@@ -1,7 +1,5 @@
 # Wallet GUI client
 
--------------------
-
 ## Build System
 
 The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The front-end is programmed in [QML](http://doc.qt.io/qt-5/qmlapplications.html "QML Applications"), and the back-end in [Python](https://www.python.org/ "Python"), using [PySide2](https://wiki.qt.io/Qt_for_Python "Qt for Python").
