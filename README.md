@@ -21,4 +21,4 @@ The minimum Qt version required is [Qt 5.12.0 LTS](https://download.qt.io/archiv
 The wheel of [PySide2](https://wiki.qt.io/Qt_for_Python "Qt for Python") must match the selected Qt version, i.e. if you use [Qt 5.12.0 LTS](https://download.qt.io/archive/qt/5.12/5.12.0/ "Qt Archive") you must use it with PySide2 5.12.0, and if you use [Qt 5.12.1 LTS](https://download.qt.io/archive/qt/5.12/5.12.1/ "Qt Archive") you must use PySide2 5.12.1.
 
 ## WIP
-This is a Work-In-Progress
+This is a Work-In-Progress.
