@@ -10,9 +10,9 @@ The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The fro
 
 #### Qt version
 
-Linux/X11 requirements: 
-MacOS requirements: 
-Windows requirements: 
+[Linux/X11 requirements](http://doc.qt.io/qt-5/linux.html)
+[MacOS requirements](http://doc.qt.io/qt-5/macos.html)
+[Windows requirements](http://doc.qt.io/qt-5/windows.html)
 
 The minimum Qt version required is [Qt 5.12.0 LTS](https://download.qt.io/archive/qt/5.12/5.12.0/ "Qt Archive"). However, is highly recommended using [Qt 5.12.1 LTS](https://download.qt.io/archive/qt/5.12/5.12.1/ "Qt Archive") due to some bugs:
 - [QTBUG-68156](https://bugreports.qt.io/browse/QTBUG-68156 "Incompatible version of OpenSSL on Ubuntu 18.04")  
