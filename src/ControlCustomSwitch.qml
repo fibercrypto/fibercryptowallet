@@ -30,8 +30,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: root.isInLeftSide ? root.width/2 + spacing*2 : spacing
 
-        Behavior on anchors.leftMargin  { NumberAnimation { } }
-        Behavior on anchors.rightMargin { NumberAnimation { } }
+        Behavior on anchors.leftMargin  { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
+        Behavior on anchors.rightMargin { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
 
         text: "<b>" + (root.isInLeftSide ? root.leftText : root.rightText) + "</b>"
         highlighted: true
@@ -46,7 +46,7 @@ Rectangle {
 
             radius: root.radius
             color: !switchButton.enabled ? switchButton.Material.buttonDisabledColor : root.isInLeftSide ? root.leftColor : root.rightColor
-            Behavior on color { ColorAnimation { } }
+            Behavior on color { ColorAnimation { duration: 150 } }
 
             layer.enabled: switchButton.enabled && switchButton.Material.buttonColor.a > 0
 
@@ -57,7 +57,7 @@ Rectangle {
 
                 color: switchButton.down ? "#33000000" : switchButton.hovered ? "#11000000" : "transparent"
 
-                Behavior on color { ColorAnimation { } }
+                Behavior on color { ColorAnimation { duration: 150 } }
             }
         }
     }
