@@ -10,6 +10,8 @@ Rectangle {
     property bool isInLeftSide: true
     property string leftText: "Left Text"
     property string rightText: "Right Text"
+    property color leftColor: Material.color(Material.Blue)
+    property color rightColor: Material.color(Material.Green)
 
     width: 300
     height: 70
@@ -43,8 +45,8 @@ Rectangle {
             implicitHeight: switchButton.Material.buttonHeight
 
             radius: root.radius
-            color: !switchButton.enabled ? switchButton.Material.buttonDisabledColor :
-                                        switchButton.highlighted ? switchButton.Material.highlightedButtonColor : switchButton.Material.buttonColor
+            color: !switchButton.enabled ? switchButton.Material.buttonDisabledColor : root.isInLeftSide ? root.leftColor : root.rightColor
+            Behavior on color { ColorAnimation { } }
 
             layer.enabled: switchButton.enabled && switchButton.Material.buttonColor.a > 0
 
