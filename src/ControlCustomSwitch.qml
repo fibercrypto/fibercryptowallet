@@ -12,6 +12,7 @@ Rectangle {
     property string rightText: "Right Text"
     property color leftColor: Material.color(Material.Blue)
     property color rightColor: Material.color(Material.Green)
+    property int animationsSpeed: 150
 
     width: 300
     height: 70
@@ -30,8 +31,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.rightMargin: root.isInLeftSide ? root.width/2 + spacing*2 : spacing
 
-        Behavior on anchors.leftMargin  { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
-        Behavior on anchors.rightMargin { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
+        Behavior on anchors.leftMargin  { NumberAnimation { duration: animationsSpeed; easing.type: Easing.OutQuint } }
+        Behavior on anchors.rightMargin { NumberAnimation { duration: animationsSpeed; easing.type: Easing.OutQuint } }
 
         text: "<b>" + (root.isInLeftSide ? root.leftText : root.rightText) + "</b>"
         highlighted: true
@@ -46,7 +47,7 @@ Rectangle {
 
             radius: root.radius
             color: !switchButton.enabled ? switchButton.Material.buttonDisabledColor : root.isInLeftSide ? root.leftColor : root.rightColor
-            Behavior on color { ColorAnimation { duration: 150 } }
+            Behavior on color { ColorAnimation { duration: animationsSpeed } }
 
             layer.enabled: switchButton.enabled && switchButton.Material.buttonColor.a > 0
 
@@ -57,7 +58,7 @@ Rectangle {
 
                 color: switchButton.down ? "#33000000" : switchButton.hovered ? "#11000000" : "transparent"
 
-                Behavior on color { ColorAnimation { duration: 150 } }
+                Behavior on color { ColorAnimation { duration: animationsSpeed } }
             }
         }
     }
