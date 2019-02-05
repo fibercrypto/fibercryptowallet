@@ -11,8 +11,6 @@ Rectangle {
     property string leftText: "Left Text"
     property string rightText: "Right Text"
 
-    anchors.centerIn: parent
-
     width: 300
     height: 70
 
