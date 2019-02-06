@@ -78,7 +78,7 @@ Item {
         id: textArea
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 60
+        height: 80
         wrapMode: TextArea.Wrap
 
         selectByMouse: true
