@@ -1,6 +1,10 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.impl 2.12
 import QtQuick.Controls.Material 2.12
+
+// Colors are only implemented for Material Style
+// TODO: Impplement the same colors for the other styles
 
 Rectangle {
     id: root
@@ -44,6 +48,18 @@ Rectangle {
 
         onClicked: {
             root.isInLeftSide = !root.isInLeftSide
+        }
+
+        contentItem: IconLabel {
+            spacing: switchButton.spacing
+            mirrored: switchButton.mirrored
+            display: switchButton.display
+
+            icon: switchButton.icon
+            text: switchButton.text
+            font: switchButton.font
+            color: !switchButton.enabled ? switchButton.Material.hintTextColor :
+                                      switchButton.flat && switchButton.highlighted ? switchButton.Material.accentColor : switchButton.Material.foreground
         }
 
         background: Rectangle {
