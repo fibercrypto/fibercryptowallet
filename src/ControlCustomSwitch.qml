@@ -4,7 +4,7 @@ import QtQuick.Controls.impl 2.12
 import QtQuick.Controls.Material 2.12
 
 // Colors are only implemented for Material Style
-// TODO: Impplement the same colors for the other styles
+// TODO: Implement the same colors for the other styles
 
 Rectangle {
     id: root
