@@ -15,6 +15,7 @@ Rectangle {
     property bool leftHighlighted: false
     property bool rightHighlighted: false
     property int animationsSpeed: 150
+    property color textColor: Material.foreground
 
     width: 300
     height: 70
@@ -32,6 +33,8 @@ Rectangle {
         anchors.leftMargin: root.isInLeftSide ? spacing : root.width/2 + spacing*2
         anchors.right: parent.right
         anchors.rightMargin: root.isInLeftSide ? root.width/2 + spacing*2 : spacing
+
+        Material.foreground: textColor
 
         Behavior on anchors.leftMargin  { NumberAnimation { duration: animationsSpeed; easing.type: Easing.OutQuint } }
         Behavior on anchors.rightMargin { NumberAnimation { duration: animationsSpeed; easing.type: Easing.OutQuint } }
