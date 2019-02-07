@@ -16,8 +16,6 @@ Rectangle {
     property string rightText: "Right Text"
     property color leftColor: Material.color(Material.Blue)
     property color rightColor: Material.color(Material.Green)
-    property bool leftHighlighted: false
-    property bool rightHighlighted: false
     property int animationsSpeed: 150
     property color textColor: Material.foreground
 
@@ -44,7 +42,6 @@ Rectangle {
         Behavior on anchors.rightMargin { NumberAnimation { duration: animationsSpeed; easing.type: Easing.OutQuint } }
 
         text: "<b>" + (root.isInLeftSide ? root.leftText : root.rightText) + "</b>"
-        highlighted: root.isInLeftSide ? root.leftHighlighted : root.rightHighlighted
 
         onClicked: {
             root.isInLeftSide = !root.isInLeftSide
