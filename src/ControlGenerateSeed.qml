@@ -13,6 +13,8 @@ Item {
     property alias buttonLeftText: buttonLeft.text
     property alias buttonRightText: buttonRight.text
 
+    property bool buttonsVisible: buttonRight.visible
+
     readonly property alias inputControlWidth: textArea.width
     readonly property alias inputControlHeight: textArea.height
 
@@ -30,6 +32,8 @@ Item {
 
             text: "ButtonLeft"
             font.pointSize: 8
+            visible: buttonRight.visible
+            opacity: buttonRight.opacity
 
             contentItem: Label {
                 text: buttonLeft.text
@@ -42,7 +46,10 @@ Item {
             id: buttonRight
 
             height: 30
+            opacity: buttonsVisible ? 1.0 : 0.0
+            visible: opacity > 0.0
 
+            Behavior on opacity { NumberAnimation { easing.type: Easing.OutQuint } }
 
             text: "ButtonRight"
             font.pointSize: 8
