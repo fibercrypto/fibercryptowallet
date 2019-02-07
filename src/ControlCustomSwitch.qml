@@ -26,6 +26,7 @@ Rectangle {
     height: 70
 
     color: backgroundColor
+    radius: controlRadius
 
     Button {
         id: switchButton
