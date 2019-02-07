@@ -18,6 +18,8 @@ Rectangle {
     property color rightColor: Material.color(Material.Green)
     property int animationsSpeed: 150
     property color textColor: Material.foreground
+    property color hoveredColor: "#0A000000"
+    property color pressedColor: "#1A000000"
 
     width: 300
     height: 70
@@ -73,7 +75,7 @@ Rectangle {
                 anchors.fill: parent
                 radius: root.radius
 
-                color: switchButton.down ? "#33000000" : switchButton.hovered ? "#11000000" : "transparent"
+                color: switchButton.down ? pressedColor : switchButton.hovered ? hoveredColor : "transparent"
 
                 Behavior on color { ColorAnimation { duration: animationsSpeed } }
             }
