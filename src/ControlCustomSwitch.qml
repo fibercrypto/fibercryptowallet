@@ -22,9 +22,6 @@ Rectangle {
     property color pressedColor: "#1A000000"
     property real controlRadius: 40
 
-    width: 300
-    height: 70
-
     color: backgroundColor
     radius: controlRadius
 
