@@ -20,11 +20,11 @@ Rectangle {
     property color textColor: Material.foreground
     property color hoveredColor: "#0A000000"
     property color pressedColor: "#1A000000"
+    property real controlRadius: 40
 
     width: 300
     height: 70
 
-    radius: 40
     color: backgroundColor
 
     Button {
@@ -64,7 +64,7 @@ Rectangle {
             implicitWidth: 64
             implicitHeight: switchButton.Material.buttonHeight
 
-            radius: root.radius
+            radius: root.controlRadius
             color: !switchButton.enabled ? switchButton.Material.buttonDisabledColor : root.isInLeftSide ? root.leftColor : root.rightColor
             Behavior on color { ColorAnimation { duration: animationsSpeed } }
 
@@ -73,7 +73,7 @@ Rectangle {
             Rectangle {
                 id: rectangleColorEffect
                 anchors.fill: parent
-                radius: root.radius
+                radius: root.controlRadius
 
                 color: switchButton.down ? pressedColor : switchButton.hovered ? hoveredColor : "transparent"
 
