@@ -55,8 +55,7 @@ Rectangle {
             icon: switchButton.icon
             text: switchButton.text
             font: switchButton.font
-            color: !switchButton.enabled ? switchButton.Material.hintTextColor :
-                                      switchButton.flat && switchButton.highlighted ? switchButton.Material.accentColor : switchButton.Material.foreground
+            color: !switchButton.enabled ? switchButton.Material.hintTextColor : switchButton.Material.foreground
         }
 
         background: Rectangle {
