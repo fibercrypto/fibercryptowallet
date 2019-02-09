@@ -9,7 +9,6 @@ Dialog {
     property alias text: msg.text
     property alias imagePath: icon.source
 
-    clip: true
     focus: true
     modal: true
     title: Qt.application.name
