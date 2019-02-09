@@ -18,14 +18,17 @@ Dialog {
     ColumnLayout {
         anchors.fill: parent
         spacing: 50
+
         RowLayout {
             spacing: 50
+
             Image {
                 id: icon
                 source: "qrc:/images/icons/cpu.svg"
                 sourceSize: "64x64"
                 Layout.alignment: Qt.AlignTop
             }
+
             ColumnLayout {
                 Label {
                     id: msgTitle
@@ -50,6 +53,7 @@ Dialog {
                 }
             }
         }
+
         ColumnLayout {
             Label {
                 id: options
