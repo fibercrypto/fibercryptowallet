@@ -16,7 +16,8 @@ Dialog {
 
     RowLayout {
         anchors.fill: parent
-        spacing: 50
+        spacing: 30
+        
         Image {
             id: icon
             sourceSize: "64x64"
