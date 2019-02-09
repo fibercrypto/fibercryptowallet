@@ -29,7 +29,8 @@ Dialog {
             ColumnLayout {
                 Label {
                     id: msgTitle
-                    text: "<b>" + qsTr("Unconfigured Hardware Wallet") + "</b>"
+                    text: qsTr("Unconfigured Hardware Wallet")
+                    font.bold: true
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     Layout.alignment: Qt.AlignTop
