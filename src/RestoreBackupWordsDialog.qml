@@ -6,7 +6,7 @@ import QtQuick.Layouts 1.12
 Dialog {
     id: root
 
-    focus: true
+    focus: visible
     modal: true
     title: Qt.application.name
     standardButtons: Dialog.YesToAll
@@ -55,7 +55,7 @@ Dialog {
             id: wordInput
             placeholderText: qsTr("Requested word")
             Layout.fillWidth: true
-            focus: true
+            focus: root.focus
         }
     }
 }
