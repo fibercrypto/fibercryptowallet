@@ -8,27 +8,54 @@ Dialog {
 
     property alias text: msg.text
     property alias imagePath: icon.source
+    property alias confirmationCheckBoxVisible: checkBoxConfirmation.visible
+    property alias confirmationCheckBoxText: checkBoxConfirmation.text
+    property alias confirmationCheckBoxChecked: checkBoxConfirmation.checked
 
     focus: true
     modal: true
     title: Qt.application.name
     standardButtons: Dialog.Ok
 
-    RowLayout {
+    Component.onCompleted: {
+        if (standardButton(Dialog.Ok)) {
+            standardButton(Dialog.Ok).enabled = confirmationCheckBoxChecked
+        }
+    }
+
+    onConfirmationCheckBoxCheckedChanged: {
+        if (confirmationCheckBoxVisible && standardButton(Dialog.Ok)) {
+            standardButton(Dialog.Ok).enabled = confirmationCheckBoxChecked
+        } else if (standardButton(Dialog.Ok)) {
+            standardButton(Dialog.Ok).enabled = true
+        }
+    }
+
+    ColumnLayout {
         anchors.fill: parent
         spacing: 30
-        
-        Image {
-            id: icon
-            sourceSize: "64x64"
-            Layout.alignment: Qt.AlignTop
+
+        RowLayout {
+            spacing: 30
+
+            Image {
+                id: icon
+                sourceSize: "64x64"
+            }
+            Label {
+                id: msg
+                text: qsTr("Your message goes here.")
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+                wrapMode: Text.WordWrap
+            }
         }
-        Label {
-            id: msg
-            text: qsTr("Your message goes here.")
-            wrapMode: Text.WordWrap
+
+        CheckBox {
+            id: checkBoxConfirmation
+            visible: false
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignVCenter
+            Layout.alignment: Qt.AlignHCenter
         }
     }
 
