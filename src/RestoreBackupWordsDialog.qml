@@ -9,7 +9,7 @@ Dialog {
     focus: visible
     modal: true
     title: Qt.application.name
-    standardButtons: Dialog.YesToAll
+    standardButtons: Dialog.YesToAll | Dialog.Cancel
     Component.onCompleted: {
         standardButton(Dialog.YesToAll).text = qsTr("Continue")
     }
