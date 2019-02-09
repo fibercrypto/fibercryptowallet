@@ -36,6 +36,7 @@ Item {
 
             selectByMouse: true
             placeholderText: qsTr("Wallet's name")
+            focus: true
         }
 
         ControlGenerateSeed {
