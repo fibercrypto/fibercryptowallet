@@ -12,6 +12,7 @@ Dialog {
     standardButtons: Dialog.YesToAll | Dialog.Cancel
     Component.onCompleted: {
         standardButton(Dialog.YesToAll).text = qsTr("Continue")
+        standardButton(Dialog.YesToAll).enabled = wordInput.text !== ""
     }
 
     implicitWidth: 420
@@ -56,6 +57,10 @@ Dialog {
             placeholderText: qsTr("Requested word")
             Layout.fillWidth: true
             focus: root.focus
+
+            onTextChanged: {
+                standardButton(Dialog.YesToAll).enabled = text !== ""
+            }
         }
     }
 }
