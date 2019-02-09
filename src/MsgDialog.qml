@@ -24,7 +24,7 @@ Dialog {
             id: msg
             text: qsTr("Your message goes here.")
             Layout.fillWidth: true
-            verticalAlignment: Text.AlignTop
+            Layout.alignment: Qt.AlignTop
         }
     }
 
