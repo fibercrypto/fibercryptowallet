@@ -22,8 +22,10 @@ Dialog {
     ColumnLayout {
         anchors.fill: parent
         spacing: 50
+
         RowLayout {
-            spacing: 50
+            spacing: 30
+            
             Image {
                 id: icon
                 source: "qrc:/images/icons/security.svg"
