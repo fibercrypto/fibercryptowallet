@@ -19,6 +19,7 @@ Dialog {
         Image {
             id: icon
             sourceSize: "64x64"
+            Layout.alignment: Qt.AlignTop
         }
         Label {
             id: msg
