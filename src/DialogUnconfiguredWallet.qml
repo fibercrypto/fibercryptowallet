@@ -7,6 +7,8 @@ Dialog {
     id: root
 
     clip: true
+    focus: true
+    modal: true
     title: Qt.application.name
     standardButtons: Dialog.Abort
 

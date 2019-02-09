@@ -10,6 +10,8 @@ Dialog {
     property alias imagePath: icon.source
 
     clip: true
+    focus: true
+    modal: true
     title: Qt.application.name
     standardButtons: Dialog.Ok
 
