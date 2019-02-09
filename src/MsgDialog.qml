@@ -11,6 +11,7 @@ Dialog {
     property alias confirmationCheckBoxVisible: checkBoxConfirmation.visible
     property alias confirmationCheckBoxText: checkBoxConfirmation.text
     property alias confirmationCheckBoxChecked: checkBoxConfirmation.checked
+    property int buttonToConnectWithConfirmationCheckBox: Dialog.Ok
 
     focus: true
     modal: true
@@ -18,16 +19,16 @@ Dialog {
     standardButtons: Dialog.Ok
 
     Component.onCompleted: {
-        if (standardButton(Dialog.Ok)) {
-            standardButton(Dialog.Ok).enabled = confirmationCheckBoxChecked
+        if (standardButton(buttonToConnectWithConfirmationCheckBox)) {
+            standardButton(buttonToConnectWithConfirmationCheckBox).enabled = confirmationCheckBoxChecked
         }
     }
 
     onConfirmationCheckBoxCheckedChanged: {
-        if (confirmationCheckBoxVisible && standardButton(Dialog.Ok)) {
-            standardButton(Dialog.Ok).enabled = confirmationCheckBoxChecked
-        } else if (standardButton(Dialog.Ok)) {
-            standardButton(Dialog.Ok).enabled = true
+        if (confirmationCheckBoxVisible && standardButton(buttonToConnectWithConfirmationCheckBox)) {
+            standardButton(buttonToConnectWithConfirmationCheckBox).enabled = confirmationCheckBoxChecked
+        } else if (standardButton(buttonToConnectWithConfirmationCheckBox)) {
+            standardButton(buttonToConnectWithConfirmationCheckBox).enabled = true
         }
     }
 
