@@ -24,6 +24,7 @@ Dialog {
         Label {
             id: msg
             text: qsTr("Your message goes here.")
+            wrapMode: Text.WordWrap
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
         }
