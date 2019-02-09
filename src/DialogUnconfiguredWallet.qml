@@ -53,7 +53,8 @@ Dialog {
         ColumnLayout {
             Label {
                 id: options
-                text: "<b>" + qsTr("Options:") + "</b>"
+                text: qsTr("Options:")
+                font.bold: true
                 Layout.fillWidth: true
             }
             ItemDelegate {
