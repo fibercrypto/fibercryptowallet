@@ -22,10 +22,8 @@ Dialog {
     ColumnLayout {
         anchors.fill: parent
         spacing: 50
-
         RowLayout {
-            spacing: 30
-            
+            spacing: 50
             Image {
                 id: icon
                 source: "qrc:/images/icons/security.svg"
@@ -85,7 +83,7 @@ Dialog {
                     text: "<b>" + (enableBackupWarning ? 2 : 1) + ")</b> " +
                           qsTr("The connected hardware wallet does not have a PIN. " +
                                "The PIN code protects the hardware wallet in case of " +
-                               "loss, theft and hacks." +
+                               "loss, theft and hacks. " +
                                "To do this, select <b><i>Create PIN code</i></b>.")
                     color: Material.color(Material.Pink)
                     Layout.fillWidth: true
