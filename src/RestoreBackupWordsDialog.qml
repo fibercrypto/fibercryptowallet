@@ -10,13 +10,14 @@ Dialog {
     modal: true
     title: Qt.application.name
     standardButtons: Dialog.YesToAll | Dialog.Cancel
+
+    implicitWidth: 420
+    implicitHeight: 300
+
     Component.onCompleted: {
         standardButton(Dialog.YesToAll).text = qsTr("Continue")
         standardButton(Dialog.YesToAll).enabled = wordInput.text !== ""
     }
-
-    implicitWidth: 420
-    implicitHeight: 300
 
     ColumnLayout {
         anchors.fill: parent
