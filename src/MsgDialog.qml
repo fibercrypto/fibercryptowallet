@@ -28,7 +28,7 @@ Dialog {
             text: qsTr("Your message goes here.")
             wrapMode: Text.WordWrap
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignTop
+            Layout.alignment: Qt.AlignVCenter
         }
     }
 
