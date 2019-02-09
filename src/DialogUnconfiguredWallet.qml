@@ -10,6 +10,7 @@ Dialog {
     modal: true
     title: Qt.application.name
     standardButtons: Dialog.Abort
+    closePolicy: Dialog.NoAutoClose
 
     implicitWidth: 650
     implicitHeight: 380
