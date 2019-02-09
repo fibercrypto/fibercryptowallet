@@ -70,6 +70,7 @@ Dialog {
         id: cancelConfirmationDialog
         anchors.centerIn: parent
         modal: true
+        focus: true
         title: Qt.application.name
         closePolicy: Dialog.NoAutoClose
         standardButtons: Dialog.Yes | Dialog.No
