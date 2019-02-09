@@ -64,4 +64,27 @@ Dialog {
             }
         }
     }
+
+    // Confirm the cancellation of the operation
+    Dialog {
+        id: cancelConfirmationDialog
+        anchors.centerIn: parent
+        modal: true
+        title: Qt.application.name
+        closePolicy: Dialog.NoAutoClose
+        standardButtons: Dialog.Yes | Dialog.No
+
+        RowLayout {
+            spacing: 30
+
+            Image {
+                source: "qrc:/images/icons/question.svg"
+                sourceSize: "64x64"
+            }
+
+            Label {
+                text: qsTr("Abort the operation?")
+            }
+        }
+    }
 }
