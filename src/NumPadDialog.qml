@@ -10,9 +10,10 @@ Dialog {
     modal: true
     standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy: Popup.NoAutoClose
+    title: Qt.application.name
 
     implicitWidth: gridNumPad.width + 250
-    implicitHeight: labelInstructions.height + textInput.height + numPad.height + 150
+    implicitHeight: labelInstructions.height + textInput.height + numPad.height + 200
 
     readonly property string numPadButtonText: "#"
     readonly property real numPadButtonImplicitSize: 50
