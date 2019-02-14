@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.12
 Page {
     id: root
 
+    property string statusIcon; // an empty string for no icon
     readonly property real internalLabelsWidth: 50
 
     header: Label {
@@ -61,8 +62,8 @@ Page {
 
                 // TODO: add an 'encryption-disabled' SVG icon
                 Image {
-                    id: lockIcon
-                    source: "qrc:/images/security.svg"
+                    id: status
+                    source: statusIcon
                     sourceSize: "24x24"
                 }
 
@@ -70,6 +71,12 @@ Page {
                     id: labelWalletName
                     text: name // a role of the model
                     Layout.fillWidth: true
+                }
+
+                Image {
+                    id: lockIcon
+                    source: "qrc:/images/security.svg"
+                    sourceSize: "24x24"
                 }
 
                 Label {
