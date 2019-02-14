@@ -14,6 +14,21 @@ Page {
         padding: 10
     }
 
+    footer: RowLayout {
+        ItemDelegate {
+            id: buttonAddWallet
+            text: qsTr("Add wallet")
+            Layout.fillWidth: true
+            display: ItemDelegate.TextUnderIcon
+        }
+        ItemDelegate {
+            id: buttonLoadWallet
+            text: qsTr("Load wallet")
+            Layout.fillWidth: true
+            display: ItemDelegate.TextUnderIcon
+        }
+    }
+
     ScrollView {
         id: scrollItem
         anchors.fill: parent
