@@ -68,13 +68,13 @@ Page {
 
                 Label {
                     id: labelWalletName
-                    text: name
+                    text: name // a role of the model
                     Layout.fillWidth: true
                 }
 
                 Label {
                     id: labelskycoins
-                    text: sky
+                    text: sky // a role of the model
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
@@ -82,7 +82,7 @@ Page {
 
                 Label {
                     id: labelCoins
-                    text: coinHours
+                    text: coinHours // a role of the model
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
                 }
