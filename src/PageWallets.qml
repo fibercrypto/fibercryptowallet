@@ -128,7 +128,7 @@ Page {
                 }
 
                 Label {
-                    id: labelskycoins
+                    id: labelSky
                     text: sky // a role of the model
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
