@@ -49,18 +49,29 @@ Page {
         }
     }
 
-    footer: RowLayout {
-        ItemDelegate {
-            id: buttonAddWallet
-            text: qsTr("Add wallet")
+    footer: ColumnLayout {
+        Rectangle {
             Layout.fillWidth: true
-            display: ItemDelegate.TextUnderIcon
+            height: 1
+            color: "#FFDDDDDD"
         }
-        ItemDelegate {
-            id: buttonLoadWallet
-            text: qsTr("Load wallet")
-            Layout.fillWidth: true
-            display: ItemDelegate.TextUnderIcon
+        RowLayout {
+            ItemDelegate {
+                id: buttonAddWallet
+                text: qsTr("Add wallet")
+                icon.source: "qrc:/images/add.svg"
+                icon.color: "transparent"
+                Layout.fillWidth: true
+                display: ItemDelegate.TextUnderIcon
+            }
+            ItemDelegate {
+                id: buttonLoadWallet
+                text: qsTr("Load wallet")
+                icon.source: "qrc:/images/upload.svg"
+                icon.color: "transparent"
+                Layout.fillWidth: true
+                display: ItemDelegate.TextUnderIcon
+            }
         }
     }
 
