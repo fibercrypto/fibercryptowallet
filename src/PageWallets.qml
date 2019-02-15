@@ -7,7 +7,10 @@ Page {
     id: root
 
     property string statusIcon; // an empty string for no icon
-    readonly property real internalLabelsWidth: 50
+    readonly property real listWalletLeftMargin: 20
+    readonly property real listWalletRightMargin: 50
+    readonly property real listWalletSpacing: 20
+    readonly property real internalLabelsWidth: 70
 
     header: Label {
         text: qsTr("Wallets")
