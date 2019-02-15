@@ -84,7 +84,7 @@ Page {
             anchors.fill: parent
             clip: true // limit the painting to it's bounding rectangle
             model: listModel
-            delegate: delegateWalletList
+            delegate: WalletListDelegate {}
         }
     }
 
@@ -93,55 +93,5 @@ Page {
     // Or implement the model in the backend (a more recommendable approach)
     ListModel {
         id: listModel
-    }
-
-    Component {
-        id: delegateWalletList
-
-        ItemDelegate {
-            width: walletList.width
-
-            RowLayout {
-                id: delegateLayout
-                anchors.fill: parent
-                anchors.leftMargin: listWalletLeftMargin
-                anchors.rightMargin: listWalletRightMargin
-                spacing: listWalletSpacing
-
-                // TODO: add an 'encryption-disabled' SVG icon
-                Image {
-                    id: status
-                    source: statusIcon
-                    sourceSize: "24x24"
-                }
-
-                Label {
-                    id: labelWalletName
-                    text: name // a role of the model
-                    Layout.fillWidth: true
-                }
-
-                Image {
-                    id: lockIcon
-                    source: "qrc:/images/security.svg"
-                    sourceSize: "24x24"
-                }
-
-                Label {
-                    id: labelSky
-                    text: sky // a role of the model
-                    color: Material.accent
-                    horizontalAlignment: Text.AlignRight
-                    Layout.preferredWidth: internalLabelsWidth
-                }
-
-                Label {
-                    id: labelCoins
-                    text: coinHours // a role of the model
-                    horizontalAlignment: Text.AlignRight
-                    Layout.preferredWidth: internalLabelsWidth
-                }
-            }
-        }
     }
 }
