@@ -78,9 +78,11 @@ Page {
     ScrollView {
         id: scrollItem
         anchors.fill: parent
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
         ListView {
             id: walletList
             anchors.fill: parent
+            clip: true // limit the painting to it's bounding rectangle
             model: listModel
             delegate: delegateWalletList
         }
