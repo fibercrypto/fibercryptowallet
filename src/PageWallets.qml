@@ -56,21 +56,21 @@ Page {
             color: "#FFDDDDDD"
         }
         RowLayout {
-            ItemDelegate {
+            Button {
                 id: buttonAddWallet
                 text: qsTr("Add wallet")
+                flat: true
                 icon.source: "qrc:/images/add.svg"
-                icon.color: "transparent"
+                highlighted: true
                 Layout.fillWidth: true
-                display: ItemDelegate.TextUnderIcon
             }
-            ItemDelegate {
+            Button {
                 id: buttonLoadWallet
                 text: qsTr("Load wallet")
+                flat: true
                 icon.source: "qrc:/images/upload.svg"
-                icon.color: "transparent"
+                highlighted: true
                 Layout.fillWidth: true
-                display: ItemDelegate.TextUnderIcon
             }
         }
     }
