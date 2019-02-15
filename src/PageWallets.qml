@@ -12,10 +12,41 @@ Page {
     readonly property real listWalletSpacing: 20
     readonly property real internalLabelsWidth: 70
 
-    header: Label {
-        text: qsTr("Wallets")
-        font.pixelSize: Qt.application.font.pixelSize * 2
-        padding: 10
+    header: ColumnLayout {
+        Label {
+            text: qsTr("Wallets")
+            font.pixelSize: Qt.application.font.pixelSize * 2
+            padding: 10
+        }
+
+        RowLayout {
+            spacing: listWalletSpacing
+            Label {
+                text: qsTr("Name")
+                font.pointSize: 9
+                Layout.leftMargin: listWalletLeftMargin
+                Layout.fillWidth: true
+            }
+            Label {
+                text: qsTr("Sky")
+                font.pointSize: 9
+                horizontalAlignment: Text.AlignRight
+                Layout.preferredWidth: internalLabelsWidth
+            }
+            Label {
+                text: qsTr("Coin hours")
+                font.pointSize: 9
+                horizontalAlignment: Text.AlignRight
+                Layout.rightMargin: listWalletRightMargin
+                Layout.preferredWidth: internalLabelsWidth
+            }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            height: 1
+            color: "#FFDDDDDD"
+        }
     }
 
     footer: RowLayout {
