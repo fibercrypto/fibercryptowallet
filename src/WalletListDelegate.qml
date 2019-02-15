@@ -8,7 +8,7 @@ ItemDelegate {
     width: walletList.width
 
     RowLayout {
-        id: delegateLayout
+        id: delegateRowLayout
         anchors.fill: parent
         anchors.leftMargin: listWalletLeftMargin
         anchors.rightMargin: listWalletRightMargin
