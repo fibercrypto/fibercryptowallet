@@ -102,10 +102,11 @@ Page {
             width: walletList.width
 
             RowLayout {
+                id: delegateLayout
                 anchors.fill: parent
-                anchors.leftMargin: 30
-                anchors.rightMargin: 50
-                spacing: 20
+                anchors.leftMargin: listWalletLeftMargin
+                anchors.rightMargin: listWalletRightMargin
+                spacing: listWalletSpacing
 
                 // TODO: add an 'encryption-disabled' SVG icon
                 Image {
