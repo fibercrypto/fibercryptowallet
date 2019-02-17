@@ -51,6 +51,8 @@ Page {
 
     footer: ToolBar {
         id: tabBarCreateUpload
+        Material.primary: Material.Blue
+        Material.accent: Material.Yellow
 
         RowLayout {
             anchors.fill: parent
