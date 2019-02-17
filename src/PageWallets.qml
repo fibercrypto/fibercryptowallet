@@ -49,27 +49,21 @@ Page {
         }
     }
 
-    footer: ColumnLayout {
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: "#FFDDDDDD"
-        }
+    footer: ToolBar {
+        id: tabBarCreateUpload
+
         RowLayout {
-            Button {
+            anchors.fill: parent
+            ToolButton {
                 id: buttonAddWallet
                 text: qsTr("Add wallet")
-                flat: true
                 icon.source: "qrc:/images/add.svg"
-                highlighted: true
                 Layout.fillWidth: true
             }
-            Button {
+            ToolButton {
                 id: buttonLoadWallet
                 text: qsTr("Load wallet")
-                flat: true
                 icon.source: "qrc:/images/upload.svg"
-                highlighted: true
                 Layout.fillWidth: true
             }
         }
