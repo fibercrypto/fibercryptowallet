@@ -9,6 +9,8 @@ Item {
     readonly property real delegateHeight: 30
     property bool emptyAddressVisible: true
     property bool expanded: false
+    // The following property is used to avoid a binding conflict with the `height` property.
+    // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
 
     width: walletList.width
