@@ -79,7 +79,7 @@ Page {
             id: walletList
             anchors.fill: parent
             clip: true // limit the painting to it's bounding rectangle
-            model: listModel
+            model: listWallets
             delegate: WalletListDelegate {}
         }
     }
@@ -88,6 +88,6 @@ Page {
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
     ListModel {
-        id: listModel
+        id: listWallets
     }
 }
