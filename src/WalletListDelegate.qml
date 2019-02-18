@@ -12,9 +12,9 @@ Item {
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
 
     width: walletList.width
-    implicitHeight: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
+    height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
 
-    Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+    Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
     ColumnLayout {
         id: delegateColumnLayout
