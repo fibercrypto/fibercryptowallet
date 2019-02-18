@@ -34,7 +34,6 @@ Item {
                 anchors.rightMargin: listWalletRightMargin
                 spacing: listWalletSpacing
 
-                // TODO: add an 'encryption-disabled' SVG icon
                 Image {
                     id: status
                     source: statusIcon
