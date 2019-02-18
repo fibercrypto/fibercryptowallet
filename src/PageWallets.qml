@@ -45,7 +45,7 @@ Page {
         Rectangle {
             Layout.fillWidth: true
             height: 1
-            color: "#FFDDDDDD"
+            color: "#DDDDDD"
         }
     }
 
