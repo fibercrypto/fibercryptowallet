@@ -109,6 +109,24 @@ Item {
                     opacity: 0.0
                 }
 
+                onClicked: {
+                    textAddress.selectAll()
+                    textAddress.copy()
+                    textAddress.deselect()
+                    if (copyAnimation.running) {
+                        copyAnimation.restart()
+                    } else {
+                        copyAnimation.start()
+                    }
+                }
+
+                SequentialAnimation {
+                    id: copyAnimation
+                    NumberAnimation { target: imageCopied; property: "opacity"; to: 1.0; easing.type: Easing.OutCubic }
+                    PauseAnimation { duration: 1000 }
+                    NumberAnimation { target: imageCopied; property: "opacity"; to: 0.0; easing.type: Easing.OutCubic }
+                }
+
             }
             Rectangle {
                 id: spacer
