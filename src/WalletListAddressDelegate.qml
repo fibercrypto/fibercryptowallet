@@ -87,9 +87,10 @@ Item {
         }
 
         RowLayout {
-            Label {
-                id: labelAddress
+            TextInput {
+                id: textAddress
                 text: address // a role of the model
+                readOnly: true
                 font.family: "Code New Roman"
             }
             ToolButton {
