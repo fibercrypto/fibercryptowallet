@@ -97,6 +97,18 @@ Item {
                 id: toolButtonCopy
                 icon.source: "qrc:/images/copy.svg"
                 Layout.alignment: Qt.AlignLeft
+
+                Image {
+                    id: imageCopied
+                    anchors.centerIn: parent
+                    source: "qrc:/images/check-simple.svg"
+                    fillMode: Image.PreserveAspectFit
+                    sourceSize: Qt.size(toolButtonCopy.icon.width*1.5, toolButtonCopy.icon.height*1.5)
+                    z: 1
+
+                    opacity: 0.0
+                }
+
             }
             Rectangle {
                 id: spacer
