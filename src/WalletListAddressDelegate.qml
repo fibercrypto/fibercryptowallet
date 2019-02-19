@@ -86,11 +86,21 @@ Item {
             sourceSize: "24x24"
         }
 
-        Label {
-            id: labelAddress
-            text: address // a role of the model
-            font.family: "Code New Roman"
-            Layout.fillWidth: true
+        RowLayout {
+            Label {
+                id: labelAddress
+                text: address // a role of the model
+                font.family: "Code New Roman"
+            }
+            ToolButton {
+                id: toolButtonCopy
+                icon.source: "qrc:/images/copy.svg"
+                Layout.alignment: Qt.AlignLeft
+            }
+            Rectangle {
+                id: spacer
+                Layout.fillWidth: true
+            }
         }
 
         Label {
