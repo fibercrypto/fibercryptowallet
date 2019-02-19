@@ -26,6 +26,7 @@ Item {
             id: itemDelegateMainButton
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
+            font.bold: expanded
 
             RowLayout {
                 id: delegateRowLayout
