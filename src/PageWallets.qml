@@ -15,7 +15,7 @@ Page {
     header: ColumnLayout {
         Label {
             text: qsTr("Wallets")
-            font.pixelSize: Qt.application.font.pixelSize * 2
+            font.pointSize: Qt.application.font.pointSize * 3
             padding: 10
         }
 
