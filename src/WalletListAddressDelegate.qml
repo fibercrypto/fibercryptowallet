@@ -82,8 +82,8 @@ Item {
 
         Image {
             id: qrIcon
-            source: ""
-            sourceSize: "24x24"
+            source: "qrc:/images/qr.svg"
+            sourceSize: "16x16"
         }
 
         RowLayout {
