@@ -18,7 +18,7 @@ The minimum Qt version required is [Qt 5.12.0 LTS](https://download.qt.io/archiv
 
 #### PySide2
 
-From Qt 5.12.0 onwards, the Qt Company officially supports Python as programming language for desktop development. Currently, Python (both 2.7+ and 3.5+) is currently only available for all the three major desktop platforms. This will change in future versions of Qt.  
+From Qt 5.12.0 onwards, the Qt Company officially supports Python as programming language (*Qt for Python*) for desktop development. Currently, Python (both 2.7+ and 3.5+) is currently only available for all the three major desktop platforms. This will change in future versions of Qt.  
 The wheel of [PySide2](https://wiki.qt.io/Qt_for_Python "Qt for Python") must match the selected Qt version, i.e. if you use [Qt 5.12.0 LTS](https://download.qt.io/archive/qt/5.12/5.12.0/ "Qt Archive") you must use it with PySide2 5.12.0, and if you use [Qt 5.12.1 LTS](https://download.qt.io/archive/qt/5.12/5.12.1/ "Qt Archive") you must use PySide2 5.12.1.
 
 ## WIP
