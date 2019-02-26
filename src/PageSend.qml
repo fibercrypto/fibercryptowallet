@@ -24,6 +24,10 @@ Page {
             anchors.fill: parent
             text: qsTr("Send")
             icon.source: "qrc:/images/send.svg"
+
+            onClicked: {
+                dialogSend.open()
+            }
         }
     }
 
@@ -86,4 +90,8 @@ Page {
             }
         }
     } // GroupBox
+
+    DialogSendTransaction {
+        id: dialogSend
+    }
 }
