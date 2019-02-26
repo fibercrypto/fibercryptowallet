@@ -1,5 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
+import QtQuick.Layouts 1.12
 
 Page {
     id: root
@@ -10,6 +12,19 @@ Page {
         text: qsTr("Send")
         font.pointSize: Qt.application.font.pointSize * 3
         padding: 10
+    }
+
+    footer: ToolBar {
+        id: tabBarSend
+        Material.primary: Material.Blue
+        Material.accent: Material.Yellow
+
+        ToolButton {
+            id: buttonAddWallet
+            anchors.fill: parent
+            text: qsTr("Send")
+            icon.source: "qrc:/images/send.svg"
+        }
     }
 
     GroupBox {
