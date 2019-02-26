@@ -8,7 +8,7 @@ Page {
 
     header: Label {
         text: qsTr("Send")
-        font.pixelSize: Qt.application.font.pixelSize * 3
+        font.pointSize: Qt.application.font.pointSize * 3
         padding: 10
     }
 
