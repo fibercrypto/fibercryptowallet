@@ -18,12 +18,19 @@ Item {
         Component.onCompleted: { opacity = 1.0 } // Not the best way to do this
         Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
 
-        TextField {
-            id: textFieldDestinationAddress
-            font.family: "Code New Roman"
-            placeholderText: qsTr("Destination address")
-            text: address
+        RowLayout {
             Layout.fillWidth: true
+            Image {
+                source: "qrc:/images/qr.svg"
+                sourceSize: "24x24"
+            }
+            TextField {
+                id: textFieldDestinationAddress
+                font.family: "Code New Roman"
+                placeholderText: qsTr("Destination address")
+                text: address
+                Layout.fillWidth: true
+            }
         }
         RowLayout {
             TextField {
