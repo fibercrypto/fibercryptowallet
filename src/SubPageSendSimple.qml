@@ -32,12 +32,19 @@ Page {
             Label {
                 text: qsTr("Send to")
             }
-            TextField {
-                id: textFieldWalletsSendTo
-                font.family: "Code New Roman"
-                placeholderText: qsTr("Destination address")
+            RowLayout {
                 Layout.fillWidth: true
-                Layout.topMargin: -5
+                Image {
+                    source: "qrc:/images/qr.svg"
+                    sourceSize: "24x24"
+                }
+                TextField {
+                    id: textFieldWalletsSendTo
+                    font.family: "Code New Roman"
+                    placeholderText: qsTr("Destination address")
+                    Layout.fillWidth: true
+                    Layout.topMargin: -5
+                }
             }
         }
 
