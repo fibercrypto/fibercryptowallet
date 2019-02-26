@@ -51,6 +51,9 @@ Page {
                 id: textFieldAmount
                 placeholderText: qsTr("Amount to send")
                 Layout.fillWidth: true
+                validator: DoubleValidator {
+                    notation: DoubleValidator.StandardNotation
+                }
             }
         }
     } // ColumnLayout (root)
