@@ -57,6 +57,8 @@ Page {
                 Layout.topMargin: -16
                 implicitHeight: count * delegateHeight
 
+                Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
                 interactive: false
 
                 model: listModelDestinations
