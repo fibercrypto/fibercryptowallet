@@ -30,6 +30,7 @@ Page {
             ComboBox {
                 id: comboBoxWalletsAddressesSendFrom
                 Layout.fillWidth: true
+                Layout.topMargin: -12
             }
         }
 
@@ -53,6 +54,7 @@ Page {
                 property real delegateHeight: 47
 
                 Layout.fillWidth: true
+                Layout.topMargin: -16
                 implicitHeight: count * delegateHeight
 
                 interactive: false
@@ -92,6 +94,7 @@ Page {
                 id: textFieldCustomChangeAddress
                 placeholderText: qsTr("Address to receive change")
                 Layout.fillWidth: true
+                Layout.topMargin: -16
             }
         }
 
