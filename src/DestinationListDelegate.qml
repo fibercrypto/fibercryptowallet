@@ -25,6 +25,9 @@ Item {
                 id: textFieldDestinationAmount
                 text: sky
                 implicitWidth: 60
+                validator: DoubleValidator {
+                    notation: DoubleValidator.StandardNotation
+                }
             }
             Label {
                 text: qsTr("SKY")
@@ -36,6 +39,9 @@ Item {
                 id: textFieldCoinHoursAmount
                 text: coinHours
                 implicitWidth: 60
+                validator: DoubleValidator {
+                    notation: DoubleValidator.StandardNotation
+                }
             }
             Label {
                 text: qsTr("CoinHours")
