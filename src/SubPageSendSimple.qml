@@ -37,6 +37,7 @@ Page {
                 font.family: "Code New Roman"
                 placeholderText: qsTr("Destination address")
                 Layout.fillWidth: true
+                Layout.topMargin: -5
             }
         }
 
@@ -51,6 +52,7 @@ Page {
                 id: textFieldAmount
                 placeholderText: qsTr("Amount to send")
                 Layout.fillWidth: true
+                Layout.topMargin: -10
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
                 }
