@@ -38,6 +38,7 @@ Page {
                 Image {
                     source: "qrc:/images/qr.svg"
                     sourceSize: "24x24"
+                    Layout.bottomMargin: 4
                 }
                 TextField {
                     id: textFieldWalletsSendTo
