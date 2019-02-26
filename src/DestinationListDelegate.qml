@@ -12,6 +12,11 @@ Item {
         width: root.width
         clip: true
         spacing: 20
+        opacity: 0.0
+
+        // TODO: Use `add`, `remove`, etc. transitions
+        Component.onCompleted: { opacity = 1.0 } // Not the best way to do this
+        Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
 
         TextField {
             id: textFieldDestinationAddress
