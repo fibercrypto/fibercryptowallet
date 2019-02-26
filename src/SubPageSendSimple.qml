@@ -34,6 +34,7 @@ Page {
             }
             RowLayout {
                 Layout.fillWidth: true
+                spacing: 8
                 Image {
                     source: "qrc:/images/qr.svg"
                     sourceSize: "24x24"
