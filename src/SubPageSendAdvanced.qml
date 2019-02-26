@@ -50,8 +50,10 @@ Page {
             ListView {
                 id: listViewDestinations
 
+                property real delegateHeight: 47
+
                 Layout.fillWidth: true
-                implicitHeight: count * 47
+                implicitHeight: count * delegateHeight
 
                 interactive: false
 
@@ -61,7 +63,7 @@ Page {
                 delegate: DestinationListDelegate {
                     id: delegateDestination
                     width: listViewDestinations.width
-                    implicitHeight: 47
+                    implicitHeight: ListView.view.delegateHeight
                 }
             } // ListView
         } // ColumnLayout (destinations)
