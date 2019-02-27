@@ -28,6 +28,7 @@ Item {
     }
 
     implicitHeight: 70 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
+    Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
     implicitWidth: 650
     clip: true
 
