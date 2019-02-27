@@ -15,6 +15,8 @@ Item {
     property int hoursBurned: 0
     property string transactionID
 
+    readonly property bool expanded: buttonMoreDetails.checked
+
     enum Status {
         Confirmed,
         Pending,
@@ -25,7 +27,7 @@ Item {
         Receive
     }
 
-    implicitHeight: 400
+    implicitHeight: 70 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
     implicitWidth: 650
     clip: true
 
@@ -35,6 +37,7 @@ Item {
         spacing: 20
 
         RowLayout {
+            id: rowLayoutBasicDetails
             Layout.fillWidth: true
 
             ColumnLayout {
@@ -43,6 +46,7 @@ Item {
                 Label {
                     text: qsTr("Transaction")
                     font.bold: true
+                    Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
                 }
 
@@ -109,13 +113,30 @@ Item {
             }
         } // RowLayout
 
-        Rectangle {
-            height: 1
-            color: Material.color(Material.Grey)
+        RowLayout {
+            id: rowLayoutDetailsSeparator
+
             Layout.fillWidth: true
+
+            Button {
+                id: buttonMoreDetails
+                implicitWidth: 200
+                flat: true
+                checkable: true
+                text: (checked ? qsTr("Less") : qsTr("More")) + ' ' + qsTr("details")
+            }
+
+            Rectangle {
+                height: 1
+                color: Material.color(Material.Grey)
+                Layout.alignment: Qt.AlignVCenter
+                Layout.fillWidth: true
+            }
         }
 
         RowLayout {
+            id: rowLayoutMoreDetails
+
             Layout.fillWidth: true
 
             ColumnLayout {
