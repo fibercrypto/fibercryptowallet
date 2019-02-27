@@ -43,12 +43,14 @@ Dialog {
         }
 
         Rectangle {
+            visible: transactionDetail.expanded
             height: 1
             color: Material.color(Material.Grey)
             Layout.fillWidth: true
         }
 
         ColumnLayout {
+            id: columnLayoutPasswordField
             Layout.fillWidth: true
 
             Label {
