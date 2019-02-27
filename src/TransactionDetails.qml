@@ -25,7 +25,8 @@ Item {
         Receive
     }
 
-    implicitHeight: 150
+    implicitHeight: 400
+    implicitWidth: 650
     clip: true
 
     ColumnLayout {
