@@ -57,7 +57,7 @@ Item {
                 }
             }
             Label {
-                text: qsTr("CoinHours")
+                text: qsTr("Coin hours")
             }
         }
         ToolButton {
