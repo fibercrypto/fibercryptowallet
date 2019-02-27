@@ -42,6 +42,12 @@ Dialog {
             Layout.fillWidth: true
         }
 
+        Rectangle {
+            height: 1
+            color: Material.color(Material.Grey)
+            Layout.fillWidth: true
+        }
+
         ColumnLayout {
             Layout.fillWidth: true
 
