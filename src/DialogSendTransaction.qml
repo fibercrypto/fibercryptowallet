@@ -42,16 +42,25 @@ Dialog {
             Layout.fillWidth: true
         }
 
-        TextField {
-            id: textFieldPassword
-
-            placeholderText: qsTr("Enter the password")
-            echoMode: TextField.Password
+        ColumnLayout {
             Layout.fillWidth: true
-            focus: true
 
-            onTextChanged: {
-                dialogSend.standardButton(Dialog.Ok).enabled = text !== ""
+            Label {
+                text: qsTr("Enter the password to confirm the transaction")
+            }
+
+            TextField {
+                id: textFieldPassword
+
+                placeholderText: qsTr("Enter the password")
+                echoMode: TextField.Password
+                focus: true
+                Layout.topMargin: -10
+                Layout.fillWidth: true
+
+                onTextChanged: {
+                    dialogSend.standardButton(Dialog.Ok).enabled = text !== ""
+                }
             }
         }
     }
