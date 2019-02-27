@@ -25,6 +25,7 @@ Dialog {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 20
 
         TransactionDetails {
             id: transactionDetail
