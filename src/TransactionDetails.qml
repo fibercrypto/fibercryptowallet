@@ -38,9 +38,11 @@ Item {
 
         RowLayout {
             id: rowLayoutBasicDetails
+            Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
 
             ColumnLayout {
+                Layout.alignment: Qt.AlignTop
                 Layout.fillWidth: true
 
                 Label {
@@ -56,6 +58,7 @@ Item {
                     columns: 2
                     columnSpacing: 10
 
+                    Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
 
                     Label {
@@ -116,6 +119,7 @@ Item {
         RowLayout {
             id: rowLayoutDetailsSeparator
 
+            Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
 
             Button {
@@ -137,9 +141,11 @@ Item {
         RowLayout {
             id: rowLayoutMoreDetails
 
+            Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
 
             ColumnLayout {
+                Layout.alignment: Qt.AlignTop
                 Layout.fillWidth: true
 
                 Label {
@@ -163,6 +169,7 @@ Item {
             }
 
             ColumnLayout {
+                Layout.alignment: Qt.AlignTop
                 Layout.fillWidth: true
 
                 Label {
@@ -178,6 +185,7 @@ Item {
                     model: listModelOutputsInputs
                     implicitHeight: 120 * count
                     interactive: false
+                    Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
                     delegate: InputOutputDelegate {
                         width: ListView.view.width
