@@ -156,14 +156,23 @@ Item {
                     Layout.fillWidth: true
                 }
 
-                ListView {
-                    id: listViewInputs
-                    model: listModelOutputsInputs
-                    implicitHeight: 120 * count
-                    interactive: false
+                ScrollView {
+                    Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
-                    delegate: InputOutputDelegate {
-                        width: ListView.view.width
+
+                    contentHeight: 160
+
+                    ListView {
+                        id: listViewInputs
+
+                        Material.foreground: Material.Grey
+                        model: listModelOutputsInputs
+                        clip: true
+                        Layout.alignment: Qt.AlignTop
+                        Layout.fillWidth: true
+                        delegate: InputOutputDelegate {
+                            width: ListView.view.width
+                        }
                     }
                 }
             }
@@ -179,15 +188,23 @@ Item {
                     Layout.fillWidth: true
                 }
 
-                ListView {
-                    id: listViewOutputs
-                    model: listModelOutputsInputs
-                    implicitHeight: 120 * count
-                    interactive: false
+                ScrollView {
                     Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
-                    delegate: InputOutputDelegate {
-                        width: ListView.view.width
+
+                    contentHeight: 160
+
+                    ListView {
+                        id: listViewOutputs
+
+                        Material.foreground: Material.Grey
+                        model: listModelOutputsInputs
+                        clip: true
+                        Layout.alignment: Qt.AlignTop
+                        Layout.fillWidth: true
+                        delegate: InputOutputDelegate {
+                            width: ListView.view.width
+                        }
                     }
                 }
             }
