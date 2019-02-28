@@ -118,7 +118,7 @@ Item {
                 Label {
                     text: (type === TransactionDetails.Type.Receive ? "Receive" : "Send") + ' ' + amount + ' ' + qsTr("SKY")
                     font.bold: true
-                    font.pointSize: 14
+                    font.pointSize: Qt.application.font.pointSize * 1.25
                     horizontalAlignment: Label.AlignHCenter
                     Layout.fillWidth: true
                 }
