@@ -4,7 +4,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 Dialog {
-    id: dialogSend
+    id: root
     anchors.centerIn: Overlay.overlay
 
     title: qsTr("Password requested")
@@ -65,7 +65,7 @@ Dialog {
                 Layout.fillWidth: true
 
                 onTextChanged: {
-                    dialogSend.standardButton(Dialog.Ok).enabled = text !== ""
+                    root.standardButton(Dialog.Ok).enabled = text !== ""
                 }
             }
         }
