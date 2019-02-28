@@ -102,7 +102,7 @@ Item {
                 Layout.rightMargin: 20
                 Image {
                     source: "qrc:/images/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
-                    sourceSize: "96x96"
+                    sourceSize: "72x72"
                     fillMode: Image.PreserveAspectFit
                     mirror: type === TransactionDetails.Type.Receive
                     Layout.fillWidth: true
