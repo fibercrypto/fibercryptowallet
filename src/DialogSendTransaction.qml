@@ -6,7 +6,6 @@ import QtQuick.Layouts 1.12
 Dialog {
     id: dialogSend
     anchors.centerIn: Overlay.overlay
-    implicitWidth: 550
 
     title: qsTr("Password requested")
     modal: true
@@ -26,6 +25,7 @@ Dialog {
 
     ColumnLayout {
         anchors.fill: parent
+        spacing: 20
 
         TransactionDetails {
             id: transactionDetail
@@ -42,16 +42,33 @@ Dialog {
             Layout.fillWidth: true
         }
 
-        TextField {
-            id: textFieldPassword
-
-            placeholderText: qsTr("Enter the password")
-            echoMode: TextField.Password
+        Rectangle {
+            visible: transactionDetail.expanded
+            height: 1
+            color: Material.color(Material.Grey)
             Layout.fillWidth: true
-            focus: true
+        }
 
-            onTextChanged: {
-                dialogSend.standardButton(Dialog.Ok).enabled = text !== ""
+        ColumnLayout {
+            id: columnLayoutPasswordField
+            Layout.fillWidth: true
+
+            Label {
+                text: qsTr("Enter the password to confirm the transaction")
+            }
+
+            TextField {
+                id: textFieldPassword
+
+                placeholderText: qsTr("Enter the password")
+                echoMode: TextField.Password
+                focus: true
+                Layout.topMargin: -10
+                Layout.fillWidth: true
+
+                onTextChanged: {
+                    dialogSend.standardButton(Dialog.Ok).enabled = text !== ""
+                }
             }
         }
     }
