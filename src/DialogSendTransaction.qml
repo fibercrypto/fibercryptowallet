@@ -14,13 +14,13 @@ Dialog {
     standardButtons: Dialog.Ok | Dialog.Cancel
 
     onOpened: {
-        dialogSend.forceActiveFocus()
-        textFieldPassword.forceActiveFocus()
-        standardButton(Dialog.Ok).enabled = textFieldPassword.text !== ""
+        forceActiveFocus()
+        passwordRequester.forceTextFocus()
+        standardButton(Dialog.Ok).enabled = passwordRequester.text !== ""
     }
 
     onClosed: {
-        textFieldPassword.clear()
+        passwordRequester.clear()
     }
 
     ColumnLayout {
@@ -58,12 +58,9 @@ Dialog {
                 font.bold: true
             }
 
-            TextField {
-                id: textFieldPassword
+            PasswordRequester {
+                id: passwordRequester
 
-                placeholderText: qsTr("Password")
-                echoMode: TextField.Password
-                focus: true
                 Layout.topMargin: -10
                 Layout.fillWidth: true
 
