@@ -64,34 +64,42 @@ Item {
 
                     Label {
                         text: qsTr("Date:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: Qt.formatDateTime(root.date, Qt.DefaultLocaleShortDate)
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                     }
 
                     Label {
                         text: qsTr("Status:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: statusString[root.status]
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                     }
 
                     Label {
                         text: qsTr("Hours:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: root.hoursReceived + ' ' + qsTr("received") + ' | ' + hoursBurned + ' ' + qsTr("burned")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                     }
 
                     Label {
                         text: qsTr("Tx ID:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: root.transactionID
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         Layout.fillWidth: true
                     }
                 } // GridLayout
