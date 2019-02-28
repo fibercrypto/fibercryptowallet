@@ -55,6 +55,7 @@ Dialog {
 
             Label {
                 text: qsTr("Enter the password to confirm the transaction")
+                font.bold: true
             }
 
             TextField {
