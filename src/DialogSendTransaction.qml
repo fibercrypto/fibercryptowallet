@@ -4,7 +4,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 Dialog {
-    id: dialogSend
+    id: root
     anchors.centerIn: Overlay.overlay
 
     title: qsTr("Password requested")
@@ -14,13 +14,13 @@ Dialog {
     standardButtons: Dialog.Ok | Dialog.Cancel
 
     onOpened: {
-        dialogSend.forceActiveFocus()
-        textFieldPassword.forceActiveFocus()
-        standardButton(Dialog.Ok).enabled = textFieldPassword.text !== ""
+        forceActiveFocus()
+        passwordRequester.forceTextFocus()
+        standardButton(Dialog.Ok).enabled = passwordRequester.text !== ""
     }
 
     onClosed: {
-        textFieldPassword.clear()
+        passwordRequester.clear()
     }
 
     ColumnLayout {
@@ -55,19 +55,17 @@ Dialog {
 
             Label {
                 text: qsTr("Enter the password to confirm the transaction")
+                font.bold: true
             }
 
-            TextField {
-                id: textFieldPassword
+            PasswordRequester {
+                id: passwordRequester
 
-                placeholderText: qsTr("Enter the password")
-                echoMode: TextField.Password
-                focus: true
                 Layout.topMargin: -10
                 Layout.fillWidth: true
 
                 onTextChanged: {
-                    dialogSend.standardButton(Dialog.Ok).enabled = text !== ""
+                    root.standardButton(Dialog.Ok).enabled = text !== ""
                 }
             }
         }

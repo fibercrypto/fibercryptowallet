@@ -27,7 +27,7 @@ Item {
         Receive
     }
 
-    implicitHeight: 70 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
+    implicitHeight: 80 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
     Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
     implicitWidth: 650
     clip: true
@@ -64,34 +64,42 @@ Item {
 
                     Label {
                         text: qsTr("Date:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: Qt.formatDateTime(root.date, Qt.DefaultLocaleShortDate)
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                     }
 
                     Label {
                         text: qsTr("Status:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: statusString[root.status]
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                     }
 
                     Label {
                         text: qsTr("Hours:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: root.hoursReceived + ' ' + qsTr("received") + ' | ' + hoursBurned + ' ' + qsTr("burned")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                     }
 
                     Label {
                         text: qsTr("Tx ID:")
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         font.bold: true
                     }
                     Label {
                         text: root.transactionID
+                        font.pointSize: Qt.application.font.pointSize * 0.9
                         Layout.fillWidth: true
                     }
                 } // GridLayout
@@ -102,7 +110,7 @@ Item {
                 Layout.rightMargin: 20
                 Image {
                     source: "qrc:/images/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
-                    sourceSize: "96x96"
+                    sourceSize: "72x72"
                     fillMode: Image.PreserveAspectFit
                     mirror: type === TransactionDetails.Type.Receive
                     Layout.fillWidth: true
@@ -110,7 +118,7 @@ Item {
                 Label {
                     text: (type === TransactionDetails.Type.Receive ? "Receive" : "Send") + ' ' + amount + ' ' + qsTr("SKY")
                     font.bold: true
-                    font.pointSize: 14
+                    font.pointSize: Qt.application.font.pointSize * 1.25
                     horizontalAlignment: Label.AlignHCenter
                     Layout.fillWidth: true
                 }
@@ -151,20 +159,28 @@ Item {
 
                 Label {
                     text: qsTr("Inputs")
-                    font.pointSize: Qt.application.font.pointSize + 2
                     font.bold: true
                     font.italic: true
                     Layout.fillWidth: true
                 }
 
-                ListView {
-                    id: listViewInputs
-                    model: listModelOutputsInputs
-                    implicitHeight: 120 * count
-                    interactive: false
+                ScrollView {
+                    Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
-                    delegate: InputOutputDelegate {
-                        width: ListView.view.width
+
+                    contentHeight: 160
+
+                    ListView {
+                        id: listViewInputs
+
+                        Material.foreground: Material.Grey
+                        model: listModelOutputsInputs
+                        clip: true
+                        Layout.alignment: Qt.AlignTop
+                        Layout.fillWidth: true
+                        delegate: InputOutputDelegate {
+                            width: ListView.view.width
+                        }
                     }
                 }
             }
@@ -175,21 +191,28 @@ Item {
 
                 Label {
                     text: qsTr("Outputs")
-                    font.pointSize: Qt.application.font.pointSize + 3
                     font.bold: true
                     font.italic: true
                     Layout.fillWidth: true
                 }
 
-                ListView {
-                    id: listViewOutputs
-                    model: listModelOutputsInputs
-                    implicitHeight: 120 * count
-                    interactive: false
+                ScrollView {
                     Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
-                    delegate: InputOutputDelegate {
-                        width: ListView.view.width
+
+                    contentHeight: 160
+
+                    ListView {
+                        id: listViewOutputs
+
+                        Material.foreground: Material.Grey
+                        model: listModelOutputsInputs
+                        clip: true
+                        Layout.alignment: Qt.AlignTop
+                        Layout.fillWidth: true
+                        delegate: InputOutputDelegate {
+                            width: ListView.view.width
+                        }
                     }
                 }
             }
@@ -203,5 +226,7 @@ Item {
         id: listModelOutputsInputs
         ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
         ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
+        ListElement { address: "ias7a6ifk7kafns7dfayksdkfl"; addressSky: 3; addressCoinHours: 24 }
+        ListElement { address: "oa87w3uiefkg8430gwekhfssdj"; addressSky: 147; addressCoinHours: 247011 }
     }
 }
