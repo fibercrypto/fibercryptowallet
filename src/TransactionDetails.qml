@@ -151,7 +151,6 @@ Item {
 
                 Label {
                     text: qsTr("Inputs")
-                    font.pointSize: Qt.application.font.pointSize + 2
                     font.bold: true
                     font.italic: true
                     Layout.fillWidth: true
@@ -175,7 +174,6 @@ Item {
 
                 Label {
                     text: qsTr("Outputs")
-                    font.pointSize: Qt.application.font.pointSize + 3
                     font.bold: true
                     font.italic: true
                     Layout.fillWidth: true
