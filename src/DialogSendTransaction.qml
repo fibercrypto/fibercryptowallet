@@ -61,7 +61,7 @@ Dialog {
             TextField {
                 id: textFieldPassword
 
-                placeholderText: qsTr("Enter the password")
+                placeholderText: qsTr("Password")
                 echoMode: TextField.Password
                 focus: true
                 Layout.topMargin: -10
