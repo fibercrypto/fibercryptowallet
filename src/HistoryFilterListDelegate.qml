@@ -8,4 +8,5 @@ CheckDelegate {
     width: ListView.view.width
     tristate: true
     text: name
+    LayoutMirroring.enabled: true
 }
