@@ -174,7 +174,7 @@ Item {
                         id: listViewInputs
 
                         Material.foreground: Material.Grey
-                        model: listModelOutputsInputs
+                        model: listModelInputs
                         clip: true
                         Layout.alignment: Qt.AlignTop
                         Layout.fillWidth: true
@@ -206,7 +206,7 @@ Item {
                         id: listViewOutputs
 
                         Material.foreground: Material.Grey
-                        model: listModelOutputsInputs
+                        model: listModelOutputs
                         clip: true
                         Layout.alignment: Qt.AlignTop
                         Layout.fillWidth: true
@@ -223,10 +223,17 @@ Item {
     // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
     ListModel {
-        id: listModelOutputsInputs
+        id: listModelInputs
         ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
         ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
         ListElement { address: "ias7a6ifk7kafns7dfayksdkfl"; addressSky: 3; addressCoinHours: 24 }
         ListElement { address: "oa87w3uiefkg8430gwekhfssdj"; addressSky: 147; addressCoinHours: 247011 }
+    }
+    ListModel {
+        id: listModelOutputs
+        ListElement { address: "734irweaweygtawieta783cwyc"; addressSky: 38; addressCoinHours: 5048 }
+        ListElement { address: "ekq03i3qerwhjqoqh9823yurig"; addressSky: 61; addressCoinHours: 9456 }
+        ListElement { address: "1kjher73yiner7wn32nkuwe94v"; addressSky: 1; addressCoinHours: 24 }
+        ListElement { address: "oopfwwklfd34iuhjwe83w3h28r"; addressSky: 111; addressCoinHours: 13548 }
     }
 }
