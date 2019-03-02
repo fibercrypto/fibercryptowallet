@@ -8,6 +8,7 @@ Item {
 
     readonly property real delegateHeight: 48
     readonly property alias count: view.count
+    property alias interactive: view.interactive
 
     implicitWidth: view.width
     implicitHeight: view.height
