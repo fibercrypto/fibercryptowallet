@@ -163,6 +163,7 @@ Page {
                 from: 0.01
                 to: 1.00
                 value: 0.50
+                stepSize: 0.01
 
                 onPressedChanged: {
                     if (!hovered && !toolTipAutomaticCoinHoursAllocation.toolTipHovered) {
