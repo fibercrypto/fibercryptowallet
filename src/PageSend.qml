@@ -31,6 +31,7 @@ Page {
         readonly property real margins: 50
 
         anchors.fill: parent
+        anchors.topMargin: 10
         anchors.leftMargin: margins
         anchors.rightMargin: margins
         anchors.bottomMargin: margins
