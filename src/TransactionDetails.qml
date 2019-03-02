@@ -226,8 +226,6 @@ Item {
         id: listModelInputs
         ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
         ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
-        ListElement { address: "ias7a6ifk7kafns7dfayksdkfl"; addressSky: 3; addressCoinHours: 24 }
-        ListElement { address: "oa87w3uiefkg8430gwekhfssdj"; addressSky: 147; addressCoinHours: 247011 }
     }
     ListModel {
         id: listModelOutputs
