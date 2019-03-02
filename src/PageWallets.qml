@@ -13,11 +13,6 @@ Page {
     readonly property real internalLabelsWidth: 70
 
     header: ColumnLayout {
-        Label {
-            text: qsTr("Wallets")
-            font.pointSize: Qt.application.font.pointSize * 3
-            padding: 10
-        }
 
         RowLayout {
             spacing: listWalletSpacing
