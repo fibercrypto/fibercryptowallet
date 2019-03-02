@@ -10,7 +10,10 @@ ItemDelegate {
         Send,
         Receive
     }
-    
+
+    implicitWidth: parent.width
+    implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
+
     RowLayout {
         id: rowLayoutRoot
         anchors.fill: parent
