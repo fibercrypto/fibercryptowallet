@@ -4,4 +4,7 @@ import QtQuick.Controls.Material 2.12
 
 CheckDelegate {
     id: root
+
+    tristate: true
+    text: name
 }
