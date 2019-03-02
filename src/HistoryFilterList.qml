@@ -8,6 +8,9 @@ Item {
 
     readonly property real delegateHeight: 48
 
+    implicitWidth: view.width
+    implicitHeight: view.height
+
     ListView {
         id: view
 
