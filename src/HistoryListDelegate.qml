@@ -6,6 +6,11 @@ import QtQuick.Layouts 1.12
 ItemDelegate {
     id: root
 
+    enum Type {
+        Send,
+        Receive
+    }
+    
     RowLayout {
         id: rowLayoutRoot
         anchors.fill: parent
