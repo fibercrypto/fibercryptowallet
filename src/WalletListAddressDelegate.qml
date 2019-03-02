@@ -9,7 +9,6 @@ Item {
     readonly property bool itemVisible: index === 0 || addressSky > 0 || emptyAddressVisible
     property bool showOnlyAddresses: false
 
-    width: walletList.width
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
 
