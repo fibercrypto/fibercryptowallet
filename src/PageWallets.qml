@@ -16,6 +16,8 @@ Page {
 
         RowLayout {
             spacing: listWalletSpacing
+            Layout.topMargin: 30
+
             Label {
                 text: qsTr("Name")
                 font.pointSize: 9
