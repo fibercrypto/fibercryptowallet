@@ -138,7 +138,7 @@ Page {
 
         parent: buttonOptionsAutomaticCoinHoursAllocation
         anchors.centerIn: parent
-        height: sliderCoinHoursShareFactor.height + sliderCoinHoursShareFactor.anchors.topMargin + 10
+        height: sliderCoinHoursShareFactor.height + rowLayoutSlider.anchors.topMargin + 10
 
         HoverHandler {
             id: hoverHandler
@@ -150,27 +150,28 @@ Page {
             }
         }
 
-        Slider {
-            id: sliderCoinHoursShareFactor
+        RowLayout {
+            id: rowLayoutSlider
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
             anchors.topMargin: 16
+            Slider {
+                id: sliderCoinHoursShareFactor
+                Layout.fillWidth: true
 
-            from: 0.01
-            to: 1.00
-            value: 0.50
+                from: 0.01
+                to: 1.00
+                value: 0.50
 
-
-            onPressedChanged: {
-                if (!hovered && !toolTipAutomaticCoinHoursAllocation.toolTipHovered) {
-                    toolTipAutomaticCoinHoursAllocation.close()
+                onPressedChanged: {
+                    if (!hovered && !toolTipAutomaticCoinHoursAllocation.toolTipHovered) {
+                        toolTipAutomaticCoinHoursAllocation.close()
+                    }
                 }
-            }
+            } // Slider
 
-            ToolTip {
-                parent: sliderCoinHoursShareFactor.handle
-                visible: sliderCoinHoursShareFactor.pressed
+            Label {
                 text: sliderCoinHoursShareFactor.value.toFixed(2)
             }
         }
