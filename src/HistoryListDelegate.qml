@@ -17,5 +17,12 @@ ItemDelegate {
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
         }
 
+        Label {
+            text: (type === HistoryListDelegate.Type.Receive ? "" : "-") + amount + " SKY" // model's role
+            font.pointSize: Qt.application.font.pointSize * 1.25
+            font.bold: true
+            Layout.alignment: Qt.AlignTop | Qt.AlignRight
+        }
+
     } // RowLayout (root)
 }
