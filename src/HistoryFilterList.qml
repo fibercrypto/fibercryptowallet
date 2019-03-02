@@ -7,6 +7,7 @@ Item {
     id: root
 
     readonly property real delegateHeight: 48
+    readonly property alias count: view.count
 
     implicitWidth: view.width
     implicitHeight: view.height
