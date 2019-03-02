@@ -5,6 +5,7 @@ import QtQuick.Controls.Material 2.12
 CheckDelegate {
     id: root
 
+    width: ListView.view.width
     tristate: true
     text: name
 }
