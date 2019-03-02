@@ -91,15 +91,14 @@ Item {
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
             }
         }
-
-        // Roles: address, addressSky, addressCoinHours
-        // Use listModel.append( { "address": value, "addressSky": value, "sky": value, "addressCoinHours": value } )
-        // Or implement the model in the backend (a more recommendable approach)
-        ListModel {
-            id: listAddresses
-            // The first element must exist but will not be used
-            ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
-        }
-
     } // ColumnLayout
+
+    // Roles: address, addressSky, addressCoinHours
+    // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
+    // Or implement the model in the backend (a more recommendable approach)
+    ListModel {
+        id: listAddresses
+        // The first element must exist but will not be used
+        ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
+    }
 }
