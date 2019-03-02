@@ -100,5 +100,9 @@ Item {
         id: listAddresses
         // The first element must exist but will not be used
         ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
+        ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
+        ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
+        ListElement { address: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
+        ListElement { address: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
     }
 }
