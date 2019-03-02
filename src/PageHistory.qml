@@ -11,6 +11,11 @@ Page {
         anchors.margins: 20
         clip: true
 
+        label: SwitchDelegate {
+            id: switchFilters
+            text: qsTr("Filters")
+        }
+
         ScrollView {
             anchors.fill: parent
             clip: true
