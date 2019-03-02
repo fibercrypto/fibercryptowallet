@@ -5,7 +5,7 @@ Page {
     id: root
     header: TabBar {
         id: tabBar
-        currentIndex: 1
+        currentIndex: 2
 
         TabButton {
             text: qsTr("Wallets")
