@@ -29,6 +29,39 @@ Page {
         }
     } // GroupBox
 
+
+    ToolTip {
+        id: toolTipFilters
+
+        anchors.centerIn: Overlay.overlay
+        height: 16 + (filter.count > 5 ? filter.delegateHeight * 5 : filter.delegateHeight * filter.count)
+        clip: true
+        modal: true
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+        ColumnLayout {
+            anchors.fill: parent
+
+            Label {
+                font.pointSize: Qt.application.font.pointSize * 1.25
+                font.bold: true
+                text: qsTr("Available filters")
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+            }
+
+            ScrollView {
+                Layout.alignment: Qt.AlignCenter
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+                HistoryFilterList {
+                    id: filter
+                    interactive: false
+                }
+            }
+        } // ColumnLayout
+    } // ToolTip
+
     // Roles: type, date, amount, sentAddress, receivedAddress
     // Use listModel.append( { "type": value, "date": value, "sentAddress": value, "receivedAddress": value } )
     // Or implement the model in the backend (a more recommendable approach)
