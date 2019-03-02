@@ -9,4 +9,11 @@ CheckDelegate {
     tristate: true
     text: name
     LayoutMirroring.enabled: true
+
+    contentItem: Label {
+        leftPadding: root.indicator.width + root.spacing
+        text: root.text
+        verticalAlignment: Qt.AlignVCenter
+        color: root.enabled ? root.Material.foreground : root.Material.hintTextColor
+    }
 }
