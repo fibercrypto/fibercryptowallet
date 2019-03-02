@@ -6,7 +6,8 @@ import QtQuick.Layouts 1.12
 Item {
     id: root
 
-    property bool itemVisible: index === 0 || addressSky > 0 || emptyAddressVisible
+    readonly property bool itemVisible: index === 0 || addressSky > 0 || emptyAddressVisible
+    property bool showOnlyAddresses: false
 
     width: walletList.width
     visible: itemVisible || opacity > 0.0
@@ -21,7 +22,7 @@ Item {
         anchors.leftMargin: listWalletLeftMargin
         anchors.rightMargin: listWalletRightMargin
         spacing: listWalletSpacing
-        visible: index === 0
+        visible: index === 0 && !showOnlyAddresses
 
         ToolButton {
             id: buttonAddAddress
@@ -77,11 +78,13 @@ Item {
 
         Label {
             id: labelNumber
+            visible:  !showOnlyAddresses
             text: index
         }
 
         Image {
             id: qrIcon
+            visible:  !showOnlyAddresses
             source: "qrc:/images/qr.svg"
             sourceSize: "16x16"
         }
@@ -95,12 +98,14 @@ Item {
             }
             ToolButton {
                 id: toolButtonCopy
+                visible:  !showOnlyAddresses
                 icon.source: "qrc:/images/copy.svg"
                 Layout.alignment: Qt.AlignLeft
 
                 Image {
                     id: imageCopied
                     anchors.centerIn: parent
+                    visible:  !showOnlyAddresses
                     source: "qrc:/images/check-simple.svg"
                     fillMode: Image.PreserveAspectFit
                     sourceSize: Qt.size(toolButtonCopy.icon.width*1.5, toolButtonCopy.icon.height*1.5)
@@ -130,12 +135,14 @@ Item {
             }
             Rectangle {
                 id: spacer
+                visible:  !showOnlyAddresses
                 Layout.fillWidth: true
             }
         }
 
         Label {
             id: labelAddressSky
+            visible:  !showOnlyAddresses
             text: addressSky // a role of the model
             color: Material.accent
             horizontalAlignment: Text.AlignRight
@@ -144,6 +151,7 @@ Item {
 
         Label {
             id: labelAddressCoins
+            visible:  !showOnlyAddresses
             text: addressCoinHours // a role of the model
             horizontalAlignment: Text.AlignRight
             Layout.preferredWidth: internalLabelsWidth
