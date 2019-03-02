@@ -8,6 +8,7 @@ ItemDelegate {
 
     RowLayout {
         id: rowLayoutRoot
+        spacing: 20
 
         Image {
             source: "qrc:/images/send-blue.svg"
