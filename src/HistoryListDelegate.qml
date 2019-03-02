@@ -37,6 +37,34 @@ ItemDelegate {
                     font.pointSize: Qt.application.font.pointSize * 0.9
                 }
             }
+
+            ColumnLayout {
+                RowLayout {
+                    id: rowLayoutSent
+                    visible: type === HistoryListDelegate.Type.Send
+                    Image {
+                        source: "qrc:/images/qr.svg"
+                        sourceSize: "24x24"
+                    }
+                    Label {
+                        text: sentAddress // model's role
+                        font.family: "Code New Roman"
+                        Layout.fillWidth: true
+                    }
+                }
+                RowLayout {
+                    id: rowLayoutReceive
+                    Image {
+                        source: "qrc:/images/qr.svg"
+                        sourceSize: "24x24"
+                    }
+                    Label {
+                        text: receivedAddress // model's role
+                        font.family: "Code New Roman"
+                        Layout.fillWidth: true
+                    }
+                }
+            } // ColumnLayout (addresses)
         } // ColumnLayout (main content)
 
         Label {
