@@ -13,6 +13,9 @@ Page {
         TabButton {
             text: qsTr("Send")
         }
+        TabButton {
+            text: qsTr("History")
+        }
     }
 
     SwipeView {
@@ -24,6 +27,9 @@ Page {
         }
 
         PageSend {
+        }
+
+        PageHistory {
         }
     }
 }
