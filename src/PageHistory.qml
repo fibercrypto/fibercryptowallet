@@ -11,10 +11,23 @@ Page {
         anchors.margins: 20
         clip: true
 
-        label: SwitchDelegate {
-            id: switchFilters
-            text: qsTr("Filters")
-        }
+        label: RowLayout {
+            SwitchDelegate {
+                id: switchFilters
+                text: qsTr("Filters")
+            }
+            Button {
+                id: buttonFilters
+                flat: true
+                enabled: switchFilters.checked
+                highlighted: true
+                text: qsTr("Select filters")
+
+                onClicked: {
+                    toolTipFilters.open()
+                }
+            }
+        } // RowLayout (GroupBox label)
 
         ScrollView {
             anchors.fill: parent
