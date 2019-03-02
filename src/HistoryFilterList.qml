@@ -6,10 +6,12 @@ import QtQuick.Layouts 1.12
 Item {
     id: root
 
+    readonly property real delegateHeight: 48
+
     ListView {
         id: view
 
-        height: 48 * count
+        height: delegateHeight * count
         width: 300
         clip: true
 
