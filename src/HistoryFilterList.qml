@@ -14,6 +14,9 @@ Item {
         clip: true
 
         model: modelFilters
+        delegate: HistoryFilterListDelegate {
+            id: filterDelegate
+        }
     }
 
     // This model can be the same as the wallet list,
