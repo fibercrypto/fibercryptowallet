@@ -88,6 +88,7 @@ Item {
             Behavior on opacity { NumberAnimation { duration: expanded ? 250 : 1000; easing.type: Easing.OutQuint } }
 
             delegate: WalletListAddressDelegate {
+                width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
             }
         }
