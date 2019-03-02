@@ -8,6 +8,12 @@ ItemDelegate {
 
     RowLayout {
         id: rowLayoutRoot
+        anchors.fill: parent
+        anchors.leftMargin: 20
+        anchors.rightMargin: 20
+        anchors.topMargin: 10
+        anchors.bottomMargin: 12
+
         spacing: 20
 
         Image {
