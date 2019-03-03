@@ -5,6 +5,9 @@ import QtQuick.Controls.Material 2.12
 Item {
     id: root
 
+    property alias tristate: checkDelegate.tristate
+    property alias walletText: checkDelegate.text
+
     CheckDelegate {
         id: checkDelegate
 
