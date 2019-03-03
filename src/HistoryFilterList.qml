@@ -23,6 +23,7 @@ Item {
         model: modelFilters
         delegate: HistoryFilterListDelegate {
             id: filterDelegate
+            width: ListView.view.width
         }
     }
 
