@@ -8,10 +8,12 @@ Item {
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
 
+    width: ListView.view.width
+
     CheckDelegate {
         id: checkDelegate
 
-        width: ListView.view.width
+        width: root.width
         tristate: true
         text: name
         LayoutMirroring.enabled: true
