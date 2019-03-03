@@ -24,6 +24,7 @@ Item {
         delegate: HistoryFilterListDelegate {
             id: filterDelegate
             width: ListView.view.width
+            height: delegateHeight
         }
     }
 
