@@ -10,11 +10,12 @@ Item {
     property alias walletText: checkDelegate.text
 
     ColumnLayout {
+        width: root.width
 
         CheckDelegate {
             id: checkDelegate
 
-            width: root.width
+            Layout.fillWidth: true
             tristate: true
             text: name
             LayoutMirroring.enabled: true
