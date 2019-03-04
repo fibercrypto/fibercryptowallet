@@ -6,6 +6,8 @@ import QtQuick.Layouts 1.12
 Item {
     id: root
 
+    readonly property real addressListHeight: listViewFilterAddress.height
+    readonly property real delegateHeight: 42
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
 
@@ -30,6 +32,15 @@ Item {
 
         ListView {
             id: listViewFilterAddress
+
+            Layout.fillWidth: true
+            height: count * delegateHeight
+
+            delegate: HistoryFilterListAddressDelegate {
+                width: ListView.view.width
+                height: delegateHeight
+                leftPadding: 30
+            }
         } // ListView
     } // ColumnLayout
 }
