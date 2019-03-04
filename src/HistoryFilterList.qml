@@ -7,14 +7,14 @@ Item {
     id: root
 
     readonly property real delegateHeight: 48
-    readonly property alias count: view.count
-    property alias interactive: view.interactive
+    readonly property alias count: listViewFilters.count
+    property alias interactive: listViewFilters.interactive
 
-    implicitWidth: view.width
-    implicitHeight: view.height
+    implicitWidth: listViewFilters.width
+    implicitHeight: listViewFilters.height
 
     ListView {
-        id: view
+        id: listViewFilters
 
         height: delegateHeight * count
         width: 300
