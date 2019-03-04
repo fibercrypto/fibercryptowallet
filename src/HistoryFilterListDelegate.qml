@@ -22,6 +22,16 @@ Item {
             text: name
             LayoutMirroring.enabled: true
 
+            nextCheckState: function() {
+                if (checkState === Qt.Checked) {
+                    listViewFilterAddress.allChecked = false
+                    return Qt.Unchecked
+                } else {
+                    listViewFilterAddress.allChecked = true
+                    return Qt.Checked
+                }
+            }
+
             contentItem: Label {
                 leftPadding: checkDelegate.indicator.width + checkDelegate.spacing
                 text: checkDelegate.text
