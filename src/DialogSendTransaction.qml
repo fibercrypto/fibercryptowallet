@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.12
 
 Dialog {
     id: root
-    anchors.centerIn: Overlay.overlay
 
     title: qsTr("Password requested")
     modal: true
