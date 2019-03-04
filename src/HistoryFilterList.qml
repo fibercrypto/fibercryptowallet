@@ -17,6 +17,7 @@ Item {
     ListView {
         id: listViewFilters
 
+        spacing: 20
         width: 300
         clip: true
 
