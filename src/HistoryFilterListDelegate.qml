@@ -55,6 +55,10 @@ Item {
                 height: delegateHeight
                 leftPadding: 30
                 checked: ListView.view.allChecked
+
+                onCheckedChanged: {
+                    ListView.view.checkedDelegates += checked ? 1 : -1
+                }
             }
         } // ListView
     } // ColumnLayout
