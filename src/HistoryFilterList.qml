@@ -17,7 +17,6 @@ Item {
     ListView {
         id: listViewFilters
 
-        height: delegateHeight * count
         width: 300
         clip: true
 
@@ -25,7 +24,13 @@ Item {
         delegate: HistoryFilterListDelegate {
             id: filterDelegate
             width: ListView.view.width
-            height: delegateHeight
+            height: delegateHeight + addressListHeight
+            Component.onCompleted: {
+                listViewFilters.height += height
+                if (index === count - 1) {
+                    listViewFilters.height += 24
+                }
+            }
         }
     }
 
