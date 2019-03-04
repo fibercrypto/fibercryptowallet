@@ -36,6 +36,7 @@ Item {
             Layout.fillWidth: true
             height: count * delegateHeight
 
+            model: listAddresses
             delegate: HistoryFilterListAddressDelegate {
                 width: ListView.view.width
                 height: delegateHeight
@@ -43,4 +44,15 @@ Item {
             }
         } // ListView
     } // ColumnLayout
+
+    // This model can be the same as the wallet address list,
+    // as this model need to expose all addresses for each wallet.
+    // For that, it should be implemented in the backend, instead of here.
+    ListModel { // EXAMPLE
+        id: listAddresses
+
+        ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
+        ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
+        ListElement { address: "gfdhgs343kweru38200384uwqd" }
+    }
 }
