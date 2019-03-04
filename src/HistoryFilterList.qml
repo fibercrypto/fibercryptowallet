@@ -12,6 +12,7 @@ Item {
 
     implicitWidth: listViewFilters.width
     implicitHeight: listViewFilters.height
+    clip: true
 
     ListView {
         id: listViewFilters
