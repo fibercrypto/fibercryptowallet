@@ -27,5 +27,9 @@ Item {
                 color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
             }
         }
+
+        ListView {
+            id: listViewFilterAddress
+        } // ListView
     } // ColumnLayout
 }
