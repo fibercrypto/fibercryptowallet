@@ -18,7 +18,7 @@ Item {
         id: listViewFilters
 
         spacing: 20
-        width: 300
+        width: 400
         clip: true
 
         model: modelFilters
