@@ -34,6 +34,7 @@ Item {
             id: listViewFilterAddress
 
             property int checkedDelegates: 0
+            property bool allChecked: false
 
             Layout.fillWidth: true
             height: count * delegateHeight
@@ -43,6 +44,7 @@ Item {
                 width: ListView.view.width
                 height: delegateHeight
                 leftPadding: 30
+                checked: ListView.view.allChecked
             }
         } // ListView
     } // ColumnLayout
