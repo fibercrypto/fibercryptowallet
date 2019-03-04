@@ -33,6 +33,8 @@ Item {
         ListView {
             id: listViewFilterAddress
 
+            property int checkedDelegates: 0
+
             Layout.fillWidth: true
             height: count * delegateHeight
 
