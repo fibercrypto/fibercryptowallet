@@ -24,9 +24,15 @@ Item {
 
             nextCheckState: function() {
                 if (checkState === Qt.Checked) {
+                    if (!listViewFilterAddress.allChecked) {
+                        listViewFilterAddress.allChecked = true
+                    }
                     listViewFilterAddress.allChecked = false
                     return Qt.Unchecked
                 } else {
+                    if (listViewFilterAddress.allChecked) {
+                        listViewFilterAddress.allChecked = false
+                    }
                     listViewFilterAddress.allChecked = true
                     return Qt.Checked
                 }
