@@ -6,11 +6,6 @@ import QtQuick.Layouts 1.12
 ItemDelegate {
     id: root
 
-    enum Type {
-        Send,
-        Receive
-    }
-
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
 
@@ -28,7 +23,7 @@ ItemDelegate {
             source: "qrc:/images/send-blue.svg"
             sourceSize: "32x32"
             fillMode: Image.PreserveAspectFit
-            mirror: type === HistoryListDelegate.Type.Receive
+            mirror: type === TransactionDetails.Type.Receive
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
         }
 
@@ -43,7 +38,7 @@ ItemDelegate {
 
                 Label {
                     font.bold: true
-                    text: (type === HistoryListDelegate.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
+                    text: (type === TransactionDetails.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
                 }
 
                 Label {
@@ -56,7 +51,7 @@ ItemDelegate {
             ColumnLayout {
                 RowLayout {
                     id: rowLayoutSent
-                    visible: type === HistoryListDelegate.Type.Send
+                    visible: type === TransactionDetails.Type.Send
                     Image {
                         source: "qrc:/images/qr.svg"
                         sourceSize: "24x24"
@@ -83,7 +78,7 @@ ItemDelegate {
         } // ColumnLayout (main content)
 
         Label {
-            text: (type === HistoryListDelegate.Type.Receive ? "" : "-") + amount + " SKY" // model's role
+            text: (type === TransactionDetails.Type.Receive ? "" : "-") + amount + " SKY" // model's role
             font.pointSize: Qt.application.font.pointSize * 1.25
             font.bold: true
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
