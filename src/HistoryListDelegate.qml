@@ -6,6 +6,15 @@ import QtQuick.Layouts 1.12
 ItemDelegate {
     id: root
 
+    property date modelDate: date
+    property int modelType: type
+    property int modelStatus: status
+    property var modelStatusString: [ qsTr("Confirmed"), qsTr("Pending"), qsTr("Preview") ]
+    property real modelAmount: amount
+    property int modelHoursReceived: hoursReceived
+    property int modelHoursBurned: hoursBurned
+    property string modelTransactionID
+
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
 
@@ -23,7 +32,7 @@ ItemDelegate {
             source: "qrc:/images/send-blue.svg"
             sourceSize: "32x32"
             fillMode: Image.PreserveAspectFit
-            mirror: type === TransactionDetails.Type.Receive
+            mirror: modelType === TransactionDetails.Type.Receive
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
         }
 
@@ -38,12 +47,12 @@ ItemDelegate {
 
                 Label {
                     font.bold: true
-                    text: (type === TransactionDetails.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
+                    text: (modelType === TransactionDetails.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
                 }
 
                 Label {
                     Material.foreground: Material.Grey
-                    text: date // model's role
+                    text: modelDate // model's role
                     font.pointSize: Qt.application.font.pointSize * 0.9
                 }
             }
@@ -51,7 +60,7 @@ ItemDelegate {
             ColumnLayout {
                 RowLayout {
                     id: rowLayoutSent
-                    visible: type === TransactionDetails.Type.Send
+                    visible: modelType === TransactionDetails.Type.Send
                     Image {
                         source: "qrc:/images/qr.svg"
                         sourceSize: "24x24"
@@ -78,7 +87,7 @@ ItemDelegate {
         } // ColumnLayout (main content)
 
         Label {
-            text: (type === TransactionDetails.Type.Receive ? "" : "-") + amount + " SKY" // model's role
+            text: (modelType === TransactionDetails.Type.Receive ? "" : "-") + amount + " SKY" // model's role
             font.pointSize: Qt.application.font.pointSize * 1.25
             font.bold: true
             Layout.alignment: Qt.AlignTop | Qt.AlignRight
