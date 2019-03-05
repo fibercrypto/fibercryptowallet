@@ -64,6 +64,7 @@ Item {
                 width: ListView.view.width
                 height: delegateHeight
                 leftPadding: 30
+                scale: 0.875
                 checked: ListView.view.allChecked
 
                 onCheckedChanged: {
