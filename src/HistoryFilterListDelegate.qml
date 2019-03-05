@@ -46,6 +46,16 @@ Item {
             property int checkedDelegates: 0
             property bool allChecked: false
 
+            onCheckedDelegatesChanged: {
+                if (checkedDelegates === 0) {
+                    checkDelegate.checkState = Qt.Unchecked
+                } else if (checkedDelegates === count) {
+                    checkDelegate.checkState = Qt.Checked
+                } else {
+                    checkDelegate.checkState = Qt.PartiallyChecked
+                }
+            }
+
             Layout.fillWidth: true
             height: count * delegateHeight
 
