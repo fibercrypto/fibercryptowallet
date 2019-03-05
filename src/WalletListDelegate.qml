@@ -88,18 +88,22 @@ Item {
             Behavior on opacity { NumberAnimation { duration: expanded ? 250 : 1000; easing.type: Easing.OutQuint } }
 
             delegate: WalletListAddressDelegate {
+                width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
             }
         }
-
-        // Roles: address, addressSky, addressCoinHours
-        // Use listModel.append( { "address": value, "addressSky": value, "sky": value, "addressCoinHours": value } )
-        // Or implement the model in the backend (a more recommendable approach)
-        ListModel {
-            id: listAddresses
-            // The first element must exist but will not be used
-            ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
-        }
-
     } // ColumnLayout
+
+    // Roles: address, addressSky, addressCoinHours
+    // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
+    // Or implement the model in the backend (a more recommendable approach)
+    ListModel {
+        id: listAddresses
+        // The first element must exist but will not be used
+        ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
+        ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
+        ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
+        ListElement { address: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
+        ListElement { address: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
+    }
 }

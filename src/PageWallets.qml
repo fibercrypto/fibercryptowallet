@@ -13,14 +13,11 @@ Page {
     readonly property real internalLabelsWidth: 70
 
     header: ColumnLayout {
-        Label {
-            text: qsTr("Wallets")
-            font.pointSize: Qt.application.font.pointSize * 3
-            padding: 10
-        }
 
         RowLayout {
             spacing: listWalletSpacing
+            Layout.topMargin: 30
+
             Label {
                 text: qsTr("Name")
                 font.pointSize: 9
@@ -89,5 +86,20 @@ Page {
     // Or implement the model in the backend (a more recommendable approach)
     ListModel {
         id: listWallets
+        ListElement { name: "My first wallet"; encryptionEnabled: true; sky: 5; coinHours: 10 }
+        ListElement { name: "My second wallet"; encryptionEnabled: true; sky: 300; coinHours: 1049 }
+        ListElement { name: "My third wallet"; encryptionEnabled: false; sky: 13; coinHours: 201 }
+
+        ListElement { name: "My first wallet"; encryptionEnabled: false; sky: 5; coinHours: 10 }
+        ListElement { name: "My second wallet"; encryptionEnabled: true; sky: 300; coinHours: 1049 }
+        ListElement { name: "My third wallet"; encryptionEnabled: true; sky: 13; coinHours: 201 }
+
+        ListElement { name: "My first wallet"; encryptionEnabled: true; sky: 5; coinHours: 10 }
+        ListElement { name: "My second wallet"; encryptionEnabled: false; sky: 300; coinHours: 1049 }
+        ListElement { name: "My third wallet"; encryptionEnabled: false; sky: 13; coinHours: 201 }
+
+        ListElement { name: "My first wallet"; encryptionEnabled: true; sky: 5; coinHours: 10 }
+        ListElement { name: "My second wallet"; encryptionEnabled: false; sky: 300; coinHours: 1049 }
+        ListElement { name: "My third wallet"; encryptionEnabled: true; sky: 13; coinHours: 201 }
     }
 }

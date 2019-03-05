@@ -8,12 +8,6 @@ Page {
 
     property alias advancedMode: switchAdvancedMode.checked
 
-    header: Label {
-        text: qsTr("Send")
-        font.pointSize: Qt.application.font.pointSize * 3
-        padding: 10
-    }
-
     footer: ToolBar {
         id: tabBarSend
         Material.primary: Material.Blue
@@ -37,6 +31,7 @@ Page {
         readonly property real margins: 50
 
         anchors.fill: parent
+        anchors.topMargin: 10
         anchors.leftMargin: margins
         anchors.rightMargin: margins
         anchors.bottomMargin: margins
