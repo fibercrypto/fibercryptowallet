@@ -14,6 +14,8 @@ Dialog {
     property alias hoursBurned: transactionDetails.hoursBurned
     property alias transactionID: transactionDetails.transactionID
 
+    title: qsTr("Transaction details")
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 20
