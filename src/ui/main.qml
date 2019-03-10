@@ -7,7 +7,7 @@ ApplicationWindow {
     height: 580
     title: qsTr("FiberCrypto Wallet")
 
-    GeneralSwipeView {
+    GeneralStackView {
         id: general
         anchors.fill: parent
     }
