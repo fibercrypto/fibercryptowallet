@@ -3,8 +3,8 @@ import QtQuick.Controls 2.12
 
 ApplicationWindow {
     visible: true
-    width: 640
-    height: 480
+    width: 680
+    height: 580
     title: qsTr("FiberCrypto Wallet")
 
     GeneralSwipeView {
