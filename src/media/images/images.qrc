@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>icons/cpu.svg</file>
+        <file>icons/usb.svg</file>
+        <file>icons/backup.svg</file>
+        <file>icons/check.svg</file>
+        <file>icons/error.svg</file>
+        <file>icons/question.svg</file>
+        <file>icons/warning.svg</file>
+        <file>icons/security.svg</file>
+        <file>icons/backspace.svg</file>
+        <file>icons/trash.svg</file>
+        <file>icons/add.svg</file>
+        <file>icons/upload.svg</file>
+        <file>icons/lockOff.svg</file>
+        <file>icons/lockOn.svg</file>
+        <file>icons/visibleOff.svg</file>
+        <file>icons/visibleOn.svg</file>
+        <file>icons/edit.svg</file>
+        <file>icons/copy.svg</file>
+        <file>icons/check-simple.svg</file>
+        <file>icons/add-circle.svg</file>
+        <file>icons/remove-circle.svg</file>
+        <file>icons/help.svg</file>
+        <file>icons/qr.svg</file>
+        <file>icons/send.svg</file>
+        <file>icons/send-amber.svg</file>
+        <file>icons/send-blue.svg</file>
+    </qresource>
+</RCC>
