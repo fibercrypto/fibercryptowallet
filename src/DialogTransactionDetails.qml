@@ -6,6 +6,14 @@ import QtQuick.Layouts 1.12
 Dialog {
     id: root
 
+    property alias date: transactionDetails.date
+    property alias status: transactionDetails.status
+    property alias type: transactionDetails.type
+    property alias amount: transactionDetails.amount
+    property alias hoursReceived: transactionDetails.hoursReceived
+    property alias hoursBurned: transactionDetails.hoursBurned
+    property alias transactionID: transactionDetails.transactionID
+
     ColumnLayout {
         anchors.fill: parent
         spacing: 20
