@@ -28,7 +28,10 @@ Item {
     }
 
     implicitHeight: 80 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
-    Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+
+    // TODO: Fix performance problem with the animation
+    //Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+
     implicitWidth: 650
     clip: true
 
