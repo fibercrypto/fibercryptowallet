@@ -9,6 +9,8 @@ Item {
     implicitWidth: 400
     implicitHeight: 400
 
+    signal walletCreationRequested()
+
     Column {
         anchors.fill: parent
         spacing: 30
@@ -77,6 +79,10 @@ Item {
 
             text: qsTr("Create")
             highlighted: true
+
+            onClicked: {
+                walletCreationRequested()
+            }
         }
 
         move: Transition {
