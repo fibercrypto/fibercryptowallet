@@ -22,7 +22,7 @@ Item {
             Layout.fillWidth: true
             spacing: 8
             Image {
-                source: "qrc:/images/qr.svg"
+                source: "qrc:/images/icons/qr.svg"
                 sourceSize: "24x24"
             }
             TextField {
@@ -64,7 +64,7 @@ Item {
             id: toolButtonAddRemoveDestination
             // The 'accent' attribute is used for button highlighting
             Material.accent: index === 0 ? Material.Teal : Material.Red
-            icon.source: "qrc:/images/" + (index === 0 ? "add" : "remove") + "-circle.svg"
+            icon.source: "qrc:/images/icons/" + (index === 0 ? "add" : "remove") + "-circle.svg"
             highlighted: true // enable the usage of the `Material.accent` attribute
 
             Layout.alignment: Qt.AlignRight

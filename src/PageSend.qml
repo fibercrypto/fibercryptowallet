@@ -17,7 +17,7 @@ Page {
             id: buttonAddWallet
             anchors.fill: parent
             text: qsTr("Send")
-            icon.source: "qrc:/images/send.svg"
+            icon.source: "qrc:/images/icons/send.svg"
 
             onClicked: {
                 dialogSend.open()
