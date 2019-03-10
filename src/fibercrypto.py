@@ -6,9 +6,11 @@ from os.path import abspath, dirname, join
 current_dir = dirname(__file__)
 resource_dir = join(current_dir, "media")
 
+ui_dir = join(current_dir, "ui")
 images_dir = join(resource_dir, "images")
 config_dir = join(resource_dir, "qt")
 
+sys.path.append(ui_dir)
 sys.path.append(images_dir)
 sys.path.append(config_dir)
 
@@ -25,9 +27,9 @@ if __name__ == '__main__':
     app = QGuiApplication(sys.argv)
     engine = QQmlApplicationEngine()
 
-    # Once you have the path of the current directory,
+    # Once you have the path of the UI directory,
     # add the name of the QML file, to load it.
-    qmlFile = join(current_dir, 'main.qml')
+    qmlFile = join(ui_dir, 'main.qml')
     engine.load(abspath(qmlFile))
 
     if not engine.rootObjects():
