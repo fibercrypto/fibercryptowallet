@@ -37,6 +37,10 @@ Page {
 
                 model: modelTransactions
                 delegate: HistoryListDelegate {
+                    onClicked: {
+                        dialogTransactionDetails.open()
+                        listTransactions.currentIndex = index
+                    }
                 }
             }
         }
@@ -74,6 +78,23 @@ Page {
             }
         } // ColumnLayout
     } // ToolTip
+
+    DialogTransactionDetails {
+        id: dialogTransactionDetails
+        anchors.centerIn: Overlay.overlay
+
+        modal: true
+        focus: true
+        standardButtons: Dialog.Ok
+
+        date: listTransactions.currentItem.modelDate
+        status: listTransactions.currentItem.modelStatus
+        type: listTransactions.currentItem.modelType
+        amount: listTransactions.currentItem.modelAmount
+        hoursReceived: listTransactions.currentItem.modelHoursReceived
+        hoursBurned: listTransactions.currentItem.modelHoursBurned
+        transactionID: listTransactions.currentItem.modelTransactionID
+    }
 
     // Roles: type, date, amount, sentAddress, receivedAddress
     // Use listModel.append( { "type": value, "date": value, "sentAddress": value, "receivedAddress": value } )
