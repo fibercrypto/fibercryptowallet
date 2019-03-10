@@ -56,13 +56,13 @@ Page {
             ToolButton {
                 id: buttonAddWallet
                 text: qsTr("Add wallet")
-                icon.source: "qrc:/images/add.svg"
+                icon.source: "qrc:/images/icons/add.svg"
                 Layout.fillWidth: true
             }
             ToolButton {
                 id: buttonLoadWallet
                 text: qsTr("Load wallet")
-                icon.source: "qrc:/images/upload.svg"
+                icon.source: "qrc:/images/icons/upload.svg"
                 Layout.fillWidth: true
             }
         }

@@ -28,7 +28,10 @@ Item {
     }
 
     implicitHeight: 80 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
-    Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+
+    // TODO: Fix performance problem with the animation
+    //Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+
     implicitWidth: 650
     clip: true
 
@@ -109,7 +112,7 @@ Item {
                 Layout.alignment: Qt.AlignTop
                 Layout.rightMargin: 20
                 Image {
-                    source: "qrc:/images/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
+                    source: "qrc:/images/icons/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
                     sourceSize: "72x72"
                     fillMode: Image.PreserveAspectFit
                     mirror: type === TransactionDetails.Type.Receive

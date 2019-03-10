@@ -5,7 +5,7 @@ Page {
     id: root
     header: TabBar {
         id: tabBar
-        currentIndex: 2
+        currentIndex: swipeView.currentIndex
 
         TabButton {
             text: qsTr("Wallets")

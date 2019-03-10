@@ -49,7 +49,7 @@ Item {
 
                 Image {
                     id: lockIcon
-                    source: "qrc:/images/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
+                    source: "qrc:/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
                     sourceSize: "24x24"
                 }
 
