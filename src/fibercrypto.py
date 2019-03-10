@@ -2,6 +2,16 @@
 import sys
 from os.path import abspath, dirname, join
 
+## Modify the sys.path environment variable
+current_dir = dirname(__file__)
+resource_dir = join(current_dir, "media")
+
+images_dir = join(resource_dir, "images")
+config_dir = join(resource_dir, "qt")
+
+sys.path.append(images_dir)
+sys.path.append(config_dir)
+
 # PySide2 imports
 from PySide2.QtGui import QGuiApplication
 from PySide2.QtQml import QQmlApplicationEngine
