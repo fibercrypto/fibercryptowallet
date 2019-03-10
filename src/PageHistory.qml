@@ -71,6 +71,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
+                contentHeight: filter.implicitHeight
                 HistoryFilterList {
                     id: filter
                     interactive: false
