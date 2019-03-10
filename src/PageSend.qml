@@ -88,5 +88,6 @@ Page {
 
     DialogSendTransaction {
         id: dialogSend
+        anchors.centerIn: Overlay.overlay
     }
 }
