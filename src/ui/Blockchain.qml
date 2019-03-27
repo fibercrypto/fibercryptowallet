@@ -18,6 +18,7 @@ Page {
     signal backRequested()
 
     header: RowLayout {
+        spacing: 20
         ToolButton {
             id: toolButtonBack
             icon.source: "qrc:/images/icons/back.svg"
@@ -26,6 +27,14 @@ Page {
             onClicked: {
                 backRequested()
             }
+        }
+
+        Label {
+            text: qsTr("Blockchain")
+            font.pointSize: Qt.application.font.pointSize * 2
+            horizontalAlignment: Text.AlignHCenter
+            leftPadding: -(toolButtonBack.width + parent.spacing)
+            Layout.fillWidth: true
         }
     }
 
