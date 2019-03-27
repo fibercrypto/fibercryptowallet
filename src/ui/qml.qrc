@@ -30,5 +30,8 @@
         <file>RestoreBackupWordsDialog.qml</file>
         <file>SecureWalletDialog.qml</file>
         <file>WalletCreatedDialog.qml</file>
+        <file>Blockchain.qml</file>
+        <file>DialogAbout.qml</file>
+        <file>DialogAboutQt.qml</file>
     </qresource>
 </RCC>
