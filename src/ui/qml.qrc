@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/">
+    <qresource prefix="/ui">
         <file>main.qml</file>
         <file>PageWallets.qml</file>
         <file>PageSend.qml</file>

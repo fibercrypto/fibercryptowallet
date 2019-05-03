@@ -26,7 +26,7 @@ Dialog {
 
         ColumnLayout {
             Label {
-                text: qsTr("This program uses Qt %1").arg("5.12.1")
+                text: qsTr("This program uses Qt %1").arg("5.12.3")
                 font.bold: true
             }
             Label {
