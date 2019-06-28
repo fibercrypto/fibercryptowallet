@@ -4,6 +4,13 @@ import QtQuick.Controls 2.12
 Item {
     id: root
 
+    property bool toolPageOpened: false
+
+    function openBlockchainPage() {
+        stackView.push(componentBlockchain)
+        toolPageOpened = true
+    }
+
     StackView {
         id: stackView
         initialItem: componentCreateLoadWallet
@@ -30,6 +37,19 @@ Item {
 
         GeneralSwipeView {
             id: generalSwipeView
+        }
+    }
+
+    Component {
+        id: componentBlockchain
+
+        Blockchain {
+            id: blockchain
+
+            onBackRequested: {
+                stackView.pop()
+                toolPageOpened = false
+            }
         }
     }
 }
