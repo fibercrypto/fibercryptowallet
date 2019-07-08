@@ -109,3 +109,6 @@ venv.bak/
 
 #Linux stuff
 .directory
+
+# Jetbrains IDE's
+.idea
