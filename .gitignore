@@ -112,3 +112,9 @@ venv.bak/
 
 # Jetbrains IDE's
 .idea
+
+deploy/
+rcc.cpp
+rcc.qrc
+rcc_cgo_linux_linux_amd64.go
+
