@@ -8,7 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+build*/
 develop-eggs/
 dist/
 downloads/
@@ -27,6 +27,7 @@ MANIFEST
 
 # Configuration
 *.vscode
+*.pro.user
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -105,3 +106,15 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+#Linux stuff
+.directory
+
+# Jetbrains IDE's
+.idea
+
+deploy/
+rcc.cpp
+rcc.qrc
+rcc_cgo_linux_linux_amd64.go
+
