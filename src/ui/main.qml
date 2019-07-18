@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 
 // Resource imports
 import "qrc:/ui/src/ui/"
+import "qrc:/ui/src/ui/Dialogs"
 
 ApplicationWindow {
     visible: true
