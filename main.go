@@ -21,7 +21,7 @@ func main() {
 	engine := qml.NewQQmlApplicationEngine(nil)
 	url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
 
-	// TODO: Find a way to use a `core.Qt__QueuedConnection`, so we can remove the flag `AllOk`
+	// TODO: Find a way to use a `core.Qt__QueuedConnection`, so we can remove the flag `allOk`
 	allOk := true
 	engine.ConnectObjectCreated(func (object *core.QObject, objUrl *core.QUrl) {
 		if object.Pointer() == nil && url.ToString(0) == objUrl.ToString(0) {
