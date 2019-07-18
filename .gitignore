@@ -113,6 +113,7 @@ venv.bak/
 # Jetbrains IDE's
 .idea
 
+# Go wrapper building/deployment
 deploy/
 rcc.cpp
 rcc.qrc
