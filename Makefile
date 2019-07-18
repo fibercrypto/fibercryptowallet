@@ -7,7 +7,7 @@ run-wallet:  ## Run fiberCryptoWallet.
 build-wallet:  ## Build fiberCryptoWallet.
 	@echo "Building Fiber Wallet"
 	@echo "..."
-	@qtdeploy build desktop
+	@qtdeploy -debug build desktop
 	@echo "Wallet builded"
 
 clean: ## Clean project.
