@@ -15,7 +15,7 @@ func main() {
 	widgets.NewQApplication(len(os.Args), os.Args)
 
 	engine := qml.NewQQmlApplicationEngine(nil)
-	engine.Load(core.NewQUrl3("qrc:/ui/qml/main.qml", 0))
+	engine.Load(core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0))
 
 	widgets.QApplication_Exec()
 	//app := widgets.NewQApplication(len(os.Args), os.Args)

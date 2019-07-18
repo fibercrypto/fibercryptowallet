@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 // Resource imports
-import "qrc:/qml"
+import "qrc:/ui/src/ui/"
 
 ApplicationWindow {
     visible: true
