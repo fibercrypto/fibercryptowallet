@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
 
 Page {
     id: root
@@ -76,11 +77,14 @@ Page {
             id: walletList
             anchors.fill: parent
             clip: true // limit the painting to it's bounding rectangle
-            model: listWallets
+            model: walletModel
             delegate: WalletListDelegate {}
         }
     }
 
+    WalletModel{
+        id: walletModel
+    }
     // Roles: name, encryptionEnabled, sky, coinHours
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)

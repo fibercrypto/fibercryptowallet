@@ -5,6 +5,7 @@ import (
 	"github.com/therecipe/qt/qml"
 	//"github.com/therecipe/qt/quick"
 	"github.com/therecipe/qt/widgets"
+	"github.com/FiberCryptoWallet/pkg/WalletManager"
 	"os"
 )
 
@@ -16,7 +17,7 @@ func main() {
 
 	engine := qml.NewQQmlApplicationEngine(nil)
 	engine.Load(core.NewQUrl3("qml/main.qml", 0))
-
+	
 	widgets.QApplication_Exec()
 	//app := widgets.NewQApplication(len(os.Args), os.Args)
 	//view := quick.NewQQuickView(nil)
