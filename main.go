@@ -2,22 +2,26 @@ package main
 
 import (
 	"github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
 	//"github.com/therecipe/qt/quick"
-	"github.com/therecipe/qt/widgets"
+	//"github.com/therecipe/qt/widgets"
 	"os"
 )
 
 func main() {
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 
-
-	widgets.NewQApplication(len(os.Args), os.Args)
+	app := gui.NewQGuiApplication(len(os.Args), os.Args)
+	app.SetOrganizationName("Simelo")
+	app.SetApplicationName("FiberCrypto Wallet")
+	app.SetApplicationVersion("0.1")
+	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon.png"))
 
 	engine := qml.NewQQmlApplicationEngine(nil)
 	engine.Load(core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0))
 
-	widgets.QApplication_Exec()
+	app.Exec()
 	//app := widgets.NewQApplication(len(os.Args), os.Args)
 	//view := quick.NewQQuickView(nil)
 	//view.SetTitle("gotemplate Example")
