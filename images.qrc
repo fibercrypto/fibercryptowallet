@@ -1,32 +1,32 @@
 <RCC>
-    <qresource prefix="/">
-        <file>images/icons/cpu.svg</file>
-        <file>images/icons/usb.svg</file>
-        <file>images/icons/backup.svg</file>
-        <file>images/icons/check.svg</file>
-        <file>images/icons/error.svg</file>
-        <file>images/icons/question.svg</file>
-        <file>images/icons/warning.svg</file>
-        <file>images/icons/security.svg</file>
-        <file>images/icons/backspace.svg</file>
-        <file>images/icons/trash.svg</file>
-        <file>images/icons/add.svg</file>
-        <file>images/icons/upload.svg</file>
-        <file>images/icons/lockOff.svg</file>
-        <file>images/icons/lockOn.svg</file>
-        <file>images/icons/visibleOff.svg</file>
-        <file>images/icons/visibleOn.svg</file>
-        <file>images/icons/edit.svg</file>
-        <file>images/icons/copy.svg</file>
-        <file>images/icons/check-simple.svg</file>
-        <file>images/icons/add-circle.svg</file>
-        <file>images/icons/remove-circle.svg</file>
-        <file>images/icons/help.svg</file>
-        <file>images/icons/qr.svg</file>
-        <file>images/icons/send.svg</file>
-        <file>images/icons/send-amber.svg</file>
-        <file>images/icons/send-blue.svg</file>
-        <file>images/icons/back.svg</file>
-        <file>images/icons/qt_logo_green_rgb.svg</file>
+    <qresource prefix="/images">
+        <file>resources/images/icons/cpu.svg</file>
+        <file>resources/images/icons/usb.svg</file>
+        <file>resources/images/icons/backup.svg</file>
+        <file>resources/images/icons/check.svg</file>
+        <file>resources/images/icons/error.svg</file>
+        <file>resources/images/icons/question.svg</file>
+        <file>resources/images/icons/warning.svg</file>
+        <file>resources/images/icons/security.svg</file>
+        <file>resources/images/icons/backspace.svg</file>
+        <file>resources/images/icons/trash.svg</file>
+        <file>resources/images/icons/add.svg</file>
+        <file>resources/images/icons/upload.svg</file>
+        <file>resources/images/icons/lockOff.svg</file>
+        <file>resources/images/icons/lockOn.svg</file>
+        <file>resources/images/icons/visibleOff.svg</file>
+        <file>resources/images/icons/visibleOn.svg</file>
+        <file>resources/images/icons/edit.svg</file>
+        <file>resources/images/icons/copy.svg</file>
+        <file>resources/images/icons/check-simple.svg</file>
+        <file>resources/images/icons/add-circle.svg</file>
+        <file>resources/images/icons/remove-circle.svg</file>
+        <file>resources/images/icons/help.svg</file>
+        <file>resources/images/icons/qr.svg</file>
+        <file>resources/images/icons/send.svg</file>
+        <file>resources/images/icons/send-amber.svg</file>
+        <file>resources/images/icons/send-blue.svg</file>
+        <file>resources/images/icons/back.svg</file>
+        <file>resources/images/icons/qt_logo_green_rgb.svg</file>
     </qresource>
 </RCC>

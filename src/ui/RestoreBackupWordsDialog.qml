@@ -29,7 +29,7 @@ Dialog {
 
             Image {
                 id: icon
-                source: "qrc:/images/icons/backup.svg"
+                source: "qrc:/images/resources/images/icons/backup.svg"
                 sourceSize: "64x64"
             }
 

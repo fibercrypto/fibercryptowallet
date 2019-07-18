@@ -23,7 +23,7 @@ Page {
                 }
                 ToolButton {
                     id: toolButtonAddressPopupHelp
-                    icon.source: "qrc:/images/icons/help.svg"
+                    icon.source: "qrc:/images/resources/images/icons/help.svg"
                     icon.color: Material.color(Material.Grey)
                 }
             }
@@ -44,7 +44,7 @@ Page {
                 }
                 ToolButton {
                     id: toolButtonDestinationPopupHelp
-                    icon.source: "qrc:/images/icons/help.svg"
+                    icon.source: "qrc:/images/resources/images/icons/help.svg"
                     icon.color: Material.color(Material.Grey)
                 }
             }
@@ -82,7 +82,7 @@ Page {
                 }
                 ToolButton {
                     id: toolButtonCustomChangeAddressPopupHelp
-                    icon.source: "qrc:/images/icons/help.svg"
+                    icon.source: "qrc:/images/resources/images/icons/help.svg"
                     icon.color: Material.color(Material.Grey)
                 }
                 Button {

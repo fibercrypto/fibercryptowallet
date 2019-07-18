@@ -11,7 +11,7 @@ Dialog {
         spacing: 20
 
         Image {
-            source: "qrc:/images/appIcon.svg"
+            source: "qrc:/images/resources/images/appIcon.svg"
             sourceSize: Qt.size(120, 120)
             fillMode: Image.PreserveAspectFit
 
