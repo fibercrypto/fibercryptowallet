@@ -28,5 +28,6 @@
         <file>resources/images/icons/send-blue.svg</file>
         <file>resources/images/icons/back.svg</file>
         <file>resources/images/icons/qt_logo_green_rgb.svg</file>
+        <file>resources/images/icons/appIcon.png</file>
     </qresource>
 </RCC>
