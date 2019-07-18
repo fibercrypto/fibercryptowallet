@@ -1,36 +1,37 @@
 import QtQuick 2.12
-import QtQuick.Controls 2.12
-import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import QtQuick.Controls 2.12
 
 Dialog {
-    id: root
+    id: aboutQt
 
-    ColumnLayout {
+    modal: true
+    title: qsTr("About") + " Qt"
+    standardButtons: Dialog.Close
+
+    Flickable {
+        id: flickable
+        clip: true
         anchors.fill: parent
-        spacing: 20
+        contentHeight: column.height
 
-        Image {
-            source: "qrc:/images/resources/images/icons/qt_logo_green_rgb.svg"
-            sourceSize: Qt.size(72, 72)
-            fillMode: Image.PreserveAspectFit
+        Column {
+            id: column
+            spacing: 20
+            width: parent.width
 
-            Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
-        }
-
-        Rectangle {
-            height: 1
-            color: "gray"
-            Layout.fillWidth: true
-        }
-
-        ColumnLayout {
-            Label {
-                text: qsTr("This program uses Qt %1").arg("5.12.3")
-                font.bold: true
+            Image {
+                id: logo
+                width: parent.width / 2
+                anchors.horizontalCenter: parent.horizontalCenter
+                fillMode: Image.PreserveAspectFit
+                source: "qrc:/images/resources/images/icons/qt_logo_green_rgb.svg"
             }
+
             Label {
-                text: qsTr("<p>Qt is a <i>C++ toolkit for cross-platform application " +
+                width: parent.width
+                text: "<b>" + qsTr("This program uses Qt %1").arg("5.13.0") + "</b><br>"
+                    + qsTr("<p>Qt is a <i>C++ toolkit for cross-platform application " +
                            "development</i>.</p>" +
                            "<p>Qt provides single-source portability across all major desktop and mobile " +
                            "operating systems. It is also available for embedded Linux and other " +
@@ -38,12 +39,27 @@ Dialog {
                            "<p>Qt offers both <i>commercial</i> and <i>opensource</i> licences. Please see <a href=\"http://%2/\">%2</a> " +
                            "for an overview of Qt licensing.</p><br>" +
                            "<p><i>Copyright © %1 The Qt Company Ltd</i> and other " +
-                           "contributors. See <a href=\"http://%3/\">%3</a> for more information.</p><br>").arg("2018").arg("qt.io/licensing").arg("qt.io")
-                wrapMode: Label.WordWrap
+                           "contributors. See <a href=\"http://%3/\">%3</a> for more information.</p>").arg("2019").arg("qt.io/licensing").arg("qt.io")
+                wrapMode: Label.Wrap
+                onHoveredLinkChanged: {
+                    mouseAreaLinkHovered.cursorShape = hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor
+                }
+                onLinkActivated: { Qt.openUrlExternally(link) }
 
-                Layout.preferredWidth: 300
-                Layout.alignment: Qt.AlignHCenter
-            }
-        } // ColumnLayout
-    } // ColumnLayout
-} // Dialog
+                MouseArea {
+                    id: mouseAreaLinkHovered
+                    anchors.fill: parent
+                    acceptedButtons: Qt.NoButton
+                }
+            } // Label
+        } // Column
+
+        ScrollIndicator.vertical: ScrollIndicator {
+            parent: aboutQt.contentItem
+            anchors.top: flickable.top
+            anchors.bottom: flickable.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: -aboutQt.rightPadding + 1
+        }
+    } // Flickable
+}
