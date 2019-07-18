@@ -13,6 +13,7 @@ build-wallet:  ## Build fiberCryptoWallet.
 clean: ## Clean project.
 	@echo "Cleaning project..."
 	rm -rf deploy/
+	rm -rf linux/
 	rm -rf rcc.cpp
 	rm -rf rcc.qrc
 	rm -rf rcc_cgo_linux_linux_amd64.go
