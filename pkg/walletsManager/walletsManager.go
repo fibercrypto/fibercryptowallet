@@ -104,7 +104,7 @@ func (m *WalletModel) init() {
 }
 
 
-}
+
 func (m *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() {
 		return core.NewQVariant()
