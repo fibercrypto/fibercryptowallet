@@ -1,8 +1,8 @@
 package walletsManager
 
 import (
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/therecipe/qt/core"
+		"github.com/therecipe/qt/core"
+		"fmt"
 )
 
 const (
@@ -36,15 +36,15 @@ type QAddress struct{
 	core.QObject
 
 	_ string `property:"address"`
-	_ int	`property:"sky"`
-	_ int	`property:"coinHours"`
+	_ int	`property:"addressSky"`
+	_ int	`property:"addressCoinHours"`
 }
 
 func (m *AddressesModel) init(){
 	m.SetRoles(map[int]*core.QByteArray{
 		Address: core.NewQByteArray2("address", -1),
-		ASky: core.NewQByteArray2("sky", -1),
-		ACoinHours: core.NewQByteArray2("coinHours", -1),
+		ASky: core.NewQByteArray2("addressSky", -1),
+		ACoinHours: core.NewQByteArray2("addressCoinHours", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -78,15 +78,15 @@ func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant 
 	
 	case Address:
 		{
-			return core.NewQVariant1(m.Address())
+			return core.NewQVariant1(a.Address())
 		}
 	case ASky:
 		{
-			return core.NewQVariant1(m.Sky())
+			return core.NewQVariant1(a.AddressSky())
 		}
 	case ACoinHours:
 		{
-			return core.NewQVariant1(m.CoinHours())
+			return core.NewQVariant1(a.AddressCoinHours())
 		}
 	default:
 		{
@@ -108,7 +108,7 @@ func (m *AddressesModel) roleNames() map[int]*core.QByteArray {
 }
 
 func (m *AddressesModel) addAddress(address *QAddress) {
-	m.BeginInsertRows(core.NewQModelIndex(), len(m.Addresses(), len(m.Addresses())))
+	m.BeginInsertRows(core.NewQModelIndex(), len(m.Addresses()), len(m.Addresses()))
 	m.SetAddresses(append(m.Addresses(), address))
 	m.EndInsertRows()
 }
@@ -121,21 +121,32 @@ func (m *AddressesModel) removeAddress(row int) {
 
 func (m *AddressesModel) editAddress(row int, address string, sky, coinHours int){
 	a := m.Addresses()[row]
-	a.SetLoaded(loaded)
 	a.SetAddress(address)
-	a.SetSky(sky)
-	a.SetCoinHours(coinHours)
+	a.SetAddressSky(sky)
+	a.SetAddressCoinHours(coinHours)
 	
 	pIndex := m.Index(row, 0, core.NewQModelIndex())
-	m.DataChanged(pIndex, pIndex, []int {Loaded, Address, ASky, ACoinHours})
+	m.DataChanged(pIndex, pIndex, []int {Address, ASky, ACoinHours})
 }
 
 func (m *AddressesModel) loadModel(wallet string){
+	fmt.Println(wallet)
 	Qaddresses, err := getQAddresses(wallet)
+	fmt.Println("Cargando direcciones")
 	if err != nil {
 		return
 	}
-	m.SetAddresses(Qaddresses)
+	
+	addresses := make([]*QAddress, 0)
+	address := NewQAddress(nil)
+	address.SetAddress("--------------------------")
+	address.SetAddressSky(0)
+	address.SetAddressCoinHours(0)
+	addresses = append(addresses, address)
+	addresses = append(addresses, Qaddresses...)
+	fmt.Println(len(addresses))
+	m.SetAddresses(addresses)
+	fmt.Println("Direcciones cargadas")
 	m.SetLoaded(1)
 }
 
@@ -145,19 +156,19 @@ func getQAddresses(wallet string) ([]*QAddress, error) {
 	if err != nil {
 		return nil, err
 	}
-	Qaddresses := make([]*QAddress)
-	entries = wlt.Entries
+	Qaddresses := make([]*QAddress, 0)
+	entries := wlt.Entries
 	for _, entry := range entries {
 		address := NewQAddress(nil)
 		address.SetAddress(entry.Address)
-		addresses := make([]string)
+		addresses := make([]string, 0)
 		addresses = append(addresses, entry.Address)
-		bl, err = c.Balance(addresses)
+		bl, err := c.Balance(addresses)
 		if err != nil {
 			return nil, err
 		}
-		address.SetSky(bl.Confimed.Coins)
-		address.SetCoinHours(bl.Confimed.CoinHours)
+		address.SetAddressSky(int(bl.Confirmed.Coins))
+		address.SetAddressCoinHours(int(bl.Confirmed.Hours))
 		Qaddresses = append(Qaddresses, address)
 	}
 

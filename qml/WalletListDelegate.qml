@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
-
+import WalletsManager 1.0
 
 Item {
     id: root
@@ -71,7 +71,10 @@ Item {
             }
 
             onClicked: {
-                walletModel.loadModel()
+                if (!listAddresses.loaded){
+                    listAddresses.loadModel(fileName)
+                }
+                
                 expanded = !expanded
             }
         } // ItemDelegate
@@ -96,16 +99,20 @@ Item {
         }
     } // ColumnLayout
 
-    // Roles: address, addressSky, addressCoinHours
-    // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
-    // Or implement the model in the backend (a more recommendable approach)
-    ListModel {
+    AddressModel {
         id: listAddresses
-        // The first element must exist but will not be used
-        ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
-        ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
-        ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
-        ListElement { address: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
-        ListElement { address: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
     }
+
+     //Roles: address, addressSky, addressCoinHours
+     //Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
+     //Or implement the model in the backend (a more recommendable approach)
+    //ListModel {
+    //    id: listAddresses
+    //    // The first element must exist but will not be used
+    //    ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
+    //    ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
+    //    ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
+    //    ListElement { address: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
+    //    ListElement { address: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
+    //}
 }
