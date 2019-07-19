@@ -2,7 +2,7 @@ package walletsManager
 
 import (
 		"github.com/therecipe/qt/core"
-		"fmt"
+		
 )
 
 const (
@@ -19,7 +19,7 @@ type AddressesModel struct{
 	_ func() `constructor:"init"`
 
 	_ map[int]*core.QByteArray `property:"roles"`
-	_ [] *QAddress	`property:"addresses"`
+	_ []*QAddress	`property:"addresses"`
 
 	_ int	`property:"loaded"`
 
@@ -130,9 +130,7 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours int
 }
 
 func (m *AddressesModel) loadModel(wallet string){
-	fmt.Println(wallet)
 	Qaddresses, err := getQAddresses(wallet)
-	fmt.Println("Cargando direcciones")
 	if err != nil {
 		return
 	}
@@ -144,9 +142,10 @@ func (m *AddressesModel) loadModel(wallet string){
 	address.SetAddressCoinHours(0)
 	addresses = append(addresses, address)
 	addresses = append(addresses, Qaddresses...)
-	fmt.Println(len(addresses))
+	
+	m.BeginInsertRows(core.NewQModelIndex(), 0, len(addresses)-1)
 	m.SetAddresses(addresses)
-	fmt.Println("Direcciones cargadas")
+	m.EndInsertRows()
 	m.SetLoaded(1)
 }
 
@@ -174,4 +173,6 @@ func getQAddresses(wallet string) ([]*QAddress, error) {
 
 	return Qaddresses, nil
 }
+
+
 

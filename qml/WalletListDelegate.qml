@@ -96,6 +96,8 @@ Item {
                 width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
             }
+
+            
         }
     } // ColumnLayout
 

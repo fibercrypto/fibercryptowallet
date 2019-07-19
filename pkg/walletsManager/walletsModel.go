@@ -2,6 +2,9 @@ package walletsManager
 
 import (
 	"github.com/therecipe/qt/core"
+	"github.com/skycoin/skycoin/src/api"
+	
+	
 )
 
 const (
@@ -128,6 +131,8 @@ func (m *WalletModel) addWallet(w *QWallet){
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Wallets()), len(m.Wallets()))
 	m.SetWallets(append(m.Wallets(), w))
 	m.EndInsertRows()
+	
+
 } 
 
 func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky, coinHours int) {
@@ -160,19 +165,10 @@ func getWalletsModel() ([]*QWallet, error) {
 	}
 	walletsModels := make([]*QWallet, 0)
 	for _, w := range wallets {
-		wlt := NewQWallet(nil)
-		wlt.SetName(w.Meta.Label)
-		wlt.SetEncryptionEnabled(0)
-		if w.Meta.Encrypted {
-			wlt.SetEncryptionEnabled(1)
-		}
-		bl, err := c.WalletBalance(w.Meta.Filename)
-		if err != nil {
+		wlt, err := walletResponseToQWallet(&w)
+		if err != nil{
 			return nil, err
 		}
-		wlt.SetSky(int(bl.Confirmed.Coins))
-		wlt.SetCoinHours(int(bl.Confirmed.Hours))
-		wlt.SetFileName(w.Meta.Filename)
 		walletsModels = append(walletsModels, wlt)
 	}
 	return walletsModels, nil
@@ -210,4 +206,23 @@ func (m *WalletModel) loadModel() {
 	
 	m.SetWallets(wltsModels)
 
+}
+
+func walletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error){
+	c := newClient()
+	qwallet := NewQWallet(nil)
+	qwallet.SetFileName(wr.Meta.Filename)
+	qwallet.SetName(wr.Meta.Label)
+	qwallet.SetEncryptionEnabled(0)
+	if wr.Meta.Encrypted {
+		qwallet.SetEncryptionEnabled(1)
+	}
+	bl, err := c.WalletBalance(wr.Meta.Filename)
+	if err != nil{
+		return nil, err
+	}
+	qwallet.SetSky(int(bl.Confirmed.Coins))
+	qwallet.SetCoinHours(int(bl.Confirmed.Hours))
+	return qwallet, nil
+	
 }

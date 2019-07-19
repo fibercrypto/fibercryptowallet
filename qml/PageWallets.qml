@@ -60,6 +60,12 @@ Page {
                 text: qsTr("Add wallet")
                 icon.source: "qrc:/images/icons/add.svg"
                 Layout.fillWidth: true
+
+                onClicked: {
+                    console.log("Begin")
+                    //walletManager.createEncryptedWallet( walletManager.getNewSeed(128), "kid3", "mauricio1802", 1)
+                    walletManager.createUnencryptedWallet(walletModel, walletManager.getNewSeed(128), "kid4", 1)
+                }
             }
             ToolButton {
                 id: buttonLoadWallet
@@ -80,6 +86,7 @@ Page {
             clip: true // limit the painting to it's bounding rectangle
             model: walletModel
             delegate: WalletListDelegate {}
+            
         }
     }
 
@@ -87,6 +94,10 @@ Page {
         id: walletModel
         
                
+    }
+
+    WalletManager{
+        id: walletManager
     }
     // Roles: name, encryptionEnabled, sky, coinHours
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )
