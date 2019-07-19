@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 
 // Resource imports
 import "qrc:/ui/src/ui/Dialogs"
+import "qrc:/ui/src/ui/Delegates"
 
 Page {
     id: root
