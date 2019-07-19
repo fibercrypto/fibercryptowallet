@@ -26,7 +26,7 @@ Item {
 
         ToolButton {
             id: buttonAddAddress
-            text: qsTr("Add wallet")
+            text: qsTr("Add address")
             icon.source: "qrc:/images/resources/images/icons/add.svg"
             Material.foreground: Material.Teal
             Layout.fillWidth: true
