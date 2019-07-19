@@ -18,6 +18,9 @@ func main() {
 	app.SetApplicationVersion("0.1")
 	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon.png"))
 
+	// Add this monospaced font
+	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/code-new-roman/code-new-roman.otf")
+
 	engine := qml.NewQQmlApplicationEngine(nil)
 	url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
 
