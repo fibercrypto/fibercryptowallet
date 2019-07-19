@@ -86,10 +86,7 @@ Page {
     WalletModel{
         id: walletModel
         
-        onCreated:{
-            rect.color = "#000000"
-        } 
-        
+               
     }
     // Roles: name, encryptionEnabled, sky, coinHours
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )
