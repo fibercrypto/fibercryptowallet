@@ -5,16 +5,17 @@ import (
 	"github.com/therecipe/qt/qml"
 	//"github.com/therecipe/qt/quick"
 	"github.com/therecipe/qt/widgets"
-	"github.com/FiberCryptoWallet/pkg/WalletManager"
+	_ "github.com/FiberCryptoWallet/pkg/walletsManager"
 	"os"
 )
 
 func main() {
+	
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
-
+	
 
 	widgets.NewQApplication(len(os.Args), os.Args)
-
+	
 	engine := qml.NewQQmlApplicationEngine(nil)
 	engine.Load(core.NewQUrl3("qml/main.qml", 0))
 	

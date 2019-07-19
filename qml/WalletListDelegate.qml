@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+
 Item {
     id: root
 
@@ -70,6 +71,7 @@ Item {
             }
 
             onClicked: {
+                walletModel.loadModel()
                 expanded = !expanded
             }
         } // ItemDelegate
