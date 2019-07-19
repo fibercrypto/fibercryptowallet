@@ -1,0 +1,37 @@
+<RCC>
+    <qresource prefix="/ui">
+        <file>src/ui/main.qml</file>
+        <file>src/ui/PageWallets.qml</file>
+        <file>src/ui/PageSend.qml</file>
+        <file>src/ui/GeneralSwipeView.qml</file>
+        <file>src/ui/GeneralStackView.qml</file>
+        <file>src/ui/SubPageSendSimple.qml</file>
+        <file>src/ui/SubPageSendAdvanced.qml</file>
+        <file>src/ui/TransactionDetails.qml</file>
+        <file>src/ui/PasswordRequester.qml</file>
+        <file>src/ui/PageHistory.qml</file>
+        <file>src/ui/HistoryFilterList.qml</file>
+        <file>src/ui/BusyPopup.qml</file>
+        <file>src/ui/ControlCustomSwitch.qml</file>
+        <file>src/ui/ControlGenerateSeed.qml</file>
+        <file>src/ui/CreateLoadWallet.qml</file>
+        <file>src/ui/Blockchain.qml</file>
+        <file>src/ui/Delegates/WalletListDelegate.qml</file>
+        <file>src/ui/Delegates/WalletListAddressDelegate.qml</file>
+        <file>src/ui/Delegates/DestinationListDelegate.qml</file>
+        <file>src/ui/Delegates/InputOutputDelegate.qml</file>
+        <file>src/ui/Delegates/HistoryListDelegate.qml</file>
+        <file>src/ui/Delegates/HistoryFilterListDelegate.qml</file>
+        <file>src/ui/Delegates/HistoryFilterListAddressDelegate.qml</file>
+        <file>src/ui/Dialogs/DialogTransactionDetails.qml</file>
+        <file>src/ui/Dialogs/RestoreBackupWordsDialog.qml</file>
+        <file>src/ui/Dialogs/SecureWalletDialog.qml</file>
+        <file>src/ui/Dialogs/WalletCreatedDialog.qml</file>
+        <file>src/ui/Dialogs/MsgDialog.qml</file>
+        <file>src/ui/Dialogs/NumPadDialog.qml</file>
+        <file>src/ui/Dialogs/DialogUnconfiguredWallet.qml</file>
+        <file>src/ui/Dialogs/DialogSendTransaction.qml</file>
+        <file>src/ui/Dialogs/DialogAbout.qml</file>
+        <file>src/ui/Dialogs/DialogAboutQt.qml</file>
+    </qresource>
+</RCC>

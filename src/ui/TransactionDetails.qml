@@ -3,6 +3,9 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+import "qrc:/ui/src/ui/Delegates"
+
 Item {
     id: root
 
@@ -112,7 +115,7 @@ Item {
                 Layout.alignment: Qt.AlignTop
                 Layout.rightMargin: 20
                 Image {
-                    source: "qrc:/images/icons/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
+                    source: "qrc:/images/resources/images/icons/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
                     sourceSize: "72x72"
                     fillMode: Image.PreserveAspectFit
                     mirror: type === TransactionDetails.Type.Receive

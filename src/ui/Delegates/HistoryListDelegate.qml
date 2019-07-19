@@ -3,6 +3,9 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+import "qrc:/ui/src/ui/"
+
 ItemDelegate {
     id: root
 
@@ -29,7 +32,7 @@ ItemDelegate {
         spacing: 20
 
         Image {
-            source: "qrc:/images/icons/send-blue.svg"
+            source: "qrc:/images/resources/images/icons/send-blue.svg"
             sourceSize: "32x32"
             fillMode: Image.PreserveAspectFit
             mirror: modelType === TransactionDetails.Type.Receive
@@ -62,7 +65,7 @@ ItemDelegate {
                     id: rowLayoutSent
                     visible: modelType === TransactionDetails.Type.Send
                     Image {
-                        source: "qrc:/images/icons/qr.svg"
+                        source: "qrc:/images/resources/images/icons/qr.svg"
                         sourceSize: "24x24"
                     }
                     Label {
@@ -74,7 +77,7 @@ ItemDelegate {
                 RowLayout {
                     id: rowLayoutReceive
                     Image {
-                        source: "qrc:/images/icons/qr.svg"
+                        source: "qrc:/images/resources/images/icons/qr.svg"
                         sourceSize: "24x24"
                     }
                     Label {

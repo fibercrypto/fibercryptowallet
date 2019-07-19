@@ -36,7 +36,7 @@ Page {
                 Layout.fillWidth: true
                 spacing: 8
                 Image {
-                    source: "qrc:/images/icons/qr.svg"
+                    source: "qrc:/images/resources/images/icons/qr.svg"
                     sourceSize: "24x24"
                     Layout.bottomMargin: 4
                 }

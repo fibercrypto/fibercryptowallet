@@ -26,7 +26,7 @@ Item {
         ToolButton {
             id: buttonAddAddress
             text: qsTr("Add wallet")
-            icon.source: "qrc:/images/icons/add.svg"
+            icon.source: "qrc:/images/resources/images/icons/add.svg"
             Material.foreground: Material.Teal
             Layout.fillWidth: true
         }
@@ -35,7 +35,7 @@ Item {
             text: qsTr("Show empty")
             checkable: true
             checked: emptyAddressVisible
-            icon.source: "qrc:/images/icons/visible" + (checked ? "On" : "Off") + ".svg"
+            icon.source: "qrc:/images/resources/images/icons/visible" + (checked ? "On" : "Off") + ".svg"
             Material.accent: Material.Indigo
             Material.foreground: Material.Grey
             Layout.fillWidth: true
@@ -49,7 +49,7 @@ Item {
             text: qsTr("Encrypt wallet")
             checkable: true
             checked: encryptionEnabled
-            icon.source: "qrc:/images/icons/lock" + (checked ? "On" : "Off") + ".svg"
+            icon.source: "qrc:/images/resources/images/icons/lock" + (checked ? "On" : "Off") + ".svg"
             Material.accent: Material.Amber
             Material.foreground: Material.Grey
             Layout.fillWidth: true
@@ -61,7 +61,7 @@ Item {
         ToolButton {
             id: buttonEdit
             text: qsTr("Edit wallet")
-            icon.source: "qrc:/images/icons/edit.svg"
+            icon.source: "qrc:/images/resources/images/icons/edit.svg"
             Material.foreground: Material.Blue
             Layout.fillWidth: true
         }
@@ -84,7 +84,7 @@ Item {
         Image {
             id: qrIcon
             visible:  !showOnlyAddresses
-            source: "qrc:/images/icons/qr.svg"
+            source: "qrc:/images/resources/images/icons/qr.svg"
             sourceSize: "16x16"
         }
 
@@ -98,14 +98,14 @@ Item {
             ToolButton {
                 id: toolButtonCopy
                 visible:  !showOnlyAddresses
-                icon.source: "qrc:/images/icons/copy.svg"
+                icon.source: "qrc:/images/resources/images/icons/copy.svg"
                 Layout.alignment: Qt.AlignLeft
 
                 Image {
                     id: imageCopied
                     anchors.centerIn: parent
                     visible:  !showOnlyAddresses
-                    source: "qrc:/images/icons/check-simple.svg"
+                    source: "qrc:/images/resources/images/icons/check-simple.svg"
                     fillMode: Image.PreserveAspectFit
                     sourceSize: Qt.size(toolButtonCopy.icon.width*1.5, toolButtonCopy.icon.height*1.5)
                     z: 1

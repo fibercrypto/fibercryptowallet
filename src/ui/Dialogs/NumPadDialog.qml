@@ -372,7 +372,7 @@ Dialog {
 
                 ItemDelegate {
                     id: backspace
-                    icon.source: "qrc:/images/icons/backspace.svg"
+                    icon.source: "qrc:/images/resources/images/icons/backspace.svg"
                     display: ItemDelegate.IconOnly
                     font.pointSize: numPadButtonPointSize
                     Layout.fillWidth: true

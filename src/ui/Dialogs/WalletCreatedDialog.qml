@@ -28,7 +28,7 @@ Dialog {
 
             Image {
                 id: icon
-                source: "qrc:/images/icons/check.svg"
+                source: "qrc:/images/resources/images/icons/check.svg"
                 sourceSize: "64x64"
                 Layout.alignment: Qt.AlignTop
             }
