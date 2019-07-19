@@ -2,9 +2,7 @@ package walletsManager
 
 import (
 	"github.com/skycoin/skycoin/src/api"
-	//"github.com/skycoin/skycoin/src/wallet"
 	"github.com/therecipe/qt/core"
-	"fmt"
 )
 
 
@@ -237,7 +235,7 @@ func (m *WalletModel) loadModel() {
 	if err != nil {
 		return 
 	}
-	m.testFunc()
+	
 	m.SetWallets(wltsModels)
 
 }

@@ -105,7 +105,6 @@ Q_PROPERTY(type378cdd roles READ roles WRITE setRoles NOTIFY rolesChanged)
 Q_PROPERTY(QList<QWallet268d39*> wallets READ wallets WRITE setWallets NOTIFY walletsChanged)
 public:
 	WalletModel268d39(QObject *parent = Q_NULLPTR) : QAbstractListModel(parent) {qRegisterMetaType<quintptr>("quintptr");WalletModel268d39_WalletModel268d39_QRegisterMetaType();WalletModel268d39_WalletModel268d39_QRegisterMetaTypes();callbackWalletModel268d39_Constructor(this);};
-	void Signal_Created() { callbackWalletModel268d39_Created(this); };
 	type378cdd roles() { return ({ QMap<qint32, QByteArray>* tmpP = static_cast<QMap<qint32, QByteArray>*>(callbackWalletModel268d39_Roles(this)); QMap<qint32, QByteArray> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
 	void setRoles(type378cdd roles) { callbackWalletModel268d39_SetRoles(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_RolesChanged(type378cdd roles) { callbackWalletModel268d39_RolesChanged(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
@@ -181,7 +180,6 @@ public:
 	QList<QWallet268d39*> walletsDefault() { return _wallets; };
 	void setWalletsDefault(QList<QWallet268d39*> p) { if (p != _wallets) { _wallets = p; walletsChanged(_wallets); } };
 signals:
-	void created();
 	void rolesChanged(type378cdd roles);
 	void walletsChanged(QList<QWallet268d39*> wallets);
 public slots:
@@ -189,7 +187,6 @@ public slots:
 	void editWallet(qint32 row, QString name, bool encryptionEnabled, qint32 sky, qint32 coinHours) { QByteArray t6ae999 = name.toUtf8(); Moc_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackWalletModel268d39_EditWallet(this, row, namePacked, encryptionEnabled, sky, coinHours); };
 	void removeWallet(qint32 row) { callbackWalletModel268d39_RemoveWallet(this, row); };
 	void loadModel() { callbackWalletModel268d39_LoadModel(this); };
-	void testFunc() { callbackWalletModel268d39_TestFunc(this); };
 private:
 	type378cdd _roles;
 	QList<QWallet268d39*> _wallets;
@@ -201,6 +198,328 @@ Q_DECLARE_METATYPE(WalletModel268d39*)
 void WalletModel268d39_WalletModel268d39_QRegisterMetaTypes() {
 	qRegisterMetaType<QList<QObject*>>("QList<QWallet268d39*>");
 	qRegisterMetaType<type378cdd>("type378cdd");
+}
+
+struct Moc_PackedString QWallet268d39_Name(void* ptr)
+{
+	return ({ QByteArray tedc734 = static_cast<QWallet268d39*>(ptr)->name().toUtf8(); Moc_PackedString { const_cast<char*>(tedc734.prepend("WHITESPACE").constData()+10), tedc734.size()-10 }; });
+}
+
+struct Moc_PackedString QWallet268d39_NameDefault(void* ptr)
+{
+	return ({ QByteArray tee7a91 = static_cast<QWallet268d39*>(ptr)->nameDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tee7a91.prepend("WHITESPACE").constData()+10), tee7a91.size()-10 }; });
+}
+
+void QWallet268d39_SetName(void* ptr, struct Moc_PackedString name)
+{
+	static_cast<QWallet268d39*>(ptr)->setName(QString::fromUtf8(name.data, name.len));
+}
+
+void QWallet268d39_SetNameDefault(void* ptr, struct Moc_PackedString name)
+{
+	static_cast<QWallet268d39*>(ptr)->setNameDefault(QString::fromUtf8(name.data, name.len));
+}
+
+void QWallet268d39_ConnectNameChanged(void* ptr)
+{
+	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::nameChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::Signal_NameChanged));
+}
+
+void QWallet268d39_DisconnectNameChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::nameChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::Signal_NameChanged));
+}
+
+void QWallet268d39_NameChanged(void* ptr, struct Moc_PackedString name)
+{
+	static_cast<QWallet268d39*>(ptr)->nameChanged(QString::fromUtf8(name.data, name.len));
+}
+
+int QWallet268d39_EncryptionEnabled(void* ptr)
+{
+	return static_cast<QWallet268d39*>(ptr)->encryptionEnabled();
+}
+
+int QWallet268d39_EncryptionEnabledDefault(void* ptr)
+{
+	return static_cast<QWallet268d39*>(ptr)->encryptionEnabledDefault();
+}
+
+void QWallet268d39_SetEncryptionEnabled(void* ptr, int encryptionEnabled)
+{
+	static_cast<QWallet268d39*>(ptr)->setEncryptionEnabled(encryptionEnabled);
+}
+
+void QWallet268d39_SetEncryptionEnabledDefault(void* ptr, int encryptionEnabled)
+{
+	static_cast<QWallet268d39*>(ptr)->setEncryptionEnabledDefault(encryptionEnabled);
+}
+
+void QWallet268d39_ConnectEncryptionEnabledChanged(void* ptr)
+{
+	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::encryptionEnabledChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_EncryptionEnabledChanged));
+}
+
+void QWallet268d39_DisconnectEncryptionEnabledChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::encryptionEnabledChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_EncryptionEnabledChanged));
+}
+
+void QWallet268d39_EncryptionEnabledChanged(void* ptr, int encryptionEnabled)
+{
+	static_cast<QWallet268d39*>(ptr)->encryptionEnabledChanged(encryptionEnabled);
+}
+
+int QWallet268d39_Sky(void* ptr)
+{
+	return static_cast<QWallet268d39*>(ptr)->sky();
+}
+
+int QWallet268d39_SkyDefault(void* ptr)
+{
+	return static_cast<QWallet268d39*>(ptr)->skyDefault();
+}
+
+void QWallet268d39_SetSky(void* ptr, int sky)
+{
+	static_cast<QWallet268d39*>(ptr)->setSky(sky);
+}
+
+void QWallet268d39_SetSkyDefault(void* ptr, int sky)
+{
+	static_cast<QWallet268d39*>(ptr)->setSkyDefault(sky);
+}
+
+void QWallet268d39_ConnectSkyChanged(void* ptr)
+{
+	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::skyChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_SkyChanged));
+}
+
+void QWallet268d39_DisconnectSkyChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::skyChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_SkyChanged));
+}
+
+void QWallet268d39_SkyChanged(void* ptr, int sky)
+{
+	static_cast<QWallet268d39*>(ptr)->skyChanged(sky);
+}
+
+int QWallet268d39_CoinHours(void* ptr)
+{
+	return static_cast<QWallet268d39*>(ptr)->coinHours();
+}
+
+int QWallet268d39_CoinHoursDefault(void* ptr)
+{
+	return static_cast<QWallet268d39*>(ptr)->coinHoursDefault();
+}
+
+void QWallet268d39_SetCoinHours(void* ptr, int coinHours)
+{
+	static_cast<QWallet268d39*>(ptr)->setCoinHours(coinHours);
+}
+
+void QWallet268d39_SetCoinHoursDefault(void* ptr, int coinHours)
+{
+	static_cast<QWallet268d39*>(ptr)->setCoinHoursDefault(coinHours);
+}
+
+void QWallet268d39_ConnectCoinHoursChanged(void* ptr)
+{
+	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::coinHoursChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_CoinHoursChanged));
+}
+
+void QWallet268d39_DisconnectCoinHoursChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::coinHoursChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_CoinHoursChanged));
+}
+
+void QWallet268d39_CoinHoursChanged(void* ptr, int coinHours)
+{
+	static_cast<QWallet268d39*>(ptr)->coinHoursChanged(coinHours);
+}
+
+int QWallet268d39_QWallet268d39_QRegisterMetaType()
+{
+	return qRegisterMetaType<QWallet268d39*>();
+}
+
+int QWallet268d39_QWallet268d39_QRegisterMetaType2(char* typeName)
+{
+	return qRegisterMetaType<QWallet268d39*>(const_cast<const char*>(typeName));
+}
+
+int QWallet268d39_QWallet268d39_QmlRegisterType()
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<QWallet268d39>();
+#else
+	return 0;
+#endif
+}
+
+int QWallet268d39_QWallet268d39_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<QWallet268d39>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
+#else
+	return 0;
+#endif
+}
+
+void* QWallet268d39___children_atList(void* ptr, int i)
+{
+	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void QWallet268d39___children_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* QWallet268d39___children_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject *>();
+}
+
+void* QWallet268d39___dynamicPropertyNames_atList(void* ptr, int i)
+{
+	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
+}
+
+void QWallet268d39___dynamicPropertyNames_setList(void* ptr, void* i)
+{
+	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
+}
+
+void* QWallet268d39___dynamicPropertyNames_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QByteArray>();
+}
+
+void* QWallet268d39___findChildren_atList(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void QWallet268d39___findChildren_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* QWallet268d39___findChildren_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* QWallet268d39___findChildren_atList3(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void QWallet268d39___findChildren_setList3(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* QWallet268d39___findChildren_newList3(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* QWallet268d39___qFindChildren_atList2(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void QWallet268d39___qFindChildren_setList2(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* QWallet268d39___qFindChildren_newList2(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* QWallet268d39_NewQWallet(void* parent)
+{
+	if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QGraphicsObject*>(parent));
+	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QGraphicsWidget*>(parent));
+	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QLayout*>(parent));
+	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QOffscreenSurface*>(parent));
+	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QPaintDeviceWindow*>(parent));
+	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QPdfWriter*>(parent));
+	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QWidget*>(parent));
+	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
+		return new QWallet268d39(static_cast<QWindow*>(parent));
+	} else {
+		return new QWallet268d39(static_cast<QObject*>(parent));
+	}
+}
+
+void QWallet268d39_DestroyQWallet(void* ptr)
+{
+	static_cast<QWallet268d39*>(ptr)->~QWallet268d39();
+}
+
+void QWallet268d39_DestroyQWalletDefault(void* ptr)
+{
+	Q_UNUSED(ptr);
+
+}
+
+void QWallet268d39_ChildEventDefault(void* ptr, void* event)
+{
+	static_cast<QWallet268d39*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
+}
+
+void QWallet268d39_ConnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<QWallet268d39*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+void QWallet268d39_CustomEventDefault(void* ptr, void* event)
+{
+	static_cast<QWallet268d39*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
+}
+
+void QWallet268d39_DeleteLaterDefault(void* ptr)
+{
+	static_cast<QWallet268d39*>(ptr)->QObject::deleteLater();
+}
+
+void QWallet268d39_DisconnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<QWallet268d39*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+char QWallet268d39_EventDefault(void* ptr, void* e)
+{
+	return static_cast<QWallet268d39*>(ptr)->QObject::event(static_cast<QEvent*>(e));
+}
+
+char QWallet268d39_EventFilterDefault(void* ptr, void* watched, void* event)
+{
+	return static_cast<QWallet268d39*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
+}
+
+void QWallet268d39_TimerEventDefault(void* ptr, void* event)
+{
+	static_cast<QWallet268d39*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
 void WalletModel268d39_AddWallet(void* ptr, void* v0)
@@ -221,26 +540,6 @@ void WalletModel268d39_RemoveWallet(void* ptr, int row)
 void WalletModel268d39_LoadModel(void* ptr)
 {
 	QMetaObject::invokeMethod(static_cast<WalletModel268d39*>(ptr), "loadModel");
-}
-
-void WalletModel268d39_TestFunc(void* ptr)
-{
-	QMetaObject::invokeMethod(static_cast<WalletModel268d39*>(ptr), "testFunc");
-}
-
-void WalletModel268d39_ConnectCreated(void* ptr)
-{
-	QObject::connect(static_cast<WalletModel268d39*>(ptr), static_cast<void (WalletModel268d39::*)()>(&WalletModel268d39::created), static_cast<WalletModel268d39*>(ptr), static_cast<void (WalletModel268d39::*)()>(&WalletModel268d39::Signal_Created));
-}
-
-void WalletModel268d39_DisconnectCreated(void* ptr)
-{
-	QObject::disconnect(static_cast<WalletModel268d39*>(ptr), static_cast<void (WalletModel268d39::*)()>(&WalletModel268d39::created), static_cast<WalletModel268d39*>(ptr), static_cast<void (WalletModel268d39::*)()>(&WalletModel268d39::Signal_Created));
-}
-
-void WalletModel268d39_Created(void* ptr)
-{
-	static_cast<WalletModel268d39*>(ptr)->created();
 }
 
 struct Moc_PackedList WalletModel268d39_Roles(void* ptr)
@@ -1103,328 +1402,6 @@ char WalletModel268d39_EventFilterDefault(void* ptr, void* watched, void* event)
 void WalletModel268d39_TimerEventDefault(void* ptr, void* event)
 {
 	static_cast<WalletModel268d39*>(ptr)->QAbstractListModel::timerEvent(static_cast<QTimerEvent*>(event));
-}
-
-struct Moc_PackedString QWallet268d39_Name(void* ptr)
-{
-	return ({ QByteArray tedc734 = static_cast<QWallet268d39*>(ptr)->name().toUtf8(); Moc_PackedString { const_cast<char*>(tedc734.prepend("WHITESPACE").constData()+10), tedc734.size()-10 }; });
-}
-
-struct Moc_PackedString QWallet268d39_NameDefault(void* ptr)
-{
-	return ({ QByteArray tee7a91 = static_cast<QWallet268d39*>(ptr)->nameDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tee7a91.prepend("WHITESPACE").constData()+10), tee7a91.size()-10 }; });
-}
-
-void QWallet268d39_SetName(void* ptr, struct Moc_PackedString name)
-{
-	static_cast<QWallet268d39*>(ptr)->setName(QString::fromUtf8(name.data, name.len));
-}
-
-void QWallet268d39_SetNameDefault(void* ptr, struct Moc_PackedString name)
-{
-	static_cast<QWallet268d39*>(ptr)->setNameDefault(QString::fromUtf8(name.data, name.len));
-}
-
-void QWallet268d39_ConnectNameChanged(void* ptr)
-{
-	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::nameChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::Signal_NameChanged));
-}
-
-void QWallet268d39_DisconnectNameChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::nameChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(QString)>(&QWallet268d39::Signal_NameChanged));
-}
-
-void QWallet268d39_NameChanged(void* ptr, struct Moc_PackedString name)
-{
-	static_cast<QWallet268d39*>(ptr)->nameChanged(QString::fromUtf8(name.data, name.len));
-}
-
-int QWallet268d39_EncryptionEnabled(void* ptr)
-{
-	return static_cast<QWallet268d39*>(ptr)->encryptionEnabled();
-}
-
-int QWallet268d39_EncryptionEnabledDefault(void* ptr)
-{
-	return static_cast<QWallet268d39*>(ptr)->encryptionEnabledDefault();
-}
-
-void QWallet268d39_SetEncryptionEnabled(void* ptr, int encryptionEnabled)
-{
-	static_cast<QWallet268d39*>(ptr)->setEncryptionEnabled(encryptionEnabled);
-}
-
-void QWallet268d39_SetEncryptionEnabledDefault(void* ptr, int encryptionEnabled)
-{
-	static_cast<QWallet268d39*>(ptr)->setEncryptionEnabledDefault(encryptionEnabled);
-}
-
-void QWallet268d39_ConnectEncryptionEnabledChanged(void* ptr)
-{
-	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::encryptionEnabledChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_EncryptionEnabledChanged));
-}
-
-void QWallet268d39_DisconnectEncryptionEnabledChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::encryptionEnabledChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_EncryptionEnabledChanged));
-}
-
-void QWallet268d39_EncryptionEnabledChanged(void* ptr, int encryptionEnabled)
-{
-	static_cast<QWallet268d39*>(ptr)->encryptionEnabledChanged(encryptionEnabled);
-}
-
-int QWallet268d39_Sky(void* ptr)
-{
-	return static_cast<QWallet268d39*>(ptr)->sky();
-}
-
-int QWallet268d39_SkyDefault(void* ptr)
-{
-	return static_cast<QWallet268d39*>(ptr)->skyDefault();
-}
-
-void QWallet268d39_SetSky(void* ptr, int sky)
-{
-	static_cast<QWallet268d39*>(ptr)->setSky(sky);
-}
-
-void QWallet268d39_SetSkyDefault(void* ptr, int sky)
-{
-	static_cast<QWallet268d39*>(ptr)->setSkyDefault(sky);
-}
-
-void QWallet268d39_ConnectSkyChanged(void* ptr)
-{
-	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::skyChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_SkyChanged));
-}
-
-void QWallet268d39_DisconnectSkyChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::skyChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_SkyChanged));
-}
-
-void QWallet268d39_SkyChanged(void* ptr, int sky)
-{
-	static_cast<QWallet268d39*>(ptr)->skyChanged(sky);
-}
-
-int QWallet268d39_CoinHours(void* ptr)
-{
-	return static_cast<QWallet268d39*>(ptr)->coinHours();
-}
-
-int QWallet268d39_CoinHoursDefault(void* ptr)
-{
-	return static_cast<QWallet268d39*>(ptr)->coinHoursDefault();
-}
-
-void QWallet268d39_SetCoinHours(void* ptr, int coinHours)
-{
-	static_cast<QWallet268d39*>(ptr)->setCoinHours(coinHours);
-}
-
-void QWallet268d39_SetCoinHoursDefault(void* ptr, int coinHours)
-{
-	static_cast<QWallet268d39*>(ptr)->setCoinHoursDefault(coinHours);
-}
-
-void QWallet268d39_ConnectCoinHoursChanged(void* ptr)
-{
-	QObject::connect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::coinHoursChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_CoinHoursChanged));
-}
-
-void QWallet268d39_DisconnectCoinHoursChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::coinHoursChanged), static_cast<QWallet268d39*>(ptr), static_cast<void (QWallet268d39::*)(qint32)>(&QWallet268d39::Signal_CoinHoursChanged));
-}
-
-void QWallet268d39_CoinHoursChanged(void* ptr, int coinHours)
-{
-	static_cast<QWallet268d39*>(ptr)->coinHoursChanged(coinHours);
-}
-
-int QWallet268d39_QWallet268d39_QRegisterMetaType()
-{
-	return qRegisterMetaType<QWallet268d39*>();
-}
-
-int QWallet268d39_QWallet268d39_QRegisterMetaType2(char* typeName)
-{
-	return qRegisterMetaType<QWallet268d39*>(const_cast<const char*>(typeName));
-}
-
-int QWallet268d39_QWallet268d39_QmlRegisterType()
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<QWallet268d39>();
-#else
-	return 0;
-#endif
-}
-
-int QWallet268d39_QWallet268d39_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<QWallet268d39>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
-#else
-	return 0;
-#endif
-}
-
-void* QWallet268d39___children_atList(void* ptr, int i)
-{
-	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void QWallet268d39___children_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* QWallet268d39___children_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject *>();
-}
-
-void* QWallet268d39___dynamicPropertyNames_atList(void* ptr, int i)
-{
-	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
-}
-
-void QWallet268d39___dynamicPropertyNames_setList(void* ptr, void* i)
-{
-	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
-}
-
-void* QWallet268d39___dynamicPropertyNames_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QByteArray>();
-}
-
-void* QWallet268d39___findChildren_atList(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void QWallet268d39___findChildren_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* QWallet268d39___findChildren_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* QWallet268d39___findChildren_atList3(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void QWallet268d39___findChildren_setList3(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* QWallet268d39___findChildren_newList3(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* QWallet268d39___qFindChildren_atList2(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void QWallet268d39___qFindChildren_setList2(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* QWallet268d39___qFindChildren_newList2(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* QWallet268d39_NewQWallet(void* parent)
-{
-	if (dynamic_cast<QGraphicsObject*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QGraphicsObject*>(parent));
-	} else if (dynamic_cast<QGraphicsWidget*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QGraphicsWidget*>(parent));
-	} else if (dynamic_cast<QLayout*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QLayout*>(parent));
-	} else if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QOffscreenSurface*>(parent));
-	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QPaintDeviceWindow*>(parent));
-	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QPdfWriter*>(parent));
-	} else if (dynamic_cast<QWidget*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QWidget*>(parent));
-	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new QWallet268d39(static_cast<QWindow*>(parent));
-	} else {
-		return new QWallet268d39(static_cast<QObject*>(parent));
-	}
-}
-
-void QWallet268d39_DestroyQWallet(void* ptr)
-{
-	static_cast<QWallet268d39*>(ptr)->~QWallet268d39();
-}
-
-void QWallet268d39_DestroyQWalletDefault(void* ptr)
-{
-	Q_UNUSED(ptr);
-
-}
-
-void QWallet268d39_ChildEventDefault(void* ptr, void* event)
-{
-	static_cast<QWallet268d39*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
-}
-
-void QWallet268d39_ConnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<QWallet268d39*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-void QWallet268d39_CustomEventDefault(void* ptr, void* event)
-{
-	static_cast<QWallet268d39*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
-}
-
-void QWallet268d39_DeleteLaterDefault(void* ptr)
-{
-	static_cast<QWallet268d39*>(ptr)->QObject::deleteLater();
-}
-
-void QWallet268d39_DisconnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<QWallet268d39*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-char QWallet268d39_EventDefault(void* ptr, void* e)
-{
-	return static_cast<QWallet268d39*>(ptr)->QObject::event(static_cast<QEvent*>(e));
-}
-
-char QWallet268d39_EventFilterDefault(void* ptr, void* watched, void* event)
-{
-	return static_cast<QWallet268d39*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
-}
-
-void QWallet268d39_TimerEventDefault(void* ptr, void* event)
-{
-	static_cast<QWallet268d39*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
 #include "moc_moc.h"
