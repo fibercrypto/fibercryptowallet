@@ -4,8 +4,10 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
-import "qrc:/ui/src/ui/Dialogs"
-import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Dialogs"
+// import "qrc:/ui/src/ui/Delegates"
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
+import "Delegates/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: root
@@ -51,11 +53,12 @@ Page {
     } // GroupBox
 
 
-    ToolTip {
+    Dialog {
         id: toolTipFilters
 
         anchors.centerIn: Overlay.overlay
         height: 16 + (filter.count > 5 ? filter.delegateHeight * 5 : filter.delegateHeight * filter.count)
+        width: 350
         clip: true
         modal: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
@@ -71,11 +74,13 @@ Page {
             }
 
             ScrollView {
+                id: scrollView
                 Layout.alignment: Qt.AlignCenter
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                contentHeight: filter.implicitHeight
+                contentHeight: filter.height
+                contentWidth: filter.width
                 HistoryFilterList {
                     id: filter
                     interactive: false

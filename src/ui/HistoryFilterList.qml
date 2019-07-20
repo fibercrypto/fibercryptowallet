@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.12
 
 // Resource imports
 import "qrc:/ui/src/ui/Delegates"
+import "Delegates/" // For quick UI development, switch back to resources when making a release
 
 Item {
     id: root
@@ -30,9 +31,9 @@ Item {
             width: ListView.view.width
             height: delegateHeight + addressListHeight
             Component.onCompleted: {
-                listViewFilters.height += height
+                ListView.view.height += delegateHeight*3
                 if (index === count - 1) {
-                    listViewFilters.height += 24
+                    ListView.view.height += 42
                 }
             }
         }
