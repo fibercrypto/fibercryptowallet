@@ -1,17 +1,18 @@
 .DEFAULT_GOAL := help
 .PHONY: run-wallet build-wallet clean help
 
-run-wallet:  ## Run fiberCryptoWallet.
-	@echo "Running Fiber Wallet..."
-	@./deploy/linux/FiberCryptoWallet
+run-wallet:  ## Run FiberCrypto Wallet.
+	@echo "Running FiberCrypto Wallet..."
+	@./deploy/linux/FiberCrypto Wallet
 
-build-wallet:  ## Build fiberCryptoWallet.
-	@echo "Building Fiber Wallet..."
-	@qtdeploy -debug -quickcompiler build desktop
+build-wallet:  ## Build FiberCrypto Wallet.
+	@echo "Building FiberCrypto Wallet..."
+	# Add the flag `-quickcompiler` when making a release
+	@qtdeploy -debug build desktop
 	@echo "Done."
 
-clean: ## Clean project.
-	@echo "Cleaning project..."
+clean: ## Clean project FiberCrypto Wallet.
+	@echo "Cleaning project FiberCrypto Wallet..."
 	rm -rf deploy/
 	rm -rf linux/
 	rm -rf rcc.cpp
