@@ -4,6 +4,7 @@ import (
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
+
 	//"github.com/therecipe/qt/quick"
 	//"github.com/therecipe/qt/widgets"
 	"os"
@@ -22,11 +23,13 @@ func main() {
 	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/code-new-roman/code-new-roman.otf")
 
 	engine := qml.NewQQmlApplicationEngine(nil)
-	url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
+	// To speed up UI development, loading QML files from resources is disabled, but it must be re-enabled in order to make a release
+	// url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
+	url := core.NewQUrl3("src/ui/main.qml", 0) // disable this to make a release
 
 	// TODO: Find a way to use a `core.Qt__QueuedConnection`, so we can remove the flag `allOk`
 	allOk := true
-	engine.ConnectObjectCreated(func (object *core.QObject, objUrl *core.QUrl) {
+	engine.ConnectObjectCreated(func(object *core.QObject, objUrl *core.QUrl) {
 		if object.Pointer() == nil && url.ToString(0) == objUrl.ToString(0) {
 			allOk = false
 			app.Exit(-1) // Ignored because we need a `core.Qt__QueuedConnection`
