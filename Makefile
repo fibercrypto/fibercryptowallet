@@ -3,7 +3,7 @@
 
 run-wallet:  ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
-	@./deploy/linux/FiberCrypto Wallet
+	@./deploy/linux/FiberCryptoWallet
 
 build-wallet:  ## Build FiberCrypto Wallet.
 	@echo "Building FiberCrypto Wallet..."
