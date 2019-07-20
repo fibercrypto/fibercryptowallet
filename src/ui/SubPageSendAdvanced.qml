@@ -3,6 +3,9 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+import "qrc:/ui/src/ui/Delegates"
+
 Page {
     id: root
 
@@ -23,7 +26,7 @@ Page {
                 }
                 ToolButton {
                     id: toolButtonAddressPopupHelp
-                    icon.source: "qrc:/images/icons/help.svg"
+                    icon.source: "qrc:/images/resources/images/icons/help.svg"
                     icon.color: Material.color(Material.Grey)
                 }
             }
@@ -44,7 +47,7 @@ Page {
                 }
                 ToolButton {
                     id: toolButtonDestinationPopupHelp
-                    icon.source: "qrc:/images/icons/help.svg"
+                    icon.source: "qrc:/images/resources/images/icons/help.svg"
                     icon.color: Material.color(Material.Grey)
                 }
             }
@@ -82,7 +85,7 @@ Page {
                 }
                 ToolButton {
                     id: toolButtonCustomChangeAddressPopupHelp
-                    icon.source: "qrc:/images/icons/help.svg"
+                    icon.source: "qrc:/images/resources/images/icons/help.svg"
                     icon.color: Material.color(Material.Grey)
                 }
                 Button {
