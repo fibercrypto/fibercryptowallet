@@ -82,28 +82,30 @@ func NewBlockchainStatusModelFromPointer(ptr unsafe.Pointer) (n *BlockchainStatu
 	}
 	return
 }
+func (this *BlockchainStatusModel) Init() { this.init() }
 
 //export callbackBlockchainStatusModel97d618_Constructor
 func callbackBlockchainStatusModel97d618_Constructor(ptr unsafe.Pointer) {
 	this := NewBlockchainStatusModelFromPointer(ptr)
 	qt.Register(ptr, this)
+	this.init()
 }
 
 //export callbackBlockchainStatusModel97d618_NumberOfBlocks
-func callbackBlockchainStatusModel97d618_NumberOfBlocks(ptr unsafe.Pointer) C.longlong {
+func callbackBlockchainStatusModel97d618_NumberOfBlocks(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "numberOfBlocks"); signal != nil {
-		return C.longlong((*(*func() int64)(signal))())
+		return C.int(int32((*(*func() int)(signal))()))
 	}
 
-	return C.longlong(NewBlockchainStatusModelFromPointer(ptr).NumberOfBlocksDefault())
+	return C.int(int32(NewBlockchainStatusModelFromPointer(ptr).NumberOfBlocksDefault()))
 }
 
-func (ptr *BlockchainStatusModel) ConnectNumberOfBlocks(f func() int64) {
+func (ptr *BlockchainStatusModel) ConnectNumberOfBlocks(f func() int) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "numberOfBlocks"); signal != nil {
-			f := func() int64 {
-				(*(*func() int64)(signal))()
+			f := func() int {
+				(*(*func() int)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "numberOfBlocks", unsafe.Pointer(&f))
@@ -120,35 +122,35 @@ func (ptr *BlockchainStatusModel) DisconnectNumberOfBlocks() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) NumberOfBlocks() int64 {
+func (ptr *BlockchainStatusModel) NumberOfBlocks() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_NumberOfBlocks(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_NumberOfBlocks(ptr.Pointer())))
 	}
 	return 0
 }
 
-func (ptr *BlockchainStatusModel) NumberOfBlocksDefault() int64 {
+func (ptr *BlockchainStatusModel) NumberOfBlocksDefault() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_NumberOfBlocksDefault(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_NumberOfBlocksDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
 //export callbackBlockchainStatusModel97d618_SetNumberOfBlocks
-func callbackBlockchainStatusModel97d618_SetNumberOfBlocks(ptr unsafe.Pointer, numberOfBlocks C.longlong) {
+func callbackBlockchainStatusModel97d618_SetNumberOfBlocks(ptr unsafe.Pointer, numberOfBlocks C.int) {
 	if signal := qt.GetSignal(ptr, "setNumberOfBlocks"); signal != nil {
-		(*(*func(int64))(signal))(int64(numberOfBlocks))
+		(*(*func(int))(signal))(int(int32(numberOfBlocks)))
 	} else {
-		NewBlockchainStatusModelFromPointer(ptr).SetNumberOfBlocksDefault(int64(numberOfBlocks))
+		NewBlockchainStatusModelFromPointer(ptr).SetNumberOfBlocksDefault(int(int32(numberOfBlocks)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) ConnectSetNumberOfBlocks(f func(numberOfBlocks int64)) {
+func (ptr *BlockchainStatusModel) ConnectSetNumberOfBlocks(f func(numberOfBlocks int)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setNumberOfBlocks"); signal != nil {
-			f := func(numberOfBlocks int64) {
-				(*(*func(int64))(signal))(numberOfBlocks)
+			f := func(numberOfBlocks int) {
+				(*(*func(int))(signal))(numberOfBlocks)
 				f(numberOfBlocks)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setNumberOfBlocks", unsafe.Pointer(&f))
@@ -165,27 +167,27 @@ func (ptr *BlockchainStatusModel) DisconnectSetNumberOfBlocks() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetNumberOfBlocks(numberOfBlocks int64) {
+func (ptr *BlockchainStatusModel) SetNumberOfBlocks(numberOfBlocks int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetNumberOfBlocks(ptr.Pointer(), C.longlong(numberOfBlocks))
+		C.BlockchainStatusModel97d618_SetNumberOfBlocks(ptr.Pointer(), C.int(int32(numberOfBlocks)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetNumberOfBlocksDefault(numberOfBlocks int64) {
+func (ptr *BlockchainStatusModel) SetNumberOfBlocksDefault(numberOfBlocks int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetNumberOfBlocksDefault(ptr.Pointer(), C.longlong(numberOfBlocks))
+		C.BlockchainStatusModel97d618_SetNumberOfBlocksDefault(ptr.Pointer(), C.int(int32(numberOfBlocks)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_NumberOfBlocksChanged
-func callbackBlockchainStatusModel97d618_NumberOfBlocksChanged(ptr unsafe.Pointer, numberOfBlocks C.longlong) {
+func callbackBlockchainStatusModel97d618_NumberOfBlocksChanged(ptr unsafe.Pointer, numberOfBlocks C.int) {
 	if signal := qt.GetSignal(ptr, "numberOfBlocksChanged"); signal != nil {
-		(*(*func(int64))(signal))(int64(numberOfBlocks))
+		(*(*func(int))(signal))(int(int32(numberOfBlocks)))
 	}
 
 }
 
-func (ptr *BlockchainStatusModel) ConnectNumberOfBlocksChanged(f func(numberOfBlocks int64)) {
+func (ptr *BlockchainStatusModel) ConnectNumberOfBlocksChanged(f func(numberOfBlocks int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "numberOfBlocksChanged") {
@@ -193,8 +195,8 @@ func (ptr *BlockchainStatusModel) ConnectNumberOfBlocksChanged(f func(numberOfBl
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "numberOfBlocksChanged"); signal != nil {
-			f := func(numberOfBlocks int64) {
-				(*(*func(int64))(signal))(numberOfBlocks)
+			f := func(numberOfBlocks int) {
+				(*(*func(int))(signal))(numberOfBlocks)
 				f(numberOfBlocks)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "numberOfBlocksChanged", unsafe.Pointer(&f))
@@ -211,28 +213,27 @@ func (ptr *BlockchainStatusModel) DisconnectNumberOfBlocksChanged() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) NumberOfBlocksChanged(numberOfBlocks int64) {
+func (ptr *BlockchainStatusModel) NumberOfBlocksChanged(numberOfBlocks int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_NumberOfBlocksChanged(ptr.Pointer(), C.longlong(numberOfBlocks))
+		C.BlockchainStatusModel97d618_NumberOfBlocksChanged(ptr.Pointer(), C.int(int32(numberOfBlocks)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_TimestampLastBlock
-func callbackBlockchainStatusModel97d618_TimestampLastBlock(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+func callbackBlockchainStatusModel97d618_TimestampLastBlock(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "timestampLastBlock"); signal != nil {
-		tempVal := (*(*func() string)(signal))()
-		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
+		return std_core.PointerFromQDateTime((*(*func() *std_core.QDateTime)(signal))())
 	}
-	tempVal := NewBlockchainStatusModelFromPointer(ptr).TimestampLastBlockDefault()
-	return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
+
+	return std_core.PointerFromQDateTime(NewBlockchainStatusModelFromPointer(ptr).TimestampLastBlockDefault())
 }
 
-func (ptr *BlockchainStatusModel) ConnectTimestampLastBlock(f func() string) {
+func (ptr *BlockchainStatusModel) ConnectTimestampLastBlock(f func() *std_core.QDateTime) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "timestampLastBlock"); signal != nil {
-			f := func() string {
-				(*(*func() string)(signal))()
+			f := func() *std_core.QDateTime {
+				(*(*func() *std_core.QDateTime)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "timestampLastBlock", unsafe.Pointer(&f))
@@ -249,35 +250,39 @@ func (ptr *BlockchainStatusModel) DisconnectTimestampLastBlock() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) TimestampLastBlock() string {
+func (ptr *BlockchainStatusModel) TimestampLastBlock() *std_core.QDateTime {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.BlockchainStatusModel97d618_TimestampLastBlock(ptr.Pointer()))
+		tmpValue := std_core.NewQDateTimeFromPointer(C.BlockchainStatusModel97d618_TimestampLastBlock(ptr.Pointer()))
+		runtime.SetFinalizer(tmpValue, (*std_core.QDateTime).DestroyQDateTime)
+		return tmpValue
 	}
-	return ""
+	return nil
 }
 
-func (ptr *BlockchainStatusModel) TimestampLastBlockDefault() string {
+func (ptr *BlockchainStatusModel) TimestampLastBlockDefault() *std_core.QDateTime {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.BlockchainStatusModel97d618_TimestampLastBlockDefault(ptr.Pointer()))
+		tmpValue := std_core.NewQDateTimeFromPointer(C.BlockchainStatusModel97d618_TimestampLastBlockDefault(ptr.Pointer()))
+		runtime.SetFinalizer(tmpValue, (*std_core.QDateTime).DestroyQDateTime)
+		return tmpValue
 	}
-	return ""
+	return nil
 }
 
 //export callbackBlockchainStatusModel97d618_SetTimestampLastBlock
-func callbackBlockchainStatusModel97d618_SetTimestampLastBlock(ptr unsafe.Pointer, timestampLastBlock C.struct_Moc_PackedString) {
+func callbackBlockchainStatusModel97d618_SetTimestampLastBlock(ptr unsafe.Pointer, timestampLastBlock unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "setTimestampLastBlock"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(timestampLastBlock))
+		(*(*func(*std_core.QDateTime))(signal))(std_core.NewQDateTimeFromPointer(timestampLastBlock))
 	} else {
-		NewBlockchainStatusModelFromPointer(ptr).SetTimestampLastBlockDefault(cGoUnpackString(timestampLastBlock))
+		NewBlockchainStatusModelFromPointer(ptr).SetTimestampLastBlockDefault(std_core.NewQDateTimeFromPointer(timestampLastBlock))
 	}
 }
 
-func (ptr *BlockchainStatusModel) ConnectSetTimestampLastBlock(f func(timestampLastBlock string)) {
+func (ptr *BlockchainStatusModel) ConnectSetTimestampLastBlock(f func(timestampLastBlock *std_core.QDateTime)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setTimestampLastBlock"); signal != nil {
-			f := func(timestampLastBlock string) {
-				(*(*func(string))(signal))(timestampLastBlock)
+			f := func(timestampLastBlock *std_core.QDateTime) {
+				(*(*func(*std_core.QDateTime))(signal))(timestampLastBlock)
 				f(timestampLastBlock)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setTimestampLastBlock", unsafe.Pointer(&f))
@@ -294,37 +299,27 @@ func (ptr *BlockchainStatusModel) DisconnectSetTimestampLastBlock() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetTimestampLastBlock(timestampLastBlock string) {
+func (ptr *BlockchainStatusModel) SetTimestampLastBlock(timestampLastBlock std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		var timestampLastBlockC *C.char
-		if timestampLastBlock != "" {
-			timestampLastBlockC = C.CString(timestampLastBlock)
-			defer C.free(unsafe.Pointer(timestampLastBlockC))
-		}
-		C.BlockchainStatusModel97d618_SetTimestampLastBlock(ptr.Pointer(), C.struct_Moc_PackedString{data: timestampLastBlockC, len: C.longlong(len(timestampLastBlock))})
+		C.BlockchainStatusModel97d618_SetTimestampLastBlock(ptr.Pointer(), std_core.PointerFromQDateTime(timestampLastBlock))
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetTimestampLastBlockDefault(timestampLastBlock string) {
+func (ptr *BlockchainStatusModel) SetTimestampLastBlockDefault(timestampLastBlock std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		var timestampLastBlockC *C.char
-		if timestampLastBlock != "" {
-			timestampLastBlockC = C.CString(timestampLastBlock)
-			defer C.free(unsafe.Pointer(timestampLastBlockC))
-		}
-		C.BlockchainStatusModel97d618_SetTimestampLastBlockDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: timestampLastBlockC, len: C.longlong(len(timestampLastBlock))})
+		C.BlockchainStatusModel97d618_SetTimestampLastBlockDefault(ptr.Pointer(), std_core.PointerFromQDateTime(timestampLastBlock))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_TimestampLastBlockChanged
-func callbackBlockchainStatusModel97d618_TimestampLastBlockChanged(ptr unsafe.Pointer, timestampLastBlock C.struct_Moc_PackedString) {
+func callbackBlockchainStatusModel97d618_TimestampLastBlockChanged(ptr unsafe.Pointer, timestampLastBlock unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timestampLastBlockChanged"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(timestampLastBlock))
+		(*(*func(*std_core.QDateTime))(signal))(std_core.NewQDateTimeFromPointer(timestampLastBlock))
 	}
 
 }
 
-func (ptr *BlockchainStatusModel) ConnectTimestampLastBlockChanged(f func(timestampLastBlock string)) {
+func (ptr *BlockchainStatusModel) ConnectTimestampLastBlockChanged(f func(timestampLastBlock *std_core.QDateTime)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "timestampLastBlockChanged") {
@@ -332,8 +327,8 @@ func (ptr *BlockchainStatusModel) ConnectTimestampLastBlockChanged(f func(timest
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "timestampLastBlockChanged"); signal != nil {
-			f := func(timestampLastBlock string) {
-				(*(*func(string))(signal))(timestampLastBlock)
+			f := func(timestampLastBlock *std_core.QDateTime) {
+				(*(*func(*std_core.QDateTime))(signal))(timestampLastBlock)
 				f(timestampLastBlock)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "timestampLastBlockChanged", unsafe.Pointer(&f))
@@ -350,14 +345,9 @@ func (ptr *BlockchainStatusModel) DisconnectTimestampLastBlockChanged() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) TimestampLastBlockChanged(timestampLastBlock string) {
+func (ptr *BlockchainStatusModel) TimestampLastBlockChanged(timestampLastBlock std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		var timestampLastBlockC *C.char
-		if timestampLastBlock != "" {
-			timestampLastBlockC = C.CString(timestampLastBlock)
-			defer C.free(unsafe.Pointer(timestampLastBlockC))
-		}
-		C.BlockchainStatusModel97d618_TimestampLastBlockChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: timestampLastBlockC, len: C.longlong(len(timestampLastBlock))})
+		C.BlockchainStatusModel97d618_TimestampLastBlockChanged(ptr.Pointer(), std_core.PointerFromQDateTime(timestampLastBlock))
 	}
 }
 
@@ -506,20 +496,20 @@ func (ptr *BlockchainStatusModel) HashLastBlockChanged(hashLastBlock string) {
 }
 
 //export callbackBlockchainStatusModel97d618_CurrentSkySupply
-func callbackBlockchainStatusModel97d618_CurrentSkySupply(ptr unsafe.Pointer) C.longlong {
+func callbackBlockchainStatusModel97d618_CurrentSkySupply(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "currentSkySupply"); signal != nil {
-		return C.longlong((*(*func() int64)(signal))())
+		return C.int(int32((*(*func() int)(signal))()))
 	}
 
-	return C.longlong(NewBlockchainStatusModelFromPointer(ptr).CurrentSkySupplyDefault())
+	return C.int(int32(NewBlockchainStatusModelFromPointer(ptr).CurrentSkySupplyDefault()))
 }
 
-func (ptr *BlockchainStatusModel) ConnectCurrentSkySupply(f func() int64) {
+func (ptr *BlockchainStatusModel) ConnectCurrentSkySupply(f func() int) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "currentSkySupply"); signal != nil {
-			f := func() int64 {
-				(*(*func() int64)(signal))()
+			f := func() int {
+				(*(*func() int)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "currentSkySupply", unsafe.Pointer(&f))
@@ -536,35 +526,35 @@ func (ptr *BlockchainStatusModel) DisconnectCurrentSkySupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) CurrentSkySupply() int64 {
+func (ptr *BlockchainStatusModel) CurrentSkySupply() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_CurrentSkySupply(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_CurrentSkySupply(ptr.Pointer())))
 	}
 	return 0
 }
 
-func (ptr *BlockchainStatusModel) CurrentSkySupplyDefault() int64 {
+func (ptr *BlockchainStatusModel) CurrentSkySupplyDefault() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_CurrentSkySupplyDefault(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_CurrentSkySupplyDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
 //export callbackBlockchainStatusModel97d618_SetCurrentSkySupply
-func callbackBlockchainStatusModel97d618_SetCurrentSkySupply(ptr unsafe.Pointer, currentSkySupply C.longlong) {
+func callbackBlockchainStatusModel97d618_SetCurrentSkySupply(ptr unsafe.Pointer, currentSkySupply C.int) {
 	if signal := qt.GetSignal(ptr, "setCurrentSkySupply"); signal != nil {
-		(*(*func(int64))(signal))(int64(currentSkySupply))
+		(*(*func(int))(signal))(int(int32(currentSkySupply)))
 	} else {
-		NewBlockchainStatusModelFromPointer(ptr).SetCurrentSkySupplyDefault(int64(currentSkySupply))
+		NewBlockchainStatusModelFromPointer(ptr).SetCurrentSkySupplyDefault(int(int32(currentSkySupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) ConnectSetCurrentSkySupply(f func(currentSkySupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectSetCurrentSkySupply(f func(currentSkySupply int)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setCurrentSkySupply"); signal != nil {
-			f := func(currentSkySupply int64) {
-				(*(*func(int64))(signal))(currentSkySupply)
+			f := func(currentSkySupply int) {
+				(*(*func(int))(signal))(currentSkySupply)
 				f(currentSkySupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setCurrentSkySupply", unsafe.Pointer(&f))
@@ -581,27 +571,27 @@ func (ptr *BlockchainStatusModel) DisconnectSetCurrentSkySupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetCurrentSkySupply(currentSkySupply int64) {
+func (ptr *BlockchainStatusModel) SetCurrentSkySupply(currentSkySupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetCurrentSkySupply(ptr.Pointer(), C.longlong(currentSkySupply))
+		C.BlockchainStatusModel97d618_SetCurrentSkySupply(ptr.Pointer(), C.int(int32(currentSkySupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetCurrentSkySupplyDefault(currentSkySupply int64) {
+func (ptr *BlockchainStatusModel) SetCurrentSkySupplyDefault(currentSkySupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetCurrentSkySupplyDefault(ptr.Pointer(), C.longlong(currentSkySupply))
+		C.BlockchainStatusModel97d618_SetCurrentSkySupplyDefault(ptr.Pointer(), C.int(int32(currentSkySupply)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_CurrentSkySupplyChanged
-func callbackBlockchainStatusModel97d618_CurrentSkySupplyChanged(ptr unsafe.Pointer, currentSkySupply C.longlong) {
+func callbackBlockchainStatusModel97d618_CurrentSkySupplyChanged(ptr unsafe.Pointer, currentSkySupply C.int) {
 	if signal := qt.GetSignal(ptr, "currentSkySupplyChanged"); signal != nil {
-		(*(*func(int64))(signal))(int64(currentSkySupply))
+		(*(*func(int))(signal))(int(int32(currentSkySupply)))
 	}
 
 }
 
-func (ptr *BlockchainStatusModel) ConnectCurrentSkySupplyChanged(f func(currentSkySupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectCurrentSkySupplyChanged(f func(currentSkySupply int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "currentSkySupplyChanged") {
@@ -609,8 +599,8 @@ func (ptr *BlockchainStatusModel) ConnectCurrentSkySupplyChanged(f func(currentS
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "currentSkySupplyChanged"); signal != nil {
-			f := func(currentSkySupply int64) {
-				(*(*func(int64))(signal))(currentSkySupply)
+			f := func(currentSkySupply int) {
+				(*(*func(int))(signal))(currentSkySupply)
 				f(currentSkySupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "currentSkySupplyChanged", unsafe.Pointer(&f))
@@ -627,27 +617,27 @@ func (ptr *BlockchainStatusModel) DisconnectCurrentSkySupplyChanged() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) CurrentSkySupplyChanged(currentSkySupply int64) {
+func (ptr *BlockchainStatusModel) CurrentSkySupplyChanged(currentSkySupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_CurrentSkySupplyChanged(ptr.Pointer(), C.longlong(currentSkySupply))
+		C.BlockchainStatusModel97d618_CurrentSkySupplyChanged(ptr.Pointer(), C.int(int32(currentSkySupply)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_TotalSkySupply
-func callbackBlockchainStatusModel97d618_TotalSkySupply(ptr unsafe.Pointer) C.longlong {
+func callbackBlockchainStatusModel97d618_TotalSkySupply(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "totalSkySupply"); signal != nil {
-		return C.longlong((*(*func() int64)(signal))())
+		return C.int(int32((*(*func() int)(signal))()))
 	}
 
-	return C.longlong(NewBlockchainStatusModelFromPointer(ptr).TotalSkySupplyDefault())
+	return C.int(int32(NewBlockchainStatusModelFromPointer(ptr).TotalSkySupplyDefault()))
 }
 
-func (ptr *BlockchainStatusModel) ConnectTotalSkySupply(f func() int64) {
+func (ptr *BlockchainStatusModel) ConnectTotalSkySupply(f func() int) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "totalSkySupply"); signal != nil {
-			f := func() int64 {
-				(*(*func() int64)(signal))()
+			f := func() int {
+				(*(*func() int)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "totalSkySupply", unsafe.Pointer(&f))
@@ -664,35 +654,35 @@ func (ptr *BlockchainStatusModel) DisconnectTotalSkySupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) TotalSkySupply() int64 {
+func (ptr *BlockchainStatusModel) TotalSkySupply() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_TotalSkySupply(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_TotalSkySupply(ptr.Pointer())))
 	}
 	return 0
 }
 
-func (ptr *BlockchainStatusModel) TotalSkySupplyDefault() int64 {
+func (ptr *BlockchainStatusModel) TotalSkySupplyDefault() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_TotalSkySupplyDefault(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_TotalSkySupplyDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
 //export callbackBlockchainStatusModel97d618_SetTotalSkySupply
-func callbackBlockchainStatusModel97d618_SetTotalSkySupply(ptr unsafe.Pointer, totalSkySupply C.longlong) {
+func callbackBlockchainStatusModel97d618_SetTotalSkySupply(ptr unsafe.Pointer, totalSkySupply C.int) {
 	if signal := qt.GetSignal(ptr, "setTotalSkySupply"); signal != nil {
-		(*(*func(int64))(signal))(int64(totalSkySupply))
+		(*(*func(int))(signal))(int(int32(totalSkySupply)))
 	} else {
-		NewBlockchainStatusModelFromPointer(ptr).SetTotalSkySupplyDefault(int64(totalSkySupply))
+		NewBlockchainStatusModelFromPointer(ptr).SetTotalSkySupplyDefault(int(int32(totalSkySupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) ConnectSetTotalSkySupply(f func(totalSkySupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectSetTotalSkySupply(f func(totalSkySupply int)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setTotalSkySupply"); signal != nil {
-			f := func(totalSkySupply int64) {
-				(*(*func(int64))(signal))(totalSkySupply)
+			f := func(totalSkySupply int) {
+				(*(*func(int))(signal))(totalSkySupply)
 				f(totalSkySupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setTotalSkySupply", unsafe.Pointer(&f))
@@ -709,27 +699,27 @@ func (ptr *BlockchainStatusModel) DisconnectSetTotalSkySupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetTotalSkySupply(totalSkySupply int64) {
+func (ptr *BlockchainStatusModel) SetTotalSkySupply(totalSkySupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetTotalSkySupply(ptr.Pointer(), C.longlong(totalSkySupply))
+		C.BlockchainStatusModel97d618_SetTotalSkySupply(ptr.Pointer(), C.int(int32(totalSkySupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetTotalSkySupplyDefault(totalSkySupply int64) {
+func (ptr *BlockchainStatusModel) SetTotalSkySupplyDefault(totalSkySupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetTotalSkySupplyDefault(ptr.Pointer(), C.longlong(totalSkySupply))
+		C.BlockchainStatusModel97d618_SetTotalSkySupplyDefault(ptr.Pointer(), C.int(int32(totalSkySupply)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_TotalSkySupplyChanged
-func callbackBlockchainStatusModel97d618_TotalSkySupplyChanged(ptr unsafe.Pointer, totalSkySupply C.longlong) {
+func callbackBlockchainStatusModel97d618_TotalSkySupplyChanged(ptr unsafe.Pointer, totalSkySupply C.int) {
 	if signal := qt.GetSignal(ptr, "totalSkySupplyChanged"); signal != nil {
-		(*(*func(int64))(signal))(int64(totalSkySupply))
+		(*(*func(int))(signal))(int(int32(totalSkySupply)))
 	}
 
 }
 
-func (ptr *BlockchainStatusModel) ConnectTotalSkySupplyChanged(f func(totalSkySupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectTotalSkySupplyChanged(f func(totalSkySupply int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "totalSkySupplyChanged") {
@@ -737,8 +727,8 @@ func (ptr *BlockchainStatusModel) ConnectTotalSkySupplyChanged(f func(totalSkySu
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "totalSkySupplyChanged"); signal != nil {
-			f := func(totalSkySupply int64) {
-				(*(*func(int64))(signal))(totalSkySupply)
+			f := func(totalSkySupply int) {
+				(*(*func(int))(signal))(totalSkySupply)
 				f(totalSkySupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "totalSkySupplyChanged", unsafe.Pointer(&f))
@@ -755,27 +745,27 @@ func (ptr *BlockchainStatusModel) DisconnectTotalSkySupplyChanged() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) TotalSkySupplyChanged(totalSkySupply int64) {
+func (ptr *BlockchainStatusModel) TotalSkySupplyChanged(totalSkySupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_TotalSkySupplyChanged(ptr.Pointer(), C.longlong(totalSkySupply))
+		C.BlockchainStatusModel97d618_TotalSkySupplyChanged(ptr.Pointer(), C.int(int32(totalSkySupply)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_CurrentCoinHoursSupply
-func callbackBlockchainStatusModel97d618_CurrentCoinHoursSupply(ptr unsafe.Pointer) C.longlong {
+func callbackBlockchainStatusModel97d618_CurrentCoinHoursSupply(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "currentCoinHoursSupply"); signal != nil {
-		return C.longlong((*(*func() int64)(signal))())
+		return C.int(int32((*(*func() int)(signal))()))
 	}
 
-	return C.longlong(NewBlockchainStatusModelFromPointer(ptr).CurrentCoinHoursSupplyDefault())
+	return C.int(int32(NewBlockchainStatusModelFromPointer(ptr).CurrentCoinHoursSupplyDefault()))
 }
 
-func (ptr *BlockchainStatusModel) ConnectCurrentCoinHoursSupply(f func() int64) {
+func (ptr *BlockchainStatusModel) ConnectCurrentCoinHoursSupply(f func() int) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "currentCoinHoursSupply"); signal != nil {
-			f := func() int64 {
-				(*(*func() int64)(signal))()
+			f := func() int {
+				(*(*func() int)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "currentCoinHoursSupply", unsafe.Pointer(&f))
@@ -792,35 +782,35 @@ func (ptr *BlockchainStatusModel) DisconnectCurrentCoinHoursSupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) CurrentCoinHoursSupply() int64 {
+func (ptr *BlockchainStatusModel) CurrentCoinHoursSupply() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_CurrentCoinHoursSupply(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_CurrentCoinHoursSupply(ptr.Pointer())))
 	}
 	return 0
 }
 
-func (ptr *BlockchainStatusModel) CurrentCoinHoursSupplyDefault() int64 {
+func (ptr *BlockchainStatusModel) CurrentCoinHoursSupplyDefault() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_CurrentCoinHoursSupplyDefault(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_CurrentCoinHoursSupplyDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
 //export callbackBlockchainStatusModel97d618_SetCurrentCoinHoursSupply
-func callbackBlockchainStatusModel97d618_SetCurrentCoinHoursSupply(ptr unsafe.Pointer, currentCoinHoursSupply C.longlong) {
+func callbackBlockchainStatusModel97d618_SetCurrentCoinHoursSupply(ptr unsafe.Pointer, currentCoinHoursSupply C.int) {
 	if signal := qt.GetSignal(ptr, "setCurrentCoinHoursSupply"); signal != nil {
-		(*(*func(int64))(signal))(int64(currentCoinHoursSupply))
+		(*(*func(int))(signal))(int(int32(currentCoinHoursSupply)))
 	} else {
-		NewBlockchainStatusModelFromPointer(ptr).SetCurrentCoinHoursSupplyDefault(int64(currentCoinHoursSupply))
+		NewBlockchainStatusModelFromPointer(ptr).SetCurrentCoinHoursSupplyDefault(int(int32(currentCoinHoursSupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) ConnectSetCurrentCoinHoursSupply(f func(currentCoinHoursSupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectSetCurrentCoinHoursSupply(f func(currentCoinHoursSupply int)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setCurrentCoinHoursSupply"); signal != nil {
-			f := func(currentCoinHoursSupply int64) {
-				(*(*func(int64))(signal))(currentCoinHoursSupply)
+			f := func(currentCoinHoursSupply int) {
+				(*(*func(int))(signal))(currentCoinHoursSupply)
 				f(currentCoinHoursSupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setCurrentCoinHoursSupply", unsafe.Pointer(&f))
@@ -837,27 +827,27 @@ func (ptr *BlockchainStatusModel) DisconnectSetCurrentCoinHoursSupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetCurrentCoinHoursSupply(currentCoinHoursSupply int64) {
+func (ptr *BlockchainStatusModel) SetCurrentCoinHoursSupply(currentCoinHoursSupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetCurrentCoinHoursSupply(ptr.Pointer(), C.longlong(currentCoinHoursSupply))
+		C.BlockchainStatusModel97d618_SetCurrentCoinHoursSupply(ptr.Pointer(), C.int(int32(currentCoinHoursSupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetCurrentCoinHoursSupplyDefault(currentCoinHoursSupply int64) {
+func (ptr *BlockchainStatusModel) SetCurrentCoinHoursSupplyDefault(currentCoinHoursSupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetCurrentCoinHoursSupplyDefault(ptr.Pointer(), C.longlong(currentCoinHoursSupply))
+		C.BlockchainStatusModel97d618_SetCurrentCoinHoursSupplyDefault(ptr.Pointer(), C.int(int32(currentCoinHoursSupply)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged
-func callbackBlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(ptr unsafe.Pointer, currentCoinHoursSupply C.longlong) {
+func callbackBlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(ptr unsafe.Pointer, currentCoinHoursSupply C.int) {
 	if signal := qt.GetSignal(ptr, "currentCoinHoursSupplyChanged"); signal != nil {
-		(*(*func(int64))(signal))(int64(currentCoinHoursSupply))
+		(*(*func(int))(signal))(int(int32(currentCoinHoursSupply)))
 	}
 
 }
 
-func (ptr *BlockchainStatusModel) ConnectCurrentCoinHoursSupplyChanged(f func(currentCoinHoursSupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectCurrentCoinHoursSupplyChanged(f func(currentCoinHoursSupply int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "currentCoinHoursSupplyChanged") {
@@ -865,8 +855,8 @@ func (ptr *BlockchainStatusModel) ConnectCurrentCoinHoursSupplyChanged(f func(cu
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "currentCoinHoursSupplyChanged"); signal != nil {
-			f := func(currentCoinHoursSupply int64) {
-				(*(*func(int64))(signal))(currentCoinHoursSupply)
+			f := func(currentCoinHoursSupply int) {
+				(*(*func(int))(signal))(currentCoinHoursSupply)
 				f(currentCoinHoursSupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "currentCoinHoursSupplyChanged", unsafe.Pointer(&f))
@@ -883,27 +873,27 @@ func (ptr *BlockchainStatusModel) DisconnectCurrentCoinHoursSupplyChanged() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) CurrentCoinHoursSupplyChanged(currentCoinHoursSupply int64) {
+func (ptr *BlockchainStatusModel) CurrentCoinHoursSupplyChanged(currentCoinHoursSupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(ptr.Pointer(), C.longlong(currentCoinHoursSupply))
+		C.BlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(ptr.Pointer(), C.int(int32(currentCoinHoursSupply)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_TotalCoinHoursSupply
-func callbackBlockchainStatusModel97d618_TotalCoinHoursSupply(ptr unsafe.Pointer) C.longlong {
+func callbackBlockchainStatusModel97d618_TotalCoinHoursSupply(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "totalCoinHoursSupply"); signal != nil {
-		return C.longlong((*(*func() int64)(signal))())
+		return C.int(int32((*(*func() int)(signal))()))
 	}
 
-	return C.longlong(NewBlockchainStatusModelFromPointer(ptr).TotalCoinHoursSupplyDefault())
+	return C.int(int32(NewBlockchainStatusModelFromPointer(ptr).TotalCoinHoursSupplyDefault()))
 }
 
-func (ptr *BlockchainStatusModel) ConnectTotalCoinHoursSupply(f func() int64) {
+func (ptr *BlockchainStatusModel) ConnectTotalCoinHoursSupply(f func() int) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "totalCoinHoursSupply"); signal != nil {
-			f := func() int64 {
-				(*(*func() int64)(signal))()
+			f := func() int {
+				(*(*func() int)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "totalCoinHoursSupply", unsafe.Pointer(&f))
@@ -920,35 +910,35 @@ func (ptr *BlockchainStatusModel) DisconnectTotalCoinHoursSupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) TotalCoinHoursSupply() int64 {
+func (ptr *BlockchainStatusModel) TotalCoinHoursSupply() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_TotalCoinHoursSupply(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_TotalCoinHoursSupply(ptr.Pointer())))
 	}
 	return 0
 }
 
-func (ptr *BlockchainStatusModel) TotalCoinHoursSupplyDefault() int64 {
+func (ptr *BlockchainStatusModel) TotalCoinHoursSupplyDefault() int {
 	if ptr.Pointer() != nil {
-		return int64(C.BlockchainStatusModel97d618_TotalCoinHoursSupplyDefault(ptr.Pointer()))
+		return int(int32(C.BlockchainStatusModel97d618_TotalCoinHoursSupplyDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
 //export callbackBlockchainStatusModel97d618_SetTotalCoinHoursSupply
-func callbackBlockchainStatusModel97d618_SetTotalCoinHoursSupply(ptr unsafe.Pointer, totalCoinHoursSupply C.longlong) {
+func callbackBlockchainStatusModel97d618_SetTotalCoinHoursSupply(ptr unsafe.Pointer, totalCoinHoursSupply C.int) {
 	if signal := qt.GetSignal(ptr, "setTotalCoinHoursSupply"); signal != nil {
-		(*(*func(int64))(signal))(int64(totalCoinHoursSupply))
+		(*(*func(int))(signal))(int(int32(totalCoinHoursSupply)))
 	} else {
-		NewBlockchainStatusModelFromPointer(ptr).SetTotalCoinHoursSupplyDefault(int64(totalCoinHoursSupply))
+		NewBlockchainStatusModelFromPointer(ptr).SetTotalCoinHoursSupplyDefault(int(int32(totalCoinHoursSupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) ConnectSetTotalCoinHoursSupply(f func(totalCoinHoursSupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectSetTotalCoinHoursSupply(f func(totalCoinHoursSupply int)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setTotalCoinHoursSupply"); signal != nil {
-			f := func(totalCoinHoursSupply int64) {
-				(*(*func(int64))(signal))(totalCoinHoursSupply)
+			f := func(totalCoinHoursSupply int) {
+				(*(*func(int))(signal))(totalCoinHoursSupply)
 				f(totalCoinHoursSupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setTotalCoinHoursSupply", unsafe.Pointer(&f))
@@ -965,27 +955,27 @@ func (ptr *BlockchainStatusModel) DisconnectSetTotalCoinHoursSupply() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetTotalCoinHoursSupply(totalCoinHoursSupply int64) {
+func (ptr *BlockchainStatusModel) SetTotalCoinHoursSupply(totalCoinHoursSupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetTotalCoinHoursSupply(ptr.Pointer(), C.longlong(totalCoinHoursSupply))
+		C.BlockchainStatusModel97d618_SetTotalCoinHoursSupply(ptr.Pointer(), C.int(int32(totalCoinHoursSupply)))
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetTotalCoinHoursSupplyDefault(totalCoinHoursSupply int64) {
+func (ptr *BlockchainStatusModel) SetTotalCoinHoursSupplyDefault(totalCoinHoursSupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetTotalCoinHoursSupplyDefault(ptr.Pointer(), C.longlong(totalCoinHoursSupply))
+		C.BlockchainStatusModel97d618_SetTotalCoinHoursSupplyDefault(ptr.Pointer(), C.int(int32(totalCoinHoursSupply)))
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_TotalCoinHoursSupplyChanged
-func callbackBlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(ptr unsafe.Pointer, totalCoinHoursSupply C.longlong) {
+func callbackBlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(ptr unsafe.Pointer, totalCoinHoursSupply C.int) {
 	if signal := qt.GetSignal(ptr, "totalCoinHoursSupplyChanged"); signal != nil {
-		(*(*func(int64))(signal))(int64(totalCoinHoursSupply))
+		(*(*func(int))(signal))(int(int32(totalCoinHoursSupply)))
 	}
 
 }
 
-func (ptr *BlockchainStatusModel) ConnectTotalCoinHoursSupplyChanged(f func(totalCoinHoursSupply int64)) {
+func (ptr *BlockchainStatusModel) ConnectTotalCoinHoursSupplyChanged(f func(totalCoinHoursSupply int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "totalCoinHoursSupplyChanged") {
@@ -993,8 +983,8 @@ func (ptr *BlockchainStatusModel) ConnectTotalCoinHoursSupplyChanged(f func(tota
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "totalCoinHoursSupplyChanged"); signal != nil {
-			f := func(totalCoinHoursSupply int64) {
-				(*(*func(int64))(signal))(totalCoinHoursSupply)
+			f := func(totalCoinHoursSupply int) {
+				(*(*func(int))(signal))(totalCoinHoursSupply)
 				f(totalCoinHoursSupply)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "totalCoinHoursSupplyChanged", unsafe.Pointer(&f))
@@ -1011,9 +1001,9 @@ func (ptr *BlockchainStatusModel) DisconnectTotalCoinHoursSupplyChanged() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) TotalCoinHoursSupplyChanged(totalCoinHoursSupply int64) {
+func (ptr *BlockchainStatusModel) TotalCoinHoursSupplyChanged(totalCoinHoursSupply int) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(ptr.Pointer(), C.longlong(totalCoinHoursSupply))
+		C.BlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(ptr.Pointer(), C.int(int32(totalCoinHoursSupply)))
 	}
 }
 
