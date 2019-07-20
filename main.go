@@ -1,23 +1,18 @@
 package main
 
-import (
-	"github.com/therecipe/qt/core"
-	"github.com/therecipe/qt/qml"
-	//"github.com/therecipe/qt/quick"
-	"github.com/therecipe/qt/widgets"
-	"os"
-)
+import "github.com/fibercrypto/FiberCryptoWallet/pkg/networking"
 
 func main() {
-	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
-
-
-	widgets.NewQApplication(len(os.Args), os.Args)
-
-	engine := qml.NewQQmlApplicationEngine(nil)
-	engine.Load(core.NewQUrl3("qml/main.qml", 0))
-
-	widgets.QApplication_Exec()
+	networking.GetDefaultConnections("http://localhost:6420")
+	//core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
+	//
+	//
+	//widgets.NewQApplication(len(os.Args), os.Args)
+	//
+	//engine := qml.NewQQmlApplicationEngine(nil)
+	//engine.Load(core.NewQUrl3("qml/main.qml", 0))
+	//
+	//widgets.QApplication_Exec()
 	//app := widgets.NewQApplication(len(os.Args), os.Args)
 	//view := quick.NewQQuickView(nil)
 	//view.SetTitle("gotemplate Example")
