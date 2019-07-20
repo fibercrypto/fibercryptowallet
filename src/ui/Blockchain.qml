@@ -2,23 +2,23 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
-// import BlockchainModels 1.0
+import BlockchainModels 1.0
 
 Page {
     id: root
     
-    // BlockchainStatusModel {
-    //     id: blockchain_status;
-    // }
+    BlockchainStatusModel {
+        id: blockchain_status
+    }
 
-    property int numberOfBlocks: 0 // blockchain_status.numberOfBlocks
-    property date timestampLastBlock: "2000-01-01 00:00" // blockchain_status.timestampLastBlock
-    property string hashLastBlock;//: blockchain_status.hashLastBlock
+    property int numberOfBlocks: blockchain_status.numberOfBlocks
+    property date timestampLastBlock: blockchain_status.timestampLastBlock
+    property string hashLastBlock: blockchain_status.hashLastBlock
 
-    property int currentSkySupply: 0 // blockchain_status.currentSkySupply
-    property int totalSkySupply: 0 // blockchain_status.totalSkySupply
-    property int currentCoinHoursSupply: 0 // blockchain_status.currentCoinHoursSupply
-    property int totalCoinHoursSupply: 0 // blockchain_status.totalCoinHoursSupply
+    property int currentSkySupply: blockchain_status.currentSkySupply
+    property int totalSkySupply: blockchain_status.totalSkySupply
+    property int currentCoinHoursSupply: blockchain_status.currentCoinHoursSupply
+    property int totalCoinHoursSupply: blockchain_status.totalCoinHoursSupply
 
     signal backRequested()
 
