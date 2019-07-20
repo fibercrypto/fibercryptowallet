@@ -4,7 +4,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
-import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Delegates"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 
 Item {
@@ -31,7 +31,7 @@ Item {
             width: ListView.view.width
             height: delegateHeight + addressListHeight
             Component.onCompleted: {
-                ListView.view.height += delegateHeight*3
+                ListView.view.height += delegateHeight
                 if (index === count - 1) {
                     ListView.view.height += 42
                 }
