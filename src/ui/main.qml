@@ -7,6 +7,7 @@ import QtQuick.Controls 2.12
 import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
 ApplicationWindow {
+    id: applicationWindow
     visible: true
     width: 680
     height: 580
