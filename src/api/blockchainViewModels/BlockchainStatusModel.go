@@ -1,8 +1,7 @@
 package blockchainViewModels
 
 import (
-	"time"
-
+	"github.com/skycoin/skycoin/src/api"
 	"github.com/therecipe/qt/core"
 )
 
@@ -44,25 +43,52 @@ func (bs *BlockchainStatusModel) init() {
 	return
 }
 
+//NewClient returns a new client
+func NewClient() *api.Client {
+	addr := "http://127.0.0.1:38391" //
+	return api.NewClient(addr)
+}
+
 // updateInfo request the needed information
 func (bs *BlockchainStatusModel) updateInfo() error {
 	// TODO: api work
-	dt := time.Now()
-	year, _, day := dt.Date() //month problem
-	month := 6
-	h, m, _ := dt.Clock()
+
+	c := NewClient()
+
+	blocks, err := c.LastBlocks(1)
+	if err != nil {
+		return err
+	}
+
+	lastBlock := blocks.Blocks[0]
+	numberOfBlocks := 1 // TODO: number of blocks?
+	lastBlockHash := lastBlock.Head.Hash
+	// timeStampLastBlock := lastBlock.Head.Time //TODO: how to extract the time from it
+
+	year, month, day := 2000, 6, 25
+	h, m, _ := 12, 12, 0
+
+	// coinSup, err := c.CoinSupply()
+	if err != nil {
+		return err
+	}
+
+	currentSkySupply := 123      //(*coinSup).CurrentSupply // TODO: Parse int
+	totalSkySupply := 211        //(*coinSup).TotalSupply
+	currentCoinHoursSupply := 12 //(*coinSup).CurrentCoinHourSupply
+	totalCoinHoursSupply := 122  //(*coinSup).TotalCoinHourSupply
 
 	// block details
 	println("updated-status")
-	bs.SetNumberOfBlocks(2)
+	bs.SetNumberOfBlocks(numberOfBlocks)
 	bs.SetTimestampLastBlock(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, 0, 0), core.Qt__LocalTime)) //TODO: datetime
-	bs.SetHashLastBlock("12312312323123123123")
+	bs.SetHashLastBlock(lastBlockHash)
 
 	// sky details
-	bs.SetCurrentSkySupply(123)
-	bs.SetTotalSkySupply(211)
-	bs.SetCurrentCoinHoursSupply(12)
-	bs.SetTotalCoinHoursSupply(123)
+	bs.SetCurrentSkySupply(currentSkySupply)
+	bs.SetTotalSkySupply(totalSkySupply)
+	bs.SetCurrentCoinHoursSupply(currentCoinHoursSupply)
+	bs.SetTotalCoinHoursSupply(totalCoinHoursSupply)
 
 	return nil
 }
