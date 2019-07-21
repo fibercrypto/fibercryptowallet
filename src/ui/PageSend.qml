@@ -3,6 +3,9 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+import "qrc:/ui/src/ui/Dialogs"
+
 Page {
     id: root
 
@@ -17,7 +20,7 @@ Page {
             id: buttonAddWallet
             anchors.fill: parent
             text: qsTr("Send")
-            icon.source: "qrc:/images/icons/send.svg"
+            icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
                 dialogSend.open()

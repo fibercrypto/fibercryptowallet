@@ -21,7 +21,7 @@ Page {
         spacing: 20
         ToolButton {
             id: toolButtonBack
-            icon.source: "qrc:/images/icons/back.svg"
+            icon.source: "qrc:/images/resources/images/icons/back.svg"
             Layout.alignment: Qt.AlignLeft
 
             onClicked: {

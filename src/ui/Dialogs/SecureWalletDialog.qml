@@ -26,7 +26,7 @@ Dialog {
             spacing: 50
             Image {
                 id: icon
-                source: "qrc:/images/icons/security.svg"
+                source: "qrc:/images/resources/images/icons/security.svg"
                 sourceSize: "72x72"
                 Layout.alignment: Qt.AlignTop
             }
