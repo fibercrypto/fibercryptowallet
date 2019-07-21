@@ -10,32 +10,21 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 Item {
     id: root
 
-    readonly property real delegateHeight: 48
     readonly property alias count: listViewFilters.count
     property alias interactive: listViewFilters.interactive
+    property alias contentHeight: listViewFilters.contentHeight
 
-    implicitWidth: listViewFilters.width
-    implicitHeight: listViewFilters.height
     clip: true
 
     ListView {
         id: listViewFilters
+        anchors.fill: parent
 
-        spacing: 20
-        width: 400
-        clip: true
+        spacing: 10
 
         model: modelFilters
         delegate: HistoryFilterListDelegate {
             id: filterDelegate
-            width: ListView.view.width
-            height: delegateHeight + addressListHeight
-            Component.onCompleted: {
-                ListView.view.height += delegateHeight
-                if (index === count - 1) {
-                    ListView.view.height += 42
-                }
-            }
         }
     }
 

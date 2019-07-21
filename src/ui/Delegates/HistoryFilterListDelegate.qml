@@ -11,8 +11,13 @@ Item {
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
 
+    clip: true
+    width: 300
+    height: checkDelegate.height + columnLayout.spacing + listViewFilterAddress.height
+
     ColumnLayout {
-        width: root.width
+        id: columnLayout
+        anchors.fill: parent
 
         CheckDelegate {
             id: checkDelegate
@@ -65,12 +70,11 @@ Item {
             Layout.fillWidth: true
             height: count * delegateHeight
 
+            interactive: false
             model: listAddresses
             delegate: HistoryFilterListAddressDelegate {
-                width: ListView.view.width
-                height: delegateHeight
-                leftPadding: 30
-                scale: 0.875
+                leftPadding: 20
+                scale: 0.85
                 checked: ListView.view.allChecked
 
                 onCheckedChanged: {

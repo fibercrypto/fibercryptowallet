@@ -57,36 +57,20 @@ Page {
         id: toolTipFilters
 
         anchors.centerIn: Overlay.overlay
-        height: 16 + (filter.count > 5 ? filter.delegateHeight * 5 : filter.delegateHeight * filter.count)
-        width: 350
-        clip: true
+
+        readonly property real minimumHeight: Math.min(applicationWindow.height - 100, filter.contentHeight + 150)
+        width: 300
+        height: minimumHeight
+
         modal: true
+        standardButtons: Dialog.Close
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        title: qsTr("Available filters")
 
-        ColumnLayout {
+        HistoryFilterList {
+            id: filter
             anchors.fill: parent
-
-            Label {
-                font.pointSize: Qt.application.font.pointSize * 1.25
-                font.bold: true
-                text: qsTr("Available filters")
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-            }
-
-            ScrollView {
-                id: scrollView
-                Layout.alignment: Qt.AlignCenter
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-                contentHeight: filter.height
-                contentWidth: filter.width
-                HistoryFilterList {
-                    id: filter
-                    interactive: false
-                }
-            }
-        } // ColumnLayout
+        }
     } // ToolTip
 
     DialogTransactionDetails {
