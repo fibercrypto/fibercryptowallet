@@ -1,6 +1,10 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 
+// Resource imports
+import "qrc:/ui/src/ui/"
+import "qrc:/ui/src/ui/Dialogs"
+
 ApplicationWindow {
     visible: true
     width: 680
@@ -20,7 +24,7 @@ ApplicationWindow {
         Menu {
             id: menuHelp
             title: qsTr("&Help")
-            MenuItem { text: qsTr("About FiberCripto") }
+            MenuItem { text: qsTr("About FiberCrypto"); onClicked: dialogAbout.open() }
             MenuItem { text: qsTr("About Qt"); onClicked: dialogAboutQt.open() }
         }
     }
@@ -30,15 +34,29 @@ ApplicationWindow {
         anchors.fill: parent
     }
 
-    // About
+    //! Dialogs
+
+    // Help dialogs
+
     DialogAbout {
         id: dialogAbout
-        anchors.centerIn: Overlay.overlay
-        modal: true
+
+        readonly property real minimumParentSideSize: Math.min(parent.width, parent.height)
+
+        parent: Overlay.overlay
+        anchors.centerIn: parent
+        width: (minimumParentSideSize / 3) * 2
+        height: (parent.height / 3) * 2
     }
+
     DialogAboutQt {
         id: dialogAboutQt
-        anchors.centerIn: Overlay.overlay
-        modal: true
+
+        readonly property real minimumParentSideSize: Math.min(parent.width, parent.height)
+
+        parent: Overlay.overlay
+        anchors.centerIn: parent
+        width: (minimumParentSideSize / 3) * 2
+        height: (parent.height / 3) * 2
     }
 }
