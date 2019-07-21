@@ -1,9 +1,15 @@
 package blockchainViewModels
 
 import (
+	"strconv"
+
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/therecipe/qt/core"
 )
+
+func init() {
+	BlockchainStatusModel_QmlRegisterType2("BlockchainModels", 1, 0, "BlockchainStatusModel")
+}
 
 // BlockchainStatusModel Contains info about the blockchain to be show.
 type BlockchainStatusModel struct {
@@ -17,10 +23,6 @@ type BlockchainStatusModel struct {
 	_ int             `property:"totalSkySupply"`
 	_ int             `property:"currentCoinHoursSupply"`
 	_ int             `property:"totalCoinHoursSupply"`
-}
-
-func init() {
-	BlockchainStatusModel_QmlRegisterType2("BlockchainModels", 1, 0, "BlockchainStatusModel")
 }
 
 func (bs *BlockchainStatusModel) init() {
@@ -38,6 +40,7 @@ func (bs *BlockchainStatusModel) init() {
 
 	// update info
 	if err := bs.updateInfo(); err != nil {
+		println(err.Error())
 		return
 	}
 	return
@@ -45,7 +48,7 @@ func (bs *BlockchainStatusModel) init() {
 
 //NewClient returns a new client
 func NewClient() *api.Client {
-	addr := "http://127.0.0.1:38391" //
+	addr := "http://127.0.0.1:38391" // example only
 	return api.NewClient(addr)
 }
 
@@ -60,7 +63,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 		return err
 	}
 
-	lastBlock := blocks.Blocks[0]
+	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
 	numberOfBlocks := 1 // TODO: number of blocks?
 	lastBlockHash := lastBlock.Head.Hash
 	// timeStampLastBlock := lastBlock.Head.Time //TODO: how to extract the time from it
@@ -68,18 +71,37 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	year, month, day := 2000, 6, 25
 	h, m, _ := 12, 12, 0
 
-	// coinSup, err := c.CoinSupply()
+	coinSup, err := c.CoinSupply()
 	if err != nil {
 		return err
 	}
 
-	currentSkySupply := 123      //(*coinSup).CurrentSupply // TODO: Parse int
-	totalSkySupply := 211        //(*coinSup).TotalSupply
-	currentCoinHoursSupply := 12 //(*coinSup).CurrentCoinHourSupply
-	totalCoinHoursSupply := 122  //(*coinSup).TotalCoinHourSupply
+	// TODO: what i supose to use int or float to representate money values
+	// TODO: resolve conflicts with int64 and qlonglong
+	//
+	_currentSkySupply, err := strconv.ParseInt((*coinSup).CurrentSupply, 10, 0)
+	if err != nil {
+		return err
+	}
+	currentSkySupply := int(_currentSkySupply)
+	_totalSkySupply, err := strconv.ParseInt((*coinSup).TotalSupply, 10, 0)
+	if err != nil {
+		return err
+	}
+	totalSkySupply := int(_totalSkySupply)
+	_currentCoinHoursSupply, err := strconv.ParseInt((*coinSup).CurrentCoinHourSupply, 10, 0)
+	if err != nil {
+		return err
+	}
+	currentCoinHoursSupply := int(_currentCoinHoursSupply)
+
+	_totalCoinHoursSupply, err := strconv.ParseInt((*coinSup).TotalCoinHourSupply, 10, 0)
+	if err != nil {
+		return err
+	}
+	totalCoinHoursSupply := int(_totalCoinHoursSupply)
 
 	// block details
-	println("updated-status")
 	bs.SetNumberOfBlocks(numberOfBlocks)
 	bs.SetTimestampLastBlock(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, 0, 0), core.Qt__LocalTime)) //TODO: datetime
 	bs.SetHashLastBlock(lastBlockHash)
@@ -89,6 +111,8 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	bs.SetTotalSkySupply(totalSkySupply)
 	bs.SetCurrentCoinHoursSupply(currentCoinHoursSupply)
 	bs.SetTotalCoinHoursSupply(totalCoinHoursSupply)
+
+	println("Status-updated")
 
 	return nil
 }
