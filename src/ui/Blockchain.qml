@@ -15,10 +15,10 @@ Page {
     property date timestampLastBlock: blockchain_status.timestampLastBlock
     property string hashLastBlock: blockchain_status.hashLastBlock
 
-    property int currentSkySupply: blockchain_status.currentSkySupply
-    property int totalSkySupply: blockchain_status.totalSkySupply
-    property int currentCoinHoursSupply: blockchain_status.currentCoinHoursSupply
-    property int totalCoinHoursSupply: blockchain_status.totalCoinHoursSupply
+    property string currentSkySupply: blockchain_status.currentSkySupply
+    property string totalSkySupply: blockchain_status.totalSkySupply
+    property string currentCoinHoursSupply: blockchain_status.currentCoinHoursSupply
+    property string totalCoinHoursSupply: blockchain_status.totalCoinHoursSupply
 
     signal backRequested()
 
