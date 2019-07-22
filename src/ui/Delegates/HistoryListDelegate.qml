@@ -16,7 +16,7 @@ ItemDelegate {
     property real modelAmount: amount
     property int modelHoursReceived: hoursReceived
     property int modelHoursBurned: hoursBurned
-    property string modelTransactionID
+    property string modelTransactionID: transactionID
 
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
