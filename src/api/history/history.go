@@ -41,8 +41,6 @@ type Address struct {
 type TransactionDetails struct {
 	core.QObject
 
-	// _ func() `constructor:"init"`
-
 	_ string `property:"date"`
 	_ int    `property:"status"`
 	_ int    `property:"type"`
@@ -53,18 +51,6 @@ type TransactionDetails struct {
 	_ string `property:"sentAddress"`
 	_ string `property:"receivedAddress"`
 }
-
-// func (td *TransactionDetails) init() {
-// 	td.SetProperty("date", core.NewQVariant12("2000-01-01"))
-// 	td.SetProperty("status", core.NewQVariant5(transactionStatusConfirmed))
-// 	td.SetProperty("type", core.NewQVariant5(transactionTypeReceive))
-// 	td.SetProperty("amount", core.NewQVariant5(100))
-// 	td.SetProperty("hoursReceived", core.NewQVariant5(100))
-// 	td.SetProperty("hoursBurned", core.NewQVariant5(100))
-// 	td.SetProperty("transactionID", core.NewQVariant12("transactionID"))
-// 	td.SetProperty("sentAddress", core.NewQVariant12("addrexample1"))
-// 	td.SetProperty("receivedAddress", core.NewQVariant12("addrexample2"))
-// }
 
 type HistoryModel struct {
 	core.QAbstractListModel
@@ -95,17 +81,7 @@ func (hm *HistoryModel) init() {
 	hm.ConnectData(hm.data)
 	hm.ConnectRoleNames(hm.roleNames)
 
-	td := NewTransactionDetails(nil)
-	td.SetDate("2000-01-01")
-	td.SetStatus(transactionStatusConfirmed)
-	td.SetType(transactionTypeReceive)
-	td.SetAmount(100)
-	td.SetHoursReceived(100)
-	td.SetHoursBurned(100)
-	td.SetTransactionID("transactionID")
-	td.SetSentAddress("addrexample1")
-	td.SetReceivedAddress("addrexample2")
-	hm.addTransaction(td)
+	addExamples(hm)
 }
 
 func (hm *HistoryModel) rowCount(*core.QModelIndex) int {
@@ -171,4 +147,18 @@ func (hm *HistoryModel) data(index *core.QModelIndex, role int) *core.QVariant {
 			return core.NewQVariant()
 		}
 	}
+}
+
+func addExamples(hm *HistoryModel) {
+	td := NewTransactionDetails(nil)
+	td.SetDate("2000-01-01 00:00")
+	td.SetStatus(transactionStatusPending)
+	td.SetType(transactionTypeSend)
+	td.SetAmount(100)
+	td.SetHoursReceived(100)
+	td.SetHoursBurned(100)
+	td.SetTransactionID("transactionID")
+	td.SetSentAddress("addrexample1")
+	td.SetReceivedAddress("addrexample2")
+	hm.addTransaction(td)
 }

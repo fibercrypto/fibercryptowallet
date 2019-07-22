@@ -34,106 +34,6 @@
 
 
 typedef QMap<qint32, QByteArray> type378cdd;
-class HistoryModel8ba275: public QAbstractListModel
-{
-Q_OBJECT
-Q_PROPERTY(type378cdd roles READ roles WRITE setRoles NOTIFY rolesChanged)
-Q_PROPERTY(QList<TransactionDetails8ba275*> transactions READ transactions WRITE setTransactions NOTIFY transactionsChanged)
-public:
-	HistoryModel8ba275(QObject *parent = Q_NULLPTR) : QAbstractListModel(parent) {qRegisterMetaType<quintptr>("quintptr");HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaType();HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes();callbackHistoryModel8ba275_Constructor(this);};
-	void Signal_AddTransaction(TransactionDetails8ba275* transaction) { callbackHistoryModel8ba275_AddTransaction(this, transaction); };
-	type378cdd roles() { return ({ QMap<qint32, QByteArray>* tmpP = static_cast<QMap<qint32, QByteArray>*>(callbackHistoryModel8ba275_Roles(this)); QMap<qint32, QByteArray> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
-	void setRoles(type378cdd roles) { callbackHistoryModel8ba275_SetRoles(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	void Signal_RolesChanged(type378cdd roles) { callbackHistoryModel8ba275_RolesChanged(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	QList<TransactionDetails8ba275*> transactions() { return ({ QList<TransactionDetails8ba275*>* tmpP = static_cast<QList<TransactionDetails8ba275*>*>(callbackHistoryModel8ba275_Transactions(this)); QList<TransactionDetails8ba275*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
-	void setTransactions(QList<TransactionDetails8ba275*> transactions) { callbackHistoryModel8ba275_SetTransactions(this, ({ QList<TransactionDetails8ba275*>* tmpValue = new QList<TransactionDetails8ba275*>(transactions); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	void Signal_TransactionsChanged(QList<TransactionDetails8ba275*> transactions) { callbackHistoryModel8ba275_TransactionsChanged(this, ({ QList<TransactionDetails8ba275*>* tmpValue = new QList<TransactionDetails8ba275*>(transactions); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	 ~HistoryModel8ba275() { callbackHistoryModel8ba275_DestroyHistoryModel(this); };
-	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) { return callbackHistoryModel8ba275_DropMimeData(this, const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
-	Qt::ItemFlags flags(const QModelIndex & index) const { return static_cast<Qt::ItemFlag>(callbackHistoryModel8ba275_Flags(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
-	QModelIndex index(int row, int column, const QModelIndex & parent) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Index(const_cast<void*>(static_cast<const void*>(this)), row, column, const_cast<QModelIndex*>(&parent))); };
-	QModelIndex sibling(int row, int column, const QModelIndex & idx) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Sibling(const_cast<void*>(static_cast<const void*>(this)), row, column, const_cast<QModelIndex*>(&idx))); };
-	QModelIndex buddy(const QModelIndex & index) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Buddy(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
-	bool canDropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const { return callbackHistoryModel8ba275_CanDropMimeData(const_cast<void*>(static_cast<const void*>(this)), const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
-	bool canFetchMore(const QModelIndex & parent) const { return callbackHistoryModel8ba275_CanFetchMore(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)) != 0; };
-	int columnCount(const QModelIndex & parent) const { return callbackHistoryModel8ba275_ColumnCount(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)); };
-	void Signal_ColumnsAboutToBeInserted(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsAboutToBeInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_ColumnsAboutToBeMoved(const QModelIndex & sourceParent, int sourceStart, int sourceEnd, const QModelIndex & destinationParent, int destinationColumn) { callbackHistoryModel8ba275_ColumnsAboutToBeMoved(this, const_cast<QModelIndex*>(&sourceParent), sourceStart, sourceEnd, const_cast<QModelIndex*>(&destinationParent), destinationColumn); };
-	void Signal_ColumnsAboutToBeRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsAboutToBeRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_ColumnsInserted(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_ColumnsMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int column) { callbackHistoryModel8ba275_ColumnsMoved(this, const_cast<QModelIndex*>(&parent), start, end, const_cast<QModelIndex*>(&destination), column); };
-	void Signal_ColumnsRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
-	QVariant data(const QModelIndex & index, int role) const { return *static_cast<QVariant*>(callbackHistoryModel8ba275_Data(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index), role)); };
-	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackHistoryModel8ba275_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = new QVector<int>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	void fetchMore(const QModelIndex & parent) { callbackHistoryModel8ba275_FetchMore(this, const_cast<QModelIndex*>(&parent)); };
-	bool hasChildren(const QModelIndex & parent) const { return callbackHistoryModel8ba275_HasChildren(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)) != 0; };
-	QVariant headerData(int section, Qt::Orientation orientation, int role) const { return *static_cast<QVariant*>(callbackHistoryModel8ba275_HeaderData(const_cast<void*>(static_cast<const void*>(this)), section, orientation, role)); };
-	void Signal_HeaderDataChanged(Qt::Orientation orientation, int first, int last) { callbackHistoryModel8ba275_HeaderDataChanged(this, orientation, first, last); };
-	bool insertColumns(int column, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_InsertColumns(this, column, count, const_cast<QModelIndex*>(&parent)) != 0; };
-	bool insertRows(int row, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_InsertRows(this, row, count, const_cast<QModelIndex*>(&parent)) != 0; };
-	QMap<int, QVariant> itemData(const QModelIndex & index) const { return ({ QMap<int, QVariant>* tmpP = static_cast<QMap<int, QVariant>*>(callbackHistoryModel8ba275_ItemData(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); QMap<int, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
-	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackHistoryModel8ba275_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); Moc_PackedList { tmpValue, tmpValue->size() }; }), hint); };
-	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackHistoryModel8ba275_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); Moc_PackedList { tmpValue, tmpValue->size() }; }), hint); };
-	QList<QModelIndex> match(const QModelIndex & start, int role, const QVariant & value, int hits, Qt::MatchFlags flags) const { return ({ QList<QModelIndex>* tmpP = static_cast<QList<QModelIndex>*>(callbackHistoryModel8ba275_Match(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&start), role, const_cast<QVariant*>(&value), hits, flags)); QList<QModelIndex> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
-	QMimeData * mimeData(const QModelIndexList & indexes) const { return static_cast<QMimeData*>(callbackHistoryModel8ba275_MimeData(const_cast<void*>(static_cast<const void*>(this)), ({ QList<QModelIndex>* tmpValue = new QList<QModelIndex>(indexes); Moc_PackedList { tmpValue, tmpValue->size() }; }))); };
-	QStringList mimeTypes() const { return ({ Moc_PackedString tempVal = callbackHistoryModel8ba275_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
-	void Signal_ModelAboutToBeReset() { callbackHistoryModel8ba275_ModelAboutToBeReset(this); };
-	void Signal_ModelReset() { callbackHistoryModel8ba275_ModelReset(this); };
-	bool moveColumns(const QModelIndex & sourceParent, int sourceColumn, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackHistoryModel8ba275_MoveColumns(this, const_cast<QModelIndex*>(&sourceParent), sourceColumn, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
-	bool moveRows(const QModelIndex & sourceParent, int sourceRow, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackHistoryModel8ba275_MoveRows(this, const_cast<QModelIndex*>(&sourceParent), sourceRow, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
-	QModelIndex parent(const QModelIndex & index) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Parent(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
-	bool removeColumns(int column, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_RemoveColumns(this, column, count, const_cast<QModelIndex*>(&parent)) != 0; };
-	bool removeRows(int row, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_RemoveRows(this, row, count, const_cast<QModelIndex*>(&parent)) != 0; };
-	void resetInternalData() { callbackHistoryModel8ba275_ResetInternalData(this); };
-	void revert() { callbackHistoryModel8ba275_Revert(this); };
-	QHash<int, QByteArray> roleNames() const { return ({ QHash<int, QByteArray>* tmpP = static_cast<QHash<int, QByteArray>*>(callbackHistoryModel8ba275_RoleNames(const_cast<void*>(static_cast<const void*>(this)))); QHash<int, QByteArray> tmpV = *tmpP; tmpP->~QHash(); free(tmpP); tmpV; }); };
-	int rowCount(const QModelIndex & parent) const { return callbackHistoryModel8ba275_RowCount(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)); };
-	void Signal_RowsAboutToBeInserted(const QModelIndex & parent, int start, int end) { callbackHistoryModel8ba275_RowsAboutToBeInserted(this, const_cast<QModelIndex*>(&parent), start, end); };
-	void Signal_RowsAboutToBeMoved(const QModelIndex & sourceParent, int sourceStart, int sourceEnd, const QModelIndex & destinationParent, int destinationRow) { callbackHistoryModel8ba275_RowsAboutToBeMoved(this, const_cast<QModelIndex*>(&sourceParent), sourceStart, sourceEnd, const_cast<QModelIndex*>(&destinationParent), destinationRow); };
-	void Signal_RowsAboutToBeRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_RowsAboutToBeRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_RowsInserted(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_RowsInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
-	void Signal_RowsMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int row) { callbackHistoryModel8ba275_RowsMoved(this, const_cast<QModelIndex*>(&parent), start, end, const_cast<QModelIndex*>(&destination), row); };
-	void Signal_RowsRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_RowsRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
-	bool setData(const QModelIndex & index, const QVariant & value, int role) { return callbackHistoryModel8ba275_SetData(this, const_cast<QModelIndex*>(&index), const_cast<QVariant*>(&value), role) != 0; };
-	bool setHeaderData(int section, Qt::Orientation orientation, const QVariant & value, int role) { return callbackHistoryModel8ba275_SetHeaderData(this, section, orientation, const_cast<QVariant*>(&value), role) != 0; };
-	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackHistoryModel8ba275_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = new QMap<int, QVariant>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
-	void sort(int column, Qt::SortOrder order) { callbackHistoryModel8ba275_Sort(this, column, order); };
-	QSize span(const QModelIndex & index) const { return *static_cast<QSize*>(callbackHistoryModel8ba275_Span(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
-	bool submit() { return callbackHistoryModel8ba275_Submit(this) != 0; };
-	Qt::DropActions supportedDragActions() const { return static_cast<Qt::DropAction>(callbackHistoryModel8ba275_SupportedDragActions(const_cast<void*>(static_cast<const void*>(this)))); };
-	Qt::DropActions supportedDropActions() const { return static_cast<Qt::DropAction>(callbackHistoryModel8ba275_SupportedDropActions(const_cast<void*>(static_cast<const void*>(this)))); };
-	void childEvent(QChildEvent * event) { callbackHistoryModel8ba275_ChildEvent(this, event); };
-	void connectNotify(const QMetaMethod & sign) { callbackHistoryModel8ba275_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	void customEvent(QEvent * event) { callbackHistoryModel8ba275_CustomEvent(this, event); };
-	void deleteLater() { callbackHistoryModel8ba275_DeleteLater(this); };
-	void Signal_Destroyed(QObject * obj) { callbackHistoryModel8ba275_Destroyed(this, obj); };
-	void disconnectNotify(const QMetaMethod & sign) { callbackHistoryModel8ba275_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	bool event(QEvent * e) { return callbackHistoryModel8ba275_Event(this, e) != 0; };
-	bool eventFilter(QObject * watched, QEvent * event) { return callbackHistoryModel8ba275_EventFilter(this, watched, event) != 0; };
-	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackHistoryModel8ba275_ObjectNameChanged(this, objectNamePacked); };
-	void timerEvent(QTimerEvent * event) { callbackHistoryModel8ba275_TimerEvent(this, event); };
-	type378cdd rolesDefault() { return _roles; };
-	void setRolesDefault(type378cdd p) { if (p != _roles) { _roles = p; rolesChanged(_roles); } };
-	QList<TransactionDetails8ba275*> transactionsDefault() { return _transactions; };
-	void setTransactionsDefault(QList<TransactionDetails8ba275*> p) { if (p != _transactions) { _transactions = p; transactionsChanged(_transactions); } };
-signals:
-	void addTransaction(TransactionDetails8ba275* transaction);
-	void rolesChanged(type378cdd roles);
-	void transactionsChanged(QList<TransactionDetails8ba275*> transactions);
-public slots:
-private:
-	type378cdd _roles;
-	QList<TransactionDetails8ba275*> _transactions;
-};
-
-Q_DECLARE_METATYPE(HistoryModel8ba275*)
-
-
-void HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes() {
-	qRegisterMetaType<type378cdd>("type378cdd");
-	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetails8ba275*>");
-}
-
 class TransactionDetails8ba275: public QObject
 {
 Q_OBJECT
@@ -232,6 +132,106 @@ Q_DECLARE_METATYPE(TransactionDetails8ba275*)
 
 void TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaTypes() {
 	qRegisterMetaType<QString>();
+}
+
+class HistoryModel8ba275: public QAbstractListModel
+{
+Q_OBJECT
+Q_PROPERTY(type378cdd roles READ roles WRITE setRoles NOTIFY rolesChanged)
+Q_PROPERTY(QList<TransactionDetails8ba275*> transactions READ transactions WRITE setTransactions NOTIFY transactionsChanged)
+public:
+	HistoryModel8ba275(QObject *parent = Q_NULLPTR) : QAbstractListModel(parent) {qRegisterMetaType<quintptr>("quintptr");HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaType();HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes();callbackHistoryModel8ba275_Constructor(this);};
+	void Signal_AddTransaction(TransactionDetails8ba275* transaction) { callbackHistoryModel8ba275_AddTransaction(this, transaction); };
+	type378cdd roles() { return ({ QMap<qint32, QByteArray>* tmpP = static_cast<QMap<qint32, QByteArray>*>(callbackHistoryModel8ba275_Roles(this)); QMap<qint32, QByteArray> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
+	void setRoles(type378cdd roles) { callbackHistoryModel8ba275_SetRoles(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_RolesChanged(type378cdd roles) { callbackHistoryModel8ba275_RolesChanged(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	QList<TransactionDetails8ba275*> transactions() { return ({ QList<TransactionDetails8ba275*>* tmpP = static_cast<QList<TransactionDetails8ba275*>*>(callbackHistoryModel8ba275_Transactions(this)); QList<TransactionDetails8ba275*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	void setTransactions(QList<TransactionDetails8ba275*> transactions) { callbackHistoryModel8ba275_SetTransactions(this, ({ QList<TransactionDetails8ba275*>* tmpValue = new QList<TransactionDetails8ba275*>(transactions); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_TransactionsChanged(QList<TransactionDetails8ba275*> transactions) { callbackHistoryModel8ba275_TransactionsChanged(this, ({ QList<TransactionDetails8ba275*>* tmpValue = new QList<TransactionDetails8ba275*>(transactions); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	 ~HistoryModel8ba275() { callbackHistoryModel8ba275_DestroyHistoryModel(this); };
+	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) { return callbackHistoryModel8ba275_DropMimeData(this, const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
+	Qt::ItemFlags flags(const QModelIndex & index) const { return static_cast<Qt::ItemFlag>(callbackHistoryModel8ba275_Flags(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
+	QModelIndex index(int row, int column, const QModelIndex & parent) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Index(const_cast<void*>(static_cast<const void*>(this)), row, column, const_cast<QModelIndex*>(&parent))); };
+	QModelIndex sibling(int row, int column, const QModelIndex & idx) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Sibling(const_cast<void*>(static_cast<const void*>(this)), row, column, const_cast<QModelIndex*>(&idx))); };
+	QModelIndex buddy(const QModelIndex & index) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Buddy(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
+	bool canDropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) const { return callbackHistoryModel8ba275_CanDropMimeData(const_cast<void*>(static_cast<const void*>(this)), const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
+	bool canFetchMore(const QModelIndex & parent) const { return callbackHistoryModel8ba275_CanFetchMore(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)) != 0; };
+	int columnCount(const QModelIndex & parent) const { return callbackHistoryModel8ba275_ColumnCount(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)); };
+	void Signal_ColumnsAboutToBeInserted(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsAboutToBeInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
+	void Signal_ColumnsAboutToBeMoved(const QModelIndex & sourceParent, int sourceStart, int sourceEnd, const QModelIndex & destinationParent, int destinationColumn) { callbackHistoryModel8ba275_ColumnsAboutToBeMoved(this, const_cast<QModelIndex*>(&sourceParent), sourceStart, sourceEnd, const_cast<QModelIndex*>(&destinationParent), destinationColumn); };
+	void Signal_ColumnsAboutToBeRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsAboutToBeRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
+	void Signal_ColumnsInserted(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
+	void Signal_ColumnsMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int column) { callbackHistoryModel8ba275_ColumnsMoved(this, const_cast<QModelIndex*>(&parent), start, end, const_cast<QModelIndex*>(&destination), column); };
+	void Signal_ColumnsRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_ColumnsRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
+	QVariant data(const QModelIndex & index, int role) const { return *static_cast<QVariant*>(callbackHistoryModel8ba275_Data(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index), role)); };
+	void Signal_DataChanged(const QModelIndex & topLeft, const QModelIndex & bottomRight, const QVector<int> & roles) { callbackHistoryModel8ba275_DataChanged(this, const_cast<QModelIndex*>(&topLeft), const_cast<QModelIndex*>(&bottomRight), ({ QVector<int>* tmpValue = new QVector<int>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	void fetchMore(const QModelIndex & parent) { callbackHistoryModel8ba275_FetchMore(this, const_cast<QModelIndex*>(&parent)); };
+	bool hasChildren(const QModelIndex & parent) const { return callbackHistoryModel8ba275_HasChildren(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)) != 0; };
+	QVariant headerData(int section, Qt::Orientation orientation, int role) const { return *static_cast<QVariant*>(callbackHistoryModel8ba275_HeaderData(const_cast<void*>(static_cast<const void*>(this)), section, orientation, role)); };
+	void Signal_HeaderDataChanged(Qt::Orientation orientation, int first, int last) { callbackHistoryModel8ba275_HeaderDataChanged(this, orientation, first, last); };
+	bool insertColumns(int column, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_InsertColumns(this, column, count, const_cast<QModelIndex*>(&parent)) != 0; };
+	bool insertRows(int row, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_InsertRows(this, row, count, const_cast<QModelIndex*>(&parent)) != 0; };
+	QMap<int, QVariant> itemData(const QModelIndex & index) const { return ({ QMap<int, QVariant>* tmpP = static_cast<QMap<int, QVariant>*>(callbackHistoryModel8ba275_ItemData(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); QMap<int, QVariant> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
+	void Signal_LayoutAboutToBeChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackHistoryModel8ba275_LayoutAboutToBeChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); Moc_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	void Signal_LayoutChanged(const QList<QPersistentModelIndex> & parents, QAbstractItemModel::LayoutChangeHint hint) { callbackHistoryModel8ba275_LayoutChanged(this, ({ QList<QPersistentModelIndex>* tmpValue = new QList<QPersistentModelIndex>(parents); Moc_PackedList { tmpValue, tmpValue->size() }; }), hint); };
+	QList<QModelIndex> match(const QModelIndex & start, int role, const QVariant & value, int hits, Qt::MatchFlags flags) const { return ({ QList<QModelIndex>* tmpP = static_cast<QList<QModelIndex>*>(callbackHistoryModel8ba275_Match(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&start), role, const_cast<QVariant*>(&value), hits, flags)); QList<QModelIndex> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	QMimeData * mimeData(const QModelIndexList & indexes) const { return static_cast<QMimeData*>(callbackHistoryModel8ba275_MimeData(const_cast<void*>(static_cast<const void*>(this)), ({ QList<QModelIndex>* tmpValue = new QList<QModelIndex>(indexes); Moc_PackedList { tmpValue, tmpValue->size() }; }))); };
+	QStringList mimeTypes() const { return ({ Moc_PackedString tempVal = callbackHistoryModel8ba275_MimeTypes(const_cast<void*>(static_cast<const void*>(this))); QStringList ret = QString::fromUtf8(tempVal.data, tempVal.len).split("¡¦!", QString::SkipEmptyParts); free(tempVal.data); ret; }); };
+	void Signal_ModelAboutToBeReset() { callbackHistoryModel8ba275_ModelAboutToBeReset(this); };
+	void Signal_ModelReset() { callbackHistoryModel8ba275_ModelReset(this); };
+	bool moveColumns(const QModelIndex & sourceParent, int sourceColumn, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackHistoryModel8ba275_MoveColumns(this, const_cast<QModelIndex*>(&sourceParent), sourceColumn, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
+	bool moveRows(const QModelIndex & sourceParent, int sourceRow, int count, const QModelIndex & destinationParent, int destinationChild) { return callbackHistoryModel8ba275_MoveRows(this, const_cast<QModelIndex*>(&sourceParent), sourceRow, count, const_cast<QModelIndex*>(&destinationParent), destinationChild) != 0; };
+	QModelIndex parent(const QModelIndex & index) const { return *static_cast<QModelIndex*>(callbackHistoryModel8ba275_Parent(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
+	bool removeColumns(int column, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_RemoveColumns(this, column, count, const_cast<QModelIndex*>(&parent)) != 0; };
+	bool removeRows(int row, int count, const QModelIndex & parent) { return callbackHistoryModel8ba275_RemoveRows(this, row, count, const_cast<QModelIndex*>(&parent)) != 0; };
+	void resetInternalData() { callbackHistoryModel8ba275_ResetInternalData(this); };
+	void revert() { callbackHistoryModel8ba275_Revert(this); };
+	QHash<int, QByteArray> roleNames() const { return ({ QHash<int, QByteArray>* tmpP = static_cast<QHash<int, QByteArray>*>(callbackHistoryModel8ba275_RoleNames(const_cast<void*>(static_cast<const void*>(this)))); QHash<int, QByteArray> tmpV = *tmpP; tmpP->~QHash(); free(tmpP); tmpV; }); };
+	int rowCount(const QModelIndex & parent) const { return callbackHistoryModel8ba275_RowCount(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&parent)); };
+	void Signal_RowsAboutToBeInserted(const QModelIndex & parent, int start, int end) { callbackHistoryModel8ba275_RowsAboutToBeInserted(this, const_cast<QModelIndex*>(&parent), start, end); };
+	void Signal_RowsAboutToBeMoved(const QModelIndex & sourceParent, int sourceStart, int sourceEnd, const QModelIndex & destinationParent, int destinationRow) { callbackHistoryModel8ba275_RowsAboutToBeMoved(this, const_cast<QModelIndex*>(&sourceParent), sourceStart, sourceEnd, const_cast<QModelIndex*>(&destinationParent), destinationRow); };
+	void Signal_RowsAboutToBeRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_RowsAboutToBeRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
+	void Signal_RowsInserted(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_RowsInserted(this, const_cast<QModelIndex*>(&parent), first, last); };
+	void Signal_RowsMoved(const QModelIndex & parent, int start, int end, const QModelIndex & destination, int row) { callbackHistoryModel8ba275_RowsMoved(this, const_cast<QModelIndex*>(&parent), start, end, const_cast<QModelIndex*>(&destination), row); };
+	void Signal_RowsRemoved(const QModelIndex & parent, int first, int last) { callbackHistoryModel8ba275_RowsRemoved(this, const_cast<QModelIndex*>(&parent), first, last); };
+	bool setData(const QModelIndex & index, const QVariant & value, int role) { return callbackHistoryModel8ba275_SetData(this, const_cast<QModelIndex*>(&index), const_cast<QVariant*>(&value), role) != 0; };
+	bool setHeaderData(int section, Qt::Orientation orientation, const QVariant & value, int role) { return callbackHistoryModel8ba275_SetHeaderData(this, section, orientation, const_cast<QVariant*>(&value), role) != 0; };
+	bool setItemData(const QModelIndex & index, const QMap<int, QVariant> & roles) { return callbackHistoryModel8ba275_SetItemData(this, const_cast<QModelIndex*>(&index), ({ QMap<int, QVariant>* tmpValue = new QMap<int, QVariant>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })) != 0; };
+	void sort(int column, Qt::SortOrder order) { callbackHistoryModel8ba275_Sort(this, column, order); };
+	QSize span(const QModelIndex & index) const { return *static_cast<QSize*>(callbackHistoryModel8ba275_Span(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
+	bool submit() { return callbackHistoryModel8ba275_Submit(this) != 0; };
+	Qt::DropActions supportedDragActions() const { return static_cast<Qt::DropAction>(callbackHistoryModel8ba275_SupportedDragActions(const_cast<void*>(static_cast<const void*>(this)))); };
+	Qt::DropActions supportedDropActions() const { return static_cast<Qt::DropAction>(callbackHistoryModel8ba275_SupportedDropActions(const_cast<void*>(static_cast<const void*>(this)))); };
+	void childEvent(QChildEvent * event) { callbackHistoryModel8ba275_ChildEvent(this, event); };
+	void connectNotify(const QMetaMethod & sign) { callbackHistoryModel8ba275_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	void customEvent(QEvent * event) { callbackHistoryModel8ba275_CustomEvent(this, event); };
+	void deleteLater() { callbackHistoryModel8ba275_DeleteLater(this); };
+	void Signal_Destroyed(QObject * obj) { callbackHistoryModel8ba275_Destroyed(this, obj); };
+	void disconnectNotify(const QMetaMethod & sign) { callbackHistoryModel8ba275_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	bool event(QEvent * e) { return callbackHistoryModel8ba275_Event(this, e) != 0; };
+	bool eventFilter(QObject * watched, QEvent * event) { return callbackHistoryModel8ba275_EventFilter(this, watched, event) != 0; };
+	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackHistoryModel8ba275_ObjectNameChanged(this, objectNamePacked); };
+	void timerEvent(QTimerEvent * event) { callbackHistoryModel8ba275_TimerEvent(this, event); };
+	type378cdd rolesDefault() { return _roles; };
+	void setRolesDefault(type378cdd p) { if (p != _roles) { _roles = p; rolesChanged(_roles); } };
+	QList<TransactionDetails8ba275*> transactionsDefault() { return _transactions; };
+	void setTransactionsDefault(QList<TransactionDetails8ba275*> p) { if (p != _transactions) { _transactions = p; transactionsChanged(_transactions); } };
+signals:
+	void addTransaction(TransactionDetails8ba275* transaction);
+	void rolesChanged(type378cdd roles);
+	void transactionsChanged(QList<TransactionDetails8ba275*> transactions);
+public slots:
+private:
+	type378cdd _roles;
+	QList<TransactionDetails8ba275*> _transactions;
+};
+
+Q_DECLARE_METATYPE(HistoryModel8ba275*)
+
+
+void HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes() {
+	qRegisterMetaType<type378cdd>("type378cdd");
+	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetails8ba275*>");
 }
 
 void HistoryModel8ba275_ConnectAddTransaction(void* ptr)
