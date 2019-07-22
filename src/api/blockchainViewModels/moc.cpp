@@ -30,10 +30,10 @@ Q_OBJECT
 Q_PROPERTY(qint32 numberOfBlocks READ numberOfBlocks WRITE setNumberOfBlocks NOTIFY numberOfBlocksChanged)
 Q_PROPERTY(QDateTime timestampLastBlock READ timestampLastBlock WRITE setTimestampLastBlock NOTIFY timestampLastBlockChanged)
 Q_PROPERTY(QString hashLastBlock READ hashLastBlock WRITE setHashLastBlock NOTIFY hashLastBlockChanged)
-Q_PROPERTY(qint32 currentSkySupply READ currentSkySupply WRITE setCurrentSkySupply NOTIFY currentSkySupplyChanged)
-Q_PROPERTY(qint32 totalSkySupply READ totalSkySupply WRITE setTotalSkySupply NOTIFY totalSkySupplyChanged)
-Q_PROPERTY(qint32 currentCoinHoursSupply READ currentCoinHoursSupply WRITE setCurrentCoinHoursSupply NOTIFY currentCoinHoursSupplyChanged)
-Q_PROPERTY(qint32 totalCoinHoursSupply READ totalCoinHoursSupply WRITE setTotalCoinHoursSupply NOTIFY totalCoinHoursSupplyChanged)
+Q_PROPERTY(QString currentSkySupply READ currentSkySupply WRITE setCurrentSkySupply NOTIFY currentSkySupplyChanged)
+Q_PROPERTY(QString totalSkySupply READ totalSkySupply WRITE setTotalSkySupply NOTIFY totalSkySupplyChanged)
+Q_PROPERTY(QString currentCoinHoursSupply READ currentCoinHoursSupply WRITE setCurrentCoinHoursSupply NOTIFY currentCoinHoursSupplyChanged)
+Q_PROPERTY(QString totalCoinHoursSupply READ totalCoinHoursSupply WRITE setTotalCoinHoursSupply NOTIFY totalCoinHoursSupplyChanged)
 public:
 	BlockchainStatusModel97d618(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");BlockchainStatusModel97d618_BlockchainStatusModel97d618_QRegisterMetaType();BlockchainStatusModel97d618_BlockchainStatusModel97d618_QRegisterMetaTypes();callbackBlockchainStatusModel97d618_Constructor(this);};
 	qint32 numberOfBlocks() { return callbackBlockchainStatusModel97d618_NumberOfBlocks(this); };
@@ -45,18 +45,18 @@ public:
 	QString hashLastBlock() { return ({ Moc_PackedString tempVal = callbackBlockchainStatusModel97d618_HashLastBlock(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
 	void setHashLastBlock(QString hashLastBlock) { QByteArray t33501e = hashLastBlock.toUtf8(); Moc_PackedString hashLastBlockPacked = { const_cast<char*>(t33501e.prepend("WHITESPACE").constData()+10), t33501e.size()-10 };callbackBlockchainStatusModel97d618_SetHashLastBlock(this, hashLastBlockPacked); };
 	void Signal_HashLastBlockChanged(QString hashLastBlock) { QByteArray t33501e = hashLastBlock.toUtf8(); Moc_PackedString hashLastBlockPacked = { const_cast<char*>(t33501e.prepend("WHITESPACE").constData()+10), t33501e.size()-10 };callbackBlockchainStatusModel97d618_HashLastBlockChanged(this, hashLastBlockPacked); };
-	qint32 currentSkySupply() { return callbackBlockchainStatusModel97d618_CurrentSkySupply(this); };
-	void setCurrentSkySupply(qint32 currentSkySupply) { callbackBlockchainStatusModel97d618_SetCurrentSkySupply(this, currentSkySupply); };
-	void Signal_CurrentSkySupplyChanged(qint32 currentSkySupply) { callbackBlockchainStatusModel97d618_CurrentSkySupplyChanged(this, currentSkySupply); };
-	qint32 totalSkySupply() { return callbackBlockchainStatusModel97d618_TotalSkySupply(this); };
-	void setTotalSkySupply(qint32 totalSkySupply) { callbackBlockchainStatusModel97d618_SetTotalSkySupply(this, totalSkySupply); };
-	void Signal_TotalSkySupplyChanged(qint32 totalSkySupply) { callbackBlockchainStatusModel97d618_TotalSkySupplyChanged(this, totalSkySupply); };
-	qint32 currentCoinHoursSupply() { return callbackBlockchainStatusModel97d618_CurrentCoinHoursSupply(this); };
-	void setCurrentCoinHoursSupply(qint32 currentCoinHoursSupply) { callbackBlockchainStatusModel97d618_SetCurrentCoinHoursSupply(this, currentCoinHoursSupply); };
-	void Signal_CurrentCoinHoursSupplyChanged(qint32 currentCoinHoursSupply) { callbackBlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(this, currentCoinHoursSupply); };
-	qint32 totalCoinHoursSupply() { return callbackBlockchainStatusModel97d618_TotalCoinHoursSupply(this); };
-	void setTotalCoinHoursSupply(qint32 totalCoinHoursSupply) { callbackBlockchainStatusModel97d618_SetTotalCoinHoursSupply(this, totalCoinHoursSupply); };
-	void Signal_TotalCoinHoursSupplyChanged(qint32 totalCoinHoursSupply) { callbackBlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(this, totalCoinHoursSupply); };
+	QString currentSkySupply() { return ({ Moc_PackedString tempVal = callbackBlockchainStatusModel97d618_CurrentSkySupply(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setCurrentSkySupply(QString currentSkySupply) { QByteArray t9cbeff = currentSkySupply.toUtf8(); Moc_PackedString currentSkySupplyPacked = { const_cast<char*>(t9cbeff.prepend("WHITESPACE").constData()+10), t9cbeff.size()-10 };callbackBlockchainStatusModel97d618_SetCurrentSkySupply(this, currentSkySupplyPacked); };
+	void Signal_CurrentSkySupplyChanged(QString currentSkySupply) { QByteArray t9cbeff = currentSkySupply.toUtf8(); Moc_PackedString currentSkySupplyPacked = { const_cast<char*>(t9cbeff.prepend("WHITESPACE").constData()+10), t9cbeff.size()-10 };callbackBlockchainStatusModel97d618_CurrentSkySupplyChanged(this, currentSkySupplyPacked); };
+	QString totalSkySupply() { return ({ Moc_PackedString tempVal = callbackBlockchainStatusModel97d618_TotalSkySupply(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setTotalSkySupply(QString totalSkySupply) { QByteArray tf96a84 = totalSkySupply.toUtf8(); Moc_PackedString totalSkySupplyPacked = { const_cast<char*>(tf96a84.prepend("WHITESPACE").constData()+10), tf96a84.size()-10 };callbackBlockchainStatusModel97d618_SetTotalSkySupply(this, totalSkySupplyPacked); };
+	void Signal_TotalSkySupplyChanged(QString totalSkySupply) { QByteArray tf96a84 = totalSkySupply.toUtf8(); Moc_PackedString totalSkySupplyPacked = { const_cast<char*>(tf96a84.prepend("WHITESPACE").constData()+10), tf96a84.size()-10 };callbackBlockchainStatusModel97d618_TotalSkySupplyChanged(this, totalSkySupplyPacked); };
+	QString currentCoinHoursSupply() { return ({ Moc_PackedString tempVal = callbackBlockchainStatusModel97d618_CurrentCoinHoursSupply(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setCurrentCoinHoursSupply(QString currentCoinHoursSupply) { QByteArray t88f3d1 = currentCoinHoursSupply.toUtf8(); Moc_PackedString currentCoinHoursSupplyPacked = { const_cast<char*>(t88f3d1.prepend("WHITESPACE").constData()+10), t88f3d1.size()-10 };callbackBlockchainStatusModel97d618_SetCurrentCoinHoursSupply(this, currentCoinHoursSupplyPacked); };
+	void Signal_CurrentCoinHoursSupplyChanged(QString currentCoinHoursSupply) { QByteArray t88f3d1 = currentCoinHoursSupply.toUtf8(); Moc_PackedString currentCoinHoursSupplyPacked = { const_cast<char*>(t88f3d1.prepend("WHITESPACE").constData()+10), t88f3d1.size()-10 };callbackBlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(this, currentCoinHoursSupplyPacked); };
+	QString totalCoinHoursSupply() { return ({ Moc_PackedString tempVal = callbackBlockchainStatusModel97d618_TotalCoinHoursSupply(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setTotalCoinHoursSupply(QString totalCoinHoursSupply) { QByteArray t1cfb46 = totalCoinHoursSupply.toUtf8(); Moc_PackedString totalCoinHoursSupplyPacked = { const_cast<char*>(t1cfb46.prepend("WHITESPACE").constData()+10), t1cfb46.size()-10 };callbackBlockchainStatusModel97d618_SetTotalCoinHoursSupply(this, totalCoinHoursSupplyPacked); };
+	void Signal_TotalCoinHoursSupplyChanged(QString totalCoinHoursSupply) { QByteArray t1cfb46 = totalCoinHoursSupply.toUtf8(); Moc_PackedString totalCoinHoursSupplyPacked = { const_cast<char*>(t1cfb46.prepend("WHITESPACE").constData()+10), t1cfb46.size()-10 };callbackBlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(this, totalCoinHoursSupplyPacked); };
 	 ~BlockchainStatusModel97d618() { callbackBlockchainStatusModel97d618_DestroyBlockchainStatusModel(this); };
 	void childEvent(QChildEvent * event) { callbackBlockchainStatusModel97d618_ChildEvent(this, event); };
 	void connectNotify(const QMetaMethod & sign) { callbackBlockchainStatusModel97d618_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
@@ -74,31 +74,31 @@ public:
 	void setTimestampLastBlockDefault(QDateTime p) { if (p != _timestampLastBlock) { _timestampLastBlock = p; timestampLastBlockChanged(_timestampLastBlock); } };
 	QString hashLastBlockDefault() { return _hashLastBlock; };
 	void setHashLastBlockDefault(QString p) { if (p != _hashLastBlock) { _hashLastBlock = p; hashLastBlockChanged(_hashLastBlock); } };
-	qint32 currentSkySupplyDefault() { return _currentSkySupply; };
-	void setCurrentSkySupplyDefault(qint32 p) { if (p != _currentSkySupply) { _currentSkySupply = p; currentSkySupplyChanged(_currentSkySupply); } };
-	qint32 totalSkySupplyDefault() { return _totalSkySupply; };
-	void setTotalSkySupplyDefault(qint32 p) { if (p != _totalSkySupply) { _totalSkySupply = p; totalSkySupplyChanged(_totalSkySupply); } };
-	qint32 currentCoinHoursSupplyDefault() { return _currentCoinHoursSupply; };
-	void setCurrentCoinHoursSupplyDefault(qint32 p) { if (p != _currentCoinHoursSupply) { _currentCoinHoursSupply = p; currentCoinHoursSupplyChanged(_currentCoinHoursSupply); } };
-	qint32 totalCoinHoursSupplyDefault() { return _totalCoinHoursSupply; };
-	void setTotalCoinHoursSupplyDefault(qint32 p) { if (p != _totalCoinHoursSupply) { _totalCoinHoursSupply = p; totalCoinHoursSupplyChanged(_totalCoinHoursSupply); } };
+	QString currentSkySupplyDefault() { return _currentSkySupply; };
+	void setCurrentSkySupplyDefault(QString p) { if (p != _currentSkySupply) { _currentSkySupply = p; currentSkySupplyChanged(_currentSkySupply); } };
+	QString totalSkySupplyDefault() { return _totalSkySupply; };
+	void setTotalSkySupplyDefault(QString p) { if (p != _totalSkySupply) { _totalSkySupply = p; totalSkySupplyChanged(_totalSkySupply); } };
+	QString currentCoinHoursSupplyDefault() { return _currentCoinHoursSupply; };
+	void setCurrentCoinHoursSupplyDefault(QString p) { if (p != _currentCoinHoursSupply) { _currentCoinHoursSupply = p; currentCoinHoursSupplyChanged(_currentCoinHoursSupply); } };
+	QString totalCoinHoursSupplyDefault() { return _totalCoinHoursSupply; };
+	void setTotalCoinHoursSupplyDefault(QString p) { if (p != _totalCoinHoursSupply) { _totalCoinHoursSupply = p; totalCoinHoursSupplyChanged(_totalCoinHoursSupply); } };
 signals:
 	void numberOfBlocksChanged(qint32 numberOfBlocks);
 	void timestampLastBlockChanged(QDateTime timestampLastBlock);
 	void hashLastBlockChanged(QString hashLastBlock);
-	void currentSkySupplyChanged(qint32 currentSkySupply);
-	void totalSkySupplyChanged(qint32 totalSkySupply);
-	void currentCoinHoursSupplyChanged(qint32 currentCoinHoursSupply);
-	void totalCoinHoursSupplyChanged(qint32 totalCoinHoursSupply);
+	void currentSkySupplyChanged(QString currentSkySupply);
+	void totalSkySupplyChanged(QString totalSkySupply);
+	void currentCoinHoursSupplyChanged(QString currentCoinHoursSupply);
+	void totalCoinHoursSupplyChanged(QString totalCoinHoursSupply);
 public slots:
 private:
 	qint32 _numberOfBlocks;
 	QDateTime _timestampLastBlock;
 	QString _hashLastBlock;
-	qint32 _currentSkySupply;
-	qint32 _totalSkySupply;
-	qint32 _currentCoinHoursSupply;
-	qint32 _totalCoinHoursSupply;
+	QString _currentSkySupply;
+	QString _totalSkySupply;
+	QString _currentCoinHoursSupply;
+	QString _totalCoinHoursSupply;
 };
 
 Q_DECLARE_METATYPE(BlockchainStatusModel97d618*)
@@ -214,144 +214,144 @@ void BlockchainStatusModel97d618_HashLastBlockChanged(void* ptr, struct Moc_Pack
 	static_cast<BlockchainStatusModel97d618*>(ptr)->hashLastBlockChanged(QString::fromUtf8(hashLastBlock.data, hashLastBlock.len));
 }
 
-int BlockchainStatusModel97d618_CurrentSkySupply(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_CurrentSkySupply(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->currentSkySupply();
+	return ({ QByteArray ta7721d = static_cast<BlockchainStatusModel97d618*>(ptr)->currentSkySupply().toUtf8(); Moc_PackedString { const_cast<char*>(ta7721d.prepend("WHITESPACE").constData()+10), ta7721d.size()-10 }; });
 }
 
-int BlockchainStatusModel97d618_CurrentSkySupplyDefault(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_CurrentSkySupplyDefault(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->currentSkySupplyDefault();
+	return ({ QByteArray ta836bf = static_cast<BlockchainStatusModel97d618*>(ptr)->currentSkySupplyDefault().toUtf8(); Moc_PackedString { const_cast<char*>(ta836bf.prepend("WHITESPACE").constData()+10), ta836bf.size()-10 }; });
 }
 
-void BlockchainStatusModel97d618_SetCurrentSkySupply(void* ptr, int currentSkySupply)
+void BlockchainStatusModel97d618_SetCurrentSkySupply(void* ptr, struct Moc_PackedString currentSkySupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentSkySupply(currentSkySupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentSkySupply(QString::fromUtf8(currentSkySupply.data, currentSkySupply.len));
 }
 
-void BlockchainStatusModel97d618_SetCurrentSkySupplyDefault(void* ptr, int currentSkySupply)
+void BlockchainStatusModel97d618_SetCurrentSkySupplyDefault(void* ptr, struct Moc_PackedString currentSkySupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentSkySupplyDefault(currentSkySupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentSkySupplyDefault(QString::fromUtf8(currentSkySupply.data, currentSkySupply.len));
 }
 
 void BlockchainStatusModel97d618_ConnectCurrentSkySupplyChanged(void* ptr)
 {
-	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::currentSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_CurrentSkySupplyChanged));
+	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::currentSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_CurrentSkySupplyChanged));
 }
 
 void BlockchainStatusModel97d618_DisconnectCurrentSkySupplyChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::currentSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_CurrentSkySupplyChanged));
+	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::currentSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_CurrentSkySupplyChanged));
 }
 
-void BlockchainStatusModel97d618_CurrentSkySupplyChanged(void* ptr, int currentSkySupply)
+void BlockchainStatusModel97d618_CurrentSkySupplyChanged(void* ptr, struct Moc_PackedString currentSkySupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->currentSkySupplyChanged(currentSkySupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->currentSkySupplyChanged(QString::fromUtf8(currentSkySupply.data, currentSkySupply.len));
 }
 
-int BlockchainStatusModel97d618_TotalSkySupply(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_TotalSkySupply(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->totalSkySupply();
+	return ({ QByteArray t35020f = static_cast<BlockchainStatusModel97d618*>(ptr)->totalSkySupply().toUtf8(); Moc_PackedString { const_cast<char*>(t35020f.prepend("WHITESPACE").constData()+10), t35020f.size()-10 }; });
 }
 
-int BlockchainStatusModel97d618_TotalSkySupplyDefault(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_TotalSkySupplyDefault(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->totalSkySupplyDefault();
+	return ({ QByteArray tec951b = static_cast<BlockchainStatusModel97d618*>(ptr)->totalSkySupplyDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tec951b.prepend("WHITESPACE").constData()+10), tec951b.size()-10 }; });
 }
 
-void BlockchainStatusModel97d618_SetTotalSkySupply(void* ptr, int totalSkySupply)
+void BlockchainStatusModel97d618_SetTotalSkySupply(void* ptr, struct Moc_PackedString totalSkySupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalSkySupply(totalSkySupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalSkySupply(QString::fromUtf8(totalSkySupply.data, totalSkySupply.len));
 }
 
-void BlockchainStatusModel97d618_SetTotalSkySupplyDefault(void* ptr, int totalSkySupply)
+void BlockchainStatusModel97d618_SetTotalSkySupplyDefault(void* ptr, struct Moc_PackedString totalSkySupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalSkySupplyDefault(totalSkySupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalSkySupplyDefault(QString::fromUtf8(totalSkySupply.data, totalSkySupply.len));
 }
 
 void BlockchainStatusModel97d618_ConnectTotalSkySupplyChanged(void* ptr)
 {
-	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::totalSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_TotalSkySupplyChanged));
+	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::totalSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_TotalSkySupplyChanged));
 }
 
 void BlockchainStatusModel97d618_DisconnectTotalSkySupplyChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::totalSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_TotalSkySupplyChanged));
+	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::totalSkySupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_TotalSkySupplyChanged));
 }
 
-void BlockchainStatusModel97d618_TotalSkySupplyChanged(void* ptr, int totalSkySupply)
+void BlockchainStatusModel97d618_TotalSkySupplyChanged(void* ptr, struct Moc_PackedString totalSkySupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->totalSkySupplyChanged(totalSkySupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->totalSkySupplyChanged(QString::fromUtf8(totalSkySupply.data, totalSkySupply.len));
 }
 
-int BlockchainStatusModel97d618_CurrentCoinHoursSupply(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_CurrentCoinHoursSupply(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->currentCoinHoursSupply();
+	return ({ QByteArray t848392 = static_cast<BlockchainStatusModel97d618*>(ptr)->currentCoinHoursSupply().toUtf8(); Moc_PackedString { const_cast<char*>(t848392.prepend("WHITESPACE").constData()+10), t848392.size()-10 }; });
 }
 
-int BlockchainStatusModel97d618_CurrentCoinHoursSupplyDefault(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_CurrentCoinHoursSupplyDefault(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->currentCoinHoursSupplyDefault();
+	return ({ QByteArray t627637 = static_cast<BlockchainStatusModel97d618*>(ptr)->currentCoinHoursSupplyDefault().toUtf8(); Moc_PackedString { const_cast<char*>(t627637.prepend("WHITESPACE").constData()+10), t627637.size()-10 }; });
 }
 
-void BlockchainStatusModel97d618_SetCurrentCoinHoursSupply(void* ptr, int currentCoinHoursSupply)
+void BlockchainStatusModel97d618_SetCurrentCoinHoursSupply(void* ptr, struct Moc_PackedString currentCoinHoursSupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentCoinHoursSupply(currentCoinHoursSupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentCoinHoursSupply(QString::fromUtf8(currentCoinHoursSupply.data, currentCoinHoursSupply.len));
 }
 
-void BlockchainStatusModel97d618_SetCurrentCoinHoursSupplyDefault(void* ptr, int currentCoinHoursSupply)
+void BlockchainStatusModel97d618_SetCurrentCoinHoursSupplyDefault(void* ptr, struct Moc_PackedString currentCoinHoursSupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentCoinHoursSupplyDefault(currentCoinHoursSupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setCurrentCoinHoursSupplyDefault(QString::fromUtf8(currentCoinHoursSupply.data, currentCoinHoursSupply.len));
 }
 
 void BlockchainStatusModel97d618_ConnectCurrentCoinHoursSupplyChanged(void* ptr)
 {
-	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::currentCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_CurrentCoinHoursSupplyChanged));
+	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::currentCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_CurrentCoinHoursSupplyChanged));
 }
 
 void BlockchainStatusModel97d618_DisconnectCurrentCoinHoursSupplyChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::currentCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_CurrentCoinHoursSupplyChanged));
+	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::currentCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_CurrentCoinHoursSupplyChanged));
 }
 
-void BlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(void* ptr, int currentCoinHoursSupply)
+void BlockchainStatusModel97d618_CurrentCoinHoursSupplyChanged(void* ptr, struct Moc_PackedString currentCoinHoursSupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->currentCoinHoursSupplyChanged(currentCoinHoursSupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->currentCoinHoursSupplyChanged(QString::fromUtf8(currentCoinHoursSupply.data, currentCoinHoursSupply.len));
 }
 
-int BlockchainStatusModel97d618_TotalCoinHoursSupply(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_TotalCoinHoursSupply(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->totalCoinHoursSupply();
+	return ({ QByteArray t379ab0 = static_cast<BlockchainStatusModel97d618*>(ptr)->totalCoinHoursSupply().toUtf8(); Moc_PackedString { const_cast<char*>(t379ab0.prepend("WHITESPACE").constData()+10), t379ab0.size()-10 }; });
 }
 
-int BlockchainStatusModel97d618_TotalCoinHoursSupplyDefault(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_TotalCoinHoursSupplyDefault(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->totalCoinHoursSupplyDefault();
+	return ({ QByteArray t08aab2 = static_cast<BlockchainStatusModel97d618*>(ptr)->totalCoinHoursSupplyDefault().toUtf8(); Moc_PackedString { const_cast<char*>(t08aab2.prepend("WHITESPACE").constData()+10), t08aab2.size()-10 }; });
 }
 
-void BlockchainStatusModel97d618_SetTotalCoinHoursSupply(void* ptr, int totalCoinHoursSupply)
+void BlockchainStatusModel97d618_SetTotalCoinHoursSupply(void* ptr, struct Moc_PackedString totalCoinHoursSupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalCoinHoursSupply(totalCoinHoursSupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalCoinHoursSupply(QString::fromUtf8(totalCoinHoursSupply.data, totalCoinHoursSupply.len));
 }
 
-void BlockchainStatusModel97d618_SetTotalCoinHoursSupplyDefault(void* ptr, int totalCoinHoursSupply)
+void BlockchainStatusModel97d618_SetTotalCoinHoursSupplyDefault(void* ptr, struct Moc_PackedString totalCoinHoursSupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalCoinHoursSupplyDefault(totalCoinHoursSupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setTotalCoinHoursSupplyDefault(QString::fromUtf8(totalCoinHoursSupply.data, totalCoinHoursSupply.len));
 }
 
 void BlockchainStatusModel97d618_ConnectTotalCoinHoursSupplyChanged(void* ptr)
 {
-	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::totalCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_TotalCoinHoursSupplyChanged));
+	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::totalCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_TotalCoinHoursSupplyChanged));
 }
 
 void BlockchainStatusModel97d618_DisconnectTotalCoinHoursSupplyChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::totalCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_TotalCoinHoursSupplyChanged));
+	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::totalCoinHoursSupplyChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_TotalCoinHoursSupplyChanged));
 }
 
-void BlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(void* ptr, int totalCoinHoursSupply)
+void BlockchainStatusModel97d618_TotalCoinHoursSupplyChanged(void* ptr, struct Moc_PackedString totalCoinHoursSupply)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->totalCoinHoursSupplyChanged(totalCoinHoursSupply);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->totalCoinHoursSupplyChanged(QString::fromUtf8(totalCoinHoursSupply.data, totalCoinHoursSupply.len));
 }
 
 int BlockchainStatusModel97d618_BlockchainStatusModel97d618_QRegisterMetaType()

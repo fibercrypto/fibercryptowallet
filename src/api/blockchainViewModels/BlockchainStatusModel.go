@@ -19,10 +19,10 @@ type BlockchainStatusModel struct {
 	_ int             `property:"numberOfBlocks"`
 	_ *core.QDateTime `property:"timestampLastBlock"`
 	_ string          `property:"hashLastBlock"`
-	_ int             `property:"currentSkySupply"`
-	_ int             `property:"totalSkySupply"`
-	_ int             `property:"currentCoinHoursSupply"`
-	_ int             `property:"totalCoinHoursSupply"`
+	_ string          `property:"currentSkySupply"`
+	_ string          `property:"totalSkySupply"`
+	_ string          `property:"currentCoinHoursSupply"`
+	_ string          `property:"totalCoinHoursSupply"`
 }
 
 func (bs *BlockchainStatusModel) init() {
@@ -33,10 +33,10 @@ func (bs *BlockchainStatusModel) init() {
 	bs.SetTimestampLastBlockDefault(core.NewQDateTime())
 	bs.SetHashLastBlockDefault("")
 	// sky details
-	bs.SetCurrentSkySupplyDefault(0)
-	bs.SetTotalSkySupplyDefault(0)
-	bs.SetCurrentCoinHoursSupplyDefault(0)
-	bs.SetTotalCoinHoursSupplyDefault(0)
+	bs.SetCurrentSkySupplyDefault("0")
+	bs.SetTotalSkySupplyDefault("0")
+	bs.SetCurrentCoinHoursSupplyDefault("0")
+	bs.SetTotalCoinHoursSupplyDefault("0")
 
 	// update info
 	if err := bs.updateInfo(); err != nil {
@@ -46,7 +46,7 @@ func (bs *BlockchainStatusModel) init() {
 	return
 }
 
-//NewClient returns a new client
+// NewClient returns a new client
 func NewClient() *api.Client {
 	addr := "http://127.0.0.1:38391" // example only
 	return api.NewClient(addr)
@@ -54,8 +54,6 @@ func NewClient() *api.Client {
 
 // updateInfo request the needed information
 func (bs *BlockchainStatusModel) updateInfo() error {
-	// TODO: api work
-
 	c := NewClient()
 
 	blocks, err := c.LastBlocks(1)
@@ -66,44 +64,21 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
 	numberOfBlocks := 1 // TODO: number of blocks?
 	lastBlockHash := lastBlock.Head.Hash
-	// timeStampLastBlock := lastBlock.Head.Time //TODO: how to extract the time from it
-
-	year, month, day := 2000, 6, 25
-	h, m, _ := 12, 12, 0
+	year, month, day, h, m, s := parseDate(int64(lastBlock.Head.Time)) // Fixme: the conversion its save, right??
 
 	coinSup, err := c.CoinSupply()
 	if err != nil {
 		return err
 	}
 
-	// TODO: what i supose to use int or float to representate money values
-	// TODO: resolve conflicts with int64 and qlonglong
-	//
-	_currentSkySupply, err := strconv.ParseInt((*coinSup).CurrentSupply, 10, 0)
-	if err != nil {
-		return err
-	}
-	currentSkySupply := int(_currentSkySupply)
-	_totalSkySupply, err := strconv.ParseInt((*coinSup).TotalSupply, 10, 0)
-	if err != nil {
-		return err
-	}
-	totalSkySupply := int(_totalSkySupply)
-	_currentCoinHoursSupply, err := strconv.ParseInt((*coinSup).CurrentCoinHourSupply, 10, 0)
-	if err != nil {
-		return err
-	}
-	currentCoinHoursSupply := int(_currentCoinHoursSupply)
-
-	_totalCoinHoursSupply, err := strconv.ParseInt((*coinSup).TotalCoinHourSupply, 10, 0)
-	if err != nil {
-		return err
-	}
-	totalCoinHoursSupply := int(_totalCoinHoursSupply)
+	currentSkySupply := (*coinSup).CurrentSupply
+	totalSkySupply := (*coinSup).TotalSupply
+	currentCoinHoursSupply := (*coinSup).CurrentCoinHourSupply
+	totalCoinHoursSupply := (*coinSup).TotalCoinHourSupply
 
 	// block details
 	bs.SetNumberOfBlocks(numberOfBlocks)
-	bs.SetTimestampLastBlock(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, 0, 0), core.Qt__LocalTime)) //TODO: datetime
+	bs.SetTimestampLastBlock(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, s, 0), core.Qt__LocalTime)) //TODO: datetime
 	bs.SetHashLastBlock(lastBlockHash)
 
 	// sky details
