@@ -1,7 +1,7 @@
 package blockchainViewModels
 
 import (
-	"strconv"
+	"time"
 
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/therecipe/qt/core"
@@ -115,4 +115,11 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	println("Status-updated")
 
 	return nil
+}
+
+func parseDate(timeStamp int64) (int, int, int, int, int, int) {
+	t := time.Unix(timeStamp, 0) //Fixme: use or not UTC() for local time or for server time?
+	y, _m, d := t.Date()
+
+	return y, int(_m), d, t.Hour(), t.Minute(), t.Second()
 }
