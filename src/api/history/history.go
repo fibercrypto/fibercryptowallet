@@ -41,15 +41,15 @@ type Address struct {
 type TransactionDetails struct {
 	core.QObject
 
-	_ string `property:"date"`
-	_ int    `property:"status"`
-	_ int    `property:"type"`
-	_ int    `property:"amount"`
-	_ int    `property:"hoursReceived"`
-	_ int    `property:"hoursBurned"`
-	_ string `property:"transactionID"`
-	_ string `property:"sentAddress"`
-	_ string `property:"receivedAddress"`
+	_ *core.QDateTime `property:"date"`
+	_ int             `property:"status"`
+	_ int             `property:"type"`
+	_ int             `property:"amount"`
+	_ int             `property:"hoursReceived"`
+	_ int             `property:"hoursBurned"`
+	_ string          `property:"transactionID"`
+	_ string          `property:"sentAddress"`
+	_ string          `property:"receivedAddress"`
 }
 
 type HistoryModel struct {
@@ -59,7 +59,8 @@ type HistoryModel struct {
 
 	_ func() `constructor:"init"`
 
-	_ func(transaction *TransactionDetails) `signal:"addTransaction"`
+	_ func(transaction *TransactionDetails) `signal:"addTransaction,auto"`
+	_ func(index int)                       `signal:"removeTransaction,auto"`
 
 	_ []*TransactionDetails `property:"transactions"`
 }
@@ -96,6 +97,12 @@ func (hm *HistoryModel) addTransaction(transaction *TransactionDetails) {
 	hm.BeginInsertRows(core.NewQModelIndex(), len(hm.Transactions()), len(hm.Transactions()))
 	hm.SetTransactions(append(hm.Transactions(), transaction))
 	hm.EndInsertRows()
+}
+
+func (hm *HistoryModel) removeTransaction(index int) {
+	hm.BeginRemoveRows(core.NewQModelIndex(), index, index)
+	hm.SetTransactions(append(hm.Transactions()[:index], hm.Transactions()[index+1:]...))
+	hm.EndRemoveRows()
 }
 
 func (hm *HistoryModel) data(index *core.QModelIndex, role int) *core.QVariant {
@@ -151,7 +158,7 @@ func (hm *HistoryModel) data(index *core.QModelIndex, role int) *core.QVariant {
 
 func addExamples(hm *HistoryModel) {
 	td := NewTransactionDetails(nil)
-	td.SetDate("2000-01-01 00:00")
+	td.SetDate(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(10, 0, 0, 0), core.Qt__LocalTime))
 	td.SetStatus(transactionStatusPending)
 	td.SetType(transactionTypeSend)
 	td.SetAmount(100)

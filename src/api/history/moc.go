@@ -2317,21 +2317,20 @@ func callbackTransactionDetails8ba275_Constructor(ptr unsafe.Pointer) {
 }
 
 //export callbackTransactionDetails8ba275_Date
-func callbackTransactionDetails8ba275_Date(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+func callbackTransactionDetails8ba275_Date(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "date"); signal != nil {
-		tempVal := (*(*func() string)(signal))()
-		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
+		return std_core.PointerFromQDateTime((*(*func() *std_core.QDateTime)(signal))())
 	}
-	tempVal := NewTransactionDetailsFromPointer(ptr).DateDefault()
-	return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
+
+	return std_core.PointerFromQDateTime(NewTransactionDetailsFromPointer(ptr).DateDefault())
 }
 
-func (ptr *TransactionDetails) ConnectDate(f func() string) {
+func (ptr *TransactionDetails) ConnectDate(f func() *std_core.QDateTime) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "date"); signal != nil {
-			f := func() string {
-				(*(*func() string)(signal))()
+			f := func() *std_core.QDateTime {
+				(*(*func() *std_core.QDateTime)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "date", unsafe.Pointer(&f))
@@ -2348,35 +2347,39 @@ func (ptr *TransactionDetails) DisconnectDate() {
 	}
 }
 
-func (ptr *TransactionDetails) Date() string {
+func (ptr *TransactionDetails) Date() *std_core.QDateTime {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_Date(ptr.Pointer()))
+		tmpValue := std_core.NewQDateTimeFromPointer(C.TransactionDetails8ba275_Date(ptr.Pointer()))
+		runtime.SetFinalizer(tmpValue, (*std_core.QDateTime).DestroyQDateTime)
+		return tmpValue
 	}
-	return ""
+	return nil
 }
 
-func (ptr *TransactionDetails) DateDefault() string {
+func (ptr *TransactionDetails) DateDefault() *std_core.QDateTime {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_DateDefault(ptr.Pointer()))
+		tmpValue := std_core.NewQDateTimeFromPointer(C.TransactionDetails8ba275_DateDefault(ptr.Pointer()))
+		runtime.SetFinalizer(tmpValue, (*std_core.QDateTime).DestroyQDateTime)
+		return tmpValue
 	}
-	return ""
+	return nil
 }
 
 //export callbackTransactionDetails8ba275_SetDate
-func callbackTransactionDetails8ba275_SetDate(ptr unsafe.Pointer, date C.struct_Moc_PackedString) {
+func callbackTransactionDetails8ba275_SetDate(ptr unsafe.Pointer, date unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "setDate"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(date))
+		(*(*func(*std_core.QDateTime))(signal))(std_core.NewQDateTimeFromPointer(date))
 	} else {
-		NewTransactionDetailsFromPointer(ptr).SetDateDefault(cGoUnpackString(date))
+		NewTransactionDetailsFromPointer(ptr).SetDateDefault(std_core.NewQDateTimeFromPointer(date))
 	}
 }
 
-func (ptr *TransactionDetails) ConnectSetDate(f func(date string)) {
+func (ptr *TransactionDetails) ConnectSetDate(f func(date *std_core.QDateTime)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setDate"); signal != nil {
-			f := func(date string) {
-				(*(*func(string))(signal))(date)
+			f := func(date *std_core.QDateTime) {
+				(*(*func(*std_core.QDateTime))(signal))(date)
 				f(date)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setDate", unsafe.Pointer(&f))
@@ -2393,37 +2396,27 @@ func (ptr *TransactionDetails) DisconnectSetDate() {
 	}
 }
 
-func (ptr *TransactionDetails) SetDate(date string) {
+func (ptr *TransactionDetails) SetDate(date std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		var dateC *C.char
-		if date != "" {
-			dateC = C.CString(date)
-			defer C.free(unsafe.Pointer(dateC))
-		}
-		C.TransactionDetails8ba275_SetDate(ptr.Pointer(), C.struct_Moc_PackedString{data: dateC, len: C.longlong(len(date))})
+		C.TransactionDetails8ba275_SetDate(ptr.Pointer(), std_core.PointerFromQDateTime(date))
 	}
 }
 
-func (ptr *TransactionDetails) SetDateDefault(date string) {
+func (ptr *TransactionDetails) SetDateDefault(date std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		var dateC *C.char
-		if date != "" {
-			dateC = C.CString(date)
-			defer C.free(unsafe.Pointer(dateC))
-		}
-		C.TransactionDetails8ba275_SetDateDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: dateC, len: C.longlong(len(date))})
+		C.TransactionDetails8ba275_SetDateDefault(ptr.Pointer(), std_core.PointerFromQDateTime(date))
 	}
 }
 
 //export callbackTransactionDetails8ba275_DateChanged
-func callbackTransactionDetails8ba275_DateChanged(ptr unsafe.Pointer, date C.struct_Moc_PackedString) {
+func callbackTransactionDetails8ba275_DateChanged(ptr unsafe.Pointer, date unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "dateChanged"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(date))
+		(*(*func(*std_core.QDateTime))(signal))(std_core.NewQDateTimeFromPointer(date))
 	}
 
 }
 
-func (ptr *TransactionDetails) ConnectDateChanged(f func(date string)) {
+func (ptr *TransactionDetails) ConnectDateChanged(f func(date *std_core.QDateTime)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "dateChanged") {
@@ -2431,8 +2424,8 @@ func (ptr *TransactionDetails) ConnectDateChanged(f func(date string)) {
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "dateChanged"); signal != nil {
-			f := func(date string) {
-				(*(*func(string))(signal))(date)
+			f := func(date *std_core.QDateTime) {
+				(*(*func(*std_core.QDateTime))(signal))(date)
 				f(date)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "dateChanged", unsafe.Pointer(&f))
@@ -2449,14 +2442,9 @@ func (ptr *TransactionDetails) DisconnectDateChanged() {
 	}
 }
 
-func (ptr *TransactionDetails) DateChanged(date string) {
+func (ptr *TransactionDetails) DateChanged(date std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		var dateC *C.char
-		if date != "" {
-			dateC = C.CString(date)
-			defer C.free(unsafe.Pointer(dateC))
-		}
-		C.TransactionDetails8ba275_DateChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: dateC, len: C.longlong(len(date))})
+		C.TransactionDetails8ba275_DateChanged(ptr.Pointer(), std_core.PointerFromQDateTime(date))
 	}
 }
 
