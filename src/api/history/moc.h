@@ -8,33 +8,33 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-class HistoryModel8ba275;
-void HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes();
-class TransactionDetails8ba275;
-void TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaTypes();
 class AddressDeatails8ba275;
 void AddressDeatails8ba275_AddressDeatails8ba275_QRegisterMetaTypes();
 class AddressList8ba275;
 void AddressList8ba275_AddressList8ba275_QRegisterMetaTypes();
+class HistoryModel8ba275;
+void HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes();
+class TransactionDetails8ba275;
+void TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaTypes();
 extern "C" {
 #endif
 
 struct Moc_PackedString { char* data; long long len; };
 struct Moc_PackedList { void* data; long long len; };
-float AddressDeatails8ba275_Address(void* ptr);
-float AddressDeatails8ba275_AddressDefault(void* ptr);
-void AddressDeatails8ba275_SetAddress(void* ptr, float address);
-void AddressDeatails8ba275_SetAddressDefault(void* ptr, float address);
+struct Moc_PackedString AddressDeatails8ba275_Address(void* ptr);
+struct Moc_PackedString AddressDeatails8ba275_AddressDefault(void* ptr);
+void AddressDeatails8ba275_SetAddress(void* ptr, struct Moc_PackedString address);
+void AddressDeatails8ba275_SetAddressDefault(void* ptr, struct Moc_PackedString address);
 void AddressDeatails8ba275_ConnectAddressChanged(void* ptr);
 void AddressDeatails8ba275_DisconnectAddressChanged(void* ptr);
-void AddressDeatails8ba275_AddressChanged(void* ptr, float address);
-int AddressDeatails8ba275_AddressSky(void* ptr);
-int AddressDeatails8ba275_AddressSkyDefault(void* ptr);
-void AddressDeatails8ba275_SetAddressSky(void* ptr, int addressSky);
-void AddressDeatails8ba275_SetAddressSkyDefault(void* ptr, int addressSky);
+void AddressDeatails8ba275_AddressChanged(void* ptr, struct Moc_PackedString address);
+float AddressDeatails8ba275_AddressSky(void* ptr);
+float AddressDeatails8ba275_AddressSkyDefault(void* ptr);
+void AddressDeatails8ba275_SetAddressSky(void* ptr, float addressSky);
+void AddressDeatails8ba275_SetAddressSkyDefault(void* ptr, float addressSky);
 void AddressDeatails8ba275_ConnectAddressSkyChanged(void* ptr);
 void AddressDeatails8ba275_DisconnectAddressSkyChanged(void* ptr);
-void AddressDeatails8ba275_AddressSkyChanged(void* ptr, int addressSky);
+void AddressDeatails8ba275_AddressSkyChanged(void* ptr, float addressSky);
 int AddressDeatails8ba275_AddressCoinHours(void* ptr);
 int AddressDeatails8ba275_AddressCoinHoursDefault(void* ptr);
 void AddressDeatails8ba275_SetAddressCoinHours(void* ptr, int addressCoinHours);
@@ -72,12 +72,12 @@ void AddressDeatails8ba275_DisconnectNotifyDefault(void* ptr, void* sign);
 char AddressDeatails8ba275_EventDefault(void* ptr, void* e);
 char AddressDeatails8ba275_EventFilterDefault(void* ptr, void* watched, void* event);
 void AddressDeatails8ba275_TimerEventDefault(void* ptr, void* event);
-void AddressList8ba275_ConnectAddTransaction(void* ptr);
-void AddressList8ba275_DisconnectAddTransaction(void* ptr);
-void AddressList8ba275_AddTransaction(void* ptr, void* transaction);
-void AddressList8ba275_ConnectRemoveTransaction(void* ptr);
-void AddressList8ba275_DisconnectRemoveTransaction(void* ptr);
-void AddressList8ba275_RemoveTransaction(void* ptr, int index);
+void AddressList8ba275_ConnectAddAddress(void* ptr);
+void AddressList8ba275_DisconnectAddAddress(void* ptr);
+void AddressList8ba275_AddAddress(void* ptr, void* transaction);
+void AddressList8ba275_ConnectRemoveAddress(void* ptr);
+void AddressList8ba275_DisconnectRemoveAddress(void* ptr);
+void AddressList8ba275_RemoveAddress(void* ptr, int index);
 struct Moc_PackedList AddressList8ba275_Roles(void* ptr);
 struct Moc_PackedList AddressList8ba275_RolesDefault(void* ptr);
 void AddressList8ba275_SetRoles(void* ptr, void* roles);

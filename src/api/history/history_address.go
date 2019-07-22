@@ -13,8 +13,8 @@ const (
 type AddressDeatails struct {
 	core.QObject
 
-	_ float32 `property:"address"`
-	_ int     `property:"addressSky"`
+	_ string  `property:"address"`
+	_ float32 `property:"addressSky"`
 	_ int     `property:"addressCoinHours"`
 }
 
@@ -25,8 +25,8 @@ type AddressList struct {
 
 	_ func() `constructor:"init"`
 
-	_ func(transaction *AddressDeatails) `signal:"addTransaction,auto"`
-	_ func(index int)                    `signal:"removeTransaction,auto"`
+	_ func(transaction *AddressDeatails) `signal:"addAddress,auto"`
+	_ func(index int)                    `signal:"removeAddress,auto"`
 
 	_ []*AddressDeatails `property:"addresses"`
 }
@@ -41,6 +41,8 @@ func (al *AddressList) init() {
 	al.ConnectRowCount(al.rowCount)
 	al.ConnectData(al.data)
 	al.ConnectRoleNames(al.roleNames)
+
+	al.addExamples()
 }
 
 func (al *AddressList) rowCount(*core.QModelIndex) int {
@@ -51,13 +53,13 @@ func (al *AddressList) roleNames() map[int]*core.QByteArray {
 	return al.Roles()
 }
 
-func (al *AddressList) addTransaction(address *AddressDeatails) {
+func (al *AddressList) addAddress(address *AddressDeatails) {
 	al.BeginInsertRows(core.NewQModelIndex(), len(al.Addresses()), len(al.Addresses()))
 	al.SetAddresses(append(al.Addresses(), address))
 	al.EndInsertRows()
 }
 
-func (al *AddressList) removeTransaction(index int) {
+func (al *AddressList) removeAddress(index int) {
 	al.BeginRemoveRows(core.NewQModelIndex(), index, index)
 	al.SetAddresses(append(al.Addresses()[:index], al.Addresses()[index+1:]...))
 	al.EndRemoveRows()
@@ -88,4 +90,27 @@ func (al *AddressList) data(index *core.QModelIndex, role int) *core.QVariant {
 			return core.NewQVariant()
 		}
 	}
+}
+
+func (al *AddressList) addExamples() {
+	adr := NewAddressDeatails(nil)
+	adr.SetAddress("734irweaweygtawieta783cwyc")
+	adr.SetAddressSky(38)
+	adr.SetAddressCoinHours(5048)
+	al.addAddress(adr)
+	adr1 := NewAddressDeatails(nil)
+	adr1.SetAddress("ekq03i3qerwhjqoqh9823yurig")
+	adr1.SetAddressSky(61)
+	adr1.SetAddressCoinHours(9456)
+	al.addAddress(adr1)
+	adr2 := NewAddressDeatails(nil)
+	adr2.SetAddress("1kjher73yiner7wn32nkuwe94v")
+	adr2.SetAddressSky(1)
+	adr2.SetAddressCoinHours(24)
+	al.addAddress(adr2)
+	adr3 := NewAddressDeatails(nil)
+	adr3.SetAddress("oopfwwklfd34iuhjwe83w3h28r")
+	adr3.SetAddressSky(111)
+	adr3.SetAddressCoinHours(13548)
+	al.addAddress(adr3)
 }

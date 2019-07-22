@@ -34,7 +34,7 @@ func (hm *HistoryModel) init() {
 	hm.ConnectData(hm.data)
 	hm.ConnectRoleNames(hm.roleNames)
 
-	addExamples(hm)
+	hm.addExamples()
 }
 
 func (hm *HistoryModel) rowCount(*core.QModelIndex) int {
@@ -108,7 +108,7 @@ func (hm *HistoryModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	}
 }
 
-func addExamples(hm *HistoryModel) {
+func (hm *HistoryModel) addExamples() {
 	td := NewTransactionDetails(nil)
 	td.SetDate(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(10, 0, 0, 0), core.Qt__LocalTime))
 	td.SetStatus(transactionStatusPending)
