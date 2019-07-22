@@ -1,12 +1,62 @@
-# Wallet GUI client
+# FiberCrypto wallet
 
-## Build System
+FiberCrypto wallet is a cryptocurrency software wallet aimed at:
+
+- Provide easy-to-use interactions to users
+- State
+- Out-of-the-box support for every SkyFiber token in a single place
+- Support other altcoins
+- Facilitate exchange of crypto assets
+- Buy and sell supported crypto assets using fiat (e.g. USD, GBP, EUR, ...)
+- Integrations with trading tools
+- Offer basic blockchain-specific tools
+
+## Development
+
+### Project folder structure
+
+Project files are organized as follows:
+
+- `main.go` : Application entry point
+- `CHANGELOG.md` : Project changelog
+- `Makefile` : Project build rules
+- `README.md` : This file.
+- `*.qrc` : QML resource index files.
+- `qtquickcontrols2.conf` : QT Quick controls configuration file.
+- `./resources` : Static resources.
+- `./resources/images` : Graphics resources needed by the application.
+- `./resources/images/icons` : Project and third-party icons
+- `./resources/fonts` : Font files needed to compile the application.
+- `./src` : Application source code.
+- `./src/ui` : QML definitions for application GUI components.
+- `./src/ui/Dialogs` : QML definitions for reusable dialogs.
+- `./src/ui/Delegates` : QML specs for partial views.
+- `./src/core` : Core go-lang interfaces.
+- `./src/util` : Reusable code.
+- `./src/models` : QT models linking coin-specific models to application GUI.
+- `./src/coin` : Source code for altcoin integrations.
+- `./src/coin/skycoin` : Skycoin wallet integration
+- `./src/coin/skycoin/models` : Skycoin implementation of golang core interfaces.
+- `./src/coin/skycoin/blockchain` : Skycoin blockchain API.
+- `./src/coin/skycoin/sign` : Skycoin sign API.
+- `vendor` : Project dependencies managed by `dep`.
+
+### Anatomy of 
+
+FiberCrypto wallet supports multiple altcoins. In order to cope with this complexity GUI code and QT models rely on strict interfaces which shall be implemented to add support for a given coin. Each such integration must have two main components:
+
+- `Models API`: Implements application core interfaces.
+- `Sign API` : Implements altcoin transaction and message signing primitives required by application code.
+- `Blockchain API` : Provides communication between application and altcoin service nodes to query for data via REST, JSON-RPC and other similar low-level client-server API.
+- `Peer-exchange API` (optional): Implements peer-to-peer interactions with altcoin blockchain nodes.
+
+### Build System
 
 The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The front-end is programmed in [QML](http://doc.qt.io/qt-5/qmlapplications.html "QML Applications"), and the back-end in [Go](https://golang.org/ "The Go Programming Language"), using [therecipe/qt](https://github.com/therecipe/qt/ "therecipe/qt").
 
-### Requirements
+#### Requirements
 
-#### Qt version
+##### Qt version
 
 [Linux/X11 requirements](http://doc.qt.io/qt-5/linux.html)  
 [MacOS requirements](http://doc.qt.io/qt-5/macos.html)  
