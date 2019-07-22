@@ -27,7 +27,7 @@
 class BlockchainStatusModel97d618: public QObject
 {
 Q_OBJECT
-Q_PROPERTY(qint32 numberOfBlocks READ numberOfBlocks WRITE setNumberOfBlocks NOTIFY numberOfBlocksChanged)
+Q_PROPERTY(QString numberOfBlocks READ numberOfBlocks WRITE setNumberOfBlocks NOTIFY numberOfBlocksChanged)
 Q_PROPERTY(QDateTime timestampLastBlock READ timestampLastBlock WRITE setTimestampLastBlock NOTIFY timestampLastBlockChanged)
 Q_PROPERTY(QString hashLastBlock READ hashLastBlock WRITE setHashLastBlock NOTIFY hashLastBlockChanged)
 Q_PROPERTY(QString currentSkySupply READ currentSkySupply WRITE setCurrentSkySupply NOTIFY currentSkySupplyChanged)
@@ -36,9 +36,9 @@ Q_PROPERTY(QString currentCoinHoursSupply READ currentCoinHoursSupply WRITE setC
 Q_PROPERTY(QString totalCoinHoursSupply READ totalCoinHoursSupply WRITE setTotalCoinHoursSupply NOTIFY totalCoinHoursSupplyChanged)
 public:
 	BlockchainStatusModel97d618(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");BlockchainStatusModel97d618_BlockchainStatusModel97d618_QRegisterMetaType();BlockchainStatusModel97d618_BlockchainStatusModel97d618_QRegisterMetaTypes();callbackBlockchainStatusModel97d618_Constructor(this);};
-	qint32 numberOfBlocks() { return callbackBlockchainStatusModel97d618_NumberOfBlocks(this); };
-	void setNumberOfBlocks(qint32 numberOfBlocks) { callbackBlockchainStatusModel97d618_SetNumberOfBlocks(this, numberOfBlocks); };
-	void Signal_NumberOfBlocksChanged(qint32 numberOfBlocks) { callbackBlockchainStatusModel97d618_NumberOfBlocksChanged(this, numberOfBlocks); };
+	QString numberOfBlocks() { return ({ Moc_PackedString tempVal = callbackBlockchainStatusModel97d618_NumberOfBlocks(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setNumberOfBlocks(QString numberOfBlocks) { QByteArray tf3f052 = numberOfBlocks.toUtf8(); Moc_PackedString numberOfBlocksPacked = { const_cast<char*>(tf3f052.prepend("WHITESPACE").constData()+10), tf3f052.size()-10 };callbackBlockchainStatusModel97d618_SetNumberOfBlocks(this, numberOfBlocksPacked); };
+	void Signal_NumberOfBlocksChanged(QString numberOfBlocks) { QByteArray tf3f052 = numberOfBlocks.toUtf8(); Moc_PackedString numberOfBlocksPacked = { const_cast<char*>(tf3f052.prepend("WHITESPACE").constData()+10), tf3f052.size()-10 };callbackBlockchainStatusModel97d618_NumberOfBlocksChanged(this, numberOfBlocksPacked); };
 	QDateTime timestampLastBlock() { return *static_cast<QDateTime*>(callbackBlockchainStatusModel97d618_TimestampLastBlock(this)); };
 	void setTimestampLastBlock(QDateTime timestampLastBlock) { callbackBlockchainStatusModel97d618_SetTimestampLastBlock(this, new QDateTime(timestampLastBlock)); };
 	void Signal_TimestampLastBlockChanged(QDateTime timestampLastBlock) { callbackBlockchainStatusModel97d618_TimestampLastBlockChanged(this, new QDateTime(timestampLastBlock)); };
@@ -68,8 +68,8 @@ public:
 	bool eventFilter(QObject * watched, QEvent * event) { return callbackBlockchainStatusModel97d618_EventFilter(this, watched, event) != 0; };
 	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackBlockchainStatusModel97d618_ObjectNameChanged(this, objectNamePacked); };
 	void timerEvent(QTimerEvent * event) { callbackBlockchainStatusModel97d618_TimerEvent(this, event); };
-	qint32 numberOfBlocksDefault() { return _numberOfBlocks; };
-	void setNumberOfBlocksDefault(qint32 p) { if (p != _numberOfBlocks) { _numberOfBlocks = p; numberOfBlocksChanged(_numberOfBlocks); } };
+	QString numberOfBlocksDefault() { return _numberOfBlocks; };
+	void setNumberOfBlocksDefault(QString p) { if (p != _numberOfBlocks) { _numberOfBlocks = p; numberOfBlocksChanged(_numberOfBlocks); } };
 	QDateTime timestampLastBlockDefault() { return _timestampLastBlock; };
 	void setTimestampLastBlockDefault(QDateTime p) { if (p != _timestampLastBlock) { _timestampLastBlock = p; timestampLastBlockChanged(_timestampLastBlock); } };
 	QString hashLastBlockDefault() { return _hashLastBlock; };
@@ -83,7 +83,7 @@ public:
 	QString totalCoinHoursSupplyDefault() { return _totalCoinHoursSupply; };
 	void setTotalCoinHoursSupplyDefault(QString p) { if (p != _totalCoinHoursSupply) { _totalCoinHoursSupply = p; totalCoinHoursSupplyChanged(_totalCoinHoursSupply); } };
 signals:
-	void numberOfBlocksChanged(qint32 numberOfBlocks);
+	void numberOfBlocksChanged(QString numberOfBlocks);
 	void timestampLastBlockChanged(QDateTime timestampLastBlock);
 	void hashLastBlockChanged(QString hashLastBlock);
 	void currentSkySupplyChanged(QString currentSkySupply);
@@ -92,7 +92,7 @@ signals:
 	void totalCoinHoursSupplyChanged(QString totalCoinHoursSupply);
 public slots:
 private:
-	qint32 _numberOfBlocks;
+	QString _numberOfBlocks;
 	QDateTime _timestampLastBlock;
 	QString _hashLastBlock;
 	QString _currentSkySupply;
@@ -109,39 +109,39 @@ void BlockchainStatusModel97d618_BlockchainStatusModel97d618_QRegisterMetaTypes(
 	qRegisterMetaType<QString>();
 }
 
-int BlockchainStatusModel97d618_NumberOfBlocks(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_NumberOfBlocks(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->numberOfBlocks();
+	return ({ QByteArray t90e1b1 = static_cast<BlockchainStatusModel97d618*>(ptr)->numberOfBlocks().toUtf8(); Moc_PackedString { const_cast<char*>(t90e1b1.prepend("WHITESPACE").constData()+10), t90e1b1.size()-10 }; });
 }
 
-int BlockchainStatusModel97d618_NumberOfBlocksDefault(void* ptr)
+struct Moc_PackedString BlockchainStatusModel97d618_NumberOfBlocksDefault(void* ptr)
 {
-	return static_cast<BlockchainStatusModel97d618*>(ptr)->numberOfBlocksDefault();
+	return ({ QByteArray td41e94 = static_cast<BlockchainStatusModel97d618*>(ptr)->numberOfBlocksDefault().toUtf8(); Moc_PackedString { const_cast<char*>(td41e94.prepend("WHITESPACE").constData()+10), td41e94.size()-10 }; });
 }
 
-void BlockchainStatusModel97d618_SetNumberOfBlocks(void* ptr, int numberOfBlocks)
+void BlockchainStatusModel97d618_SetNumberOfBlocks(void* ptr, struct Moc_PackedString numberOfBlocks)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setNumberOfBlocks(numberOfBlocks);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setNumberOfBlocks(QString::fromUtf8(numberOfBlocks.data, numberOfBlocks.len));
 }
 
-void BlockchainStatusModel97d618_SetNumberOfBlocksDefault(void* ptr, int numberOfBlocks)
+void BlockchainStatusModel97d618_SetNumberOfBlocksDefault(void* ptr, struct Moc_PackedString numberOfBlocks)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->setNumberOfBlocksDefault(numberOfBlocks);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->setNumberOfBlocksDefault(QString::fromUtf8(numberOfBlocks.data, numberOfBlocks.len));
 }
 
 void BlockchainStatusModel97d618_ConnectNumberOfBlocksChanged(void* ptr)
 {
-	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::numberOfBlocksChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_NumberOfBlocksChanged));
+	QObject::connect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::numberOfBlocksChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_NumberOfBlocksChanged));
 }
 
 void BlockchainStatusModel97d618_DisconnectNumberOfBlocksChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::numberOfBlocksChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(qint32)>(&BlockchainStatusModel97d618::Signal_NumberOfBlocksChanged));
+	QObject::disconnect(static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::numberOfBlocksChanged), static_cast<BlockchainStatusModel97d618*>(ptr), static_cast<void (BlockchainStatusModel97d618::*)(QString)>(&BlockchainStatusModel97d618::Signal_NumberOfBlocksChanged));
 }
 
-void BlockchainStatusModel97d618_NumberOfBlocksChanged(void* ptr, int numberOfBlocks)
+void BlockchainStatusModel97d618_NumberOfBlocksChanged(void* ptr, struct Moc_PackedString numberOfBlocks)
 {
-	static_cast<BlockchainStatusModel97d618*>(ptr)->numberOfBlocksChanged(numberOfBlocks);
+	static_cast<BlockchainStatusModel97d618*>(ptr)->numberOfBlocksChanged(QString::fromUtf8(numberOfBlocks.data, numberOfBlocks.len));
 }
 
 void* BlockchainStatusModel97d618_TimestampLastBlock(void* ptr)

@@ -15,13 +15,13 @@ extern "C" {
 
 struct Moc_PackedString { char* data; long long len; };
 struct Moc_PackedList { void* data; long long len; };
-int BlockchainStatusModel97d618_NumberOfBlocks(void* ptr);
-int BlockchainStatusModel97d618_NumberOfBlocksDefault(void* ptr);
-void BlockchainStatusModel97d618_SetNumberOfBlocks(void* ptr, int numberOfBlocks);
-void BlockchainStatusModel97d618_SetNumberOfBlocksDefault(void* ptr, int numberOfBlocks);
+struct Moc_PackedString BlockchainStatusModel97d618_NumberOfBlocks(void* ptr);
+struct Moc_PackedString BlockchainStatusModel97d618_NumberOfBlocksDefault(void* ptr);
+void BlockchainStatusModel97d618_SetNumberOfBlocks(void* ptr, struct Moc_PackedString numberOfBlocks);
+void BlockchainStatusModel97d618_SetNumberOfBlocksDefault(void* ptr, struct Moc_PackedString numberOfBlocks);
 void BlockchainStatusModel97d618_ConnectNumberOfBlocksChanged(void* ptr);
 void BlockchainStatusModel97d618_DisconnectNumberOfBlocksChanged(void* ptr);
-void BlockchainStatusModel97d618_NumberOfBlocksChanged(void* ptr, int numberOfBlocks);
+void BlockchainStatusModel97d618_NumberOfBlocksChanged(void* ptr, struct Moc_PackedString numberOfBlocks);
 void* BlockchainStatusModel97d618_TimestampLastBlock(void* ptr);
 void* BlockchainStatusModel97d618_TimestampLastBlockDefault(void* ptr);
 void BlockchainStatusModel97d618_SetTimestampLastBlock(void* ptr, void* timestampLastBlock);

@@ -92,20 +92,21 @@ func callbackBlockchainStatusModel97d618_Constructor(ptr unsafe.Pointer) {
 }
 
 //export callbackBlockchainStatusModel97d618_NumberOfBlocks
-func callbackBlockchainStatusModel97d618_NumberOfBlocks(ptr unsafe.Pointer) C.int {
+func callbackBlockchainStatusModel97d618_NumberOfBlocks(ptr unsafe.Pointer) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "numberOfBlocks"); signal != nil {
-		return C.int(int32((*(*func() int)(signal))()))
+		tempVal := (*(*func() string)(signal))()
+		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
 	}
-
-	return C.int(int32(NewBlockchainStatusModelFromPointer(ptr).NumberOfBlocksDefault()))
+	tempVal := NewBlockchainStatusModelFromPointer(ptr).NumberOfBlocksDefault()
+	return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
 }
 
-func (ptr *BlockchainStatusModel) ConnectNumberOfBlocks(f func() int) {
+func (ptr *BlockchainStatusModel) ConnectNumberOfBlocks(f func() string) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "numberOfBlocks"); signal != nil {
-			f := func() int {
-				(*(*func() int)(signal))()
+			f := func() string {
+				(*(*func() string)(signal))()
 				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "numberOfBlocks", unsafe.Pointer(&f))
@@ -122,35 +123,35 @@ func (ptr *BlockchainStatusModel) DisconnectNumberOfBlocks() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) NumberOfBlocks() int {
+func (ptr *BlockchainStatusModel) NumberOfBlocks() string {
 	if ptr.Pointer() != nil {
-		return int(int32(C.BlockchainStatusModel97d618_NumberOfBlocks(ptr.Pointer())))
+		return cGoUnpackString(C.BlockchainStatusModel97d618_NumberOfBlocks(ptr.Pointer()))
 	}
-	return 0
+	return ""
 }
 
-func (ptr *BlockchainStatusModel) NumberOfBlocksDefault() int {
+func (ptr *BlockchainStatusModel) NumberOfBlocksDefault() string {
 	if ptr.Pointer() != nil {
-		return int(int32(C.BlockchainStatusModel97d618_NumberOfBlocksDefault(ptr.Pointer())))
+		return cGoUnpackString(C.BlockchainStatusModel97d618_NumberOfBlocksDefault(ptr.Pointer()))
 	}
-	return 0
+	return ""
 }
 
 //export callbackBlockchainStatusModel97d618_SetNumberOfBlocks
-func callbackBlockchainStatusModel97d618_SetNumberOfBlocks(ptr unsafe.Pointer, numberOfBlocks C.int) {
+func callbackBlockchainStatusModel97d618_SetNumberOfBlocks(ptr unsafe.Pointer, numberOfBlocks C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "setNumberOfBlocks"); signal != nil {
-		(*(*func(int))(signal))(int(int32(numberOfBlocks)))
+		(*(*func(string))(signal))(cGoUnpackString(numberOfBlocks))
 	} else {
-		NewBlockchainStatusModelFromPointer(ptr).SetNumberOfBlocksDefault(int(int32(numberOfBlocks)))
+		NewBlockchainStatusModelFromPointer(ptr).SetNumberOfBlocksDefault(cGoUnpackString(numberOfBlocks))
 	}
 }
 
-func (ptr *BlockchainStatusModel) ConnectSetNumberOfBlocks(f func(numberOfBlocks int)) {
+func (ptr *BlockchainStatusModel) ConnectSetNumberOfBlocks(f func(numberOfBlocks string)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "setNumberOfBlocks"); signal != nil {
-			f := func(numberOfBlocks int) {
-				(*(*func(int))(signal))(numberOfBlocks)
+			f := func(numberOfBlocks string) {
+				(*(*func(string))(signal))(numberOfBlocks)
 				f(numberOfBlocks)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "setNumberOfBlocks", unsafe.Pointer(&f))
@@ -167,27 +168,37 @@ func (ptr *BlockchainStatusModel) DisconnectSetNumberOfBlocks() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetNumberOfBlocks(numberOfBlocks int) {
+func (ptr *BlockchainStatusModel) SetNumberOfBlocks(numberOfBlocks string) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetNumberOfBlocks(ptr.Pointer(), C.int(int32(numberOfBlocks)))
+		var numberOfBlocksC *C.char
+		if numberOfBlocks != "" {
+			numberOfBlocksC = C.CString(numberOfBlocks)
+			defer C.free(unsafe.Pointer(numberOfBlocksC))
+		}
+		C.BlockchainStatusModel97d618_SetNumberOfBlocks(ptr.Pointer(), C.struct_Moc_PackedString{data: numberOfBlocksC, len: C.longlong(len(numberOfBlocks))})
 	}
 }
 
-func (ptr *BlockchainStatusModel) SetNumberOfBlocksDefault(numberOfBlocks int) {
+func (ptr *BlockchainStatusModel) SetNumberOfBlocksDefault(numberOfBlocks string) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_SetNumberOfBlocksDefault(ptr.Pointer(), C.int(int32(numberOfBlocks)))
+		var numberOfBlocksC *C.char
+		if numberOfBlocks != "" {
+			numberOfBlocksC = C.CString(numberOfBlocks)
+			defer C.free(unsafe.Pointer(numberOfBlocksC))
+		}
+		C.BlockchainStatusModel97d618_SetNumberOfBlocksDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: numberOfBlocksC, len: C.longlong(len(numberOfBlocks))})
 	}
 }
 
 //export callbackBlockchainStatusModel97d618_NumberOfBlocksChanged
-func callbackBlockchainStatusModel97d618_NumberOfBlocksChanged(ptr unsafe.Pointer, numberOfBlocks C.int) {
+func callbackBlockchainStatusModel97d618_NumberOfBlocksChanged(ptr unsafe.Pointer, numberOfBlocks C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "numberOfBlocksChanged"); signal != nil {
-		(*(*func(int))(signal))(int(int32(numberOfBlocks)))
+		(*(*func(string))(signal))(cGoUnpackString(numberOfBlocks))
 	}
 
 }
 
-func (ptr *BlockchainStatusModel) ConnectNumberOfBlocksChanged(f func(numberOfBlocks int)) {
+func (ptr *BlockchainStatusModel) ConnectNumberOfBlocksChanged(f func(numberOfBlocks string)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "numberOfBlocksChanged") {
@@ -195,8 +206,8 @@ func (ptr *BlockchainStatusModel) ConnectNumberOfBlocksChanged(f func(numberOfBl
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "numberOfBlocksChanged"); signal != nil {
-			f := func(numberOfBlocks int) {
-				(*(*func(int))(signal))(numberOfBlocks)
+			f := func(numberOfBlocks string) {
+				(*(*func(string))(signal))(numberOfBlocks)
 				f(numberOfBlocks)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "numberOfBlocksChanged", unsafe.Pointer(&f))
@@ -213,9 +224,14 @@ func (ptr *BlockchainStatusModel) DisconnectNumberOfBlocksChanged() {
 	}
 }
 
-func (ptr *BlockchainStatusModel) NumberOfBlocksChanged(numberOfBlocks int) {
+func (ptr *BlockchainStatusModel) NumberOfBlocksChanged(numberOfBlocks string) {
 	if ptr.Pointer() != nil {
-		C.BlockchainStatusModel97d618_NumberOfBlocksChanged(ptr.Pointer(), C.int(int32(numberOfBlocks)))
+		var numberOfBlocksC *C.char
+		if numberOfBlocks != "" {
+			numberOfBlocksC = C.CString(numberOfBlocks)
+			defer C.free(unsafe.Pointer(numberOfBlocksC))
+		}
+		C.BlockchainStatusModel97d618_NumberOfBlocksChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: numberOfBlocksC, len: C.longlong(len(numberOfBlocks))})
 	}
 }
 

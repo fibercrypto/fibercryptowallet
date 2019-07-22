@@ -85,7 +85,7 @@ static const uint qt_meta_data_BlockchainStatusModel97d618[] = {
       14,    1,   67,    2, 0x06 /* Public */,
 
  // signals: parameters
-    QMetaType::Void, QMetaType::Int,    3,
+    QMetaType::Void, QMetaType::QString,    3,
     QMetaType::Void, QMetaType::QDateTime,    5,
     QMetaType::Void, QMetaType::QString,    7,
     QMetaType::Void, QMetaType::QString,    9,
@@ -94,7 +94,7 @@ static const uint qt_meta_data_BlockchainStatusModel97d618[] = {
     QMetaType::Void, QMetaType::QString,   15,
 
  // properties: name, type, flags
-       3, QMetaType::Int, 0x00495103,
+       3, QMetaType::QString, 0x00495103,
        5, QMetaType::QDateTime, 0x00495103,
        7, QMetaType::QString, 0x00495103,
        9, QMetaType::QString, 0x00495103,
@@ -120,7 +120,7 @@ void BlockchainStatusModel97d618::qt_static_metacall(QObject *_o, QMetaObject::C
         auto *_t = static_cast<BlockchainStatusModel97d618 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->numberOfBlocksChanged((*reinterpret_cast< qint32(*)>(_a[1]))); break;
+        case 0: _t->numberOfBlocksChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 1: _t->timestampLastBlockChanged((*reinterpret_cast< QDateTime(*)>(_a[1]))); break;
         case 2: _t->hashLastBlockChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 3: _t->currentSkySupplyChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
@@ -132,7 +132,7 @@ void BlockchainStatusModel97d618::qt_static_metacall(QObject *_o, QMetaObject::C
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (BlockchainStatusModel97d618::*)(qint32 );
+            using _t = void (BlockchainStatusModel97d618::*)(QString );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel97d618::numberOfBlocksChanged)) {
                 *result = 0;
                 return;
@@ -187,7 +187,7 @@ void BlockchainStatusModel97d618::qt_static_metacall(QObject *_o, QMetaObject::C
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: *reinterpret_cast< qint32*>(_v) = _t->numberOfBlocks(); break;
+        case 0: *reinterpret_cast< QString*>(_v) = _t->numberOfBlocks(); break;
         case 1: *reinterpret_cast< QDateTime*>(_v) = _t->timestampLastBlock(); break;
         case 2: *reinterpret_cast< QString*>(_v) = _t->hashLastBlock(); break;
         case 3: *reinterpret_cast< QString*>(_v) = _t->currentSkySupply(); break;
@@ -201,7 +201,7 @@ void BlockchainStatusModel97d618::qt_static_metacall(QObject *_o, QMetaObject::C
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
-        case 0: _t->setNumberOfBlocks(*reinterpret_cast< qint32*>(_v)); break;
+        case 0: _t->setNumberOfBlocks(*reinterpret_cast< QString*>(_v)); break;
         case 1: _t->setTimestampLastBlock(*reinterpret_cast< QDateTime*>(_v)); break;
         case 2: _t->setHashLastBlock(*reinterpret_cast< QString*>(_v)); break;
         case 3: _t->setCurrentSkySupply(*reinterpret_cast< QString*>(_v)); break;
@@ -273,7 +273,7 @@ int BlockchainStatusModel97d618::qt_metacall(QMetaObject::Call _c, int _id, void
 }
 
 // SIGNAL 0
-void BlockchainStatusModel97d618::numberOfBlocksChanged(qint32 _t1)
+void BlockchainStatusModel97d618::numberOfBlocksChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);

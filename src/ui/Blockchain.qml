@@ -11,7 +11,7 @@ Page {
         id: blockchain_status
     }
 
-    property int numberOfBlocks: blockchain_status.numberOfBlocks
+    property string numberOfBlocks: blockchain_status.numberOfBlocks
     property date timestampLastBlock: blockchain_status.timestampLastBlock
     property string hashLastBlock: blockchain_status.hashLastBlock
 

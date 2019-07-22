@@ -1,6 +1,7 @@
 package blockchainViewModels
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/skycoin/skycoin/src/api"
@@ -16,7 +17,7 @@ type BlockchainStatusModel struct {
 	core.QObject
 	_ func() `constructor:"init"`
 
-	_ int             `property:"numberOfBlocks"`
+	_ string          `property:"numberOfBlocks"`
 	_ *core.QDateTime `property:"timestampLastBlock"`
 	_ string          `property:"hashLastBlock"`
 	_ string          `property:"currentSkySupply"`
@@ -29,8 +30,8 @@ func (bs *BlockchainStatusModel) init() {
 	println("init-BlockchainStatusModel")
 
 	// block details
-	bs.SetNumberOfBlocksDefault(0)
-	bs.SetTimestampLastBlockDefault(core.NewQDateTime())
+	bs.SetNumberOfBlocksDefault("0")
+	bs.SetTimestampLastBlockDefault(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(0, 0, 0, 0), core.Qt__LocalTime))
 	bs.SetHashLastBlockDefault("")
 	// sky details
 	bs.SetCurrentSkySupplyDefault("0")
@@ -48,7 +49,7 @@ func (bs *BlockchainStatusModel) init() {
 
 // NewClient returns a new client
 func NewClient() *api.Client {
-	addr := "http://127.0.0.1:38391" // example only
+	addr := "http://node.skycoin.net" // example only
 	return api.NewClient(addr)
 }
 
@@ -62,7 +63,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	}
 
 	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
-	numberOfBlocks := 1 // TODO: number of blocks?
+	numberOfBlocks := strconv.FormatUint(lastBlock.Head.BkSeq, 10)
 	lastBlockHash := lastBlock.Head.Hash
 	year, month, day, h, m, s := parseDate(int64(lastBlock.Head.Time)) // Fixme: the conversion its save, right??
 
@@ -78,7 +79,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 
 	// block details
 	bs.SetNumberOfBlocks(numberOfBlocks)
-	bs.SetTimestampLastBlock(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, s, 0), core.Qt__LocalTime)) //TODO: datetime
+	bs.SetTimestampLastBlock(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, s, 0), core.Qt__LocalTime))
 	bs.SetHashLastBlock(lastBlockHash)
 
 	// sky details
