@@ -43,6 +43,7 @@ Q_PROPERTY(QList<TransactionDetails8ba275*> transactions READ transactions WRITE
 public:
 	HistoryModel8ba275(QObject *parent = Q_NULLPTR) : QAbstractListModel(parent) {qRegisterMetaType<quintptr>("quintptr");HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaType();HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes();callbackHistoryModel8ba275_Constructor(this);};
 	void Signal_AddTransaction(TransactionDetails8ba275* transaction) { callbackHistoryModel8ba275_AddTransaction(this, transaction); };
+	void Signal_RemoveTransaction(qint32 index) { callbackHistoryModel8ba275_RemoveTransaction(this, index); };
 	type378cdd roles() { return ({ QMap<qint32, QByteArray>* tmpP = static_cast<QMap<qint32, QByteArray>*>(callbackHistoryModel8ba275_Roles(this)); QMap<qint32, QByteArray> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
 	void setRoles(type378cdd roles) { callbackHistoryModel8ba275_SetRoles(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_RolesChanged(type378cdd roles) { callbackHistoryModel8ba275_RolesChanged(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
@@ -119,6 +120,7 @@ public:
 	void setTransactionsDefault(QList<TransactionDetails8ba275*> p) { if (p != _transactions) { _transactions = p; transactionsChanged(_transactions); } };
 signals:
 	void addTransaction(TransactionDetails8ba275* transaction);
+	void removeTransaction(qint32 index);
 	void rolesChanged(type378cdd roles);
 	void transactionsChanged(QList<TransactionDetails8ba275*> transactions);
 public slots:
@@ -131,8 +133,8 @@ Q_DECLARE_METATYPE(HistoryModel8ba275*)
 
 
 void HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaTypes() {
-	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetails8ba275*>");
 	qRegisterMetaType<type378cdd>("type378cdd");
+	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetails8ba275*>");
 }
 
 class TransactionDetails8ba275: public QObject
@@ -236,495 +238,6 @@ void TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaTypes() {
 	qRegisterMetaType<QString>();
 }
 
-void* TransactionDetails8ba275_Date(void* ptr)
-{
-	return new QDateTime(static_cast<TransactionDetails8ba275*>(ptr)->date());
-}
-
-void* TransactionDetails8ba275_DateDefault(void* ptr)
-{
-	return new QDateTime(static_cast<TransactionDetails8ba275*>(ptr)->dateDefault());
-}
-
-void TransactionDetails8ba275_SetDate(void* ptr, void* date)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setDate(*static_cast<QDateTime*>(date));
-}
-
-void TransactionDetails8ba275_SetDateDefault(void* ptr, void* date)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setDateDefault(*static_cast<QDateTime*>(date));
-}
-
-void TransactionDetails8ba275_ConnectDateChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::dateChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::Signal_DateChanged));
-}
-
-void TransactionDetails8ba275_DisconnectDateChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::dateChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::Signal_DateChanged));
-}
-
-void TransactionDetails8ba275_DateChanged(void* ptr, void* date)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->dateChanged(*static_cast<QDateTime*>(date));
-}
-
-int TransactionDetails8ba275_Status(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->status();
-}
-
-int TransactionDetails8ba275_StatusDefault(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->statusDefault();
-}
-
-void TransactionDetails8ba275_SetStatus(void* ptr, int status)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setStatus(status);
-}
-
-void TransactionDetails8ba275_SetStatusDefault(void* ptr, int status)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setStatusDefault(status);
-}
-
-void TransactionDetails8ba275_ConnectStatusChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::statusChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_StatusChanged));
-}
-
-void TransactionDetails8ba275_DisconnectStatusChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::statusChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_StatusChanged));
-}
-
-void TransactionDetails8ba275_StatusChanged(void* ptr, int status)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->statusChanged(status);
-}
-
-int TransactionDetails8ba275_Type(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->type();
-}
-
-int TransactionDetails8ba275_TypeDefault(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->typeDefault();
-}
-
-void TransactionDetails8ba275_SetType(void* ptr, int ty)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setType(ty);
-}
-
-void TransactionDetails8ba275_SetTypeDefault(void* ptr, int ty)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setTypeDefault(ty);
-}
-
-void TransactionDetails8ba275_ConnectTypeChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::typeChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_TypeChanged));
-}
-
-void TransactionDetails8ba275_DisconnectTypeChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::typeChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_TypeChanged));
-}
-
-void TransactionDetails8ba275_TypeChanged(void* ptr, int ty)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->typeChanged(ty);
-}
-
-int TransactionDetails8ba275_Amount(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->amount();
-}
-
-int TransactionDetails8ba275_AmountDefault(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->amountDefault();
-}
-
-void TransactionDetails8ba275_SetAmount(void* ptr, int amount)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setAmount(amount);
-}
-
-void TransactionDetails8ba275_SetAmountDefault(void* ptr, int amount)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setAmountDefault(amount);
-}
-
-void TransactionDetails8ba275_ConnectAmountChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::amountChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_AmountChanged));
-}
-
-void TransactionDetails8ba275_DisconnectAmountChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::amountChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_AmountChanged));
-}
-
-void TransactionDetails8ba275_AmountChanged(void* ptr, int amount)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->amountChanged(amount);
-}
-
-int TransactionDetails8ba275_HoursReceived(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->hoursReceived();
-}
-
-int TransactionDetails8ba275_HoursReceivedDefault(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->hoursReceivedDefault();
-}
-
-void TransactionDetails8ba275_SetHoursReceived(void* ptr, int hoursReceived)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setHoursReceived(hoursReceived);
-}
-
-void TransactionDetails8ba275_SetHoursReceivedDefault(void* ptr, int hoursReceived)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setHoursReceivedDefault(hoursReceived);
-}
-
-void TransactionDetails8ba275_ConnectHoursReceivedChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursReceivedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursReceivedChanged));
-}
-
-void TransactionDetails8ba275_DisconnectHoursReceivedChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursReceivedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursReceivedChanged));
-}
-
-void TransactionDetails8ba275_HoursReceivedChanged(void* ptr, int hoursReceived)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->hoursReceivedChanged(hoursReceived);
-}
-
-int TransactionDetails8ba275_HoursBurned(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->hoursBurned();
-}
-
-int TransactionDetails8ba275_HoursBurnedDefault(void* ptr)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->hoursBurnedDefault();
-}
-
-void TransactionDetails8ba275_SetHoursBurned(void* ptr, int hoursBurned)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setHoursBurned(hoursBurned);
-}
-
-void TransactionDetails8ba275_SetHoursBurnedDefault(void* ptr, int hoursBurned)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setHoursBurnedDefault(hoursBurned);
-}
-
-void TransactionDetails8ba275_ConnectHoursBurnedChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursBurnedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursBurnedChanged));
-}
-
-void TransactionDetails8ba275_DisconnectHoursBurnedChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursBurnedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursBurnedChanged));
-}
-
-void TransactionDetails8ba275_HoursBurnedChanged(void* ptr, int hoursBurned)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->hoursBurnedChanged(hoursBurned);
-}
-
-struct Moc_PackedString TransactionDetails8ba275_TransactionID(void* ptr)
-{
-	return ({ QByteArray tc8c5df = static_cast<TransactionDetails8ba275*>(ptr)->transactionID().toUtf8(); Moc_PackedString { const_cast<char*>(tc8c5df.prepend("WHITESPACE").constData()+10), tc8c5df.size()-10 }; });
-}
-
-struct Moc_PackedString TransactionDetails8ba275_TransactionIDDefault(void* ptr)
-{
-	return ({ QByteArray t299bde = static_cast<TransactionDetails8ba275*>(ptr)->transactionIDDefault().toUtf8(); Moc_PackedString { const_cast<char*>(t299bde.prepend("WHITESPACE").constData()+10), t299bde.size()-10 }; });
-}
-
-void TransactionDetails8ba275_SetTransactionID(void* ptr, struct Moc_PackedString transactionID)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setTransactionID(QString::fromUtf8(transactionID.data, transactionID.len));
-}
-
-void TransactionDetails8ba275_SetTransactionIDDefault(void* ptr, struct Moc_PackedString transactionID)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setTransactionIDDefault(QString::fromUtf8(transactionID.data, transactionID.len));
-}
-
-void TransactionDetails8ba275_ConnectTransactionIDChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::transactionIDChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_TransactionIDChanged));
-}
-
-void TransactionDetails8ba275_DisconnectTransactionIDChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::transactionIDChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_TransactionIDChanged));
-}
-
-void TransactionDetails8ba275_TransactionIDChanged(void* ptr, struct Moc_PackedString transactionID)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->transactionIDChanged(QString::fromUtf8(transactionID.data, transactionID.len));
-}
-
-struct Moc_PackedString TransactionDetails8ba275_SentAddress(void* ptr)
-{
-	return ({ QByteArray te78448 = static_cast<TransactionDetails8ba275*>(ptr)->sentAddress().toUtf8(); Moc_PackedString { const_cast<char*>(te78448.prepend("WHITESPACE").constData()+10), te78448.size()-10 }; });
-}
-
-struct Moc_PackedString TransactionDetails8ba275_SentAddressDefault(void* ptr)
-{
-	return ({ QByteArray tf856c0 = static_cast<TransactionDetails8ba275*>(ptr)->sentAddressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tf856c0.prepend("WHITESPACE").constData()+10), tf856c0.size()-10 }; });
-}
-
-void TransactionDetails8ba275_SetSentAddress(void* ptr, struct Moc_PackedString sentAddress)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setSentAddress(QString::fromUtf8(sentAddress.data, sentAddress.len));
-}
-
-void TransactionDetails8ba275_SetSentAddressDefault(void* ptr, struct Moc_PackedString sentAddress)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setSentAddressDefault(QString::fromUtf8(sentAddress.data, sentAddress.len));
-}
-
-void TransactionDetails8ba275_ConnectSentAddressChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::sentAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_SentAddressChanged));
-}
-
-void TransactionDetails8ba275_DisconnectSentAddressChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::sentAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_SentAddressChanged));
-}
-
-void TransactionDetails8ba275_SentAddressChanged(void* ptr, struct Moc_PackedString sentAddress)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->sentAddressChanged(QString::fromUtf8(sentAddress.data, sentAddress.len));
-}
-
-struct Moc_PackedString TransactionDetails8ba275_ReceivedAddress(void* ptr)
-{
-	return ({ QByteArray t3a4c8c = static_cast<TransactionDetails8ba275*>(ptr)->receivedAddress().toUtf8(); Moc_PackedString { const_cast<char*>(t3a4c8c.prepend("WHITESPACE").constData()+10), t3a4c8c.size()-10 }; });
-}
-
-struct Moc_PackedString TransactionDetails8ba275_ReceivedAddressDefault(void* ptr)
-{
-	return ({ QByteArray ta1cf30 = static_cast<TransactionDetails8ba275*>(ptr)->receivedAddressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(ta1cf30.prepend("WHITESPACE").constData()+10), ta1cf30.size()-10 }; });
-}
-
-void TransactionDetails8ba275_SetReceivedAddress(void* ptr, struct Moc_PackedString receivedAddress)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setReceivedAddress(QString::fromUtf8(receivedAddress.data, receivedAddress.len));
-}
-
-void TransactionDetails8ba275_SetReceivedAddressDefault(void* ptr, struct Moc_PackedString receivedAddress)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->setReceivedAddressDefault(QString::fromUtf8(receivedAddress.data, receivedAddress.len));
-}
-
-void TransactionDetails8ba275_ConnectReceivedAddressChanged(void* ptr)
-{
-	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::receivedAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_ReceivedAddressChanged));
-}
-
-void TransactionDetails8ba275_DisconnectReceivedAddressChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::receivedAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_ReceivedAddressChanged));
-}
-
-void TransactionDetails8ba275_ReceivedAddressChanged(void* ptr, struct Moc_PackedString receivedAddress)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->receivedAddressChanged(QString::fromUtf8(receivedAddress.data, receivedAddress.len));
-}
-
-int TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType()
-{
-	return qRegisterMetaType<TransactionDetails8ba275*>();
-}
-
-int TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType2(char* typeName)
-{
-	return qRegisterMetaType<TransactionDetails8ba275*>(const_cast<const char*>(typeName));
-}
-
-int TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType()
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<TransactionDetails8ba275>();
-#else
-	return 0;
-#endif
-}
-
-int TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<TransactionDetails8ba275>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
-#else
-	return 0;
-#endif
-}
-
-void* TransactionDetails8ba275___children_atList(void* ptr, int i)
-{
-	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void TransactionDetails8ba275___children_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* TransactionDetails8ba275___children_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject *>();
-}
-
-void* TransactionDetails8ba275___dynamicPropertyNames_atList(void* ptr, int i)
-{
-	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
-}
-
-void TransactionDetails8ba275___dynamicPropertyNames_setList(void* ptr, void* i)
-{
-	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
-}
-
-void* TransactionDetails8ba275___dynamicPropertyNames_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QByteArray>();
-}
-
-void* TransactionDetails8ba275___findChildren_atList(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void TransactionDetails8ba275___findChildren_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* TransactionDetails8ba275___findChildren_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* TransactionDetails8ba275___findChildren_atList3(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void TransactionDetails8ba275___findChildren_setList3(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* TransactionDetails8ba275___findChildren_newList3(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* TransactionDetails8ba275___qFindChildren_atList2(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void TransactionDetails8ba275___qFindChildren_setList2(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* TransactionDetails8ba275___qFindChildren_newList2(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* TransactionDetails8ba275_NewTransactionDetails(void* parent)
-{
-	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new TransactionDetails8ba275(static_cast<QOffscreenSurface*>(parent));
-	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new TransactionDetails8ba275(static_cast<QPaintDeviceWindow*>(parent));
-	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new TransactionDetails8ba275(static_cast<QPdfWriter*>(parent));
-	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new TransactionDetails8ba275(static_cast<QWindow*>(parent));
-	} else {
-		return new TransactionDetails8ba275(static_cast<QObject*>(parent));
-	}
-}
-
-void TransactionDetails8ba275_DestroyTransactionDetails(void* ptr)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->~TransactionDetails8ba275();
-}
-
-void TransactionDetails8ba275_DestroyTransactionDetailsDefault(void* ptr)
-{
-	Q_UNUSED(ptr);
-
-}
-
-void TransactionDetails8ba275_ChildEventDefault(void* ptr, void* event)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
-}
-
-void TransactionDetails8ba275_ConnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-void TransactionDetails8ba275_CustomEventDefault(void* ptr, void* event)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
-}
-
-void TransactionDetails8ba275_DeleteLaterDefault(void* ptr)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->QObject::deleteLater();
-}
-
-void TransactionDetails8ba275_DisconnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-char TransactionDetails8ba275_EventDefault(void* ptr, void* e)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->QObject::event(static_cast<QEvent*>(e));
-}
-
-char TransactionDetails8ba275_EventFilterDefault(void* ptr, void* watched, void* event)
-{
-	return static_cast<TransactionDetails8ba275*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
-}
-
-void TransactionDetails8ba275_TimerEventDefault(void* ptr, void* event)
-{
-	static_cast<TransactionDetails8ba275*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
-}
-
 void HistoryModel8ba275_ConnectAddTransaction(void* ptr)
 {
 	QObject::connect(static_cast<HistoryModel8ba275*>(ptr), static_cast<void (HistoryModel8ba275::*)(TransactionDetails8ba275*)>(&HistoryModel8ba275::addTransaction), static_cast<HistoryModel8ba275*>(ptr), static_cast<void (HistoryModel8ba275::*)(TransactionDetails8ba275*)>(&HistoryModel8ba275::Signal_AddTransaction));
@@ -738,6 +251,21 @@ void HistoryModel8ba275_DisconnectAddTransaction(void* ptr)
 void HistoryModel8ba275_AddTransaction(void* ptr, void* transaction)
 {
 	static_cast<HistoryModel8ba275*>(ptr)->addTransaction(static_cast<TransactionDetails8ba275*>(transaction));
+}
+
+void HistoryModel8ba275_ConnectRemoveTransaction(void* ptr)
+{
+	QObject::connect(static_cast<HistoryModel8ba275*>(ptr), static_cast<void (HistoryModel8ba275::*)(qint32)>(&HistoryModel8ba275::removeTransaction), static_cast<HistoryModel8ba275*>(ptr), static_cast<void (HistoryModel8ba275::*)(qint32)>(&HistoryModel8ba275::Signal_RemoveTransaction));
+}
+
+void HistoryModel8ba275_DisconnectRemoveTransaction(void* ptr)
+{
+	QObject::disconnect(static_cast<HistoryModel8ba275*>(ptr), static_cast<void (HistoryModel8ba275::*)(qint32)>(&HistoryModel8ba275::removeTransaction), static_cast<HistoryModel8ba275*>(ptr), static_cast<void (HistoryModel8ba275::*)(qint32)>(&HistoryModel8ba275::Signal_RemoveTransaction));
+}
+
+void HistoryModel8ba275_RemoveTransaction(void* ptr, int index)
+{
+	static_cast<HistoryModel8ba275*>(ptr)->removeTransaction(index);
 }
 
 struct Moc_PackedList HistoryModel8ba275_Roles(void* ptr)
@@ -1592,6 +1120,495 @@ char HistoryModel8ba275_EventFilterDefault(void* ptr, void* watched, void* event
 void HistoryModel8ba275_TimerEventDefault(void* ptr, void* event)
 {
 	static_cast<HistoryModel8ba275*>(ptr)->QAbstractListModel::timerEvent(static_cast<QTimerEvent*>(event));
+}
+
+void* TransactionDetails8ba275_Date(void* ptr)
+{
+	return new QDateTime(static_cast<TransactionDetails8ba275*>(ptr)->date());
+}
+
+void* TransactionDetails8ba275_DateDefault(void* ptr)
+{
+	return new QDateTime(static_cast<TransactionDetails8ba275*>(ptr)->dateDefault());
+}
+
+void TransactionDetails8ba275_SetDate(void* ptr, void* date)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setDate(*static_cast<QDateTime*>(date));
+}
+
+void TransactionDetails8ba275_SetDateDefault(void* ptr, void* date)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setDateDefault(*static_cast<QDateTime*>(date));
+}
+
+void TransactionDetails8ba275_ConnectDateChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::dateChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::Signal_DateChanged));
+}
+
+void TransactionDetails8ba275_DisconnectDateChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::dateChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QDateTime)>(&TransactionDetails8ba275::Signal_DateChanged));
+}
+
+void TransactionDetails8ba275_DateChanged(void* ptr, void* date)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->dateChanged(*static_cast<QDateTime*>(date));
+}
+
+int TransactionDetails8ba275_Status(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->status();
+}
+
+int TransactionDetails8ba275_StatusDefault(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->statusDefault();
+}
+
+void TransactionDetails8ba275_SetStatus(void* ptr, int status)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setStatus(status);
+}
+
+void TransactionDetails8ba275_SetStatusDefault(void* ptr, int status)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setStatusDefault(status);
+}
+
+void TransactionDetails8ba275_ConnectStatusChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::statusChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_StatusChanged));
+}
+
+void TransactionDetails8ba275_DisconnectStatusChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::statusChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_StatusChanged));
+}
+
+void TransactionDetails8ba275_StatusChanged(void* ptr, int status)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->statusChanged(status);
+}
+
+int TransactionDetails8ba275_Type(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->type();
+}
+
+int TransactionDetails8ba275_TypeDefault(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->typeDefault();
+}
+
+void TransactionDetails8ba275_SetType(void* ptr, int ty)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setType(ty);
+}
+
+void TransactionDetails8ba275_SetTypeDefault(void* ptr, int ty)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setTypeDefault(ty);
+}
+
+void TransactionDetails8ba275_ConnectTypeChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::typeChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_TypeChanged));
+}
+
+void TransactionDetails8ba275_DisconnectTypeChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::typeChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_TypeChanged));
+}
+
+void TransactionDetails8ba275_TypeChanged(void* ptr, int ty)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->typeChanged(ty);
+}
+
+int TransactionDetails8ba275_Amount(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->amount();
+}
+
+int TransactionDetails8ba275_AmountDefault(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->amountDefault();
+}
+
+void TransactionDetails8ba275_SetAmount(void* ptr, int amount)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setAmount(amount);
+}
+
+void TransactionDetails8ba275_SetAmountDefault(void* ptr, int amount)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setAmountDefault(amount);
+}
+
+void TransactionDetails8ba275_ConnectAmountChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::amountChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_AmountChanged));
+}
+
+void TransactionDetails8ba275_DisconnectAmountChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::amountChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_AmountChanged));
+}
+
+void TransactionDetails8ba275_AmountChanged(void* ptr, int amount)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->amountChanged(amount);
+}
+
+int TransactionDetails8ba275_HoursReceived(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->hoursReceived();
+}
+
+int TransactionDetails8ba275_HoursReceivedDefault(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->hoursReceivedDefault();
+}
+
+void TransactionDetails8ba275_SetHoursReceived(void* ptr, int hoursReceived)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setHoursReceived(hoursReceived);
+}
+
+void TransactionDetails8ba275_SetHoursReceivedDefault(void* ptr, int hoursReceived)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setHoursReceivedDefault(hoursReceived);
+}
+
+void TransactionDetails8ba275_ConnectHoursReceivedChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursReceivedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursReceivedChanged));
+}
+
+void TransactionDetails8ba275_DisconnectHoursReceivedChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursReceivedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursReceivedChanged));
+}
+
+void TransactionDetails8ba275_HoursReceivedChanged(void* ptr, int hoursReceived)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->hoursReceivedChanged(hoursReceived);
+}
+
+int TransactionDetails8ba275_HoursBurned(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->hoursBurned();
+}
+
+int TransactionDetails8ba275_HoursBurnedDefault(void* ptr)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->hoursBurnedDefault();
+}
+
+void TransactionDetails8ba275_SetHoursBurned(void* ptr, int hoursBurned)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setHoursBurned(hoursBurned);
+}
+
+void TransactionDetails8ba275_SetHoursBurnedDefault(void* ptr, int hoursBurned)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setHoursBurnedDefault(hoursBurned);
+}
+
+void TransactionDetails8ba275_ConnectHoursBurnedChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursBurnedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursBurnedChanged));
+}
+
+void TransactionDetails8ba275_DisconnectHoursBurnedChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::hoursBurnedChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(qint32)>(&TransactionDetails8ba275::Signal_HoursBurnedChanged));
+}
+
+void TransactionDetails8ba275_HoursBurnedChanged(void* ptr, int hoursBurned)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->hoursBurnedChanged(hoursBurned);
+}
+
+struct Moc_PackedString TransactionDetails8ba275_TransactionID(void* ptr)
+{
+	return ({ QByteArray tc8c5df = static_cast<TransactionDetails8ba275*>(ptr)->transactionID().toUtf8(); Moc_PackedString { const_cast<char*>(tc8c5df.prepend("WHITESPACE").constData()+10), tc8c5df.size()-10 }; });
+}
+
+struct Moc_PackedString TransactionDetails8ba275_TransactionIDDefault(void* ptr)
+{
+	return ({ QByteArray t299bde = static_cast<TransactionDetails8ba275*>(ptr)->transactionIDDefault().toUtf8(); Moc_PackedString { const_cast<char*>(t299bde.prepend("WHITESPACE").constData()+10), t299bde.size()-10 }; });
+}
+
+void TransactionDetails8ba275_SetTransactionID(void* ptr, struct Moc_PackedString transactionID)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setTransactionID(QString::fromUtf8(transactionID.data, transactionID.len));
+}
+
+void TransactionDetails8ba275_SetTransactionIDDefault(void* ptr, struct Moc_PackedString transactionID)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setTransactionIDDefault(QString::fromUtf8(transactionID.data, transactionID.len));
+}
+
+void TransactionDetails8ba275_ConnectTransactionIDChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::transactionIDChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_TransactionIDChanged));
+}
+
+void TransactionDetails8ba275_DisconnectTransactionIDChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::transactionIDChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_TransactionIDChanged));
+}
+
+void TransactionDetails8ba275_TransactionIDChanged(void* ptr, struct Moc_PackedString transactionID)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->transactionIDChanged(QString::fromUtf8(transactionID.data, transactionID.len));
+}
+
+struct Moc_PackedString TransactionDetails8ba275_SentAddress(void* ptr)
+{
+	return ({ QByteArray te78448 = static_cast<TransactionDetails8ba275*>(ptr)->sentAddress().toUtf8(); Moc_PackedString { const_cast<char*>(te78448.prepend("WHITESPACE").constData()+10), te78448.size()-10 }; });
+}
+
+struct Moc_PackedString TransactionDetails8ba275_SentAddressDefault(void* ptr)
+{
+	return ({ QByteArray tf856c0 = static_cast<TransactionDetails8ba275*>(ptr)->sentAddressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tf856c0.prepend("WHITESPACE").constData()+10), tf856c0.size()-10 }; });
+}
+
+void TransactionDetails8ba275_SetSentAddress(void* ptr, struct Moc_PackedString sentAddress)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setSentAddress(QString::fromUtf8(sentAddress.data, sentAddress.len));
+}
+
+void TransactionDetails8ba275_SetSentAddressDefault(void* ptr, struct Moc_PackedString sentAddress)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setSentAddressDefault(QString::fromUtf8(sentAddress.data, sentAddress.len));
+}
+
+void TransactionDetails8ba275_ConnectSentAddressChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::sentAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_SentAddressChanged));
+}
+
+void TransactionDetails8ba275_DisconnectSentAddressChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::sentAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_SentAddressChanged));
+}
+
+void TransactionDetails8ba275_SentAddressChanged(void* ptr, struct Moc_PackedString sentAddress)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->sentAddressChanged(QString::fromUtf8(sentAddress.data, sentAddress.len));
+}
+
+struct Moc_PackedString TransactionDetails8ba275_ReceivedAddress(void* ptr)
+{
+	return ({ QByteArray t3a4c8c = static_cast<TransactionDetails8ba275*>(ptr)->receivedAddress().toUtf8(); Moc_PackedString { const_cast<char*>(t3a4c8c.prepend("WHITESPACE").constData()+10), t3a4c8c.size()-10 }; });
+}
+
+struct Moc_PackedString TransactionDetails8ba275_ReceivedAddressDefault(void* ptr)
+{
+	return ({ QByteArray ta1cf30 = static_cast<TransactionDetails8ba275*>(ptr)->receivedAddressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(ta1cf30.prepend("WHITESPACE").constData()+10), ta1cf30.size()-10 }; });
+}
+
+void TransactionDetails8ba275_SetReceivedAddress(void* ptr, struct Moc_PackedString receivedAddress)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setReceivedAddress(QString::fromUtf8(receivedAddress.data, receivedAddress.len));
+}
+
+void TransactionDetails8ba275_SetReceivedAddressDefault(void* ptr, struct Moc_PackedString receivedAddress)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->setReceivedAddressDefault(QString::fromUtf8(receivedAddress.data, receivedAddress.len));
+}
+
+void TransactionDetails8ba275_ConnectReceivedAddressChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::receivedAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_ReceivedAddressChanged));
+}
+
+void TransactionDetails8ba275_DisconnectReceivedAddressChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::receivedAddressChanged), static_cast<TransactionDetails8ba275*>(ptr), static_cast<void (TransactionDetails8ba275::*)(QString)>(&TransactionDetails8ba275::Signal_ReceivedAddressChanged));
+}
+
+void TransactionDetails8ba275_ReceivedAddressChanged(void* ptr, struct Moc_PackedString receivedAddress)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->receivedAddressChanged(QString::fromUtf8(receivedAddress.data, receivedAddress.len));
+}
+
+int TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType()
+{
+	return qRegisterMetaType<TransactionDetails8ba275*>();
+}
+
+int TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType2(char* typeName)
+{
+	return qRegisterMetaType<TransactionDetails8ba275*>(const_cast<const char*>(typeName));
+}
+
+int TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType()
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<TransactionDetails8ba275>();
+#else
+	return 0;
+#endif
+}
+
+int TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<TransactionDetails8ba275>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
+#else
+	return 0;
+#endif
+}
+
+void* TransactionDetails8ba275___children_atList(void* ptr, int i)
+{
+	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void TransactionDetails8ba275___children_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* TransactionDetails8ba275___children_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject *>();
+}
+
+void* TransactionDetails8ba275___dynamicPropertyNames_atList(void* ptr, int i)
+{
+	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
+}
+
+void TransactionDetails8ba275___dynamicPropertyNames_setList(void* ptr, void* i)
+{
+	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
+}
+
+void* TransactionDetails8ba275___dynamicPropertyNames_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QByteArray>();
+}
+
+void* TransactionDetails8ba275___findChildren_atList(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void TransactionDetails8ba275___findChildren_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* TransactionDetails8ba275___findChildren_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* TransactionDetails8ba275___findChildren_atList3(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void TransactionDetails8ba275___findChildren_setList3(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* TransactionDetails8ba275___findChildren_newList3(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* TransactionDetails8ba275___qFindChildren_atList2(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void TransactionDetails8ba275___qFindChildren_setList2(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* TransactionDetails8ba275___qFindChildren_newList2(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* TransactionDetails8ba275_NewTransactionDetails(void* parent)
+{
+	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
+		return new TransactionDetails8ba275(static_cast<QOffscreenSurface*>(parent));
+	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
+		return new TransactionDetails8ba275(static_cast<QPaintDeviceWindow*>(parent));
+	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
+		return new TransactionDetails8ba275(static_cast<QPdfWriter*>(parent));
+	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
+		return new TransactionDetails8ba275(static_cast<QWindow*>(parent));
+	} else {
+		return new TransactionDetails8ba275(static_cast<QObject*>(parent));
+	}
+}
+
+void TransactionDetails8ba275_DestroyTransactionDetails(void* ptr)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->~TransactionDetails8ba275();
+}
+
+void TransactionDetails8ba275_DestroyTransactionDetailsDefault(void* ptr)
+{
+	Q_UNUSED(ptr);
+
+}
+
+void TransactionDetails8ba275_ChildEventDefault(void* ptr, void* event)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
+}
+
+void TransactionDetails8ba275_ConnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+void TransactionDetails8ba275_CustomEventDefault(void* ptr, void* event)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
+}
+
+void TransactionDetails8ba275_DeleteLaterDefault(void* ptr)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->QObject::deleteLater();
+}
+
+void TransactionDetails8ba275_DisconnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+char TransactionDetails8ba275_EventDefault(void* ptr, void* e)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->QObject::event(static_cast<QEvent*>(e));
+}
+
+char TransactionDetails8ba275_EventFilterDefault(void* ptr, void* watched, void* event)
+{
+	return static_cast<TransactionDetails8ba275*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
+}
+
+void TransactionDetails8ba275_TimerEventDefault(void* ptr, void* event)
+{
+	static_cast<TransactionDetails8ba275*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
 #include "moc_moc.h"

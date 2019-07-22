@@ -88,6 +88,8 @@ func (this *HistoryModel) Init() { this.init() }
 func callbackHistoryModel8ba275_Constructor(ptr unsafe.Pointer) {
 	this := NewHistoryModelFromPointer(ptr)
 	qt.Register(ptr, this)
+	this.ConnectAddTransaction(this.addTransaction)
+	this.ConnectRemoveTransaction(this.removeTransaction)
 	this.init()
 }
 
@@ -128,6 +130,46 @@ func (ptr *HistoryModel) DisconnectAddTransaction() {
 func (ptr *HistoryModel) AddTransaction(transaction TransactionDetails_ITF) {
 	if ptr.Pointer() != nil {
 		C.HistoryModel8ba275_AddTransaction(ptr.Pointer(), PointerFromTransactionDetails(transaction))
+	}
+}
+
+//export callbackHistoryModel8ba275_RemoveTransaction
+func callbackHistoryModel8ba275_RemoveTransaction(ptr unsafe.Pointer, index C.int) {
+	if signal := qt.GetSignal(ptr, "removeTransaction"); signal != nil {
+		(*(*func(int))(signal))(int(int32(index)))
+	}
+
+}
+
+func (ptr *HistoryModel) ConnectRemoveTransaction(f func(index int)) {
+	if ptr.Pointer() != nil {
+
+		if !qt.ExistsSignal(ptr.Pointer(), "removeTransaction") {
+			C.HistoryModel8ba275_ConnectRemoveTransaction(ptr.Pointer())
+		}
+
+		if signal := qt.LendSignal(ptr.Pointer(), "removeTransaction"); signal != nil {
+			f := func(index int) {
+				(*(*func(int))(signal))(index)
+				f(index)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "removeTransaction", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "removeTransaction", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *HistoryModel) DisconnectRemoveTransaction() {
+	if ptr.Pointer() != nil {
+		C.HistoryModel8ba275_DisconnectRemoveTransaction(ptr.Pointer())
+		qt.DisconnectSignal(ptr.Pointer(), "removeTransaction")
+	}
+}
+
+func (ptr *HistoryModel) RemoveTransaction(index int) {
+	if ptr.Pointer() != nil {
+		C.HistoryModel8ba275_RemoveTransaction(ptr.Pointer(), C.int(int32(index)))
 	}
 }
 
