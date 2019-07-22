@@ -1,8 +1,6 @@
 package history
 
 import (
-	"fmt"
-
 	"github.com/therecipe/qt/core"
 )
 
@@ -97,11 +95,7 @@ func (hm *HistoryModel) init() {
 	hm.ConnectData(hm.data)
 	hm.ConnectRoleNames(hm.roleNames)
 
-	// hm.ConnectAddTransaction(hm.addTransaction)
-
-	fmt.Println("Initialicing History Model")
-
-	td := new(TransactionDetails)
+	td := NewTransactionDetails(nil)
 	td.SetDate("2000-01-01")
 	td.SetStatus(transactionStatusConfirmed)
 	td.SetType(transactionTypeReceive)
@@ -112,10 +106,6 @@ func (hm *HistoryModel) init() {
 	td.SetSentAddress("addrexample1")
 	td.SetReceivedAddress("addrexample2")
 	hm.addTransaction(td)
-	println("transaction->", td.Amount(), "<-")
-	// fmt.Println(hm.Transactions())
-	// fmt.Println(td)
-	fmt.Println("Done")
 }
 
 func (hm *HistoryModel) rowCount(*core.QModelIndex) int {

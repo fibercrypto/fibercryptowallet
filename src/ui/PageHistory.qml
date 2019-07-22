@@ -45,9 +45,6 @@ Page {
                     onClicked: {
                         dialogTransactionDetails.open()
                         listTransactions.currentIndex = index
-                        console.log("QT:", listTransactions.currentItem.Amount)
-                        console.log("QT:", listTransactions.currentItem.amount)
-                        console.log("QT:", listTransactions.currentItem.modelAmount)
                     }
                 }
             }
