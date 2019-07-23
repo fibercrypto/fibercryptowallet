@@ -28,6 +28,8 @@ func (hm *HistoryModel) init() {
 		TransactionID:   core.NewQByteArray2("transactionID", -1),
 		SentAddress:     core.NewQByteArray2("sentAddress", -1),
 		ReceivedAddress: core.NewQByteArray2("receivedAddress", -1),
+		Inputs:          core.NewQByteArray2("inputs", -1),
+		Outputs:         core.NewQByteArray2("outputs", -1),
 	})
 
 	hm.ConnectRowCount(hm.rowCount)
@@ -100,6 +102,14 @@ func (hm *HistoryModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	case ReceivedAddress:
 		{
 			return core.NewQVariant1(transaction.ReceivedAddress())
+		}
+	case Inputs:
+		{
+			return core.NewQVariant1(transaction.Inputs())
+		}
+	case Outputs:
+		{
+			return core.NewQVariant1(transaction.Outputs())
 		}
 	default:
 		{

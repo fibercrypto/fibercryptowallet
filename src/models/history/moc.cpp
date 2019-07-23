@@ -36,34 +36,34 @@
 
 typedef QMap<qint32, QByteArray> type378cdd;
 typedef QMap<qint32, QByteArray> type378cdd;
-class AddressDeatails742340: public QObject
+class AddressDetails742340: public QObject
 {
 Q_OBJECT
 Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
 Q_PROPERTY(float addressSky READ addressSky WRITE setAddressSky NOTIFY addressSkyChanged)
 Q_PROPERTY(qint32 addressCoinHours READ addressCoinHours WRITE setAddressCoinHours NOTIFY addressCoinHoursChanged)
 public:
-	AddressDeatails742340(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");AddressDeatails742340_AddressDeatails742340_QRegisterMetaType();AddressDeatails742340_AddressDeatails742340_QRegisterMetaTypes();callbackAddressDeatails742340_Constructor(this);};
-	QString address() { return ({ Moc_PackedString tempVal = callbackAddressDeatails742340_Address(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
-	void setAddress(QString address) { QByteArray tc66218 = address.toUtf8(); Moc_PackedString addressPacked = { const_cast<char*>(tc66218.prepend("WHITESPACE").constData()+10), tc66218.size()-10 };callbackAddressDeatails742340_SetAddress(this, addressPacked); };
-	void Signal_AddressChanged(QString address) { QByteArray tc66218 = address.toUtf8(); Moc_PackedString addressPacked = { const_cast<char*>(tc66218.prepend("WHITESPACE").constData()+10), tc66218.size()-10 };callbackAddressDeatails742340_AddressChanged(this, addressPacked); };
-	float addressSky() { return callbackAddressDeatails742340_AddressSky(this); };
-	void setAddressSky(float addressSky) { callbackAddressDeatails742340_SetAddressSky(this, addressSky); };
-	void Signal_AddressSkyChanged(float addressSky) { callbackAddressDeatails742340_AddressSkyChanged(this, addressSky); };
-	qint32 addressCoinHours() { return callbackAddressDeatails742340_AddressCoinHours(this); };
-	void setAddressCoinHours(qint32 addressCoinHours) { callbackAddressDeatails742340_SetAddressCoinHours(this, addressCoinHours); };
-	void Signal_AddressCoinHoursChanged(qint32 addressCoinHours) { callbackAddressDeatails742340_AddressCoinHoursChanged(this, addressCoinHours); };
-	 ~AddressDeatails742340() { callbackAddressDeatails742340_DestroyAddressDeatails(this); };
-	void childEvent(QChildEvent * event) { callbackAddressDeatails742340_ChildEvent(this, event); };
-	void connectNotify(const QMetaMethod & sign) { callbackAddressDeatails742340_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	void customEvent(QEvent * event) { callbackAddressDeatails742340_CustomEvent(this, event); };
-	void deleteLater() { callbackAddressDeatails742340_DeleteLater(this); };
-	void Signal_Destroyed(QObject * obj) { callbackAddressDeatails742340_Destroyed(this, obj); };
-	void disconnectNotify(const QMetaMethod & sign) { callbackAddressDeatails742340_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	bool event(QEvent * e) { return callbackAddressDeatails742340_Event(this, e) != 0; };
-	bool eventFilter(QObject * watched, QEvent * event) { return callbackAddressDeatails742340_EventFilter(this, watched, event) != 0; };
-	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackAddressDeatails742340_ObjectNameChanged(this, objectNamePacked); };
-	void timerEvent(QTimerEvent * event) { callbackAddressDeatails742340_TimerEvent(this, event); };
+	AddressDetails742340(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");AddressDetails742340_AddressDetails742340_QRegisterMetaType();AddressDetails742340_AddressDetails742340_QRegisterMetaTypes();callbackAddressDetails742340_Constructor(this);};
+	QString address() { return ({ Moc_PackedString tempVal = callbackAddressDetails742340_Address(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setAddress(QString address) { QByteArray tc66218 = address.toUtf8(); Moc_PackedString addressPacked = { const_cast<char*>(tc66218.prepend("WHITESPACE").constData()+10), tc66218.size()-10 };callbackAddressDetails742340_SetAddress(this, addressPacked); };
+	void Signal_AddressChanged(QString address) { QByteArray tc66218 = address.toUtf8(); Moc_PackedString addressPacked = { const_cast<char*>(tc66218.prepend("WHITESPACE").constData()+10), tc66218.size()-10 };callbackAddressDetails742340_AddressChanged(this, addressPacked); };
+	float addressSky() { return callbackAddressDetails742340_AddressSky(this); };
+	void setAddressSky(float addressSky) { callbackAddressDetails742340_SetAddressSky(this, addressSky); };
+	void Signal_AddressSkyChanged(float addressSky) { callbackAddressDetails742340_AddressSkyChanged(this, addressSky); };
+	qint32 addressCoinHours() { return callbackAddressDetails742340_AddressCoinHours(this); };
+	void setAddressCoinHours(qint32 addressCoinHours) { callbackAddressDetails742340_SetAddressCoinHours(this, addressCoinHours); };
+	void Signal_AddressCoinHoursChanged(qint32 addressCoinHours) { callbackAddressDetails742340_AddressCoinHoursChanged(this, addressCoinHours); };
+	 ~AddressDetails742340() { callbackAddressDetails742340_DestroyAddressDetails(this); };
+	void childEvent(QChildEvent * event) { callbackAddressDetails742340_ChildEvent(this, event); };
+	void connectNotify(const QMetaMethod & sign) { callbackAddressDetails742340_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	void customEvent(QEvent * event) { callbackAddressDetails742340_CustomEvent(this, event); };
+	void deleteLater() { callbackAddressDetails742340_DeleteLater(this); };
+	void Signal_Destroyed(QObject * obj) { callbackAddressDetails742340_Destroyed(this, obj); };
+	void disconnectNotify(const QMetaMethod & sign) { callbackAddressDetails742340_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	bool event(QEvent * e) { return callbackAddressDetails742340_Event(this, e) != 0; };
+	bool eventFilter(QObject * watched, QEvent * event) { return callbackAddressDetails742340_EventFilter(this, watched, event) != 0; };
+	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackAddressDetails742340_ObjectNameChanged(this, objectNamePacked); };
+	void timerEvent(QTimerEvent * event) { callbackAddressDetails742340_TimerEvent(this, event); };
 	QString addressDefault() { return _address; };
 	void setAddressDefault(QString p) { if (p != _address) { _address = p; addressChanged(_address); } };
 	float addressSkyDefault() { return _addressSky; };
@@ -81,10 +81,10 @@ private:
 	qint32 _addressCoinHours;
 };
 
-Q_DECLARE_METATYPE(AddressDeatails742340*)
+Q_DECLARE_METATYPE(AddressDetails742340*)
 
 
-void AddressDeatails742340_AddressDeatails742340_QRegisterMetaTypes() {
+void AddressDetails742340_AddressDetails742340_QRegisterMetaTypes() {
 	qRegisterMetaType<QString>();
 }
 
@@ -92,17 +92,17 @@ class AddressList742340: public QAbstractListModel
 {
 Q_OBJECT
 Q_PROPERTY(type378cdd roles READ roles WRITE setRoles NOTIFY rolesChanged)
-Q_PROPERTY(QList<AddressDeatails742340*> addresses READ addresses WRITE setAddresses NOTIFY addressesChanged)
+Q_PROPERTY(QList<AddressDetails742340*> addresses READ addresses WRITE setAddresses NOTIFY addressesChanged)
 public:
 	AddressList742340(QObject *parent = Q_NULLPTR) : QAbstractListModel(parent) {qRegisterMetaType<quintptr>("quintptr");AddressList742340_AddressList742340_QRegisterMetaType();AddressList742340_AddressList742340_QRegisterMetaTypes();callbackAddressList742340_Constructor(this);};
-	void Signal_AddAddress(AddressDeatails742340* transaction) { callbackAddressList742340_AddAddress(this, transaction); };
+	void Signal_AddAddress(AddressDetails742340* transaction) { callbackAddressList742340_AddAddress(this, transaction); };
 	void Signal_RemoveAddress(qint32 index) { callbackAddressList742340_RemoveAddress(this, index); };
 	type378cdd roles() { return ({ QMap<qint32, QByteArray>* tmpP = static_cast<QMap<qint32, QByteArray>*>(callbackAddressList742340_Roles(this)); QMap<qint32, QByteArray> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
 	void setRoles(type378cdd roles) { callbackAddressList742340_SetRoles(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_RolesChanged(type378cdd roles) { callbackAddressList742340_RolesChanged(this, ({ QMap<qint32, QByteArray>* tmpValue = new QMap<qint32, QByteArray>(roles); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	QList<AddressDeatails742340*> addresses() { return ({ QList<AddressDeatails742340*>* tmpP = static_cast<QList<AddressDeatails742340*>*>(callbackAddressList742340_Addresses(this)); QList<AddressDeatails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
-	void setAddresses(QList<AddressDeatails742340*> addresses) { callbackAddressList742340_SetAddresses(this, ({ QList<AddressDeatails742340*>* tmpValue = new QList<AddressDeatails742340*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	void Signal_AddressesChanged(QList<AddressDeatails742340*> addresses) { callbackAddressList742340_AddressesChanged(this, ({ QList<AddressDeatails742340*>* tmpValue = new QList<AddressDeatails742340*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	QList<AddressDetails742340*> addresses() { return ({ QList<AddressDetails742340*>* tmpP = static_cast<QList<AddressDetails742340*>*>(callbackAddressList742340_Addresses(this)); QList<AddressDetails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	void setAddresses(QList<AddressDetails742340*> addresses) { callbackAddressList742340_SetAddresses(this, ({ QList<AddressDetails742340*>* tmpValue = new QList<AddressDetails742340*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_AddressesChanged(QList<AddressDetails742340*> addresses) { callbackAddressList742340_AddressesChanged(this, ({ QList<AddressDetails742340*>* tmpValue = new QList<AddressDetails742340*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 	 ~AddressList742340() { callbackAddressList742340_DestroyAddressList(this); };
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) { return callbackAddressList742340_DropMimeData(this, const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
 	Qt::ItemFlags flags(const QModelIndex & index) const { return static_cast<Qt::ItemFlag>(callbackAddressList742340_Flags(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
@@ -169,17 +169,17 @@ public:
 	void timerEvent(QTimerEvent * event) { callbackAddressList742340_TimerEvent(this, event); };
 	type378cdd rolesDefault() { return _roles; };
 	void setRolesDefault(type378cdd p) { if (p != _roles) { _roles = p; rolesChanged(_roles); } };
-	QList<AddressDeatails742340*> addressesDefault() { return _addresses; };
-	void setAddressesDefault(QList<AddressDeatails742340*> p) { if (p != _addresses) { _addresses = p; addressesChanged(_addresses); } };
+	QList<AddressDetails742340*> addressesDefault() { return _addresses; };
+	void setAddressesDefault(QList<AddressDetails742340*> p) { if (p != _addresses) { _addresses = p; addressesChanged(_addresses); } };
 signals:
-	void addAddress(AddressDeatails742340* transaction);
+	void addAddress(AddressDetails742340* transaction);
 	void removeAddress(qint32 index);
 	void rolesChanged(type378cdd roles);
-	void addressesChanged(QList<AddressDeatails742340*> addresses);
+	void addressesChanged(QList<AddressDetails742340*> addresses);
 public slots:
 private:
 	type378cdd _roles;
-	QList<AddressDeatails742340*> _addresses;
+	QList<AddressDetails742340*> _addresses;
 };
 
 Q_DECLARE_METATYPE(AddressList742340*)
@@ -187,7 +187,7 @@ Q_DECLARE_METATYPE(AddressList742340*)
 
 void AddressList742340_AddressList742340_QRegisterMetaTypes() {
 	qRegisterMetaType<type378cdd>("type378cdd");
-	qRegisterMetaType<QList<QObject*>>("QList<AddressDeatails742340*>");
+	qRegisterMetaType<QList<QObject*>>("QList<AddressDetails742340*>");
 }
 
 class HistoryModel742340: public QAbstractListModel
@@ -304,6 +304,8 @@ Q_PROPERTY(qint32 hoursBurned READ hoursBurned WRITE setHoursBurned NOTIFY hours
 Q_PROPERTY(QString transactionID READ transactionID WRITE setTransactionID NOTIFY transactionIDChanged)
 Q_PROPERTY(QString sentAddress READ sentAddress WRITE setSentAddress NOTIFY sentAddressChanged)
 Q_PROPERTY(QString receivedAddress READ receivedAddress WRITE setReceivedAddress NOTIFY receivedAddressChanged)
+Q_PROPERTY(AddressList742340* inputs READ inputs WRITE setInputs NOTIFY inputsChanged)
+Q_PROPERTY(AddressList742340* outputs READ outputs WRITE setOutputs NOTIFY outputsChanged)
 public:
 	TransactionDetails742340(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");TransactionDetails742340_TransactionDetails742340_QRegisterMetaType();TransactionDetails742340_TransactionDetails742340_QRegisterMetaTypes();callbackTransactionDetails742340_Constructor(this);};
 	QDateTime date() { return *static_cast<QDateTime*>(callbackTransactionDetails742340_Date(this)); };
@@ -333,6 +335,12 @@ public:
 	QString receivedAddress() { return ({ Moc_PackedString tempVal = callbackTransactionDetails742340_ReceivedAddress(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
 	void setReceivedAddress(QString receivedAddress) { QByteArray t55bc8c = receivedAddress.toUtf8(); Moc_PackedString receivedAddressPacked = { const_cast<char*>(t55bc8c.prepend("WHITESPACE").constData()+10), t55bc8c.size()-10 };callbackTransactionDetails742340_SetReceivedAddress(this, receivedAddressPacked); };
 	void Signal_ReceivedAddressChanged(QString receivedAddress) { QByteArray t55bc8c = receivedAddress.toUtf8(); Moc_PackedString receivedAddressPacked = { const_cast<char*>(t55bc8c.prepend("WHITESPACE").constData()+10), t55bc8c.size()-10 };callbackTransactionDetails742340_ReceivedAddressChanged(this, receivedAddressPacked); };
+	AddressList742340* inputs() { return static_cast<AddressList742340*>(callbackTransactionDetails742340_Inputs(this)); };
+	void setInputs(AddressList742340* inputs) { callbackTransactionDetails742340_SetInputs(this, inputs); };
+	void Signal_InputsChanged(AddressList742340* inputs) { callbackTransactionDetails742340_InputsChanged(this, inputs); };
+	AddressList742340* outputs() { return static_cast<AddressList742340*>(callbackTransactionDetails742340_Outputs(this)); };
+	void setOutputs(AddressList742340* outputs) { callbackTransactionDetails742340_SetOutputs(this, outputs); };
+	void Signal_OutputsChanged(AddressList742340* outputs) { callbackTransactionDetails742340_OutputsChanged(this, outputs); };
 	 ~TransactionDetails742340() { callbackTransactionDetails742340_DestroyTransactionDetails(this); };
 	void childEvent(QChildEvent * event) { callbackTransactionDetails742340_ChildEvent(this, event); };
 	void connectNotify(const QMetaMethod & sign) { callbackTransactionDetails742340_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
@@ -362,6 +370,10 @@ public:
 	void setSentAddressDefault(QString p) { if (p != _sentAddress) { _sentAddress = p; sentAddressChanged(_sentAddress); } };
 	QString receivedAddressDefault() { return _receivedAddress; };
 	void setReceivedAddressDefault(QString p) { if (p != _receivedAddress) { _receivedAddress = p; receivedAddressChanged(_receivedAddress); } };
+	AddressList742340* inputsDefault() { return _inputs; };
+	void setInputsDefault(AddressList742340* p) { if (p != _inputs) { _inputs = p; inputsChanged(_inputs); } };
+	AddressList742340* outputsDefault() { return _outputs; };
+	void setOutputsDefault(AddressList742340* p) { if (p != _outputs) { _outputs = p; outputsChanged(_outputs); } };
 signals:
 	void dateChanged(QDateTime date);
 	void statusChanged(qint32 status);
@@ -372,6 +384,8 @@ signals:
 	void transactionIDChanged(QString transactionID);
 	void sentAddressChanged(QString sentAddress);
 	void receivedAddressChanged(QString receivedAddress);
+	void inputsChanged(AddressList742340* inputs);
+	void outputsChanged(AddressList742340* outputs);
 public slots:
 private:
 	QDateTime _date;
@@ -383,6 +397,8 @@ private:
 	QString _transactionID;
 	QString _sentAddress;
 	QString _receivedAddress;
+	AddressList742340* _inputs;
+	AddressList742340* _outputs;
 };
 
 Q_DECLARE_METATYPE(TransactionDetails742340*)
@@ -393,298 +409,298 @@ void TransactionDetails742340_TransactionDetails742340_QRegisterMetaTypes() {
 	qRegisterMetaType<QString>();
 }
 
-struct Moc_PackedString AddressDeatails742340_Address(void* ptr)
+struct Moc_PackedString AddressDetails742340_Address(void* ptr)
 {
-	return ({ QByteArray tc350c2 = static_cast<AddressDeatails742340*>(ptr)->address().toUtf8(); Moc_PackedString { const_cast<char*>(tc350c2.prepend("WHITESPACE").constData()+10), tc350c2.size()-10 }; });
+	return ({ QByteArray t686357 = static_cast<AddressDetails742340*>(ptr)->address().toUtf8(); Moc_PackedString { const_cast<char*>(t686357.prepend("WHITESPACE").constData()+10), t686357.size()-10 }; });
 }
 
-struct Moc_PackedString AddressDeatails742340_AddressDefault(void* ptr)
+struct Moc_PackedString AddressDetails742340_AddressDefault(void* ptr)
 {
-	return ({ QByteArray t5e2b39 = static_cast<AddressDeatails742340*>(ptr)->addressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(t5e2b39.prepend("WHITESPACE").constData()+10), t5e2b39.size()-10 }; });
+	return ({ QByteArray tbaed36 = static_cast<AddressDetails742340*>(ptr)->addressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tbaed36.prepend("WHITESPACE").constData()+10), tbaed36.size()-10 }; });
 }
 
-void AddressDeatails742340_SetAddress(void* ptr, struct Moc_PackedString address)
+void AddressDetails742340_SetAddress(void* ptr, struct Moc_PackedString address)
 {
-	static_cast<AddressDeatails742340*>(ptr)->setAddress(QString::fromUtf8(address.data, address.len));
+	static_cast<AddressDetails742340*>(ptr)->setAddress(QString::fromUtf8(address.data, address.len));
 }
 
-void AddressDeatails742340_SetAddressDefault(void* ptr, struct Moc_PackedString address)
+void AddressDetails742340_SetAddressDefault(void* ptr, struct Moc_PackedString address)
 {
-	static_cast<AddressDeatails742340*>(ptr)->setAddressDefault(QString::fromUtf8(address.data, address.len));
+	static_cast<AddressDetails742340*>(ptr)->setAddressDefault(QString::fromUtf8(address.data, address.len));
 }
 
-void AddressDeatails742340_ConnectAddressChanged(void* ptr)
+void AddressDetails742340_ConnectAddressChanged(void* ptr)
 {
-	QObject::connect(static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(QString)>(&AddressDeatails742340::addressChanged), static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(QString)>(&AddressDeatails742340::Signal_AddressChanged));
+	QObject::connect(static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(QString)>(&AddressDetails742340::addressChanged), static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(QString)>(&AddressDetails742340::Signal_AddressChanged));
 }
 
-void AddressDeatails742340_DisconnectAddressChanged(void* ptr)
+void AddressDetails742340_DisconnectAddressChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(QString)>(&AddressDeatails742340::addressChanged), static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(QString)>(&AddressDeatails742340::Signal_AddressChanged));
+	QObject::disconnect(static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(QString)>(&AddressDetails742340::addressChanged), static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(QString)>(&AddressDetails742340::Signal_AddressChanged));
 }
 
-void AddressDeatails742340_AddressChanged(void* ptr, struct Moc_PackedString address)
+void AddressDetails742340_AddressChanged(void* ptr, struct Moc_PackedString address)
 {
-	static_cast<AddressDeatails742340*>(ptr)->addressChanged(QString::fromUtf8(address.data, address.len));
+	static_cast<AddressDetails742340*>(ptr)->addressChanged(QString::fromUtf8(address.data, address.len));
 }
 
-float AddressDeatails742340_AddressSky(void* ptr)
+float AddressDetails742340_AddressSky(void* ptr)
 {
-	return static_cast<AddressDeatails742340*>(ptr)->addressSky();
+	return static_cast<AddressDetails742340*>(ptr)->addressSky();
 }
 
-float AddressDeatails742340_AddressSkyDefault(void* ptr)
+float AddressDetails742340_AddressSkyDefault(void* ptr)
 {
-	return static_cast<AddressDeatails742340*>(ptr)->addressSkyDefault();
+	return static_cast<AddressDetails742340*>(ptr)->addressSkyDefault();
 }
 
-void AddressDeatails742340_SetAddressSky(void* ptr, float addressSky)
+void AddressDetails742340_SetAddressSky(void* ptr, float addressSky)
 {
-	static_cast<AddressDeatails742340*>(ptr)->setAddressSky(addressSky);
+	static_cast<AddressDetails742340*>(ptr)->setAddressSky(addressSky);
 }
 
-void AddressDeatails742340_SetAddressSkyDefault(void* ptr, float addressSky)
+void AddressDetails742340_SetAddressSkyDefault(void* ptr, float addressSky)
 {
-	static_cast<AddressDeatails742340*>(ptr)->setAddressSkyDefault(addressSky);
+	static_cast<AddressDetails742340*>(ptr)->setAddressSkyDefault(addressSky);
 }
 
-void AddressDeatails742340_ConnectAddressSkyChanged(void* ptr)
+void AddressDetails742340_ConnectAddressSkyChanged(void* ptr)
 {
-	QObject::connect(static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(float)>(&AddressDeatails742340::addressSkyChanged), static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(float)>(&AddressDeatails742340::Signal_AddressSkyChanged));
+	QObject::connect(static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(float)>(&AddressDetails742340::addressSkyChanged), static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(float)>(&AddressDetails742340::Signal_AddressSkyChanged));
 }
 
-void AddressDeatails742340_DisconnectAddressSkyChanged(void* ptr)
+void AddressDetails742340_DisconnectAddressSkyChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(float)>(&AddressDeatails742340::addressSkyChanged), static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(float)>(&AddressDeatails742340::Signal_AddressSkyChanged));
+	QObject::disconnect(static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(float)>(&AddressDetails742340::addressSkyChanged), static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(float)>(&AddressDetails742340::Signal_AddressSkyChanged));
 }
 
-void AddressDeatails742340_AddressSkyChanged(void* ptr, float addressSky)
+void AddressDetails742340_AddressSkyChanged(void* ptr, float addressSky)
 {
-	static_cast<AddressDeatails742340*>(ptr)->addressSkyChanged(addressSky);
+	static_cast<AddressDetails742340*>(ptr)->addressSkyChanged(addressSky);
 }
 
-int AddressDeatails742340_AddressCoinHours(void* ptr)
+int AddressDetails742340_AddressCoinHours(void* ptr)
 {
-	return static_cast<AddressDeatails742340*>(ptr)->addressCoinHours();
+	return static_cast<AddressDetails742340*>(ptr)->addressCoinHours();
 }
 
-int AddressDeatails742340_AddressCoinHoursDefault(void* ptr)
+int AddressDetails742340_AddressCoinHoursDefault(void* ptr)
 {
-	return static_cast<AddressDeatails742340*>(ptr)->addressCoinHoursDefault();
+	return static_cast<AddressDetails742340*>(ptr)->addressCoinHoursDefault();
 }
 
-void AddressDeatails742340_SetAddressCoinHours(void* ptr, int addressCoinHours)
+void AddressDetails742340_SetAddressCoinHours(void* ptr, int addressCoinHours)
 {
-	static_cast<AddressDeatails742340*>(ptr)->setAddressCoinHours(addressCoinHours);
+	static_cast<AddressDetails742340*>(ptr)->setAddressCoinHours(addressCoinHours);
 }
 
-void AddressDeatails742340_SetAddressCoinHoursDefault(void* ptr, int addressCoinHours)
+void AddressDetails742340_SetAddressCoinHoursDefault(void* ptr, int addressCoinHours)
 {
-	static_cast<AddressDeatails742340*>(ptr)->setAddressCoinHoursDefault(addressCoinHours);
+	static_cast<AddressDetails742340*>(ptr)->setAddressCoinHoursDefault(addressCoinHours);
 }
 
-void AddressDeatails742340_ConnectAddressCoinHoursChanged(void* ptr)
+void AddressDetails742340_ConnectAddressCoinHoursChanged(void* ptr)
 {
-	QObject::connect(static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(qint32)>(&AddressDeatails742340::addressCoinHoursChanged), static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(qint32)>(&AddressDeatails742340::Signal_AddressCoinHoursChanged));
+	QObject::connect(static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(qint32)>(&AddressDetails742340::addressCoinHoursChanged), static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(qint32)>(&AddressDetails742340::Signal_AddressCoinHoursChanged));
 }
 
-void AddressDeatails742340_DisconnectAddressCoinHoursChanged(void* ptr)
+void AddressDetails742340_DisconnectAddressCoinHoursChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(qint32)>(&AddressDeatails742340::addressCoinHoursChanged), static_cast<AddressDeatails742340*>(ptr), static_cast<void (AddressDeatails742340::*)(qint32)>(&AddressDeatails742340::Signal_AddressCoinHoursChanged));
+	QObject::disconnect(static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(qint32)>(&AddressDetails742340::addressCoinHoursChanged), static_cast<AddressDetails742340*>(ptr), static_cast<void (AddressDetails742340::*)(qint32)>(&AddressDetails742340::Signal_AddressCoinHoursChanged));
 }
 
-void AddressDeatails742340_AddressCoinHoursChanged(void* ptr, int addressCoinHours)
+void AddressDetails742340_AddressCoinHoursChanged(void* ptr, int addressCoinHours)
 {
-	static_cast<AddressDeatails742340*>(ptr)->addressCoinHoursChanged(addressCoinHours);
+	static_cast<AddressDetails742340*>(ptr)->addressCoinHoursChanged(addressCoinHours);
 }
 
-int AddressDeatails742340_AddressDeatails742340_QRegisterMetaType()
+int AddressDetails742340_AddressDetails742340_QRegisterMetaType()
 {
-	return qRegisterMetaType<AddressDeatails742340*>();
+	return qRegisterMetaType<AddressDetails742340*>();
 }
 
-int AddressDeatails742340_AddressDeatails742340_QRegisterMetaType2(char* typeName)
+int AddressDetails742340_AddressDetails742340_QRegisterMetaType2(char* typeName)
 {
-	return qRegisterMetaType<AddressDeatails742340*>(const_cast<const char*>(typeName));
+	return qRegisterMetaType<AddressDetails742340*>(const_cast<const char*>(typeName));
 }
 
-int AddressDeatails742340_AddressDeatails742340_QmlRegisterType()
+int AddressDetails742340_AddressDetails742340_QmlRegisterType()
 {
 #ifdef QT_QML_LIB
-	return qmlRegisterType<AddressDeatails742340>();
+	return qmlRegisterType<AddressDetails742340>();
 #else
 	return 0;
 #endif
 }
 
-int AddressDeatails742340_AddressDeatails742340_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
+int AddressDetails742340_AddressDetails742340_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
 {
 #ifdef QT_QML_LIB
-	return qmlRegisterType<AddressDeatails742340>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
+	return qmlRegisterType<AddressDetails742340>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
 #else
 	return 0;
 #endif
 }
 
-void* AddressDeatails742340___children_atList(void* ptr, int i)
+void* AddressDetails742340___children_atList(void* ptr, int i)
 {
 	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
 }
 
-void AddressDeatails742340___children_setList(void* ptr, void* i)
+void AddressDetails742340___children_setList(void* ptr, void* i)
 {
 	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
 }
 
-void* AddressDeatails742340___children_newList(void* ptr)
+void* AddressDetails742340___children_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QObject *>();
 }
 
-void* AddressDeatails742340___dynamicPropertyNames_atList(void* ptr, int i)
+void* AddressDetails742340___dynamicPropertyNames_atList(void* ptr, int i)
 {
 	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
 }
 
-void AddressDeatails742340___dynamicPropertyNames_setList(void* ptr, void* i)
+void AddressDetails742340___dynamicPropertyNames_setList(void* ptr, void* i)
 {
 	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
 }
 
-void* AddressDeatails742340___dynamicPropertyNames_newList(void* ptr)
+void* AddressDetails742340___dynamicPropertyNames_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QByteArray>();
 }
 
-void* AddressDeatails742340___findChildren_atList(void* ptr, int i)
+void* AddressDetails742340___findChildren_atList(void* ptr, int i)
 {
 	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
 }
 
-void AddressDeatails742340___findChildren_setList(void* ptr, void* i)
+void AddressDetails742340___findChildren_setList(void* ptr, void* i)
 {
 	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
 }
 
-void* AddressDeatails742340___findChildren_newList(void* ptr)
+void* AddressDetails742340___findChildren_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QObject*>();
 }
 
-void* AddressDeatails742340___findChildren_atList3(void* ptr, int i)
+void* AddressDetails742340___findChildren_atList3(void* ptr, int i)
 {
 	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
 }
 
-void AddressDeatails742340___findChildren_setList3(void* ptr, void* i)
+void AddressDetails742340___findChildren_setList3(void* ptr, void* i)
 {
 	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
 }
 
-void* AddressDeatails742340___findChildren_newList3(void* ptr)
+void* AddressDetails742340___findChildren_newList3(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QObject*>();
 }
 
-void* AddressDeatails742340___qFindChildren_atList2(void* ptr, int i)
+void* AddressDetails742340___qFindChildren_atList2(void* ptr, int i)
 {
 	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
 }
 
-void AddressDeatails742340___qFindChildren_setList2(void* ptr, void* i)
+void AddressDetails742340___qFindChildren_setList2(void* ptr, void* i)
 {
 	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
 }
 
-void* AddressDeatails742340___qFindChildren_newList2(void* ptr)
+void* AddressDetails742340___qFindChildren_newList2(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QObject*>();
 }
 
-void* AddressDeatails742340_NewAddressDeatails(void* parent)
+void* AddressDetails742340_NewAddressDetails(void* parent)
 {
 	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new AddressDeatails742340(static_cast<QOffscreenSurface*>(parent));
+		return new AddressDetails742340(static_cast<QOffscreenSurface*>(parent));
 	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new AddressDeatails742340(static_cast<QPaintDeviceWindow*>(parent));
+		return new AddressDetails742340(static_cast<QPaintDeviceWindow*>(parent));
 	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new AddressDeatails742340(static_cast<QPdfWriter*>(parent));
+		return new AddressDetails742340(static_cast<QPdfWriter*>(parent));
 	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new AddressDeatails742340(static_cast<QWindow*>(parent));
+		return new AddressDetails742340(static_cast<QWindow*>(parent));
 	} else {
-		return new AddressDeatails742340(static_cast<QObject*>(parent));
+		return new AddressDetails742340(static_cast<QObject*>(parent));
 	}
 }
 
-void AddressDeatails742340_DestroyAddressDeatails(void* ptr)
+void AddressDetails742340_DestroyAddressDetails(void* ptr)
 {
-	static_cast<AddressDeatails742340*>(ptr)->~AddressDeatails742340();
+	static_cast<AddressDetails742340*>(ptr)->~AddressDetails742340();
 }
 
-void AddressDeatails742340_DestroyAddressDeatailsDefault(void* ptr)
+void AddressDetails742340_DestroyAddressDetailsDefault(void* ptr)
 {
 	Q_UNUSED(ptr);
 
 }
 
-void AddressDeatails742340_ChildEventDefault(void* ptr, void* event)
+void AddressDetails742340_ChildEventDefault(void* ptr, void* event)
 {
-	static_cast<AddressDeatails742340*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
+	static_cast<AddressDetails742340*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
 }
 
-void AddressDeatails742340_ConnectNotifyDefault(void* ptr, void* sign)
+void AddressDetails742340_ConnectNotifyDefault(void* ptr, void* sign)
 {
-	static_cast<AddressDeatails742340*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
+	static_cast<AddressDetails742340*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
 }
 
-void AddressDeatails742340_CustomEventDefault(void* ptr, void* event)
+void AddressDetails742340_CustomEventDefault(void* ptr, void* event)
 {
-	static_cast<AddressDeatails742340*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
+	static_cast<AddressDetails742340*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
 }
 
-void AddressDeatails742340_DeleteLaterDefault(void* ptr)
+void AddressDetails742340_DeleteLaterDefault(void* ptr)
 {
-	static_cast<AddressDeatails742340*>(ptr)->QObject::deleteLater();
+	static_cast<AddressDetails742340*>(ptr)->QObject::deleteLater();
 }
 
-void AddressDeatails742340_DisconnectNotifyDefault(void* ptr, void* sign)
+void AddressDetails742340_DisconnectNotifyDefault(void* ptr, void* sign)
 {
-	static_cast<AddressDeatails742340*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
+	static_cast<AddressDetails742340*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
 }
 
-char AddressDeatails742340_EventDefault(void* ptr, void* e)
+char AddressDetails742340_EventDefault(void* ptr, void* e)
 {
-	return static_cast<AddressDeatails742340*>(ptr)->QObject::event(static_cast<QEvent*>(e));
+	return static_cast<AddressDetails742340*>(ptr)->QObject::event(static_cast<QEvent*>(e));
 }
 
-char AddressDeatails742340_EventFilterDefault(void* ptr, void* watched, void* event)
+char AddressDetails742340_EventFilterDefault(void* ptr, void* watched, void* event)
 {
-	return static_cast<AddressDeatails742340*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
+	return static_cast<AddressDetails742340*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
 }
 
-void AddressDeatails742340_TimerEventDefault(void* ptr, void* event)
+void AddressDetails742340_TimerEventDefault(void* ptr, void* event)
 {
-	static_cast<AddressDeatails742340*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
+	static_cast<AddressDetails742340*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
 void AddressList742340_ConnectAddAddress(void* ptr)
 {
-	QObject::connect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDeatails742340*)>(&AddressList742340::addAddress), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDeatails742340*)>(&AddressList742340::Signal_AddAddress));
+	QObject::connect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDetails742340*)>(&AddressList742340::addAddress), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDetails742340*)>(&AddressList742340::Signal_AddAddress));
 }
 
 void AddressList742340_DisconnectAddAddress(void* ptr)
 {
-	QObject::disconnect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDeatails742340*)>(&AddressList742340::addAddress), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDeatails742340*)>(&AddressList742340::Signal_AddAddress));
+	QObject::disconnect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDetails742340*)>(&AddressList742340::addAddress), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(AddressDetails742340*)>(&AddressList742340::Signal_AddAddress));
 }
 
 void AddressList742340_AddAddress(void* ptr, void* transaction)
 {
-	static_cast<AddressList742340*>(ptr)->addAddress(static_cast<AddressDeatails742340*>(transaction));
+	static_cast<AddressList742340*>(ptr)->addAddress(static_cast<AddressDetails742340*>(transaction));
 }
 
 void AddressList742340_ConnectRemoveAddress(void* ptr)
@@ -739,37 +755,37 @@ void AddressList742340_RolesChanged(void* ptr, void* roles)
 
 struct Moc_PackedList AddressList742340_Addresses(void* ptr)
 {
-	return ({ QList<AddressDeatails742340*>* tmpValue = new QList<AddressDeatails742340*>(static_cast<AddressList742340*>(ptr)->addresses()); Moc_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<AddressDetails742340*>* tmpValue = new QList<AddressDetails742340*>(static_cast<AddressList742340*>(ptr)->addresses()); Moc_PackedList { tmpValue, tmpValue->size() }; });
 }
 
 struct Moc_PackedList AddressList742340_AddressesDefault(void* ptr)
 {
-	return ({ QList<AddressDeatails742340*>* tmpValue = new QList<AddressDeatails742340*>(static_cast<AddressList742340*>(ptr)->addressesDefault()); Moc_PackedList { tmpValue, tmpValue->size() }; });
+	return ({ QList<AddressDetails742340*>* tmpValue = new QList<AddressDetails742340*>(static_cast<AddressList742340*>(ptr)->addressesDefault()); Moc_PackedList { tmpValue, tmpValue->size() }; });
 }
 
 void AddressList742340_SetAddresses(void* ptr, void* addresses)
 {
-	static_cast<AddressList742340*>(ptr)->setAddresses(({ QList<AddressDeatails742340*>* tmpP = static_cast<QList<AddressDeatails742340*>*>(addresses); QList<AddressDeatails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
+	static_cast<AddressList742340*>(ptr)->setAddresses(({ QList<AddressDetails742340*>* tmpP = static_cast<QList<AddressDetails742340*>*>(addresses); QList<AddressDetails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
 }
 
 void AddressList742340_SetAddressesDefault(void* ptr, void* addresses)
 {
-	static_cast<AddressList742340*>(ptr)->setAddressesDefault(({ QList<AddressDeatails742340*>* tmpP = static_cast<QList<AddressDeatails742340*>*>(addresses); QList<AddressDeatails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
+	static_cast<AddressList742340*>(ptr)->setAddressesDefault(({ QList<AddressDetails742340*>* tmpP = static_cast<QList<AddressDetails742340*>*>(addresses); QList<AddressDetails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
 }
 
 void AddressList742340_ConnectAddressesChanged(void* ptr)
 {
-	QObject::connect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDeatails742340*>)>(&AddressList742340::addressesChanged), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDeatails742340*>)>(&AddressList742340::Signal_AddressesChanged));
+	QObject::connect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDetails742340*>)>(&AddressList742340::addressesChanged), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDetails742340*>)>(&AddressList742340::Signal_AddressesChanged));
 }
 
 void AddressList742340_DisconnectAddressesChanged(void* ptr)
 {
-	QObject::disconnect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDeatails742340*>)>(&AddressList742340::addressesChanged), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDeatails742340*>)>(&AddressList742340::Signal_AddressesChanged));
+	QObject::disconnect(static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDetails742340*>)>(&AddressList742340::addressesChanged), static_cast<AddressList742340*>(ptr), static_cast<void (AddressList742340::*)(QList<AddressDetails742340*>)>(&AddressList742340::Signal_AddressesChanged));
 }
 
 void AddressList742340_AddressesChanged(void* ptr, void* addresses)
 {
-	static_cast<AddressList742340*>(ptr)->addressesChanged(({ QList<AddressDeatails742340*>* tmpP = static_cast<QList<AddressDeatails742340*>*>(addresses); QList<AddressDeatails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
+	static_cast<AddressList742340*>(ptr)->addressesChanged(({ QList<AddressDetails742340*>* tmpP = static_cast<QList<AddressDetails742340*>*>(addresses); QList<AddressDetails742340*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
 }
 
 int AddressList742340_AddressList742340_QRegisterMetaType()
@@ -1216,50 +1232,50 @@ struct Moc_PackedList AddressList742340___rolesChanged_roles_keyList(void* ptr)
 
 void* AddressList742340___addresses_atList(void* ptr, int i)
 {
-	return ({AddressDeatails742340* tmp = static_cast<QList<AddressDeatails742340*>*>(ptr)->at(i); if (i == static_cast<QList<AddressDeatails742340*>*>(ptr)->size()-1) { static_cast<QList<AddressDeatails742340*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+	return ({AddressDetails742340* tmp = static_cast<QList<AddressDetails742340*>*>(ptr)->at(i); if (i == static_cast<QList<AddressDetails742340*>*>(ptr)->size()-1) { static_cast<QList<AddressDetails742340*>*>(ptr)->~QList(); free(ptr); }; tmp; });
 }
 
 void AddressList742340___addresses_setList(void* ptr, void* i)
 {
-	static_cast<QList<AddressDeatails742340*>*>(ptr)->append(static_cast<AddressDeatails742340*>(i));
+	static_cast<QList<AddressDetails742340*>*>(ptr)->append(static_cast<AddressDetails742340*>(i));
 }
 
 void* AddressList742340___addresses_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
-	return new QList<AddressDeatails742340*>();
+	return new QList<AddressDetails742340*>();
 }
 
 void* AddressList742340___setAddresses_addresses_atList(void* ptr, int i)
 {
-	return ({AddressDeatails742340* tmp = static_cast<QList<AddressDeatails742340*>*>(ptr)->at(i); if (i == static_cast<QList<AddressDeatails742340*>*>(ptr)->size()-1) { static_cast<QList<AddressDeatails742340*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+	return ({AddressDetails742340* tmp = static_cast<QList<AddressDetails742340*>*>(ptr)->at(i); if (i == static_cast<QList<AddressDetails742340*>*>(ptr)->size()-1) { static_cast<QList<AddressDetails742340*>*>(ptr)->~QList(); free(ptr); }; tmp; });
 }
 
 void AddressList742340___setAddresses_addresses_setList(void* ptr, void* i)
 {
-	static_cast<QList<AddressDeatails742340*>*>(ptr)->append(static_cast<AddressDeatails742340*>(i));
+	static_cast<QList<AddressDetails742340*>*>(ptr)->append(static_cast<AddressDetails742340*>(i));
 }
 
 void* AddressList742340___setAddresses_addresses_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
-	return new QList<AddressDeatails742340*>();
+	return new QList<AddressDetails742340*>();
 }
 
 void* AddressList742340___addressesChanged_addresses_atList(void* ptr, int i)
 {
-	return ({AddressDeatails742340* tmp = static_cast<QList<AddressDeatails742340*>*>(ptr)->at(i); if (i == static_cast<QList<AddressDeatails742340*>*>(ptr)->size()-1) { static_cast<QList<AddressDeatails742340*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+	return ({AddressDetails742340* tmp = static_cast<QList<AddressDetails742340*>*>(ptr)->at(i); if (i == static_cast<QList<AddressDetails742340*>*>(ptr)->size()-1) { static_cast<QList<AddressDetails742340*>*>(ptr)->~QList(); free(ptr); }; tmp; });
 }
 
 void AddressList742340___addressesChanged_addresses_setList(void* ptr, void* i)
 {
-	static_cast<QList<AddressDeatails742340*>*>(ptr)->append(static_cast<AddressDeatails742340*>(i));
+	static_cast<QList<AddressDetails742340*>*>(ptr)->append(static_cast<AddressDetails742340*>(i));
 }
 
 void* AddressList742340___addressesChanged_addresses_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
-	return new QList<AddressDeatails742340*>();
+	return new QList<AddressDetails742340*>();
 }
 
 int AddressList742340_____roles_keyList_atList(void* ptr, int i)
@@ -2753,6 +2769,76 @@ void TransactionDetails742340_DisconnectReceivedAddressChanged(void* ptr)
 void TransactionDetails742340_ReceivedAddressChanged(void* ptr, struct Moc_PackedString receivedAddress)
 {
 	static_cast<TransactionDetails742340*>(ptr)->receivedAddressChanged(QString::fromUtf8(receivedAddress.data, receivedAddress.len));
+}
+
+void* TransactionDetails742340_Inputs(void* ptr)
+{
+	return static_cast<TransactionDetails742340*>(ptr)->inputs();
+}
+
+void* TransactionDetails742340_InputsDefault(void* ptr)
+{
+	return static_cast<TransactionDetails742340*>(ptr)->inputsDefault();
+}
+
+void TransactionDetails742340_SetInputs(void* ptr, void* inputs)
+{
+	static_cast<TransactionDetails742340*>(ptr)->setInputs(static_cast<AddressList742340*>(inputs));
+}
+
+void TransactionDetails742340_SetInputsDefault(void* ptr, void* inputs)
+{
+	static_cast<TransactionDetails742340*>(ptr)->setInputsDefault(static_cast<AddressList742340*>(inputs));
+}
+
+void TransactionDetails742340_ConnectInputsChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::inputsChanged), static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::Signal_InputsChanged));
+}
+
+void TransactionDetails742340_DisconnectInputsChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::inputsChanged), static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::Signal_InputsChanged));
+}
+
+void TransactionDetails742340_InputsChanged(void* ptr, void* inputs)
+{
+	static_cast<TransactionDetails742340*>(ptr)->inputsChanged(static_cast<AddressList742340*>(inputs));
+}
+
+void* TransactionDetails742340_Outputs(void* ptr)
+{
+	return static_cast<TransactionDetails742340*>(ptr)->outputs();
+}
+
+void* TransactionDetails742340_OutputsDefault(void* ptr)
+{
+	return static_cast<TransactionDetails742340*>(ptr)->outputsDefault();
+}
+
+void TransactionDetails742340_SetOutputs(void* ptr, void* outputs)
+{
+	static_cast<TransactionDetails742340*>(ptr)->setOutputs(static_cast<AddressList742340*>(outputs));
+}
+
+void TransactionDetails742340_SetOutputsDefault(void* ptr, void* outputs)
+{
+	static_cast<TransactionDetails742340*>(ptr)->setOutputsDefault(static_cast<AddressList742340*>(outputs));
+}
+
+void TransactionDetails742340_ConnectOutputsChanged(void* ptr)
+{
+	QObject::connect(static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::outputsChanged), static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::Signal_OutputsChanged));
+}
+
+void TransactionDetails742340_DisconnectOutputsChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::outputsChanged), static_cast<TransactionDetails742340*>(ptr), static_cast<void (TransactionDetails742340::*)(AddressList742340*)>(&TransactionDetails742340::Signal_OutputsChanged));
+}
+
+void TransactionDetails742340_OutputsChanged(void* ptr, void* outputs)
+{
+	static_cast<TransactionDetails742340*>(ptr)->outputsChanged(static_cast<AddressList742340*>(outputs));
 }
 
 int TransactionDetails742340_TransactionDetails742340_QRegisterMetaType()

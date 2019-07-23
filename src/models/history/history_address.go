@@ -10,7 +10,7 @@ const (
 	AddressCoinHours
 )
 
-type AddressDeatails struct {
+type AddressDetails struct {
 	core.QObject
 
 	_ string  `property:"address"`
@@ -25,10 +25,10 @@ type AddressList struct {
 
 	_ func() `constructor:"init"`
 
-	_ func(transaction *AddressDeatails) `signal:"addAddress,auto"`
-	_ func(index int)                    `signal:"removeAddress,auto"`
+	_ func(transaction *AddressDetails) `signal:"addAddress,auto"`
+	_ func(index int)                   `signal:"removeAddress,auto"`
 
-	_ []*AddressDeatails `property:"addresses"`
+	_ []*AddressDetails `property:"addresses"`
 }
 
 func (al *AddressList) init() {
@@ -53,7 +53,7 @@ func (al *AddressList) roleNames() map[int]*core.QByteArray {
 	return al.Roles()
 }
 
-func (al *AddressList) addAddress(address *AddressDeatails) {
+func (al *AddressList) addAddress(address *AddressDetails) {
 	al.BeginInsertRows(core.NewQModelIndex(), len(al.Addresses()), len(al.Addresses()))
 	al.SetAddresses(append(al.Addresses(), address))
 	al.EndInsertRows()
@@ -93,22 +93,22 @@ func (al *AddressList) data(index *core.QModelIndex, role int) *core.QVariant {
 }
 
 func (al *AddressList) addExamples() {
-	adr := NewAddressDeatails(nil)
+	adr := NewAddressDetails(nil)
 	adr.SetAddress("734irweaweygtawieta783cwyc")
 	adr.SetAddressSky(38)
 	adr.SetAddressCoinHours(5048)
 	al.addAddress(adr)
-	adr1 := NewAddressDeatails(nil)
+	adr1 := NewAddressDetails(nil)
 	adr1.SetAddress("ekq03i3qerwhjqoqh9823yurig")
 	adr1.SetAddressSky(61)
 	adr1.SetAddressCoinHours(9456)
 	al.addAddress(adr1)
-	adr2 := NewAddressDeatails(nil)
+	adr2 := NewAddressDetails(nil)
 	adr2.SetAddress("1kjher73yiner7wn32nkuwe94v")
 	adr2.SetAddressSky(1)
 	adr2.SetAddressCoinHours(24)
 	al.addAddress(adr2)
-	adr3 := NewAddressDeatails(nil)
+	adr3 := NewAddressDetails(nil)
 	adr3.SetAddress("oopfwwklfd34iuhjwe83w3h28r")
 	adr3.SetAddressSky(111)
 	adr3.SetAddressCoinHours(13548)
