@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/FiberCryptoWallet/src/api/blockchainViewModels"
+	_ "github.com/simelo/FiberCryptoWallet/src/api/blockchainViewModels"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
