@@ -3,7 +3,7 @@ package blockchain
 import (
 	"strconv"
 
-	"github.com/simelo/FiberCryptoWallet/src/utils"
+	"github.com/simelo/FiberCryptoWallet/src/util"
 
 	"github.com/therecipe/qt/core"
 )
@@ -49,7 +49,7 @@ func (bs *BlockchainStatusModel) init() {
 
 // updateInfo request the needed information
 func (bs *BlockchainStatusModel) updateInfo() error {
-	c := utils.NewClient()
+	c := util.NewClient()
 
 	blocks, err := c.LastBlocks(1)
 	if err != nil {
@@ -59,7 +59,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
 	numberOfBlocks := strconv.FormatUint(lastBlock.Head.BkSeq, 10)
 	lastBlockHash := lastBlock.Head.Hash
-	year, month, day, h, m, s := utils.ParseDate(int64(lastBlock.Head.Time)) // Fixme: the conversion its save, right??
+	year, month, day, h, m, s := util.ParseDate(int64(lastBlock.Head.Time)) // Fixme: the conversion its save, right??
 
 	coinSup, err := c.CoinSupply()
 	if err != nil {
