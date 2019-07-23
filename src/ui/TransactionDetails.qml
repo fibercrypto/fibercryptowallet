@@ -8,6 +8,9 @@ import HistoryModels 1.0
 // import "qrc:/ui/src/ui/Delegates"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 
+// Backend imports
+import HistoryModels 1.0
+
 Item {
     id: root
 
@@ -19,6 +22,8 @@ Item {
     property int hoursReceived: 0
     property int hoursBurned: 0
     property string transactionID
+    property QAddressList modelInputs
+    property QAddressList modelOutputs
 
     readonly property bool expanded: buttonMoreDetails.checked
 
@@ -182,7 +187,7 @@ Item {
                         id: listViewInputs
 
                         Material.foreground: Material.Grey
-                        model: listModelInputs
+                        model: modelInputs
                         clip: true
                         Layout.alignment: Qt.AlignTop
                         Layout.fillWidth: true
@@ -214,7 +219,7 @@ Item {
                         id: listViewOutputs
 
                         Material.foreground: Material.Grey
-                        model: listModelOutputs
+                        model: modelOutputs
                         clip: true
                         Layout.alignment: Qt.AlignTop
                         Layout.fillWidth: true
@@ -242,10 +247,10 @@ Item {
     //     ListElement { address: "1kjher73yiner7wn32nkuwe94v"; addressSky: 1; addressCoinHours: 24 }
     //     ListElement { address: "oopfwwklfd34iuhjwe83w3h28r"; addressSky: 111; addressCoinHours: 13548 }
     // }
-    QAddressList{
-        id: listModelInputs
-    }
-    QAddressList{
-        id: listModelOutputs
-    }
+    // QAddressList{
+    //     id: listModelInputs
+    // }
+    // QAddressList{
+    //     id: listModelOutputs
+    // }
 }

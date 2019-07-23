@@ -7,6 +7,9 @@ import QtQuick.Layouts 1.12
 // import "qrc:/ui/src/ui/"
 import "../" // For quick UI development, switch back to resources when making a release
 
+// Backend imports
+import HistoryModels 1.0
+
 ItemDelegate {
     id: root
 
@@ -18,6 +21,8 @@ ItemDelegate {
     property int modelHoursReceived: hoursReceived
     property int modelHoursBurned: hoursBurned
     property string modelTransactionID: transactionID
+    property QAddressList modelInputs: inputs
+    property QAddressList modelOutputs: outputs
 
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
