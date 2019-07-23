@@ -1,10 +1,10 @@
-package blockchainViewModels
+package blockchain
 
 import (
 	"strconv"
-	"time"
 
-	"github.com/skycoin/skycoin/src/api"
+	"github.com/simelo/FiberCryptoWallet/src/utils"
+
 	"github.com/therecipe/qt/core"
 )
 
@@ -47,15 +47,9 @@ func (bs *BlockchainStatusModel) init() {
 	return
 }
 
-// NewClient returns a new client
-func NewClient() *api.Client {
-	addr := "http://node.skycoin.net" // example only
-	return api.NewClient(addr)
-}
-
 // updateInfo request the needed information
 func (bs *BlockchainStatusModel) updateInfo() error {
-	c := NewClient()
+	c := utils.NewClient()
 
 	blocks, err := c.LastBlocks(1)
 	if err != nil {
@@ -65,7 +59,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
 	numberOfBlocks := strconv.FormatUint(lastBlock.Head.BkSeq, 10)
 	lastBlockHash := lastBlock.Head.Hash
-	year, month, day, h, m, s := parseDate(int64(lastBlock.Head.Time)) // Fixme: the conversion its save, right??
+	year, month, day, h, m, s := utils.ParseDate(int64(lastBlock.Head.Time)) // Fixme: the conversion its save, right??
 
 	coinSup, err := c.CoinSupply()
 	if err != nil {
@@ -91,11 +85,4 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	println("Status-updated")
 
 	return nil
-}
-
-func parseDate(timeStamp int64) (int, int, int, int, int, int) {
-	t := time.Unix(timeStamp, 0) //Fixme: use or not UTC() for local time or for server time?
-	y, _m, d := t.Date()
-
-	return y, int(_m), d, t.Hour(), t.Minute(), t.Second()
 }

@@ -20,18 +20,18 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_BlockchainStatusModelba1e39_t {
+struct qt_meta_stringdata_BlockchainStatusModel9ae898_t {
     QByteArrayData data[16];
     char stringdata0[326];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_BlockchainStatusModelba1e39_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_BlockchainStatusModel9ae898_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_BlockchainStatusModelba1e39_t qt_meta_stringdata_BlockchainStatusModelba1e39 = {
+static const qt_meta_stringdata_BlockchainStatusModel9ae898_t qt_meta_stringdata_BlockchainStatusModel9ae898 = {
     {
-QT_MOC_LITERAL(0, 0, 27), // "BlockchainStatusModelba1e39"
+QT_MOC_LITERAL(0, 0, 27), // "BlockchainStatusModel9ae898"
 QT_MOC_LITERAL(1, 28, 21), // "numberOfBlocksChanged"
 QT_MOC_LITERAL(2, 50, 0), // ""
 QT_MOC_LITERAL(3, 51, 14), // "numberOfBlocks"
@@ -49,7 +49,7 @@ QT_MOC_LITERAL(14, 277, 27), // "totalCoinHoursSupplyChanged"
 QT_MOC_LITERAL(15, 305, 20) // "totalCoinHoursSupply"
 
     },
-    "BlockchainStatusModelba1e39\0"
+    "BlockchainStatusModel9ae898\0"
     "numberOfBlocksChanged\0\0numberOfBlocks\0"
     "timestampLastBlockChanged\0timestampLastBlock\0"
     "hashLastBlockChanged\0hashLastBlock\0"
@@ -62,7 +62,7 @@ QT_MOC_LITERAL(15, 305, 20) // "totalCoinHoursSupply"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_BlockchainStatusModelba1e39[] = {
+static const uint qt_meta_data_BlockchainStatusModel9ae898[] = {
 
  // content:
        8,       // revision
@@ -114,10 +114,10 @@ static const uint qt_meta_data_BlockchainStatusModelba1e39[] = {
        0        // eod
 };
 
-void BlockchainStatusModelba1e39::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void BlockchainStatusModel9ae898::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<BlockchainStatusModelba1e39 *>(_o);
+        auto *_t = static_cast<BlockchainStatusModel9ae898 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->numberOfBlocksChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
@@ -132,50 +132,50 @@ void BlockchainStatusModelba1e39::qt_static_metacall(QObject *_o, QMetaObject::C
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (BlockchainStatusModelba1e39::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModelba1e39::numberOfBlocksChanged)) {
+            using _t = void (BlockchainStatusModel9ae898::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel9ae898::numberOfBlocksChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
-            using _t = void (BlockchainStatusModelba1e39::*)(QDateTime );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModelba1e39::timestampLastBlockChanged)) {
+            using _t = void (BlockchainStatusModel9ae898::*)(QDateTime );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel9ae898::timestampLastBlockChanged)) {
                 *result = 1;
                 return;
             }
         }
         {
-            using _t = void (BlockchainStatusModelba1e39::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModelba1e39::hashLastBlockChanged)) {
+            using _t = void (BlockchainStatusModel9ae898::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel9ae898::hashLastBlockChanged)) {
                 *result = 2;
                 return;
             }
         }
         {
-            using _t = void (BlockchainStatusModelba1e39::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModelba1e39::currentSkySupplyChanged)) {
+            using _t = void (BlockchainStatusModel9ae898::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel9ae898::currentSkySupplyChanged)) {
                 *result = 3;
                 return;
             }
         }
         {
-            using _t = void (BlockchainStatusModelba1e39::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModelba1e39::totalSkySupplyChanged)) {
+            using _t = void (BlockchainStatusModel9ae898::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel9ae898::totalSkySupplyChanged)) {
                 *result = 4;
                 return;
             }
         }
         {
-            using _t = void (BlockchainStatusModelba1e39::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModelba1e39::currentCoinHoursSupplyChanged)) {
+            using _t = void (BlockchainStatusModel9ae898::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel9ae898::currentCoinHoursSupplyChanged)) {
                 *result = 5;
                 return;
             }
         }
         {
-            using _t = void (BlockchainStatusModelba1e39::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModelba1e39::totalCoinHoursSupplyChanged)) {
+            using _t = void (BlockchainStatusModel9ae898::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&BlockchainStatusModel9ae898::totalCoinHoursSupplyChanged)) {
                 *result = 6;
                 return;
             }
@@ -183,7 +183,7 @@ void BlockchainStatusModelba1e39::qt_static_metacall(QObject *_o, QMetaObject::C
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
-        auto *_t = static_cast<BlockchainStatusModelba1e39 *>(_o);
+        auto *_t = static_cast<BlockchainStatusModel9ae898 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
@@ -197,7 +197,7 @@ void BlockchainStatusModelba1e39::qt_static_metacall(QObject *_o, QMetaObject::C
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
-        auto *_t = static_cast<BlockchainStatusModelba1e39 *>(_o);
+        auto *_t = static_cast<BlockchainStatusModel9ae898 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
@@ -215,30 +215,30 @@ void BlockchainStatusModelba1e39::qt_static_metacall(QObject *_o, QMetaObject::C
 #endif // QT_NO_PROPERTIES
 }
 
-QT_INIT_METAOBJECT const QMetaObject BlockchainStatusModelba1e39::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject BlockchainStatusModel9ae898::staticMetaObject = { {
     &QObject::staticMetaObject,
-    qt_meta_stringdata_BlockchainStatusModelba1e39.data,
-    qt_meta_data_BlockchainStatusModelba1e39,
+    qt_meta_stringdata_BlockchainStatusModel9ae898.data,
+    qt_meta_data_BlockchainStatusModel9ae898,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *BlockchainStatusModelba1e39::metaObject() const
+const QMetaObject *BlockchainStatusModel9ae898::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *BlockchainStatusModelba1e39::qt_metacast(const char *_clname)
+void *BlockchainStatusModel9ae898::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_BlockchainStatusModelba1e39.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_BlockchainStatusModel9ae898.stringdata0))
         return static_cast<void*>(this);
     return QObject::qt_metacast(_clname);
 }
 
-int BlockchainStatusModelba1e39::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int BlockchainStatusModel9ae898::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -273,49 +273,49 @@ int BlockchainStatusModelba1e39::qt_metacall(QMetaObject::Call _c, int _id, void
 }
 
 // SIGNAL 0
-void BlockchainStatusModelba1e39::numberOfBlocksChanged(QString _t1)
+void BlockchainStatusModel9ae898::numberOfBlocksChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void BlockchainStatusModelba1e39::timestampLastBlockChanged(QDateTime _t1)
+void BlockchainStatusModel9ae898::timestampLastBlockChanged(QDateTime _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
 // SIGNAL 2
-void BlockchainStatusModelba1e39::hashLastBlockChanged(QString _t1)
+void BlockchainStatusModel9ae898::hashLastBlockChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 
 // SIGNAL 3
-void BlockchainStatusModelba1e39::currentSkySupplyChanged(QString _t1)
+void BlockchainStatusModel9ae898::currentSkySupplyChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 
 // SIGNAL 4
-void BlockchainStatusModelba1e39::totalSkySupplyChanged(QString _t1)
+void BlockchainStatusModel9ae898::totalSkySupplyChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
 
 // SIGNAL 5
-void BlockchainStatusModelba1e39::currentCoinHoursSupplyChanged(QString _t1)
+void BlockchainStatusModel9ae898::currentCoinHoursSupplyChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 5, _a);
 }
 
 // SIGNAL 6
-void BlockchainStatusModelba1e39::totalCoinHoursSupplyChanged(QString _t1)
+void BlockchainStatusModel9ae898::totalCoinHoursSupplyChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 6, _a);
