@@ -9,7 +9,7 @@ import (
 	//"github.com/therecipe/qt/widgets"
 	"os"
 
-	_ "github.com/simelo/FiberCryptoWallet/src/api/history"
+	_ "github.com/simelo/FiberCryptoWallet/src/models/history"
 )
 
 func main() {

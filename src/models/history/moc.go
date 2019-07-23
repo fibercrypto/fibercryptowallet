@@ -83,14 +83,14 @@ func NewAddressDeatailsFromPointer(ptr unsafe.Pointer) (n *AddressDeatails) {
 	return
 }
 
-//export callbackAddressDeatails8ba275_Constructor
-func callbackAddressDeatails8ba275_Constructor(ptr unsafe.Pointer) {
+//export callbackAddressDeatails742340_Constructor
+func callbackAddressDeatails742340_Constructor(ptr unsafe.Pointer) {
 	this := NewAddressDeatailsFromPointer(ptr)
 	qt.Register(ptr, this)
 }
 
-//export callbackAddressDeatails8ba275_Address
-func callbackAddressDeatails8ba275_Address(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+//export callbackAddressDeatails742340_Address
+func callbackAddressDeatails742340_Address(ptr unsafe.Pointer) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "address"); signal != nil {
 		tempVal := (*(*func() string)(signal))()
 		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
@@ -123,20 +123,20 @@ func (ptr *AddressDeatails) DisconnectAddress() {
 
 func (ptr *AddressDeatails) Address() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.AddressDeatails8ba275_Address(ptr.Pointer()))
+		return cGoUnpackString(C.AddressDeatails742340_Address(ptr.Pointer()))
 	}
 	return ""
 }
 
 func (ptr *AddressDeatails) AddressDefault() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.AddressDeatails8ba275_AddressDefault(ptr.Pointer()))
+		return cGoUnpackString(C.AddressDeatails742340_AddressDefault(ptr.Pointer()))
 	}
 	return ""
 }
 
-//export callbackAddressDeatails8ba275_SetAddress
-func callbackAddressDeatails8ba275_SetAddress(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
+//export callbackAddressDeatails742340_SetAddress
+func callbackAddressDeatails742340_SetAddress(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "setAddress"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(address))
 	} else {
@@ -173,7 +173,7 @@ func (ptr *AddressDeatails) SetAddress(address string) {
 			addressC = C.CString(address)
 			defer C.free(unsafe.Pointer(addressC))
 		}
-		C.AddressDeatails8ba275_SetAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
+		C.AddressDeatails742340_SetAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
 	}
 }
 
@@ -184,12 +184,12 @@ func (ptr *AddressDeatails) SetAddressDefault(address string) {
 			addressC = C.CString(address)
 			defer C.free(unsafe.Pointer(addressC))
 		}
-		C.AddressDeatails8ba275_SetAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
+		C.AddressDeatails742340_SetAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
 	}
 }
 
-//export callbackAddressDeatails8ba275_AddressChanged
-func callbackAddressDeatails8ba275_AddressChanged(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
+//export callbackAddressDeatails742340_AddressChanged
+func callbackAddressDeatails742340_AddressChanged(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "addressChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(address))
 	}
@@ -200,7 +200,7 @@ func (ptr *AddressDeatails) ConnectAddressChanged(f func(address string)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "addressChanged") {
-			C.AddressDeatails8ba275_ConnectAddressChanged(ptr.Pointer())
+			C.AddressDeatails742340_ConnectAddressChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "addressChanged"); signal != nil {
@@ -217,7 +217,7 @@ func (ptr *AddressDeatails) ConnectAddressChanged(f func(address string)) {
 
 func (ptr *AddressDeatails) DisconnectAddressChanged() {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_DisconnectAddressChanged(ptr.Pointer())
+		C.AddressDeatails742340_DisconnectAddressChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "addressChanged")
 	}
 }
@@ -229,12 +229,12 @@ func (ptr *AddressDeatails) AddressChanged(address string) {
 			addressC = C.CString(address)
 			defer C.free(unsafe.Pointer(addressC))
 		}
-		C.AddressDeatails8ba275_AddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
+		C.AddressDeatails742340_AddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
 	}
 }
 
-//export callbackAddressDeatails8ba275_AddressSky
-func callbackAddressDeatails8ba275_AddressSky(ptr unsafe.Pointer) C.float {
+//export callbackAddressDeatails742340_AddressSky
+func callbackAddressDeatails742340_AddressSky(ptr unsafe.Pointer) C.float {
 	if signal := qt.GetSignal(ptr, "addressSky"); signal != nil {
 		return C.float((*(*func() float32)(signal))())
 	}
@@ -266,20 +266,20 @@ func (ptr *AddressDeatails) DisconnectAddressSky() {
 
 func (ptr *AddressDeatails) AddressSky() float32 {
 	if ptr.Pointer() != nil {
-		return float32(C.AddressDeatails8ba275_AddressSky(ptr.Pointer()))
+		return float32(C.AddressDeatails742340_AddressSky(ptr.Pointer()))
 	}
 	return 0
 }
 
 func (ptr *AddressDeatails) AddressSkyDefault() float32 {
 	if ptr.Pointer() != nil {
-		return float32(C.AddressDeatails8ba275_AddressSkyDefault(ptr.Pointer()))
+		return float32(C.AddressDeatails742340_AddressSkyDefault(ptr.Pointer()))
 	}
 	return 0
 }
 
-//export callbackAddressDeatails8ba275_SetAddressSky
-func callbackAddressDeatails8ba275_SetAddressSky(ptr unsafe.Pointer, addressSky C.float) {
+//export callbackAddressDeatails742340_SetAddressSky
+func callbackAddressDeatails742340_SetAddressSky(ptr unsafe.Pointer, addressSky C.float) {
 	if signal := qt.GetSignal(ptr, "setAddressSky"); signal != nil {
 		(*(*func(float32))(signal))(float32(addressSky))
 	} else {
@@ -311,18 +311,18 @@ func (ptr *AddressDeatails) DisconnectSetAddressSky() {
 
 func (ptr *AddressDeatails) SetAddressSky(addressSky float32) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_SetAddressSky(ptr.Pointer(), C.float(addressSky))
+		C.AddressDeatails742340_SetAddressSky(ptr.Pointer(), C.float(addressSky))
 	}
 }
 
 func (ptr *AddressDeatails) SetAddressSkyDefault(addressSky float32) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_SetAddressSkyDefault(ptr.Pointer(), C.float(addressSky))
+		C.AddressDeatails742340_SetAddressSkyDefault(ptr.Pointer(), C.float(addressSky))
 	}
 }
 
-//export callbackAddressDeatails8ba275_AddressSkyChanged
-func callbackAddressDeatails8ba275_AddressSkyChanged(ptr unsafe.Pointer, addressSky C.float) {
+//export callbackAddressDeatails742340_AddressSkyChanged
+func callbackAddressDeatails742340_AddressSkyChanged(ptr unsafe.Pointer, addressSky C.float) {
 	if signal := qt.GetSignal(ptr, "addressSkyChanged"); signal != nil {
 		(*(*func(float32))(signal))(float32(addressSky))
 	}
@@ -333,7 +333,7 @@ func (ptr *AddressDeatails) ConnectAddressSkyChanged(f func(addressSky float32))
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "addressSkyChanged") {
-			C.AddressDeatails8ba275_ConnectAddressSkyChanged(ptr.Pointer())
+			C.AddressDeatails742340_ConnectAddressSkyChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "addressSkyChanged"); signal != nil {
@@ -350,19 +350,19 @@ func (ptr *AddressDeatails) ConnectAddressSkyChanged(f func(addressSky float32))
 
 func (ptr *AddressDeatails) DisconnectAddressSkyChanged() {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_DisconnectAddressSkyChanged(ptr.Pointer())
+		C.AddressDeatails742340_DisconnectAddressSkyChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "addressSkyChanged")
 	}
 }
 
 func (ptr *AddressDeatails) AddressSkyChanged(addressSky float32) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_AddressSkyChanged(ptr.Pointer(), C.float(addressSky))
+		C.AddressDeatails742340_AddressSkyChanged(ptr.Pointer(), C.float(addressSky))
 	}
 }
 
-//export callbackAddressDeatails8ba275_AddressCoinHours
-func callbackAddressDeatails8ba275_AddressCoinHours(ptr unsafe.Pointer) C.int {
+//export callbackAddressDeatails742340_AddressCoinHours
+func callbackAddressDeatails742340_AddressCoinHours(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "addressCoinHours"); signal != nil {
 		return C.int(int32((*(*func() int)(signal))()))
 	}
@@ -394,20 +394,20 @@ func (ptr *AddressDeatails) DisconnectAddressCoinHours() {
 
 func (ptr *AddressDeatails) AddressCoinHours() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressDeatails8ba275_AddressCoinHours(ptr.Pointer())))
+		return int(int32(C.AddressDeatails742340_AddressCoinHours(ptr.Pointer())))
 	}
 	return 0
 }
 
 func (ptr *AddressDeatails) AddressCoinHoursDefault() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressDeatails8ba275_AddressCoinHoursDefault(ptr.Pointer())))
+		return int(int32(C.AddressDeatails742340_AddressCoinHoursDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
-//export callbackAddressDeatails8ba275_SetAddressCoinHours
-func callbackAddressDeatails8ba275_SetAddressCoinHours(ptr unsafe.Pointer, addressCoinHours C.int) {
+//export callbackAddressDeatails742340_SetAddressCoinHours
+func callbackAddressDeatails742340_SetAddressCoinHours(ptr unsafe.Pointer, addressCoinHours C.int) {
 	if signal := qt.GetSignal(ptr, "setAddressCoinHours"); signal != nil {
 		(*(*func(int))(signal))(int(int32(addressCoinHours)))
 	} else {
@@ -439,18 +439,18 @@ func (ptr *AddressDeatails) DisconnectSetAddressCoinHours() {
 
 func (ptr *AddressDeatails) SetAddressCoinHours(addressCoinHours int) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_SetAddressCoinHours(ptr.Pointer(), C.int(int32(addressCoinHours)))
+		C.AddressDeatails742340_SetAddressCoinHours(ptr.Pointer(), C.int(int32(addressCoinHours)))
 	}
 }
 
 func (ptr *AddressDeatails) SetAddressCoinHoursDefault(addressCoinHours int) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_SetAddressCoinHoursDefault(ptr.Pointer(), C.int(int32(addressCoinHours)))
+		C.AddressDeatails742340_SetAddressCoinHoursDefault(ptr.Pointer(), C.int(int32(addressCoinHours)))
 	}
 }
 
-//export callbackAddressDeatails8ba275_AddressCoinHoursChanged
-func callbackAddressDeatails8ba275_AddressCoinHoursChanged(ptr unsafe.Pointer, addressCoinHours C.int) {
+//export callbackAddressDeatails742340_AddressCoinHoursChanged
+func callbackAddressDeatails742340_AddressCoinHoursChanged(ptr unsafe.Pointer, addressCoinHours C.int) {
 	if signal := qt.GetSignal(ptr, "addressCoinHoursChanged"); signal != nil {
 		(*(*func(int))(signal))(int(int32(addressCoinHours)))
 	}
@@ -461,7 +461,7 @@ func (ptr *AddressDeatails) ConnectAddressCoinHoursChanged(f func(addressCoinHou
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "addressCoinHoursChanged") {
-			C.AddressDeatails8ba275_ConnectAddressCoinHoursChanged(ptr.Pointer())
+			C.AddressDeatails742340_ConnectAddressCoinHoursChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "addressCoinHoursChanged"); signal != nil {
@@ -478,23 +478,23 @@ func (ptr *AddressDeatails) ConnectAddressCoinHoursChanged(f func(addressCoinHou
 
 func (ptr *AddressDeatails) DisconnectAddressCoinHoursChanged() {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_DisconnectAddressCoinHoursChanged(ptr.Pointer())
+		C.AddressDeatails742340_DisconnectAddressCoinHoursChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "addressCoinHoursChanged")
 	}
 }
 
 func (ptr *AddressDeatails) AddressCoinHoursChanged(addressCoinHours int) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_AddressCoinHoursChanged(ptr.Pointer(), C.int(int32(addressCoinHours)))
+		C.AddressDeatails742340_AddressCoinHoursChanged(ptr.Pointer(), C.int(int32(addressCoinHours)))
 	}
 }
 
 func AddressDeatails_QRegisterMetaType() int {
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QRegisterMetaType()))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QRegisterMetaType()))
 }
 
 func (ptr *AddressDeatails) QRegisterMetaType() int {
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QRegisterMetaType()))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QRegisterMetaType()))
 }
 
 func AddressDeatails_QRegisterMetaType2(typeName string) int {
@@ -503,7 +503,7 @@ func AddressDeatails_QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QRegisterMetaType2(typeNameC)))
 }
 
 func (ptr *AddressDeatails) QRegisterMetaType2(typeName string) int {
@@ -512,15 +512,15 @@ func (ptr *AddressDeatails) QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QRegisterMetaType2(typeNameC)))
 }
 
 func AddressDeatails_QmlRegisterType() int {
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QmlRegisterType()))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QmlRegisterType()))
 }
 
 func (ptr *AddressDeatails) QmlRegisterType() int {
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QmlRegisterType()))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QmlRegisterType()))
 }
 
 func AddressDeatails_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -534,7 +534,7 @@ func AddressDeatails_QmlRegisterType2(uri string, versionMajor int, versionMinor
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *AddressDeatails) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -548,12 +548,12 @@ func (ptr *AddressDeatails) QmlRegisterType2(uri string, versionMajor int, versi
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.AddressDeatails8ba275_AddressDeatails8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.AddressDeatails742340_AddressDeatails742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *AddressDeatails) __children_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails8ba275___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails742340___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -564,17 +564,17 @@ func (ptr *AddressDeatails) __children_atList(i int) *std_core.QObject {
 
 func (ptr *AddressDeatails) __children_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressDeatails742340___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressDeatails) __children_newList() unsafe.Pointer {
-	return C.AddressDeatails8ba275___children_newList(ptr.Pointer())
+	return C.AddressDeatails742340___children_newList(ptr.Pointer())
 }
 
 func (ptr *AddressDeatails) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressDeatails8ba275___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressDeatails742340___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -583,17 +583,17 @@ func (ptr *AddressDeatails) __dynamicPropertyNames_atList(i int) *std_core.QByte
 
 func (ptr *AddressDeatails) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
+		C.AddressDeatails742340___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *AddressDeatails) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return C.AddressDeatails8ba275___dynamicPropertyNames_newList(ptr.Pointer())
+	return C.AddressDeatails742340___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *AddressDeatails) __findChildren_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails8ba275___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails742340___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -604,17 +604,17 @@ func (ptr *AddressDeatails) __findChildren_atList(i int) *std_core.QObject {
 
 func (ptr *AddressDeatails) __findChildren_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressDeatails742340___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressDeatails) __findChildren_newList() unsafe.Pointer {
-	return C.AddressDeatails8ba275___findChildren_newList(ptr.Pointer())
+	return C.AddressDeatails742340___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *AddressDeatails) __findChildren_atList3(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails8ba275___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails742340___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -625,17 +625,17 @@ func (ptr *AddressDeatails) __findChildren_atList3(i int) *std_core.QObject {
 
 func (ptr *AddressDeatails) __findChildren_setList3(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressDeatails742340___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressDeatails) __findChildren_newList3() unsafe.Pointer {
-	return C.AddressDeatails8ba275___findChildren_newList3(ptr.Pointer())
+	return C.AddressDeatails742340___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *AddressDeatails) __qFindChildren_atList2(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails8ba275___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressDeatails742340___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -646,24 +646,24 @@ func (ptr *AddressDeatails) __qFindChildren_atList2(i int) *std_core.QObject {
 
 func (ptr *AddressDeatails) __qFindChildren_setList2(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressDeatails742340___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressDeatails) __qFindChildren_newList2() unsafe.Pointer {
-	return C.AddressDeatails8ba275___qFindChildren_newList2(ptr.Pointer())
+	return C.AddressDeatails742340___qFindChildren_newList2(ptr.Pointer())
 }
 
 func NewAddressDeatails(parent std_core.QObject_ITF) *AddressDeatails {
-	tmpValue := NewAddressDeatailsFromPointer(C.AddressDeatails8ba275_NewAddressDeatails(std_core.PointerFromQObject(parent)))
+	tmpValue := NewAddressDeatailsFromPointer(C.AddressDeatails742340_NewAddressDeatails(std_core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 	}
 	return tmpValue
 }
 
-//export callbackAddressDeatails8ba275_DestroyAddressDeatails
-func callbackAddressDeatails8ba275_DestroyAddressDeatails(ptr unsafe.Pointer) {
+//export callbackAddressDeatails742340_DestroyAddressDeatails
+func callbackAddressDeatails742340_DestroyAddressDeatails(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~AddressDeatails"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -695,7 +695,7 @@ func (ptr *AddressDeatails) DisconnectDestroyAddressDeatails() {
 
 func (ptr *AddressDeatails) DestroyAddressDeatails() {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_DestroyAddressDeatails(ptr.Pointer())
+		C.AddressDeatails742340_DestroyAddressDeatails(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
@@ -703,14 +703,14 @@ func (ptr *AddressDeatails) DestroyAddressDeatails() {
 
 func (ptr *AddressDeatails) DestroyAddressDeatailsDefault() {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_DestroyAddressDeatailsDefault(ptr.Pointer())
+		C.AddressDeatails742340_DestroyAddressDeatailsDefault(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackAddressDeatails8ba275_ChildEvent
-func callbackAddressDeatails8ba275_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackAddressDeatails742340_ChildEvent
+func callbackAddressDeatails742340_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
 		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
 	} else {
@@ -720,12 +720,12 @@ func callbackAddressDeatails8ba275_ChildEvent(ptr unsafe.Pointer, event unsafe.P
 
 func (ptr *AddressDeatails) ChildEventDefault(event std_core.QChildEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
+		C.AddressDeatails742340_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
 	}
 }
 
-//export callbackAddressDeatails8ba275_ConnectNotify
-func callbackAddressDeatails8ba275_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackAddressDeatails742340_ConnectNotify
+func callbackAddressDeatails742340_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -735,12 +735,12 @@ func callbackAddressDeatails8ba275_ConnectNotify(ptr unsafe.Pointer, sign unsafe
 
 func (ptr *AddressDeatails) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.AddressDeatails742340_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackAddressDeatails8ba275_CustomEvent
-func callbackAddressDeatails8ba275_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackAddressDeatails742340_CustomEvent
+func callbackAddressDeatails742340_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
 		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
 	} else {
@@ -750,12 +750,12 @@ func callbackAddressDeatails8ba275_CustomEvent(ptr unsafe.Pointer, event unsafe.
 
 func (ptr *AddressDeatails) CustomEventDefault(event std_core.QEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
+		C.AddressDeatails742340_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
 	}
 }
 
-//export callbackAddressDeatails8ba275_DeleteLater
-func callbackAddressDeatails8ba275_DeleteLater(ptr unsafe.Pointer) {
+//export callbackAddressDeatails742340_DeleteLater
+func callbackAddressDeatails742340_DeleteLater(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -765,13 +765,13 @@ func callbackAddressDeatails8ba275_DeleteLater(ptr unsafe.Pointer) {
 
 func (ptr *AddressDeatails) DeleteLaterDefault() {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_DeleteLaterDefault(ptr.Pointer())
+		C.AddressDeatails742340_DeleteLaterDefault(ptr.Pointer())
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackAddressDeatails8ba275_Destroyed
-func callbackAddressDeatails8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
+//export callbackAddressDeatails742340_Destroyed
+func callbackAddressDeatails742340_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
 		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
 	}
@@ -779,8 +779,8 @@ func callbackAddressDeatails8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.Poin
 
 }
 
-//export callbackAddressDeatails8ba275_DisconnectNotify
-func callbackAddressDeatails8ba275_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackAddressDeatails742340_DisconnectNotify
+func callbackAddressDeatails742340_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -790,12 +790,12 @@ func callbackAddressDeatails8ba275_DisconnectNotify(ptr unsafe.Pointer, sign uns
 
 func (ptr *AddressDeatails) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.AddressDeatails742340_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackAddressDeatails8ba275_Event
-func callbackAddressDeatails8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
+//export callbackAddressDeatails742340_Event
+func callbackAddressDeatails742340_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "event"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
 	}
@@ -805,13 +805,13 @@ func callbackAddressDeatails8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer) C
 
 func (ptr *AddressDeatails) EventDefault(e std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressDeatails8ba275_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
+		return int8(C.AddressDeatails742340_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
 	}
 	return false
 }
 
-//export callbackAddressDeatails8ba275_EventFilter
-func callbackAddressDeatails8ba275_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
+//export callbackAddressDeatails742340_EventFilter
+func callbackAddressDeatails742340_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
 	}
@@ -821,21 +821,21 @@ func callbackAddressDeatails8ba275_EventFilter(ptr unsafe.Pointer, watched unsaf
 
 func (ptr *AddressDeatails) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressDeatails8ba275_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
+		return int8(C.AddressDeatails742340_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
 	}
 	return false
 }
 
-//export callbackAddressDeatails8ba275_ObjectNameChanged
-func callbackAddressDeatails8ba275_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
+//export callbackAddressDeatails742340_ObjectNameChanged
+func callbackAddressDeatails742340_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(objectName))
 	}
 
 }
 
-//export callbackAddressDeatails8ba275_TimerEvent
-func callbackAddressDeatails8ba275_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackAddressDeatails742340_TimerEvent
+func callbackAddressDeatails742340_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
 		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
 	} else {
@@ -845,7 +845,7 @@ func callbackAddressDeatails8ba275_TimerEvent(ptr unsafe.Pointer, event unsafe.P
 
 func (ptr *AddressDeatails) TimerEventDefault(event std_core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressDeatails8ba275_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
+		C.AddressDeatails742340_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
 	}
 }
 
@@ -899,8 +899,8 @@ func NewAddressListFromPointer(ptr unsafe.Pointer) (n *AddressList) {
 }
 func (this *AddressList) Init() { this.init() }
 
-//export callbackAddressList8ba275_Constructor
-func callbackAddressList8ba275_Constructor(ptr unsafe.Pointer) {
+//export callbackAddressList742340_Constructor
+func callbackAddressList742340_Constructor(ptr unsafe.Pointer) {
 	this := NewAddressListFromPointer(ptr)
 	qt.Register(ptr, this)
 	this.ConnectAddAddress(this.addAddress)
@@ -908,8 +908,8 @@ func callbackAddressList8ba275_Constructor(ptr unsafe.Pointer) {
 	this.init()
 }
 
-//export callbackAddressList8ba275_AddAddress
-func callbackAddressList8ba275_AddAddress(ptr unsafe.Pointer, transaction unsafe.Pointer) {
+//export callbackAddressList742340_AddAddress
+func callbackAddressList742340_AddAddress(ptr unsafe.Pointer, transaction unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "addAddress"); signal != nil {
 		(*(*func(*AddressDeatails))(signal))(NewAddressDeatailsFromPointer(transaction))
 	}
@@ -920,7 +920,7 @@ func (ptr *AddressList) ConnectAddAddress(f func(transaction *AddressDeatails)) 
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "addAddress") {
-			C.AddressList8ba275_ConnectAddAddress(ptr.Pointer())
+			C.AddressList742340_ConnectAddAddress(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "addAddress"); signal != nil {
@@ -937,19 +937,19 @@ func (ptr *AddressList) ConnectAddAddress(f func(transaction *AddressDeatails)) 
 
 func (ptr *AddressList) DisconnectAddAddress() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DisconnectAddAddress(ptr.Pointer())
+		C.AddressList742340_DisconnectAddAddress(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "addAddress")
 	}
 }
 
 func (ptr *AddressList) AddAddress(transaction AddressDeatails_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_AddAddress(ptr.Pointer(), PointerFromAddressDeatails(transaction))
+		C.AddressList742340_AddAddress(ptr.Pointer(), PointerFromAddressDeatails(transaction))
 	}
 }
 
-//export callbackAddressList8ba275_RemoveAddress
-func callbackAddressList8ba275_RemoveAddress(ptr unsafe.Pointer, index C.int) {
+//export callbackAddressList742340_RemoveAddress
+func callbackAddressList742340_RemoveAddress(ptr unsafe.Pointer, index C.int) {
 	if signal := qt.GetSignal(ptr, "removeAddress"); signal != nil {
 		(*(*func(int))(signal))(int(int32(index)))
 	}
@@ -960,7 +960,7 @@ func (ptr *AddressList) ConnectRemoveAddress(f func(index int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "removeAddress") {
-			C.AddressList8ba275_ConnectRemoveAddress(ptr.Pointer())
+			C.AddressList742340_ConnectRemoveAddress(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "removeAddress"); signal != nil {
@@ -977,19 +977,19 @@ func (ptr *AddressList) ConnectRemoveAddress(f func(index int)) {
 
 func (ptr *AddressList) DisconnectRemoveAddress() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DisconnectRemoveAddress(ptr.Pointer())
+		C.AddressList742340_DisconnectRemoveAddress(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "removeAddress")
 	}
 }
 
 func (ptr *AddressList) RemoveAddress(index int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_RemoveAddress(ptr.Pointer(), C.int(int32(index)))
+		C.AddressList742340_RemoveAddress(ptr.Pointer(), C.int(int32(index)))
 	}
 }
 
-//export callbackAddressList8ba275_Roles
-func callbackAddressList8ba275_Roles(ptr unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_Roles
+func callbackAddressList742340_Roles(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "roles"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__roles_newList())
@@ -1040,7 +1040,7 @@ func (ptr *AddressList) Roles() map[int]*std_core.QByteArray {
 				out[v] = tmpList.__roles_atList(v, i)
 			}
 			return out
-		}(C.AddressList8ba275_Roles(ptr.Pointer()))
+		}(C.AddressList742340_Roles(ptr.Pointer()))
 	}
 	return make(map[int]*std_core.QByteArray, 0)
 }
@@ -1054,13 +1054,13 @@ func (ptr *AddressList) RolesDefault() map[int]*std_core.QByteArray {
 				out[v] = tmpList.__roles_atList(v, i)
 			}
 			return out
-		}(C.AddressList8ba275_RolesDefault(ptr.Pointer()))
+		}(C.AddressList742340_RolesDefault(ptr.Pointer()))
 	}
 	return make(map[int]*std_core.QByteArray, 0)
 }
 
-//export callbackAddressList8ba275_SetRoles
-func callbackAddressList8ba275_SetRoles(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
+//export callbackAddressList742340_SetRoles
+func callbackAddressList742340_SetRoles(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "setRoles"); signal != nil {
 		(*(*func(map[int]*std_core.QByteArray))(signal))(func(l C.struct_Moc_PackedList) map[int]*std_core.QByteArray {
 			out := make(map[int]*std_core.QByteArray, int(l.len))
@@ -1106,7 +1106,7 @@ func (ptr *AddressList) DisconnectSetRoles() {
 
 func (ptr *AddressList) SetRoles(roles map[int]*std_core.QByteArray) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_SetRoles(ptr.Pointer(), func() unsafe.Pointer {
+		C.AddressList742340_SetRoles(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__setRoles_roles_newList())
 			for k, v := range roles {
 				tmpList.__setRoles_roles_setList(k, v)
@@ -1118,7 +1118,7 @@ func (ptr *AddressList) SetRoles(roles map[int]*std_core.QByteArray) {
 
 func (ptr *AddressList) SetRolesDefault(roles map[int]*std_core.QByteArray) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_SetRolesDefault(ptr.Pointer(), func() unsafe.Pointer {
+		C.AddressList742340_SetRolesDefault(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__setRoles_roles_newList())
 			for k, v := range roles {
 				tmpList.__setRoles_roles_setList(k, v)
@@ -1128,8 +1128,8 @@ func (ptr *AddressList) SetRolesDefault(roles map[int]*std_core.QByteArray) {
 	}
 }
 
-//export callbackAddressList8ba275_RolesChanged
-func callbackAddressList8ba275_RolesChanged(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
+//export callbackAddressList742340_RolesChanged
+func callbackAddressList742340_RolesChanged(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "rolesChanged"); signal != nil {
 		(*(*func(map[int]*std_core.QByteArray))(signal))(func(l C.struct_Moc_PackedList) map[int]*std_core.QByteArray {
 			out := make(map[int]*std_core.QByteArray, int(l.len))
@@ -1147,7 +1147,7 @@ func (ptr *AddressList) ConnectRolesChanged(f func(roles map[int]*std_core.QByte
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "rolesChanged") {
-			C.AddressList8ba275_ConnectRolesChanged(ptr.Pointer())
+			C.AddressList742340_ConnectRolesChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "rolesChanged"); signal != nil {
@@ -1164,14 +1164,14 @@ func (ptr *AddressList) ConnectRolesChanged(f func(roles map[int]*std_core.QByte
 
 func (ptr *AddressList) DisconnectRolesChanged() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DisconnectRolesChanged(ptr.Pointer())
+		C.AddressList742340_DisconnectRolesChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "rolesChanged")
 	}
 }
 
 func (ptr *AddressList) RolesChanged(roles map[int]*std_core.QByteArray) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_RolesChanged(ptr.Pointer(), func() unsafe.Pointer {
+		C.AddressList742340_RolesChanged(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__rolesChanged_roles_newList())
 			for k, v := range roles {
 				tmpList.__rolesChanged_roles_setList(k, v)
@@ -1181,8 +1181,8 @@ func (ptr *AddressList) RolesChanged(roles map[int]*std_core.QByteArray) {
 	}
 }
 
-//export callbackAddressList8ba275_Addresses
-func callbackAddressList8ba275_Addresses(ptr unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_Addresses
+func callbackAddressList742340_Addresses(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "addresses"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__addresses_newList())
@@ -1233,7 +1233,7 @@ func (ptr *AddressList) Addresses() []*AddressDeatails {
 				out[i] = tmpList.__addresses_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275_Addresses(ptr.Pointer()))
+		}(C.AddressList742340_Addresses(ptr.Pointer()))
 	}
 	return make([]*AddressDeatails, 0)
 }
@@ -1247,13 +1247,13 @@ func (ptr *AddressList) AddressesDefault() []*AddressDeatails {
 				out[i] = tmpList.__addresses_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275_AddressesDefault(ptr.Pointer()))
+		}(C.AddressList742340_AddressesDefault(ptr.Pointer()))
 	}
 	return make([]*AddressDeatails, 0)
 }
 
-//export callbackAddressList8ba275_SetAddresses
-func callbackAddressList8ba275_SetAddresses(ptr unsafe.Pointer, addresses C.struct_Moc_PackedList) {
+//export callbackAddressList742340_SetAddresses
+func callbackAddressList742340_SetAddresses(ptr unsafe.Pointer, addresses C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "setAddresses"); signal != nil {
 		(*(*func([]*AddressDeatails))(signal))(func(l C.struct_Moc_PackedList) []*AddressDeatails {
 			out := make([]*AddressDeatails, int(l.len))
@@ -1299,7 +1299,7 @@ func (ptr *AddressList) DisconnectSetAddresses() {
 
 func (ptr *AddressList) SetAddresses(addresses []*AddressDeatails) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_SetAddresses(ptr.Pointer(), func() unsafe.Pointer {
+		C.AddressList742340_SetAddresses(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__setAddresses_addresses_newList())
 			for _, v := range addresses {
 				tmpList.__setAddresses_addresses_setList(v)
@@ -1311,7 +1311,7 @@ func (ptr *AddressList) SetAddresses(addresses []*AddressDeatails) {
 
 func (ptr *AddressList) SetAddressesDefault(addresses []*AddressDeatails) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_SetAddressesDefault(ptr.Pointer(), func() unsafe.Pointer {
+		C.AddressList742340_SetAddressesDefault(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__setAddresses_addresses_newList())
 			for _, v := range addresses {
 				tmpList.__setAddresses_addresses_setList(v)
@@ -1321,8 +1321,8 @@ func (ptr *AddressList) SetAddressesDefault(addresses []*AddressDeatails) {
 	}
 }
 
-//export callbackAddressList8ba275_AddressesChanged
-func callbackAddressList8ba275_AddressesChanged(ptr unsafe.Pointer, addresses C.struct_Moc_PackedList) {
+//export callbackAddressList742340_AddressesChanged
+func callbackAddressList742340_AddressesChanged(ptr unsafe.Pointer, addresses C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "addressesChanged"); signal != nil {
 		(*(*func([]*AddressDeatails))(signal))(func(l C.struct_Moc_PackedList) []*AddressDeatails {
 			out := make([]*AddressDeatails, int(l.len))
@@ -1340,7 +1340,7 @@ func (ptr *AddressList) ConnectAddressesChanged(f func(addresses []*AddressDeata
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "addressesChanged") {
-			C.AddressList8ba275_ConnectAddressesChanged(ptr.Pointer())
+			C.AddressList742340_ConnectAddressesChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "addressesChanged"); signal != nil {
@@ -1357,14 +1357,14 @@ func (ptr *AddressList) ConnectAddressesChanged(f func(addresses []*AddressDeata
 
 func (ptr *AddressList) DisconnectAddressesChanged() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DisconnectAddressesChanged(ptr.Pointer())
+		C.AddressList742340_DisconnectAddressesChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "addressesChanged")
 	}
 }
 
 func (ptr *AddressList) AddressesChanged(addresses []*AddressDeatails) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_AddressesChanged(ptr.Pointer(), func() unsafe.Pointer {
+		C.AddressList742340_AddressesChanged(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__addressesChanged_addresses_newList())
 			for _, v := range addresses {
 				tmpList.__addressesChanged_addresses_setList(v)
@@ -1375,11 +1375,11 @@ func (ptr *AddressList) AddressesChanged(addresses []*AddressDeatails) {
 }
 
 func AddressList_QRegisterMetaType() int {
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QRegisterMetaType()))
+	return int(int32(C.AddressList742340_AddressList742340_QRegisterMetaType()))
 }
 
 func (ptr *AddressList) QRegisterMetaType() int {
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QRegisterMetaType()))
+	return int(int32(C.AddressList742340_AddressList742340_QRegisterMetaType()))
 }
 
 func AddressList_QRegisterMetaType2(typeName string) int {
@@ -1388,7 +1388,7 @@ func AddressList_QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.AddressList742340_AddressList742340_QRegisterMetaType2(typeNameC)))
 }
 
 func (ptr *AddressList) QRegisterMetaType2(typeName string) int {
@@ -1397,15 +1397,15 @@ func (ptr *AddressList) QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.AddressList742340_AddressList742340_QRegisterMetaType2(typeNameC)))
 }
 
 func AddressList_QmlRegisterType() int {
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QmlRegisterType()))
+	return int(int32(C.AddressList742340_AddressList742340_QmlRegisterType()))
 }
 
 func (ptr *AddressList) QmlRegisterType() int {
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QmlRegisterType()))
+	return int(int32(C.AddressList742340_AddressList742340_QmlRegisterType()))
 }
 
 func AddressList_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -1419,7 +1419,7 @@ func AddressList_QmlRegisterType2(uri string, versionMajor int, versionMinor int
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.AddressList742340_AddressList742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *AddressList) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -1433,63 +1433,63 @@ func (ptr *AddressList) QmlRegisterType2(uri string, versionMajor int, versionMi
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.AddressList8ba275_AddressList8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.AddressList742340_AddressList742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *AddressList) ____itemData_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____itemData_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____itemData_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____itemData_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____itemData_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____itemData_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____itemData_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____itemData_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____itemData_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) ____roleNames_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____roleNames_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____roleNames_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____roleNames_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____roleNames_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) ____setItemData_roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____setItemData_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____setItemData_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____setItemData_roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____setItemData_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____setItemData_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____setItemData_roles_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____setItemData_roles_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____setItemData_roles_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __changePersistentIndexList_from_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275___changePersistentIndexList_from_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340___changePersistentIndexList_from_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -1498,17 +1498,17 @@ func (ptr *AddressList) __changePersistentIndexList_from_atList(i int) *std_core
 
 func (ptr *AddressList) __changePersistentIndexList_from_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___changePersistentIndexList_from_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.AddressList742340___changePersistentIndexList_from_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *AddressList) __changePersistentIndexList_from_newList() unsafe.Pointer {
-	return C.AddressList8ba275___changePersistentIndexList_from_newList(ptr.Pointer())
+	return C.AddressList742340___changePersistentIndexList_from_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __changePersistentIndexList_to_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275___changePersistentIndexList_to_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340___changePersistentIndexList_to_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -1517,34 +1517,34 @@ func (ptr *AddressList) __changePersistentIndexList_to_atList(i int) *std_core.Q
 
 func (ptr *AddressList) __changePersistentIndexList_to_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___changePersistentIndexList_to_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.AddressList742340___changePersistentIndexList_to_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *AddressList) __changePersistentIndexList_to_newList() unsafe.Pointer {
-	return C.AddressList8ba275___changePersistentIndexList_to_newList(ptr.Pointer())
+	return C.AddressList742340___changePersistentIndexList_to_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __dataChanged_roles_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275___dataChanged_roles_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340___dataChanged_roles_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) __dataChanged_roles_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___dataChanged_roles_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340___dataChanged_roles_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) __dataChanged_roles_newList() unsafe.Pointer {
-	return C.AddressList8ba275___dataChanged_roles_newList(ptr.Pointer())
+	return C.AddressList742340___dataChanged_roles_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __itemData_atList(v int, i int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.AddressList8ba275___itemData_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQVariantFromPointer(C.AddressList742340___itemData_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -1553,12 +1553,12 @@ func (ptr *AddressList) __itemData_atList(v int, i int) *std_core.QVariant {
 
 func (ptr *AddressList) __itemData_setList(key int, i std_core.QVariant_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___itemData_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
+		C.AddressList742340___itemData_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
 	}
 }
 
 func (ptr *AddressList) __itemData_newList() unsafe.Pointer {
-	return C.AddressList8ba275___itemData_newList(ptr.Pointer())
+	return C.AddressList742340___itemData_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __itemData_keyList() []int {
@@ -1570,14 +1570,14 @@ func (ptr *AddressList) __itemData_keyList() []int {
 				out[i] = tmpList.____itemData_keyList_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275___itemData_keyList(ptr.Pointer()))
+		}(C.AddressList742340___itemData_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *AddressList) __layoutAboutToBeChanged_parents_atList(i int) *std_core.QPersistentModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.AddressList8ba275___layoutAboutToBeChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.AddressList742340___layoutAboutToBeChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QPersistentModelIndex).DestroyQPersistentModelIndex)
 		return tmpValue
 	}
@@ -1586,17 +1586,17 @@ func (ptr *AddressList) __layoutAboutToBeChanged_parents_atList(i int) *std_core
 
 func (ptr *AddressList) __layoutAboutToBeChanged_parents_setList(i std_core.QPersistentModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___layoutAboutToBeChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
+		C.AddressList742340___layoutAboutToBeChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
 	}
 }
 
 func (ptr *AddressList) __layoutAboutToBeChanged_parents_newList() unsafe.Pointer {
-	return C.AddressList8ba275___layoutAboutToBeChanged_parents_newList(ptr.Pointer())
+	return C.AddressList742340___layoutAboutToBeChanged_parents_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __layoutChanged_parents_atList(i int) *std_core.QPersistentModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.AddressList8ba275___layoutChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.AddressList742340___layoutChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QPersistentModelIndex).DestroyQPersistentModelIndex)
 		return tmpValue
 	}
@@ -1605,17 +1605,17 @@ func (ptr *AddressList) __layoutChanged_parents_atList(i int) *std_core.QPersist
 
 func (ptr *AddressList) __layoutChanged_parents_setList(i std_core.QPersistentModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___layoutChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
+		C.AddressList742340___layoutChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
 	}
 }
 
 func (ptr *AddressList) __layoutChanged_parents_newList() unsafe.Pointer {
-	return C.AddressList8ba275___layoutChanged_parents_newList(ptr.Pointer())
+	return C.AddressList742340___layoutChanged_parents_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __match_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275___match_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340___match_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -1624,17 +1624,17 @@ func (ptr *AddressList) __match_atList(i int) *std_core.QModelIndex {
 
 func (ptr *AddressList) __match_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___match_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.AddressList742340___match_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *AddressList) __match_newList() unsafe.Pointer {
-	return C.AddressList8ba275___match_newList(ptr.Pointer())
+	return C.AddressList742340___match_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __mimeData_indexes_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275___mimeData_indexes_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340___mimeData_indexes_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -1643,17 +1643,17 @@ func (ptr *AddressList) __mimeData_indexes_atList(i int) *std_core.QModelIndex {
 
 func (ptr *AddressList) __mimeData_indexes_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___mimeData_indexes_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.AddressList742340___mimeData_indexes_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *AddressList) __mimeData_indexes_newList() unsafe.Pointer {
-	return C.AddressList8ba275___mimeData_indexes_newList(ptr.Pointer())
+	return C.AddressList742340___mimeData_indexes_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __persistentIndexList_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275___persistentIndexList_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340___persistentIndexList_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -1662,17 +1662,17 @@ func (ptr *AddressList) __persistentIndexList_atList(i int) *std_core.QModelInde
 
 func (ptr *AddressList) __persistentIndexList_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___persistentIndexList_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.AddressList742340___persistentIndexList_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *AddressList) __persistentIndexList_newList() unsafe.Pointer {
-	return C.AddressList8ba275___persistentIndexList_newList(ptr.Pointer())
+	return C.AddressList742340___persistentIndexList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __roleNames_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList8ba275___roleNames_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList742340___roleNames_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -1681,12 +1681,12 @@ func (ptr *AddressList) __roleNames_atList(v int, i int) *std_core.QByteArray {
 
 func (ptr *AddressList) __roleNames_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___roleNames_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.AddressList742340___roleNames_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *AddressList) __roleNames_newList() unsafe.Pointer {
-	return C.AddressList8ba275___roleNames_newList(ptr.Pointer())
+	return C.AddressList742340___roleNames_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __roleNames_keyList() []int {
@@ -1698,14 +1698,14 @@ func (ptr *AddressList) __roleNames_keyList() []int {
 				out[i] = tmpList.____roleNames_keyList_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275___roleNames_keyList(ptr.Pointer()))
+		}(C.AddressList742340___roleNames_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *AddressList) __setItemData_roles_atList(v int, i int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.AddressList8ba275___setItemData_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQVariantFromPointer(C.AddressList742340___setItemData_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -1714,12 +1714,12 @@ func (ptr *AddressList) __setItemData_roles_atList(v int, i int) *std_core.QVari
 
 func (ptr *AddressList) __setItemData_roles_setList(key int, i std_core.QVariant_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___setItemData_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
+		C.AddressList742340___setItemData_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
 	}
 }
 
 func (ptr *AddressList) __setItemData_roles_newList() unsafe.Pointer {
-	return C.AddressList8ba275___setItemData_roles_newList(ptr.Pointer())
+	return C.AddressList742340___setItemData_roles_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __setItemData_roles_keyList() []int {
@@ -1731,48 +1731,48 @@ func (ptr *AddressList) __setItemData_roles_keyList() []int {
 				out[i] = tmpList.____setItemData_roles_keyList_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275___setItemData_roles_keyList(ptr.Pointer()))
+		}(C.AddressList742340___setItemData_roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *AddressList) ____doSetRoleNames_roleNames_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____doSetRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____doSetRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____doSetRoleNames_roleNames_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____doSetRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____doSetRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____doSetRoleNames_roleNames_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____doSetRoleNames_roleNames_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____doSetRoleNames_roleNames_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) ____setRoleNames_roleNames_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____setRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____setRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____setRoleNames_roleNames_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____setRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____setRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____setRoleNames_roleNames_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____setRoleNames_roleNames_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____setRoleNames_roleNames_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __children_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressList8ba275___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressList742340___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1783,17 +1783,17 @@ func (ptr *AddressList) __children_atList(i int) *std_core.QObject {
 
 func (ptr *AddressList) __children_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressList742340___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressList) __children_newList() unsafe.Pointer {
-	return C.AddressList8ba275___children_newList(ptr.Pointer())
+	return C.AddressList742340___children_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList8ba275___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList742340___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -1802,17 +1802,17 @@ func (ptr *AddressList) __dynamicPropertyNames_atList(i int) *std_core.QByteArra
 
 func (ptr *AddressList) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
+		C.AddressList742340___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *AddressList) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return C.AddressList8ba275___dynamicPropertyNames_newList(ptr.Pointer())
+	return C.AddressList742340___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __findChildren_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressList8ba275___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressList742340___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1823,17 +1823,17 @@ func (ptr *AddressList) __findChildren_atList(i int) *std_core.QObject {
 
 func (ptr *AddressList) __findChildren_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressList742340___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressList) __findChildren_newList() unsafe.Pointer {
-	return C.AddressList8ba275___findChildren_newList(ptr.Pointer())
+	return C.AddressList742340___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __findChildren_atList3(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressList8ba275___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressList742340___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1844,17 +1844,17 @@ func (ptr *AddressList) __findChildren_atList3(i int) *std_core.QObject {
 
 func (ptr *AddressList) __findChildren_setList3(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressList742340___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressList) __findChildren_newList3() unsafe.Pointer {
-	return C.AddressList8ba275___findChildren_newList3(ptr.Pointer())
+	return C.AddressList742340___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *AddressList) __qFindChildren_atList2(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.AddressList8ba275___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.AddressList742340___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1865,17 +1865,17 @@ func (ptr *AddressList) __qFindChildren_atList2(i int) *std_core.QObject {
 
 func (ptr *AddressList) __qFindChildren_setList2(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.AddressList742340___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *AddressList) __qFindChildren_newList2() unsafe.Pointer {
-	return C.AddressList8ba275___qFindChildren_newList2(ptr.Pointer())
+	return C.AddressList742340___qFindChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *AddressList) __roles_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList8ba275___roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList742340___roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -1884,12 +1884,12 @@ func (ptr *AddressList) __roles_atList(v int, i int) *std_core.QByteArray {
 
 func (ptr *AddressList) __roles_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.AddressList742340___roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *AddressList) __roles_newList() unsafe.Pointer {
-	return C.AddressList8ba275___roles_newList(ptr.Pointer())
+	return C.AddressList742340___roles_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __roles_keyList() []int {
@@ -1901,14 +1901,14 @@ func (ptr *AddressList) __roles_keyList() []int {
 				out[i] = tmpList.____roles_keyList_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275___roles_keyList(ptr.Pointer()))
+		}(C.AddressList742340___roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *AddressList) __setRoles_roles_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList8ba275___setRoles_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList742340___setRoles_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -1917,12 +1917,12 @@ func (ptr *AddressList) __setRoles_roles_atList(v int, i int) *std_core.QByteArr
 
 func (ptr *AddressList) __setRoles_roles_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___setRoles_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.AddressList742340___setRoles_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *AddressList) __setRoles_roles_newList() unsafe.Pointer {
-	return C.AddressList8ba275___setRoles_roles_newList(ptr.Pointer())
+	return C.AddressList742340___setRoles_roles_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __setRoles_roles_keyList() []int {
@@ -1934,14 +1934,14 @@ func (ptr *AddressList) __setRoles_roles_keyList() []int {
 				out[i] = tmpList.____setRoles_roles_keyList_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275___setRoles_roles_keyList(ptr.Pointer()))
+		}(C.AddressList742340___setRoles_roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *AddressList) __rolesChanged_roles_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList8ba275___rolesChanged_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.AddressList742340___rolesChanged_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -1950,12 +1950,12 @@ func (ptr *AddressList) __rolesChanged_roles_atList(v int, i int) *std_core.QByt
 
 func (ptr *AddressList) __rolesChanged_roles_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___rolesChanged_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.AddressList742340___rolesChanged_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *AddressList) __rolesChanged_roles_newList() unsafe.Pointer {
-	return C.AddressList8ba275___rolesChanged_roles_newList(ptr.Pointer())
+	return C.AddressList742340___rolesChanged_roles_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __rolesChanged_roles_keyList() []int {
@@ -1967,14 +1967,14 @@ func (ptr *AddressList) __rolesChanged_roles_keyList() []int {
 				out[i] = tmpList.____rolesChanged_roles_keyList_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275___rolesChanged_roles_keyList(ptr.Pointer()))
+		}(C.AddressList742340___rolesChanged_roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *AddressList) __addresses_atList(i int) *AddressDeatails {
 	if ptr.Pointer() != nil {
-		tmpValue := NewAddressDeatailsFromPointer(C.AddressList8ba275___addresses_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewAddressDeatailsFromPointer(C.AddressList742340___addresses_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -1985,17 +1985,17 @@ func (ptr *AddressList) __addresses_atList(i int) *AddressDeatails {
 
 func (ptr *AddressList) __addresses_setList(i AddressDeatails_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___addresses_setList(ptr.Pointer(), PointerFromAddressDeatails(i))
+		C.AddressList742340___addresses_setList(ptr.Pointer(), PointerFromAddressDeatails(i))
 	}
 }
 
 func (ptr *AddressList) __addresses_newList() unsafe.Pointer {
-	return C.AddressList8ba275___addresses_newList(ptr.Pointer())
+	return C.AddressList742340___addresses_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __setAddresses_addresses_atList(i int) *AddressDeatails {
 	if ptr.Pointer() != nil {
-		tmpValue := NewAddressDeatailsFromPointer(C.AddressList8ba275___setAddresses_addresses_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewAddressDeatailsFromPointer(C.AddressList742340___setAddresses_addresses_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -2006,17 +2006,17 @@ func (ptr *AddressList) __setAddresses_addresses_atList(i int) *AddressDeatails 
 
 func (ptr *AddressList) __setAddresses_addresses_setList(i AddressDeatails_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___setAddresses_addresses_setList(ptr.Pointer(), PointerFromAddressDeatails(i))
+		C.AddressList742340___setAddresses_addresses_setList(ptr.Pointer(), PointerFromAddressDeatails(i))
 	}
 }
 
 func (ptr *AddressList) __setAddresses_addresses_newList() unsafe.Pointer {
-	return C.AddressList8ba275___setAddresses_addresses_newList(ptr.Pointer())
+	return C.AddressList742340___setAddresses_addresses_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) __addressesChanged_addresses_atList(i int) *AddressDeatails {
 	if ptr.Pointer() != nil {
-		tmpValue := NewAddressDeatailsFromPointer(C.AddressList8ba275___addressesChanged_addresses_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewAddressDeatailsFromPointer(C.AddressList742340___addressesChanged_addresses_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -2027,75 +2027,75 @@ func (ptr *AddressList) __addressesChanged_addresses_atList(i int) *AddressDeata
 
 func (ptr *AddressList) __addressesChanged_addresses_setList(i AddressDeatails_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275___addressesChanged_addresses_setList(ptr.Pointer(), PointerFromAddressDeatails(i))
+		C.AddressList742340___addressesChanged_addresses_setList(ptr.Pointer(), PointerFromAddressDeatails(i))
 	}
 }
 
 func (ptr *AddressList) __addressesChanged_addresses_newList() unsafe.Pointer {
-	return C.AddressList8ba275___addressesChanged_addresses_newList(ptr.Pointer())
+	return C.AddressList742340___addressesChanged_addresses_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) ____roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____roles_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____roles_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____roles_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) ____setRoles_roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____setRoles_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____setRoles_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____setRoles_roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____setRoles_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____setRoles_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____setRoles_roles_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____setRoles_roles_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____setRoles_roles_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *AddressList) ____rolesChanged_roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_____rolesChanged_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.AddressList742340_____rolesChanged_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *AddressList) ____rolesChanged_roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_____rolesChanged_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.AddressList742340_____rolesChanged_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *AddressList) ____rolesChanged_roles_keyList_newList() unsafe.Pointer {
-	return C.AddressList8ba275_____rolesChanged_roles_keyList_newList(ptr.Pointer())
+	return C.AddressList742340_____rolesChanged_roles_keyList_newList(ptr.Pointer())
 }
 
 func NewAddressList(parent std_core.QObject_ITF) *AddressList {
-	tmpValue := NewAddressListFromPointer(C.AddressList8ba275_NewAddressList(std_core.PointerFromQObject(parent)))
+	tmpValue := NewAddressListFromPointer(C.AddressList742340_NewAddressList(std_core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 	}
 	return tmpValue
 }
 
-//export callbackAddressList8ba275_DestroyAddressList
-func callbackAddressList8ba275_DestroyAddressList(ptr unsafe.Pointer) {
+//export callbackAddressList742340_DestroyAddressList
+func callbackAddressList742340_DestroyAddressList(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~AddressList"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -2127,7 +2127,7 @@ func (ptr *AddressList) DisconnectDestroyAddressList() {
 
 func (ptr *AddressList) DestroyAddressList() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DestroyAddressList(ptr.Pointer())
+		C.AddressList742340_DestroyAddressList(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
@@ -2135,14 +2135,14 @@ func (ptr *AddressList) DestroyAddressList() {
 
 func (ptr *AddressList) DestroyAddressListDefault() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DestroyAddressListDefault(ptr.Pointer())
+		C.AddressList742340_DestroyAddressListDefault(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackAddressList8ba275_DropMimeData
-func callbackAddressList8ba275_DropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_DropMimeData
+func callbackAddressList742340_DropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "dropMimeData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QMimeData, std_core.Qt__DropAction, int, int, *std_core.QModelIndex) bool)(signal))(std_core.NewQMimeDataFromPointer(data), std_core.Qt__DropAction(action), int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2152,13 +2152,13 @@ func callbackAddressList8ba275_DropMimeData(ptr unsafe.Pointer, data unsafe.Poin
 
 func (ptr *AddressList) DropMimeDataDefault(data std_core.QMimeData_ITF, action std_core.Qt__DropAction, row int, column int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_DropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_DropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_Flags
-func callbackAddressList8ba275_Flags(ptr unsafe.Pointer, index unsafe.Pointer) C.longlong {
+//export callbackAddressList742340_Flags
+func callbackAddressList742340_Flags(ptr unsafe.Pointer, index unsafe.Pointer) C.longlong {
 	if signal := qt.GetSignal(ptr, "flags"); signal != nil {
 		return C.longlong((*(*func(*std_core.QModelIndex) std_core.Qt__ItemFlag)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -2168,13 +2168,13 @@ func callbackAddressList8ba275_Flags(ptr unsafe.Pointer, index unsafe.Pointer) C
 
 func (ptr *AddressList) FlagsDefault(index std_core.QModelIndex_ITF) std_core.Qt__ItemFlag {
 	if ptr.Pointer() != nil {
-		return std_core.Qt__ItemFlag(C.AddressList8ba275_FlagsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		return std_core.Qt__ItemFlag(C.AddressList742340_FlagsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 	}
 	return 0
 }
 
-//export callbackAddressList8ba275_Index
-func callbackAddressList8ba275_Index(ptr unsafe.Pointer, row C.int, column C.int, parent unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_Index
+func callbackAddressList742340_Index(ptr unsafe.Pointer, row C.int, column C.int, parent unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "index"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(int, int, *std_core.QModelIndex) *std_core.QModelIndex)(signal))(int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(parent)))
 	}
@@ -2184,15 +2184,15 @@ func callbackAddressList8ba275_Index(ptr unsafe.Pointer, row C.int, column C.int
 
 func (ptr *AddressList) IndexDefault(row int, column int, parent std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275_IndexDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340_IndexDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackAddressList8ba275_Sibling
-func callbackAddressList8ba275_Sibling(ptr unsafe.Pointer, row C.int, column C.int, idx unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_Sibling
+func callbackAddressList742340_Sibling(ptr unsafe.Pointer, row C.int, column C.int, idx unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "sibling"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(int, int, *std_core.QModelIndex) *std_core.QModelIndex)(signal))(int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(idx)))
 	}
@@ -2202,15 +2202,15 @@ func callbackAddressList8ba275_Sibling(ptr unsafe.Pointer, row C.int, column C.i
 
 func (ptr *AddressList) SiblingDefault(row int, column int, idx std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275_SiblingDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(idx)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340_SiblingDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(idx)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackAddressList8ba275_Buddy
-func callbackAddressList8ba275_Buddy(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_Buddy
+func callbackAddressList742340_Buddy(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "buddy"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(*std_core.QModelIndex) *std_core.QModelIndex)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -2220,15 +2220,15 @@ func callbackAddressList8ba275_Buddy(ptr unsafe.Pointer, index unsafe.Pointer) u
 
 func (ptr *AddressList) BuddyDefault(index std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275_BuddyDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340_BuddyDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackAddressList8ba275_CanDropMimeData
-func callbackAddressList8ba275_CanDropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_CanDropMimeData
+func callbackAddressList742340_CanDropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "canDropMimeData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QMimeData, std_core.Qt__DropAction, int, int, *std_core.QModelIndex) bool)(signal))(std_core.NewQMimeDataFromPointer(data), std_core.Qt__DropAction(action), int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2238,13 +2238,13 @@ func callbackAddressList8ba275_CanDropMimeData(ptr unsafe.Pointer, data unsafe.P
 
 func (ptr *AddressList) CanDropMimeDataDefault(data std_core.QMimeData_ITF, action std_core.Qt__DropAction, row int, column int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_CanDropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_CanDropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_CanFetchMore
-func callbackAddressList8ba275_CanFetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_CanFetchMore
+func callbackAddressList742340_CanFetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "canFetchMore"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex) bool)(signal))(std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2254,13 +2254,13 @@ func callbackAddressList8ba275_CanFetchMore(ptr unsafe.Pointer, parent unsafe.Po
 
 func (ptr *AddressList) CanFetchMoreDefault(parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_CanFetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_CanFetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_ColumnCount
-func callbackAddressList8ba275_ColumnCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
+//export callbackAddressList742340_ColumnCount
+func callbackAddressList742340_ColumnCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "columnCount"); signal != nil {
 		return C.int(int32((*(*func(*std_core.QModelIndex) int)(signal))(std_core.NewQModelIndexFromPointer(parent))))
 	}
@@ -2270,61 +2270,61 @@ func callbackAddressList8ba275_ColumnCount(ptr unsafe.Pointer, parent unsafe.Poi
 
 func (ptr *AddressList) ColumnCountDefault(parent std_core.QModelIndex_ITF) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_ColumnCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
+		return int(int32(C.AddressList742340_ColumnCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
 	}
 	return 0
 }
 
-//export callbackAddressList8ba275_ColumnsAboutToBeInserted
-func callbackAddressList8ba275_ColumnsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackAddressList742340_ColumnsAboutToBeInserted
+func callbackAddressList742340_ColumnsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsAboutToBeInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_ColumnsAboutToBeMoved
-func callbackAddressList8ba275_ColumnsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationColumn C.int) {
+//export callbackAddressList742340_ColumnsAboutToBeMoved
+func callbackAddressList742340_ColumnsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationColumn C.int) {
 	if signal := qt.GetSignal(ptr, "columnsAboutToBeMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceStart)), int(int32(sourceEnd)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationColumn)))
 	}
 
 }
 
-//export callbackAddressList8ba275_ColumnsAboutToBeRemoved
-func callbackAddressList8ba275_ColumnsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackAddressList742340_ColumnsAboutToBeRemoved
+func callbackAddressList742340_ColumnsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsAboutToBeRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_ColumnsInserted
-func callbackAddressList8ba275_ColumnsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackAddressList742340_ColumnsInserted
+func callbackAddressList742340_ColumnsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_ColumnsMoved
-func callbackAddressList8ba275_ColumnsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, column C.int) {
+//export callbackAddressList742340_ColumnsMoved
+func callbackAddressList742340_ColumnsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, column C.int) {
 	if signal := qt.GetSignal(ptr, "columnsMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(start)), int(int32(end)), std_core.NewQModelIndexFromPointer(destination), int(int32(column)))
 	}
 
 }
 
-//export callbackAddressList8ba275_ColumnsRemoved
-func callbackAddressList8ba275_ColumnsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackAddressList742340_ColumnsRemoved
+func callbackAddressList742340_ColumnsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_Data
-func callbackAddressList8ba275_Data(ptr unsafe.Pointer, index unsafe.Pointer, role C.int) unsafe.Pointer {
+//export callbackAddressList742340_Data
+func callbackAddressList742340_Data(ptr unsafe.Pointer, index unsafe.Pointer, role C.int) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "data"); signal != nil {
 		return std_core.PointerFromQVariant((*(*func(*std_core.QModelIndex, int) *std_core.QVariant)(signal))(std_core.NewQModelIndexFromPointer(index), int(int32(role))))
 	}
@@ -2334,15 +2334,15 @@ func callbackAddressList8ba275_Data(ptr unsafe.Pointer, index unsafe.Pointer, ro
 
 func (ptr *AddressList) DataDefault(index std_core.QModelIndex_ITF, role int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.AddressList8ba275_DataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), C.int(int32(role))))
+		tmpValue := std_core.NewQVariantFromPointer(C.AddressList742340_DataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), C.int(int32(role))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackAddressList8ba275_DataChanged
-func callbackAddressList8ba275_DataChanged(ptr unsafe.Pointer, topLeft unsafe.Pointer, bottomRight unsafe.Pointer, roles C.struct_Moc_PackedList) {
+//export callbackAddressList742340_DataChanged
+func callbackAddressList742340_DataChanged(ptr unsafe.Pointer, topLeft unsafe.Pointer, bottomRight unsafe.Pointer, roles C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "dataChanged"); signal != nil {
 		(*(*func(*std_core.QModelIndex, *std_core.QModelIndex, []int))(signal))(std_core.NewQModelIndexFromPointer(topLeft), std_core.NewQModelIndexFromPointer(bottomRight), func(l C.struct_Moc_PackedList) []int {
 			out := make([]int, int(l.len))
@@ -2356,8 +2356,8 @@ func callbackAddressList8ba275_DataChanged(ptr unsafe.Pointer, topLeft unsafe.Po
 
 }
 
-//export callbackAddressList8ba275_FetchMore
-func callbackAddressList8ba275_FetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) {
+//export callbackAddressList742340_FetchMore
+func callbackAddressList742340_FetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "fetchMore"); signal != nil {
 		(*(*func(*std_core.QModelIndex))(signal))(std_core.NewQModelIndexFromPointer(parent))
 	} else {
@@ -2367,12 +2367,12 @@ func callbackAddressList8ba275_FetchMore(ptr unsafe.Pointer, parent unsafe.Point
 
 func (ptr *AddressList) FetchMoreDefault(parent std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_FetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))
+		C.AddressList742340_FetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))
 	}
 }
 
-//export callbackAddressList8ba275_HasChildren
-func callbackAddressList8ba275_HasChildren(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_HasChildren
+func callbackAddressList742340_HasChildren(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "hasChildren"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex) bool)(signal))(std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2382,13 +2382,13 @@ func callbackAddressList8ba275_HasChildren(ptr unsafe.Pointer, parent unsafe.Poi
 
 func (ptr *AddressList) HasChildrenDefault(parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_HasChildrenDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_HasChildrenDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_HeaderData
-func callbackAddressList8ba275_HeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, role C.int) unsafe.Pointer {
+//export callbackAddressList742340_HeaderData
+func callbackAddressList742340_HeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, role C.int) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "headerData"); signal != nil {
 		return std_core.PointerFromQVariant((*(*func(int, std_core.Qt__Orientation, int) *std_core.QVariant)(signal))(int(int32(section)), std_core.Qt__Orientation(orientation), int(int32(role))))
 	}
@@ -2398,23 +2398,23 @@ func callbackAddressList8ba275_HeaderData(ptr unsafe.Pointer, section C.int, ori
 
 func (ptr *AddressList) HeaderDataDefault(section int, orientation std_core.Qt__Orientation, role int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.AddressList8ba275_HeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), C.int(int32(role))))
+		tmpValue := std_core.NewQVariantFromPointer(C.AddressList742340_HeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), C.int(int32(role))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackAddressList8ba275_HeaderDataChanged
-func callbackAddressList8ba275_HeaderDataChanged(ptr unsafe.Pointer, orientation C.longlong, first C.int, last C.int) {
+//export callbackAddressList742340_HeaderDataChanged
+func callbackAddressList742340_HeaderDataChanged(ptr unsafe.Pointer, orientation C.longlong, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "headerDataChanged"); signal != nil {
 		(*(*func(std_core.Qt__Orientation, int, int))(signal))(std_core.Qt__Orientation(orientation), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_InsertColumns
-func callbackAddressList8ba275_InsertColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_InsertColumns
+func callbackAddressList742340_InsertColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "insertColumns"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(column)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2424,13 +2424,13 @@ func callbackAddressList8ba275_InsertColumns(ptr unsafe.Pointer, column C.int, c
 
 func (ptr *AddressList) InsertColumnsDefault(column int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_InsertColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_InsertColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_InsertRows
-func callbackAddressList8ba275_InsertRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_InsertRows
+func callbackAddressList742340_InsertRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "insertRows"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(row)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2440,13 +2440,13 @@ func callbackAddressList8ba275_InsertRows(ptr unsafe.Pointer, row C.int, count C
 
 func (ptr *AddressList) InsertRowsDefault(row int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_InsertRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_InsertRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_ItemData
-func callbackAddressList8ba275_ItemData(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_ItemData
+func callbackAddressList742340_ItemData(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "itemData"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__itemData_newList())
@@ -2475,13 +2475,13 @@ func (ptr *AddressList) ItemDataDefault(index std_core.QModelIndex_ITF) map[int]
 				out[v] = tmpList.__itemData_atList(v, i)
 			}
 			return out
-		}(C.AddressList8ba275_ItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		}(C.AddressList742340_ItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 	}
 	return make(map[int]*std_core.QVariant, 0)
 }
 
-//export callbackAddressList8ba275_LayoutAboutToBeChanged
-func callbackAddressList8ba275_LayoutAboutToBeChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
+//export callbackAddressList742340_LayoutAboutToBeChanged
+func callbackAddressList742340_LayoutAboutToBeChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
 	if signal := qt.GetSignal(ptr, "layoutAboutToBeChanged"); signal != nil {
 		(*(*func([]*std_core.QPersistentModelIndex, std_core.QAbstractItemModel__LayoutChangeHint))(signal))(func(l C.struct_Moc_PackedList) []*std_core.QPersistentModelIndex {
 			out := make([]*std_core.QPersistentModelIndex, int(l.len))
@@ -2495,8 +2495,8 @@ func callbackAddressList8ba275_LayoutAboutToBeChanged(ptr unsafe.Pointer, parent
 
 }
 
-//export callbackAddressList8ba275_LayoutChanged
-func callbackAddressList8ba275_LayoutChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
+//export callbackAddressList742340_LayoutChanged
+func callbackAddressList742340_LayoutChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
 	if signal := qt.GetSignal(ptr, "layoutChanged"); signal != nil {
 		(*(*func([]*std_core.QPersistentModelIndex, std_core.QAbstractItemModel__LayoutChangeHint))(signal))(func(l C.struct_Moc_PackedList) []*std_core.QPersistentModelIndex {
 			out := make([]*std_core.QPersistentModelIndex, int(l.len))
@@ -2510,8 +2510,8 @@ func callbackAddressList8ba275_LayoutChanged(ptr unsafe.Pointer, parents C.struc
 
 }
 
-//export callbackAddressList8ba275_Match
-func callbackAddressList8ba275_Match(ptr unsafe.Pointer, start unsafe.Pointer, role C.int, value unsafe.Pointer, hits C.int, flags C.longlong) unsafe.Pointer {
+//export callbackAddressList742340_Match
+func callbackAddressList742340_Match(ptr unsafe.Pointer, start unsafe.Pointer, role C.int, value unsafe.Pointer, hits C.int, flags C.longlong) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "match"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__match_newList())
@@ -2540,13 +2540,13 @@ func (ptr *AddressList) MatchDefault(start std_core.QModelIndex_ITF, role int, v
 				out[i] = tmpList.__match_atList(i)
 			}
 			return out
-		}(C.AddressList8ba275_MatchDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(start), C.int(int32(role)), std_core.PointerFromQVariant(value), C.int(int32(hits)), C.longlong(flags)))
+		}(C.AddressList742340_MatchDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(start), C.int(int32(role)), std_core.PointerFromQVariant(value), C.int(int32(hits)), C.longlong(flags)))
 	}
 	return make([]*std_core.QModelIndex, 0)
 }
 
-//export callbackAddressList8ba275_MimeData
-func callbackAddressList8ba275_MimeData(ptr unsafe.Pointer, indexes C.struct_Moc_PackedList) unsafe.Pointer {
+//export callbackAddressList742340_MimeData
+func callbackAddressList742340_MimeData(ptr unsafe.Pointer, indexes C.struct_Moc_PackedList) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "mimeData"); signal != nil {
 		return std_core.PointerFromQMimeData((*(*func([]*std_core.QModelIndex) *std_core.QMimeData)(signal))(func(l C.struct_Moc_PackedList) []*std_core.QModelIndex {
 			out := make([]*std_core.QModelIndex, int(l.len))
@@ -2570,7 +2570,7 @@ func callbackAddressList8ba275_MimeData(ptr unsafe.Pointer, indexes C.struct_Moc
 
 func (ptr *AddressList) MimeDataDefault(indexes []*std_core.QModelIndex) *std_core.QMimeData {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQMimeDataFromPointer(C.AddressList8ba275_MimeDataDefault(ptr.Pointer(), func() unsafe.Pointer {
+		tmpValue := std_core.NewQMimeDataFromPointer(C.AddressList742340_MimeDataDefault(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__mimeData_indexes_newList())
 			for _, v := range indexes {
 				tmpList.__mimeData_indexes_setList(v)
@@ -2585,8 +2585,8 @@ func (ptr *AddressList) MimeDataDefault(indexes []*std_core.QModelIndex) *std_co
 	return nil
 }
 
-//export callbackAddressList8ba275_MimeTypes
-func callbackAddressList8ba275_MimeTypes(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+//export callbackAddressList742340_MimeTypes
+func callbackAddressList742340_MimeTypes(ptr unsafe.Pointer) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "mimeTypes"); signal != nil {
 		tempVal := (*(*func() []string)(signal))()
 		return C.struct_Moc_PackedString{data: C.CString(strings.Join(tempVal, "¡¦!")), len: C.longlong(len(strings.Join(tempVal, "¡¦!")))}
@@ -2597,29 +2597,29 @@ func callbackAddressList8ba275_MimeTypes(ptr unsafe.Pointer) C.struct_Moc_Packed
 
 func (ptr *AddressList) MimeTypesDefault() []string {
 	if ptr.Pointer() != nil {
-		return unpackStringList(cGoUnpackString(C.AddressList8ba275_MimeTypesDefault(ptr.Pointer())))
+		return unpackStringList(cGoUnpackString(C.AddressList742340_MimeTypesDefault(ptr.Pointer())))
 	}
 	return make([]string, 0)
 }
 
-//export callbackAddressList8ba275_ModelAboutToBeReset
-func callbackAddressList8ba275_ModelAboutToBeReset(ptr unsafe.Pointer) {
+//export callbackAddressList742340_ModelAboutToBeReset
+func callbackAddressList742340_ModelAboutToBeReset(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "modelAboutToBeReset"); signal != nil {
 		(*(*func())(signal))()
 	}
 
 }
 
-//export callbackAddressList8ba275_ModelReset
-func callbackAddressList8ba275_ModelReset(ptr unsafe.Pointer) {
+//export callbackAddressList742340_ModelReset
+func callbackAddressList742340_ModelReset(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "modelReset"); signal != nil {
 		(*(*func())(signal))()
 	}
 
 }
 
-//export callbackAddressList8ba275_MoveColumns
-func callbackAddressList8ba275_MoveColumns(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceColumn C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
+//export callbackAddressList742340_MoveColumns
+func callbackAddressList742340_MoveColumns(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceColumn C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
 	if signal := qt.GetSignal(ptr, "moveColumns"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int) bool)(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceColumn)), int(int32(count)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationChild))))))
 	}
@@ -2629,13 +2629,13 @@ func callbackAddressList8ba275_MoveColumns(ptr unsafe.Pointer, sourceParent unsa
 
 func (ptr *AddressList) MoveColumnsDefault(sourceParent std_core.QModelIndex_ITF, sourceColumn int, count int, destinationParent std_core.QModelIndex_ITF, destinationChild int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_MoveColumnsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceColumn)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
+		return int8(C.AddressList742340_MoveColumnsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceColumn)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_MoveRows
-func callbackAddressList8ba275_MoveRows(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceRow C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
+//export callbackAddressList742340_MoveRows
+func callbackAddressList742340_MoveRows(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceRow C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
 	if signal := qt.GetSignal(ptr, "moveRows"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int) bool)(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceRow)), int(int32(count)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationChild))))))
 	}
@@ -2645,13 +2645,13 @@ func callbackAddressList8ba275_MoveRows(ptr unsafe.Pointer, sourceParent unsafe.
 
 func (ptr *AddressList) MoveRowsDefault(sourceParent std_core.QModelIndex_ITF, sourceRow int, count int, destinationParent std_core.QModelIndex_ITF, destinationChild int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_MoveRowsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceRow)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
+		return int8(C.AddressList742340_MoveRowsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceRow)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_Parent
-func callbackAddressList8ba275_Parent(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_Parent
+func callbackAddressList742340_Parent(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "parent"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(*std_core.QModelIndex) *std_core.QModelIndex)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -2661,15 +2661,15 @@ func callbackAddressList8ba275_Parent(ptr unsafe.Pointer, index unsafe.Pointer) 
 
 func (ptr *AddressList) ParentDefault(index std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList8ba275_ParentDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.AddressList742340_ParentDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackAddressList8ba275_RemoveColumns
-func callbackAddressList8ba275_RemoveColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_RemoveColumns
+func callbackAddressList742340_RemoveColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "removeColumns"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(column)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2679,13 +2679,13 @@ func callbackAddressList8ba275_RemoveColumns(ptr unsafe.Pointer, column C.int, c
 
 func (ptr *AddressList) RemoveColumnsDefault(column int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_RemoveColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_RemoveColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_RemoveRows
-func callbackAddressList8ba275_RemoveRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackAddressList742340_RemoveRows
+func callbackAddressList742340_RemoveRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "removeRows"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(row)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -2695,13 +2695,13 @@ func callbackAddressList8ba275_RemoveRows(ptr unsafe.Pointer, row C.int, count C
 
 func (ptr *AddressList) RemoveRowsDefault(row int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_RemoveRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.AddressList742340_RemoveRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_ResetInternalData
-func callbackAddressList8ba275_ResetInternalData(ptr unsafe.Pointer) {
+//export callbackAddressList742340_ResetInternalData
+func callbackAddressList742340_ResetInternalData(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "resetInternalData"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -2711,12 +2711,12 @@ func callbackAddressList8ba275_ResetInternalData(ptr unsafe.Pointer) {
 
 func (ptr *AddressList) ResetInternalDataDefault() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_ResetInternalDataDefault(ptr.Pointer())
+		C.AddressList742340_ResetInternalDataDefault(ptr.Pointer())
 	}
 }
 
-//export callbackAddressList8ba275_Revert
-func callbackAddressList8ba275_Revert(ptr unsafe.Pointer) {
+//export callbackAddressList742340_Revert
+func callbackAddressList742340_Revert(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "revert"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -2726,12 +2726,12 @@ func callbackAddressList8ba275_Revert(ptr unsafe.Pointer) {
 
 func (ptr *AddressList) RevertDefault() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_RevertDefault(ptr.Pointer())
+		C.AddressList742340_RevertDefault(ptr.Pointer())
 	}
 }
 
-//export callbackAddressList8ba275_RoleNames
-func callbackAddressList8ba275_RoleNames(ptr unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_RoleNames
+func callbackAddressList742340_RoleNames(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "roleNames"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__roleNames_newList())
@@ -2760,13 +2760,13 @@ func (ptr *AddressList) RoleNamesDefault() map[int]*std_core.QByteArray {
 				out[v] = tmpList.__roleNames_atList(v, i)
 			}
 			return out
-		}(C.AddressList8ba275_RoleNamesDefault(ptr.Pointer()))
+		}(C.AddressList742340_RoleNamesDefault(ptr.Pointer()))
 	}
 	return make(map[int]*std_core.QByteArray, 0)
 }
 
-//export callbackAddressList8ba275_RowCount
-func callbackAddressList8ba275_RowCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
+//export callbackAddressList742340_RowCount
+func callbackAddressList742340_RowCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "rowCount"); signal != nil {
 		return C.int(int32((*(*func(*std_core.QModelIndex) int)(signal))(std_core.NewQModelIndexFromPointer(parent))))
 	}
@@ -2776,61 +2776,61 @@ func callbackAddressList8ba275_RowCount(ptr unsafe.Pointer, parent unsafe.Pointe
 
 func (ptr *AddressList) RowCountDefault(parent std_core.QModelIndex_ITF) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.AddressList8ba275_RowCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
+		return int(int32(C.AddressList742340_RowCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
 	}
 	return 0
 }
 
-//export callbackAddressList8ba275_RowsAboutToBeInserted
-func callbackAddressList8ba275_RowsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int) {
+//export callbackAddressList742340_RowsAboutToBeInserted
+func callbackAddressList742340_RowsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int) {
 	if signal := qt.GetSignal(ptr, "rowsAboutToBeInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(start)), int(int32(end)))
 	}
 
 }
 
-//export callbackAddressList8ba275_RowsAboutToBeMoved
-func callbackAddressList8ba275_RowsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationRow C.int) {
+//export callbackAddressList742340_RowsAboutToBeMoved
+func callbackAddressList742340_RowsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationRow C.int) {
 	if signal := qt.GetSignal(ptr, "rowsAboutToBeMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceStart)), int(int32(sourceEnd)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationRow)))
 	}
 
 }
 
-//export callbackAddressList8ba275_RowsAboutToBeRemoved
-func callbackAddressList8ba275_RowsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackAddressList742340_RowsAboutToBeRemoved
+func callbackAddressList742340_RowsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "rowsAboutToBeRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_RowsInserted
-func callbackAddressList8ba275_RowsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackAddressList742340_RowsInserted
+func callbackAddressList742340_RowsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "rowsInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_RowsMoved
-func callbackAddressList8ba275_RowsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, row C.int) {
+//export callbackAddressList742340_RowsMoved
+func callbackAddressList742340_RowsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, row C.int) {
 	if signal := qt.GetSignal(ptr, "rowsMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(start)), int(int32(end)), std_core.NewQModelIndexFromPointer(destination), int(int32(row)))
 	}
 
 }
 
-//export callbackAddressList8ba275_RowsRemoved
-func callbackAddressList8ba275_RowsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackAddressList742340_RowsRemoved
+func callbackAddressList742340_RowsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "rowsRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackAddressList8ba275_SetData
-func callbackAddressList8ba275_SetData(ptr unsafe.Pointer, index unsafe.Pointer, value unsafe.Pointer, role C.int) C.char {
+//export callbackAddressList742340_SetData
+func callbackAddressList742340_SetData(ptr unsafe.Pointer, index unsafe.Pointer, value unsafe.Pointer, role C.int) C.char {
 	if signal := qt.GetSignal(ptr, "setData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, *std_core.QVariant, int) bool)(signal))(std_core.NewQModelIndexFromPointer(index), std_core.NewQVariantFromPointer(value), int(int32(role))))))
 	}
@@ -2840,13 +2840,13 @@ func callbackAddressList8ba275_SetData(ptr unsafe.Pointer, index unsafe.Pointer,
 
 func (ptr *AddressList) SetDataDefault(index std_core.QModelIndex_ITF, value std_core.QVariant_ITF, role int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_SetDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
+		return int8(C.AddressList742340_SetDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_SetHeaderData
-func callbackAddressList8ba275_SetHeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, value unsafe.Pointer, role C.int) C.char {
+//export callbackAddressList742340_SetHeaderData
+func callbackAddressList742340_SetHeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, value unsafe.Pointer, role C.int) C.char {
 	if signal := qt.GetSignal(ptr, "setHeaderData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, std_core.Qt__Orientation, *std_core.QVariant, int) bool)(signal))(int(int32(section)), std_core.Qt__Orientation(orientation), std_core.NewQVariantFromPointer(value), int(int32(role))))))
 	}
@@ -2856,13 +2856,13 @@ func callbackAddressList8ba275_SetHeaderData(ptr unsafe.Pointer, section C.int, 
 
 func (ptr *AddressList) SetHeaderDataDefault(section int, orientation std_core.Qt__Orientation, value std_core.QVariant_ITF, role int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_SetHeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
+		return int8(C.AddressList742340_SetHeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_SetItemData
-func callbackAddressList8ba275_SetItemData(ptr unsafe.Pointer, index unsafe.Pointer, roles C.struct_Moc_PackedList) C.char {
+//export callbackAddressList742340_SetItemData
+func callbackAddressList742340_SetItemData(ptr unsafe.Pointer, index unsafe.Pointer, roles C.struct_Moc_PackedList) C.char {
 	if signal := qt.GetSignal(ptr, "setItemData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, map[int]*std_core.QVariant) bool)(signal))(std_core.NewQModelIndexFromPointer(index), func(l C.struct_Moc_PackedList) map[int]*std_core.QVariant {
 			out := make(map[int]*std_core.QVariant, int(l.len))
@@ -2886,7 +2886,7 @@ func callbackAddressList8ba275_SetItemData(ptr unsafe.Pointer, index unsafe.Poin
 
 func (ptr *AddressList) SetItemDataDefault(index std_core.QModelIndex_ITF, roles map[int]*std_core.QVariant) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_SetItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), func() unsafe.Pointer {
+		return int8(C.AddressList742340_SetItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), func() unsafe.Pointer {
 			tmpList := NewAddressListFromPointer(NewAddressListFromPointer(nil).__setItemData_roles_newList())
 			for k, v := range roles {
 				tmpList.__setItemData_roles_setList(k, v)
@@ -2897,8 +2897,8 @@ func (ptr *AddressList) SetItemDataDefault(index std_core.QModelIndex_ITF, roles
 	return false
 }
 
-//export callbackAddressList8ba275_Sort
-func callbackAddressList8ba275_Sort(ptr unsafe.Pointer, column C.int, order C.longlong) {
+//export callbackAddressList742340_Sort
+func callbackAddressList742340_Sort(ptr unsafe.Pointer, column C.int, order C.longlong) {
 	if signal := qt.GetSignal(ptr, "sort"); signal != nil {
 		(*(*func(int, std_core.Qt__SortOrder))(signal))(int(int32(column)), std_core.Qt__SortOrder(order))
 	} else {
@@ -2908,12 +2908,12 @@ func callbackAddressList8ba275_Sort(ptr unsafe.Pointer, column C.int, order C.lo
 
 func (ptr *AddressList) SortDefault(column int, order std_core.Qt__SortOrder) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_SortDefault(ptr.Pointer(), C.int(int32(column)), C.longlong(order))
+		C.AddressList742340_SortDefault(ptr.Pointer(), C.int(int32(column)), C.longlong(order))
 	}
 }
 
-//export callbackAddressList8ba275_Span
-func callbackAddressList8ba275_Span(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackAddressList742340_Span
+func callbackAddressList742340_Span(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "span"); signal != nil {
 		return std_core.PointerFromQSize((*(*func(*std_core.QModelIndex) *std_core.QSize)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -2923,15 +2923,15 @@ func callbackAddressList8ba275_Span(ptr unsafe.Pointer, index unsafe.Pointer) un
 
 func (ptr *AddressList) SpanDefault(index std_core.QModelIndex_ITF) *std_core.QSize {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQSizeFromPointer(C.AddressList8ba275_SpanDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		tmpValue := std_core.NewQSizeFromPointer(C.AddressList742340_SpanDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QSize).DestroyQSize)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackAddressList8ba275_Submit
-func callbackAddressList8ba275_Submit(ptr unsafe.Pointer) C.char {
+//export callbackAddressList742340_Submit
+func callbackAddressList742340_Submit(ptr unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "submit"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func() bool)(signal))())))
 	}
@@ -2941,13 +2941,13 @@ func callbackAddressList8ba275_Submit(ptr unsafe.Pointer) C.char {
 
 func (ptr *AddressList) SubmitDefault() bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_SubmitDefault(ptr.Pointer())) != 0
+		return int8(C.AddressList742340_SubmitDefault(ptr.Pointer())) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_SupportedDragActions
-func callbackAddressList8ba275_SupportedDragActions(ptr unsafe.Pointer) C.longlong {
+//export callbackAddressList742340_SupportedDragActions
+func callbackAddressList742340_SupportedDragActions(ptr unsafe.Pointer) C.longlong {
 	if signal := qt.GetSignal(ptr, "supportedDragActions"); signal != nil {
 		return C.longlong((*(*func() std_core.Qt__DropAction)(signal))())
 	}
@@ -2957,13 +2957,13 @@ func callbackAddressList8ba275_SupportedDragActions(ptr unsafe.Pointer) C.longlo
 
 func (ptr *AddressList) SupportedDragActionsDefault() std_core.Qt__DropAction {
 	if ptr.Pointer() != nil {
-		return std_core.Qt__DropAction(C.AddressList8ba275_SupportedDragActionsDefault(ptr.Pointer()))
+		return std_core.Qt__DropAction(C.AddressList742340_SupportedDragActionsDefault(ptr.Pointer()))
 	}
 	return 0
 }
 
-//export callbackAddressList8ba275_SupportedDropActions
-func callbackAddressList8ba275_SupportedDropActions(ptr unsafe.Pointer) C.longlong {
+//export callbackAddressList742340_SupportedDropActions
+func callbackAddressList742340_SupportedDropActions(ptr unsafe.Pointer) C.longlong {
 	if signal := qt.GetSignal(ptr, "supportedDropActions"); signal != nil {
 		return C.longlong((*(*func() std_core.Qt__DropAction)(signal))())
 	}
@@ -2973,13 +2973,13 @@ func callbackAddressList8ba275_SupportedDropActions(ptr unsafe.Pointer) C.longlo
 
 func (ptr *AddressList) SupportedDropActionsDefault() std_core.Qt__DropAction {
 	if ptr.Pointer() != nil {
-		return std_core.Qt__DropAction(C.AddressList8ba275_SupportedDropActionsDefault(ptr.Pointer()))
+		return std_core.Qt__DropAction(C.AddressList742340_SupportedDropActionsDefault(ptr.Pointer()))
 	}
 	return 0
 }
 
-//export callbackAddressList8ba275_ChildEvent
-func callbackAddressList8ba275_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackAddressList742340_ChildEvent
+func callbackAddressList742340_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
 		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
 	} else {
@@ -2989,12 +2989,12 @@ func callbackAddressList8ba275_ChildEvent(ptr unsafe.Pointer, event unsafe.Point
 
 func (ptr *AddressList) ChildEventDefault(event std_core.QChildEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
+		C.AddressList742340_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
 	}
 }
 
-//export callbackAddressList8ba275_ConnectNotify
-func callbackAddressList8ba275_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackAddressList742340_ConnectNotify
+func callbackAddressList742340_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -3004,12 +3004,12 @@ func callbackAddressList8ba275_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Poi
 
 func (ptr *AddressList) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.AddressList742340_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackAddressList8ba275_CustomEvent
-func callbackAddressList8ba275_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackAddressList742340_CustomEvent
+func callbackAddressList742340_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
 		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
 	} else {
@@ -3019,12 +3019,12 @@ func callbackAddressList8ba275_CustomEvent(ptr unsafe.Pointer, event unsafe.Poin
 
 func (ptr *AddressList) CustomEventDefault(event std_core.QEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
+		C.AddressList742340_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
 	}
 }
 
-//export callbackAddressList8ba275_DeleteLater
-func callbackAddressList8ba275_DeleteLater(ptr unsafe.Pointer) {
+//export callbackAddressList742340_DeleteLater
+func callbackAddressList742340_DeleteLater(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -3034,13 +3034,13 @@ func callbackAddressList8ba275_DeleteLater(ptr unsafe.Pointer) {
 
 func (ptr *AddressList) DeleteLaterDefault() {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DeleteLaterDefault(ptr.Pointer())
+		C.AddressList742340_DeleteLaterDefault(ptr.Pointer())
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackAddressList8ba275_Destroyed
-func callbackAddressList8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
+//export callbackAddressList742340_Destroyed
+func callbackAddressList742340_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
 		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
 	}
@@ -3048,8 +3048,8 @@ func callbackAddressList8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer)
 
 }
 
-//export callbackAddressList8ba275_DisconnectNotify
-func callbackAddressList8ba275_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackAddressList742340_DisconnectNotify
+func callbackAddressList742340_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -3059,12 +3059,12 @@ func callbackAddressList8ba275_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.
 
 func (ptr *AddressList) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.AddressList742340_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackAddressList8ba275_Event
-func callbackAddressList8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
+//export callbackAddressList742340_Event
+func callbackAddressList742340_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "event"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
 	}
@@ -3074,13 +3074,13 @@ func callbackAddressList8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.cha
 
 func (ptr *AddressList) EventDefault(e std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
+		return int8(C.AddressList742340_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_EventFilter
-func callbackAddressList8ba275_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
+//export callbackAddressList742340_EventFilter
+func callbackAddressList742340_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
 	}
@@ -3090,21 +3090,21 @@ func callbackAddressList8ba275_EventFilter(ptr unsafe.Pointer, watched unsafe.Po
 
 func (ptr *AddressList) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.AddressList8ba275_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
+		return int8(C.AddressList742340_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
 	}
 	return false
 }
 
-//export callbackAddressList8ba275_ObjectNameChanged
-func callbackAddressList8ba275_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
+//export callbackAddressList742340_ObjectNameChanged
+func callbackAddressList742340_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(objectName))
 	}
 
 }
 
-//export callbackAddressList8ba275_TimerEvent
-func callbackAddressList8ba275_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackAddressList742340_TimerEvent
+func callbackAddressList742340_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
 		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
 	} else {
@@ -3114,7 +3114,7 @@ func callbackAddressList8ba275_TimerEvent(ptr unsafe.Pointer, event unsafe.Point
 
 func (ptr *AddressList) TimerEventDefault(event std_core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.AddressList8ba275_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
+		C.AddressList742340_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
 	}
 }
 
@@ -3168,8 +3168,8 @@ func NewHistoryModelFromPointer(ptr unsafe.Pointer) (n *HistoryModel) {
 }
 func (this *HistoryModel) Init() { this.init() }
 
-//export callbackHistoryModel8ba275_Constructor
-func callbackHistoryModel8ba275_Constructor(ptr unsafe.Pointer) {
+//export callbackHistoryModel742340_Constructor
+func callbackHistoryModel742340_Constructor(ptr unsafe.Pointer) {
 	this := NewHistoryModelFromPointer(ptr)
 	qt.Register(ptr, this)
 	this.ConnectAddTransaction(this.addTransaction)
@@ -3177,8 +3177,8 @@ func callbackHistoryModel8ba275_Constructor(ptr unsafe.Pointer) {
 	this.init()
 }
 
-//export callbackHistoryModel8ba275_AddTransaction
-func callbackHistoryModel8ba275_AddTransaction(ptr unsafe.Pointer, transaction unsafe.Pointer) {
+//export callbackHistoryModel742340_AddTransaction
+func callbackHistoryModel742340_AddTransaction(ptr unsafe.Pointer, transaction unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "addTransaction"); signal != nil {
 		(*(*func(*TransactionDetails))(signal))(NewTransactionDetailsFromPointer(transaction))
 	}
@@ -3189,7 +3189,7 @@ func (ptr *HistoryModel) ConnectAddTransaction(f func(transaction *TransactionDe
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "addTransaction") {
-			C.HistoryModel8ba275_ConnectAddTransaction(ptr.Pointer())
+			C.HistoryModel742340_ConnectAddTransaction(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "addTransaction"); signal != nil {
@@ -3206,19 +3206,19 @@ func (ptr *HistoryModel) ConnectAddTransaction(f func(transaction *TransactionDe
 
 func (ptr *HistoryModel) DisconnectAddTransaction() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DisconnectAddTransaction(ptr.Pointer())
+		C.HistoryModel742340_DisconnectAddTransaction(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "addTransaction")
 	}
 }
 
 func (ptr *HistoryModel) AddTransaction(transaction TransactionDetails_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_AddTransaction(ptr.Pointer(), PointerFromTransactionDetails(transaction))
+		C.HistoryModel742340_AddTransaction(ptr.Pointer(), PointerFromTransactionDetails(transaction))
 	}
 }
 
-//export callbackHistoryModel8ba275_RemoveTransaction
-func callbackHistoryModel8ba275_RemoveTransaction(ptr unsafe.Pointer, index C.int) {
+//export callbackHistoryModel742340_RemoveTransaction
+func callbackHistoryModel742340_RemoveTransaction(ptr unsafe.Pointer, index C.int) {
 	if signal := qt.GetSignal(ptr, "removeTransaction"); signal != nil {
 		(*(*func(int))(signal))(int(int32(index)))
 	}
@@ -3229,7 +3229,7 @@ func (ptr *HistoryModel) ConnectRemoveTransaction(f func(index int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "removeTransaction") {
-			C.HistoryModel8ba275_ConnectRemoveTransaction(ptr.Pointer())
+			C.HistoryModel742340_ConnectRemoveTransaction(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "removeTransaction"); signal != nil {
@@ -3246,19 +3246,19 @@ func (ptr *HistoryModel) ConnectRemoveTransaction(f func(index int)) {
 
 func (ptr *HistoryModel) DisconnectRemoveTransaction() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DisconnectRemoveTransaction(ptr.Pointer())
+		C.HistoryModel742340_DisconnectRemoveTransaction(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "removeTransaction")
 	}
 }
 
 func (ptr *HistoryModel) RemoveTransaction(index int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_RemoveTransaction(ptr.Pointer(), C.int(int32(index)))
+		C.HistoryModel742340_RemoveTransaction(ptr.Pointer(), C.int(int32(index)))
 	}
 }
 
-//export callbackHistoryModel8ba275_Roles
-func callbackHistoryModel8ba275_Roles(ptr unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_Roles
+func callbackHistoryModel742340_Roles(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "roles"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__roles_newList())
@@ -3309,7 +3309,7 @@ func (ptr *HistoryModel) Roles() map[int]*std_core.QByteArray {
 				out[v] = tmpList.__roles_atList(v, i)
 			}
 			return out
-		}(C.HistoryModel8ba275_Roles(ptr.Pointer()))
+		}(C.HistoryModel742340_Roles(ptr.Pointer()))
 	}
 	return make(map[int]*std_core.QByteArray, 0)
 }
@@ -3323,13 +3323,13 @@ func (ptr *HistoryModel) RolesDefault() map[int]*std_core.QByteArray {
 				out[v] = tmpList.__roles_atList(v, i)
 			}
 			return out
-		}(C.HistoryModel8ba275_RolesDefault(ptr.Pointer()))
+		}(C.HistoryModel742340_RolesDefault(ptr.Pointer()))
 	}
 	return make(map[int]*std_core.QByteArray, 0)
 }
 
-//export callbackHistoryModel8ba275_SetRoles
-func callbackHistoryModel8ba275_SetRoles(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
+//export callbackHistoryModel742340_SetRoles
+func callbackHistoryModel742340_SetRoles(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "setRoles"); signal != nil {
 		(*(*func(map[int]*std_core.QByteArray))(signal))(func(l C.struct_Moc_PackedList) map[int]*std_core.QByteArray {
 			out := make(map[int]*std_core.QByteArray, int(l.len))
@@ -3375,7 +3375,7 @@ func (ptr *HistoryModel) DisconnectSetRoles() {
 
 func (ptr *HistoryModel) SetRoles(roles map[int]*std_core.QByteArray) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_SetRoles(ptr.Pointer(), func() unsafe.Pointer {
+		C.HistoryModel742340_SetRoles(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__setRoles_roles_newList())
 			for k, v := range roles {
 				tmpList.__setRoles_roles_setList(k, v)
@@ -3387,7 +3387,7 @@ func (ptr *HistoryModel) SetRoles(roles map[int]*std_core.QByteArray) {
 
 func (ptr *HistoryModel) SetRolesDefault(roles map[int]*std_core.QByteArray) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_SetRolesDefault(ptr.Pointer(), func() unsafe.Pointer {
+		C.HistoryModel742340_SetRolesDefault(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__setRoles_roles_newList())
 			for k, v := range roles {
 				tmpList.__setRoles_roles_setList(k, v)
@@ -3397,8 +3397,8 @@ func (ptr *HistoryModel) SetRolesDefault(roles map[int]*std_core.QByteArray) {
 	}
 }
 
-//export callbackHistoryModel8ba275_RolesChanged
-func callbackHistoryModel8ba275_RolesChanged(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
+//export callbackHistoryModel742340_RolesChanged
+func callbackHistoryModel742340_RolesChanged(ptr unsafe.Pointer, roles C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "rolesChanged"); signal != nil {
 		(*(*func(map[int]*std_core.QByteArray))(signal))(func(l C.struct_Moc_PackedList) map[int]*std_core.QByteArray {
 			out := make(map[int]*std_core.QByteArray, int(l.len))
@@ -3416,7 +3416,7 @@ func (ptr *HistoryModel) ConnectRolesChanged(f func(roles map[int]*std_core.QByt
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "rolesChanged") {
-			C.HistoryModel8ba275_ConnectRolesChanged(ptr.Pointer())
+			C.HistoryModel742340_ConnectRolesChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "rolesChanged"); signal != nil {
@@ -3433,14 +3433,14 @@ func (ptr *HistoryModel) ConnectRolesChanged(f func(roles map[int]*std_core.QByt
 
 func (ptr *HistoryModel) DisconnectRolesChanged() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DisconnectRolesChanged(ptr.Pointer())
+		C.HistoryModel742340_DisconnectRolesChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "rolesChanged")
 	}
 }
 
 func (ptr *HistoryModel) RolesChanged(roles map[int]*std_core.QByteArray) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_RolesChanged(ptr.Pointer(), func() unsafe.Pointer {
+		C.HistoryModel742340_RolesChanged(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__rolesChanged_roles_newList())
 			for k, v := range roles {
 				tmpList.__rolesChanged_roles_setList(k, v)
@@ -3450,8 +3450,8 @@ func (ptr *HistoryModel) RolesChanged(roles map[int]*std_core.QByteArray) {
 	}
 }
 
-//export callbackHistoryModel8ba275_Transactions
-func callbackHistoryModel8ba275_Transactions(ptr unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_Transactions
+func callbackHistoryModel742340_Transactions(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "transactions"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__transactions_newList())
@@ -3502,7 +3502,7 @@ func (ptr *HistoryModel) Transactions() []*TransactionDetails {
 				out[i] = tmpList.__transactions_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275_Transactions(ptr.Pointer()))
+		}(C.HistoryModel742340_Transactions(ptr.Pointer()))
 	}
 	return make([]*TransactionDetails, 0)
 }
@@ -3516,13 +3516,13 @@ func (ptr *HistoryModel) TransactionsDefault() []*TransactionDetails {
 				out[i] = tmpList.__transactions_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275_TransactionsDefault(ptr.Pointer()))
+		}(C.HistoryModel742340_TransactionsDefault(ptr.Pointer()))
 	}
 	return make([]*TransactionDetails, 0)
 }
 
-//export callbackHistoryModel8ba275_SetTransactions
-func callbackHistoryModel8ba275_SetTransactions(ptr unsafe.Pointer, transactions C.struct_Moc_PackedList) {
+//export callbackHistoryModel742340_SetTransactions
+func callbackHistoryModel742340_SetTransactions(ptr unsafe.Pointer, transactions C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "setTransactions"); signal != nil {
 		(*(*func([]*TransactionDetails))(signal))(func(l C.struct_Moc_PackedList) []*TransactionDetails {
 			out := make([]*TransactionDetails, int(l.len))
@@ -3568,7 +3568,7 @@ func (ptr *HistoryModel) DisconnectSetTransactions() {
 
 func (ptr *HistoryModel) SetTransactions(transactions []*TransactionDetails) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_SetTransactions(ptr.Pointer(), func() unsafe.Pointer {
+		C.HistoryModel742340_SetTransactions(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__setTransactions_transactions_newList())
 			for _, v := range transactions {
 				tmpList.__setTransactions_transactions_setList(v)
@@ -3580,7 +3580,7 @@ func (ptr *HistoryModel) SetTransactions(transactions []*TransactionDetails) {
 
 func (ptr *HistoryModel) SetTransactionsDefault(transactions []*TransactionDetails) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_SetTransactionsDefault(ptr.Pointer(), func() unsafe.Pointer {
+		C.HistoryModel742340_SetTransactionsDefault(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__setTransactions_transactions_newList())
 			for _, v := range transactions {
 				tmpList.__setTransactions_transactions_setList(v)
@@ -3590,8 +3590,8 @@ func (ptr *HistoryModel) SetTransactionsDefault(transactions []*TransactionDetai
 	}
 }
 
-//export callbackHistoryModel8ba275_TransactionsChanged
-func callbackHistoryModel8ba275_TransactionsChanged(ptr unsafe.Pointer, transactions C.struct_Moc_PackedList) {
+//export callbackHistoryModel742340_TransactionsChanged
+func callbackHistoryModel742340_TransactionsChanged(ptr unsafe.Pointer, transactions C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "transactionsChanged"); signal != nil {
 		(*(*func([]*TransactionDetails))(signal))(func(l C.struct_Moc_PackedList) []*TransactionDetails {
 			out := make([]*TransactionDetails, int(l.len))
@@ -3609,7 +3609,7 @@ func (ptr *HistoryModel) ConnectTransactionsChanged(f func(transactions []*Trans
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "transactionsChanged") {
-			C.HistoryModel8ba275_ConnectTransactionsChanged(ptr.Pointer())
+			C.HistoryModel742340_ConnectTransactionsChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "transactionsChanged"); signal != nil {
@@ -3626,14 +3626,14 @@ func (ptr *HistoryModel) ConnectTransactionsChanged(f func(transactions []*Trans
 
 func (ptr *HistoryModel) DisconnectTransactionsChanged() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DisconnectTransactionsChanged(ptr.Pointer())
+		C.HistoryModel742340_DisconnectTransactionsChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "transactionsChanged")
 	}
 }
 
 func (ptr *HistoryModel) TransactionsChanged(transactions []*TransactionDetails) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_TransactionsChanged(ptr.Pointer(), func() unsafe.Pointer {
+		C.HistoryModel742340_TransactionsChanged(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__transactionsChanged_transactions_newList())
 			for _, v := range transactions {
 				tmpList.__transactionsChanged_transactions_setList(v)
@@ -3644,11 +3644,11 @@ func (ptr *HistoryModel) TransactionsChanged(transactions []*TransactionDetails)
 }
 
 func HistoryModel_QRegisterMetaType() int {
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaType()))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QRegisterMetaType()))
 }
 
 func (ptr *HistoryModel) QRegisterMetaType() int {
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaType()))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QRegisterMetaType()))
 }
 
 func HistoryModel_QRegisterMetaType2(typeName string) int {
@@ -3657,7 +3657,7 @@ func HistoryModel_QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QRegisterMetaType2(typeNameC)))
 }
 
 func (ptr *HistoryModel) QRegisterMetaType2(typeName string) int {
@@ -3666,15 +3666,15 @@ func (ptr *HistoryModel) QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QRegisterMetaType2(typeNameC)))
 }
 
 func HistoryModel_QmlRegisterType() int {
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QmlRegisterType()))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QmlRegisterType()))
 }
 
 func (ptr *HistoryModel) QmlRegisterType() int {
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QmlRegisterType()))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QmlRegisterType()))
 }
 
 func HistoryModel_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -3688,7 +3688,7 @@ func HistoryModel_QmlRegisterType2(uri string, versionMajor int, versionMinor in
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *HistoryModel) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -3702,63 +3702,63 @@ func (ptr *HistoryModel) QmlRegisterType2(uri string, versionMajor int, versionM
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.HistoryModel8ba275_HistoryModel8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.HistoryModel742340_HistoryModel742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *HistoryModel) ____itemData_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____itemData_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____itemData_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____itemData_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____itemData_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____itemData_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____itemData_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____itemData_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____itemData_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) ____roleNames_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____roleNames_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____roleNames_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____roleNames_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____roleNames_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) ____setItemData_roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____setItemData_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____setItemData_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____setItemData_roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____setItemData_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____setItemData_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____setItemData_roles_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____setItemData_roles_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____setItemData_roles_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __changePersistentIndexList_from_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275___changePersistentIndexList_from_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340___changePersistentIndexList_from_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -3767,17 +3767,17 @@ func (ptr *HistoryModel) __changePersistentIndexList_from_atList(i int) *std_cor
 
 func (ptr *HistoryModel) __changePersistentIndexList_from_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___changePersistentIndexList_from_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.HistoryModel742340___changePersistentIndexList_from_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *HistoryModel) __changePersistentIndexList_from_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___changePersistentIndexList_from_newList(ptr.Pointer())
+	return C.HistoryModel742340___changePersistentIndexList_from_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __changePersistentIndexList_to_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275___changePersistentIndexList_to_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340___changePersistentIndexList_to_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -3786,34 +3786,34 @@ func (ptr *HistoryModel) __changePersistentIndexList_to_atList(i int) *std_core.
 
 func (ptr *HistoryModel) __changePersistentIndexList_to_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___changePersistentIndexList_to_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.HistoryModel742340___changePersistentIndexList_to_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *HistoryModel) __changePersistentIndexList_to_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___changePersistentIndexList_to_newList(ptr.Pointer())
+	return C.HistoryModel742340___changePersistentIndexList_to_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __dataChanged_roles_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275___dataChanged_roles_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340___dataChanged_roles_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) __dataChanged_roles_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___dataChanged_roles_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340___dataChanged_roles_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) __dataChanged_roles_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___dataChanged_roles_newList(ptr.Pointer())
+	return C.HistoryModel742340___dataChanged_roles_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __itemData_atList(v int, i int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel8ba275___itemData_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel742340___itemData_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -3822,12 +3822,12 @@ func (ptr *HistoryModel) __itemData_atList(v int, i int) *std_core.QVariant {
 
 func (ptr *HistoryModel) __itemData_setList(key int, i std_core.QVariant_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___itemData_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
+		C.HistoryModel742340___itemData_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
 	}
 }
 
 func (ptr *HistoryModel) __itemData_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___itemData_newList(ptr.Pointer())
+	return C.HistoryModel742340___itemData_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __itemData_keyList() []int {
@@ -3839,14 +3839,14 @@ func (ptr *HistoryModel) __itemData_keyList() []int {
 				out[i] = tmpList.____itemData_keyList_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275___itemData_keyList(ptr.Pointer()))
+		}(C.HistoryModel742340___itemData_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *HistoryModel) __layoutAboutToBeChanged_parents_atList(i int) *std_core.QPersistentModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.HistoryModel8ba275___layoutAboutToBeChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.HistoryModel742340___layoutAboutToBeChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QPersistentModelIndex).DestroyQPersistentModelIndex)
 		return tmpValue
 	}
@@ -3855,17 +3855,17 @@ func (ptr *HistoryModel) __layoutAboutToBeChanged_parents_atList(i int) *std_cor
 
 func (ptr *HistoryModel) __layoutAboutToBeChanged_parents_setList(i std_core.QPersistentModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___layoutAboutToBeChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
+		C.HistoryModel742340___layoutAboutToBeChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
 	}
 }
 
 func (ptr *HistoryModel) __layoutAboutToBeChanged_parents_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___layoutAboutToBeChanged_parents_newList(ptr.Pointer())
+	return C.HistoryModel742340___layoutAboutToBeChanged_parents_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __layoutChanged_parents_atList(i int) *std_core.QPersistentModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.HistoryModel8ba275___layoutChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQPersistentModelIndexFromPointer(C.HistoryModel742340___layoutChanged_parents_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QPersistentModelIndex).DestroyQPersistentModelIndex)
 		return tmpValue
 	}
@@ -3874,17 +3874,17 @@ func (ptr *HistoryModel) __layoutChanged_parents_atList(i int) *std_core.QPersis
 
 func (ptr *HistoryModel) __layoutChanged_parents_setList(i std_core.QPersistentModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___layoutChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
+		C.HistoryModel742340___layoutChanged_parents_setList(ptr.Pointer(), std_core.PointerFromQPersistentModelIndex(i))
 	}
 }
 
 func (ptr *HistoryModel) __layoutChanged_parents_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___layoutChanged_parents_newList(ptr.Pointer())
+	return C.HistoryModel742340___layoutChanged_parents_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __match_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275___match_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340___match_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -3893,17 +3893,17 @@ func (ptr *HistoryModel) __match_atList(i int) *std_core.QModelIndex {
 
 func (ptr *HistoryModel) __match_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___match_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.HistoryModel742340___match_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *HistoryModel) __match_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___match_newList(ptr.Pointer())
+	return C.HistoryModel742340___match_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __mimeData_indexes_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275___mimeData_indexes_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340___mimeData_indexes_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -3912,17 +3912,17 @@ func (ptr *HistoryModel) __mimeData_indexes_atList(i int) *std_core.QModelIndex 
 
 func (ptr *HistoryModel) __mimeData_indexes_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___mimeData_indexes_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.HistoryModel742340___mimeData_indexes_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *HistoryModel) __mimeData_indexes_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___mimeData_indexes_newList(ptr.Pointer())
+	return C.HistoryModel742340___mimeData_indexes_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __persistentIndexList_atList(i int) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275___persistentIndexList_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340___persistentIndexList_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
@@ -3931,17 +3931,17 @@ func (ptr *HistoryModel) __persistentIndexList_atList(i int) *std_core.QModelInd
 
 func (ptr *HistoryModel) __persistentIndexList_setList(i std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___persistentIndexList_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
+		C.HistoryModel742340___persistentIndexList_setList(ptr.Pointer(), std_core.PointerFromQModelIndex(i))
 	}
 }
 
 func (ptr *HistoryModel) __persistentIndexList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___persistentIndexList_newList(ptr.Pointer())
+	return C.HistoryModel742340___persistentIndexList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __roleNames_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel8ba275___roleNames_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel742340___roleNames_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -3950,12 +3950,12 @@ func (ptr *HistoryModel) __roleNames_atList(v int, i int) *std_core.QByteArray {
 
 func (ptr *HistoryModel) __roleNames_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___roleNames_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.HistoryModel742340___roleNames_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *HistoryModel) __roleNames_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___roleNames_newList(ptr.Pointer())
+	return C.HistoryModel742340___roleNames_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __roleNames_keyList() []int {
@@ -3967,14 +3967,14 @@ func (ptr *HistoryModel) __roleNames_keyList() []int {
 				out[i] = tmpList.____roleNames_keyList_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275___roleNames_keyList(ptr.Pointer()))
+		}(C.HistoryModel742340___roleNames_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *HistoryModel) __setItemData_roles_atList(v int, i int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel8ba275___setItemData_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel742340___setItemData_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
@@ -3983,12 +3983,12 @@ func (ptr *HistoryModel) __setItemData_roles_atList(v int, i int) *std_core.QVar
 
 func (ptr *HistoryModel) __setItemData_roles_setList(key int, i std_core.QVariant_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___setItemData_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
+		C.HistoryModel742340___setItemData_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQVariant(i))
 	}
 }
 
 func (ptr *HistoryModel) __setItemData_roles_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___setItemData_roles_newList(ptr.Pointer())
+	return C.HistoryModel742340___setItemData_roles_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __setItemData_roles_keyList() []int {
@@ -4000,48 +4000,48 @@ func (ptr *HistoryModel) __setItemData_roles_keyList() []int {
 				out[i] = tmpList.____setItemData_roles_keyList_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275___setItemData_roles_keyList(ptr.Pointer()))
+		}(C.HistoryModel742340___setItemData_roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *HistoryModel) ____doSetRoleNames_roleNames_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____doSetRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____doSetRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____doSetRoleNames_roleNames_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____doSetRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____doSetRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____doSetRoleNames_roleNames_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____doSetRoleNames_roleNames_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____doSetRoleNames_roleNames_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) ____setRoleNames_roleNames_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____setRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____setRoleNames_roleNames_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____setRoleNames_roleNames_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____setRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____setRoleNames_roleNames_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____setRoleNames_roleNames_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____setRoleNames_roleNames_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____setRoleNames_roleNames_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __children_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel8ba275___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel742340___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4052,17 +4052,17 @@ func (ptr *HistoryModel) __children_atList(i int) *std_core.QObject {
 
 func (ptr *HistoryModel) __children_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.HistoryModel742340___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *HistoryModel) __children_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___children_newList(ptr.Pointer())
+	return C.HistoryModel742340___children_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel8ba275___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel742340___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -4071,17 +4071,17 @@ func (ptr *HistoryModel) __dynamicPropertyNames_atList(i int) *std_core.QByteArr
 
 func (ptr *HistoryModel) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
+		C.HistoryModel742340___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *HistoryModel) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___dynamicPropertyNames_newList(ptr.Pointer())
+	return C.HistoryModel742340___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __findChildren_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel8ba275___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel742340___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4092,17 +4092,17 @@ func (ptr *HistoryModel) __findChildren_atList(i int) *std_core.QObject {
 
 func (ptr *HistoryModel) __findChildren_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.HistoryModel742340___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *HistoryModel) __findChildren_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___findChildren_newList(ptr.Pointer())
+	return C.HistoryModel742340___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __findChildren_atList3(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel8ba275___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel742340___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4113,17 +4113,17 @@ func (ptr *HistoryModel) __findChildren_atList3(i int) *std_core.QObject {
 
 func (ptr *HistoryModel) __findChildren_setList3(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.HistoryModel742340___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *HistoryModel) __findChildren_newList3() unsafe.Pointer {
-	return C.HistoryModel8ba275___findChildren_newList3(ptr.Pointer())
+	return C.HistoryModel742340___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __qFindChildren_atList2(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel8ba275___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.HistoryModel742340___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4134,17 +4134,17 @@ func (ptr *HistoryModel) __qFindChildren_atList2(i int) *std_core.QObject {
 
 func (ptr *HistoryModel) __qFindChildren_setList2(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.HistoryModel742340___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *HistoryModel) __qFindChildren_newList2() unsafe.Pointer {
-	return C.HistoryModel8ba275___qFindChildren_newList2(ptr.Pointer())
+	return C.HistoryModel742340___qFindChildren_newList2(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __roles_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel8ba275___roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel742340___roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -4153,12 +4153,12 @@ func (ptr *HistoryModel) __roles_atList(v int, i int) *std_core.QByteArray {
 
 func (ptr *HistoryModel) __roles_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.HistoryModel742340___roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *HistoryModel) __roles_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___roles_newList(ptr.Pointer())
+	return C.HistoryModel742340___roles_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __roles_keyList() []int {
@@ -4170,14 +4170,14 @@ func (ptr *HistoryModel) __roles_keyList() []int {
 				out[i] = tmpList.____roles_keyList_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275___roles_keyList(ptr.Pointer()))
+		}(C.HistoryModel742340___roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *HistoryModel) __setRoles_roles_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel8ba275___setRoles_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel742340___setRoles_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -4186,12 +4186,12 @@ func (ptr *HistoryModel) __setRoles_roles_atList(v int, i int) *std_core.QByteAr
 
 func (ptr *HistoryModel) __setRoles_roles_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___setRoles_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.HistoryModel742340___setRoles_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *HistoryModel) __setRoles_roles_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___setRoles_roles_newList(ptr.Pointer())
+	return C.HistoryModel742340___setRoles_roles_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __setRoles_roles_keyList() []int {
@@ -4203,14 +4203,14 @@ func (ptr *HistoryModel) __setRoles_roles_keyList() []int {
 				out[i] = tmpList.____setRoles_roles_keyList_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275___setRoles_roles_keyList(ptr.Pointer()))
+		}(C.HistoryModel742340___setRoles_roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *HistoryModel) __rolesChanged_roles_atList(v int, i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel8ba275___rolesChanged_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.HistoryModel742340___rolesChanged_roles_atList(ptr.Pointer(), C.int(int32(v)), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -4219,12 +4219,12 @@ func (ptr *HistoryModel) __rolesChanged_roles_atList(v int, i int) *std_core.QBy
 
 func (ptr *HistoryModel) __rolesChanged_roles_setList(key int, i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___rolesChanged_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
+		C.HistoryModel742340___rolesChanged_roles_setList(ptr.Pointer(), C.int(int32(key)), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *HistoryModel) __rolesChanged_roles_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___rolesChanged_roles_newList(ptr.Pointer())
+	return C.HistoryModel742340___rolesChanged_roles_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __rolesChanged_roles_keyList() []int {
@@ -4236,14 +4236,14 @@ func (ptr *HistoryModel) __rolesChanged_roles_keyList() []int {
 				out[i] = tmpList.____rolesChanged_roles_keyList_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275___rolesChanged_roles_keyList(ptr.Pointer()))
+		}(C.HistoryModel742340___rolesChanged_roles_keyList(ptr.Pointer()))
 	}
 	return make([]int, 0)
 }
 
 func (ptr *HistoryModel) __transactions_atList(i int) *TransactionDetails {
 	if ptr.Pointer() != nil {
-		tmpValue := NewTransactionDetailsFromPointer(C.HistoryModel8ba275___transactions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewTransactionDetailsFromPointer(C.HistoryModel742340___transactions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4254,17 +4254,17 @@ func (ptr *HistoryModel) __transactions_atList(i int) *TransactionDetails {
 
 func (ptr *HistoryModel) __transactions_setList(i TransactionDetails_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___transactions_setList(ptr.Pointer(), PointerFromTransactionDetails(i))
+		C.HistoryModel742340___transactions_setList(ptr.Pointer(), PointerFromTransactionDetails(i))
 	}
 }
 
 func (ptr *HistoryModel) __transactions_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___transactions_newList(ptr.Pointer())
+	return C.HistoryModel742340___transactions_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __setTransactions_transactions_atList(i int) *TransactionDetails {
 	if ptr.Pointer() != nil {
-		tmpValue := NewTransactionDetailsFromPointer(C.HistoryModel8ba275___setTransactions_transactions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewTransactionDetailsFromPointer(C.HistoryModel742340___setTransactions_transactions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4275,17 +4275,17 @@ func (ptr *HistoryModel) __setTransactions_transactions_atList(i int) *Transacti
 
 func (ptr *HistoryModel) __setTransactions_transactions_setList(i TransactionDetails_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___setTransactions_transactions_setList(ptr.Pointer(), PointerFromTransactionDetails(i))
+		C.HistoryModel742340___setTransactions_transactions_setList(ptr.Pointer(), PointerFromTransactionDetails(i))
 	}
 }
 
 func (ptr *HistoryModel) __setTransactions_transactions_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___setTransactions_transactions_newList(ptr.Pointer())
+	return C.HistoryModel742340___setTransactions_transactions_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) __transactionsChanged_transactions_atList(i int) *TransactionDetails {
 	if ptr.Pointer() != nil {
-		tmpValue := NewTransactionDetailsFromPointer(C.HistoryModel8ba275___transactionsChanged_transactions_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := NewTransactionDetailsFromPointer(C.HistoryModel742340___transactionsChanged_transactions_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -4296,75 +4296,75 @@ func (ptr *HistoryModel) __transactionsChanged_transactions_atList(i int) *Trans
 
 func (ptr *HistoryModel) __transactionsChanged_transactions_setList(i TransactionDetails_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275___transactionsChanged_transactions_setList(ptr.Pointer(), PointerFromTransactionDetails(i))
+		C.HistoryModel742340___transactionsChanged_transactions_setList(ptr.Pointer(), PointerFromTransactionDetails(i))
 	}
 }
 
 func (ptr *HistoryModel) __transactionsChanged_transactions_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275___transactionsChanged_transactions_newList(ptr.Pointer())
+	return C.HistoryModel742340___transactionsChanged_transactions_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) ____roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____roles_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____roles_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____roles_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) ____setRoles_roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____setRoles_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____setRoles_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____setRoles_roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____setRoles_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____setRoles_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____setRoles_roles_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____setRoles_roles_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____setRoles_roles_keyList_newList(ptr.Pointer())
 }
 
 func (ptr *HistoryModel) ____rolesChanged_roles_keyList_atList(i int) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_____rolesChanged_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
+		return int(int32(C.HistoryModel742340_____rolesChanged_roles_keyList_atList(ptr.Pointer(), C.int(int32(i)))))
 	}
 	return 0
 }
 
 func (ptr *HistoryModel) ____rolesChanged_roles_keyList_setList(i int) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_____rolesChanged_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
+		C.HistoryModel742340_____rolesChanged_roles_keyList_setList(ptr.Pointer(), C.int(int32(i)))
 	}
 }
 
 func (ptr *HistoryModel) ____rolesChanged_roles_keyList_newList() unsafe.Pointer {
-	return C.HistoryModel8ba275_____rolesChanged_roles_keyList_newList(ptr.Pointer())
+	return C.HistoryModel742340_____rolesChanged_roles_keyList_newList(ptr.Pointer())
 }
 
 func NewHistoryModel(parent std_core.QObject_ITF) *HistoryModel {
-	tmpValue := NewHistoryModelFromPointer(C.HistoryModel8ba275_NewHistoryModel(std_core.PointerFromQObject(parent)))
+	tmpValue := NewHistoryModelFromPointer(C.HistoryModel742340_NewHistoryModel(std_core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 	}
 	return tmpValue
 }
 
-//export callbackHistoryModel8ba275_DestroyHistoryModel
-func callbackHistoryModel8ba275_DestroyHistoryModel(ptr unsafe.Pointer) {
+//export callbackHistoryModel742340_DestroyHistoryModel
+func callbackHistoryModel742340_DestroyHistoryModel(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~HistoryModel"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -4396,7 +4396,7 @@ func (ptr *HistoryModel) DisconnectDestroyHistoryModel() {
 
 func (ptr *HistoryModel) DestroyHistoryModel() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DestroyHistoryModel(ptr.Pointer())
+		C.HistoryModel742340_DestroyHistoryModel(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
@@ -4404,14 +4404,14 @@ func (ptr *HistoryModel) DestroyHistoryModel() {
 
 func (ptr *HistoryModel) DestroyHistoryModelDefault() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DestroyHistoryModelDefault(ptr.Pointer())
+		C.HistoryModel742340_DestroyHistoryModelDefault(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackHistoryModel8ba275_DropMimeData
-func callbackHistoryModel8ba275_DropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_DropMimeData
+func callbackHistoryModel742340_DropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "dropMimeData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QMimeData, std_core.Qt__DropAction, int, int, *std_core.QModelIndex) bool)(signal))(std_core.NewQMimeDataFromPointer(data), std_core.Qt__DropAction(action), int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4421,13 +4421,13 @@ func callbackHistoryModel8ba275_DropMimeData(ptr unsafe.Pointer, data unsafe.Poi
 
 func (ptr *HistoryModel) DropMimeDataDefault(data std_core.QMimeData_ITF, action std_core.Qt__DropAction, row int, column int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_DropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_DropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_Flags
-func callbackHistoryModel8ba275_Flags(ptr unsafe.Pointer, index unsafe.Pointer) C.longlong {
+//export callbackHistoryModel742340_Flags
+func callbackHistoryModel742340_Flags(ptr unsafe.Pointer, index unsafe.Pointer) C.longlong {
 	if signal := qt.GetSignal(ptr, "flags"); signal != nil {
 		return C.longlong((*(*func(*std_core.QModelIndex) std_core.Qt__ItemFlag)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -4437,13 +4437,13 @@ func callbackHistoryModel8ba275_Flags(ptr unsafe.Pointer, index unsafe.Pointer) 
 
 func (ptr *HistoryModel) FlagsDefault(index std_core.QModelIndex_ITF) std_core.Qt__ItemFlag {
 	if ptr.Pointer() != nil {
-		return std_core.Qt__ItemFlag(C.HistoryModel8ba275_FlagsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		return std_core.Qt__ItemFlag(C.HistoryModel742340_FlagsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 	}
 	return 0
 }
 
-//export callbackHistoryModel8ba275_Index
-func callbackHistoryModel8ba275_Index(ptr unsafe.Pointer, row C.int, column C.int, parent unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_Index
+func callbackHistoryModel742340_Index(ptr unsafe.Pointer, row C.int, column C.int, parent unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "index"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(int, int, *std_core.QModelIndex) *std_core.QModelIndex)(signal))(int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(parent)))
 	}
@@ -4453,15 +4453,15 @@ func callbackHistoryModel8ba275_Index(ptr unsafe.Pointer, row C.int, column C.in
 
 func (ptr *HistoryModel) IndexDefault(row int, column int, parent std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275_IndexDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340_IndexDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackHistoryModel8ba275_Sibling
-func callbackHistoryModel8ba275_Sibling(ptr unsafe.Pointer, row C.int, column C.int, idx unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_Sibling
+func callbackHistoryModel742340_Sibling(ptr unsafe.Pointer, row C.int, column C.int, idx unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "sibling"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(int, int, *std_core.QModelIndex) *std_core.QModelIndex)(signal))(int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(idx)))
 	}
@@ -4471,15 +4471,15 @@ func callbackHistoryModel8ba275_Sibling(ptr unsafe.Pointer, row C.int, column C.
 
 func (ptr *HistoryModel) SiblingDefault(row int, column int, idx std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275_SiblingDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(idx)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340_SiblingDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(idx)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackHistoryModel8ba275_Buddy
-func callbackHistoryModel8ba275_Buddy(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_Buddy
+func callbackHistoryModel742340_Buddy(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "buddy"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(*std_core.QModelIndex) *std_core.QModelIndex)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -4489,15 +4489,15 @@ func callbackHistoryModel8ba275_Buddy(ptr unsafe.Pointer, index unsafe.Pointer) 
 
 func (ptr *HistoryModel) BuddyDefault(index std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275_BuddyDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340_BuddyDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackHistoryModel8ba275_CanDropMimeData
-func callbackHistoryModel8ba275_CanDropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_CanDropMimeData
+func callbackHistoryModel742340_CanDropMimeData(ptr unsafe.Pointer, data unsafe.Pointer, action C.longlong, row C.int, column C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "canDropMimeData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QMimeData, std_core.Qt__DropAction, int, int, *std_core.QModelIndex) bool)(signal))(std_core.NewQMimeDataFromPointer(data), std_core.Qt__DropAction(action), int(int32(row)), int(int32(column)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4507,13 +4507,13 @@ func callbackHistoryModel8ba275_CanDropMimeData(ptr unsafe.Pointer, data unsafe.
 
 func (ptr *HistoryModel) CanDropMimeDataDefault(data std_core.QMimeData_ITF, action std_core.Qt__DropAction, row int, column int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_CanDropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_CanDropMimeDataDefault(ptr.Pointer(), std_core.PointerFromQMimeData(data), C.longlong(action), C.int(int32(row)), C.int(int32(column)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_CanFetchMore
-func callbackHistoryModel8ba275_CanFetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_CanFetchMore
+func callbackHistoryModel742340_CanFetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "canFetchMore"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex) bool)(signal))(std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4523,13 +4523,13 @@ func callbackHistoryModel8ba275_CanFetchMore(ptr unsafe.Pointer, parent unsafe.P
 
 func (ptr *HistoryModel) CanFetchMoreDefault(parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_CanFetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_CanFetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_ColumnCount
-func callbackHistoryModel8ba275_ColumnCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
+//export callbackHistoryModel742340_ColumnCount
+func callbackHistoryModel742340_ColumnCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "columnCount"); signal != nil {
 		return C.int(int32((*(*func(*std_core.QModelIndex) int)(signal))(std_core.NewQModelIndexFromPointer(parent))))
 	}
@@ -4539,61 +4539,61 @@ func callbackHistoryModel8ba275_ColumnCount(ptr unsafe.Pointer, parent unsafe.Po
 
 func (ptr *HistoryModel) ColumnCountDefault(parent std_core.QModelIndex_ITF) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_ColumnCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
+		return int(int32(C.HistoryModel742340_ColumnCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
 	}
 	return 0
 }
 
-//export callbackHistoryModel8ba275_ColumnsAboutToBeInserted
-func callbackHistoryModel8ba275_ColumnsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackHistoryModel742340_ColumnsAboutToBeInserted
+func callbackHistoryModel742340_ColumnsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsAboutToBeInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_ColumnsAboutToBeMoved
-func callbackHistoryModel8ba275_ColumnsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationColumn C.int) {
+//export callbackHistoryModel742340_ColumnsAboutToBeMoved
+func callbackHistoryModel742340_ColumnsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationColumn C.int) {
 	if signal := qt.GetSignal(ptr, "columnsAboutToBeMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceStart)), int(int32(sourceEnd)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationColumn)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_ColumnsAboutToBeRemoved
-func callbackHistoryModel8ba275_ColumnsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackHistoryModel742340_ColumnsAboutToBeRemoved
+func callbackHistoryModel742340_ColumnsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsAboutToBeRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_ColumnsInserted
-func callbackHistoryModel8ba275_ColumnsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackHistoryModel742340_ColumnsInserted
+func callbackHistoryModel742340_ColumnsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_ColumnsMoved
-func callbackHistoryModel8ba275_ColumnsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, column C.int) {
+//export callbackHistoryModel742340_ColumnsMoved
+func callbackHistoryModel742340_ColumnsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, column C.int) {
 	if signal := qt.GetSignal(ptr, "columnsMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(start)), int(int32(end)), std_core.NewQModelIndexFromPointer(destination), int(int32(column)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_ColumnsRemoved
-func callbackHistoryModel8ba275_ColumnsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackHistoryModel742340_ColumnsRemoved
+func callbackHistoryModel742340_ColumnsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "columnsRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_Data
-func callbackHistoryModel8ba275_Data(ptr unsafe.Pointer, index unsafe.Pointer, role C.int) unsafe.Pointer {
+//export callbackHistoryModel742340_Data
+func callbackHistoryModel742340_Data(ptr unsafe.Pointer, index unsafe.Pointer, role C.int) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "data"); signal != nil {
 		return std_core.PointerFromQVariant((*(*func(*std_core.QModelIndex, int) *std_core.QVariant)(signal))(std_core.NewQModelIndexFromPointer(index), int(int32(role))))
 	}
@@ -4603,15 +4603,15 @@ func callbackHistoryModel8ba275_Data(ptr unsafe.Pointer, index unsafe.Pointer, r
 
 func (ptr *HistoryModel) DataDefault(index std_core.QModelIndex_ITF, role int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel8ba275_DataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), C.int(int32(role))))
+		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel742340_DataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), C.int(int32(role))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackHistoryModel8ba275_DataChanged
-func callbackHistoryModel8ba275_DataChanged(ptr unsafe.Pointer, topLeft unsafe.Pointer, bottomRight unsafe.Pointer, roles C.struct_Moc_PackedList) {
+//export callbackHistoryModel742340_DataChanged
+func callbackHistoryModel742340_DataChanged(ptr unsafe.Pointer, topLeft unsafe.Pointer, bottomRight unsafe.Pointer, roles C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "dataChanged"); signal != nil {
 		(*(*func(*std_core.QModelIndex, *std_core.QModelIndex, []int))(signal))(std_core.NewQModelIndexFromPointer(topLeft), std_core.NewQModelIndexFromPointer(bottomRight), func(l C.struct_Moc_PackedList) []int {
 			out := make([]int, int(l.len))
@@ -4625,8 +4625,8 @@ func callbackHistoryModel8ba275_DataChanged(ptr unsafe.Pointer, topLeft unsafe.P
 
 }
 
-//export callbackHistoryModel8ba275_FetchMore
-func callbackHistoryModel8ba275_FetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) {
+//export callbackHistoryModel742340_FetchMore
+func callbackHistoryModel742340_FetchMore(ptr unsafe.Pointer, parent unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "fetchMore"); signal != nil {
 		(*(*func(*std_core.QModelIndex))(signal))(std_core.NewQModelIndexFromPointer(parent))
 	} else {
@@ -4636,12 +4636,12 @@ func callbackHistoryModel8ba275_FetchMore(ptr unsafe.Pointer, parent unsafe.Poin
 
 func (ptr *HistoryModel) FetchMoreDefault(parent std_core.QModelIndex_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_FetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))
+		C.HistoryModel742340_FetchMoreDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))
 	}
 }
 
-//export callbackHistoryModel8ba275_HasChildren
-func callbackHistoryModel8ba275_HasChildren(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_HasChildren
+func callbackHistoryModel742340_HasChildren(ptr unsafe.Pointer, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "hasChildren"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex) bool)(signal))(std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4651,13 +4651,13 @@ func callbackHistoryModel8ba275_HasChildren(ptr unsafe.Pointer, parent unsafe.Po
 
 func (ptr *HistoryModel) HasChildrenDefault(parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_HasChildrenDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_HasChildrenDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_HeaderData
-func callbackHistoryModel8ba275_HeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, role C.int) unsafe.Pointer {
+//export callbackHistoryModel742340_HeaderData
+func callbackHistoryModel742340_HeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, role C.int) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "headerData"); signal != nil {
 		return std_core.PointerFromQVariant((*(*func(int, std_core.Qt__Orientation, int) *std_core.QVariant)(signal))(int(int32(section)), std_core.Qt__Orientation(orientation), int(int32(role))))
 	}
@@ -4667,23 +4667,23 @@ func callbackHistoryModel8ba275_HeaderData(ptr unsafe.Pointer, section C.int, or
 
 func (ptr *HistoryModel) HeaderDataDefault(section int, orientation std_core.Qt__Orientation, role int) *std_core.QVariant {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel8ba275_HeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), C.int(int32(role))))
+		tmpValue := std_core.NewQVariantFromPointer(C.HistoryModel742340_HeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), C.int(int32(role))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackHistoryModel8ba275_HeaderDataChanged
-func callbackHistoryModel8ba275_HeaderDataChanged(ptr unsafe.Pointer, orientation C.longlong, first C.int, last C.int) {
+//export callbackHistoryModel742340_HeaderDataChanged
+func callbackHistoryModel742340_HeaderDataChanged(ptr unsafe.Pointer, orientation C.longlong, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "headerDataChanged"); signal != nil {
 		(*(*func(std_core.Qt__Orientation, int, int))(signal))(std_core.Qt__Orientation(orientation), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_InsertColumns
-func callbackHistoryModel8ba275_InsertColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_InsertColumns
+func callbackHistoryModel742340_InsertColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "insertColumns"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(column)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4693,13 +4693,13 @@ func callbackHistoryModel8ba275_InsertColumns(ptr unsafe.Pointer, column C.int, 
 
 func (ptr *HistoryModel) InsertColumnsDefault(column int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_InsertColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_InsertColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_InsertRows
-func callbackHistoryModel8ba275_InsertRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_InsertRows
+func callbackHistoryModel742340_InsertRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "insertRows"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(row)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4709,13 +4709,13 @@ func callbackHistoryModel8ba275_InsertRows(ptr unsafe.Pointer, row C.int, count 
 
 func (ptr *HistoryModel) InsertRowsDefault(row int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_InsertRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_InsertRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_ItemData
-func callbackHistoryModel8ba275_ItemData(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_ItemData
+func callbackHistoryModel742340_ItemData(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "itemData"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__itemData_newList())
@@ -4744,13 +4744,13 @@ func (ptr *HistoryModel) ItemDataDefault(index std_core.QModelIndex_ITF) map[int
 				out[v] = tmpList.__itemData_atList(v, i)
 			}
 			return out
-		}(C.HistoryModel8ba275_ItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		}(C.HistoryModel742340_ItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 	}
 	return make(map[int]*std_core.QVariant, 0)
 }
 
-//export callbackHistoryModel8ba275_LayoutAboutToBeChanged
-func callbackHistoryModel8ba275_LayoutAboutToBeChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
+//export callbackHistoryModel742340_LayoutAboutToBeChanged
+func callbackHistoryModel742340_LayoutAboutToBeChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
 	if signal := qt.GetSignal(ptr, "layoutAboutToBeChanged"); signal != nil {
 		(*(*func([]*std_core.QPersistentModelIndex, std_core.QAbstractItemModel__LayoutChangeHint))(signal))(func(l C.struct_Moc_PackedList) []*std_core.QPersistentModelIndex {
 			out := make([]*std_core.QPersistentModelIndex, int(l.len))
@@ -4764,8 +4764,8 @@ func callbackHistoryModel8ba275_LayoutAboutToBeChanged(ptr unsafe.Pointer, paren
 
 }
 
-//export callbackHistoryModel8ba275_LayoutChanged
-func callbackHistoryModel8ba275_LayoutChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
+//export callbackHistoryModel742340_LayoutChanged
+func callbackHistoryModel742340_LayoutChanged(ptr unsafe.Pointer, parents C.struct_Moc_PackedList, hint C.longlong) {
 	if signal := qt.GetSignal(ptr, "layoutChanged"); signal != nil {
 		(*(*func([]*std_core.QPersistentModelIndex, std_core.QAbstractItemModel__LayoutChangeHint))(signal))(func(l C.struct_Moc_PackedList) []*std_core.QPersistentModelIndex {
 			out := make([]*std_core.QPersistentModelIndex, int(l.len))
@@ -4779,8 +4779,8 @@ func callbackHistoryModel8ba275_LayoutChanged(ptr unsafe.Pointer, parents C.stru
 
 }
 
-//export callbackHistoryModel8ba275_Match
-func callbackHistoryModel8ba275_Match(ptr unsafe.Pointer, start unsafe.Pointer, role C.int, value unsafe.Pointer, hits C.int, flags C.longlong) unsafe.Pointer {
+//export callbackHistoryModel742340_Match
+func callbackHistoryModel742340_Match(ptr unsafe.Pointer, start unsafe.Pointer, role C.int, value unsafe.Pointer, hits C.int, flags C.longlong) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "match"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__match_newList())
@@ -4809,13 +4809,13 @@ func (ptr *HistoryModel) MatchDefault(start std_core.QModelIndex_ITF, role int, 
 				out[i] = tmpList.__match_atList(i)
 			}
 			return out
-		}(C.HistoryModel8ba275_MatchDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(start), C.int(int32(role)), std_core.PointerFromQVariant(value), C.int(int32(hits)), C.longlong(flags)))
+		}(C.HistoryModel742340_MatchDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(start), C.int(int32(role)), std_core.PointerFromQVariant(value), C.int(int32(hits)), C.longlong(flags)))
 	}
 	return make([]*std_core.QModelIndex, 0)
 }
 
-//export callbackHistoryModel8ba275_MimeData
-func callbackHistoryModel8ba275_MimeData(ptr unsafe.Pointer, indexes C.struct_Moc_PackedList) unsafe.Pointer {
+//export callbackHistoryModel742340_MimeData
+func callbackHistoryModel742340_MimeData(ptr unsafe.Pointer, indexes C.struct_Moc_PackedList) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "mimeData"); signal != nil {
 		return std_core.PointerFromQMimeData((*(*func([]*std_core.QModelIndex) *std_core.QMimeData)(signal))(func(l C.struct_Moc_PackedList) []*std_core.QModelIndex {
 			out := make([]*std_core.QModelIndex, int(l.len))
@@ -4839,7 +4839,7 @@ func callbackHistoryModel8ba275_MimeData(ptr unsafe.Pointer, indexes C.struct_Mo
 
 func (ptr *HistoryModel) MimeDataDefault(indexes []*std_core.QModelIndex) *std_core.QMimeData {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQMimeDataFromPointer(C.HistoryModel8ba275_MimeDataDefault(ptr.Pointer(), func() unsafe.Pointer {
+		tmpValue := std_core.NewQMimeDataFromPointer(C.HistoryModel742340_MimeDataDefault(ptr.Pointer(), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__mimeData_indexes_newList())
 			for _, v := range indexes {
 				tmpList.__mimeData_indexes_setList(v)
@@ -4854,8 +4854,8 @@ func (ptr *HistoryModel) MimeDataDefault(indexes []*std_core.QModelIndex) *std_c
 	return nil
 }
 
-//export callbackHistoryModel8ba275_MimeTypes
-func callbackHistoryModel8ba275_MimeTypes(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+//export callbackHistoryModel742340_MimeTypes
+func callbackHistoryModel742340_MimeTypes(ptr unsafe.Pointer) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "mimeTypes"); signal != nil {
 		tempVal := (*(*func() []string)(signal))()
 		return C.struct_Moc_PackedString{data: C.CString(strings.Join(tempVal, "¡¦!")), len: C.longlong(len(strings.Join(tempVal, "¡¦!")))}
@@ -4866,29 +4866,29 @@ func callbackHistoryModel8ba275_MimeTypes(ptr unsafe.Pointer) C.struct_Moc_Packe
 
 func (ptr *HistoryModel) MimeTypesDefault() []string {
 	if ptr.Pointer() != nil {
-		return unpackStringList(cGoUnpackString(C.HistoryModel8ba275_MimeTypesDefault(ptr.Pointer())))
+		return unpackStringList(cGoUnpackString(C.HistoryModel742340_MimeTypesDefault(ptr.Pointer())))
 	}
 	return make([]string, 0)
 }
 
-//export callbackHistoryModel8ba275_ModelAboutToBeReset
-func callbackHistoryModel8ba275_ModelAboutToBeReset(ptr unsafe.Pointer) {
+//export callbackHistoryModel742340_ModelAboutToBeReset
+func callbackHistoryModel742340_ModelAboutToBeReset(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "modelAboutToBeReset"); signal != nil {
 		(*(*func())(signal))()
 	}
 
 }
 
-//export callbackHistoryModel8ba275_ModelReset
-func callbackHistoryModel8ba275_ModelReset(ptr unsafe.Pointer) {
+//export callbackHistoryModel742340_ModelReset
+func callbackHistoryModel742340_ModelReset(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "modelReset"); signal != nil {
 		(*(*func())(signal))()
 	}
 
 }
 
-//export callbackHistoryModel8ba275_MoveColumns
-func callbackHistoryModel8ba275_MoveColumns(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceColumn C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
+//export callbackHistoryModel742340_MoveColumns
+func callbackHistoryModel742340_MoveColumns(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceColumn C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
 	if signal := qt.GetSignal(ptr, "moveColumns"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int) bool)(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceColumn)), int(int32(count)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationChild))))))
 	}
@@ -4898,13 +4898,13 @@ func callbackHistoryModel8ba275_MoveColumns(ptr unsafe.Pointer, sourceParent uns
 
 func (ptr *HistoryModel) MoveColumnsDefault(sourceParent std_core.QModelIndex_ITF, sourceColumn int, count int, destinationParent std_core.QModelIndex_ITF, destinationChild int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_MoveColumnsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceColumn)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
+		return int8(C.HistoryModel742340_MoveColumnsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceColumn)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_MoveRows
-func callbackHistoryModel8ba275_MoveRows(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceRow C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
+//export callbackHistoryModel742340_MoveRows
+func callbackHistoryModel742340_MoveRows(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceRow C.int, count C.int, destinationParent unsafe.Pointer, destinationChild C.int) C.char {
 	if signal := qt.GetSignal(ptr, "moveRows"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int) bool)(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceRow)), int(int32(count)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationChild))))))
 	}
@@ -4914,13 +4914,13 @@ func callbackHistoryModel8ba275_MoveRows(ptr unsafe.Pointer, sourceParent unsafe
 
 func (ptr *HistoryModel) MoveRowsDefault(sourceParent std_core.QModelIndex_ITF, sourceRow int, count int, destinationParent std_core.QModelIndex_ITF, destinationChild int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_MoveRowsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceRow)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
+		return int8(C.HistoryModel742340_MoveRowsDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(sourceParent), C.int(int32(sourceRow)), C.int(int32(count)), std_core.PointerFromQModelIndex(destinationParent), C.int(int32(destinationChild)))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_Parent
-func callbackHistoryModel8ba275_Parent(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_Parent
+func callbackHistoryModel742340_Parent(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "parent"); signal != nil {
 		return std_core.PointerFromQModelIndex((*(*func(*std_core.QModelIndex) *std_core.QModelIndex)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -4930,15 +4930,15 @@ func callbackHistoryModel8ba275_Parent(ptr unsafe.Pointer, index unsafe.Pointer)
 
 func (ptr *HistoryModel) ParentDefault(index std_core.QModelIndex_ITF) *std_core.QModelIndex {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel8ba275_ParentDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		tmpValue := std_core.NewQModelIndexFromPointer(C.HistoryModel742340_ParentDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QModelIndex).DestroyQModelIndex)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackHistoryModel8ba275_RemoveColumns
-func callbackHistoryModel8ba275_RemoveColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_RemoveColumns
+func callbackHistoryModel742340_RemoveColumns(ptr unsafe.Pointer, column C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "removeColumns"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(column)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4948,13 +4948,13 @@ func callbackHistoryModel8ba275_RemoveColumns(ptr unsafe.Pointer, column C.int, 
 
 func (ptr *HistoryModel) RemoveColumnsDefault(column int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_RemoveColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_RemoveColumnsDefault(ptr.Pointer(), C.int(int32(column)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_RemoveRows
-func callbackHistoryModel8ba275_RemoveRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_RemoveRows
+func callbackHistoryModel742340_RemoveRows(ptr unsafe.Pointer, row C.int, count C.int, parent unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "removeRows"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, int, *std_core.QModelIndex) bool)(signal))(int(int32(row)), int(int32(count)), std_core.NewQModelIndexFromPointer(parent)))))
 	}
@@ -4964,13 +4964,13 @@ func callbackHistoryModel8ba275_RemoveRows(ptr unsafe.Pointer, row C.int, count 
 
 func (ptr *HistoryModel) RemoveRowsDefault(row int, count int, parent std_core.QModelIndex_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_RemoveRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
+		return int8(C.HistoryModel742340_RemoveRowsDefault(ptr.Pointer(), C.int(int32(row)), C.int(int32(count)), std_core.PointerFromQModelIndex(parent))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_ResetInternalData
-func callbackHistoryModel8ba275_ResetInternalData(ptr unsafe.Pointer) {
+//export callbackHistoryModel742340_ResetInternalData
+func callbackHistoryModel742340_ResetInternalData(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "resetInternalData"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -4980,12 +4980,12 @@ func callbackHistoryModel8ba275_ResetInternalData(ptr unsafe.Pointer) {
 
 func (ptr *HistoryModel) ResetInternalDataDefault() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_ResetInternalDataDefault(ptr.Pointer())
+		C.HistoryModel742340_ResetInternalDataDefault(ptr.Pointer())
 	}
 }
 
-//export callbackHistoryModel8ba275_Revert
-func callbackHistoryModel8ba275_Revert(ptr unsafe.Pointer) {
+//export callbackHistoryModel742340_Revert
+func callbackHistoryModel742340_Revert(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "revert"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -4995,12 +4995,12 @@ func callbackHistoryModel8ba275_Revert(ptr unsafe.Pointer) {
 
 func (ptr *HistoryModel) RevertDefault() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_RevertDefault(ptr.Pointer())
+		C.HistoryModel742340_RevertDefault(ptr.Pointer())
 	}
 }
 
-//export callbackHistoryModel8ba275_RoleNames
-func callbackHistoryModel8ba275_RoleNames(ptr unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_RoleNames
+func callbackHistoryModel742340_RoleNames(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "roleNames"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__roleNames_newList())
@@ -5029,13 +5029,13 @@ func (ptr *HistoryModel) RoleNamesDefault() map[int]*std_core.QByteArray {
 				out[v] = tmpList.__roleNames_atList(v, i)
 			}
 			return out
-		}(C.HistoryModel8ba275_RoleNamesDefault(ptr.Pointer()))
+		}(C.HistoryModel742340_RoleNamesDefault(ptr.Pointer()))
 	}
 	return make(map[int]*std_core.QByteArray, 0)
 }
 
-//export callbackHistoryModel8ba275_RowCount
-func callbackHistoryModel8ba275_RowCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
+//export callbackHistoryModel742340_RowCount
+func callbackHistoryModel742340_RowCount(ptr unsafe.Pointer, parent unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "rowCount"); signal != nil {
 		return C.int(int32((*(*func(*std_core.QModelIndex) int)(signal))(std_core.NewQModelIndexFromPointer(parent))))
 	}
@@ -5045,61 +5045,61 @@ func callbackHistoryModel8ba275_RowCount(ptr unsafe.Pointer, parent unsafe.Point
 
 func (ptr *HistoryModel) RowCountDefault(parent std_core.QModelIndex_ITF) int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.HistoryModel8ba275_RowCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
+		return int(int32(C.HistoryModel742340_RowCountDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(parent))))
 	}
 	return 0
 }
 
-//export callbackHistoryModel8ba275_RowsAboutToBeInserted
-func callbackHistoryModel8ba275_RowsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int) {
+//export callbackHistoryModel742340_RowsAboutToBeInserted
+func callbackHistoryModel742340_RowsAboutToBeInserted(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int) {
 	if signal := qt.GetSignal(ptr, "rowsAboutToBeInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(start)), int(int32(end)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_RowsAboutToBeMoved
-func callbackHistoryModel8ba275_RowsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationRow C.int) {
+//export callbackHistoryModel742340_RowsAboutToBeMoved
+func callbackHistoryModel742340_RowsAboutToBeMoved(ptr unsafe.Pointer, sourceParent unsafe.Pointer, sourceStart C.int, sourceEnd C.int, destinationParent unsafe.Pointer, destinationRow C.int) {
 	if signal := qt.GetSignal(ptr, "rowsAboutToBeMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(sourceParent), int(int32(sourceStart)), int(int32(sourceEnd)), std_core.NewQModelIndexFromPointer(destinationParent), int(int32(destinationRow)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_RowsAboutToBeRemoved
-func callbackHistoryModel8ba275_RowsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackHistoryModel742340_RowsAboutToBeRemoved
+func callbackHistoryModel742340_RowsAboutToBeRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "rowsAboutToBeRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_RowsInserted
-func callbackHistoryModel8ba275_RowsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackHistoryModel742340_RowsInserted
+func callbackHistoryModel742340_RowsInserted(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "rowsInserted"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_RowsMoved
-func callbackHistoryModel8ba275_RowsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, row C.int) {
+//export callbackHistoryModel742340_RowsMoved
+func callbackHistoryModel742340_RowsMoved(ptr unsafe.Pointer, parent unsafe.Pointer, start C.int, end C.int, destination unsafe.Pointer, row C.int) {
 	if signal := qt.GetSignal(ptr, "rowsMoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int, *std_core.QModelIndex, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(start)), int(int32(end)), std_core.NewQModelIndexFromPointer(destination), int(int32(row)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_RowsRemoved
-func callbackHistoryModel8ba275_RowsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
+//export callbackHistoryModel742340_RowsRemoved
+func callbackHistoryModel742340_RowsRemoved(ptr unsafe.Pointer, parent unsafe.Pointer, first C.int, last C.int) {
 	if signal := qt.GetSignal(ptr, "rowsRemoved"); signal != nil {
 		(*(*func(*std_core.QModelIndex, int, int))(signal))(std_core.NewQModelIndexFromPointer(parent), int(int32(first)), int(int32(last)))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_SetData
-func callbackHistoryModel8ba275_SetData(ptr unsafe.Pointer, index unsafe.Pointer, value unsafe.Pointer, role C.int) C.char {
+//export callbackHistoryModel742340_SetData
+func callbackHistoryModel742340_SetData(ptr unsafe.Pointer, index unsafe.Pointer, value unsafe.Pointer, role C.int) C.char {
 	if signal := qt.GetSignal(ptr, "setData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, *std_core.QVariant, int) bool)(signal))(std_core.NewQModelIndexFromPointer(index), std_core.NewQVariantFromPointer(value), int(int32(role))))))
 	}
@@ -5109,13 +5109,13 @@ func callbackHistoryModel8ba275_SetData(ptr unsafe.Pointer, index unsafe.Pointer
 
 func (ptr *HistoryModel) SetDataDefault(index std_core.QModelIndex_ITF, value std_core.QVariant_ITF, role int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_SetDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
+		return int8(C.HistoryModel742340_SetDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_SetHeaderData
-func callbackHistoryModel8ba275_SetHeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, value unsafe.Pointer, role C.int) C.char {
+//export callbackHistoryModel742340_SetHeaderData
+func callbackHistoryModel742340_SetHeaderData(ptr unsafe.Pointer, section C.int, orientation C.longlong, value unsafe.Pointer, role C.int) C.char {
 	if signal := qt.GetSignal(ptr, "setHeaderData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(int, std_core.Qt__Orientation, *std_core.QVariant, int) bool)(signal))(int(int32(section)), std_core.Qt__Orientation(orientation), std_core.NewQVariantFromPointer(value), int(int32(role))))))
 	}
@@ -5125,13 +5125,13 @@ func callbackHistoryModel8ba275_SetHeaderData(ptr unsafe.Pointer, section C.int,
 
 func (ptr *HistoryModel) SetHeaderDataDefault(section int, orientation std_core.Qt__Orientation, value std_core.QVariant_ITF, role int) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_SetHeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
+		return int8(C.HistoryModel742340_SetHeaderDataDefault(ptr.Pointer(), C.int(int32(section)), C.longlong(orientation), std_core.PointerFromQVariant(value), C.int(int32(role)))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_SetItemData
-func callbackHistoryModel8ba275_SetItemData(ptr unsafe.Pointer, index unsafe.Pointer, roles C.struct_Moc_PackedList) C.char {
+//export callbackHistoryModel742340_SetItemData
+func callbackHistoryModel742340_SetItemData(ptr unsafe.Pointer, index unsafe.Pointer, roles C.struct_Moc_PackedList) C.char {
 	if signal := qt.GetSignal(ptr, "setItemData"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QModelIndex, map[int]*std_core.QVariant) bool)(signal))(std_core.NewQModelIndexFromPointer(index), func(l C.struct_Moc_PackedList) map[int]*std_core.QVariant {
 			out := make(map[int]*std_core.QVariant, int(l.len))
@@ -5155,7 +5155,7 @@ func callbackHistoryModel8ba275_SetItemData(ptr unsafe.Pointer, index unsafe.Poi
 
 func (ptr *HistoryModel) SetItemDataDefault(index std_core.QModelIndex_ITF, roles map[int]*std_core.QVariant) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_SetItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), func() unsafe.Pointer {
+		return int8(C.HistoryModel742340_SetItemDataDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index), func() unsafe.Pointer {
 			tmpList := NewHistoryModelFromPointer(NewHistoryModelFromPointer(nil).__setItemData_roles_newList())
 			for k, v := range roles {
 				tmpList.__setItemData_roles_setList(k, v)
@@ -5166,8 +5166,8 @@ func (ptr *HistoryModel) SetItemDataDefault(index std_core.QModelIndex_ITF, role
 	return false
 }
 
-//export callbackHistoryModel8ba275_Sort
-func callbackHistoryModel8ba275_Sort(ptr unsafe.Pointer, column C.int, order C.longlong) {
+//export callbackHistoryModel742340_Sort
+func callbackHistoryModel742340_Sort(ptr unsafe.Pointer, column C.int, order C.longlong) {
 	if signal := qt.GetSignal(ptr, "sort"); signal != nil {
 		(*(*func(int, std_core.Qt__SortOrder))(signal))(int(int32(column)), std_core.Qt__SortOrder(order))
 	} else {
@@ -5177,12 +5177,12 @@ func callbackHistoryModel8ba275_Sort(ptr unsafe.Pointer, column C.int, order C.l
 
 func (ptr *HistoryModel) SortDefault(column int, order std_core.Qt__SortOrder) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_SortDefault(ptr.Pointer(), C.int(int32(column)), C.longlong(order))
+		C.HistoryModel742340_SortDefault(ptr.Pointer(), C.int(int32(column)), C.longlong(order))
 	}
 }
 
-//export callbackHistoryModel8ba275_Span
-func callbackHistoryModel8ba275_Span(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
+//export callbackHistoryModel742340_Span
+func callbackHistoryModel742340_Span(ptr unsafe.Pointer, index unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "span"); signal != nil {
 		return std_core.PointerFromQSize((*(*func(*std_core.QModelIndex) *std_core.QSize)(signal))(std_core.NewQModelIndexFromPointer(index)))
 	}
@@ -5192,15 +5192,15 @@ func callbackHistoryModel8ba275_Span(ptr unsafe.Pointer, index unsafe.Pointer) u
 
 func (ptr *HistoryModel) SpanDefault(index std_core.QModelIndex_ITF) *std_core.QSize {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQSizeFromPointer(C.HistoryModel8ba275_SpanDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
+		tmpValue := std_core.NewQSizeFromPointer(C.HistoryModel742340_SpanDefault(ptr.Pointer(), std_core.PointerFromQModelIndex(index)))
 		runtime.SetFinalizer(tmpValue, (*std_core.QSize).DestroyQSize)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackHistoryModel8ba275_Submit
-func callbackHistoryModel8ba275_Submit(ptr unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_Submit
+func callbackHistoryModel742340_Submit(ptr unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "submit"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func() bool)(signal))())))
 	}
@@ -5210,13 +5210,13 @@ func callbackHistoryModel8ba275_Submit(ptr unsafe.Pointer) C.char {
 
 func (ptr *HistoryModel) SubmitDefault() bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_SubmitDefault(ptr.Pointer())) != 0
+		return int8(C.HistoryModel742340_SubmitDefault(ptr.Pointer())) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_SupportedDragActions
-func callbackHistoryModel8ba275_SupportedDragActions(ptr unsafe.Pointer) C.longlong {
+//export callbackHistoryModel742340_SupportedDragActions
+func callbackHistoryModel742340_SupportedDragActions(ptr unsafe.Pointer) C.longlong {
 	if signal := qt.GetSignal(ptr, "supportedDragActions"); signal != nil {
 		return C.longlong((*(*func() std_core.Qt__DropAction)(signal))())
 	}
@@ -5226,13 +5226,13 @@ func callbackHistoryModel8ba275_SupportedDragActions(ptr unsafe.Pointer) C.longl
 
 func (ptr *HistoryModel) SupportedDragActionsDefault() std_core.Qt__DropAction {
 	if ptr.Pointer() != nil {
-		return std_core.Qt__DropAction(C.HistoryModel8ba275_SupportedDragActionsDefault(ptr.Pointer()))
+		return std_core.Qt__DropAction(C.HistoryModel742340_SupportedDragActionsDefault(ptr.Pointer()))
 	}
 	return 0
 }
 
-//export callbackHistoryModel8ba275_SupportedDropActions
-func callbackHistoryModel8ba275_SupportedDropActions(ptr unsafe.Pointer) C.longlong {
+//export callbackHistoryModel742340_SupportedDropActions
+func callbackHistoryModel742340_SupportedDropActions(ptr unsafe.Pointer) C.longlong {
 	if signal := qt.GetSignal(ptr, "supportedDropActions"); signal != nil {
 		return C.longlong((*(*func() std_core.Qt__DropAction)(signal))())
 	}
@@ -5242,13 +5242,13 @@ func callbackHistoryModel8ba275_SupportedDropActions(ptr unsafe.Pointer) C.longl
 
 func (ptr *HistoryModel) SupportedDropActionsDefault() std_core.Qt__DropAction {
 	if ptr.Pointer() != nil {
-		return std_core.Qt__DropAction(C.HistoryModel8ba275_SupportedDropActionsDefault(ptr.Pointer()))
+		return std_core.Qt__DropAction(C.HistoryModel742340_SupportedDropActionsDefault(ptr.Pointer()))
 	}
 	return 0
 }
 
-//export callbackHistoryModel8ba275_ChildEvent
-func callbackHistoryModel8ba275_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackHistoryModel742340_ChildEvent
+func callbackHistoryModel742340_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
 		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
 	} else {
@@ -5258,12 +5258,12 @@ func callbackHistoryModel8ba275_ChildEvent(ptr unsafe.Pointer, event unsafe.Poin
 
 func (ptr *HistoryModel) ChildEventDefault(event std_core.QChildEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
+		C.HistoryModel742340_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
 	}
 }
 
-//export callbackHistoryModel8ba275_ConnectNotify
-func callbackHistoryModel8ba275_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackHistoryModel742340_ConnectNotify
+func callbackHistoryModel742340_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -5273,12 +5273,12 @@ func callbackHistoryModel8ba275_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Po
 
 func (ptr *HistoryModel) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.HistoryModel742340_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackHistoryModel8ba275_CustomEvent
-func callbackHistoryModel8ba275_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackHistoryModel742340_CustomEvent
+func callbackHistoryModel742340_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
 		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
 	} else {
@@ -5288,12 +5288,12 @@ func callbackHistoryModel8ba275_CustomEvent(ptr unsafe.Pointer, event unsafe.Poi
 
 func (ptr *HistoryModel) CustomEventDefault(event std_core.QEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
+		C.HistoryModel742340_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
 	}
 }
 
-//export callbackHistoryModel8ba275_DeleteLater
-func callbackHistoryModel8ba275_DeleteLater(ptr unsafe.Pointer) {
+//export callbackHistoryModel742340_DeleteLater
+func callbackHistoryModel742340_DeleteLater(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -5303,13 +5303,13 @@ func callbackHistoryModel8ba275_DeleteLater(ptr unsafe.Pointer) {
 
 func (ptr *HistoryModel) DeleteLaterDefault() {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DeleteLaterDefault(ptr.Pointer())
+		C.HistoryModel742340_DeleteLaterDefault(ptr.Pointer())
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackHistoryModel8ba275_Destroyed
-func callbackHistoryModel8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
+//export callbackHistoryModel742340_Destroyed
+func callbackHistoryModel742340_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
 		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
 	}
@@ -5317,8 +5317,8 @@ func callbackHistoryModel8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer
 
 }
 
-//export callbackHistoryModel8ba275_DisconnectNotify
-func callbackHistoryModel8ba275_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackHistoryModel742340_DisconnectNotify
+func callbackHistoryModel742340_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -5328,12 +5328,12 @@ func callbackHistoryModel8ba275_DisconnectNotify(ptr unsafe.Pointer, sign unsafe
 
 func (ptr *HistoryModel) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.HistoryModel742340_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackHistoryModel8ba275_Event
-func callbackHistoryModel8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_Event
+func callbackHistoryModel742340_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "event"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
 	}
@@ -5343,13 +5343,13 @@ func callbackHistoryModel8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.ch
 
 func (ptr *HistoryModel) EventDefault(e std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
+		return int8(C.HistoryModel742340_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_EventFilter
-func callbackHistoryModel8ba275_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
+//export callbackHistoryModel742340_EventFilter
+func callbackHistoryModel742340_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
 	}
@@ -5359,21 +5359,21 @@ func callbackHistoryModel8ba275_EventFilter(ptr unsafe.Pointer, watched unsafe.P
 
 func (ptr *HistoryModel) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.HistoryModel8ba275_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
+		return int8(C.HistoryModel742340_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
 	}
 	return false
 }
 
-//export callbackHistoryModel8ba275_ObjectNameChanged
-func callbackHistoryModel8ba275_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
+//export callbackHistoryModel742340_ObjectNameChanged
+func callbackHistoryModel742340_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(objectName))
 	}
 
 }
 
-//export callbackHistoryModel8ba275_TimerEvent
-func callbackHistoryModel8ba275_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackHistoryModel742340_TimerEvent
+func callbackHistoryModel742340_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
 		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
 	} else {
@@ -5383,7 +5383,7 @@ func callbackHistoryModel8ba275_TimerEvent(ptr unsafe.Pointer, event unsafe.Poin
 
 func (ptr *HistoryModel) TimerEventDefault(event std_core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.HistoryModel8ba275_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
+		C.HistoryModel742340_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
 	}
 }
 
@@ -5436,14 +5436,14 @@ func NewTransactionDetailsFromPointer(ptr unsafe.Pointer) (n *TransactionDetails
 	return
 }
 
-//export callbackTransactionDetails8ba275_Constructor
-func callbackTransactionDetails8ba275_Constructor(ptr unsafe.Pointer) {
+//export callbackTransactionDetails742340_Constructor
+func callbackTransactionDetails742340_Constructor(ptr unsafe.Pointer) {
 	this := NewTransactionDetailsFromPointer(ptr)
 	qt.Register(ptr, this)
 }
 
-//export callbackTransactionDetails8ba275_Date
-func callbackTransactionDetails8ba275_Date(ptr unsafe.Pointer) unsafe.Pointer {
+//export callbackTransactionDetails742340_Date
+func callbackTransactionDetails742340_Date(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "date"); signal != nil {
 		return std_core.PointerFromQDateTime((*(*func() *std_core.QDateTime)(signal))())
 	}
@@ -5475,7 +5475,7 @@ func (ptr *TransactionDetails) DisconnectDate() {
 
 func (ptr *TransactionDetails) Date() *std_core.QDateTime {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQDateTimeFromPointer(C.TransactionDetails8ba275_Date(ptr.Pointer()))
+		tmpValue := std_core.NewQDateTimeFromPointer(C.TransactionDetails742340_Date(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*std_core.QDateTime).DestroyQDateTime)
 		return tmpValue
 	}
@@ -5484,15 +5484,15 @@ func (ptr *TransactionDetails) Date() *std_core.QDateTime {
 
 func (ptr *TransactionDetails) DateDefault() *std_core.QDateTime {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQDateTimeFromPointer(C.TransactionDetails8ba275_DateDefault(ptr.Pointer()))
+		tmpValue := std_core.NewQDateTimeFromPointer(C.TransactionDetails742340_DateDefault(ptr.Pointer()))
 		runtime.SetFinalizer(tmpValue, (*std_core.QDateTime).DestroyQDateTime)
 		return tmpValue
 	}
 	return nil
 }
 
-//export callbackTransactionDetails8ba275_SetDate
-func callbackTransactionDetails8ba275_SetDate(ptr unsafe.Pointer, date unsafe.Pointer) {
+//export callbackTransactionDetails742340_SetDate
+func callbackTransactionDetails742340_SetDate(ptr unsafe.Pointer, date unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "setDate"); signal != nil {
 		(*(*func(*std_core.QDateTime))(signal))(std_core.NewQDateTimeFromPointer(date))
 	} else {
@@ -5524,18 +5524,18 @@ func (ptr *TransactionDetails) DisconnectSetDate() {
 
 func (ptr *TransactionDetails) SetDate(date std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetDate(ptr.Pointer(), std_core.PointerFromQDateTime(date))
+		C.TransactionDetails742340_SetDate(ptr.Pointer(), std_core.PointerFromQDateTime(date))
 	}
 }
 
 func (ptr *TransactionDetails) SetDateDefault(date std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetDateDefault(ptr.Pointer(), std_core.PointerFromQDateTime(date))
+		C.TransactionDetails742340_SetDateDefault(ptr.Pointer(), std_core.PointerFromQDateTime(date))
 	}
 }
 
-//export callbackTransactionDetails8ba275_DateChanged
-func callbackTransactionDetails8ba275_DateChanged(ptr unsafe.Pointer, date unsafe.Pointer) {
+//export callbackTransactionDetails742340_DateChanged
+func callbackTransactionDetails742340_DateChanged(ptr unsafe.Pointer, date unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "dateChanged"); signal != nil {
 		(*(*func(*std_core.QDateTime))(signal))(std_core.NewQDateTimeFromPointer(date))
 	}
@@ -5546,7 +5546,7 @@ func (ptr *TransactionDetails) ConnectDateChanged(f func(date *std_core.QDateTim
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "dateChanged") {
-			C.TransactionDetails8ba275_ConnectDateChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectDateChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "dateChanged"); signal != nil {
@@ -5563,19 +5563,19 @@ func (ptr *TransactionDetails) ConnectDateChanged(f func(date *std_core.QDateTim
 
 func (ptr *TransactionDetails) DisconnectDateChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectDateChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectDateChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "dateChanged")
 	}
 }
 
 func (ptr *TransactionDetails) DateChanged(date std_core.QDateTime_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DateChanged(ptr.Pointer(), std_core.PointerFromQDateTime(date))
+		C.TransactionDetails742340_DateChanged(ptr.Pointer(), std_core.PointerFromQDateTime(date))
 	}
 }
 
-//export callbackTransactionDetails8ba275_Status
-func callbackTransactionDetails8ba275_Status(ptr unsafe.Pointer) C.int {
+//export callbackTransactionDetails742340_Status
+func callbackTransactionDetails742340_Status(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "status"); signal != nil {
 		return C.int(int32((*(*func() int)(signal))()))
 	}
@@ -5607,20 +5607,20 @@ func (ptr *TransactionDetails) DisconnectStatus() {
 
 func (ptr *TransactionDetails) Status() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_Status(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_Status(ptr.Pointer())))
 	}
 	return 0
 }
 
 func (ptr *TransactionDetails) StatusDefault() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_StatusDefault(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_StatusDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
-//export callbackTransactionDetails8ba275_SetStatus
-func callbackTransactionDetails8ba275_SetStatus(ptr unsafe.Pointer, status C.int) {
+//export callbackTransactionDetails742340_SetStatus
+func callbackTransactionDetails742340_SetStatus(ptr unsafe.Pointer, status C.int) {
 	if signal := qt.GetSignal(ptr, "setStatus"); signal != nil {
 		(*(*func(int))(signal))(int(int32(status)))
 	} else {
@@ -5652,18 +5652,18 @@ func (ptr *TransactionDetails) DisconnectSetStatus() {
 
 func (ptr *TransactionDetails) SetStatus(status int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetStatus(ptr.Pointer(), C.int(int32(status)))
+		C.TransactionDetails742340_SetStatus(ptr.Pointer(), C.int(int32(status)))
 	}
 }
 
 func (ptr *TransactionDetails) SetStatusDefault(status int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetStatusDefault(ptr.Pointer(), C.int(int32(status)))
+		C.TransactionDetails742340_SetStatusDefault(ptr.Pointer(), C.int(int32(status)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_StatusChanged
-func callbackTransactionDetails8ba275_StatusChanged(ptr unsafe.Pointer, status C.int) {
+//export callbackTransactionDetails742340_StatusChanged
+func callbackTransactionDetails742340_StatusChanged(ptr unsafe.Pointer, status C.int) {
 	if signal := qt.GetSignal(ptr, "statusChanged"); signal != nil {
 		(*(*func(int))(signal))(int(int32(status)))
 	}
@@ -5674,7 +5674,7 @@ func (ptr *TransactionDetails) ConnectStatusChanged(f func(status int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "statusChanged") {
-			C.TransactionDetails8ba275_ConnectStatusChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectStatusChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "statusChanged"); signal != nil {
@@ -5691,19 +5691,19 @@ func (ptr *TransactionDetails) ConnectStatusChanged(f func(status int)) {
 
 func (ptr *TransactionDetails) DisconnectStatusChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectStatusChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectStatusChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "statusChanged")
 	}
 }
 
 func (ptr *TransactionDetails) StatusChanged(status int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_StatusChanged(ptr.Pointer(), C.int(int32(status)))
+		C.TransactionDetails742340_StatusChanged(ptr.Pointer(), C.int(int32(status)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_Type
-func callbackTransactionDetails8ba275_Type(ptr unsafe.Pointer) C.int {
+//export callbackTransactionDetails742340_Type
+func callbackTransactionDetails742340_Type(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "type"); signal != nil {
 		return C.int(int32((*(*func() int)(signal))()))
 	}
@@ -5735,20 +5735,20 @@ func (ptr *TransactionDetails) DisconnectType() {
 
 func (ptr *TransactionDetails) Type() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_Type(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_Type(ptr.Pointer())))
 	}
 	return 0
 }
 
 func (ptr *TransactionDetails) TypeDefault() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_TypeDefault(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_TypeDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
-//export callbackTransactionDetails8ba275_SetType
-func callbackTransactionDetails8ba275_SetType(ptr unsafe.Pointer, ty C.int) {
+//export callbackTransactionDetails742340_SetType
+func callbackTransactionDetails742340_SetType(ptr unsafe.Pointer, ty C.int) {
 	if signal := qt.GetSignal(ptr, "setType"); signal != nil {
 		(*(*func(int))(signal))(int(int32(ty)))
 	} else {
@@ -5780,18 +5780,18 @@ func (ptr *TransactionDetails) DisconnectSetType() {
 
 func (ptr *TransactionDetails) SetType(ty int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetType(ptr.Pointer(), C.int(int32(ty)))
+		C.TransactionDetails742340_SetType(ptr.Pointer(), C.int(int32(ty)))
 	}
 }
 
 func (ptr *TransactionDetails) SetTypeDefault(ty int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetTypeDefault(ptr.Pointer(), C.int(int32(ty)))
+		C.TransactionDetails742340_SetTypeDefault(ptr.Pointer(), C.int(int32(ty)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_TypeChanged
-func callbackTransactionDetails8ba275_TypeChanged(ptr unsafe.Pointer, ty C.int) {
+//export callbackTransactionDetails742340_TypeChanged
+func callbackTransactionDetails742340_TypeChanged(ptr unsafe.Pointer, ty C.int) {
 	if signal := qt.GetSignal(ptr, "typeChanged"); signal != nil {
 		(*(*func(int))(signal))(int(int32(ty)))
 	}
@@ -5802,7 +5802,7 @@ func (ptr *TransactionDetails) ConnectTypeChanged(f func(ty int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "typeChanged") {
-			C.TransactionDetails8ba275_ConnectTypeChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectTypeChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "typeChanged"); signal != nil {
@@ -5819,19 +5819,19 @@ func (ptr *TransactionDetails) ConnectTypeChanged(f func(ty int)) {
 
 func (ptr *TransactionDetails) DisconnectTypeChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectTypeChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectTypeChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "typeChanged")
 	}
 }
 
 func (ptr *TransactionDetails) TypeChanged(ty int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_TypeChanged(ptr.Pointer(), C.int(int32(ty)))
+		C.TransactionDetails742340_TypeChanged(ptr.Pointer(), C.int(int32(ty)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_Amount
-func callbackTransactionDetails8ba275_Amount(ptr unsafe.Pointer) C.int {
+//export callbackTransactionDetails742340_Amount
+func callbackTransactionDetails742340_Amount(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "amount"); signal != nil {
 		return C.int(int32((*(*func() int)(signal))()))
 	}
@@ -5863,20 +5863,20 @@ func (ptr *TransactionDetails) DisconnectAmount() {
 
 func (ptr *TransactionDetails) Amount() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_Amount(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_Amount(ptr.Pointer())))
 	}
 	return 0
 }
 
 func (ptr *TransactionDetails) AmountDefault() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_AmountDefault(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_AmountDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
-//export callbackTransactionDetails8ba275_SetAmount
-func callbackTransactionDetails8ba275_SetAmount(ptr unsafe.Pointer, amount C.int) {
+//export callbackTransactionDetails742340_SetAmount
+func callbackTransactionDetails742340_SetAmount(ptr unsafe.Pointer, amount C.int) {
 	if signal := qt.GetSignal(ptr, "setAmount"); signal != nil {
 		(*(*func(int))(signal))(int(int32(amount)))
 	} else {
@@ -5908,18 +5908,18 @@ func (ptr *TransactionDetails) DisconnectSetAmount() {
 
 func (ptr *TransactionDetails) SetAmount(amount int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetAmount(ptr.Pointer(), C.int(int32(amount)))
+		C.TransactionDetails742340_SetAmount(ptr.Pointer(), C.int(int32(amount)))
 	}
 }
 
 func (ptr *TransactionDetails) SetAmountDefault(amount int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetAmountDefault(ptr.Pointer(), C.int(int32(amount)))
+		C.TransactionDetails742340_SetAmountDefault(ptr.Pointer(), C.int(int32(amount)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_AmountChanged
-func callbackTransactionDetails8ba275_AmountChanged(ptr unsafe.Pointer, amount C.int) {
+//export callbackTransactionDetails742340_AmountChanged
+func callbackTransactionDetails742340_AmountChanged(ptr unsafe.Pointer, amount C.int) {
 	if signal := qt.GetSignal(ptr, "amountChanged"); signal != nil {
 		(*(*func(int))(signal))(int(int32(amount)))
 	}
@@ -5930,7 +5930,7 @@ func (ptr *TransactionDetails) ConnectAmountChanged(f func(amount int)) {
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "amountChanged") {
-			C.TransactionDetails8ba275_ConnectAmountChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectAmountChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "amountChanged"); signal != nil {
@@ -5947,19 +5947,19 @@ func (ptr *TransactionDetails) ConnectAmountChanged(f func(amount int)) {
 
 func (ptr *TransactionDetails) DisconnectAmountChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectAmountChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectAmountChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "amountChanged")
 	}
 }
 
 func (ptr *TransactionDetails) AmountChanged(amount int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_AmountChanged(ptr.Pointer(), C.int(int32(amount)))
+		C.TransactionDetails742340_AmountChanged(ptr.Pointer(), C.int(int32(amount)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_HoursReceived
-func callbackTransactionDetails8ba275_HoursReceived(ptr unsafe.Pointer) C.int {
+//export callbackTransactionDetails742340_HoursReceived
+func callbackTransactionDetails742340_HoursReceived(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "hoursReceived"); signal != nil {
 		return C.int(int32((*(*func() int)(signal))()))
 	}
@@ -5991,20 +5991,20 @@ func (ptr *TransactionDetails) DisconnectHoursReceived() {
 
 func (ptr *TransactionDetails) HoursReceived() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_HoursReceived(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_HoursReceived(ptr.Pointer())))
 	}
 	return 0
 }
 
 func (ptr *TransactionDetails) HoursReceivedDefault() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_HoursReceivedDefault(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_HoursReceivedDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
-//export callbackTransactionDetails8ba275_SetHoursReceived
-func callbackTransactionDetails8ba275_SetHoursReceived(ptr unsafe.Pointer, hoursReceived C.int) {
+//export callbackTransactionDetails742340_SetHoursReceived
+func callbackTransactionDetails742340_SetHoursReceived(ptr unsafe.Pointer, hoursReceived C.int) {
 	if signal := qt.GetSignal(ptr, "setHoursReceived"); signal != nil {
 		(*(*func(int))(signal))(int(int32(hoursReceived)))
 	} else {
@@ -6036,18 +6036,18 @@ func (ptr *TransactionDetails) DisconnectSetHoursReceived() {
 
 func (ptr *TransactionDetails) SetHoursReceived(hoursReceived int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetHoursReceived(ptr.Pointer(), C.int(int32(hoursReceived)))
+		C.TransactionDetails742340_SetHoursReceived(ptr.Pointer(), C.int(int32(hoursReceived)))
 	}
 }
 
 func (ptr *TransactionDetails) SetHoursReceivedDefault(hoursReceived int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetHoursReceivedDefault(ptr.Pointer(), C.int(int32(hoursReceived)))
+		C.TransactionDetails742340_SetHoursReceivedDefault(ptr.Pointer(), C.int(int32(hoursReceived)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_HoursReceivedChanged
-func callbackTransactionDetails8ba275_HoursReceivedChanged(ptr unsafe.Pointer, hoursReceived C.int) {
+//export callbackTransactionDetails742340_HoursReceivedChanged
+func callbackTransactionDetails742340_HoursReceivedChanged(ptr unsafe.Pointer, hoursReceived C.int) {
 	if signal := qt.GetSignal(ptr, "hoursReceivedChanged"); signal != nil {
 		(*(*func(int))(signal))(int(int32(hoursReceived)))
 	}
@@ -6058,7 +6058,7 @@ func (ptr *TransactionDetails) ConnectHoursReceivedChanged(f func(hoursReceived 
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "hoursReceivedChanged") {
-			C.TransactionDetails8ba275_ConnectHoursReceivedChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectHoursReceivedChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "hoursReceivedChanged"); signal != nil {
@@ -6075,19 +6075,19 @@ func (ptr *TransactionDetails) ConnectHoursReceivedChanged(f func(hoursReceived 
 
 func (ptr *TransactionDetails) DisconnectHoursReceivedChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectHoursReceivedChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectHoursReceivedChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "hoursReceivedChanged")
 	}
 }
 
 func (ptr *TransactionDetails) HoursReceivedChanged(hoursReceived int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_HoursReceivedChanged(ptr.Pointer(), C.int(int32(hoursReceived)))
+		C.TransactionDetails742340_HoursReceivedChanged(ptr.Pointer(), C.int(int32(hoursReceived)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_HoursBurned
-func callbackTransactionDetails8ba275_HoursBurned(ptr unsafe.Pointer) C.int {
+//export callbackTransactionDetails742340_HoursBurned
+func callbackTransactionDetails742340_HoursBurned(ptr unsafe.Pointer) C.int {
 	if signal := qt.GetSignal(ptr, "hoursBurned"); signal != nil {
 		return C.int(int32((*(*func() int)(signal))()))
 	}
@@ -6119,20 +6119,20 @@ func (ptr *TransactionDetails) DisconnectHoursBurned() {
 
 func (ptr *TransactionDetails) HoursBurned() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_HoursBurned(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_HoursBurned(ptr.Pointer())))
 	}
 	return 0
 }
 
 func (ptr *TransactionDetails) HoursBurnedDefault() int {
 	if ptr.Pointer() != nil {
-		return int(int32(C.TransactionDetails8ba275_HoursBurnedDefault(ptr.Pointer())))
+		return int(int32(C.TransactionDetails742340_HoursBurnedDefault(ptr.Pointer())))
 	}
 	return 0
 }
 
-//export callbackTransactionDetails8ba275_SetHoursBurned
-func callbackTransactionDetails8ba275_SetHoursBurned(ptr unsafe.Pointer, hoursBurned C.int) {
+//export callbackTransactionDetails742340_SetHoursBurned
+func callbackTransactionDetails742340_SetHoursBurned(ptr unsafe.Pointer, hoursBurned C.int) {
 	if signal := qt.GetSignal(ptr, "setHoursBurned"); signal != nil {
 		(*(*func(int))(signal))(int(int32(hoursBurned)))
 	} else {
@@ -6164,18 +6164,18 @@ func (ptr *TransactionDetails) DisconnectSetHoursBurned() {
 
 func (ptr *TransactionDetails) SetHoursBurned(hoursBurned int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetHoursBurned(ptr.Pointer(), C.int(int32(hoursBurned)))
+		C.TransactionDetails742340_SetHoursBurned(ptr.Pointer(), C.int(int32(hoursBurned)))
 	}
 }
 
 func (ptr *TransactionDetails) SetHoursBurnedDefault(hoursBurned int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_SetHoursBurnedDefault(ptr.Pointer(), C.int(int32(hoursBurned)))
+		C.TransactionDetails742340_SetHoursBurnedDefault(ptr.Pointer(), C.int(int32(hoursBurned)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_HoursBurnedChanged
-func callbackTransactionDetails8ba275_HoursBurnedChanged(ptr unsafe.Pointer, hoursBurned C.int) {
+//export callbackTransactionDetails742340_HoursBurnedChanged
+func callbackTransactionDetails742340_HoursBurnedChanged(ptr unsafe.Pointer, hoursBurned C.int) {
 	if signal := qt.GetSignal(ptr, "hoursBurnedChanged"); signal != nil {
 		(*(*func(int))(signal))(int(int32(hoursBurned)))
 	}
@@ -6186,7 +6186,7 @@ func (ptr *TransactionDetails) ConnectHoursBurnedChanged(f func(hoursBurned int)
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "hoursBurnedChanged") {
-			C.TransactionDetails8ba275_ConnectHoursBurnedChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectHoursBurnedChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "hoursBurnedChanged"); signal != nil {
@@ -6203,19 +6203,19 @@ func (ptr *TransactionDetails) ConnectHoursBurnedChanged(f func(hoursBurned int)
 
 func (ptr *TransactionDetails) DisconnectHoursBurnedChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectHoursBurnedChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectHoursBurnedChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "hoursBurnedChanged")
 	}
 }
 
 func (ptr *TransactionDetails) HoursBurnedChanged(hoursBurned int) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_HoursBurnedChanged(ptr.Pointer(), C.int(int32(hoursBurned)))
+		C.TransactionDetails742340_HoursBurnedChanged(ptr.Pointer(), C.int(int32(hoursBurned)))
 	}
 }
 
-//export callbackTransactionDetails8ba275_TransactionID
-func callbackTransactionDetails8ba275_TransactionID(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+//export callbackTransactionDetails742340_TransactionID
+func callbackTransactionDetails742340_TransactionID(ptr unsafe.Pointer) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "transactionID"); signal != nil {
 		tempVal := (*(*func() string)(signal))()
 		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
@@ -6248,20 +6248,20 @@ func (ptr *TransactionDetails) DisconnectTransactionID() {
 
 func (ptr *TransactionDetails) TransactionID() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_TransactionID(ptr.Pointer()))
+		return cGoUnpackString(C.TransactionDetails742340_TransactionID(ptr.Pointer()))
 	}
 	return ""
 }
 
 func (ptr *TransactionDetails) TransactionIDDefault() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_TransactionIDDefault(ptr.Pointer()))
+		return cGoUnpackString(C.TransactionDetails742340_TransactionIDDefault(ptr.Pointer()))
 	}
 	return ""
 }
 
-//export callbackTransactionDetails8ba275_SetTransactionID
-func callbackTransactionDetails8ba275_SetTransactionID(ptr unsafe.Pointer, transactionID C.struct_Moc_PackedString) {
+//export callbackTransactionDetails742340_SetTransactionID
+func callbackTransactionDetails742340_SetTransactionID(ptr unsafe.Pointer, transactionID C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "setTransactionID"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(transactionID))
 	} else {
@@ -6298,7 +6298,7 @@ func (ptr *TransactionDetails) SetTransactionID(transactionID string) {
 			transactionIDC = C.CString(transactionID)
 			defer C.free(unsafe.Pointer(transactionIDC))
 		}
-		C.TransactionDetails8ba275_SetTransactionID(ptr.Pointer(), C.struct_Moc_PackedString{data: transactionIDC, len: C.longlong(len(transactionID))})
+		C.TransactionDetails742340_SetTransactionID(ptr.Pointer(), C.struct_Moc_PackedString{data: transactionIDC, len: C.longlong(len(transactionID))})
 	}
 }
 
@@ -6309,12 +6309,12 @@ func (ptr *TransactionDetails) SetTransactionIDDefault(transactionID string) {
 			transactionIDC = C.CString(transactionID)
 			defer C.free(unsafe.Pointer(transactionIDC))
 		}
-		C.TransactionDetails8ba275_SetTransactionIDDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: transactionIDC, len: C.longlong(len(transactionID))})
+		C.TransactionDetails742340_SetTransactionIDDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: transactionIDC, len: C.longlong(len(transactionID))})
 	}
 }
 
-//export callbackTransactionDetails8ba275_TransactionIDChanged
-func callbackTransactionDetails8ba275_TransactionIDChanged(ptr unsafe.Pointer, transactionID C.struct_Moc_PackedString) {
+//export callbackTransactionDetails742340_TransactionIDChanged
+func callbackTransactionDetails742340_TransactionIDChanged(ptr unsafe.Pointer, transactionID C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "transactionIDChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(transactionID))
 	}
@@ -6325,7 +6325,7 @@ func (ptr *TransactionDetails) ConnectTransactionIDChanged(f func(transactionID 
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "transactionIDChanged") {
-			C.TransactionDetails8ba275_ConnectTransactionIDChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectTransactionIDChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "transactionIDChanged"); signal != nil {
@@ -6342,7 +6342,7 @@ func (ptr *TransactionDetails) ConnectTransactionIDChanged(f func(transactionID 
 
 func (ptr *TransactionDetails) DisconnectTransactionIDChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectTransactionIDChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectTransactionIDChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "transactionIDChanged")
 	}
 }
@@ -6354,12 +6354,12 @@ func (ptr *TransactionDetails) TransactionIDChanged(transactionID string) {
 			transactionIDC = C.CString(transactionID)
 			defer C.free(unsafe.Pointer(transactionIDC))
 		}
-		C.TransactionDetails8ba275_TransactionIDChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: transactionIDC, len: C.longlong(len(transactionID))})
+		C.TransactionDetails742340_TransactionIDChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: transactionIDC, len: C.longlong(len(transactionID))})
 	}
 }
 
-//export callbackTransactionDetails8ba275_SentAddress
-func callbackTransactionDetails8ba275_SentAddress(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+//export callbackTransactionDetails742340_SentAddress
+func callbackTransactionDetails742340_SentAddress(ptr unsafe.Pointer) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "sentAddress"); signal != nil {
 		tempVal := (*(*func() string)(signal))()
 		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
@@ -6392,20 +6392,20 @@ func (ptr *TransactionDetails) DisconnectSentAddress() {
 
 func (ptr *TransactionDetails) SentAddress() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_SentAddress(ptr.Pointer()))
+		return cGoUnpackString(C.TransactionDetails742340_SentAddress(ptr.Pointer()))
 	}
 	return ""
 }
 
 func (ptr *TransactionDetails) SentAddressDefault() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_SentAddressDefault(ptr.Pointer()))
+		return cGoUnpackString(C.TransactionDetails742340_SentAddressDefault(ptr.Pointer()))
 	}
 	return ""
 }
 
-//export callbackTransactionDetails8ba275_SetSentAddress
-func callbackTransactionDetails8ba275_SetSentAddress(ptr unsafe.Pointer, sentAddress C.struct_Moc_PackedString) {
+//export callbackTransactionDetails742340_SetSentAddress
+func callbackTransactionDetails742340_SetSentAddress(ptr unsafe.Pointer, sentAddress C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "setSentAddress"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(sentAddress))
 	} else {
@@ -6442,7 +6442,7 @@ func (ptr *TransactionDetails) SetSentAddress(sentAddress string) {
 			sentAddressC = C.CString(sentAddress)
 			defer C.free(unsafe.Pointer(sentAddressC))
 		}
-		C.TransactionDetails8ba275_SetSentAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: sentAddressC, len: C.longlong(len(sentAddress))})
+		C.TransactionDetails742340_SetSentAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: sentAddressC, len: C.longlong(len(sentAddress))})
 	}
 }
 
@@ -6453,12 +6453,12 @@ func (ptr *TransactionDetails) SetSentAddressDefault(sentAddress string) {
 			sentAddressC = C.CString(sentAddress)
 			defer C.free(unsafe.Pointer(sentAddressC))
 		}
-		C.TransactionDetails8ba275_SetSentAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: sentAddressC, len: C.longlong(len(sentAddress))})
+		C.TransactionDetails742340_SetSentAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: sentAddressC, len: C.longlong(len(sentAddress))})
 	}
 }
 
-//export callbackTransactionDetails8ba275_SentAddressChanged
-func callbackTransactionDetails8ba275_SentAddressChanged(ptr unsafe.Pointer, sentAddress C.struct_Moc_PackedString) {
+//export callbackTransactionDetails742340_SentAddressChanged
+func callbackTransactionDetails742340_SentAddressChanged(ptr unsafe.Pointer, sentAddress C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "sentAddressChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(sentAddress))
 	}
@@ -6469,7 +6469,7 @@ func (ptr *TransactionDetails) ConnectSentAddressChanged(f func(sentAddress stri
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "sentAddressChanged") {
-			C.TransactionDetails8ba275_ConnectSentAddressChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectSentAddressChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "sentAddressChanged"); signal != nil {
@@ -6486,7 +6486,7 @@ func (ptr *TransactionDetails) ConnectSentAddressChanged(f func(sentAddress stri
 
 func (ptr *TransactionDetails) DisconnectSentAddressChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectSentAddressChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectSentAddressChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "sentAddressChanged")
 	}
 }
@@ -6498,12 +6498,12 @@ func (ptr *TransactionDetails) SentAddressChanged(sentAddress string) {
 			sentAddressC = C.CString(sentAddress)
 			defer C.free(unsafe.Pointer(sentAddressC))
 		}
-		C.TransactionDetails8ba275_SentAddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: sentAddressC, len: C.longlong(len(sentAddress))})
+		C.TransactionDetails742340_SentAddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: sentAddressC, len: C.longlong(len(sentAddress))})
 	}
 }
 
-//export callbackTransactionDetails8ba275_ReceivedAddress
-func callbackTransactionDetails8ba275_ReceivedAddress(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+//export callbackTransactionDetails742340_ReceivedAddress
+func callbackTransactionDetails742340_ReceivedAddress(ptr unsafe.Pointer) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "receivedAddress"); signal != nil {
 		tempVal := (*(*func() string)(signal))()
 		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
@@ -6536,20 +6536,20 @@ func (ptr *TransactionDetails) DisconnectReceivedAddress() {
 
 func (ptr *TransactionDetails) ReceivedAddress() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_ReceivedAddress(ptr.Pointer()))
+		return cGoUnpackString(C.TransactionDetails742340_ReceivedAddress(ptr.Pointer()))
 	}
 	return ""
 }
 
 func (ptr *TransactionDetails) ReceivedAddressDefault() string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.TransactionDetails8ba275_ReceivedAddressDefault(ptr.Pointer()))
+		return cGoUnpackString(C.TransactionDetails742340_ReceivedAddressDefault(ptr.Pointer()))
 	}
 	return ""
 }
 
-//export callbackTransactionDetails8ba275_SetReceivedAddress
-func callbackTransactionDetails8ba275_SetReceivedAddress(ptr unsafe.Pointer, receivedAddress C.struct_Moc_PackedString) {
+//export callbackTransactionDetails742340_SetReceivedAddress
+func callbackTransactionDetails742340_SetReceivedAddress(ptr unsafe.Pointer, receivedAddress C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "setReceivedAddress"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(receivedAddress))
 	} else {
@@ -6586,7 +6586,7 @@ func (ptr *TransactionDetails) SetReceivedAddress(receivedAddress string) {
 			receivedAddressC = C.CString(receivedAddress)
 			defer C.free(unsafe.Pointer(receivedAddressC))
 		}
-		C.TransactionDetails8ba275_SetReceivedAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: receivedAddressC, len: C.longlong(len(receivedAddress))})
+		C.TransactionDetails742340_SetReceivedAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: receivedAddressC, len: C.longlong(len(receivedAddress))})
 	}
 }
 
@@ -6597,12 +6597,12 @@ func (ptr *TransactionDetails) SetReceivedAddressDefault(receivedAddress string)
 			receivedAddressC = C.CString(receivedAddress)
 			defer C.free(unsafe.Pointer(receivedAddressC))
 		}
-		C.TransactionDetails8ba275_SetReceivedAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: receivedAddressC, len: C.longlong(len(receivedAddress))})
+		C.TransactionDetails742340_SetReceivedAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: receivedAddressC, len: C.longlong(len(receivedAddress))})
 	}
 }
 
-//export callbackTransactionDetails8ba275_ReceivedAddressChanged
-func callbackTransactionDetails8ba275_ReceivedAddressChanged(ptr unsafe.Pointer, receivedAddress C.struct_Moc_PackedString) {
+//export callbackTransactionDetails742340_ReceivedAddressChanged
+func callbackTransactionDetails742340_ReceivedAddressChanged(ptr unsafe.Pointer, receivedAddress C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "receivedAddressChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(receivedAddress))
 	}
@@ -6613,7 +6613,7 @@ func (ptr *TransactionDetails) ConnectReceivedAddressChanged(f func(receivedAddr
 	if ptr.Pointer() != nil {
 
 		if !qt.ExistsSignal(ptr.Pointer(), "receivedAddressChanged") {
-			C.TransactionDetails8ba275_ConnectReceivedAddressChanged(ptr.Pointer())
+			C.TransactionDetails742340_ConnectReceivedAddressChanged(ptr.Pointer())
 		}
 
 		if signal := qt.LendSignal(ptr.Pointer(), "receivedAddressChanged"); signal != nil {
@@ -6630,7 +6630,7 @@ func (ptr *TransactionDetails) ConnectReceivedAddressChanged(f func(receivedAddr
 
 func (ptr *TransactionDetails) DisconnectReceivedAddressChanged() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectReceivedAddressChanged(ptr.Pointer())
+		C.TransactionDetails742340_DisconnectReceivedAddressChanged(ptr.Pointer())
 		qt.DisconnectSignal(ptr.Pointer(), "receivedAddressChanged")
 	}
 }
@@ -6642,16 +6642,16 @@ func (ptr *TransactionDetails) ReceivedAddressChanged(receivedAddress string) {
 			receivedAddressC = C.CString(receivedAddress)
 			defer C.free(unsafe.Pointer(receivedAddressC))
 		}
-		C.TransactionDetails8ba275_ReceivedAddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: receivedAddressC, len: C.longlong(len(receivedAddress))})
+		C.TransactionDetails742340_ReceivedAddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: receivedAddressC, len: C.longlong(len(receivedAddress))})
 	}
 }
 
 func TransactionDetails_QRegisterMetaType() int {
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType()))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QRegisterMetaType()))
 }
 
 func (ptr *TransactionDetails) QRegisterMetaType() int {
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType()))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QRegisterMetaType()))
 }
 
 func TransactionDetails_QRegisterMetaType2(typeName string) int {
@@ -6660,7 +6660,7 @@ func TransactionDetails_QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QRegisterMetaType2(typeNameC)))
 }
 
 func (ptr *TransactionDetails) QRegisterMetaType2(typeName string) int {
@@ -6669,15 +6669,15 @@ func (ptr *TransactionDetails) QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QRegisterMetaType2(typeNameC)))
 }
 
 func TransactionDetails_QmlRegisterType() int {
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType()))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QmlRegisterType()))
 }
 
 func (ptr *TransactionDetails) QmlRegisterType() int {
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType()))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QmlRegisterType()))
 }
 
 func TransactionDetails_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -6691,7 +6691,7 @@ func TransactionDetails_QmlRegisterType2(uri string, versionMajor int, versionMi
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *TransactionDetails) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -6705,12 +6705,12 @@ func (ptr *TransactionDetails) QmlRegisterType2(uri string, versionMajor int, ve
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.TransactionDetails8ba275_TransactionDetails8ba275_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.TransactionDetails742340_TransactionDetails742340_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *TransactionDetails) __children_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails8ba275___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails742340___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -6721,17 +6721,17 @@ func (ptr *TransactionDetails) __children_atList(i int) *std_core.QObject {
 
 func (ptr *TransactionDetails) __children_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.TransactionDetails742340___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *TransactionDetails) __children_newList() unsafe.Pointer {
-	return C.TransactionDetails8ba275___children_newList(ptr.Pointer())
+	return C.TransactionDetails742340___children_newList(ptr.Pointer())
 }
 
 func (ptr *TransactionDetails) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.TransactionDetails8ba275___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.TransactionDetails742340___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -6740,17 +6740,17 @@ func (ptr *TransactionDetails) __dynamicPropertyNames_atList(i int) *std_core.QB
 
 func (ptr *TransactionDetails) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
+		C.TransactionDetails742340___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *TransactionDetails) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return C.TransactionDetails8ba275___dynamicPropertyNames_newList(ptr.Pointer())
+	return C.TransactionDetails742340___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *TransactionDetails) __findChildren_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails8ba275___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails742340___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -6761,17 +6761,17 @@ func (ptr *TransactionDetails) __findChildren_atList(i int) *std_core.QObject {
 
 func (ptr *TransactionDetails) __findChildren_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.TransactionDetails742340___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *TransactionDetails) __findChildren_newList() unsafe.Pointer {
-	return C.TransactionDetails8ba275___findChildren_newList(ptr.Pointer())
+	return C.TransactionDetails742340___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *TransactionDetails) __findChildren_atList3(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails8ba275___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails742340___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -6782,17 +6782,17 @@ func (ptr *TransactionDetails) __findChildren_atList3(i int) *std_core.QObject {
 
 func (ptr *TransactionDetails) __findChildren_setList3(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.TransactionDetails742340___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *TransactionDetails) __findChildren_newList3() unsafe.Pointer {
-	return C.TransactionDetails8ba275___findChildren_newList3(ptr.Pointer())
+	return C.TransactionDetails742340___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *TransactionDetails) __qFindChildren_atList2(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails8ba275___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.TransactionDetails742340___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -6803,24 +6803,24 @@ func (ptr *TransactionDetails) __qFindChildren_atList2(i int) *std_core.QObject 
 
 func (ptr *TransactionDetails) __qFindChildren_setList2(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.TransactionDetails742340___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *TransactionDetails) __qFindChildren_newList2() unsafe.Pointer {
-	return C.TransactionDetails8ba275___qFindChildren_newList2(ptr.Pointer())
+	return C.TransactionDetails742340___qFindChildren_newList2(ptr.Pointer())
 }
 
 func NewTransactionDetails(parent std_core.QObject_ITF) *TransactionDetails {
-	tmpValue := NewTransactionDetailsFromPointer(C.TransactionDetails8ba275_NewTransactionDetails(std_core.PointerFromQObject(parent)))
+	tmpValue := NewTransactionDetailsFromPointer(C.TransactionDetails742340_NewTransactionDetails(std_core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 	}
 	return tmpValue
 }
 
-//export callbackTransactionDetails8ba275_DestroyTransactionDetails
-func callbackTransactionDetails8ba275_DestroyTransactionDetails(ptr unsafe.Pointer) {
+//export callbackTransactionDetails742340_DestroyTransactionDetails
+func callbackTransactionDetails742340_DestroyTransactionDetails(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~TransactionDetails"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -6852,7 +6852,7 @@ func (ptr *TransactionDetails) DisconnectDestroyTransactionDetails() {
 
 func (ptr *TransactionDetails) DestroyTransactionDetails() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DestroyTransactionDetails(ptr.Pointer())
+		C.TransactionDetails742340_DestroyTransactionDetails(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
@@ -6860,14 +6860,14 @@ func (ptr *TransactionDetails) DestroyTransactionDetails() {
 
 func (ptr *TransactionDetails) DestroyTransactionDetailsDefault() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DestroyTransactionDetailsDefault(ptr.Pointer())
+		C.TransactionDetails742340_DestroyTransactionDetailsDefault(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackTransactionDetails8ba275_ChildEvent
-func callbackTransactionDetails8ba275_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackTransactionDetails742340_ChildEvent
+func callbackTransactionDetails742340_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
 		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
 	} else {
@@ -6877,12 +6877,12 @@ func callbackTransactionDetails8ba275_ChildEvent(ptr unsafe.Pointer, event unsaf
 
 func (ptr *TransactionDetails) ChildEventDefault(event std_core.QChildEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
+		C.TransactionDetails742340_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
 	}
 }
 
-//export callbackTransactionDetails8ba275_ConnectNotify
-func callbackTransactionDetails8ba275_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackTransactionDetails742340_ConnectNotify
+func callbackTransactionDetails742340_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -6892,12 +6892,12 @@ func callbackTransactionDetails8ba275_ConnectNotify(ptr unsafe.Pointer, sign uns
 
 func (ptr *TransactionDetails) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.TransactionDetails742340_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackTransactionDetails8ba275_CustomEvent
-func callbackTransactionDetails8ba275_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackTransactionDetails742340_CustomEvent
+func callbackTransactionDetails742340_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
 		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
 	} else {
@@ -6907,12 +6907,12 @@ func callbackTransactionDetails8ba275_CustomEvent(ptr unsafe.Pointer, event unsa
 
 func (ptr *TransactionDetails) CustomEventDefault(event std_core.QEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
+		C.TransactionDetails742340_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
 	}
 }
 
-//export callbackTransactionDetails8ba275_DeleteLater
-func callbackTransactionDetails8ba275_DeleteLater(ptr unsafe.Pointer) {
+//export callbackTransactionDetails742340_DeleteLater
+func callbackTransactionDetails742340_DeleteLater(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -6922,13 +6922,13 @@ func callbackTransactionDetails8ba275_DeleteLater(ptr unsafe.Pointer) {
 
 func (ptr *TransactionDetails) DeleteLaterDefault() {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DeleteLaterDefault(ptr.Pointer())
+		C.TransactionDetails742340_DeleteLaterDefault(ptr.Pointer())
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackTransactionDetails8ba275_Destroyed
-func callbackTransactionDetails8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
+//export callbackTransactionDetails742340_Destroyed
+func callbackTransactionDetails742340_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
 		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
 	}
@@ -6936,8 +6936,8 @@ func callbackTransactionDetails8ba275_Destroyed(ptr unsafe.Pointer, obj unsafe.P
 
 }
 
-//export callbackTransactionDetails8ba275_DisconnectNotify
-func callbackTransactionDetails8ba275_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackTransactionDetails742340_DisconnectNotify
+func callbackTransactionDetails742340_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -6947,12 +6947,12 @@ func callbackTransactionDetails8ba275_DisconnectNotify(ptr unsafe.Pointer, sign 
 
 func (ptr *TransactionDetails) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.TransactionDetails742340_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackTransactionDetails8ba275_Event
-func callbackTransactionDetails8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
+//export callbackTransactionDetails742340_Event
+func callbackTransactionDetails742340_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "event"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
 	}
@@ -6962,13 +6962,13 @@ func callbackTransactionDetails8ba275_Event(ptr unsafe.Pointer, e unsafe.Pointer
 
 func (ptr *TransactionDetails) EventDefault(e std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.TransactionDetails8ba275_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
+		return int8(C.TransactionDetails742340_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
 	}
 	return false
 }
 
-//export callbackTransactionDetails8ba275_EventFilter
-func callbackTransactionDetails8ba275_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
+//export callbackTransactionDetails742340_EventFilter
+func callbackTransactionDetails742340_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
 	}
@@ -6978,21 +6978,21 @@ func callbackTransactionDetails8ba275_EventFilter(ptr unsafe.Pointer, watched un
 
 func (ptr *TransactionDetails) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.TransactionDetails8ba275_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
+		return int8(C.TransactionDetails742340_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
 	}
 	return false
 }
 
-//export callbackTransactionDetails8ba275_ObjectNameChanged
-func callbackTransactionDetails8ba275_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
+//export callbackTransactionDetails742340_ObjectNameChanged
+func callbackTransactionDetails742340_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(objectName))
 	}
 
 }
 
-//export callbackTransactionDetails8ba275_TimerEvent
-func callbackTransactionDetails8ba275_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackTransactionDetails742340_TimerEvent
+func callbackTransactionDetails742340_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
 		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
 	} else {
@@ -7002,6 +7002,6 @@ func callbackTransactionDetails8ba275_TimerEvent(ptr unsafe.Pointer, event unsaf
 
 func (ptr *TransactionDetails) TimerEventDefault(event std_core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.TransactionDetails8ba275_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
+		C.TransactionDetails742340_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
 	}
 }
