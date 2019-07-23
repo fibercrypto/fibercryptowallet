@@ -4,7 +4,8 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
-import "qrc:/ui/src/ui/Dialogs"
+// import "qrc:/ui/src/ui/Dialogs"
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: root

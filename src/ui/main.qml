@@ -2,14 +2,16 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 // Resource imports
-import "qrc:/ui/src/ui/"
-import "qrc:/ui/src/ui/Dialogs"
+// import "qrc:/ui/src/ui/"
+// import "qrc:/ui/src/ui/Dialogs"
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
 ApplicationWindow {
+    id: applicationWindow
     visible: true
     width: 680
     height: 580
-    title: qsTr("FiberCrypto Wallet")
+    title: Qt.application.name + ' v' + Qt.application.version
 
     menuBar: MenuBar {
         clip: true
