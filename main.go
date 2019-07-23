@@ -24,7 +24,9 @@ func main() {
 	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/code-new-roman/code-new-roman.otf")
 
 	engine := qml.NewQQmlApplicationEngine(nil)
-	url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
+	// To speed up UI development, loading QML files from resources is disabled, but it must be re-enabled in order to make a release
+	// url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
+	url := core.NewQUrl3("src/ui/main.qml", 0) // disable this to make a release
 
 	// TODO: Find a way to use a `core.Qt__QueuedConnection`, so we can remove the flag `allOk`
 	allOk := true
