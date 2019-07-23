@@ -17,6 +17,8 @@ Dialog {
     property alias hoursReceived: transactionDetails.hoursReceived
     property alias hoursBurned: transactionDetails.hoursBurned
     property alias transactionID: transactionDetails.transactionID
+    property alias modelInputs: transactionDetails.modelInputs
+    property alias modelOutputs: transactionDetails.modelOutputs
 
     title: qsTr("Transaction details")
 
