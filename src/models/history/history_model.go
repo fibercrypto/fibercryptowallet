@@ -119,5 +119,9 @@ func (hm *HistoryModel) addExamples() {
 	td.SetTransactionID("transactionID")
 	td.SetSentAddress("addrexample1")
 	td.SetReceivedAddress("addrexample2")
+	inputs := NewAddressList(nil)
+	inputs.removeAddress(0)
+	td.SetInputs(inputs)
+	td.SetOutputs(NewAddressList(nil))
 	hm.addTransaction(td)
 }

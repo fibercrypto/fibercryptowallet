@@ -39,4 +39,6 @@ type TransactionDetails struct {
 	_ string          `property:"transactionID"`
 	_ string          `property:"sentAddress"`
 	_ string          `property:"receivedAddress"`
+	_ *AddressList    `property:"inputs"`
+	_ *AddressList    `property:"outputs"`
 }
