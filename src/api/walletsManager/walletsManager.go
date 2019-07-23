@@ -22,17 +22,17 @@ func init() {
 
 
 
-//Return address of daemon node----INCOMPLETE
+//Return address of daemon node----TODO
 func nodeAddress() string {
 	return "http://127.0.0.1:38391"
 }
 
-//Return username of daemon node----INCOMPLETE
+//Return username of daemon node----TODO
 func nodeUsername() string {
 	return "Kid"
 }
 
-//Return password of daemon node-----INCOMPLETE
+//Return password of daemon node-----TODO
 func nodePassword() string {
 	return "P@ssw0rd!"
 }
