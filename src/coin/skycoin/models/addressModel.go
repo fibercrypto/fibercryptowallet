@@ -1,7 +1,8 @@
-package walletsManager
+package models
 
 import (
 		"github.com/therecipe/qt/core"
+		"github.com/FiberCryptoWallet/src/util"
 		
 )
 
@@ -25,7 +26,7 @@ type AddressesModel struct{
 
 	_ func(*QAddress)	`slot:"addAddress"`
 	_ func(int)	`slot:"removeAddress"`
-	_ func(int, string, int, int)	`slot:"editAddress"`
+	_ func(int, string, uint64, uint64)	`slot:"editAddress"`
 	_ func(string)	`slot:"loadModel"`
 
 
@@ -119,7 +120,7 @@ func (m *AddressesModel) removeAddress(row int) {
 	m.EndRemoveRows()
 }
 
-func (m *AddressesModel) editAddress(row int, address string, sky, coinHours int){
+func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64){
 	a := m.Addresses()[row]
 	a.SetAddress(address)
 	a.SetAddressSky(sky)
@@ -150,7 +151,7 @@ func (m *AddressesModel) loadModel(wallet string){
 }
 
 func getQAddresses(wallet string) ([]*QAddress, error) {
-	c := newClient()
+	c := util.newClient()
 	wlt, err := c.Wallet(wallet)
 	if err != nil {
 		return nil, err

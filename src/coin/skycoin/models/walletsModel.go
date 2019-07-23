@@ -1,8 +1,9 @@
-package walletsManager
+package models
 
 import (
 	"github.com/therecipe/qt/core"
 	"github.com/skycoin/skycoin/src/api"
+	"github.com/FiberCryptoWallet/src/util"
 	
 	
 )
@@ -158,7 +159,7 @@ func (m *WalletModel) removeWallet(row int) {
 
 
 func getWalletsModel() ([]*QWallet, error) {
-	c := newClient()
+	c := util.newClient()
 	wallets, err := c.Wallets()
 	if err != nil {
 		return nil, err
@@ -176,28 +177,6 @@ func getWalletsModel() ([]*QWallet, error) {
 	
 }
 
-func getWalletsModelTest() ([]*QWallet, error){
-
-	walletsModel := make([]*QWallet, 0)
-	wlt := NewQWallet(nil)
-	wlt.SetName("Kid's Wallet")
-	wlt.SetEncryptionEnabled(0)
-	wlt.SetSky(200)
-	wlt.SetCoinHours(1000)
-	walletsModel  = append(walletsModel, wlt)
-
-	wlt2 := NewQWallet(nil)
-	wlt2.SetName("Adri's Wallet")
-	wlt2.SetEncryptionEnabled(1)
-	wlt2.SetSky(2000)
-	wlt2.SetCoinHours(1000)
-	walletsModel  = append(walletsModel, wlt2)
-
-
-
-	return walletsModel, nil
-}
-
 func (m *WalletModel) loadModel() {
 	wltsModels, err := getWalletsModel()
 	if err != nil {
@@ -209,7 +188,7 @@ func (m *WalletModel) loadModel() {
 }
 
 func walletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error){
-	c := newClient()
+	c := util.newClient()
 	qwallet := NewQWallet(nil)
 	qwallet.SetFileName(wr.Meta.Filename)
 	qwallet.SetName(wr.Meta.Label)
@@ -221,8 +200,8 @@ func walletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error){
 	if err != nil{
 		return nil, err
 	}
-	qwallet.SetSky(int(bl.Confirmed.Coins))
-	qwallet.SetCoinHours(int(bl.Confirmed.Hours))
+	qwallet.SetSky(bl.Confirmed.Coins)
+	qwallet.SetCoinHours(bl.Confirmed.Hours)
 	return qwallet, nil
 	
 }

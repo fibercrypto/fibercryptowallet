@@ -7,7 +7,7 @@ import (
 	//"github.com/therecipe/qt/quick"
 	//"github.com/therecipe/qt/widgets"
 	"os"
-	_ "github.com/FiberCryptoWallet/src/api/walletsManager"
+	_ "github.com/FiberCryptoWallet/src/coin/skycoin/api/walletsManager"
 )
 
 func main() {
