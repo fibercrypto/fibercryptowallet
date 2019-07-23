@@ -22,6 +22,7 @@ ApplicationWindow {
             title: qsTr("&Tools")
             MenuItem { text: qsTr("Outputs") }
             MenuItem { text: qsTr("Blockchain"); onClicked: general.openBlockchainPage() }
+            MenuItem { text: qsTr("Networking"); onClicked: general.openNetworkingPage() }
         }
         Menu {
             id: menuHelp
