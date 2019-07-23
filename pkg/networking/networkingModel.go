@@ -20,6 +20,9 @@ type networkingModel struct {
 	_ func()	`constructor:"init"`
 	_ map[int]*core.QByteArray	`property:"roles"`
 	_ []*QConnection	`property:"connections"`
+
+	
+	_ func()	`slot:"loadModel"`
 	
 }
 
@@ -35,6 +38,10 @@ func (m *networkingModel) init(){
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
 	m.ConnectRoles(m.roles)
+
+	m.ConnectLoadModel(m.loadModel)
+
+	m.loadModel()
 }
 
 func (m *networkingModel) data(index *core.QModelIndex, role int) *core.QVariant{
