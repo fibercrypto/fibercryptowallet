@@ -36,8 +36,8 @@ type QAddress struct{
 	core.QObject
 
 	_ string `property:"address"`
-	_ int	`property:"addressSky"`
-	_ int	`property:"addressCoinHours"`
+	_ uint64	`property:"addressSky"`
+	_ uint64	`property:"addressCoinHours"`
 }
 
 func (m *AddressesModel) init(){
@@ -166,8 +166,8 @@ func getQAddresses(wallet string) ([]*QAddress, error) {
 		if err != nil {
 			return nil, err
 		}
-		address.SetAddressSky(int(bl.Confirmed.Coins))
-		address.SetAddressCoinHours(int(bl.Confirmed.Hours))
+		address.SetAddressSky(bl.Confirmed.Coins)
+		address.SetAddressCoinHours(bl.Confirmed.Hours)
 		Qaddresses = append(Qaddresses, address)
 	}
 
