@@ -12,6 +12,8 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 Page {
     id: root
 
+    signal backRequested()
+
     header: RowLayout {
         spacing: 20
         ToolButton {
@@ -45,6 +47,12 @@ Page {
 
             model: modelNetworking
             delegate: NetworkingListDelegate {
+                modelIp: ip
+                modelPort: port
+                modelSource: source
+                modelBlock: block
+                modelLastSeenIn: lastSeenIn
+                modelLastSeenOut: lastSeenOut
             }
         }
     } // Frame
@@ -53,6 +61,8 @@ Page {
     // Implement the model in the backend (a more recommendable approach)
     ListModel { // EXAMPLE
         id: modelNetworking
-        ListElement { ip: "0.0.0.0."; port: "0"; source: "Default peer"; block: 0; lastSeenIn: ""; lastSeenOut: "" }
+        ListElement { ip: "192.168.137.1"; port: "8080"; source: qsTr("Default peer"); block: 17700; lastSeenIn: "a few seconds ago"; lastSeenOut: "two minutes ago" }
+        ListElement { ip: "255.255.255.255"; port: "65535"; source: qsTr("Default peer"); block: 60978432; lastSeenIn: "a few seconds ago"; lastSeenOut: "a few seconds ago" }
+        ListElement { ip: "192.168.137.3"; port: "5"; source: qsTr("Default peer"); block: 500; lastSeenIn: "4 days ago"; lastSeenOut: "one day ago" }
     }
 }

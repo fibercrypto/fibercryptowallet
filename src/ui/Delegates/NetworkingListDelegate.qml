@@ -10,17 +10,16 @@ import "../" // For quick UI development, switch back to resources when making a
 ItemDelegate {
     id: root
 
-    property date modelDate: date
-    property int modelType: type
-    property int modelStatus: status
-    property var modelStatusString: [ qsTr("Confirmed"), qsTr("Pending"), qsTr("Preview") ]
-    property real modelAmount: amount
-    property int modelHoursReceived: hoursReceived
-    property int modelHoursBurned: hoursBurned
-    property string modelTransactionID
+    property string modelIp: "0.0.0.0"
+    property int modelPort: 0
+    property string modelSource: qsTr("Default peer")
+    property int modelBlock: 0
+    property string modelLastSeenIn
+    property string modelLastSeenOut
+    
 
-    implicitWidth: parent.width
-    implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
+    width: parent.width
+    height: columnLayoutLastSeen.height + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
 
     RowLayout {
         id: rowLayoutRoot
@@ -36,66 +35,57 @@ ItemDelegate {
             source: "qrc:/images/resources/images/icons/send-blue.svg"
             sourceSize: "32x32"
             fillMode: Image.PreserveAspectFit
-            mirror: modelType === TransactionDetails.Type.Receive
-            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+        }
+
+        Label {
+            Material.foreground: Material.Grey
+            text: modelIp + ':' + modelPort // model's roles
+            Layout.fillWidth: true
+            Layout.minimumWidth: 160
+        }
+
+        Label {
+            text: modelSource // model's role
+            Layout.preferredWidth: 100
+        }
+
+        Label {
+            text: modelBlock // model's role
+            Layout.preferredWidth: 80
         }
 
         ColumnLayout {
-            id: columnLayoutMainContent
-            Layout.fillWidth: true
-            Layout.alignment: Qt.AlignTop
+            id: columnLayoutLastSeen
+            Layout.preferredWidth: 160
+            spacing: 0
 
             RowLayout {
-                spacing: 20
-                Layout.fillWidth: true
-
-                Label {
-                    font.bold: true
-                    text: (modelType === TransactionDetails.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
+                Image {
+                    source: "qrc:/images/resources/images/icons/up.svg"
+                    sourceSize: Qt.size(labelLastSeenOut.font.pixelSize, labelLastSeenOut.font.pixelSize)
+                    fillMode: Image.PreserveAspectFit
                 }
-
                 Label {
-                    Material.foreground: Material.Grey
-                    text: modelDate // model's role
-                    font.pointSize: Qt.application.font.pointSize * 0.9
+                    id: labelLastSeenOut
+                    text: modelLastSeenOut // model's role
                 }
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             }
 
-            ColumnLayout {
-                RowLayout {
-                    id: rowLayoutSent
-                    visible: modelType === TransactionDetails.Type.Send
-                    Image {
-                        source: "qrc:/images/resources/images/icons/qr.svg"
-                        sourceSize: "24x24"
-                    }
-                    Label {
-                        text: sentAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
+            RowLayout {
+                Image {
+                    source: "qrc:/images/resources/images/icons/down.svg"
+                    sourceSize: Qt.size(labelLastSeenIn.font.pixelSize, labelLastSeenIn.font.pixelSize)
+                    fillMode: Image.PreserveAspectFit
                 }
-                RowLayout {
-                    id: rowLayoutReceive
-                    Image {
-                        source: "qrc:/images/resources/images/icons/qr.svg"
-                        sourceSize: "24x24"
-                    }
-                    Label {
-                        text: receivedAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
+                Label {
+                    id: labelLastSeenIn
+                    text: modelLastSeenIn // model's role
                 }
-            } // ColumnLayout (addresses)
-        } // ColumnLayout (main content)
-
-        Label {
-            text: (modelType === TransactionDetails.Type.Receive ? "" : "-") + amount + " SKY" // model's role
-            font.pointSize: Qt.application.font.pointSize * 1.25
-            font.bold: true
-            Layout.alignment: Qt.AlignTop | Qt.AlignRight
-        }
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            }
+        } // ColumnLayout
 
     } // RowLayout (root)
 }
