@@ -57,7 +57,6 @@ Page {
                 id: columnLayoutBlockDetails
                 anchors.fill: parent
                 spacing: 20
-                Material.foreground: Material.Grey
 
                 ColumnLayout {
                     Label {
@@ -113,7 +112,6 @@ Page {
             GridLayout {
                 rows: 2
                 columns: 2
-                Material.foreground: Material.Grey
 
                 ColumnLayout {
                     Label {
