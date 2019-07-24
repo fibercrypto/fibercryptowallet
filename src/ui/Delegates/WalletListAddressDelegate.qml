@@ -100,6 +100,9 @@ Item {
                 visible:  !showOnlyAddresses
                 icon.source: "qrc:/images/resources/images/icons/copy.svg"
                 Layout.alignment: Qt.AlignLeft
+                ToolTip.text: qsTr("Copy to clipboard")
+                ToolTip.visible: hovered // TODO: pressed when mobile?
+                ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
 
                 Image {
                     id: imageCopied
