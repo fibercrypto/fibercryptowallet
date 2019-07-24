@@ -95,6 +95,9 @@ Page {
                                 anchors.verticalCenter: parent.verticalCenter
                                 icon.source: "qrc:/images/resources/images/icons/copy.svg"
                                 visible: textInputHashLastBlock.text
+                                ToolTip.text: qsTr("Copy to clipboard")
+                                ToolTip.visible: hovered // TODO: pressed when mobile?
+                                ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
 
                                 Image {
                                     id: imageCopied
