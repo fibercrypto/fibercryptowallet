@@ -130,8 +130,7 @@ Item {
                     PauseAnimation { duration: 1000 }
                     NumberAnimation { target: imageCopied; property: "opacity"; to: 0.0; easing.type: Easing.OutCubic }
                 }
-
-            }
+            } // ToolButton
             Rectangle {
                 id: spacer
                 visible:  !showOnlyAddresses
