@@ -55,6 +55,7 @@ Page {
 
             ColumnLayout {
                 id: columnLayoutBlockDetails
+                anchors.fill: parent
                 spacing: 20
                 Material.foreground: Material.Grey
 
@@ -88,16 +89,18 @@ Page {
                         Label {
                             text: qsTr("Hash of last block")
                             font.bold: true
+                        } // Label
+                        TextInput {
+                            id: textInputHashLastBlock
                             Layout.fillWidth: true
-                        }
-                        Label {
-                            id: labelHashLastBlock
                             text: hashLastBlock
+                            readOnly: true
+                            font.family: "Code New Roman"
                             wrapMode: Label.WrapAnywhere
                         }
-                    }
-                }
-            } // ColumnLayout
+                    } // ColumnLayout
+                } // RowLayout
+            } // ColumnLayout (block details)
         } // GroupBox (block details)
 
         GroupBox {
