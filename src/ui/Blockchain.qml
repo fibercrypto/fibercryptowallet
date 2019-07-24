@@ -60,8 +60,8 @@ Page {
 
             ColumnLayout {
                 id: columnLayoutBlockDetails
+                anchors.fill: parent
                 spacing: 20
-                Material.foreground: Material.Grey
 
                 ColumnLayout {
                     Label {
@@ -93,16 +93,60 @@ Page {
                         Label {
                             text: qsTr("Hash of last block")
                             font.bold: true
+
+                            ToolButton {
+                                id: toolButtonCopy
+                                anchors.left: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                icon.source: "qrc:/images/resources/images/icons/copy.svg"
+                                visible: textInputHashLastBlock.text
+                                ToolTip.text: qsTr("Copy to clipboard")
+                                ToolTip.visible: hovered // TODO: pressed when mobile?
+                                ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
+
+                                Image {
+                                    id: imageCopied
+                                    anchors.centerIn: parent
+                                    source: "qrc:/images/resources/images/icons/check-simple.svg"
+                                    fillMode: Image.PreserveAspectFit
+                                    sourceSize: Qt.size(toolButtonCopy.icon.width*1.5, toolButtonCopy.icon.height*1.5)
+                                    z: 1
+
+                                    opacity: 0.0
+                                }
+
+                                onClicked: {
+                                    if (textInputHashLastBlock.text) {
+                                        textInputHashLastBlock.selectAll()
+                                        textInputHashLastBlock.copy()
+                                        textInputHashLastBlock.deselect()
+                                        if (copyAnimation.running) {
+                                            copyAnimation.restart()
+                                        } else {
+                                            copyAnimation.start()
+                                        }
+                                    }
+                                }
+
+                                SequentialAnimation {
+                                    id: copyAnimation
+                                    NumberAnimation { target: imageCopied; property: "opacity"; to: 1.0; easing.type: Easing.OutCubic }
+                                    PauseAnimation { duration: 1000 }
+                                    NumberAnimation { target: imageCopied; property: "opacity"; to: 0.0; easing.type: Easing.OutCubic }
+                                }
+                            } // ToolButton
+                        } // Label
+                        TextInput {
+                            id: textInputHashLastBlock
                             Layout.fillWidth: true
-                        }
-                        Label {
-                            id: labelHashLastBlock
                             text: hashLastBlock
+                            readOnly: true
+                            font.family: "Code New Roman"
                             wrapMode: Label.WrapAnywhere
                         }
-                    }
-                }
-            } // ColumnLayout
+                    } // ColumnLayout
+                } // RowLayout
+            } // ColumnLayout (block details)
         } // GroupBox (block details)
 
         GroupBox {
@@ -115,7 +159,6 @@ Page {
             GridLayout {
                 rows: 2
                 columns: 2
-                Material.foreground: Material.Grey
 
                 ColumnLayout {
                     Label {
