@@ -93,7 +93,7 @@ Page {
         modelOutputs: listTransactions.currentItem.modelOutputs
     }
 
-    QHistory {
+    QTransactionList {
         id: modelTransactions
     }
 }

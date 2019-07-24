@@ -4,7 +4,7 @@ import (
 	"github.com/therecipe/qt/core"
 )
 
-type HistoryModel struct {
+type TransactionList struct {
 	core.QAbstractListModel
 
 	_ map[int]*core.QByteArray `property:"roles"`
@@ -17,7 +17,7 @@ type HistoryModel struct {
 	_ []*TransactionDetails `property:"transactions"`
 }
 
-func (hm *HistoryModel) init() {
+func (hm *TransactionList) init() {
 	hm.SetRoles(map[int]*core.QByteArray{
 		Date:            core.NewQByteArray2("date", -1),
 		Status:          core.NewQByteArray2("status", -1),
@@ -39,27 +39,27 @@ func (hm *HistoryModel) init() {
 	hm.addExamples()
 }
 
-func (hm *HistoryModel) rowCount(*core.QModelIndex) int {
+func (hm *TransactionList) rowCount(*core.QModelIndex) int {
 	return len(hm.Transactions())
 }
 
-func (hm *HistoryModel) roleNames() map[int]*core.QByteArray {
+func (hm *TransactionList) roleNames() map[int]*core.QByteArray {
 	return hm.Roles()
 }
 
-func (hm *HistoryModel) addTransaction(transaction *TransactionDetails) {
+func (hm *TransactionList) addTransaction(transaction *TransactionDetails) {
 	hm.BeginInsertRows(core.NewQModelIndex(), len(hm.Transactions()), len(hm.Transactions()))
 	hm.SetTransactions(append(hm.Transactions(), transaction))
 	hm.EndInsertRows()
 }
 
-func (hm *HistoryModel) removeTransaction(index int) {
+func (hm *TransactionList) removeTransaction(index int) {
 	hm.BeginRemoveRows(core.NewQModelIndex(), index, index)
 	hm.SetTransactions(append(hm.Transactions()[:index], hm.Transactions()[index+1:]...))
 	hm.EndRemoveRows()
 }
 
-func (hm *HistoryModel) data(index *core.QModelIndex, role int) *core.QVariant {
+func (hm *TransactionList) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() || index.Row() >= len(hm.Transactions()) {
 		return core.NewQVariant()
 	}
@@ -118,7 +118,7 @@ func (hm *HistoryModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	}
 }
 
-func (hm *HistoryModel) addExamples() {
+func (hm *TransactionList) addExamples() {
 	td := NewTransactionDetails(nil)
 	td.SetDate(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(10, 0, 0, 0), core.Qt__LocalTime))
 	td.SetStatus(transactionStatusPending)
