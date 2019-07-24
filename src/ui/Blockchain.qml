@@ -88,6 +88,45 @@ Page {
                         Label {
                             text: qsTr("Hash of last block")
                             font.bold: true
+
+                            ToolButton {
+                                id: toolButtonCopy
+                                anchors.left: parent.right
+                                anchors.verticalCenter: parent.verticalCenter
+                                icon.source: "qrc:/images/resources/images/icons/copy.svg"
+                                visible: textInputHashLastBlock.text
+
+                                Image {
+                                    id: imageCopied
+                                    anchors.centerIn: parent
+                                    source: "qrc:/images/resources/images/icons/check-simple.svg"
+                                    fillMode: Image.PreserveAspectFit
+                                    sourceSize: Qt.size(toolButtonCopy.icon.width*1.5, toolButtonCopy.icon.height*1.5)
+                                    z: 1
+
+                                    opacity: 0.0
+                                }
+
+                                onClicked: {
+                                    if (textInputHashLastBlock.text) {
+                                        textInputHashLastBlock.selectAll()
+                                        textInputHashLastBlock.copy()
+                                        textInputHashLastBlock.deselect()
+                                        if (copyAnimation.running) {
+                                            copyAnimation.restart()
+                                        } else {
+                                            copyAnimation.start()
+                                        }
+                                    }
+                                }
+
+                                SequentialAnimation {
+                                    id: copyAnimation
+                                    NumberAnimation { target: imageCopied; property: "opacity"; to: 1.0; easing.type: Easing.OutCubic }
+                                    PauseAnimation { duration: 1000 }
+                                    NumberAnimation { target: imageCopied; property: "opacity"; to: 0.0; easing.type: Easing.OutCubic }
+                                }
+                            } // ToolButton
                         } // Label
                         TextInput {
                             id: textInputHashLastBlock
