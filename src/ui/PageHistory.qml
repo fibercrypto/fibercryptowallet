@@ -89,9 +89,11 @@ Page {
         hoursReceived: listTransactions.currentItem.modelHoursReceived
         hoursBurned: listTransactions.currentItem.modelHoursBurned
         transactionID: listTransactions.currentItem.modelTransactionID
+        modelInputs: listTransactions.currentItem.modelInputs
+        modelOutputs: listTransactions.currentItem.modelOutputs
     }
 
-    QHistory {
+    QTransactionList {
         id: modelTransactions
     }
 }

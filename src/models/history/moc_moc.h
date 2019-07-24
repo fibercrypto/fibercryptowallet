@@ -21,34 +21,34 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_AddressDeatails742340_t {
+struct qt_meta_stringdata_AddressDetails742340_t {
     QByteArrayData data[8];
-    char stringdata0[116];
+    char stringdata0[115];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_AddressDeatails742340_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_AddressDetails742340_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_AddressDeatails742340_t qt_meta_stringdata_AddressDeatails742340 = {
+static const qt_meta_stringdata_AddressDetails742340_t qt_meta_stringdata_AddressDetails742340 = {
     {
-QT_MOC_LITERAL(0, 0, 21), // "AddressDeatails742340"
-QT_MOC_LITERAL(1, 22, 14), // "addressChanged"
-QT_MOC_LITERAL(2, 37, 0), // ""
-QT_MOC_LITERAL(3, 38, 7), // "address"
-QT_MOC_LITERAL(4, 46, 17), // "addressSkyChanged"
-QT_MOC_LITERAL(5, 64, 10), // "addressSky"
-QT_MOC_LITERAL(6, 75, 23), // "addressCoinHoursChanged"
-QT_MOC_LITERAL(7, 99, 16) // "addressCoinHours"
+QT_MOC_LITERAL(0, 0, 20), // "AddressDetails742340"
+QT_MOC_LITERAL(1, 21, 14), // "addressChanged"
+QT_MOC_LITERAL(2, 36, 0), // ""
+QT_MOC_LITERAL(3, 37, 7), // "address"
+QT_MOC_LITERAL(4, 45, 17), // "addressSkyChanged"
+QT_MOC_LITERAL(5, 63, 10), // "addressSky"
+QT_MOC_LITERAL(6, 74, 23), // "addressCoinHoursChanged"
+QT_MOC_LITERAL(7, 98, 16) // "addressCoinHours"
 
     },
-    "AddressDeatails742340\0addressChanged\0"
+    "AddressDetails742340\0addressChanged\0"
     "\0address\0addressSkyChanged\0addressSky\0"
     "addressCoinHoursChanged\0addressCoinHours"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_AddressDeatails742340[] = {
+static const uint qt_meta_data_AddressDetails742340[] = {
 
  // content:
        8,       // revision
@@ -84,10 +84,10 @@ static const uint qt_meta_data_AddressDeatails742340[] = {
        0        // eod
 };
 
-void AddressDeatails742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void AddressDetails742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<AddressDeatails742340 *>(_o);
+        auto *_t = static_cast<AddressDetails742340 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->addressChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
@@ -98,22 +98,22 @@ void AddressDeatails742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (AddressDeatails742340::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressDeatails742340::addressChanged)) {
+            using _t = void (AddressDetails742340::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressDetails742340::addressChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
-            using _t = void (AddressDeatails742340::*)(float );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressDeatails742340::addressSkyChanged)) {
+            using _t = void (AddressDetails742340::*)(float );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressDetails742340::addressSkyChanged)) {
                 *result = 1;
                 return;
             }
         }
         {
-            using _t = void (AddressDeatails742340::*)(qint32 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressDeatails742340::addressCoinHoursChanged)) {
+            using _t = void (AddressDetails742340::*)(qint32 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressDetails742340::addressCoinHoursChanged)) {
                 *result = 2;
                 return;
             }
@@ -121,7 +121,7 @@ void AddressDeatails742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
-        auto *_t = static_cast<AddressDeatails742340 *>(_o);
+        auto *_t = static_cast<AddressDetails742340 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
@@ -131,7 +131,7 @@ void AddressDeatails742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
-        auto *_t = static_cast<AddressDeatails742340 *>(_o);
+        auto *_t = static_cast<AddressDetails742340 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
@@ -145,30 +145,30 @@ void AddressDeatails742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c
 #endif // QT_NO_PROPERTIES
 }
 
-QT_INIT_METAOBJECT const QMetaObject AddressDeatails742340::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject AddressDetails742340::staticMetaObject = { {
     &QObject::staticMetaObject,
-    qt_meta_stringdata_AddressDeatails742340.data,
-    qt_meta_data_AddressDeatails742340,
+    qt_meta_stringdata_AddressDetails742340.data,
+    qt_meta_data_AddressDetails742340,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *AddressDeatails742340::metaObject() const
+const QMetaObject *AddressDetails742340::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *AddressDeatails742340::qt_metacast(const char *_clname)
+void *AddressDetails742340::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_AddressDeatails742340.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_AddressDetails742340.stringdata0))
         return static_cast<void*>(this);
     return QObject::qt_metacast(_clname);
 }
 
-int AddressDeatails742340::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int AddressDetails742340::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -203,28 +203,28 @@ int AddressDeatails742340::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void AddressDeatails742340::addressChanged(QString _t1)
+void AddressDetails742340::addressChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void AddressDeatails742340::addressSkyChanged(float _t1)
+void AddressDetails742340::addressSkyChanged(float _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
 // SIGNAL 2
-void AddressDeatails742340::addressCoinHoursChanged(qint32 _t1)
+void AddressDetails742340::addressCoinHoursChanged(qint32 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 struct qt_meta_stringdata_AddressList742340_t {
     QByteArrayData data[13];
-    char stringdata0[172];
+    char stringdata0[170];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -236,23 +236,23 @@ static const qt_meta_stringdata_AddressList742340_t qt_meta_stringdata_AddressLi
 QT_MOC_LITERAL(0, 0, 17), // "AddressList742340"
 QT_MOC_LITERAL(1, 18, 10), // "addAddress"
 QT_MOC_LITERAL(2, 29, 0), // ""
-QT_MOC_LITERAL(3, 30, 22), // "AddressDeatails742340*"
-QT_MOC_LITERAL(4, 53, 11), // "transaction"
-QT_MOC_LITERAL(5, 65, 13), // "removeAddress"
-QT_MOC_LITERAL(6, 79, 5), // "index"
-QT_MOC_LITERAL(7, 85, 12), // "rolesChanged"
-QT_MOC_LITERAL(8, 98, 10), // "type378cdd"
-QT_MOC_LITERAL(9, 109, 5), // "roles"
-QT_MOC_LITERAL(10, 115, 16), // "addressesChanged"
-QT_MOC_LITERAL(11, 132, 29), // "QList<AddressDeatails742340*>"
-QT_MOC_LITERAL(12, 162, 9) // "addresses"
+QT_MOC_LITERAL(3, 30, 21), // "AddressDetails742340*"
+QT_MOC_LITERAL(4, 52, 11), // "transaction"
+QT_MOC_LITERAL(5, 64, 13), // "removeAddress"
+QT_MOC_LITERAL(6, 78, 5), // "index"
+QT_MOC_LITERAL(7, 84, 12), // "rolesChanged"
+QT_MOC_LITERAL(8, 97, 10), // "type378cdd"
+QT_MOC_LITERAL(9, 108, 5), // "roles"
+QT_MOC_LITERAL(10, 114, 16), // "addressesChanged"
+QT_MOC_LITERAL(11, 131, 28), // "QList<AddressDetails742340*>"
+QT_MOC_LITERAL(12, 160, 9) // "addresses"
 
     },
     "AddressList742340\0addAddress\0\0"
-    "AddressDeatails742340*\0transaction\0"
+    "AddressDetails742340*\0transaction\0"
     "removeAddress\0index\0rolesChanged\0"
     "type378cdd\0roles\0addressesChanged\0"
-    "QList<AddressDeatails742340*>\0addresses"
+    "QList<AddressDetails742340*>\0addresses"
 };
 #undef QT_MOC_LITERAL
 
@@ -298,10 +298,10 @@ void AddressList742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         auto *_t = static_cast<AddressList742340 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->addAddress((*reinterpret_cast< AddressDeatails742340*(*)>(_a[1]))); break;
+        case 0: _t->addAddress((*reinterpret_cast< AddressDetails742340*(*)>(_a[1]))); break;
         case 1: _t->removeAddress((*reinterpret_cast< qint32(*)>(_a[1]))); break;
         case 2: _t->rolesChanged((*reinterpret_cast< type378cdd(*)>(_a[1]))); break;
-        case 3: _t->addressesChanged((*reinterpret_cast< QList<AddressDeatails742340*>(*)>(_a[1]))); break;
+        case 3: _t->addressesChanged((*reinterpret_cast< QList<AddressDetails742340*>(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -311,21 +311,21 @@ void AddressList742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< AddressDeatails742340* >(); break;
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< AddressDetails742340* >(); break;
             }
             break;
         case 3:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<AddressDeatails742340*> >(); break;
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<AddressDetails742340*> >(); break;
             }
             break;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (AddressList742340::*)(AddressDeatails742340 * );
+            using _t = void (AddressList742340::*)(AddressDetails742340 * );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressList742340::addAddress)) {
                 *result = 0;
                 return;
@@ -346,7 +346,7 @@ void AddressList742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
             }
         }
         {
-            using _t = void (AddressList742340::*)(QList<AddressDeatails742340*> );
+            using _t = void (AddressList742340::*)(QList<AddressDetails742340*> );
             if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressList742340::addressesChanged)) {
                 *result = 3;
                 return;
@@ -356,7 +356,7 @@ void AddressList742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
         case 1:
-            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<AddressDeatails742340*> >(); break;
+            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<AddressDetails742340*> >(); break;
         }
     }
 
@@ -367,7 +367,7 @@ void AddressList742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         void *_v = _a[0];
         switch (_id) {
         case 0: *reinterpret_cast< type378cdd*>(_v) = _t->roles(); break;
-        case 1: *reinterpret_cast< QList<AddressDeatails742340*>*>(_v) = _t->addresses(); break;
+        case 1: *reinterpret_cast< QList<AddressDetails742340*>*>(_v) = _t->addresses(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -376,7 +376,7 @@ void AddressList742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         void *_v = _a[0];
         switch (_id) {
         case 0: _t->setRoles(*reinterpret_cast< type378cdd*>(_v)); break;
-        case 1: _t->setAddresses(*reinterpret_cast< QList<AddressDeatails742340*>*>(_v)); break;
+        case 1: _t->setAddresses(*reinterpret_cast< QList<AddressDetails742340*>*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {
@@ -442,7 +442,7 @@ int AddressList742340::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void AddressList742340::addAddress(AddressDeatails742340 * _t1)
+void AddressList742340::addAddress(AddressDetails742340 * _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
@@ -463,261 +463,14 @@ void AddressList742340::rolesChanged(type378cdd _t1)
 }
 
 // SIGNAL 3
-void AddressList742340::addressesChanged(QList<AddressDeatails742340*> _t1)
-{
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
-    QMetaObject::activate(this, &staticMetaObject, 3, _a);
-}
-struct qt_meta_stringdata_HistoryModel742340_t {
-    QByteArrayData data[13];
-    char stringdata0[193];
-};
-#define QT_MOC_LITERAL(idx, ofs, len) \
-    Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_HistoryModel742340_t, stringdata0) + ofs \
-        - idx * sizeof(QByteArrayData)) \
-    )
-static const qt_meta_stringdata_HistoryModel742340_t qt_meta_stringdata_HistoryModel742340 = {
-    {
-QT_MOC_LITERAL(0, 0, 18), // "HistoryModel742340"
-QT_MOC_LITERAL(1, 19, 14), // "addTransaction"
-QT_MOC_LITERAL(2, 34, 0), // ""
-QT_MOC_LITERAL(3, 35, 25), // "TransactionDetails742340*"
-QT_MOC_LITERAL(4, 61, 11), // "transaction"
-QT_MOC_LITERAL(5, 73, 17), // "removeTransaction"
-QT_MOC_LITERAL(6, 91, 5), // "index"
-QT_MOC_LITERAL(7, 97, 12), // "rolesChanged"
-QT_MOC_LITERAL(8, 110, 10), // "type378cdd"
-QT_MOC_LITERAL(9, 121, 5), // "roles"
-QT_MOC_LITERAL(10, 127, 19), // "transactionsChanged"
-QT_MOC_LITERAL(11, 147, 32), // "QList<TransactionDetails742340*>"
-QT_MOC_LITERAL(12, 180, 12) // "transactions"
-
-    },
-    "HistoryModel742340\0addTransaction\0\0"
-    "TransactionDetails742340*\0transaction\0"
-    "removeTransaction\0index\0rolesChanged\0"
-    "type378cdd\0roles\0transactionsChanged\0"
-    "QList<TransactionDetails742340*>\0"
-    "transactions"
-};
-#undef QT_MOC_LITERAL
-
-static const uint qt_meta_data_HistoryModel742340[] = {
-
- // content:
-       8,       // revision
-       0,       // classname
-       0,    0, // classinfo
-       4,   14, // methods
-       2,   46, // properties
-       0,    0, // enums/sets
-       0,    0, // constructors
-       0,       // flags
-       4,       // signalCount
-
- // signals: name, argc, parameters, tag, flags
-       1,    1,   34,    2, 0x06 /* Public */,
-       5,    1,   37,    2, 0x06 /* Public */,
-       7,    1,   40,    2, 0x06 /* Public */,
-      10,    1,   43,    2, 0x06 /* Public */,
-
- // signals: parameters
-    QMetaType::Void, 0x80000000 | 3,    4,
-    QMetaType::Void, QMetaType::Int,    6,
-    QMetaType::Void, 0x80000000 | 8,    9,
-    QMetaType::Void, 0x80000000 | 11,   12,
-
- // properties: name, type, flags
-       9, 0x80000000 | 8, 0x0049510b,
-      12, 0x80000000 | 11, 0x0049510b,
-
- // properties: notify_signal_id
-       2,
-       3,
-
-       0        // eod
-};
-
-void HistoryModel742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
-{
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<HistoryModel742340 *>(_o);
-        Q_UNUSED(_t)
-        switch (_id) {
-        case 0: _t->addTransaction((*reinterpret_cast< TransactionDetails742340*(*)>(_a[1]))); break;
-        case 1: _t->removeTransaction((*reinterpret_cast< qint32(*)>(_a[1]))); break;
-        case 2: _t->rolesChanged((*reinterpret_cast< type378cdd(*)>(_a[1]))); break;
-        case 3: _t->transactionsChanged((*reinterpret_cast< QList<TransactionDetails742340*>(*)>(_a[1]))); break;
-        default: ;
-        }
-    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        switch (_id) {
-        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 0:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< TransactionDetails742340* >(); break;
-            }
-            break;
-        case 3:
-            switch (*reinterpret_cast<int*>(_a[1])) {
-            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-            case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<TransactionDetails742340*> >(); break;
-            }
-            break;
-        }
-    } else if (_c == QMetaObject::IndexOfMethod) {
-        int *result = reinterpret_cast<int *>(_a[0]);
-        {
-            using _t = void (HistoryModel742340::*)(TransactionDetails742340 * );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&HistoryModel742340::addTransaction)) {
-                *result = 0;
-                return;
-            }
-        }
-        {
-            using _t = void (HistoryModel742340::*)(qint32 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&HistoryModel742340::removeTransaction)) {
-                *result = 1;
-                return;
-            }
-        }
-        {
-            using _t = void (HistoryModel742340::*)(type378cdd );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&HistoryModel742340::rolesChanged)) {
-                *result = 2;
-                return;
-            }
-        }
-        {
-            using _t = void (HistoryModel742340::*)(QList<TransactionDetails742340*> );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&HistoryModel742340::transactionsChanged)) {
-                *result = 3;
-                return;
-            }
-        }
-    } else if (_c == QMetaObject::RegisterPropertyMetaType) {
-        switch (_id) {
-        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
-        case 1:
-            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<TransactionDetails742340*> >(); break;
-        }
-    }
-
-#ifndef QT_NO_PROPERTIES
-    else if (_c == QMetaObject::ReadProperty) {
-        auto *_t = static_cast<HistoryModel742340 *>(_o);
-        Q_UNUSED(_t)
-        void *_v = _a[0];
-        switch (_id) {
-        case 0: *reinterpret_cast< type378cdd*>(_v) = _t->roles(); break;
-        case 1: *reinterpret_cast< QList<TransactionDetails742340*>*>(_v) = _t->transactions(); break;
-        default: break;
-        }
-    } else if (_c == QMetaObject::WriteProperty) {
-        auto *_t = static_cast<HistoryModel742340 *>(_o);
-        Q_UNUSED(_t)
-        void *_v = _a[0];
-        switch (_id) {
-        case 0: _t->setRoles(*reinterpret_cast< type378cdd*>(_v)); break;
-        case 1: _t->setTransactions(*reinterpret_cast< QList<TransactionDetails742340*>*>(_v)); break;
-        default: break;
-        }
-    } else if (_c == QMetaObject::ResetProperty) {
-    }
-#endif // QT_NO_PROPERTIES
-}
-
-QT_INIT_METAOBJECT const QMetaObject HistoryModel742340::staticMetaObject = { {
-    &QAbstractListModel::staticMetaObject,
-    qt_meta_stringdata_HistoryModel742340.data,
-    qt_meta_data_HistoryModel742340,
-    qt_static_metacall,
-    nullptr,
-    nullptr
-} };
-
-
-const QMetaObject *HistoryModel742340::metaObject() const
-{
-    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
-}
-
-void *HistoryModel742340::qt_metacast(const char *_clname)
-{
-    if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_HistoryModel742340.stringdata0))
-        return static_cast<void*>(this);
-    return QAbstractListModel::qt_metacast(_clname);
-}
-
-int HistoryModel742340::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
-{
-    _id = QAbstractListModel::qt_metacall(_c, _id, _a);
-    if (_id < 0)
-        return _id;
-    if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
-    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
-            qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
-    }
-#ifndef QT_NO_PROPERTIES
-   else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
-            || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
-        qt_static_metacall(this, _c, _id, _a);
-        _id -= 2;
-    } else if (_c == QMetaObject::QueryPropertyDesignable) {
-        _id -= 2;
-    } else if (_c == QMetaObject::QueryPropertyScriptable) {
-        _id -= 2;
-    } else if (_c == QMetaObject::QueryPropertyStored) {
-        _id -= 2;
-    } else if (_c == QMetaObject::QueryPropertyEditable) {
-        _id -= 2;
-    } else if (_c == QMetaObject::QueryPropertyUser) {
-        _id -= 2;
-    }
-#endif // QT_NO_PROPERTIES
-    return _id;
-}
-
-// SIGNAL 0
-void HistoryModel742340::addTransaction(TransactionDetails742340 * _t1)
-{
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
-    QMetaObject::activate(this, &staticMetaObject, 0, _a);
-}
-
-// SIGNAL 1
-void HistoryModel742340::removeTransaction(qint32 _t1)
-{
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
-    QMetaObject::activate(this, &staticMetaObject, 1, _a);
-}
-
-// SIGNAL 2
-void HistoryModel742340::rolesChanged(type378cdd _t1)
-{
-    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
-    QMetaObject::activate(this, &staticMetaObject, 2, _a);
-}
-
-// SIGNAL 3
-void HistoryModel742340::transactionsChanged(QList<TransactionDetails742340*> _t1)
+void AddressList742340::addressesChanged(QList<AddressDetails742340*> _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 struct qt_meta_stringdata_TransactionDetails742340_t {
-    QByteArrayData data[21];
-    char stringdata0[276];
+    QByteArrayData data[26];
+    char stringdata0[339];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -746,7 +499,12 @@ QT_MOC_LITERAL(16, 201, 18), // "sentAddressChanged"
 QT_MOC_LITERAL(17, 220, 11), // "sentAddress"
 QT_MOC_LITERAL(18, 232, 22), // "receivedAddressChanged"
 QT_MOC_LITERAL(19, 255, 15), // "receivedAddress"
-QT_MOC_LITERAL(20, 271, 4) // "type"
+QT_MOC_LITERAL(20, 271, 13), // "inputsChanged"
+QT_MOC_LITERAL(21, 285, 18), // "AddressList742340*"
+QT_MOC_LITERAL(22, 304, 6), // "inputs"
+QT_MOC_LITERAL(23, 311, 14), // "outputsChanged"
+QT_MOC_LITERAL(24, 326, 7), // "outputs"
+QT_MOC_LITERAL(25, 334, 4) // "type"
 
     },
     "TransactionDetails742340\0dateChanged\0"
@@ -756,7 +514,9 @@ QT_MOC_LITERAL(20, 271, 4) // "type"
     "hoursBurned\0transactionIDChanged\0"
     "transactionID\0sentAddressChanged\0"
     "sentAddress\0receivedAddressChanged\0"
-    "receivedAddress\0type"
+    "receivedAddress\0inputsChanged\0"
+    "AddressList742340*\0inputs\0outputsChanged\0"
+    "outputs\0type"
 };
 #undef QT_MOC_LITERAL
 
@@ -766,23 +526,25 @@ static const uint qt_meta_data_TransactionDetails742340[] = {
        8,       // revision
        0,       // classname
        0,    0, // classinfo
-       9,   14, // methods
-       9,   86, // properties
+      11,   14, // methods
+      11,  102, // properties
        0,    0, // enums/sets
        0,    0, // constructors
        0,       // flags
-       9,       // signalCount
+      11,       // signalCount
 
  // signals: name, argc, parameters, tag, flags
-       1,    1,   59,    2, 0x06 /* Public */,
-       4,    1,   62,    2, 0x06 /* Public */,
-       6,    1,   65,    2, 0x06 /* Public */,
-       8,    1,   68,    2, 0x06 /* Public */,
-      10,    1,   71,    2, 0x06 /* Public */,
-      12,    1,   74,    2, 0x06 /* Public */,
-      14,    1,   77,    2, 0x06 /* Public */,
-      16,    1,   80,    2, 0x06 /* Public */,
-      18,    1,   83,    2, 0x06 /* Public */,
+       1,    1,   69,    2, 0x06 /* Public */,
+       4,    1,   72,    2, 0x06 /* Public */,
+       6,    1,   75,    2, 0x06 /* Public */,
+       8,    1,   78,    2, 0x06 /* Public */,
+      10,    1,   81,    2, 0x06 /* Public */,
+      12,    1,   84,    2, 0x06 /* Public */,
+      14,    1,   87,    2, 0x06 /* Public */,
+      16,    1,   90,    2, 0x06 /* Public */,
+      18,    1,   93,    2, 0x06 /* Public */,
+      20,    1,   96,    2, 0x06 /* Public */,
+      23,    1,   99,    2, 0x06 /* Public */,
 
  // signals: parameters
     QMetaType::Void, QMetaType::QDateTime,    3,
@@ -794,17 +556,21 @@ static const uint qt_meta_data_TransactionDetails742340[] = {
     QMetaType::Void, QMetaType::QString,   15,
     QMetaType::Void, QMetaType::QString,   17,
     QMetaType::Void, QMetaType::QString,   19,
+    QMetaType::Void, 0x80000000 | 21,   22,
+    QMetaType::Void, 0x80000000 | 21,   24,
 
  // properties: name, type, flags
        3, QMetaType::QDateTime, 0x00495103,
        5, QMetaType::Int, 0x00495103,
-      20, QMetaType::Int, 0x00495103,
+      25, QMetaType::Int, 0x00495103,
        9, QMetaType::Int, 0x00495103,
       11, QMetaType::Int, 0x00495103,
       13, QMetaType::Int, 0x00495103,
       15, QMetaType::QString, 0x00495103,
       17, QMetaType::QString, 0x00495103,
       19, QMetaType::QString, 0x00495103,
+      22, 0x80000000 | 21, 0x0049510b,
+      24, 0x80000000 | 21, 0x0049510b,
 
  // properties: notify_signal_id
        0,
@@ -816,6 +582,8 @@ static const uint qt_meta_data_TransactionDetails742340[] = {
        6,
        7,
        8,
+       9,
+      10,
 
        0        // eod
 };
@@ -835,7 +603,27 @@ void TransactionDetails742340::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 6: _t->transactionIDChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 7: _t->sentAddressChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 8: _t->receivedAddressChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
+        case 9: _t->inputsChanged((*reinterpret_cast< AddressList742340*(*)>(_a[1]))); break;
+        case 10: _t->outputsChanged((*reinterpret_cast< AddressList742340*(*)>(_a[1]))); break;
         default: ;
+        }
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+        case 9:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< AddressList742340* >(); break;
+            }
+            break;
+        case 10:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< AddressList742340* >(); break;
+            }
+            break;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
@@ -902,7 +690,29 @@ void TransactionDetails742340::qt_static_metacall(QObject *_o, QMetaObject::Call
                 return;
             }
         }
+        {
+            using _t = void (TransactionDetails742340::*)(AddressList742340 * );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&TransactionDetails742340::inputsChanged)) {
+                *result = 9;
+                return;
+            }
+        }
+        {
+            using _t = void (TransactionDetails742340::*)(AddressList742340 * );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&TransactionDetails742340::outputsChanged)) {
+                *result = 10;
+                return;
+            }
+        }
+    } else if (_c == QMetaObject::RegisterPropertyMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+        case 10:
+        case 9:
+            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< AddressList742340* >(); break;
+        }
     }
+
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
         auto *_t = static_cast<TransactionDetails742340 *>(_o);
@@ -918,6 +728,8 @@ void TransactionDetails742340::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 6: *reinterpret_cast< QString*>(_v) = _t->transactionID(); break;
         case 7: *reinterpret_cast< QString*>(_v) = _t->sentAddress(); break;
         case 8: *reinterpret_cast< QString*>(_v) = _t->receivedAddress(); break;
+        case 9: *reinterpret_cast< AddressList742340**>(_v) = _t->inputs(); break;
+        case 10: *reinterpret_cast< AddressList742340**>(_v) = _t->outputs(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
@@ -934,6 +746,8 @@ void TransactionDetails742340::qt_static_metacall(QObject *_o, QMetaObject::Call
         case 6: _t->setTransactionID(*reinterpret_cast< QString*>(_v)); break;
         case 7: _t->setSentAddress(*reinterpret_cast< QString*>(_v)); break;
         case 8: _t->setReceivedAddress(*reinterpret_cast< QString*>(_v)); break;
+        case 9: _t->setInputs(*reinterpret_cast< AddressList742340**>(_v)); break;
+        case 10: _t->setOutputs(*reinterpret_cast< AddressList742340**>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {
@@ -970,29 +784,29 @@ int TransactionDetails742340::qt_metacall(QMetaObject::Call _c, int _id, void **
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 11;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
-            *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 9;
+        if (_id < 11)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 11;
     }
 #ifndef QT_NO_PROPERTIES
    else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
             || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
         qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 11;
     } else if (_c == QMetaObject::QueryPropertyDesignable) {
-        _id -= 9;
+        _id -= 11;
     } else if (_c == QMetaObject::QueryPropertyScriptable) {
-        _id -= 9;
+        _id -= 11;
     } else if (_c == QMetaObject::QueryPropertyStored) {
-        _id -= 9;
+        _id -= 11;
     } else if (_c == QMetaObject::QueryPropertyEditable) {
-        _id -= 9;
+        _id -= 11;
     } else if (_c == QMetaObject::QueryPropertyUser) {
-        _id -= 9;
+        _id -= 11;
     }
 #endif // QT_NO_PROPERTIES
     return _id;
@@ -1059,6 +873,267 @@ void TransactionDetails742340::receivedAddressChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 8, _a);
+}
+
+// SIGNAL 9
+void TransactionDetails742340::inputsChanged(AddressList742340 * _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 9, _a);
+}
+
+// SIGNAL 10
+void TransactionDetails742340::outputsChanged(AddressList742340 * _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 10, _a);
+}
+struct qt_meta_stringdata_TransactionList742340_t {
+    QByteArrayData data[13];
+    char stringdata0[196];
+};
+#define QT_MOC_LITERAL(idx, ofs, len) \
+    Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
+    qptrdiff(offsetof(qt_meta_stringdata_TransactionList742340_t, stringdata0) + ofs \
+        - idx * sizeof(QByteArrayData)) \
+    )
+static const qt_meta_stringdata_TransactionList742340_t qt_meta_stringdata_TransactionList742340 = {
+    {
+QT_MOC_LITERAL(0, 0, 21), // "TransactionList742340"
+QT_MOC_LITERAL(1, 22, 14), // "addTransaction"
+QT_MOC_LITERAL(2, 37, 0), // ""
+QT_MOC_LITERAL(3, 38, 25), // "TransactionDetails742340*"
+QT_MOC_LITERAL(4, 64, 11), // "transaction"
+QT_MOC_LITERAL(5, 76, 17), // "removeTransaction"
+QT_MOC_LITERAL(6, 94, 5), // "index"
+QT_MOC_LITERAL(7, 100, 12), // "rolesChanged"
+QT_MOC_LITERAL(8, 113, 10), // "type378cdd"
+QT_MOC_LITERAL(9, 124, 5), // "roles"
+QT_MOC_LITERAL(10, 130, 19), // "transactionsChanged"
+QT_MOC_LITERAL(11, 150, 32), // "QList<TransactionDetails742340*>"
+QT_MOC_LITERAL(12, 183, 12) // "transactions"
+
+    },
+    "TransactionList742340\0addTransaction\0"
+    "\0TransactionDetails742340*\0transaction\0"
+    "removeTransaction\0index\0rolesChanged\0"
+    "type378cdd\0roles\0transactionsChanged\0"
+    "QList<TransactionDetails742340*>\0"
+    "transactions"
+};
+#undef QT_MOC_LITERAL
+
+static const uint qt_meta_data_TransactionList742340[] = {
+
+ // content:
+       8,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       4,   14, // methods
+       2,   46, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       4,       // signalCount
+
+ // signals: name, argc, parameters, tag, flags
+       1,    1,   34,    2, 0x06 /* Public */,
+       5,    1,   37,    2, 0x06 /* Public */,
+       7,    1,   40,    2, 0x06 /* Public */,
+      10,    1,   43,    2, 0x06 /* Public */,
+
+ // signals: parameters
+    QMetaType::Void, 0x80000000 | 3,    4,
+    QMetaType::Void, QMetaType::Int,    6,
+    QMetaType::Void, 0x80000000 | 8,    9,
+    QMetaType::Void, 0x80000000 | 11,   12,
+
+ // properties: name, type, flags
+       9, 0x80000000 | 8, 0x0049510b,
+      12, 0x80000000 | 11, 0x0049510b,
+
+ // properties: notify_signal_id
+       2,
+       3,
+
+       0        // eod
+};
+
+void TransactionList742340::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        auto *_t = static_cast<TransactionList742340 *>(_o);
+        Q_UNUSED(_t)
+        switch (_id) {
+        case 0: _t->addTransaction((*reinterpret_cast< TransactionDetails742340*(*)>(_a[1]))); break;
+        case 1: _t->removeTransaction((*reinterpret_cast< qint32(*)>(_a[1]))); break;
+        case 2: _t->rolesChanged((*reinterpret_cast< type378cdd(*)>(_a[1]))); break;
+        case 3: _t->transactionsChanged((*reinterpret_cast< QList<TransactionDetails742340*>(*)>(_a[1]))); break;
+        default: ;
+        }
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+        case 0:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< TransactionDetails742340* >(); break;
+            }
+            break;
+        case 3:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<TransactionDetails742340*> >(); break;
+            }
+            break;
+        }
+    } else if (_c == QMetaObject::IndexOfMethod) {
+        int *result = reinterpret_cast<int *>(_a[0]);
+        {
+            using _t = void (TransactionList742340::*)(TransactionDetails742340 * );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&TransactionList742340::addTransaction)) {
+                *result = 0;
+                return;
+            }
+        }
+        {
+            using _t = void (TransactionList742340::*)(qint32 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&TransactionList742340::removeTransaction)) {
+                *result = 1;
+                return;
+            }
+        }
+        {
+            using _t = void (TransactionList742340::*)(type378cdd );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&TransactionList742340::rolesChanged)) {
+                *result = 2;
+                return;
+            }
+        }
+        {
+            using _t = void (TransactionList742340::*)(QList<TransactionDetails742340*> );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&TransactionList742340::transactionsChanged)) {
+                *result = 3;
+                return;
+            }
+        }
+    } else if (_c == QMetaObject::RegisterPropertyMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+        case 1:
+            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<TransactionDetails742340*> >(); break;
+        }
+    }
+
+#ifndef QT_NO_PROPERTIES
+    else if (_c == QMetaObject::ReadProperty) {
+        auto *_t = static_cast<TransactionList742340 *>(_o);
+        Q_UNUSED(_t)
+        void *_v = _a[0];
+        switch (_id) {
+        case 0: *reinterpret_cast< type378cdd*>(_v) = _t->roles(); break;
+        case 1: *reinterpret_cast< QList<TransactionDetails742340*>*>(_v) = _t->transactions(); break;
+        default: break;
+        }
+    } else if (_c == QMetaObject::WriteProperty) {
+        auto *_t = static_cast<TransactionList742340 *>(_o);
+        Q_UNUSED(_t)
+        void *_v = _a[0];
+        switch (_id) {
+        case 0: _t->setRoles(*reinterpret_cast< type378cdd*>(_v)); break;
+        case 1: _t->setTransactions(*reinterpret_cast< QList<TransactionDetails742340*>*>(_v)); break;
+        default: break;
+        }
+    } else if (_c == QMetaObject::ResetProperty) {
+    }
+#endif // QT_NO_PROPERTIES
+}
+
+QT_INIT_METAOBJECT const QMetaObject TransactionList742340::staticMetaObject = { {
+    &QAbstractListModel::staticMetaObject,
+    qt_meta_stringdata_TransactionList742340.data,
+    qt_meta_data_TransactionList742340,
+    qt_static_metacall,
+    nullptr,
+    nullptr
+} };
+
+
+const QMetaObject *TransactionList742340::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
+}
+
+void *TransactionList742340::qt_metacast(const char *_clname)
+{
+    if (!_clname) return nullptr;
+    if (!strcmp(_clname, qt_meta_stringdata_TransactionList742340.stringdata0))
+        return static_cast<void*>(this);
+    return QAbstractListModel::qt_metacast(_clname);
+}
+
+int TransactionList742340::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QAbstractListModel::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 4)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 4;
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 4)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 4;
+    }
+#ifndef QT_NO_PROPERTIES
+   else if (_c == QMetaObject::ReadProperty || _c == QMetaObject::WriteProperty
+            || _c == QMetaObject::ResetProperty || _c == QMetaObject::RegisterPropertyMetaType) {
+        qt_static_metacall(this, _c, _id, _a);
+        _id -= 2;
+    } else if (_c == QMetaObject::QueryPropertyDesignable) {
+        _id -= 2;
+    } else if (_c == QMetaObject::QueryPropertyScriptable) {
+        _id -= 2;
+    } else if (_c == QMetaObject::QueryPropertyStored) {
+        _id -= 2;
+    } else if (_c == QMetaObject::QueryPropertyEditable) {
+        _id -= 2;
+    } else if (_c == QMetaObject::QueryPropertyUser) {
+        _id -= 2;
+    }
+#endif // QT_NO_PROPERTIES
+    return _id;
+}
+
+// SIGNAL 0
+void TransactionList742340::addTransaction(TransactionDetails742340 * _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 0, _a);
+}
+
+// SIGNAL 1
+void TransactionList742340::removeTransaction(qint32 _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 1, _a);
+}
+
+// SIGNAL 2
+void TransactionList742340::rolesChanged(type378cdd _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 2, _a);
+}
+
+// SIGNAL 3
+void TransactionList742340::transactionsChanged(QList<TransactionDetails742340*> _t1)
+{
+    void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
+    QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 QT_WARNING_POP
 QT_END_MOC_NAMESPACE

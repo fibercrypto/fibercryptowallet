@@ -1,8 +1,8 @@
 package history
 
 func init() {
-	HistoryModel_QmlRegisterType2("HistoryModels", 1, 0, "QHistory")
+	TransactionList_QmlRegisterType2("HistoryModels", 1, 0, "QTransactionList")
 	TransactionDetails_QmlRegisterType2("HistoryModels", 1, 0, "QTransactionDetail")
-	AddressDeatails_QmlRegisterType2("HistoryModels", 1, 0, "QAddress")
+	AddressDetails_QmlRegisterType2("HistoryModels", 1, 0, "QAddress")
 	AddressList_QmlRegisterType2("HistoryModels", 1, 0, "QAddressList")
 }

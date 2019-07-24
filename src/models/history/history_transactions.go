@@ -14,6 +14,8 @@ const (
 	TransactionID
 	SentAddress
 	ReceivedAddress
+	Inputs
+	Outputs
 )
 
 const (
