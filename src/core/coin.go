@@ -1,9 +1,22 @@
 package core
 
+type TransactionTimestamp uint64
+type TransactionStatus uint32
+
+const (
+	TXN_STATUS_CREATED TransactionStatus = iota
+	TXN_STATUS_PENDING
+	TXN_STATUS_CONFIRMED
+)
+
 type Transaction interface {
+	SupportedAssets() []string
+	GetTimestamp() TransactionTimestamp
+	GetStatus() TransactionStatus
 	GetInputs() []TransactionInput
 	GetOutputs() []TransactionOutput
 	GetId() string
+	ComputeFee(ticker string)
 }
 
 type TransactionIterator interface {
