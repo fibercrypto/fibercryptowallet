@@ -22,7 +22,7 @@ type SkycoinAddressIterator struct {
 
 func (iter *SkycoinAddressIterator) Value() core.Address {
 	if index == 0 && iter.value == nil {
-		iter.value = &SkycoinTransactionInput{}
+		iter.value = &SkycoinAddress{}
 	}
 	return iter.value
 }
