@@ -82,24 +82,22 @@ RowLayout {
         Menu {
             id: menuTools
             title: qsTr("&Tools")
-            MenuItem {
+
+            CustomMenuItem {
                 text: qsTr("&Outputs")
-                leftPadding: highlighted ? padding * 1.5 : padding
-                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+                iconSource: "qrc:/images/resources/images/icons/outputs.svg" 
 
                 onClicked: outputsRequested()
             }
-            MenuItem {
+            CustomMenuItem {
                 text: qsTr("&Blockchain")
-                leftPadding: highlighted ? padding * 1.5 : padding
-                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
-
+                iconSource: "qrc:/images/resources/images/icons/blockchain.svg" 
+                
                 onClicked: blockchainRequested()
             }
-            MenuItem {
+            CustomMenuItem {
                 text: qsTr("&Networking")
-                leftPadding: highlighted ? padding * 1.5 : padding
-                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+                iconSource: "qrc:/images/resources/images/icons/networking.svg"              
 
                 onClicked: networkingRequested()
             }
@@ -107,17 +105,15 @@ RowLayout {
         Menu {
             id: menuHelp
             title: qsTr("&Help")
-            MenuItem {
+            CustomMenuItem {
                 text: qsTr("&About FiberCrypto")
-                leftPadding: highlighted ? padding * 1.5 : padding
-                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+                iconSource: "qrc:/images/resources/images/icons/appIcon.png"
 
                 onClicked: aboutRequested()
             }
-            MenuItem {
+            CustomMenuItem {
                 text: qsTr("About &Qt")
-                leftPadding: highlighted ? padding * 1.5 : padding
-                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+                iconSource: "qrc:/images/resources/images/icons/qt_logo_green_rgb_256x256.png"
 
                 onClicked: aboutQtRequested()
             }
