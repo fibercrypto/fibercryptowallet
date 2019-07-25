@@ -19,6 +19,10 @@ Item {
         toolPageOpened = true
     }
 
+    function pop() {
+        stackView.pop()
+    }
+
     StackView {
         id: stackView
         initialItem: componentCreateLoadWallet
