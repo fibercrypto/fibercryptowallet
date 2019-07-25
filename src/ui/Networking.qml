@@ -10,29 +10,6 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 Page {
     id: root
 
-    signal backRequested()
-
-    header: RowLayout {
-        spacing: 20
-        ToolButton {
-            id: toolButtonBack
-            icon.source: "qrc:/images/resources/images/icons/back.svg"
-            Layout.alignment: Qt.AlignLeft
-
-            onClicked: {
-                backRequested()
-            }
-        }
-
-        Label {
-            text: qsTr("Networking")
-            font.pointSize: Qt.application.font.pointSize * 2
-            horizontalAlignment: Text.AlignHCenter
-            leftPadding: -(toolButtonBack.width + parent.spacing)
-            Layout.fillWidth: true
-        }
-    }
-
     Frame {
         anchors.fill: parent
         anchors.margins: 20
