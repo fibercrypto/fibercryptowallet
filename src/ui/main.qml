@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -15,11 +16,29 @@ ApplicationWindow {
 
     menuBar: CustomMenuBar {
         id: customMenuBar
-    }
+
+        onOutputsRequested: {
+            // ...
+            menuBarColor = Material.color(Material.Teal)
+            customHeader.text = qsTr("Outputs")
+        }
+
+        onBlockchainRequested: {
+            generalStackView.openBlockchainPage()
+            menuBarColor = Material.color(Material.Red)
+            customHeader.text = qsTr("Blockchain")
+        }
+
+        onNetworkingRequested: {
+            generalStackView.openNetworkingPage()
+            menuBarColor = Material.color(Material.Blue)
+            customHeader.text = qsTr("Networking")
+        }
+    } // CustomMenuBar
 
     CustomHeader {
         id: customHeader
-    }
+    } // CustomHeader
 
     GeneralStackView {
         id: generalStackView
