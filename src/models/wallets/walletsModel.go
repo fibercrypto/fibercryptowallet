@@ -68,8 +68,9 @@ func (m *WalletModel) init() {
 	m.ConnectLoadModel(m.loadModel)
 	
 	
-	m.SetCount(0)
+	
 	m.loadModel()
+	
 
 		
 	
@@ -135,6 +136,7 @@ func (m *WalletModel) addWallet(w *QWallet){
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Wallets()), len(m.Wallets()))
 	m.SetWallets(append(m.Wallets(), w))
 	m.EndInsertRows()
+	m.updateCount()
 	
 
 } 
@@ -151,6 +153,7 @@ func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky, coin
 	w.SetFileName(w.FileName())
 	pIndex := m.Index(row, 0, core.NewQModelIndex())
 	m.DataChanged(pIndex, pIndex, []int{Name, EncryptionEnabled, Sky, CoinHours, FileName})
+	m.updateCount()
 }
 
 
@@ -158,6 +161,7 @@ func (m *WalletModel) removeWallet(row int) {
 	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
 	m.SetWallets(append(m.Wallets()[:row], m.Wallets()[row+1:]...))
 	m.EndRemoveRows()
+	m.updateCount()
 	
 }
 
@@ -190,6 +194,7 @@ func (m *WalletModel) loadModel() {
 	m.BeginResetModel()
 	m.SetWallets(wltsModels)
 	m.EndResetModel()
+	m.updateCount()
 	
 	
 	
