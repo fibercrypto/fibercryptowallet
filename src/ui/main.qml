@@ -100,6 +100,16 @@ ApplicationWindow {
         modal: true
     }
 
+    NumPadDialog {
+        id: numPadDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 540 ? 540 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
 
     // Help dialogs
 
