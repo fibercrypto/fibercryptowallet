@@ -9,6 +9,7 @@ Item {
 
     property bool toolPageOpened: false
     property alias depth: stackView.depth
+    property alias busy: stackView.busy
 
     function openBlockchainPage() {
         stackView.push(componentBlockchain)
