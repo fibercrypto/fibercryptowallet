@@ -6,9 +6,7 @@ import QtQuick.Layouts 1.12
 Dialog {
     id: root
 
-    focus: true
-    modal: true
-    title: Qt.application.name
+    title: qsTr("Unconfigured wallet")
     standardButtons: Dialog.Abort
     closePolicy: Dialog.NoAutoClose
 
