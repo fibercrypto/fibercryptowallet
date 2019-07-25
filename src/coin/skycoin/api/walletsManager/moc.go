@@ -10,7 +10,7 @@ import (
 	"strings"
 	"unsafe"
 
-	custom_models_baab1em "github.com/FiberCryptoWallet/src/coin/skycoin/models"
+	custom_wallets_445aa6m "github.com/fibercrypto/FiberCryptoWallet/src/models/wallets"
 	"github.com/therecipe/qt"
 	std_core "github.com/therecipe/qt/core"
 )
@@ -85,27 +85,27 @@ func NewWalletManagerFromPointer(ptr unsafe.Pointer) (n *WalletManager) {
 }
 func (this *WalletManager) Init() { this.init() }
 
-//export callbackWalletManager3cf9d2_Constructor
-func callbackWalletManager3cf9d2_Constructor(ptr unsafe.Pointer) {
+//export callbackWalletManager64bdd5_Constructor
+func callbackWalletManager64bdd5_Constructor(ptr unsafe.Pointer) {
 	this := NewWalletManagerFromPointer(ptr)
 	qt.Register(ptr, this)
 	this.init()
 }
 
-//export callbackWalletManager3cf9d2_CreateEncryptedWallet
-func callbackWalletManager3cf9d2_CreateEncryptedWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, seed C.struct_Moc_PackedString, label C.struct_Moc_PackedString, password C.struct_Moc_PackedString, scanN C.int) {
+//export callbackWalletManager64bdd5_CreateEncryptedWallet
+func callbackWalletManager64bdd5_CreateEncryptedWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, seed C.struct_Moc_PackedString, label C.struct_Moc_PackedString, password C.struct_Moc_PackedString, scanN C.int) {
 	if signal := qt.GetSignal(ptr, "createEncryptedWallet"); signal != nil {
-		(*(*func(*custom_models_baab1em.WalletModel, string, string, string, int))(signal))(custom_models_baab1em.NewWalletModelFromPointer(walletM), cGoUnpackString(seed), cGoUnpackString(label), cGoUnpackString(password), int(int32(scanN)))
+		(*(*func(*custom_wallets_445aa6m.WalletModel, string, string, string, int))(signal))(custom_wallets_445aa6m.NewWalletModelFromPointer(walletM), cGoUnpackString(seed), cGoUnpackString(label), cGoUnpackString(password), int(int32(scanN)))
 	}
 
 }
 
-func (ptr *WalletManager) ConnectCreateEncryptedWallet(f func(walletM *custom_models_baab1em.WalletModel, seed string, label string, password string, scanN int)) {
+func (ptr *WalletManager) ConnectCreateEncryptedWallet(f func(walletM *custom_wallets_445aa6m.WalletModel, seed string, label string, password string, scanN int)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "createEncryptedWallet"); signal != nil {
-			f := func(walletM *custom_models_baab1em.WalletModel, seed string, label string, password string, scanN int) {
-				(*(*func(*custom_models_baab1em.WalletModel, string, string, string, int))(signal))(walletM, seed, label, password, scanN)
+			f := func(walletM *custom_wallets_445aa6m.WalletModel, seed string, label string, password string, scanN int) {
+				(*(*func(*custom_wallets_445aa6m.WalletModel, string, string, string, int))(signal))(walletM, seed, label, password, scanN)
 				f(walletM, seed, label, password, scanN)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "createEncryptedWallet", unsafe.Pointer(&f))
@@ -122,7 +122,7 @@ func (ptr *WalletManager) DisconnectCreateEncryptedWallet() {
 	}
 }
 
-func (ptr *WalletManager) CreateEncryptedWallet(walletM custom_models_baab1em.WalletModel_ITF, seed string, label string, password string, scanN int) {
+func (ptr *WalletManager) CreateEncryptedWallet(walletM custom_wallets_445aa6m.WalletModel_ITF, seed string, label string, password string, scanN int) {
 	if ptr.Pointer() != nil {
 		var seedC *C.char
 		if seed != "" {
@@ -139,24 +139,24 @@ func (ptr *WalletManager) CreateEncryptedWallet(walletM custom_models_baab1em.Wa
 			passwordC = C.CString(password)
 			defer C.free(unsafe.Pointer(passwordC))
 		}
-		C.WalletManager3cf9d2_CreateEncryptedWallet(ptr.Pointer(), custom_models_baab1em.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: seedC, len: C.longlong(len(seed))}, C.struct_Moc_PackedString{data: labelC, len: C.longlong(len(label))}, C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))}, C.int(int32(scanN)))
+		C.WalletManager64bdd5_CreateEncryptedWallet(ptr.Pointer(), custom_wallets_445aa6m.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: seedC, len: C.longlong(len(seed))}, C.struct_Moc_PackedString{data: labelC, len: C.longlong(len(label))}, C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))}, C.int(int32(scanN)))
 	}
 }
 
-//export callbackWalletManager3cf9d2_CreateUnencryptedWallet
-func callbackWalletManager3cf9d2_CreateUnencryptedWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, seed C.struct_Moc_PackedString, label C.struct_Moc_PackedString, scanN C.int) {
+//export callbackWalletManager64bdd5_CreateUnencryptedWallet
+func callbackWalletManager64bdd5_CreateUnencryptedWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, seed C.struct_Moc_PackedString, label C.struct_Moc_PackedString, scanN C.int) {
 	if signal := qt.GetSignal(ptr, "createUnencryptedWallet"); signal != nil {
-		(*(*func(*custom_models_baab1em.WalletModel, string, string, int))(signal))(custom_models_baab1em.NewWalletModelFromPointer(walletM), cGoUnpackString(seed), cGoUnpackString(label), int(int32(scanN)))
+		(*(*func(*custom_wallets_445aa6m.WalletModel, string, string, int))(signal))(custom_wallets_445aa6m.NewWalletModelFromPointer(walletM), cGoUnpackString(seed), cGoUnpackString(label), int(int32(scanN)))
 	}
 
 }
 
-func (ptr *WalletManager) ConnectCreateUnencryptedWallet(f func(walletM *custom_models_baab1em.WalletModel, seed string, label string, scanN int)) {
+func (ptr *WalletManager) ConnectCreateUnencryptedWallet(f func(walletM *custom_wallets_445aa6m.WalletModel, seed string, label string, scanN int)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "createUnencryptedWallet"); signal != nil {
-			f := func(walletM *custom_models_baab1em.WalletModel, seed string, label string, scanN int) {
-				(*(*func(*custom_models_baab1em.WalletModel, string, string, int))(signal))(walletM, seed, label, scanN)
+			f := func(walletM *custom_wallets_445aa6m.WalletModel, seed string, label string, scanN int) {
+				(*(*func(*custom_wallets_445aa6m.WalletModel, string, string, int))(signal))(walletM, seed, label, scanN)
 				f(walletM, seed, label, scanN)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "createUnencryptedWallet", unsafe.Pointer(&f))
@@ -173,7 +173,7 @@ func (ptr *WalletManager) DisconnectCreateUnencryptedWallet() {
 	}
 }
 
-func (ptr *WalletManager) CreateUnencryptedWallet(walletM custom_models_baab1em.WalletModel_ITF, seed string, label string, scanN int) {
+func (ptr *WalletManager) CreateUnencryptedWallet(walletM custom_wallets_445aa6m.WalletModel_ITF, seed string, label string, scanN int) {
 	if ptr.Pointer() != nil {
 		var seedC *C.char
 		if seed != "" {
@@ -185,12 +185,12 @@ func (ptr *WalletManager) CreateUnencryptedWallet(walletM custom_models_baab1em.
 			labelC = C.CString(label)
 			defer C.free(unsafe.Pointer(labelC))
 		}
-		C.WalletManager3cf9d2_CreateUnencryptedWallet(ptr.Pointer(), custom_models_baab1em.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: seedC, len: C.longlong(len(seed))}, C.struct_Moc_PackedString{data: labelC, len: C.longlong(len(label))}, C.int(int32(scanN)))
+		C.WalletManager64bdd5_CreateUnencryptedWallet(ptr.Pointer(), custom_wallets_445aa6m.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: seedC, len: C.longlong(len(seed))}, C.struct_Moc_PackedString{data: labelC, len: C.longlong(len(label))}, C.int(int32(scanN)))
 	}
 }
 
-//export callbackWalletManager3cf9d2_GetNewSeed
-func callbackWalletManager3cf9d2_GetNewSeed(ptr unsafe.Pointer, entropy C.int) C.struct_Moc_PackedString {
+//export callbackWalletManager64bdd5_GetNewSeed
+func callbackWalletManager64bdd5_GetNewSeed(ptr unsafe.Pointer, entropy C.int) C.struct_Moc_PackedString {
 	if signal := qt.GetSignal(ptr, "getNewSeed"); signal != nil {
 		tempVal := (*(*func(int) string)(signal))(int(int32(entropy)))
 		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
@@ -223,13 +223,13 @@ func (ptr *WalletManager) DisconnectGetNewSeed() {
 
 func (ptr *WalletManager) GetNewSeed(entropy int) string {
 	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.WalletManager3cf9d2_GetNewSeed(ptr.Pointer(), C.int(int32(entropy))))
+		return cGoUnpackString(C.WalletManager64bdd5_GetNewSeed(ptr.Pointer(), C.int(int32(entropy))))
 	}
 	return ""
 }
 
-//export callbackWalletManager3cf9d2_VerifySeed
-func callbackWalletManager3cf9d2_VerifySeed(ptr unsafe.Pointer, seed C.struct_Moc_PackedString) C.int {
+//export callbackWalletManager64bdd5_VerifySeed
+func callbackWalletManager64bdd5_VerifySeed(ptr unsafe.Pointer, seed C.struct_Moc_PackedString) C.int {
 	if signal := qt.GetSignal(ptr, "verifySeed"); signal != nil {
 		return C.int(int32((*(*func(string) int)(signal))(cGoUnpackString(seed))))
 	}
@@ -266,25 +266,25 @@ func (ptr *WalletManager) VerifySeed(seed string) int {
 			seedC = C.CString(seed)
 			defer C.free(unsafe.Pointer(seedC))
 		}
-		return int(int32(C.WalletManager3cf9d2_VerifySeed(ptr.Pointer(), C.struct_Moc_PackedString{data: seedC, len: C.longlong(len(seed))})))
+		return int(int32(C.WalletManager64bdd5_VerifySeed(ptr.Pointer(), C.struct_Moc_PackedString{data: seedC, len: C.longlong(len(seed))})))
 	}
 	return 0
 }
 
-//export callbackWalletManager3cf9d2_NewWalletAddress
-func callbackWalletManager3cf9d2_NewWalletAddress(ptr unsafe.Pointer, addressM unsafe.Pointer, id C.struct_Moc_PackedString, n C.int, password C.struct_Moc_PackedString) {
+//export callbackWalletManager64bdd5_NewWalletAddress
+func callbackWalletManager64bdd5_NewWalletAddress(ptr unsafe.Pointer, addressM unsafe.Pointer, id C.struct_Moc_PackedString, n C.int, password C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "newWalletAddress"); signal != nil {
-		(*(*func(*custom_models_baab1em.AddressesModel, string, int, string))(signal))(custom_models_baab1em.NewAddressesModelFromPointer(addressM), cGoUnpackString(id), int(int32(n)), cGoUnpackString(password))
+		(*(*func(*custom_wallets_445aa6m.AddressesModel, string, int, string))(signal))(custom_wallets_445aa6m.NewAddressesModelFromPointer(addressM), cGoUnpackString(id), int(int32(n)), cGoUnpackString(password))
 	}
 
 }
 
-func (ptr *WalletManager) ConnectNewWalletAddress(f func(addressM *custom_models_baab1em.AddressesModel, id string, n int, password string)) {
+func (ptr *WalletManager) ConnectNewWalletAddress(f func(addressM *custom_wallets_445aa6m.AddressesModel, id string, n int, password string)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "newWalletAddress"); signal != nil {
-			f := func(addressM *custom_models_baab1em.AddressesModel, id string, n int, password string) {
-				(*(*func(*custom_models_baab1em.AddressesModel, string, int, string))(signal))(addressM, id, n, password)
+			f := func(addressM *custom_wallets_445aa6m.AddressesModel, id string, n int, password string) {
+				(*(*func(*custom_wallets_445aa6m.AddressesModel, string, int, string))(signal))(addressM, id, n, password)
 				f(addressM, id, n, password)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "newWalletAddress", unsafe.Pointer(&f))
@@ -301,7 +301,7 @@ func (ptr *WalletManager) DisconnectNewWalletAddress() {
 	}
 }
 
-func (ptr *WalletManager) NewWalletAddress(addressM custom_models_baab1em.AddressesModel_ITF, id string, n int, password string) {
+func (ptr *WalletManager) NewWalletAddress(addressM custom_wallets_445aa6m.AddressesModel_ITF, id string, n int, password string) {
 	if ptr.Pointer() != nil {
 		var idC *C.char
 		if id != "" {
@@ -313,24 +313,24 @@ func (ptr *WalletManager) NewWalletAddress(addressM custom_models_baab1em.Addres
 			passwordC = C.CString(password)
 			defer C.free(unsafe.Pointer(passwordC))
 		}
-		C.WalletManager3cf9d2_NewWalletAddress(ptr.Pointer(), custom_models_baab1em.PointerFromAddressesModel(addressM), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.int(int32(n)), C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
+		C.WalletManager64bdd5_NewWalletAddress(ptr.Pointer(), custom_wallets_445aa6m.PointerFromAddressesModel(addressM), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.int(int32(n)), C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
 	}
 }
 
-//export callbackWalletManager3cf9d2_EncryptWallet
-func callbackWalletManager3cf9d2_EncryptWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, id C.struct_Moc_PackedString, password C.struct_Moc_PackedString) {
+//export callbackWalletManager64bdd5_EncryptWallet
+func callbackWalletManager64bdd5_EncryptWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, id C.struct_Moc_PackedString, password C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "encryptWallet"); signal != nil {
-		(*(*func(*custom_models_baab1em.WalletModel, string, string))(signal))(custom_models_baab1em.NewWalletModelFromPointer(walletM), cGoUnpackString(id), cGoUnpackString(password))
+		(*(*func(*custom_wallets_445aa6m.WalletModel, string, string))(signal))(custom_wallets_445aa6m.NewWalletModelFromPointer(walletM), cGoUnpackString(id), cGoUnpackString(password))
 	}
 
 }
 
-func (ptr *WalletManager) ConnectEncryptWallet(f func(walletM *custom_models_baab1em.WalletModel, id string, password string)) {
+func (ptr *WalletManager) ConnectEncryptWallet(f func(walletM *custom_wallets_445aa6m.WalletModel, id string, password string)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "encryptWallet"); signal != nil {
-			f := func(walletM *custom_models_baab1em.WalletModel, id string, password string) {
-				(*(*func(*custom_models_baab1em.WalletModel, string, string))(signal))(walletM, id, password)
+			f := func(walletM *custom_wallets_445aa6m.WalletModel, id string, password string) {
+				(*(*func(*custom_wallets_445aa6m.WalletModel, string, string))(signal))(walletM, id, password)
 				f(walletM, id, password)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "encryptWallet", unsafe.Pointer(&f))
@@ -347,7 +347,7 @@ func (ptr *WalletManager) DisconnectEncryptWallet() {
 	}
 }
 
-func (ptr *WalletManager) EncryptWallet(walletM custom_models_baab1em.WalletModel_ITF, id string, password string) {
+func (ptr *WalletManager) EncryptWallet(walletM custom_wallets_445aa6m.WalletModel_ITF, id string, password string) {
 	if ptr.Pointer() != nil {
 		var idC *C.char
 		if id != "" {
@@ -359,24 +359,24 @@ func (ptr *WalletManager) EncryptWallet(walletM custom_models_baab1em.WalletMode
 			passwordC = C.CString(password)
 			defer C.free(unsafe.Pointer(passwordC))
 		}
-		C.WalletManager3cf9d2_EncryptWallet(ptr.Pointer(), custom_models_baab1em.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
+		C.WalletManager64bdd5_EncryptWallet(ptr.Pointer(), custom_wallets_445aa6m.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
 	}
 }
 
-//export callbackWalletManager3cf9d2_DecryptWallet
-func callbackWalletManager3cf9d2_DecryptWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, id C.struct_Moc_PackedString, password C.struct_Moc_PackedString) {
+//export callbackWalletManager64bdd5_DecryptWallet
+func callbackWalletManager64bdd5_DecryptWallet(ptr unsafe.Pointer, walletM unsafe.Pointer, id C.struct_Moc_PackedString, password C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "decryptWallet"); signal != nil {
-		(*(*func(*custom_models_baab1em.WalletModel, string, string))(signal))(custom_models_baab1em.NewWalletModelFromPointer(walletM), cGoUnpackString(id), cGoUnpackString(password))
+		(*(*func(*custom_wallets_445aa6m.WalletModel, string, string))(signal))(custom_wallets_445aa6m.NewWalletModelFromPointer(walletM), cGoUnpackString(id), cGoUnpackString(password))
 	}
 
 }
 
-func (ptr *WalletManager) ConnectDecryptWallet(f func(walletM *custom_models_baab1em.WalletModel, id string, password string)) {
+func (ptr *WalletManager) ConnectDecryptWallet(f func(walletM *custom_wallets_445aa6m.WalletModel, id string, password string)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "decryptWallet"); signal != nil {
-			f := func(walletM *custom_models_baab1em.WalletModel, id string, password string) {
-				(*(*func(*custom_models_baab1em.WalletModel, string, string))(signal))(walletM, id, password)
+			f := func(walletM *custom_wallets_445aa6m.WalletModel, id string, password string) {
+				(*(*func(*custom_wallets_445aa6m.WalletModel, string, string))(signal))(walletM, id, password)
 				f(walletM, id, password)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "decryptWallet", unsafe.Pointer(&f))
@@ -393,7 +393,7 @@ func (ptr *WalletManager) DisconnectDecryptWallet() {
 	}
 }
 
-func (ptr *WalletManager) DecryptWallet(walletM custom_models_baab1em.WalletModel_ITF, id string, password string) {
+func (ptr *WalletManager) DecryptWallet(walletM custom_wallets_445aa6m.WalletModel_ITF, id string, password string) {
 	if ptr.Pointer() != nil {
 		var idC *C.char
 		if id != "" {
@@ -405,16 +405,16 @@ func (ptr *WalletManager) DecryptWallet(walletM custom_models_baab1em.WalletMode
 			passwordC = C.CString(password)
 			defer C.free(unsafe.Pointer(passwordC))
 		}
-		C.WalletManager3cf9d2_DecryptWallet(ptr.Pointer(), custom_models_baab1em.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
+		C.WalletManager64bdd5_DecryptWallet(ptr.Pointer(), custom_wallets_445aa6m.PointerFromWalletModel(walletM), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
 	}
 }
 
 func WalletManager_QRegisterMetaType() int {
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QRegisterMetaType()))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType()))
 }
 
 func (ptr *WalletManager) QRegisterMetaType() int {
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QRegisterMetaType()))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType()))
 }
 
 func WalletManager_QRegisterMetaType2(typeName string) int {
@@ -423,7 +423,7 @@ func WalletManager_QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType2(typeNameC)))
 }
 
 func (ptr *WalletManager) QRegisterMetaType2(typeName string) int {
@@ -432,15 +432,15 @@ func (ptr *WalletManager) QRegisterMetaType2(typeName string) int {
 		typeNameC = C.CString(typeName)
 		defer C.free(unsafe.Pointer(typeNameC))
 	}
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QRegisterMetaType2(typeNameC)))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType2(typeNameC)))
 }
 
 func WalletManager_QmlRegisterType() int {
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QmlRegisterType()))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QmlRegisterType()))
 }
 
 func (ptr *WalletManager) QmlRegisterType() int {
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QmlRegisterType()))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QmlRegisterType()))
 }
 
 func WalletManager_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -454,7 +454,7 @@ func WalletManager_QmlRegisterType2(uri string, versionMajor int, versionMinor i
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *WalletManager) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
@@ -468,12 +468,12 @@ func (ptr *WalletManager) QmlRegisterType2(uri string, versionMajor int, version
 		qmlNameC = C.CString(qmlName)
 		defer C.free(unsafe.Pointer(qmlNameC))
 	}
-	return int(int32(C.WalletManager3cf9d2_WalletManager3cf9d2_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+	return int(int32(C.WalletManager64bdd5_WalletManager64bdd5_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
 }
 
 func (ptr *WalletManager) __children_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager3cf9d2___children_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager64bdd5___children_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -484,17 +484,17 @@ func (ptr *WalletManager) __children_atList(i int) *std_core.QObject {
 
 func (ptr *WalletManager) __children_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.WalletManager64bdd5___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *WalletManager) __children_newList() unsafe.Pointer {
-	return C.WalletManager3cf9d2___children_newList(ptr.Pointer())
+	return C.WalletManager64bdd5___children_newList(ptr.Pointer())
 }
 
 func (ptr *WalletManager) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.WalletManager3cf9d2___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQByteArrayFromPointer(C.WalletManager64bdd5___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
 		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
 		return tmpValue
 	}
@@ -503,17 +503,17 @@ func (ptr *WalletManager) __dynamicPropertyNames_atList(i int) *std_core.QByteAr
 
 func (ptr *WalletManager) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
+		C.WalletManager64bdd5___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
 	}
 }
 
 func (ptr *WalletManager) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return C.WalletManager3cf9d2___dynamicPropertyNames_newList(ptr.Pointer())
+	return C.WalletManager64bdd5___dynamicPropertyNames_newList(ptr.Pointer())
 }
 
 func (ptr *WalletManager) __findChildren_atList(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager3cf9d2___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager64bdd5___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -524,17 +524,17 @@ func (ptr *WalletManager) __findChildren_atList(i int) *std_core.QObject {
 
 func (ptr *WalletManager) __findChildren_setList(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.WalletManager64bdd5___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *WalletManager) __findChildren_newList() unsafe.Pointer {
-	return C.WalletManager3cf9d2___findChildren_newList(ptr.Pointer())
+	return C.WalletManager64bdd5___findChildren_newList(ptr.Pointer())
 }
 
 func (ptr *WalletManager) __findChildren_atList3(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager3cf9d2___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager64bdd5___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -545,17 +545,17 @@ func (ptr *WalletManager) __findChildren_atList3(i int) *std_core.QObject {
 
 func (ptr *WalletManager) __findChildren_setList3(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.WalletManager64bdd5___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *WalletManager) __findChildren_newList3() unsafe.Pointer {
-	return C.WalletManager3cf9d2___findChildren_newList3(ptr.Pointer())
+	return C.WalletManager64bdd5___findChildren_newList3(ptr.Pointer())
 }
 
 func (ptr *WalletManager) __qFindChildren_atList2(i int) *std_core.QObject {
 	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager3cf9d2___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		tmpValue := std_core.NewQObjectFromPointer(C.WalletManager64bdd5___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
 		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 		}
@@ -566,24 +566,24 @@ func (ptr *WalletManager) __qFindChildren_atList2(i int) *std_core.QObject {
 
 func (ptr *WalletManager) __qFindChildren_setList2(i std_core.QObject_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
+		C.WalletManager64bdd5___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
 	}
 }
 
 func (ptr *WalletManager) __qFindChildren_newList2() unsafe.Pointer {
-	return C.WalletManager3cf9d2___qFindChildren_newList2(ptr.Pointer())
+	return C.WalletManager64bdd5___qFindChildren_newList2(ptr.Pointer())
 }
 
 func NewWalletManager(parent std_core.QObject_ITF) *WalletManager {
-	tmpValue := NewWalletManagerFromPointer(C.WalletManager3cf9d2_NewWalletManager(std_core.PointerFromQObject(parent)))
+	tmpValue := NewWalletManagerFromPointer(C.WalletManager64bdd5_NewWalletManager(std_core.PointerFromQObject(parent)))
 	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
 		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
 	}
 	return tmpValue
 }
 
-//export callbackWalletManager3cf9d2_DestroyWalletManager
-func callbackWalletManager3cf9d2_DestroyWalletManager(ptr unsafe.Pointer) {
+//export callbackWalletManager64bdd5_DestroyWalletManager
+func callbackWalletManager64bdd5_DestroyWalletManager(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "~WalletManager"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -615,7 +615,7 @@ func (ptr *WalletManager) DisconnectDestroyWalletManager() {
 
 func (ptr *WalletManager) DestroyWalletManager() {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_DestroyWalletManager(ptr.Pointer())
+		C.WalletManager64bdd5_DestroyWalletManager(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
@@ -623,14 +623,14 @@ func (ptr *WalletManager) DestroyWalletManager() {
 
 func (ptr *WalletManager) DestroyWalletManagerDefault() {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_DestroyWalletManagerDefault(ptr.Pointer())
+		C.WalletManager64bdd5_DestroyWalletManagerDefault(ptr.Pointer())
 		ptr.SetPointer(nil)
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackWalletManager3cf9d2_ChildEvent
-func callbackWalletManager3cf9d2_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackWalletManager64bdd5_ChildEvent
+func callbackWalletManager64bdd5_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
 		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
 	} else {
@@ -640,12 +640,12 @@ func callbackWalletManager3cf9d2_ChildEvent(ptr unsafe.Pointer, event unsafe.Poi
 
 func (ptr *WalletManager) ChildEventDefault(event std_core.QChildEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
+		C.WalletManager64bdd5_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
 	}
 }
 
-//export callbackWalletManager3cf9d2_ConnectNotify
-func callbackWalletManager3cf9d2_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackWalletManager64bdd5_ConnectNotify
+func callbackWalletManager64bdd5_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -655,12 +655,12 @@ func callbackWalletManager3cf9d2_ConnectNotify(ptr unsafe.Pointer, sign unsafe.P
 
 func (ptr *WalletManager) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.WalletManager64bdd5_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackWalletManager3cf9d2_CustomEvent
-func callbackWalletManager3cf9d2_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackWalletManager64bdd5_CustomEvent
+func callbackWalletManager64bdd5_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
 		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
 	} else {
@@ -670,12 +670,12 @@ func callbackWalletManager3cf9d2_CustomEvent(ptr unsafe.Pointer, event unsafe.Po
 
 func (ptr *WalletManager) CustomEventDefault(event std_core.QEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
+		C.WalletManager64bdd5_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
 	}
 }
 
-//export callbackWalletManager3cf9d2_DeleteLater
-func callbackWalletManager3cf9d2_DeleteLater(ptr unsafe.Pointer) {
+//export callbackWalletManager64bdd5_DeleteLater
+func callbackWalletManager64bdd5_DeleteLater(ptr unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
 		(*(*func())(signal))()
 	} else {
@@ -685,13 +685,13 @@ func callbackWalletManager3cf9d2_DeleteLater(ptr unsafe.Pointer) {
 
 func (ptr *WalletManager) DeleteLaterDefault() {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_DeleteLaterDefault(ptr.Pointer())
+		C.WalletManager64bdd5_DeleteLaterDefault(ptr.Pointer())
 		runtime.SetFinalizer(ptr, nil)
 	}
 }
 
-//export callbackWalletManager3cf9d2_Destroyed
-func callbackWalletManager3cf9d2_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
+//export callbackWalletManager64bdd5_Destroyed
+func callbackWalletManager64bdd5_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
 		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
 	}
@@ -699,8 +699,8 @@ func callbackWalletManager3cf9d2_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointe
 
 }
 
-//export callbackWalletManager3cf9d2_DisconnectNotify
-func callbackWalletManager3cf9d2_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+//export callbackWalletManager64bdd5_DisconnectNotify
+func callbackWalletManager64bdd5_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
 		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
 	} else {
@@ -710,12 +710,12 @@ func callbackWalletManager3cf9d2_DisconnectNotify(ptr unsafe.Pointer, sign unsaf
 
 func (ptr *WalletManager) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+		C.WalletManager64bdd5_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
 	}
 }
 
-//export callbackWalletManager3cf9d2_Event
-func callbackWalletManager3cf9d2_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
+//export callbackWalletManager64bdd5_Event
+func callbackWalletManager64bdd5_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "event"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
 	}
@@ -725,13 +725,13 @@ func callbackWalletManager3cf9d2_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.c
 
 func (ptr *WalletManager) EventDefault(e std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.WalletManager3cf9d2_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
+		return int8(C.WalletManager64bdd5_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
 	}
 	return false
 }
 
-//export callbackWalletManager3cf9d2_EventFilter
-func callbackWalletManager3cf9d2_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
+//export callbackWalletManager64bdd5_EventFilter
+func callbackWalletManager64bdd5_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
 	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
 		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
 	}
@@ -741,21 +741,21 @@ func callbackWalletManager3cf9d2_EventFilter(ptr unsafe.Pointer, watched unsafe.
 
 func (ptr *WalletManager) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
 	if ptr.Pointer() != nil {
-		return int8(C.WalletManager3cf9d2_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
+		return int8(C.WalletManager64bdd5_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
 	}
 	return false
 }
 
-//export callbackWalletManager3cf9d2_ObjectNameChanged
-func callbackWalletManager3cf9d2_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
+//export callbackWalletManager64bdd5_ObjectNameChanged
+func callbackWalletManager64bdd5_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
 		(*(*func(string))(signal))(cGoUnpackString(objectName))
 	}
 
 }
 
-//export callbackWalletManager3cf9d2_TimerEvent
-func callbackWalletManager3cf9d2_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+//export callbackWalletManager64bdd5_TimerEvent
+func callbackWalletManager64bdd5_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
 	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
 		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
 	} else {
@@ -765,6 +765,6 @@ func callbackWalletManager3cf9d2_TimerEvent(ptr unsafe.Pointer, event unsafe.Poi
 
 func (ptr *WalletManager) TimerEventDefault(event std_core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
-		C.WalletManager3cf9d2_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
+		C.WalletManager64bdd5_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
 	}
 }

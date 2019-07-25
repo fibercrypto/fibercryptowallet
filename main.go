@@ -4,10 +4,10 @@ import (
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
-	//"github.com/therecipe/qt/quick"
-	//"github.com/therecipe/qt/widgets"
+	
 	"os"
-	_ "github.com/FiberCryptoWallet/src/coin/skycoin/api/walletsManager"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/api/walletsManager"
+	
 )
 
 func main() {

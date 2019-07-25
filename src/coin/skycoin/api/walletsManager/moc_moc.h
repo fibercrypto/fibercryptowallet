@@ -20,21 +20,21 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_WalletManager3cf9d2_t {
+struct qt_meta_stringdata_WalletManager64bdd5_t {
     QByteArrayData data[20];
     char stringdata0[231];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_WalletManager3cf9d2_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_WalletManager64bdd5_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_WalletManager3cf9d2_t qt_meta_stringdata_WalletManager3cf9d2 = {
+static const qt_meta_stringdata_WalletManager64bdd5_t qt_meta_stringdata_WalletManager64bdd5 = {
     {
-QT_MOC_LITERAL(0, 0, 19), // "WalletManager3cf9d2"
+QT_MOC_LITERAL(0, 0, 19), // "WalletManager64bdd5"
 QT_MOC_LITERAL(1, 20, 21), // "createEncryptedWallet"
 QT_MOC_LITERAL(2, 42, 0), // ""
-QT_MOC_LITERAL(3, 43, 18), // "WalletModelbaab1e*"
+QT_MOC_LITERAL(3, 43, 18), // "WalletModel445aa6*"
 QT_MOC_LITERAL(4, 62, 7), // "walletM"
 QT_MOC_LITERAL(5, 70, 4), // "seed"
 QT_MOC_LITERAL(6, 75, 5), // "label"
@@ -45,7 +45,7 @@ QT_MOC_LITERAL(10, 120, 10), // "getNewSeed"
 QT_MOC_LITERAL(11, 131, 7), // "entropy"
 QT_MOC_LITERAL(12, 139, 10), // "verifySeed"
 QT_MOC_LITERAL(13, 150, 16), // "newWalletAddress"
-QT_MOC_LITERAL(14, 167, 21), // "AddressesModelbaab1e*"
+QT_MOC_LITERAL(14, 167, 21), // "AddressesModel445aa6*"
 QT_MOC_LITERAL(15, 189, 8), // "addressM"
 QT_MOC_LITERAL(16, 198, 2), // "id"
 QT_MOC_LITERAL(17, 201, 1), // "n"
@@ -53,16 +53,16 @@ QT_MOC_LITERAL(18, 203, 13), // "encryptWallet"
 QT_MOC_LITERAL(19, 217, 13) // "decryptWallet"
 
     },
-    "WalletManager3cf9d2\0createEncryptedWallet\0"
-    "\0WalletModelbaab1e*\0walletM\0seed\0label\0"
+    "WalletManager64bdd5\0createEncryptedWallet\0"
+    "\0WalletModel445aa6*\0walletM\0seed\0label\0"
     "password\0scanN\0createUnencryptedWallet\0"
     "getNewSeed\0entropy\0verifySeed\0"
-    "newWalletAddress\0AddressesModelbaab1e*\0"
+    "newWalletAddress\0AddressesModel445aa6*\0"
     "addressM\0id\0n\0encryptWallet\0decryptWallet"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_WalletManager3cf9d2[] = {
+static const uint qt_meta_data_WalletManager64bdd5[] = {
 
  // content:
        8,       // revision
@@ -96,50 +96,50 @@ static const uint qt_meta_data_WalletManager3cf9d2[] = {
        0        // eod
 };
 
-void WalletManager3cf9d2::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void WalletManager64bdd5::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<WalletManager3cf9d2 *>(_o);
+        auto *_t = static_cast<WalletManager64bdd5 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: _t->createEncryptedWallet((*reinterpret_cast< WalletModelbaab1e*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< qint32(*)>(_a[5]))); break;
-        case 1: _t->createUnencryptedWallet((*reinterpret_cast< WalletModelbaab1e*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< qint32(*)>(_a[4]))); break;
+        case 0: _t->createEncryptedWallet((*reinterpret_cast< WalletModel445aa6*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4])),(*reinterpret_cast< qint32(*)>(_a[5]))); break;
+        case 1: _t->createUnencryptedWallet((*reinterpret_cast< WalletModel445aa6*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3])),(*reinterpret_cast< qint32(*)>(_a[4]))); break;
         case 2: { QString _r = _t->getNewSeed((*reinterpret_cast< qint32(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QString*>(_a[0]) = std::move(_r); }  break;
         case 3: { qint32 _r = _t->verifySeed((*reinterpret_cast< QString(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< qint32*>(_a[0]) = std::move(_r); }  break;
-        case 4: _t->newWalletAddress((*reinterpret_cast< AddressesModelbaab1e*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< qint32(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4]))); break;
-        case 5: _t->encryptWallet((*reinterpret_cast< WalletModelbaab1e*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
-        case 6: _t->decryptWallet((*reinterpret_cast< WalletModelbaab1e*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
+        case 4: _t->newWalletAddress((*reinterpret_cast< AddressesModel445aa6*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< qint32(*)>(_a[3])),(*reinterpret_cast< QString(*)>(_a[4]))); break;
+        case 5: _t->encryptWallet((*reinterpret_cast< WalletModel445aa6*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
+        case 6: _t->decryptWallet((*reinterpret_cast< WalletModel445aa6*(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< QString(*)>(_a[3]))); break;
         default: ;
         }
     }
 }
 
-QT_INIT_METAOBJECT const QMetaObject WalletManager3cf9d2::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject WalletManager64bdd5::staticMetaObject = { {
     &QObject::staticMetaObject,
-    qt_meta_stringdata_WalletManager3cf9d2.data,
-    qt_meta_data_WalletManager3cf9d2,
+    qt_meta_stringdata_WalletManager64bdd5.data,
+    qt_meta_data_WalletManager64bdd5,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *WalletManager3cf9d2::metaObject() const
+const QMetaObject *WalletManager64bdd5::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *WalletManager3cf9d2::qt_metacast(const char *_clname)
+void *WalletManager64bdd5::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_WalletManager3cf9d2.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_WalletManager64bdd5.stringdata0))
         return static_cast<void*>(this);
     return QObject::qt_metacast(_clname);
 }
 
-int WalletManager3cf9d2::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int WalletManager64bdd5::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)

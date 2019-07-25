@@ -6,7 +6,7 @@ import (
 
 //Return address of daemon node----TODO
 func nodeAddress() string {
-	return "http://127.0.0.1:38391"
+	return "http://127.0.0.1:40805"
 }
 
 //Return username of daemon node----TODO
@@ -19,7 +19,7 @@ func nodePassword() string {
 	return "P@ssw0rd!"
 }
 
-func newClient() *api.Client {
+func NewClient() *api.Client {
 	c := api.NewClient(nodeAddress())
 	//c.SetAuth(nodeUsername(), nodePassword())
 	return c

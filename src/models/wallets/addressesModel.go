@@ -1,8 +1,8 @@
-package models
+package wallets
 
 import (
 		"github.com/therecipe/qt/core"
-		"github.com/FiberCryptoWallet/src/util"
+		"github.com/fibercrypto/FiberCryptoWallet/src/util"
 		
 )
 
@@ -151,7 +151,7 @@ func (m *AddressesModel) loadModel(wallet string){
 }
 
 func getQAddresses(wallet string) ([]*QAddress, error) {
-	c := util.newClient()
+	c := util.NewClient()
 	wlt, err := c.Wallet(wallet)
 	if err != nil {
 		return nil, err

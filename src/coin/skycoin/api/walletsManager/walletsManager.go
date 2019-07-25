@@ -1,10 +1,9 @@
 package walletsManager
 
 import (
-	"github.com/skycoin/skycoin/src/api"
 	"github.com/therecipe/qt/core"
-	"github.com/FiberCryptoWallet/src/coin/skycoin/models"
-	"github.com/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/models/wallets"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	
 )
@@ -12,14 +11,8 @@ import (
 
 
 
-
 func init() {
-	WalletModel_QmlRegisterType2("WalletsManager", 1, 0, "WalletModel")
-	QWallet_QmlRegisterType2("WalletsManager", 1, 0, "QWallet")
-	AddressesModel_QmlRegisterType2("WalletsManager", 1, 0, "AddressModel")
-	QAddress_QmlRegisterType2("WalletsManager", 1, 0, "QAddress")
-	WalletManager_QmlRegisterType2("WalletsManager", 1, 0, "WalletManager")
-	
+	WalletManager_QmlRegisterType2("WalletsManager", 1, 0, "WalletManager")	
 }
 
 
@@ -27,13 +20,13 @@ func init() {
 type WalletManager struct {
 	core.QObject
 	_ func ()	`constructor:"init"`
-	_ func(walletM *WalletModel, seed string, label string, password string, scanN int)	`slot:"createEncryptedWallet"`
-	_ func(walletM *WalletModel, seed string, label string, scanN int) 	`slot:"createUnencryptedWallet"`
+	_ func(walletM *wallets.WalletModel, seed string, label string, password string, scanN int)	`slot:"createEncryptedWallet"`
+	_ func(walletM *wallets.WalletModel, seed string, label string, scanN int) 	`slot:"createUnencryptedWallet"`
 	_ func(entropy int) string `slot:"getNewSeed"`
 	_ func(seed string) int  `slot:"verifySeed"`
-	_ func(addressM *AddressesModel, id string, n int, password string)	`slot:"newWalletAddress"`
-	_ func(walletM *WalletModel, id string, password string)	`slot:"encryptWallet"`
-	_ func(walletM *WalletModel, id string, password string)	`slot:"decryptWallet"`
+	_ func(addressM *wallets.AddressesModel, id string, n int, password string)	`slot:"newWalletAddress"`
+	_ func(walletM *wallets.WalletModel, id string, password string)	`slot:"encryptWallet"`
+	_ func(walletM *wallets.WalletModel, id string, password string)	`slot:"decryptWallet"`
 
 }
 
@@ -47,21 +40,21 @@ func (walletM *WalletManager) init(){
 }
 
 
-func createEncryptedWallet(walletModel *WalletModel, seed, label, password string, scanN int){
-	c := util.newClient()
+func createEncryptedWallet(walletModel *wallets.WalletModel, seed, label, password string, scanN int){
+	c := util.NewClient()
 	_, err := c.CreateEncryptedWallet(seed, label, password, scanN)
 	if err != nil{
 		return
 	}
 }
 
-func createUnencryptedWallet(walletModel *WalletModel ,seed, label string, scanN int){
-	c := util.newClient()
+func createUnencryptedWallet(walletModel *wallets.WalletModel ,seed, label string, scanN int){
+	c := util.NewClient()
 	wlt, err := c.CreateUnencryptedWallet(seed, label, scanN)
 	if err!= nil{
 		return
 	}
-	qwallet, err := walletResponseToQWallet(wlt)
+	qwallet, err := wallets.WalletResponseToQWallet(wlt)
 	if err != nil{
 		return
 	}
@@ -69,7 +62,7 @@ func createUnencryptedWallet(walletModel *WalletModel ,seed, label string, scanN
 }
 
 func getNewSeed(entropy int) string{
-	c := util.newClient()
+	c := util.NewClient()
 	seed, err := c.NewSeed(entropy)
 	if err != nil {
 		return ""
@@ -79,7 +72,7 @@ func getNewSeed(entropy int) string{
 }
 
 func verifySeed(seed string) int{
-	c := util.newClient()
+	c := util.NewClient()
 	ok, err := c.VerifySeed(seed)
 	if err != nil{
 		return 0
@@ -91,8 +84,8 @@ func verifySeed(seed string) int{
 	return 1
 }
 
-func newWalletAddress(addressModel *AddressesModel, label string, n int, password string){
-	c := util.newClient()
+func newWalletAddress(addressesM *wallets.AddressesModel, label string, n int, password string){
+	c := util.NewClient()
 	_, err := c.NewWalletAddress(label, n, password)
 	if err != nil{
 		return
@@ -100,16 +93,16 @@ func newWalletAddress(addressModel *AddressesModel, label string, n int, passwor
 
 }
 
-func encryptWallet(walletModel *WalletModel, label, password string){
-	c := util.newClient()
+func encryptWallet(walletM *wallets.WalletModel, label, password string){
+	c := util.NewClient()
 	_, err := c.EncryptWallet(label, password)
 	if err != nil{
 		return
 	}
 }
 
-func decryptWallet(walletModel *WalletModel, label, password string){
-	c := util.newClient()
+func decryptWallet(walletM *wallets.WalletModel, label, password string){
+	c := util.NewClient()
 	_, err := c.DecryptWallet(label, password)
 	if err != nil {
 		return

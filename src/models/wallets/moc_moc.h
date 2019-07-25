@@ -21,29 +21,29 @@
 QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
-struct qt_meta_stringdata_AddressesModelbaab1e_t {
+struct qt_meta_stringdata_AddressesModel445aa6_t {
     QByteArrayData data[19];
     char stringdata0[198];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_AddressesModelbaab1e_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_AddressesModel445aa6_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_AddressesModelbaab1e_t qt_meta_stringdata_AddressesModelbaab1e = {
+static const qt_meta_stringdata_AddressesModel445aa6_t qt_meta_stringdata_AddressesModel445aa6 = {
     {
-QT_MOC_LITERAL(0, 0, 20), // "AddressesModelbaab1e"
+QT_MOC_LITERAL(0, 0, 20), // "AddressesModel445aa6"
 QT_MOC_LITERAL(1, 21, 12), // "rolesChanged"
 QT_MOC_LITERAL(2, 34, 0), // ""
 QT_MOC_LITERAL(3, 35, 10), // "type378cdd"
 QT_MOC_LITERAL(4, 46, 5), // "roles"
 QT_MOC_LITERAL(5, 52, 16), // "addressesChanged"
-QT_MOC_LITERAL(6, 69, 22), // "QList<QAddressbaab1e*>"
+QT_MOC_LITERAL(6, 69, 22), // "QList<QAddress445aa6*>"
 QT_MOC_LITERAL(7, 92, 9), // "addresses"
 QT_MOC_LITERAL(8, 102, 13), // "loadedChanged"
 QT_MOC_LITERAL(9, 116, 6), // "loaded"
 QT_MOC_LITERAL(10, 123, 10), // "addAddress"
-QT_MOC_LITERAL(11, 134, 15), // "QAddressbaab1e*"
+QT_MOC_LITERAL(11, 134, 15), // "QAddress445aa6*"
 QT_MOC_LITERAL(12, 150, 2), // "v0"
 QT_MOC_LITERAL(13, 153, 13), // "removeAddress"
 QT_MOC_LITERAL(14, 167, 11), // "editAddress"
@@ -53,16 +53,16 @@ QT_MOC_LITERAL(17, 185, 2), // "v3"
 QT_MOC_LITERAL(18, 188, 9) // "loadModel"
 
     },
-    "AddressesModelbaab1e\0rolesChanged\0\0"
+    "AddressesModel445aa6\0rolesChanged\0\0"
     "type378cdd\0roles\0addressesChanged\0"
-    "QList<QAddressbaab1e*>\0addresses\0"
+    "QList<QAddress445aa6*>\0addresses\0"
     "loadedChanged\0loaded\0addAddress\0"
-    "QAddressbaab1e*\0v0\0removeAddress\0"
+    "QAddress445aa6*\0v0\0removeAddress\0"
     "editAddress\0v1\0v2\0v3\0loadModel"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_AddressesModelbaab1e[] = {
+static const uint qt_meta_data_AddressesModel445aa6[] = {
 
  // content:
        8,       // revision
@@ -110,16 +110,16 @@ static const uint qt_meta_data_AddressesModelbaab1e[] = {
        0        // eod
 };
 
-void AddressesModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void AddressesModel445aa6::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<AddressesModelbaab1e *>(_o);
+        auto *_t = static_cast<AddressesModel445aa6 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->rolesChanged((*reinterpret_cast< type378cdd(*)>(_a[1]))); break;
-        case 1: _t->addressesChanged((*reinterpret_cast< QList<QAddressbaab1e*>(*)>(_a[1]))); break;
+        case 1: _t->addressesChanged((*reinterpret_cast< QList<QAddress445aa6*>(*)>(_a[1]))); break;
         case 2: _t->loadedChanged((*reinterpret_cast< qint32(*)>(_a[1]))); break;
-        case 3: _t->addAddress((*reinterpret_cast< QAddressbaab1e*(*)>(_a[1]))); break;
+        case 3: _t->addAddress((*reinterpret_cast< QAddress445aa6*(*)>(_a[1]))); break;
         case 4: _t->removeAddress((*reinterpret_cast< qint32(*)>(_a[1]))); break;
         case 5: _t->editAddress((*reinterpret_cast< qint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< quint64(*)>(_a[3])),(*reinterpret_cast< quint64(*)>(_a[4]))); break;
         case 6: _t->loadModel((*reinterpret_cast< QString(*)>(_a[1]))); break;
@@ -132,36 +132,36 @@ void AddressesModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QAddressbaab1e*> >(); break;
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QAddress445aa6*> >(); break;
             }
             break;
         case 3:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QAddressbaab1e* >(); break;
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QAddress445aa6* >(); break;
             }
             break;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (AddressesModelbaab1e::*)(type378cdd );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressesModelbaab1e::rolesChanged)) {
+            using _t = void (AddressesModel445aa6::*)(type378cdd );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressesModel445aa6::rolesChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
-            using _t = void (AddressesModelbaab1e::*)(QList<QAddressbaab1e*> );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressesModelbaab1e::addressesChanged)) {
+            using _t = void (AddressesModel445aa6::*)(QList<QAddress445aa6*> );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressesModel445aa6::addressesChanged)) {
                 *result = 1;
                 return;
             }
         }
         {
-            using _t = void (AddressesModelbaab1e::*)(qint32 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressesModelbaab1e::loadedChanged)) {
+            using _t = void (AddressesModel445aa6::*)(qint32 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&AddressesModel445aa6::loadedChanged)) {
                 *result = 2;
                 return;
             }
@@ -170,28 +170,28 @@ void AddressesModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
         case 1:
-            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QAddressbaab1e*> >(); break;
+            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QAddress445aa6*> >(); break;
         }
     }
 
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
-        auto *_t = static_cast<AddressesModelbaab1e *>(_o);
+        auto *_t = static_cast<AddressesModel445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
         case 0: *reinterpret_cast< type378cdd*>(_v) = _t->roles(); break;
-        case 1: *reinterpret_cast< QList<QAddressbaab1e*>*>(_v) = _t->addresses(); break;
+        case 1: *reinterpret_cast< QList<QAddress445aa6*>*>(_v) = _t->addresses(); break;
         case 2: *reinterpret_cast< qint32*>(_v) = _t->loaded(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
-        auto *_t = static_cast<AddressesModelbaab1e *>(_o);
+        auto *_t = static_cast<AddressesModel445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
         case 0: _t->setRoles(*reinterpret_cast< type378cdd*>(_v)); break;
-        case 1: _t->setAddresses(*reinterpret_cast< QList<QAddressbaab1e*>*>(_v)); break;
+        case 1: _t->setAddresses(*reinterpret_cast< QList<QAddress445aa6*>*>(_v)); break;
         case 2: _t->setLoaded(*reinterpret_cast< qint32*>(_v)); break;
         default: break;
         }
@@ -200,30 +200,30 @@ void AddressesModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
 #endif // QT_NO_PROPERTIES
 }
 
-QT_INIT_METAOBJECT const QMetaObject AddressesModelbaab1e::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject AddressesModel445aa6::staticMetaObject = { {
     &QAbstractListModel::staticMetaObject,
-    qt_meta_stringdata_AddressesModelbaab1e.data,
-    qt_meta_data_AddressesModelbaab1e,
+    qt_meta_stringdata_AddressesModel445aa6.data,
+    qt_meta_data_AddressesModel445aa6,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *AddressesModelbaab1e::metaObject() const
+const QMetaObject *AddressesModel445aa6::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *AddressesModelbaab1e::qt_metacast(const char *_clname)
+void *AddressesModel445aa6::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_AddressesModelbaab1e.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_AddressesModel445aa6.stringdata0))
         return static_cast<void*>(this);
     return QAbstractListModel::qt_metacast(_clname);
 }
 
-int AddressesModelbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int AddressesModel445aa6::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QAbstractListModel::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -258,37 +258,37 @@ int AddressesModelbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void AddressesModelbaab1e::rolesChanged(type378cdd _t1)
+void AddressesModel445aa6::rolesChanged(type378cdd _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void AddressesModelbaab1e::addressesChanged(QList<QAddressbaab1e*> _t1)
+void AddressesModel445aa6::addressesChanged(QList<QAddress445aa6*> _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
 // SIGNAL 2
-void AddressesModelbaab1e::loadedChanged(qint32 _t1)
+void AddressesModel445aa6::loadedChanged(qint32 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
-struct qt_meta_stringdata_QAddressbaab1e_t {
+struct qt_meta_stringdata_QAddress445aa6_t {
     QByteArrayData data[8];
     char stringdata0[109];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_QAddressbaab1e_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_QAddress445aa6_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_QAddressbaab1e_t qt_meta_stringdata_QAddressbaab1e = {
+static const qt_meta_stringdata_QAddress445aa6_t qt_meta_stringdata_QAddress445aa6 = {
     {
-QT_MOC_LITERAL(0, 0, 14), // "QAddressbaab1e"
+QT_MOC_LITERAL(0, 0, 14), // "QAddress445aa6"
 QT_MOC_LITERAL(1, 15, 14), // "addressChanged"
 QT_MOC_LITERAL(2, 30, 0), // ""
 QT_MOC_LITERAL(3, 31, 7), // "address"
@@ -298,13 +298,13 @@ QT_MOC_LITERAL(6, 68, 23), // "addressCoinHoursChanged"
 QT_MOC_LITERAL(7, 92, 16) // "addressCoinHours"
 
     },
-    "QAddressbaab1e\0addressChanged\0\0address\0"
+    "QAddress445aa6\0addressChanged\0\0address\0"
     "addressSkyChanged\0addressSky\0"
     "addressCoinHoursChanged\0addressCoinHours"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_QAddressbaab1e[] = {
+static const uint qt_meta_data_QAddress445aa6[] = {
 
  // content:
        8,       // revision
@@ -340,10 +340,10 @@ static const uint qt_meta_data_QAddressbaab1e[] = {
        0        // eod
 };
 
-void QAddressbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void QAddress445aa6::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<QAddressbaab1e *>(_o);
+        auto *_t = static_cast<QAddress445aa6 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->addressChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
@@ -354,22 +354,22 @@ void QAddressbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (QAddressbaab1e::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QAddressbaab1e::addressChanged)) {
+            using _t = void (QAddress445aa6::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QAddress445aa6::addressChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
-            using _t = void (QAddressbaab1e::*)(quint64 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QAddressbaab1e::addressSkyChanged)) {
+            using _t = void (QAddress445aa6::*)(quint64 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QAddress445aa6::addressSkyChanged)) {
                 *result = 1;
                 return;
             }
         }
         {
-            using _t = void (QAddressbaab1e::*)(quint64 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QAddressbaab1e::addressCoinHoursChanged)) {
+            using _t = void (QAddress445aa6::*)(quint64 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QAddress445aa6::addressCoinHoursChanged)) {
                 *result = 2;
                 return;
             }
@@ -377,7 +377,7 @@ void QAddressbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
-        auto *_t = static_cast<QAddressbaab1e *>(_o);
+        auto *_t = static_cast<QAddress445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
@@ -387,7 +387,7 @@ void QAddressbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
-        auto *_t = static_cast<QAddressbaab1e *>(_o);
+        auto *_t = static_cast<QAddress445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
@@ -401,30 +401,30 @@ void QAddressbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _
 #endif // QT_NO_PROPERTIES
 }
 
-QT_INIT_METAOBJECT const QMetaObject QAddressbaab1e::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject QAddress445aa6::staticMetaObject = { {
     &QObject::staticMetaObject,
-    qt_meta_stringdata_QAddressbaab1e.data,
-    qt_meta_data_QAddressbaab1e,
+    qt_meta_stringdata_QAddress445aa6.data,
+    qt_meta_data_QAddress445aa6,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *QAddressbaab1e::metaObject() const
+const QMetaObject *QAddress445aa6::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *QAddressbaab1e::qt_metacast(const char *_clname)
+void *QAddress445aa6::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_QAddressbaab1e.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_QAddress445aa6.stringdata0))
         return static_cast<void*>(this);
     return QObject::qt_metacast(_clname);
 }
 
-int QAddressbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int QAddress445aa6::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -459,37 +459,37 @@ int QAddressbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void QAddressbaab1e::addressChanged(QString _t1)
+void QAddress445aa6::addressChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void QAddressbaab1e::addressSkyChanged(quint64 _t1)
+void QAddress445aa6::addressSkyChanged(quint64 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
 // SIGNAL 2
-void QAddressbaab1e::addressCoinHoursChanged(quint64 _t1)
+void QAddress445aa6::addressCoinHoursChanged(quint64 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
-struct qt_meta_stringdata_QWalletbaab1e_t {
+struct qt_meta_stringdata_QWallet445aa6_t {
     QByteArrayData data[12];
     char stringdata0[142];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_QWalletbaab1e_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_QWallet445aa6_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_QWalletbaab1e_t qt_meta_stringdata_QWalletbaab1e = {
+static const qt_meta_stringdata_QWallet445aa6_t qt_meta_stringdata_QWallet445aa6 = {
     {
-QT_MOC_LITERAL(0, 0, 13), // "QWalletbaab1e"
+QT_MOC_LITERAL(0, 0, 13), // "QWallet445aa6"
 QT_MOC_LITERAL(1, 14, 11), // "nameChanged"
 QT_MOC_LITERAL(2, 26, 0), // ""
 QT_MOC_LITERAL(3, 27, 4), // "name"
@@ -503,14 +503,14 @@ QT_MOC_LITERAL(10, 117, 15), // "fileNameChanged"
 QT_MOC_LITERAL(11, 133, 8) // "fileName"
 
     },
-    "QWalletbaab1e\0nameChanged\0\0name\0"
+    "QWallet445aa6\0nameChanged\0\0name\0"
     "encryptionEnabledChanged\0encryptionEnabled\0"
     "skyChanged\0sky\0coinHoursChanged\0"
     "coinHours\0fileNameChanged\0fileName"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_QWalletbaab1e[] = {
+static const uint qt_meta_data_QWallet445aa6[] = {
 
  // content:
        8,       // revision
@@ -533,15 +533,15 @@ static const uint qt_meta_data_QWalletbaab1e[] = {
  // signals: parameters
     QMetaType::Void, QMetaType::QString,    3,
     QMetaType::Void, QMetaType::Int,    5,
-    QMetaType::Void, QMetaType::Int,    7,
-    QMetaType::Void, QMetaType::Int,    9,
+    QMetaType::Void, QMetaType::ULongLong,    7,
+    QMetaType::Void, QMetaType::ULongLong,    9,
     QMetaType::Void, QMetaType::QString,   11,
 
  // properties: name, type, flags
        3, QMetaType::QString, 0x00495103,
        5, QMetaType::Int, 0x00495103,
-       7, QMetaType::Int, 0x00495103,
-       9, QMetaType::Int, 0x00495103,
+       7, QMetaType::ULongLong, 0x00495103,
+       9, QMetaType::ULongLong, 0x00495103,
       11, QMetaType::QString, 0x00495103,
 
  // properties: notify_signal_id
@@ -554,52 +554,52 @@ static const uint qt_meta_data_QWalletbaab1e[] = {
        0        // eod
 };
 
-void QWalletbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void QWallet445aa6::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<QWalletbaab1e *>(_o);
+        auto *_t = static_cast<QWallet445aa6 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->nameChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         case 1: _t->encryptionEnabledChanged((*reinterpret_cast< qint32(*)>(_a[1]))); break;
-        case 2: _t->skyChanged((*reinterpret_cast< qint32(*)>(_a[1]))); break;
-        case 3: _t->coinHoursChanged((*reinterpret_cast< qint32(*)>(_a[1]))); break;
+        case 2: _t->skyChanged((*reinterpret_cast< quint64(*)>(_a[1]))); break;
+        case 3: _t->coinHoursChanged((*reinterpret_cast< quint64(*)>(_a[1]))); break;
         case 4: _t->fileNameChanged((*reinterpret_cast< QString(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (QWalletbaab1e::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWalletbaab1e::nameChanged)) {
+            using _t = void (QWallet445aa6::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWallet445aa6::nameChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
-            using _t = void (QWalletbaab1e::*)(qint32 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWalletbaab1e::encryptionEnabledChanged)) {
+            using _t = void (QWallet445aa6::*)(qint32 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWallet445aa6::encryptionEnabledChanged)) {
                 *result = 1;
                 return;
             }
         }
         {
-            using _t = void (QWalletbaab1e::*)(qint32 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWalletbaab1e::skyChanged)) {
+            using _t = void (QWallet445aa6::*)(quint64 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWallet445aa6::skyChanged)) {
                 *result = 2;
                 return;
             }
         }
         {
-            using _t = void (QWalletbaab1e::*)(qint32 );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWalletbaab1e::coinHoursChanged)) {
+            using _t = void (QWallet445aa6::*)(quint64 );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWallet445aa6::coinHoursChanged)) {
                 *result = 3;
                 return;
             }
         }
         {
-            using _t = void (QWalletbaab1e::*)(QString );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWalletbaab1e::fileNameChanged)) {
+            using _t = void (QWallet445aa6::*)(QString );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&QWallet445aa6::fileNameChanged)) {
                 *result = 4;
                 return;
             }
@@ -607,26 +607,26 @@ void QWalletbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
     }
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
-        auto *_t = static_cast<QWalletbaab1e *>(_o);
+        auto *_t = static_cast<QWallet445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
         case 0: *reinterpret_cast< QString*>(_v) = _t->name(); break;
         case 1: *reinterpret_cast< qint32*>(_v) = _t->encryptionEnabled(); break;
-        case 2: *reinterpret_cast< qint32*>(_v) = _t->sky(); break;
-        case 3: *reinterpret_cast< qint32*>(_v) = _t->coinHours(); break;
+        case 2: *reinterpret_cast< quint64*>(_v) = _t->sky(); break;
+        case 3: *reinterpret_cast< quint64*>(_v) = _t->coinHours(); break;
         case 4: *reinterpret_cast< QString*>(_v) = _t->fileName(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
-        auto *_t = static_cast<QWalletbaab1e *>(_o);
+        auto *_t = static_cast<QWallet445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
         case 0: _t->setName(*reinterpret_cast< QString*>(_v)); break;
         case 1: _t->setEncryptionEnabled(*reinterpret_cast< qint32*>(_v)); break;
-        case 2: _t->setSky(*reinterpret_cast< qint32*>(_v)); break;
-        case 3: _t->setCoinHours(*reinterpret_cast< qint32*>(_v)); break;
+        case 2: _t->setSky(*reinterpret_cast< quint64*>(_v)); break;
+        case 3: _t->setCoinHours(*reinterpret_cast< quint64*>(_v)); break;
         case 4: _t->setFileName(*reinterpret_cast< QString*>(_v)); break;
         default: break;
         }
@@ -635,30 +635,30 @@ void QWalletbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _i
 #endif // QT_NO_PROPERTIES
 }
 
-QT_INIT_METAOBJECT const QMetaObject QWalletbaab1e::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject QWallet445aa6::staticMetaObject = { {
     &QObject::staticMetaObject,
-    qt_meta_stringdata_QWalletbaab1e.data,
-    qt_meta_data_QWalletbaab1e,
+    qt_meta_stringdata_QWallet445aa6.data,
+    qt_meta_data_QWallet445aa6,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *QWalletbaab1e::metaObject() const
+const QMetaObject *QWallet445aa6::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *QWalletbaab1e::qt_metacast(const char *_clname)
+void *QWallet445aa6::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_QWalletbaab1e.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_QWallet445aa6.stringdata0))
         return static_cast<void*>(this);
     return QObject::qt_metacast(_clname);
 }
 
-int QWalletbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int QWallet445aa6::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QObject::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -693,60 +693,60 @@ int QWalletbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void QWalletbaab1e::nameChanged(QString _t1)
+void QWallet445aa6::nameChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void QWalletbaab1e::encryptionEnabledChanged(qint32 _t1)
+void QWallet445aa6::encryptionEnabledChanged(qint32 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);
 }
 
 // SIGNAL 2
-void QWalletbaab1e::skyChanged(qint32 _t1)
+void QWallet445aa6::skyChanged(quint64 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
 
 // SIGNAL 3
-void QWalletbaab1e::coinHoursChanged(qint32 _t1)
+void QWallet445aa6::coinHoursChanged(quint64 _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 3, _a);
 }
 
 // SIGNAL 4
-void QWalletbaab1e::fileNameChanged(QString _t1)
+void QWallet445aa6::fileNameChanged(QString _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 4, _a);
 }
-struct qt_meta_stringdata_WalletModelbaab1e_t {
+struct qt_meta_stringdata_WalletModel445aa6_t {
     QByteArrayData data[19];
     char stringdata0[197];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
-    qptrdiff(offsetof(qt_meta_stringdata_WalletModelbaab1e_t, stringdata0) + ofs \
+    qptrdiff(offsetof(qt_meta_stringdata_WalletModel445aa6_t, stringdata0) + ofs \
         - idx * sizeof(QByteArrayData)) \
     )
-static const qt_meta_stringdata_WalletModelbaab1e_t qt_meta_stringdata_WalletModelbaab1e = {
+static const qt_meta_stringdata_WalletModel445aa6_t qt_meta_stringdata_WalletModel445aa6 = {
     {
-QT_MOC_LITERAL(0, 0, 17), // "WalletModelbaab1e"
+QT_MOC_LITERAL(0, 0, 17), // "WalletModel445aa6"
 QT_MOC_LITERAL(1, 18, 12), // "rolesChanged"
 QT_MOC_LITERAL(2, 31, 0), // ""
 QT_MOC_LITERAL(3, 32, 10), // "type378cdd"
 QT_MOC_LITERAL(4, 43, 5), // "roles"
 QT_MOC_LITERAL(5, 49, 14), // "walletsChanged"
-QT_MOC_LITERAL(6, 64, 21), // "QList<QWalletbaab1e*>"
+QT_MOC_LITERAL(6, 64, 21), // "QList<QWallet445aa6*>"
 QT_MOC_LITERAL(7, 86, 7), // "wallets"
 QT_MOC_LITERAL(8, 94, 9), // "addWallet"
-QT_MOC_LITERAL(9, 104, 14), // "QWalletbaab1e*"
+QT_MOC_LITERAL(9, 104, 14), // "QWallet445aa6*"
 QT_MOC_LITERAL(10, 119, 2), // "v0"
 QT_MOC_LITERAL(11, 122, 10), // "editWallet"
 QT_MOC_LITERAL(12, 133, 3), // "row"
@@ -758,16 +758,16 @@ QT_MOC_LITERAL(17, 174, 12), // "removeWallet"
 QT_MOC_LITERAL(18, 187, 9) // "loadModel"
 
     },
-    "WalletModelbaab1e\0rolesChanged\0\0"
+    "WalletModel445aa6\0rolesChanged\0\0"
     "type378cdd\0roles\0walletsChanged\0"
-    "QList<QWalletbaab1e*>\0wallets\0addWallet\0"
-    "QWalletbaab1e*\0v0\0editWallet\0row\0name\0"
+    "QList<QWallet445aa6*>\0wallets\0addWallet\0"
+    "QWallet445aa6*\0v0\0editWallet\0row\0name\0"
     "encryptionEnabled\0sky\0coinHours\0"
     "removeWallet\0loadModel"
 };
 #undef QT_MOC_LITERAL
 
-static const uint qt_meta_data_WalletModelbaab1e[] = {
+static const uint qt_meta_data_WalletModel445aa6[] = {
 
  // content:
        8,       // revision
@@ -796,7 +796,7 @@ static const uint qt_meta_data_WalletModelbaab1e[] = {
 
  // slots: parameters
     QMetaType::Void, 0x80000000 | 9,   10,
-    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::Bool, QMetaType::Int, QMetaType::Int,   12,   13,   14,   15,   16,
+    QMetaType::Void, QMetaType::Int, QMetaType::QString, QMetaType::Bool, QMetaType::ULongLong, QMetaType::ULongLong,   12,   13,   14,   15,   16,
     QMetaType::Void, QMetaType::Int,   12,
     QMetaType::Void,
 
@@ -811,16 +811,16 @@ static const uint qt_meta_data_WalletModelbaab1e[] = {
        0        // eod
 };
 
-void WalletModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+void WalletModel445aa6::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     if (_c == QMetaObject::InvokeMetaMethod) {
-        auto *_t = static_cast<WalletModelbaab1e *>(_o);
+        auto *_t = static_cast<WalletModel445aa6 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
         case 0: _t->rolesChanged((*reinterpret_cast< type378cdd(*)>(_a[1]))); break;
-        case 1: _t->walletsChanged((*reinterpret_cast< QList<QWalletbaab1e*>(*)>(_a[1]))); break;
-        case 2: _t->addWallet((*reinterpret_cast< QWalletbaab1e*(*)>(_a[1]))); break;
-        case 3: _t->editWallet((*reinterpret_cast< qint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< qint32(*)>(_a[4])),(*reinterpret_cast< qint32(*)>(_a[5]))); break;
+        case 1: _t->walletsChanged((*reinterpret_cast< QList<QWallet445aa6*>(*)>(_a[1]))); break;
+        case 2: _t->addWallet((*reinterpret_cast< QWallet445aa6*(*)>(_a[1]))); break;
+        case 3: _t->editWallet((*reinterpret_cast< qint32(*)>(_a[1])),(*reinterpret_cast< QString(*)>(_a[2])),(*reinterpret_cast< bool(*)>(_a[3])),(*reinterpret_cast< quint64(*)>(_a[4])),(*reinterpret_cast< quint64(*)>(_a[5]))); break;
         case 4: _t->removeWallet((*reinterpret_cast< qint32(*)>(_a[1]))); break;
         case 5: _t->loadModel(); break;
         default: ;
@@ -832,29 +832,29 @@ void WalletModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QWalletbaab1e*> >(); break;
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QWallet445aa6*> >(); break;
             }
             break;
         case 2:
             switch (*reinterpret_cast<int*>(_a[1])) {
             default: *reinterpret_cast<int*>(_a[0]) = -1; break;
             case 0:
-                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QWalletbaab1e* >(); break;
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QWallet445aa6* >(); break;
             }
             break;
         }
     } else if (_c == QMetaObject::IndexOfMethod) {
         int *result = reinterpret_cast<int *>(_a[0]);
         {
-            using _t = void (WalletModelbaab1e::*)(type378cdd );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&WalletModelbaab1e::rolesChanged)) {
+            using _t = void (WalletModel445aa6::*)(type378cdd );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&WalletModel445aa6::rolesChanged)) {
                 *result = 0;
                 return;
             }
         }
         {
-            using _t = void (WalletModelbaab1e::*)(QList<QWalletbaab1e*> );
-            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&WalletModelbaab1e::walletsChanged)) {
+            using _t = void (WalletModel445aa6::*)(QList<QWallet445aa6*> );
+            if (*reinterpret_cast<_t *>(_a[1]) == static_cast<_t>(&WalletModel445aa6::walletsChanged)) {
                 *result = 1;
                 return;
             }
@@ -863,27 +863,27 @@ void WalletModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
         switch (_id) {
         default: *reinterpret_cast<int*>(_a[0]) = -1; break;
         case 1:
-            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QWalletbaab1e*> >(); break;
+            *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< QList<QWallet445aa6*> >(); break;
         }
     }
 
 #ifndef QT_NO_PROPERTIES
     else if (_c == QMetaObject::ReadProperty) {
-        auto *_t = static_cast<WalletModelbaab1e *>(_o);
+        auto *_t = static_cast<WalletModel445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
         case 0: *reinterpret_cast< type378cdd*>(_v) = _t->roles(); break;
-        case 1: *reinterpret_cast< QList<QWalletbaab1e*>*>(_v) = _t->wallets(); break;
+        case 1: *reinterpret_cast< QList<QWallet445aa6*>*>(_v) = _t->wallets(); break;
         default: break;
         }
     } else if (_c == QMetaObject::WriteProperty) {
-        auto *_t = static_cast<WalletModelbaab1e *>(_o);
+        auto *_t = static_cast<WalletModel445aa6 *>(_o);
         Q_UNUSED(_t)
         void *_v = _a[0];
         switch (_id) {
         case 0: _t->setRoles(*reinterpret_cast< type378cdd*>(_v)); break;
-        case 1: _t->setWallets(*reinterpret_cast< QList<QWalletbaab1e*>*>(_v)); break;
+        case 1: _t->setWallets(*reinterpret_cast< QList<QWallet445aa6*>*>(_v)); break;
         default: break;
         }
     } else if (_c == QMetaObject::ResetProperty) {
@@ -891,30 +891,30 @@ void WalletModelbaab1e::qt_static_metacall(QObject *_o, QMetaObject::Call _c, in
 #endif // QT_NO_PROPERTIES
 }
 
-QT_INIT_METAOBJECT const QMetaObject WalletModelbaab1e::staticMetaObject = { {
+QT_INIT_METAOBJECT const QMetaObject WalletModel445aa6::staticMetaObject = { {
     &QAbstractListModel::staticMetaObject,
-    qt_meta_stringdata_WalletModelbaab1e.data,
-    qt_meta_data_WalletModelbaab1e,
+    qt_meta_stringdata_WalletModel445aa6.data,
+    qt_meta_data_WalletModel445aa6,
     qt_static_metacall,
     nullptr,
     nullptr
 } };
 
 
-const QMetaObject *WalletModelbaab1e::metaObject() const
+const QMetaObject *WalletModel445aa6::metaObject() const
 {
     return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
 }
 
-void *WalletModelbaab1e::qt_metacast(const char *_clname)
+void *WalletModel445aa6::qt_metacast(const char *_clname)
 {
     if (!_clname) return nullptr;
-    if (!strcmp(_clname, qt_meta_stringdata_WalletModelbaab1e.stringdata0))
+    if (!strcmp(_clname, qt_meta_stringdata_WalletModel445aa6.stringdata0))
         return static_cast<void*>(this);
     return QAbstractListModel::qt_metacast(_clname);
 }
 
-int WalletModelbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+int WalletModel445aa6::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QAbstractListModel::qt_metacall(_c, _id, _a);
     if (_id < 0)
@@ -949,14 +949,14 @@ int WalletModelbaab1e::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 }
 
 // SIGNAL 0
-void WalletModelbaab1e::rolesChanged(type378cdd _t1)
+void WalletModel445aa6::rolesChanged(type378cdd _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 0, _a);
 }
 
 // SIGNAL 1
-void WalletModelbaab1e::walletsChanged(QList<QWalletbaab1e*> _t1)
+void WalletModel445aa6::walletsChanged(QList<QWallet445aa6*> _t1)
 {
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 1, _a);

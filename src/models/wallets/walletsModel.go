@@ -1,9 +1,9 @@
-package models
+package wallets
 
 import (
 	"github.com/therecipe/qt/core"
 	"github.com/skycoin/skycoin/src/api"
-	"github.com/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	
 	
 )
@@ -26,7 +26,7 @@ type WalletModel struct {
 	_ []*QWallet	`property:"wallets"`
 
 	_ func(*QWallet) `slot:"addWallet"`
-	_ func(row int, name string, encryptionEnabled bool, sky, coinHours int)	`slot:"editWallet"`
+	_ func(row int, name string, encryptionEnabled bool, sky, coinHours uint64)	`slot:"editWallet"`
 	_ func(row int)	`slot:"removeWallet"`
 	_ func()	`slot:"loadModel"`
 	
@@ -37,8 +37,8 @@ type QWallet struct {
 	
 	_ string `property:"name"`
 	_ int 	 `property:"encryptionEnabled"`
-	_ int `property:"sky"`
-	_ int `property:"coinHours"`
+	_ uint64 `property:"sky"`
+	_ uint64 `property:"coinHours"`
 	_ string `property:"fileName"`
 	
 	
@@ -136,7 +136,7 @@ func (m *WalletModel) addWallet(w *QWallet){
 
 } 
 
-func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky, coinHours int) {
+func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky, coinHours uint64) {
 	w := m.Wallets()[row]
 	w.SetName(name)
 	w.SetEncryptionEnabled(0)
@@ -159,14 +159,14 @@ func (m *WalletModel) removeWallet(row int) {
 
 
 func getWalletsModel() ([]*QWallet, error) {
-	c := util.newClient()
+	c := util.NewClient()
 	wallets, err := c.Wallets()
 	if err != nil {
 		return nil, err
 	}
 	walletsModels := make([]*QWallet, 0)
 	for _, w := range wallets {
-		wlt, err := walletResponseToQWallet(&w)
+		wlt, err := WalletResponseToQWallet(&w)
 		if err != nil{
 			return nil, err
 		}
@@ -187,8 +187,8 @@ func (m *WalletModel) loadModel() {
 
 }
 
-func walletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error){
-	c := util.newClient()
+func WalletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error){
+	c := util.NewClient()
 	qwallet := NewQWallet(nil)
 	qwallet.SetFileName(wr.Meta.Filename)
 	qwallet.SetName(wr.Meta.Label)
