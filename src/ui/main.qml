@@ -110,6 +110,16 @@ ApplicationWindow {
         modal: true
     }
 
+    RestoreBackupWordsDialog {
+        id: restoreBackupWordsDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 460 ? 460 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
 
     // Help dialogs
 
