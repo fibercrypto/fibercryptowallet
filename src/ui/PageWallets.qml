@@ -93,6 +93,13 @@ Page {
         }
     }
 
+    Timer {
+        interval: 10000
+        repeat: true
+        running: true
+        onTriggered: walletModel.loadModel()
+        
+    }
     WalletModel{
         id: walletModel
         
