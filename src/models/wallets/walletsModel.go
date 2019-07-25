@@ -30,6 +30,7 @@ type WalletModel struct {
 	_ func(row int, name string, encryptionEnabled bool, sky, coinHours uint64)	`slot:"editWallet"`
 	_ func(row int)	`slot:"removeWallet"`
 	_ func()	`slot:"loadModel"`
+	_ int	`property:"count"`
 	
 }
 
@@ -67,7 +68,7 @@ func (m *WalletModel) init() {
 	m.ConnectLoadModel(m.loadModel)
 	
 	
-
+	m.SetCount(0)
 	m.loadModel()
 
 		
@@ -157,6 +158,7 @@ func (m *WalletModel) removeWallet(row int) {
 	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
 	m.SetWallets(append(m.Wallets()[:row], m.Wallets()[row+1:]...))
 	m.EndRemoveRows()
+	
 }
 
 
@@ -192,6 +194,10 @@ func (m *WalletModel) loadModel() {
 	
 	
 
+}
+
+func (m *WalletModel) updateCount(){
+	m.SetCount(len(m.Wallets()))
 }
 
 func WalletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error){
