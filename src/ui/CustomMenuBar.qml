@@ -26,10 +26,6 @@ RowLayout {
     function back() {
         if (!toolButtonBack.hide) {
             toolButtonBack.clicked()
-
-            enableOutputs = true
-            enableBlockchain = true
-            enableNetworking = true
         }
     }
 
@@ -64,6 +60,10 @@ RowLayout {
 
         onClicked: {
             generalStackView.pop()
+
+            enableOutputs = true
+            enableBlockchain = true
+            enableNetworking = true
         }
     }
 
