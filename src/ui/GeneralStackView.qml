@@ -8,6 +8,7 @@ Item {
     id: root
 
     property bool toolPageOpened: false
+    property alias depth: stackView.depth
 
     function openBlockchainPage() {
         stackView.push(componentBlockchain)
