@@ -13,23 +13,8 @@ ApplicationWindow {
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
 
-    menuBar: MenuBar {
-        clip: true
-        height: general.toolPageOpened ? 0 : implicitHeight
-        Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-        Menu {
-            id: menuTools
-            title: qsTr("&Tools")
-            MenuItem { text: qsTr("Outputs") }
-            MenuItem { text: qsTr("Blockchain"); onClicked: generalStackView.openBlockchainPage() }
-            MenuItem { text: qsTr("Networking"); onClicked: generalStackView.openNetworkingPage() }
-        }
-        Menu {
-            id: menuHelp
-            title: qsTr("&Help")
-            MenuItem { text: qsTr("About FiberCrypto"); onClicked: dialogAbout.open() }
-            MenuItem { text: qsTr("About Qt"); onClicked: dialogAboutQt.open() }
-        }
+    menuBar: CustomMenuBar {
+        id: customMenuBar
     }
 
     GeneralStackView {
