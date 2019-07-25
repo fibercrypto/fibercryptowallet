@@ -37,7 +37,7 @@ func (hm *TransactionList) init() {
 	hm.ConnectData(hm.data)
 	hm.ConnectRoleNames(hm.roleNames)
 
-	hm.loadHistory(["example"])
+	hm.loadHistory([]string{"example"})
 }
 
 func (hm *TransactionList) rowCount(*core.QModelIndex) int {
