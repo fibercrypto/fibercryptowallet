@@ -105,6 +105,13 @@ Item {
         id: listAddresses
     }
 
+    Timer {
+        interval: 10000
+        repeat: true
+        running: true
+        onTriggered: listAddresses.loadModel(filename)
+    }
+
      //Roles: address, addressSky, addressCoinHours
      //Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
      //Or implement the model in the backend (a more recommendable approach)
