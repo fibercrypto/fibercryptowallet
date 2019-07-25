@@ -13,6 +13,7 @@ type TransactionList struct {
 
 	_ func(transaction *TransactionDetails) `signal:"addTransaction,auto"`
 	_ func(index int)                       `signal:"removeTransaction,auto"`
+	_ func(wallets []string)                `signal:"loadHistory,auto"`
 
 	_ []*TransactionDetails `property:"transactions"`
 }
@@ -36,7 +37,7 @@ func (hm *TransactionList) init() {
 	hm.ConnectData(hm.data)
 	hm.ConnectRoleNames(hm.roleNames)
 
-	hm.addExamples()
+	hm.loadHistory([]string{"example"})
 }
 
 func (hm *TransactionList) rowCount(*core.QModelIndex) int {
@@ -118,7 +119,7 @@ func (hm *TransactionList) data(index *core.QModelIndex, role int) *core.QVarian
 	}
 }
 
-func (hm *TransactionList) addExamples() {
+func (hm *TransactionList) loadHistory(wallets []string) {
 	td := NewTransactionDetails(nil)
 	td.SetDate(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(10, 0, 0, 0), core.Qt__LocalTime))
 	td.SetStatus(transactionStatusPending)

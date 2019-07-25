@@ -26,8 +26,14 @@
         <file>resources/images/icons/send.svg</file>
         <file>resources/images/icons/send-amber.svg</file>
         <file>resources/images/icons/send-blue.svg</file>
+        <file>resources/images/icons/up.svg</file>
+        <file>resources/images/icons/down.svg</file>
         <file>resources/images/icons/back.svg</file>
+        <file>resources/images/icons/outputs.svg</file>
+        <file>resources/images/icons/blockchain.svg</file>
+        <file>resources/images/icons/networking.svg</file>
         <file>resources/images/icons/qt_logo_green_rgb.svg</file>
+        <file>resources/images/icons/qt_logo_green_rgb_256x256.png</file>
         <file>resources/images/icons/appIcon.png</file>
     </qresource>
 </RCC>

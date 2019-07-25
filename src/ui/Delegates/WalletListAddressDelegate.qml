@@ -100,6 +100,9 @@ Item {
                 visible:  !showOnlyAddresses
                 icon.source: "qrc:/images/resources/images/icons/copy.svg"
                 Layout.alignment: Qt.AlignLeft
+                ToolTip.text: qsTr("Copy to clipboard")
+                ToolTip.visible: hovered // TODO: pressed when mobile?
+                ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
 
                 Image {
                     id: imageCopied
@@ -130,8 +133,7 @@ Item {
                     PauseAnimation { duration: 1000 }
                     NumberAnimation { target: imageCopied; property: "opacity"; to: 0.0; easing.type: Easing.OutCubic }
                 }
-
-            }
+            } // ToolButton
             Rectangle {
                 id: spacer
                 visible:  !showOnlyAddresses

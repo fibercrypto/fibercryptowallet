@@ -7,11 +7,27 @@ import QtQuick.Controls 2.12
 Item {
     id: root
 
-    property bool toolPageOpened: false
+    property alias depth: stackView.depth
+    property alias busy: stackView.busy
 
     function openBlockchainPage() {
-        stackView.push(componentBlockchain)
-        toolPageOpened = true
+        if (stackView.depth > 1) {
+            stackView.replace(componentBlockchain)
+        } else {
+            stackView.push(componentBlockchain)
+        }
+    }
+
+    function openNetworkingPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentNetworking)
+        } else {
+            stackView.push(componentNetworking)
+        }
+    }
+
+    function pop() {
+        stackView.pop()
     }
 
     StackView {
@@ -48,11 +64,14 @@ Item {
 
         Blockchain {
             id: blockchain
+        }
+    }
 
-            onBackRequested: {
-                stackView.pop()
-                toolPageOpened = false
-            }
+    Component {
+        id: componentNetworking
+
+        Networking {
+            id: networking
         }
     }
 }

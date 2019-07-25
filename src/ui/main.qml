@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -13,26 +14,55 @@ ApplicationWindow {
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
 
-    menuBar: MenuBar {
-        clip: true
-        height: general.toolPageOpened ? 0 : implicitHeight
-        Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-        Menu {
-            id: menuTools
-            title: qsTr("&Tools")
-            MenuItem { text: qsTr("Outputs") }
-            MenuItem { text: qsTr("Blockchain"); onClicked: general.openBlockchainPage() }
+    menuBar: CustomMenuBar {
+        id: customMenuBar
+
+        onOutputsRequested: {
+            if (false) {
+                menuBarColor = Material.color(Material.Teal)
+                customHeader.text = qsTr("Outputs")
+                
+                enableOutputs = false
+                enableBlockchain = true
+                enableNetworking = true
+            }
         }
-        Menu {
-            id: menuHelp
-            title: qsTr("&Help")
-            MenuItem { text: qsTr("About FiberCrypto"); onClicked: dialogAbout.open() }
-            MenuItem { text: qsTr("About Qt"); onClicked: dialogAboutQt.open() }
+
+        onBlockchainRequested: {
+            generalStackView.openBlockchainPage()
+            menuBarColor = Material.color(Material.Red)
+            customHeader.text = qsTr("Blockchain")
+
+            enableOutputs = true
+            enableBlockchain = false
+            enableNetworking = true
         }
-    }
+
+        onNetworkingRequested: {
+            generalStackView.openNetworkingPage()
+            menuBarColor = Material.color(Material.Blue)
+            customHeader.text = qsTr("Networking")
+
+            enableOutputs = true
+            enableBlockchain = true
+            enableNetworking = false
+        }
+
+        onAboutRequested: {
+            dialogAbout.open()
+        }
+
+        onAboutQtRequested: {
+            dialogAboutQt.open()
+        }
+    } // CustomMenuBar
+
+    CustomHeader {
+        id: customHeader
+    } // CustomHeader
 
     GeneralStackView {
-        id: general
+        id: generalStackView
         anchors.fill: parent
     }
 

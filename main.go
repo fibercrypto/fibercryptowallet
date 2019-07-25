@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/blockchain"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
@@ -9,7 +10,7 @@ import (
 	//"github.com/therecipe/qt/widgets"
 	"os"
 
-	_ "github.com/simelo/FiberCryptoWallet/src/models/history"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 )
 
 func main() {
