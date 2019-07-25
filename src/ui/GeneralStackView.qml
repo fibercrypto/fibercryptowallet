@@ -59,11 +59,6 @@ Item {
 
         Blockchain {
             id: blockchain
-
-            onBackRequested: {
-                stackView.pop()
-                toolPageOpened = false
-            }
         }
     }
 
@@ -72,11 +67,6 @@ Item {
 
         Networking {
             id: networking
-
-            onBackRequested: {
-                stackView.pop()
-                toolPageOpened = false
-            }
         }
     }
 }
