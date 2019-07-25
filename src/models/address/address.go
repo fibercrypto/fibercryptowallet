@@ -1,8 +1,13 @@
-package history
+package address
 
 import (
 	"github.com/therecipe/qt/core"
 )
+
+func init() {
+	AddressDetails_QmlRegisterType2("HistoryModels", 1, 0, "QAddress")
+	AddressList_QmlRegisterType2("HistoryModels", 1, 0, "QAddressList")
+}
 
 const (
 	Address = int(core.Qt__UserRole) + 1<<iota
