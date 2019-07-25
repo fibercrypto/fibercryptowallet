@@ -11,6 +11,14 @@ RowLayout {
     property alias menuBarReal: menuBarReal
     property alias menuBarColor: menuBarReal.color
 
+    // Signals
+    signal outputsRequested()
+    signal networkingRequested()
+    signal blockchainRequested()
+    signal aboutRequested()
+    signal aboutQtRequested()
+
+    // Functions
     function back() {
         if (!toolButtonBack.hide) {
             toolButtonBack.clicked()
@@ -55,7 +63,7 @@ RowLayout {
         id: menuBarReal
 
         readonly property color iconColor: "transparent"
-        property color color
+        property color color: Material.dialogColor
         property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : "white"
 
         Layout.fillWidth: true
@@ -74,15 +82,15 @@ RowLayout {
         Menu {
             id: menuTools
             title: qsTr("&Tools")
-            MenuItem { text: qsTr("Outputs") }
-            MenuItem { text: qsTr("Blockchain"); onClicked: generalStackView.openBlockchainPage() }
-            MenuItem { text: qsTr("Networking"); onClicked: generalStackView.openNetworkingPage() }
+            MenuItem { text: qsTr("Outputs"); onClicked: outputsRequested() }
+            MenuItem { text: qsTr("Blockchain"); onClicked: blockchainRequested() }
+            MenuItem { text: qsTr("Networking"); onClicked: networkingRequested() }
         }
         Menu {
             id: menuHelp
             title: qsTr("&Help")
-            MenuItem { text: qsTr("About FiberCrypto"); onClicked: dialogAbout.open() }
-            MenuItem { text: qsTr("About Qt"); onClicked: dialogAboutQt.open() }
+            MenuItem { text: qsTr("About FiberCrypto"); onClicked: aboutRequested() }
+            MenuItem { text: qsTr("About Qt"); onClicked: aboutQtRequested() }
         }
     }
 } // RowLayout (menuBar)
