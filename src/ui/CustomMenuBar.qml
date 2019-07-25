@@ -11,6 +11,10 @@ RowLayout {
     property alias menuBarReal: menuBarReal
     property alias menuBarColor: menuBarReal.color
 
+    property alias enableOutputs: menuItemOutputs.enabled
+    property alias enableBlockchain: menuItemBlockchain.enabled
+    property alias enableNetworking: menuItemNetworking.enabled
+
     // Signals
     signal outputsRequested()
     signal networkingRequested()
@@ -22,6 +26,10 @@ RowLayout {
     function back() {
         if (!toolButtonBack.hide) {
             toolButtonBack.clicked()
+
+            enableOutputs = true
+            enableBlockchain = true
+            enableNetworking = true
         }
     }
 
@@ -84,20 +92,23 @@ RowLayout {
             title: qsTr("&Tools")
 
             CustomMenuItem {
+                id: menuItemOutputs
                 text: qsTr("&Outputs")
-                iconSource: "qrc:/images/resources/images/icons/outputs.svg" 
+                iconSource: "qrc:/images/resources/images/icons/outputs.svg"
 
                 onClicked: outputsRequested()
             }
             CustomMenuItem {
+                id: menuItemBlockchain
                 text: qsTr("&Blockchain")
-                iconSource: "qrc:/images/resources/images/icons/blockchain.svg" 
+                iconSource: "qrc:/images/resources/images/icons/blockchain.svg"
                 
                 onClicked: blockchainRequested()
             }
             CustomMenuItem {
+                id: menuItemNetworking
                 text: qsTr("&Networking")
-                iconSource: "qrc:/images/resources/images/icons/networking.svg"              
+                iconSource: "qrc:/images/resources/images/icons/networking.svg"
 
                 onClicked: networkingRequested()
             }
