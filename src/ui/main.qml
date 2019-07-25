@@ -17,6 +17,10 @@ ApplicationWindow {
         id: customMenuBar
     }
 
+    CustomHeader {
+        id: customHeader
+    }
+
     GeneralStackView {
         id: generalStackView
         anchors.fill: parent
