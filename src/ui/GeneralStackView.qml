@@ -45,7 +45,7 @@ Item {
                 anchors.centerIn: parent
 
                 onWalletCreationRequested: {
-                    stackView.push(componentGeneralSwipeView)
+                    stackView.replace(componentGeneralSwipeView)
                 }
             }
         }
