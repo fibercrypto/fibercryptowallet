@@ -34,6 +34,821 @@ func unpackStringList(s string) []string {
 	return strings.Split(s, "¡¦!")
 }
 
+type QAddress_ITF interface {
+	std_core.QObject_ITF
+	QAddress_PTR() *QAddress
+}
+
+func (ptr *QAddress) QAddress_PTR() *QAddress {
+	return ptr
+}
+
+func (ptr *QAddress) Pointer() unsafe.Pointer {
+	if ptr != nil {
+		return ptr.QObject_PTR().Pointer()
+	}
+	return nil
+}
+
+func (ptr *QAddress) SetPointer(p unsafe.Pointer) {
+	if ptr != nil {
+		ptr.QObject_PTR().SetPointer(p)
+	}
+}
+
+func PointerFromQAddress(ptr QAddress_ITF) unsafe.Pointer {
+	if ptr != nil {
+		return ptr.QAddress_PTR().Pointer()
+	}
+	return nil
+}
+
+func NewQAddressFromPointer(ptr unsafe.Pointer) (n *QAddress) {
+	if gPtr, ok := qt.Receive(ptr); !ok {
+		n = new(QAddress)
+		n.SetPointer(ptr)
+	} else {
+		switch deduced := gPtr.(type) {
+		case *QAddress:
+			n = deduced
+
+		case *std_core.QObject:
+			n = &QAddress{QObject: *deduced}
+
+		default:
+			n = new(QAddress)
+			n.SetPointer(ptr)
+		}
+	}
+	return
+}
+
+//export callbackQAddress445aa6_Constructor
+func callbackQAddress445aa6_Constructor(ptr unsafe.Pointer) {
+	this := NewQAddressFromPointer(ptr)
+	qt.Register(ptr, this)
+}
+
+//export callbackQAddress445aa6_Address
+func callbackQAddress445aa6_Address(ptr unsafe.Pointer) C.struct_Moc_PackedString {
+	if signal := qt.GetSignal(ptr, "address"); signal != nil {
+		tempVal := (*(*func() string)(signal))()
+		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
+	}
+	tempVal := NewQAddressFromPointer(ptr).AddressDefault()
+	return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
+}
+
+func (ptr *QAddress) ConnectAddress(f func() string) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "address"); signal != nil {
+			f := func() string {
+				(*(*func() string)(signal))()
+				return f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "address", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "address", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectAddress() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "address")
+	}
+}
+
+func (ptr *QAddress) Address() string {
+	if ptr.Pointer() != nil {
+		return cGoUnpackString(C.QAddress445aa6_Address(ptr.Pointer()))
+	}
+	return ""
+}
+
+func (ptr *QAddress) AddressDefault() string {
+	if ptr.Pointer() != nil {
+		return cGoUnpackString(C.QAddress445aa6_AddressDefault(ptr.Pointer()))
+	}
+	return ""
+}
+
+//export callbackQAddress445aa6_SetAddress
+func callbackQAddress445aa6_SetAddress(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
+	if signal := qt.GetSignal(ptr, "setAddress"); signal != nil {
+		(*(*func(string))(signal))(cGoUnpackString(address))
+	} else {
+		NewQAddressFromPointer(ptr).SetAddressDefault(cGoUnpackString(address))
+	}
+}
+
+func (ptr *QAddress) ConnectSetAddress(f func(address string)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "setAddress"); signal != nil {
+			f := func(address string) {
+				(*(*func(string))(signal))(address)
+				f(address)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "setAddress", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "setAddress", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectSetAddress() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "setAddress")
+	}
+}
+
+func (ptr *QAddress) SetAddress(address string) {
+	if ptr.Pointer() != nil {
+		var addressC *C.char
+		if address != "" {
+			addressC = C.CString(address)
+			defer C.free(unsafe.Pointer(addressC))
+		}
+		C.QAddress445aa6_SetAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
+	}
+}
+
+func (ptr *QAddress) SetAddressDefault(address string) {
+	if ptr.Pointer() != nil {
+		var addressC *C.char
+		if address != "" {
+			addressC = C.CString(address)
+			defer C.free(unsafe.Pointer(addressC))
+		}
+		C.QAddress445aa6_SetAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
+	}
+}
+
+//export callbackQAddress445aa6_AddressChanged
+func callbackQAddress445aa6_AddressChanged(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
+	if signal := qt.GetSignal(ptr, "addressChanged"); signal != nil {
+		(*(*func(string))(signal))(cGoUnpackString(address))
+	}
+
+}
+
+func (ptr *QAddress) ConnectAddressChanged(f func(address string)) {
+	if ptr.Pointer() != nil {
+
+		if !qt.ExistsSignal(ptr.Pointer(), "addressChanged") {
+			C.QAddress445aa6_ConnectAddressChanged(ptr.Pointer())
+		}
+
+		if signal := qt.LendSignal(ptr.Pointer(), "addressChanged"); signal != nil {
+			f := func(address string) {
+				(*(*func(string))(signal))(address)
+				f(address)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "addressChanged", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "addressChanged", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectAddressChanged() {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_DisconnectAddressChanged(ptr.Pointer())
+		qt.DisconnectSignal(ptr.Pointer(), "addressChanged")
+	}
+}
+
+func (ptr *QAddress) AddressChanged(address string) {
+	if ptr.Pointer() != nil {
+		var addressC *C.char
+		if address != "" {
+			addressC = C.CString(address)
+			defer C.free(unsafe.Pointer(addressC))
+		}
+		C.QAddress445aa6_AddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
+	}
+}
+
+//export callbackQAddress445aa6_AddressSky
+func callbackQAddress445aa6_AddressSky(ptr unsafe.Pointer) C.ulonglong {
+	if signal := qt.GetSignal(ptr, "addressSky"); signal != nil {
+		return C.ulonglong((*(*func() uint64)(signal))())
+	}
+
+	return C.ulonglong(NewQAddressFromPointer(ptr).AddressSkyDefault())
+}
+
+func (ptr *QAddress) ConnectAddressSky(f func() uint64) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "addressSky"); signal != nil {
+			f := func() uint64 {
+				(*(*func() uint64)(signal))()
+				return f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "addressSky", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "addressSky", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectAddressSky() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "addressSky")
+	}
+}
+
+func (ptr *QAddress) AddressSky() uint64 {
+	if ptr.Pointer() != nil {
+		return uint64(C.QAddress445aa6_AddressSky(ptr.Pointer()))
+	}
+	return 0
+}
+
+func (ptr *QAddress) AddressSkyDefault() uint64 {
+	if ptr.Pointer() != nil {
+		return uint64(C.QAddress445aa6_AddressSkyDefault(ptr.Pointer()))
+	}
+	return 0
+}
+
+//export callbackQAddress445aa6_SetAddressSky
+func callbackQAddress445aa6_SetAddressSky(ptr unsafe.Pointer, addressSky C.ulonglong) {
+	if signal := qt.GetSignal(ptr, "setAddressSky"); signal != nil {
+		(*(*func(uint64))(signal))(uint64(addressSky))
+	} else {
+		NewQAddressFromPointer(ptr).SetAddressSkyDefault(uint64(addressSky))
+	}
+}
+
+func (ptr *QAddress) ConnectSetAddressSky(f func(addressSky uint64)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "setAddressSky"); signal != nil {
+			f := func(addressSky uint64) {
+				(*(*func(uint64))(signal))(addressSky)
+				f(addressSky)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "setAddressSky", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "setAddressSky", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectSetAddressSky() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "setAddressSky")
+	}
+}
+
+func (ptr *QAddress) SetAddressSky(addressSky uint64) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_SetAddressSky(ptr.Pointer(), C.ulonglong(addressSky))
+	}
+}
+
+func (ptr *QAddress) SetAddressSkyDefault(addressSky uint64) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_SetAddressSkyDefault(ptr.Pointer(), C.ulonglong(addressSky))
+	}
+}
+
+//export callbackQAddress445aa6_AddressSkyChanged
+func callbackQAddress445aa6_AddressSkyChanged(ptr unsafe.Pointer, addressSky C.ulonglong) {
+	if signal := qt.GetSignal(ptr, "addressSkyChanged"); signal != nil {
+		(*(*func(uint64))(signal))(uint64(addressSky))
+	}
+
+}
+
+func (ptr *QAddress) ConnectAddressSkyChanged(f func(addressSky uint64)) {
+	if ptr.Pointer() != nil {
+
+		if !qt.ExistsSignal(ptr.Pointer(), "addressSkyChanged") {
+			C.QAddress445aa6_ConnectAddressSkyChanged(ptr.Pointer())
+		}
+
+		if signal := qt.LendSignal(ptr.Pointer(), "addressSkyChanged"); signal != nil {
+			f := func(addressSky uint64) {
+				(*(*func(uint64))(signal))(addressSky)
+				f(addressSky)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "addressSkyChanged", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "addressSkyChanged", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectAddressSkyChanged() {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_DisconnectAddressSkyChanged(ptr.Pointer())
+		qt.DisconnectSignal(ptr.Pointer(), "addressSkyChanged")
+	}
+}
+
+func (ptr *QAddress) AddressSkyChanged(addressSky uint64) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_AddressSkyChanged(ptr.Pointer(), C.ulonglong(addressSky))
+	}
+}
+
+//export callbackQAddress445aa6_AddressCoinHours
+func callbackQAddress445aa6_AddressCoinHours(ptr unsafe.Pointer) C.ulonglong {
+	if signal := qt.GetSignal(ptr, "addressCoinHours"); signal != nil {
+		return C.ulonglong((*(*func() uint64)(signal))())
+	}
+
+	return C.ulonglong(NewQAddressFromPointer(ptr).AddressCoinHoursDefault())
+}
+
+func (ptr *QAddress) ConnectAddressCoinHours(f func() uint64) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "addressCoinHours"); signal != nil {
+			f := func() uint64 {
+				(*(*func() uint64)(signal))()
+				return f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "addressCoinHours", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "addressCoinHours", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectAddressCoinHours() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "addressCoinHours")
+	}
+}
+
+func (ptr *QAddress) AddressCoinHours() uint64 {
+	if ptr.Pointer() != nil {
+		return uint64(C.QAddress445aa6_AddressCoinHours(ptr.Pointer()))
+	}
+	return 0
+}
+
+func (ptr *QAddress) AddressCoinHoursDefault() uint64 {
+	if ptr.Pointer() != nil {
+		return uint64(C.QAddress445aa6_AddressCoinHoursDefault(ptr.Pointer()))
+	}
+	return 0
+}
+
+//export callbackQAddress445aa6_SetAddressCoinHours
+func callbackQAddress445aa6_SetAddressCoinHours(ptr unsafe.Pointer, addressCoinHours C.ulonglong) {
+	if signal := qt.GetSignal(ptr, "setAddressCoinHours"); signal != nil {
+		(*(*func(uint64))(signal))(uint64(addressCoinHours))
+	} else {
+		NewQAddressFromPointer(ptr).SetAddressCoinHoursDefault(uint64(addressCoinHours))
+	}
+}
+
+func (ptr *QAddress) ConnectSetAddressCoinHours(f func(addressCoinHours uint64)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "setAddressCoinHours"); signal != nil {
+			f := func(addressCoinHours uint64) {
+				(*(*func(uint64))(signal))(addressCoinHours)
+				f(addressCoinHours)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "setAddressCoinHours", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "setAddressCoinHours", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectSetAddressCoinHours() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "setAddressCoinHours")
+	}
+}
+
+func (ptr *QAddress) SetAddressCoinHours(addressCoinHours uint64) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_SetAddressCoinHours(ptr.Pointer(), C.ulonglong(addressCoinHours))
+	}
+}
+
+func (ptr *QAddress) SetAddressCoinHoursDefault(addressCoinHours uint64) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_SetAddressCoinHoursDefault(ptr.Pointer(), C.ulonglong(addressCoinHours))
+	}
+}
+
+//export callbackQAddress445aa6_AddressCoinHoursChanged
+func callbackQAddress445aa6_AddressCoinHoursChanged(ptr unsafe.Pointer, addressCoinHours C.ulonglong) {
+	if signal := qt.GetSignal(ptr, "addressCoinHoursChanged"); signal != nil {
+		(*(*func(uint64))(signal))(uint64(addressCoinHours))
+	}
+
+}
+
+func (ptr *QAddress) ConnectAddressCoinHoursChanged(f func(addressCoinHours uint64)) {
+	if ptr.Pointer() != nil {
+
+		if !qt.ExistsSignal(ptr.Pointer(), "addressCoinHoursChanged") {
+			C.QAddress445aa6_ConnectAddressCoinHoursChanged(ptr.Pointer())
+		}
+
+		if signal := qt.LendSignal(ptr.Pointer(), "addressCoinHoursChanged"); signal != nil {
+			f := func(addressCoinHours uint64) {
+				(*(*func(uint64))(signal))(addressCoinHours)
+				f(addressCoinHours)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "addressCoinHoursChanged", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "addressCoinHoursChanged", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectAddressCoinHoursChanged() {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_DisconnectAddressCoinHoursChanged(ptr.Pointer())
+		qt.DisconnectSignal(ptr.Pointer(), "addressCoinHoursChanged")
+	}
+}
+
+func (ptr *QAddress) AddressCoinHoursChanged(addressCoinHours uint64) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_AddressCoinHoursChanged(ptr.Pointer(), C.ulonglong(addressCoinHours))
+	}
+}
+
+func QAddress_QRegisterMetaType() int {
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType()))
+}
+
+func (ptr *QAddress) QRegisterMetaType() int {
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType()))
+}
+
+func QAddress_QRegisterMetaType2(typeName string) int {
+	var typeNameC *C.char
+	if typeName != "" {
+		typeNameC = C.CString(typeName)
+		defer C.free(unsafe.Pointer(typeNameC))
+	}
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType2(typeNameC)))
+}
+
+func (ptr *QAddress) QRegisterMetaType2(typeName string) int {
+	var typeNameC *C.char
+	if typeName != "" {
+		typeNameC = C.CString(typeName)
+		defer C.free(unsafe.Pointer(typeNameC))
+	}
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType2(typeNameC)))
+}
+
+func QAddress_QmlRegisterType() int {
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType()))
+}
+
+func (ptr *QAddress) QmlRegisterType() int {
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType()))
+}
+
+func QAddress_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
+	var uriC *C.char
+	if uri != "" {
+		uriC = C.CString(uri)
+		defer C.free(unsafe.Pointer(uriC))
+	}
+	var qmlNameC *C.char
+	if qmlName != "" {
+		qmlNameC = C.CString(qmlName)
+		defer C.free(unsafe.Pointer(qmlNameC))
+	}
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+}
+
+func (ptr *QAddress) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
+	var uriC *C.char
+	if uri != "" {
+		uriC = C.CString(uri)
+		defer C.free(unsafe.Pointer(uriC))
+	}
+	var qmlNameC *C.char
+	if qmlName != "" {
+		qmlNameC = C.CString(qmlName)
+		defer C.free(unsafe.Pointer(qmlNameC))
+	}
+	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+}
+
+func (ptr *QAddress) __children_atList(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___children_atList(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *QAddress) __children_setList(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *QAddress) __children_newList() unsafe.Pointer {
+	return C.QAddress445aa6___children_newList(ptr.Pointer())
+}
+
+func (ptr *QAddress) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQByteArrayFromPointer(C.QAddress445aa6___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *QAddress) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
+	}
+}
+
+func (ptr *QAddress) __dynamicPropertyNames_newList() unsafe.Pointer {
+	return C.QAddress445aa6___dynamicPropertyNames_newList(ptr.Pointer())
+}
+
+func (ptr *QAddress) __findChildren_atList(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *QAddress) __findChildren_setList(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *QAddress) __findChildren_newList() unsafe.Pointer {
+	return C.QAddress445aa6___findChildren_newList(ptr.Pointer())
+}
+
+func (ptr *QAddress) __findChildren_atList3(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *QAddress) __findChildren_setList3(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *QAddress) __findChildren_newList3() unsafe.Pointer {
+	return C.QAddress445aa6___findChildren_newList3(ptr.Pointer())
+}
+
+func (ptr *QAddress) __qFindChildren_atList2(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *QAddress) __qFindChildren_setList2(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *QAddress) __qFindChildren_newList2() unsafe.Pointer {
+	return C.QAddress445aa6___qFindChildren_newList2(ptr.Pointer())
+}
+
+func NewQAddress(parent std_core.QObject_ITF) *QAddress {
+	tmpValue := NewQAddressFromPointer(C.QAddress445aa6_NewQAddress(std_core.PointerFromQObject(parent)))
+	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+	}
+	return tmpValue
+}
+
+//export callbackQAddress445aa6_DestroyQAddress
+func callbackQAddress445aa6_DestroyQAddress(ptr unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "~QAddress"); signal != nil {
+		(*(*func())(signal))()
+	} else {
+		NewQAddressFromPointer(ptr).DestroyQAddressDefault()
+	}
+}
+
+func (ptr *QAddress) ConnectDestroyQAddress(f func()) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "~QAddress"); signal != nil {
+			f := func() {
+				(*(*func())(signal))()
+				f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~QAddress", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "~QAddress", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *QAddress) DisconnectDestroyQAddress() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "~QAddress")
+	}
+}
+
+func (ptr *QAddress) DestroyQAddress() {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_DestroyQAddress(ptr.Pointer())
+		ptr.SetPointer(nil)
+		runtime.SetFinalizer(ptr, nil)
+	}
+}
+
+func (ptr *QAddress) DestroyQAddressDefault() {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_DestroyQAddressDefault(ptr.Pointer())
+		ptr.SetPointer(nil)
+		runtime.SetFinalizer(ptr, nil)
+	}
+}
+
+//export callbackQAddress445aa6_ChildEvent
+func callbackQAddress445aa6_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
+		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
+	} else {
+		NewQAddressFromPointer(ptr).ChildEventDefault(std_core.NewQChildEventFromPointer(event))
+	}
+}
+
+func (ptr *QAddress) ChildEventDefault(event std_core.QChildEvent_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
+	}
+}
+
+//export callbackQAddress445aa6_ConnectNotify
+func callbackQAddress445aa6_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
+		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
+	} else {
+		NewQAddressFromPointer(ptr).ConnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
+	}
+}
+
+func (ptr *QAddress) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+	}
+}
+
+//export callbackQAddress445aa6_CustomEvent
+func callbackQAddress445aa6_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
+		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
+	} else {
+		NewQAddressFromPointer(ptr).CustomEventDefault(std_core.NewQEventFromPointer(event))
+	}
+}
+
+func (ptr *QAddress) CustomEventDefault(event std_core.QEvent_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
+	}
+}
+
+//export callbackQAddress445aa6_DeleteLater
+func callbackQAddress445aa6_DeleteLater(ptr unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
+		(*(*func())(signal))()
+	} else {
+		NewQAddressFromPointer(ptr).DeleteLaterDefault()
+	}
+}
+
+func (ptr *QAddress) DeleteLaterDefault() {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_DeleteLaterDefault(ptr.Pointer())
+		runtime.SetFinalizer(ptr, nil)
+	}
+}
+
+//export callbackQAddress445aa6_Destroyed
+func callbackQAddress445aa6_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
+		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
+	}
+	qt.Unregister(ptr)
+
+}
+
+//export callbackQAddress445aa6_DisconnectNotify
+func callbackQAddress445aa6_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
+		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
+	} else {
+		NewQAddressFromPointer(ptr).DisconnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
+	}
+}
+
+func (ptr *QAddress) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+	}
+}
+
+//export callbackQAddress445aa6_Event
+func callbackQAddress445aa6_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
+	if signal := qt.GetSignal(ptr, "event"); signal != nil {
+		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
+	}
+
+	return C.char(int8(qt.GoBoolToInt(NewQAddressFromPointer(ptr).EventDefault(std_core.NewQEventFromPointer(e)))))
+}
+
+func (ptr *QAddress) EventDefault(e std_core.QEvent_ITF) bool {
+	if ptr.Pointer() != nil {
+		return int8(C.QAddress445aa6_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
+	}
+	return false
+}
+
+//export callbackQAddress445aa6_EventFilter
+func callbackQAddress445aa6_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
+	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
+		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
+	}
+
+	return C.char(int8(qt.GoBoolToInt(NewQAddressFromPointer(ptr).EventFilterDefault(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
+}
+
+func (ptr *QAddress) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
+	if ptr.Pointer() != nil {
+		return int8(C.QAddress445aa6_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
+	}
+	return false
+}
+
+//export callbackQAddress445aa6_ObjectNameChanged
+func callbackQAddress445aa6_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
+	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
+		(*(*func(string))(signal))(cGoUnpackString(objectName))
+	}
+
+}
+
+//export callbackQAddress445aa6_TimerEvent
+func callbackQAddress445aa6_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
+		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
+	} else {
+		NewQAddressFromPointer(ptr).TimerEventDefault(std_core.NewQTimerEventFromPointer(event))
+	}
+}
+
+func (ptr *QAddress) TimerEventDefault(event std_core.QTimerEvent_ITF) {
+	if ptr.Pointer() != nil {
+		C.QAddress445aa6_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
+	}
+}
+
 type QWallet_ITF interface {
 	std_core.QObject_ITF
 	QWallet_PTR() *QWallet
@@ -5923,820 +6738,5 @@ func callbackAddressesModel445aa6_TimerEvent(ptr unsafe.Pointer, event unsafe.Po
 func (ptr *AddressesModel) TimerEventDefault(event std_core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
 		C.AddressesModel445aa6_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
-	}
-}
-
-type QAddress_ITF interface {
-	std_core.QObject_ITF
-	QAddress_PTR() *QAddress
-}
-
-func (ptr *QAddress) QAddress_PTR() *QAddress {
-	return ptr
-}
-
-func (ptr *QAddress) Pointer() unsafe.Pointer {
-	if ptr != nil {
-		return ptr.QObject_PTR().Pointer()
-	}
-	return nil
-}
-
-func (ptr *QAddress) SetPointer(p unsafe.Pointer) {
-	if ptr != nil {
-		ptr.QObject_PTR().SetPointer(p)
-	}
-}
-
-func PointerFromQAddress(ptr QAddress_ITF) unsafe.Pointer {
-	if ptr != nil {
-		return ptr.QAddress_PTR().Pointer()
-	}
-	return nil
-}
-
-func NewQAddressFromPointer(ptr unsafe.Pointer) (n *QAddress) {
-	if gPtr, ok := qt.Receive(ptr); !ok {
-		n = new(QAddress)
-		n.SetPointer(ptr)
-	} else {
-		switch deduced := gPtr.(type) {
-		case *QAddress:
-			n = deduced
-
-		case *std_core.QObject:
-			n = &QAddress{QObject: *deduced}
-
-		default:
-			n = new(QAddress)
-			n.SetPointer(ptr)
-		}
-	}
-	return
-}
-
-//export callbackQAddress445aa6_Constructor
-func callbackQAddress445aa6_Constructor(ptr unsafe.Pointer) {
-	this := NewQAddressFromPointer(ptr)
-	qt.Register(ptr, this)
-}
-
-//export callbackQAddress445aa6_Address
-func callbackQAddress445aa6_Address(ptr unsafe.Pointer) C.struct_Moc_PackedString {
-	if signal := qt.GetSignal(ptr, "address"); signal != nil {
-		tempVal := (*(*func() string)(signal))()
-		return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
-	}
-	tempVal := NewQAddressFromPointer(ptr).AddressDefault()
-	return C.struct_Moc_PackedString{data: C.CString(tempVal), len: C.longlong(len(tempVal))}
-}
-
-func (ptr *QAddress) ConnectAddress(f func() string) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "address"); signal != nil {
-			f := func() string {
-				(*(*func() string)(signal))()
-				return f()
-			}
-			qt.ConnectSignal(ptr.Pointer(), "address", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "address", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectAddress() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "address")
-	}
-}
-
-func (ptr *QAddress) Address() string {
-	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.QAddress445aa6_Address(ptr.Pointer()))
-	}
-	return ""
-}
-
-func (ptr *QAddress) AddressDefault() string {
-	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.QAddress445aa6_AddressDefault(ptr.Pointer()))
-	}
-	return ""
-}
-
-//export callbackQAddress445aa6_SetAddress
-func callbackQAddress445aa6_SetAddress(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
-	if signal := qt.GetSignal(ptr, "setAddress"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(address))
-	} else {
-		NewQAddressFromPointer(ptr).SetAddressDefault(cGoUnpackString(address))
-	}
-}
-
-func (ptr *QAddress) ConnectSetAddress(f func(address string)) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "setAddress"); signal != nil {
-			f := func(address string) {
-				(*(*func(string))(signal))(address)
-				f(address)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "setAddress", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "setAddress", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectSetAddress() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "setAddress")
-	}
-}
-
-func (ptr *QAddress) SetAddress(address string) {
-	if ptr.Pointer() != nil {
-		var addressC *C.char
-		if address != "" {
-			addressC = C.CString(address)
-			defer C.free(unsafe.Pointer(addressC))
-		}
-		C.QAddress445aa6_SetAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
-	}
-}
-
-func (ptr *QAddress) SetAddressDefault(address string) {
-	if ptr.Pointer() != nil {
-		var addressC *C.char
-		if address != "" {
-			addressC = C.CString(address)
-			defer C.free(unsafe.Pointer(addressC))
-		}
-		C.QAddress445aa6_SetAddressDefault(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
-	}
-}
-
-//export callbackQAddress445aa6_AddressChanged
-func callbackQAddress445aa6_AddressChanged(ptr unsafe.Pointer, address C.struct_Moc_PackedString) {
-	if signal := qt.GetSignal(ptr, "addressChanged"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(address))
-	}
-
-}
-
-func (ptr *QAddress) ConnectAddressChanged(f func(address string)) {
-	if ptr.Pointer() != nil {
-
-		if !qt.ExistsSignal(ptr.Pointer(), "addressChanged") {
-			C.QAddress445aa6_ConnectAddressChanged(ptr.Pointer())
-		}
-
-		if signal := qt.LendSignal(ptr.Pointer(), "addressChanged"); signal != nil {
-			f := func(address string) {
-				(*(*func(string))(signal))(address)
-				f(address)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "addressChanged", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "addressChanged", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectAddressChanged() {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_DisconnectAddressChanged(ptr.Pointer())
-		qt.DisconnectSignal(ptr.Pointer(), "addressChanged")
-	}
-}
-
-func (ptr *QAddress) AddressChanged(address string) {
-	if ptr.Pointer() != nil {
-		var addressC *C.char
-		if address != "" {
-			addressC = C.CString(address)
-			defer C.free(unsafe.Pointer(addressC))
-		}
-		C.QAddress445aa6_AddressChanged(ptr.Pointer(), C.struct_Moc_PackedString{data: addressC, len: C.longlong(len(address))})
-	}
-}
-
-//export callbackQAddress445aa6_AddressSky
-func callbackQAddress445aa6_AddressSky(ptr unsafe.Pointer) C.ulonglong {
-	if signal := qt.GetSignal(ptr, "addressSky"); signal != nil {
-		return C.ulonglong((*(*func() uint64)(signal))())
-	}
-
-	return C.ulonglong(NewQAddressFromPointer(ptr).AddressSkyDefault())
-}
-
-func (ptr *QAddress) ConnectAddressSky(f func() uint64) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "addressSky"); signal != nil {
-			f := func() uint64 {
-				(*(*func() uint64)(signal))()
-				return f()
-			}
-			qt.ConnectSignal(ptr.Pointer(), "addressSky", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "addressSky", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectAddressSky() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "addressSky")
-	}
-}
-
-func (ptr *QAddress) AddressSky() uint64 {
-	if ptr.Pointer() != nil {
-		return uint64(C.QAddress445aa6_AddressSky(ptr.Pointer()))
-	}
-	return 0
-}
-
-func (ptr *QAddress) AddressSkyDefault() uint64 {
-	if ptr.Pointer() != nil {
-		return uint64(C.QAddress445aa6_AddressSkyDefault(ptr.Pointer()))
-	}
-	return 0
-}
-
-//export callbackQAddress445aa6_SetAddressSky
-func callbackQAddress445aa6_SetAddressSky(ptr unsafe.Pointer, addressSky C.ulonglong) {
-	if signal := qt.GetSignal(ptr, "setAddressSky"); signal != nil {
-		(*(*func(uint64))(signal))(uint64(addressSky))
-	} else {
-		NewQAddressFromPointer(ptr).SetAddressSkyDefault(uint64(addressSky))
-	}
-}
-
-func (ptr *QAddress) ConnectSetAddressSky(f func(addressSky uint64)) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "setAddressSky"); signal != nil {
-			f := func(addressSky uint64) {
-				(*(*func(uint64))(signal))(addressSky)
-				f(addressSky)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "setAddressSky", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "setAddressSky", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectSetAddressSky() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "setAddressSky")
-	}
-}
-
-func (ptr *QAddress) SetAddressSky(addressSky uint64) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_SetAddressSky(ptr.Pointer(), C.ulonglong(addressSky))
-	}
-}
-
-func (ptr *QAddress) SetAddressSkyDefault(addressSky uint64) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_SetAddressSkyDefault(ptr.Pointer(), C.ulonglong(addressSky))
-	}
-}
-
-//export callbackQAddress445aa6_AddressSkyChanged
-func callbackQAddress445aa6_AddressSkyChanged(ptr unsafe.Pointer, addressSky C.ulonglong) {
-	if signal := qt.GetSignal(ptr, "addressSkyChanged"); signal != nil {
-		(*(*func(uint64))(signal))(uint64(addressSky))
-	}
-
-}
-
-func (ptr *QAddress) ConnectAddressSkyChanged(f func(addressSky uint64)) {
-	if ptr.Pointer() != nil {
-
-		if !qt.ExistsSignal(ptr.Pointer(), "addressSkyChanged") {
-			C.QAddress445aa6_ConnectAddressSkyChanged(ptr.Pointer())
-		}
-
-		if signal := qt.LendSignal(ptr.Pointer(), "addressSkyChanged"); signal != nil {
-			f := func(addressSky uint64) {
-				(*(*func(uint64))(signal))(addressSky)
-				f(addressSky)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "addressSkyChanged", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "addressSkyChanged", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectAddressSkyChanged() {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_DisconnectAddressSkyChanged(ptr.Pointer())
-		qt.DisconnectSignal(ptr.Pointer(), "addressSkyChanged")
-	}
-}
-
-func (ptr *QAddress) AddressSkyChanged(addressSky uint64) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_AddressSkyChanged(ptr.Pointer(), C.ulonglong(addressSky))
-	}
-}
-
-//export callbackQAddress445aa6_AddressCoinHours
-func callbackQAddress445aa6_AddressCoinHours(ptr unsafe.Pointer) C.ulonglong {
-	if signal := qt.GetSignal(ptr, "addressCoinHours"); signal != nil {
-		return C.ulonglong((*(*func() uint64)(signal))())
-	}
-
-	return C.ulonglong(NewQAddressFromPointer(ptr).AddressCoinHoursDefault())
-}
-
-func (ptr *QAddress) ConnectAddressCoinHours(f func() uint64) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "addressCoinHours"); signal != nil {
-			f := func() uint64 {
-				(*(*func() uint64)(signal))()
-				return f()
-			}
-			qt.ConnectSignal(ptr.Pointer(), "addressCoinHours", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "addressCoinHours", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectAddressCoinHours() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "addressCoinHours")
-	}
-}
-
-func (ptr *QAddress) AddressCoinHours() uint64 {
-	if ptr.Pointer() != nil {
-		return uint64(C.QAddress445aa6_AddressCoinHours(ptr.Pointer()))
-	}
-	return 0
-}
-
-func (ptr *QAddress) AddressCoinHoursDefault() uint64 {
-	if ptr.Pointer() != nil {
-		return uint64(C.QAddress445aa6_AddressCoinHoursDefault(ptr.Pointer()))
-	}
-	return 0
-}
-
-//export callbackQAddress445aa6_SetAddressCoinHours
-func callbackQAddress445aa6_SetAddressCoinHours(ptr unsafe.Pointer, addressCoinHours C.ulonglong) {
-	if signal := qt.GetSignal(ptr, "setAddressCoinHours"); signal != nil {
-		(*(*func(uint64))(signal))(uint64(addressCoinHours))
-	} else {
-		NewQAddressFromPointer(ptr).SetAddressCoinHoursDefault(uint64(addressCoinHours))
-	}
-}
-
-func (ptr *QAddress) ConnectSetAddressCoinHours(f func(addressCoinHours uint64)) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "setAddressCoinHours"); signal != nil {
-			f := func(addressCoinHours uint64) {
-				(*(*func(uint64))(signal))(addressCoinHours)
-				f(addressCoinHours)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "setAddressCoinHours", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "setAddressCoinHours", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectSetAddressCoinHours() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "setAddressCoinHours")
-	}
-}
-
-func (ptr *QAddress) SetAddressCoinHours(addressCoinHours uint64) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_SetAddressCoinHours(ptr.Pointer(), C.ulonglong(addressCoinHours))
-	}
-}
-
-func (ptr *QAddress) SetAddressCoinHoursDefault(addressCoinHours uint64) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_SetAddressCoinHoursDefault(ptr.Pointer(), C.ulonglong(addressCoinHours))
-	}
-}
-
-//export callbackQAddress445aa6_AddressCoinHoursChanged
-func callbackQAddress445aa6_AddressCoinHoursChanged(ptr unsafe.Pointer, addressCoinHours C.ulonglong) {
-	if signal := qt.GetSignal(ptr, "addressCoinHoursChanged"); signal != nil {
-		(*(*func(uint64))(signal))(uint64(addressCoinHours))
-	}
-
-}
-
-func (ptr *QAddress) ConnectAddressCoinHoursChanged(f func(addressCoinHours uint64)) {
-	if ptr.Pointer() != nil {
-
-		if !qt.ExistsSignal(ptr.Pointer(), "addressCoinHoursChanged") {
-			C.QAddress445aa6_ConnectAddressCoinHoursChanged(ptr.Pointer())
-		}
-
-		if signal := qt.LendSignal(ptr.Pointer(), "addressCoinHoursChanged"); signal != nil {
-			f := func(addressCoinHours uint64) {
-				(*(*func(uint64))(signal))(addressCoinHours)
-				f(addressCoinHours)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "addressCoinHoursChanged", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "addressCoinHoursChanged", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectAddressCoinHoursChanged() {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_DisconnectAddressCoinHoursChanged(ptr.Pointer())
-		qt.DisconnectSignal(ptr.Pointer(), "addressCoinHoursChanged")
-	}
-}
-
-func (ptr *QAddress) AddressCoinHoursChanged(addressCoinHours uint64) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_AddressCoinHoursChanged(ptr.Pointer(), C.ulonglong(addressCoinHours))
-	}
-}
-
-func QAddress_QRegisterMetaType() int {
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType()))
-}
-
-func (ptr *QAddress) QRegisterMetaType() int {
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType()))
-}
-
-func QAddress_QRegisterMetaType2(typeName string) int {
-	var typeNameC *C.char
-	if typeName != "" {
-		typeNameC = C.CString(typeName)
-		defer C.free(unsafe.Pointer(typeNameC))
-	}
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType2(typeNameC)))
-}
-
-func (ptr *QAddress) QRegisterMetaType2(typeName string) int {
-	var typeNameC *C.char
-	if typeName != "" {
-		typeNameC = C.CString(typeName)
-		defer C.free(unsafe.Pointer(typeNameC))
-	}
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QRegisterMetaType2(typeNameC)))
-}
-
-func QAddress_QmlRegisterType() int {
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType()))
-}
-
-func (ptr *QAddress) QmlRegisterType() int {
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType()))
-}
-
-func QAddress_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
-	var uriC *C.char
-	if uri != "" {
-		uriC = C.CString(uri)
-		defer C.free(unsafe.Pointer(uriC))
-	}
-	var qmlNameC *C.char
-	if qmlName != "" {
-		qmlNameC = C.CString(qmlName)
-		defer C.free(unsafe.Pointer(qmlNameC))
-	}
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
-}
-
-func (ptr *QAddress) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
-	var uriC *C.char
-	if uri != "" {
-		uriC = C.CString(uri)
-		defer C.free(unsafe.Pointer(uriC))
-	}
-	var qmlNameC *C.char
-	if qmlName != "" {
-		qmlNameC = C.CString(qmlName)
-		defer C.free(unsafe.Pointer(qmlNameC))
-	}
-	return int(int32(C.QAddress445aa6_QAddress445aa6_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
-}
-
-func (ptr *QAddress) __children_atList(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___children_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QAddress) __children_setList(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *QAddress) __children_newList() unsafe.Pointer {
-	return C.QAddress445aa6___children_newList(ptr.Pointer())
-}
-
-func (ptr *QAddress) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.QAddress445aa6___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
-		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QAddress) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
-	}
-}
-
-func (ptr *QAddress) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return C.QAddress445aa6___dynamicPropertyNames_newList(ptr.Pointer())
-}
-
-func (ptr *QAddress) __findChildren_atList(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QAddress) __findChildren_setList(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *QAddress) __findChildren_newList() unsafe.Pointer {
-	return C.QAddress445aa6___findChildren_newList(ptr.Pointer())
-}
-
-func (ptr *QAddress) __findChildren_atList3(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QAddress) __findChildren_setList3(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *QAddress) __findChildren_newList3() unsafe.Pointer {
-	return C.QAddress445aa6___findChildren_newList3(ptr.Pointer())
-}
-
-func (ptr *QAddress) __qFindChildren_atList2(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.QAddress445aa6___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QAddress) __qFindChildren_setList2(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *QAddress) __qFindChildren_newList2() unsafe.Pointer {
-	return C.QAddress445aa6___qFindChildren_newList2(ptr.Pointer())
-}
-
-func NewQAddress(parent std_core.QObject_ITF) *QAddress {
-	tmpValue := NewQAddressFromPointer(C.QAddress445aa6_NewQAddress(std_core.PointerFromQObject(parent)))
-	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-	}
-	return tmpValue
-}
-
-//export callbackQAddress445aa6_DestroyQAddress
-func callbackQAddress445aa6_DestroyQAddress(ptr unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "~QAddress"); signal != nil {
-		(*(*func())(signal))()
-	} else {
-		NewQAddressFromPointer(ptr).DestroyQAddressDefault()
-	}
-}
-
-func (ptr *QAddress) ConnectDestroyQAddress(f func()) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "~QAddress"); signal != nil {
-			f := func() {
-				(*(*func())(signal))()
-				f()
-			}
-			qt.ConnectSignal(ptr.Pointer(), "~QAddress", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~QAddress", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QAddress) DisconnectDestroyQAddress() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "~QAddress")
-	}
-}
-
-func (ptr *QAddress) DestroyQAddress() {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_DestroyQAddress(ptr.Pointer())
-		ptr.SetPointer(nil)
-		runtime.SetFinalizer(ptr, nil)
-	}
-}
-
-func (ptr *QAddress) DestroyQAddressDefault() {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_DestroyQAddressDefault(ptr.Pointer())
-		ptr.SetPointer(nil)
-		runtime.SetFinalizer(ptr, nil)
-	}
-}
-
-//export callbackQAddress445aa6_ChildEvent
-func callbackQAddress445aa6_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
-		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
-	} else {
-		NewQAddressFromPointer(ptr).ChildEventDefault(std_core.NewQChildEventFromPointer(event))
-	}
-}
-
-func (ptr *QAddress) ChildEventDefault(event std_core.QChildEvent_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
-	}
-}
-
-//export callbackQAddress445aa6_ConnectNotify
-func callbackQAddress445aa6_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
-		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
-	} else {
-		NewQAddressFromPointer(ptr).ConnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
-	}
-}
-
-func (ptr *QAddress) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
-	}
-}
-
-//export callbackQAddress445aa6_CustomEvent
-func callbackQAddress445aa6_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
-		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
-	} else {
-		NewQAddressFromPointer(ptr).CustomEventDefault(std_core.NewQEventFromPointer(event))
-	}
-}
-
-func (ptr *QAddress) CustomEventDefault(event std_core.QEvent_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
-	}
-}
-
-//export callbackQAddress445aa6_DeleteLater
-func callbackQAddress445aa6_DeleteLater(ptr unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
-		(*(*func())(signal))()
-	} else {
-		NewQAddressFromPointer(ptr).DeleteLaterDefault()
-	}
-}
-
-func (ptr *QAddress) DeleteLaterDefault() {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_DeleteLaterDefault(ptr.Pointer())
-		runtime.SetFinalizer(ptr, nil)
-	}
-}
-
-//export callbackQAddress445aa6_Destroyed
-func callbackQAddress445aa6_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
-		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
-	}
-	qt.Unregister(ptr)
-
-}
-
-//export callbackQAddress445aa6_DisconnectNotify
-func callbackQAddress445aa6_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
-		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
-	} else {
-		NewQAddressFromPointer(ptr).DisconnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
-	}
-}
-
-func (ptr *QAddress) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
-	}
-}
-
-//export callbackQAddress445aa6_Event
-func callbackQAddress445aa6_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
-	if signal := qt.GetSignal(ptr, "event"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
-	}
-
-	return C.char(int8(qt.GoBoolToInt(NewQAddressFromPointer(ptr).EventDefault(std_core.NewQEventFromPointer(e)))))
-}
-
-func (ptr *QAddress) EventDefault(e std_core.QEvent_ITF) bool {
-	if ptr.Pointer() != nil {
-		return int8(C.QAddress445aa6_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
-	}
-	return false
-}
-
-//export callbackQAddress445aa6_EventFilter
-func callbackQAddress445aa6_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
-	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
-	}
-
-	return C.char(int8(qt.GoBoolToInt(NewQAddressFromPointer(ptr).EventFilterDefault(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
-}
-
-func (ptr *QAddress) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
-	if ptr.Pointer() != nil {
-		return int8(C.QAddress445aa6_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
-	}
-	return false
-}
-
-//export callbackQAddress445aa6_ObjectNameChanged
-func callbackQAddress445aa6_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
-	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(objectName))
-	}
-
-}
-
-//export callbackQAddress445aa6_TimerEvent
-func callbackQAddress445aa6_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
-		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
-	} else {
-		NewQAddressFromPointer(ptr).TimerEventDefault(std_core.NewQTimerEventFromPointer(event))
-	}
-}
-
-func (ptr *QAddress) TimerEventDefault(event std_core.QTimerEvent_ITF) {
-	if ptr.Pointer() != nil {
-		C.QAddress445aa6_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
 	}
 }

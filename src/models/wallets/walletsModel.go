@@ -4,6 +4,7 @@ import (
 	"github.com/therecipe/qt/core"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"time"
 	
 	
 )
@@ -68,6 +69,13 @@ func (m *WalletModel) init() {
 	
 
 	m.loadModel()
+
+	go func(){
+		ticker := time.NewTicker(10*time.Second)
+		for  _ = range ticker.C{
+			m.loadModel()
+		}
+	}()
 	
 	
 }
@@ -182,8 +190,13 @@ func (m *WalletModel) loadModel() {
 	if err != nil {
 		return 
 	}
-	
+	m.BeginRemoveRows(core.NewQModelIndex(), 0, len(m.Wallets())-1)
+	m.SetWallets(make([]*QWallet,0))
+	m.EndRemoveRows()
+	m.BeginInsertRows(core.NewQModelIndex(), 0, len(wltsModels)-1)
 	m.SetWallets(wltsModels)
+	m.EndInsertRows()
+	
 
 }
 
