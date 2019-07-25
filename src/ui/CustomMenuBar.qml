@@ -82,15 +82,45 @@ RowLayout {
         Menu {
             id: menuTools
             title: qsTr("&Tools")
-            MenuItem { text: qsTr("Outputs"); onClicked: outputsRequested() }
-            MenuItem { text: qsTr("Blockchain"); onClicked: blockchainRequested() }
-            MenuItem { text: qsTr("Networking"); onClicked: networkingRequested() }
-        }
+            MenuItem {
+                text: qsTr("Outputs")
+                leftPadding: highlighted ? padding * 1.5 : padding
+                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+
+                onClicked: outputsRequested()
+            }
+            MenuItem {
+                text: qsTr("Blockchain")
+                leftPadding: highlighted ? padding * 1.5 : padding
+                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+
+                onClicked: blockchainRequested()
+            }
+            MenuItem {
+                text: qsTr("Networking")
+                leftPadding: highlighted ? padding * 1.5 : padding
+                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+
+                onClicked: networkingRequested()
+            }
+        } // menuTools
         Menu {
             id: menuHelp
             title: qsTr("&Help")
-            MenuItem { text: qsTr("About FiberCrypto"); onClicked: aboutRequested() }
-            MenuItem { text: qsTr("About Qt"); onClicked: aboutQtRequested() }
-        }
-    }
+            MenuItem {
+                text: qsTr("About FiberCrypto")
+                leftPadding: highlighted ? padding * 1.5 : padding
+                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+
+                onClicked: aboutRequested()
+            }
+            MenuItem {
+                text: qsTr("About Qt")
+                leftPadding: highlighted ? padding * 1.5 : padding
+                Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+
+                onClicked: aboutQtRequested()
+            }
+        } // menuHelp
+    } // menuBarReal
 } // RowLayout (menuBar)
