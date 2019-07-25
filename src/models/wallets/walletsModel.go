@@ -26,7 +26,7 @@ type WalletModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QWallet	`property:"wallets"`
 
-	_ func(*QWallet) `slot:"addWallet"`
+	_ func(*util.Wallet) `slot:"addWallet"`
 	_ func(row int, name string, encryptionEnabled bool, sky, coinHours uint64)	`slot:"editWallet"`
 	_ func(row int)	`slot:"removeWallet"`
 	_ func()	`slot:"loadModel"`
@@ -204,6 +204,7 @@ func (m *WalletModel) loadModel() {
 func (m *WalletModel) updateCount(){
 	m.SetCount(len(m.Wallets()))
 }
+
 
 func WalletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error){
 	c := util.NewClient()

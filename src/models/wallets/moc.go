@@ -10,6 +10,7 @@ import (
 	"strings"
 	"unsafe"
 
+	custom_util_fdda3fm "github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/therecipe/qt"
 	std_core "github.com/therecipe/qt/core"
 )
@@ -1994,19 +1995,24 @@ func callbackWalletModel445aa6_Constructor(ptr unsafe.Pointer) {
 }
 
 //export callbackWalletModel445aa6_AddWallet
-func callbackWalletModel445aa6_AddWallet(ptr unsafe.Pointer, v0 unsafe.Pointer) {
+func callbackWalletModel445aa6_AddWallet(ptr unsafe.Pointer, v0 C.uintptr_t) {
+	var v0D *custom_util_fdda3fm.Wallet
+	if v0I, ok := qt.ReceiveTemp(unsafe.Pointer(uintptr(v0))); ok {
+		qt.UnregisterTemp(unsafe.Pointer(uintptr(v0)))
+		v0D = (*(**custom_util_fdda3fm.Wallet)(v0I))
+	}
 	if signal := qt.GetSignal(ptr, "addWallet"); signal != nil {
-		(*(*func(*QWallet))(signal))(NewQWalletFromPointer(v0))
+		(*(*func(*custom_util_fdda3fm.Wallet))(signal))(v0D)
 	}
 
 }
 
-func (ptr *WalletModel) ConnectAddWallet(f func(v0 *QWallet)) {
+func (ptr *WalletModel) ConnectAddWallet(f func(v0 *custom_util_fdda3fm.Wallet)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "addWallet"); signal != nil {
-			f := func(v0 *QWallet) {
-				(*(*func(*QWallet))(signal))(v0)
+			f := func(v0 *custom_util_fdda3fm.Wallet) {
+				(*(*func(*custom_util_fdda3fm.Wallet))(signal))(v0)
 				f(v0)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "addWallet", unsafe.Pointer(&f))
@@ -2023,9 +2029,10 @@ func (ptr *WalletModel) DisconnectAddWallet() {
 	}
 }
 
-func (ptr *WalletModel) AddWallet(v0 QWallet_ITF) {
+func (ptr *WalletModel) AddWallet(v0 *custom_util_fdda3fm.Wallet) {
 	if ptr.Pointer() != nil {
-		C.WalletModel445aa6_AddWallet(ptr.Pointer(), PointerFromQWallet(v0))
+		qt.RegisterTemp(unsafe.Pointer(v0), unsafe.Pointer(v0))
+		C.WalletModel445aa6_AddWallet(ptr.Pointer(), C.uintptr_t(uintptr(unsafe.Pointer(v0))))
 	}
 }
 
@@ -2525,6 +2532,134 @@ func (ptr *WalletModel) WalletsChanged(wallets []*QWallet) {
 			}
 			return tmpList.Pointer()
 		}())
+	}
+}
+
+//export callbackWalletModel445aa6_Count
+func callbackWalletModel445aa6_Count(ptr unsafe.Pointer) C.int {
+	if signal := qt.GetSignal(ptr, "count"); signal != nil {
+		return C.int(int32((*(*func() int)(signal))()))
+	}
+
+	return C.int(int32(NewWalletModelFromPointer(ptr).CountDefault()))
+}
+
+func (ptr *WalletModel) ConnectCount(f func() int) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "count"); signal != nil {
+			f := func() int {
+				(*(*func() int)(signal))()
+				return f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "count", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "count", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *WalletModel) DisconnectCount() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "count")
+	}
+}
+
+func (ptr *WalletModel) Count() int {
+	if ptr.Pointer() != nil {
+		return int(int32(C.WalletModel445aa6_Count(ptr.Pointer())))
+	}
+	return 0
+}
+
+func (ptr *WalletModel) CountDefault() int {
+	if ptr.Pointer() != nil {
+		return int(int32(C.WalletModel445aa6_CountDefault(ptr.Pointer())))
+	}
+	return 0
+}
+
+//export callbackWalletModel445aa6_SetCount
+func callbackWalletModel445aa6_SetCount(ptr unsafe.Pointer, count C.int) {
+	if signal := qt.GetSignal(ptr, "setCount"); signal != nil {
+		(*(*func(int))(signal))(int(int32(count)))
+	} else {
+		NewWalletModelFromPointer(ptr).SetCountDefault(int(int32(count)))
+	}
+}
+
+func (ptr *WalletModel) ConnectSetCount(f func(count int)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "setCount"); signal != nil {
+			f := func(count int) {
+				(*(*func(int))(signal))(count)
+				f(count)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "setCount", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "setCount", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *WalletModel) DisconnectSetCount() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "setCount")
+	}
+}
+
+func (ptr *WalletModel) SetCount(count int) {
+	if ptr.Pointer() != nil {
+		C.WalletModel445aa6_SetCount(ptr.Pointer(), C.int(int32(count)))
+	}
+}
+
+func (ptr *WalletModel) SetCountDefault(count int) {
+	if ptr.Pointer() != nil {
+		C.WalletModel445aa6_SetCountDefault(ptr.Pointer(), C.int(int32(count)))
+	}
+}
+
+//export callbackWalletModel445aa6_CountChanged
+func callbackWalletModel445aa6_CountChanged(ptr unsafe.Pointer, count C.int) {
+	if signal := qt.GetSignal(ptr, "countChanged"); signal != nil {
+		(*(*func(int))(signal))(int(int32(count)))
+	}
+
+}
+
+func (ptr *WalletModel) ConnectCountChanged(f func(count int)) {
+	if ptr.Pointer() != nil {
+
+		if !qt.ExistsSignal(ptr.Pointer(), "countChanged") {
+			C.WalletModel445aa6_ConnectCountChanged(ptr.Pointer())
+		}
+
+		if signal := qt.LendSignal(ptr.Pointer(), "countChanged"); signal != nil {
+			f := func(count int) {
+				(*(*func(int))(signal))(count)
+				f(count)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "countChanged", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "countChanged", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *WalletModel) DisconnectCountChanged() {
+	if ptr.Pointer() != nil {
+		C.WalletModel445aa6_DisconnectCountChanged(ptr.Pointer())
+		qt.DisconnectSignal(ptr.Pointer(), "countChanged")
+	}
+}
+
+func (ptr *WalletModel) CountChanged(count int) {
+	if ptr.Pointer() != nil {
+		C.WalletModel445aa6_CountChanged(ptr.Pointer(), C.int(int32(count)))
 	}
 }
 

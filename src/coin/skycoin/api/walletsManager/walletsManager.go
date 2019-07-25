@@ -2,8 +2,8 @@ package walletsManager
 
 import (
 	"github.com/therecipe/qt/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/models/wallets"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/models/wallets"
 
 	
 )
@@ -20,13 +20,13 @@ func init() {
 type WalletManager struct {
 	core.QObject
 	_ func ()	`constructor:"init"`
-	_ func(walletM *wallets.WalletModel, seed string, label string, password string, scanN int)	`slot:"createEncryptedWallet"`
-	_ func(walletM *wallets.WalletModel, seed string, label string, scanN int) 	`slot:"createUnencryptedWallet"`
+	_ func(seed string, label string, password string, scanN int) *wallets.QWallet	`slot:"createEncryptedWallet"`
+	_ func(seed string, label string, scanN int) *wallets.QWallet	`slot:"createUnencryptedWallet"`
 	_ func(entropy int) string `slot:"getNewSeed"`
 	_ func(seed string) int  `slot:"verifySeed"`
-	_ func(addressM *wallets.AddressesModel, id string, n int, password string)	`slot:"newWalletAddress"`
-	_ func(walletM *wallets.WalletModel, id string, password string)	`slot:"encryptWallet"`
-	_ func(walletM *wallets.WalletModel, id string, password string)	`slot:"decryptWallet"`
+	_ func(id string, n int, password string)	`slot:"newWalletAddress"`
+	_ func(id string, password string)	`slot:"encryptWallet"`
+	_ func(id string, password string)	`slot:"decryptWallet"`
 
 }
 
@@ -40,25 +40,33 @@ func (walletM *WalletManager) init(){
 }
 
 
-func createEncryptedWallet(walletModel *wallets.WalletModel, seed, label, password string, scanN int){
+func createEncryptedWallet(seed, label, password string, scanN int) {
 	c := util.NewClient()
 	_, err := c.CreateEncryptedWallet(seed, label, password, scanN)
 	if err != nil{
 		return
 	}
+	//wltr, err := wallets.WalletResponseToQWallet(wlt)
+	//if err != nil{
+	//	return
+	//}
+	//return qwallet
 }
 
-func createUnencryptedWallet(walletModel *wallets.WalletModel ,seed, label string, scanN int){
+func createUnencryptedWallet(seed, label string, scanN int) *util.Wallet{
 	c := util.NewClient()
-	wlt, err := c.CreateUnencryptedWallet(seed, label, scanN)
+	_, err := c.CreateUnencryptedWallet(seed, label, scanN)
 	if err!= nil{
-		return
+		return nil
 	}
-	qwallet, err := wallets.WalletResponseToQWallet(wlt)
-	if err != nil{
-		return
-	}
-	walletModel.AddWallet(qwallet)
+	//qwallet, err := wallets.WalletResponseToQWallet(wlt)
+	//if err != nil{
+	//	return nil
+	//}
+	//return qwallet
+	w := new(util.Wallet)
+	w.Sky = 20
+	return w
 }
 
 func getNewSeed(entropy int) string{
@@ -84,7 +92,7 @@ func verifySeed(seed string) int{
 	return 1
 }
 
-func newWalletAddress(addressesM *wallets.AddressesModel, label string, n int, password string){
+func newWalletAddress(label string, n int, password string){
 	c := util.NewClient()
 	_, err := c.NewWalletAddress(label, n, password)
 	if err != nil{
@@ -93,7 +101,7 @@ func newWalletAddress(addressesM *wallets.AddressesModel, label string, n int, p
 
 }
 
-func encryptWallet(walletM *wallets.WalletModel, label, password string){
+func encryptWallet(label, password string){
 	c := util.NewClient()
 	_, err := c.EncryptWallet(label, password)
 	if err != nil{
@@ -101,7 +109,7 @@ func encryptWallet(walletM *wallets.WalletModel, label, password string){
 	}
 }
 
-func decryptWallet(walletM *wallets.WalletModel, label, password string){
+func decryptWallet(label, password string){
 	c := util.NewClient()
 	_, err := c.DecryptWallet(label, password)
 	if err != nil {

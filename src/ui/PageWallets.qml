@@ -67,7 +67,7 @@ Page {
                 onClicked: {
                     console.log("Begin")
                     //walletManager.createEncryptedWallet( walletManager.getNewSeed(128), "kid3", "mauricio1802", 1)
-                    walletManager.createUnencryptedWallet(walletModel, walletManager.getNewSeed(128), "kid4", 1)
+                    walletModel.addWallet(walletManager.createUnencryptedWallet(walletManager.getNewSeed(128), "kid4", 1))
                 }
             }
             ToolButton {
