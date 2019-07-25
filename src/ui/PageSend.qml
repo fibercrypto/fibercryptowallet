@@ -94,9 +94,9 @@ Page {
         id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
 
-        readonly property real maxHeight: expanded ? 650 : 450
-        width: applicationWindow.width > 600 ? 600 : applicationWindow.width - 40
-        height: applicationWindow.height > maxHeight ? maxHeight : applicationWindow.height - 40
+        readonly property real maxHeight: expanded ? 690 : 490
+        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
         Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
         
         modal: true
