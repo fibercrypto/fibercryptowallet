@@ -68,6 +68,19 @@ ApplicationWindow {
 
     //! Dialogs
 
+    // Hardware dialogs
+
+    DialogUnconfiguredWallet {
+        id: dialogUnconfiguredWallet
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 690 ? 690 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 420 ? 420 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+
     // Help dialogs
 
     DialogAbout {
