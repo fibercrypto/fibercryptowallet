@@ -21,8 +21,8 @@ ApplicationWindow {
             id: menuTools
             title: qsTr("&Tools")
             MenuItem { text: qsTr("Outputs") }
-            MenuItem { text: qsTr("Blockchain"); onClicked: general.openBlockchainPage() }
-            MenuItem { text: qsTr("Networking"); onClicked: general.openNetworkingPage() }
+            MenuItem { text: qsTr("Blockchain"); onClicked: generalStackView.openBlockchainPage() }
+            MenuItem { text: qsTr("Networking"); onClicked: generalStackView.openNetworkingPage() }
         }
         Menu {
             id: menuHelp
@@ -33,7 +33,7 @@ ApplicationWindow {
     }
 
     GeneralStackView {
-        id: general
+        id: generalStackView
         anchors.fill: parent
     }
 
