@@ -34,6 +34,14 @@ ApplicationWindow {
             menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Networking")
         }
+
+        onAboutRequested: {
+            dialogAbout.open()
+        }
+
+        onAboutQtRequested: {
+            dialogAboutQt.open()
+        }
     } // CustomMenuBar
 
     CustomHeader {
