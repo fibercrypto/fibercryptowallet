@@ -24,7 +24,7 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                dialogSend.open()
+                dialogSendTransaction.open()
             }
         }
     }
@@ -87,11 +87,19 @@ Page {
                     }
                 }
             }
-        }
+        } // StackView
     } // GroupBox
 
     DialogSendTransaction {
-        id: dialogSend
+        id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
+
+        readonly property real maxHeight: expanded ? 650 : 450
+        width: applicationWindow.width > 600 ? 600 : applicationWindow.width - 40
+        height: applicationWindow.height > maxHeight ? maxHeight : applicationWindow.height - 40
+        Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+        
+        modal: true
+        focus: true
     }
 }
