@@ -11,15 +11,17 @@ matrix:
     - clang
     - gcc
     script:
-            #    - ./.travis/install-linux.sh
-    - go get ./...
+    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+    - go get -t ./...
     - go get -u -v github.com/therecipe/qt/cmd/... 
     - make build-wallet
   - os: osx
     osx_image: xcode7.2
     script:
-            #- ./.travis/install-os.sh
-    - go get ./...
+    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+    - go get -t ./...
     - xcode-select --install; go get -u -v github.com/therecipe/qt/cmd/...  
     - make build-wallet 
 #  - os: windows
