@@ -68,6 +68,26 @@ ApplicationWindow {
 
     //! Dialogs
 
+    // Message dialogs
+
+    MsgDialog {
+        id: msgDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+
+        text: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                 + "sed eiusmod tempor incidunt ut labore et dolore magna aliqua. "
+                 + "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris "
+                 + "nisi ut aliquid ex ea commodi consequat. "
+                 + "Quis aute iure reprehenderit in voluptate velit esse cillum dolore "
+                 + "eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, "
+                 + "sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    }
+
     // Hardware dialogs
 
     DialogUnconfiguredWallet {
