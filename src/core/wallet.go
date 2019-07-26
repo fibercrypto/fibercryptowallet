@@ -17,6 +17,13 @@ type WalletStorage interface {
 	IsEncrypted(walletName string) bool
 }
 
+type AddressType uint32
+
+const (
+	AccountAddress AddressType = iota
+	ChangeAddress
+)
+
 type Wallet interface {
 	ScanAddresses(startIndex, count int) AddressIterator
 	GetId() string
@@ -25,7 +32,7 @@ type Wallet interface {
 	Transfer(to Address, amount uint64)
 	SendFromAddress(from, to Address, amount uint64)
 	Spend(unspent, new []TransactionOutput)
-	GenChangeAddress() Address
+	GenAddresses(addrType AddressType, startIndex, count uint32) AddressIterator
 }
 
 type SeedGenerator interface {
