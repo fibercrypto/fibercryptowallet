@@ -1,17 +1,20 @@
 package core
 
 type WalletIterator interface {
-	// TODO: Define
+	Value() Wallet
+	Next() bool
+	HasNext() bool
 }
 
 type WalletSet interface {
 	ListWallets() WalletIterator
+	CreateWallet(name string, seed string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int)
 }
 
 type WalletStorage interface {
 	Encrypt(walletName, password string)
 	Decrypt(walletName, password string)
-	IsEncrypted(walletName string)
+	IsEncrypted(walletName string) bool
 }
 
 type Wallet interface {
@@ -22,4 +25,14 @@ type Wallet interface {
 	SendFromAddress(from, to Address, amount uint64)
 	Spend(unspent, new []TransactionOutput)
 	GenChangeAddress() Address
+}
+
+type SeedGenerator interface {
+	GenerateMnemonic(wordCount int) (string, error)
+	VerifyMnemonic(seed string) error
+}
+
+type WalletEnv interface {
+	GetStorage() WalletStorage
+	GetWalletSet() WalletSet
 }
