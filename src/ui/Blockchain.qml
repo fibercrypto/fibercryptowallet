@@ -6,19 +6,15 @@ import BlockchainModels 1.0
 
 Page {
     id: root
-    
-    BlockchainStatusModel {
-        id: blockchain_status
-    }
 
-    property string numberOfBlocks: blockchain_status.numberOfBlocks
-    property date timestampLastBlock: blockchain_status.timestampLastBlock
-    property string hashLastBlock: blockchain_status.hashLastBlock
+    property string numberOfBlocks;//: model.numberOfBlocks
+    property date timestampLastBlock;//: model.timestampLastBlock
+    property string hashLastBlock;//: model.hashLastBlock
 
-    property string currentSkySupply: blockchain_status.currentSkySupply
-    property string totalSkySupply: blockchain_status.totalSkySupply
-    property string currentCoinHoursSupply: blockchain_status.currentCoinHoursSupply
-    property string totalCoinHoursSupply: blockchain_status.totalCoinHoursSupply
+    property string currentSkySupply;//: model.currentSkySupply
+    property string totalSkySupply;//: model.totalSkySupply
+    property string currentCoinHoursSupply;//: model.currentCoinHoursSupply
+    property string totalCoinHoursSupply;//: model.totalCoinHoursSupply
 
     signal backRequested()
 
