@@ -26,3 +26,13 @@ type Wallet interface {
 	Spend(unspent, new []TransactionOutput)
 	GenChangeAddress() Address
 }
+
+type SeedGenerator interface {
+	GenerateMnemonic(wordCount int) (string, error)
+	VerifyMnemonic(seed string) error
+}
+
+type WalletEnv interface {
+	GetStorage() WalletStorage
+	GetWalletSet() WalletSet
+}
