@@ -15,6 +15,9 @@ extern "C" {
 
 struct Moc_PackedString { char* data; long long len; };
 struct Moc_PackedList { void* data; long long len; };
+void BlockchainStatusModel9ae898_ConnectUpdate(void* ptr);
+void BlockchainStatusModel9ae898_DisconnectUpdate(void* ptr);
+void BlockchainStatusModel9ae898_Update(void* ptr);
 struct Moc_PackedString BlockchainStatusModel9ae898_NumberOfBlocks(void* ptr);
 struct Moc_PackedString BlockchainStatusModel9ae898_NumberOfBlocksDefault(void* ptr);
 void BlockchainStatusModel9ae898_SetNumberOfBlocks(void* ptr, struct Moc_PackedString numberOfBlocks);

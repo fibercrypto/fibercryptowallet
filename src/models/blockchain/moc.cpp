@@ -36,6 +36,7 @@ Q_PROPERTY(QString currentCoinHoursSupply READ currentCoinHoursSupply WRITE setC
 Q_PROPERTY(QString totalCoinHoursSupply READ totalCoinHoursSupply WRITE setTotalCoinHoursSupply NOTIFY totalCoinHoursSupplyChanged)
 public:
 	BlockchainStatusModel9ae898(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");BlockchainStatusModel9ae898_BlockchainStatusModel9ae898_QRegisterMetaType();BlockchainStatusModel9ae898_BlockchainStatusModel9ae898_QRegisterMetaTypes();callbackBlockchainStatusModel9ae898_Constructor(this);};
+	void Signal_Update() { callbackBlockchainStatusModel9ae898_Update(this); };
 	QString numberOfBlocks() { return ({ Moc_PackedString tempVal = callbackBlockchainStatusModel9ae898_NumberOfBlocks(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
 	void setNumberOfBlocks(QString numberOfBlocks) { QByteArray tf3f052 = numberOfBlocks.toUtf8(); Moc_PackedString numberOfBlocksPacked = { const_cast<char*>(tf3f052.prepend("WHITESPACE").constData()+10), tf3f052.size()-10 };callbackBlockchainStatusModel9ae898_SetNumberOfBlocks(this, numberOfBlocksPacked); };
 	void Signal_NumberOfBlocksChanged(QString numberOfBlocks) { QByteArray tf3f052 = numberOfBlocks.toUtf8(); Moc_PackedString numberOfBlocksPacked = { const_cast<char*>(tf3f052.prepend("WHITESPACE").constData()+10), tf3f052.size()-10 };callbackBlockchainStatusModel9ae898_NumberOfBlocksChanged(this, numberOfBlocksPacked); };
@@ -83,6 +84,7 @@ public:
 	QString totalCoinHoursSupplyDefault() { return _totalCoinHoursSupply; };
 	void setTotalCoinHoursSupplyDefault(QString p) { if (p != _totalCoinHoursSupply) { _totalCoinHoursSupply = p; totalCoinHoursSupplyChanged(_totalCoinHoursSupply); } };
 signals:
+	void update();
 	void numberOfBlocksChanged(QString numberOfBlocks);
 	void timestampLastBlockChanged(QDateTime timestampLastBlock);
 	void hashLastBlockChanged(QString hashLastBlock);
@@ -107,6 +109,21 @@ Q_DECLARE_METATYPE(BlockchainStatusModel9ae898*)
 void BlockchainStatusModel9ae898_BlockchainStatusModel9ae898_QRegisterMetaTypes() {
 	qRegisterMetaType<QString>();
 	qRegisterMetaType<QDateTime>();
+}
+
+void BlockchainStatusModel9ae898_ConnectUpdate(void* ptr)
+{
+	QObject::connect(static_cast<BlockchainStatusModel9ae898*>(ptr), static_cast<void (BlockchainStatusModel9ae898::*)()>(&BlockchainStatusModel9ae898::update), static_cast<BlockchainStatusModel9ae898*>(ptr), static_cast<void (BlockchainStatusModel9ae898::*)()>(&BlockchainStatusModel9ae898::Signal_Update));
+}
+
+void BlockchainStatusModel9ae898_DisconnectUpdate(void* ptr)
+{
+	QObject::disconnect(static_cast<BlockchainStatusModel9ae898*>(ptr), static_cast<void (BlockchainStatusModel9ae898::*)()>(&BlockchainStatusModel9ae898::update), static_cast<BlockchainStatusModel9ae898*>(ptr), static_cast<void (BlockchainStatusModel9ae898::*)()>(&BlockchainStatusModel9ae898::Signal_Update));
+}
+
+void BlockchainStatusModel9ae898_Update(void* ptr)
+{
+	static_cast<BlockchainStatusModel9ae898*>(ptr)->update();
 }
 
 struct Moc_PackedString BlockchainStatusModel9ae898_NumberOfBlocks(void* ptr)

@@ -24,6 +24,8 @@ type BlockchainStatusModel struct {
 	_ string          `property:"totalSkySupply"`
 	_ string          `property:"currentCoinHoursSupply"`
 	_ string          `property:"totalCoinHoursSupply"`
+
+	_ func() `signal:"update,auto"`
 }
 
 func (bs *BlockchainStatusModel) init() {
@@ -38,7 +40,9 @@ func (bs *BlockchainStatusModel) init() {
 	bs.SetTotalSkySupplyDefault("0")
 	bs.SetCurrentCoinHoursSupplyDefault("0")
 	bs.SetTotalCoinHoursSupplyDefault("0")
+}
 
+func (bs *BlockchainStatusModel) update() {
 	// update info
 	if err := bs.updateInfo(); err != nil {
 		println(err.Error())

@@ -88,7 +88,48 @@ func (this *BlockchainStatusModel) Init() { this.init() }
 func callbackBlockchainStatusModel9ae898_Constructor(ptr unsafe.Pointer) {
 	this := NewBlockchainStatusModelFromPointer(ptr)
 	qt.Register(ptr, this)
+	this.ConnectUpdate(this.update)
 	this.init()
+}
+
+//export callbackBlockchainStatusModel9ae898_Update
+func callbackBlockchainStatusModel9ae898_Update(ptr unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "update"); signal != nil {
+		(*(*func())(signal))()
+	}
+
+}
+
+func (ptr *BlockchainStatusModel) ConnectUpdate(f func()) {
+	if ptr.Pointer() != nil {
+
+		if !qt.ExistsSignal(ptr.Pointer(), "update") {
+			C.BlockchainStatusModel9ae898_ConnectUpdate(ptr.Pointer())
+		}
+
+		if signal := qt.LendSignal(ptr.Pointer(), "update"); signal != nil {
+			f := func() {
+				(*(*func())(signal))()
+				f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "update", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "update", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *BlockchainStatusModel) DisconnectUpdate() {
+	if ptr.Pointer() != nil {
+		C.BlockchainStatusModel9ae898_DisconnectUpdate(ptr.Pointer())
+		qt.DisconnectSignal(ptr.Pointer(), "update")
+	}
+}
+
+func (ptr *BlockchainStatusModel) Update() {
+	if ptr.Pointer() != nil {
+		C.BlockchainStatusModel9ae898_Update(ptr.Pointer())
+	}
 }
 
 //export callbackBlockchainStatusModel9ae898_NumberOfBlocks
