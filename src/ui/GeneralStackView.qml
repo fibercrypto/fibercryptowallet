@@ -65,10 +65,9 @@ Item {
             }
 
             Component.onCompleted: {
-                blockchainModel.update()
                 model = blockchainModel
+                model.update()
             }
-
         }
     }
 
