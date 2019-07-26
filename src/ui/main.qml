@@ -128,6 +128,16 @@ ApplicationWindow {
         
         focus: true
         modal: true
+    }
+
+    WalletCreatedDialog {
+        id: walletCreatedDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 360 ? 360 - 40 : applicationWindow.height - 40
+        
+        focus: true
+        modal: true
 
         visible: true
     }
