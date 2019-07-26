@@ -138,8 +138,6 @@ ApplicationWindow {
         
         focus: true
         modal: true
-
-        visible: true
     }
 
 
