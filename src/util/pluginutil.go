@@ -1,7 +1,7 @@
 package pluginutil
 
 import (
-	"github.github.com/FiberCrypto/FibercryptoWallet/src/core"
+	"github.com/FiberCrypto/FibercryptoWallet/src/core"
 )
 
 func AltcoinCaption(ticker string) string {
@@ -9,4 +9,8 @@ func AltcoinCaption(ticker string) string {
 		return info.Name
 	}
 	return ticker + " <Unregistered>"
+}
+
+func RegisterAltcoin(p core.AltcoinPlugin) {
+	core.LoadAltcoinManager().RegisterPlugin(p)
 }

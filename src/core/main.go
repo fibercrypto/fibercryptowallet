@@ -42,6 +42,7 @@ var (
 
 func (m *fibercryptoAltcoinManager) RegisterPlugin(p AltcoinPlugin) {
 	p.RegisterTo(m)
+	m.registeredPlugins = append(m.registeredPlugins, p)
 }
 
 func (m *fibercryptoAltcoinManager) RegisterAltcoin(ticker, info AltcoinMetadata, plugin AltcoinPlugin) {
