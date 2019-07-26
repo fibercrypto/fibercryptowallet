@@ -18,12 +18,12 @@ func (wltSrv *WalletService) ListWallets() WalletIterator {
 	return NewSkycoinWalletIterator(wallets)
 }
 
-func (wltSrv *WalletService) CreateWallet(name string, seed string, IsEncrypted bool, pwd PasswordReader, scanAddressesN int) (core.Wallet, error) {
+func (wltSrv *WalletService) CreateWallet(label string, seed string, IsEncrypted bool, pwd PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	if IsEncrypted {
 		password := pwd("Enter your password")
-		return createEncryptedWallet(seed, name, password, scanAddressesN)
+		return createEncryptedWallet(seed, label, password, scanAddressesN)
 	} else {
-		return createUnencryptedWallet(seed, name, scanAddressesN)
+		return createUnencryptedWallet(seed, label, scanAddressesN)
 	}
 }
 func (wltSrv *WalletService) createEncryptedWallet(seed, label, password string, scanN int) (core.Wallet, error) {
@@ -70,23 +70,4 @@ func (wltSrv *WalletService) IsEncrypted(walletName string) bool {
 		return err
 	}
 	return wlt.Meta.Encrypted
-}
-
-func (wltSrv *WalletService) GenerateMnemonic(entropy int) (string, error) {
-	c := util.NewClient()
-	seed, err := c.NewSeed(entropy)
-	if err != nil {
-		return nil, err
-	}
-
-	return seed, nil
-}
-
-func (wltSrv *WalletService) VerifyMnemonic(seed string) (bool, error) {
-	c := util.NewClient()
-	ok, err := c.VerifySeed(seed)
-	if err != nil {
-		return nil, err
-	}
-	return ok, nil
 }
