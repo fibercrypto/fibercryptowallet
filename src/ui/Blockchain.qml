@@ -83,7 +83,7 @@ Page {
                         }
                         Label {
                             id: labelTimestampLastBlock
-                            text: Qt.formatDateTime(root.timestampLastBlock, Qt.DefaultLocaleShortDate)
+                            text: Qt.formatDateTime(timestampLastBlock, Qt.DefaultLocaleShortDate)
                         }
                     }
 
