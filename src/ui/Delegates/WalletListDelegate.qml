@@ -95,6 +95,11 @@ Item {
             delegate: WalletListAddressDelegate {
                 width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
+
+                onEditWalletRequested: {
+                    dialogEditWallet.initialText = name
+                    dialogEditWallet.open()
+                }
             }
         } // ListView
     } // ColumnLayout
