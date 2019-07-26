@@ -8,7 +8,7 @@ type WalletIterator interface {
 
 type WalletSet interface {
 	ListWallets() WalletIterator
-	CreateWallet(name string, seed string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int)
+	CreateWallet(name string, seed string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int) (Wallet, error)
 }
 
 type WalletStorage interface {
