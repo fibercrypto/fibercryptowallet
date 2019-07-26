@@ -2,7 +2,7 @@ package util
 
 import (
 	"github.com/skycoin/skycoin/src/api"
-	"github.com/therecipe/qt/core"
+	//"github.com/therecipe/qt/core"
 )
 
 //Return address of daemon node----TODO
@@ -26,8 +26,6 @@ func NewClient() *api.Client {
 	return c
 }
 
-
-type Wallet struct{
-	
+type Wallet struct {
 	Sky uint64
 }
