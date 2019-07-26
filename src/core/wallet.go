@@ -25,7 +25,6 @@ const (
 )
 
 type Wallet interface {
-	ScanAddresses(startIndex, count int) AddressIterator
 	GetId() string
 	GetLabel() string
 	SetLabel(wltName string)
