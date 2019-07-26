@@ -110,6 +110,13 @@ Item {
 
         focus: true
         modal: true
+
+        onAccepted: {
+            console.log("Editting accepted")
+        }
+        onRejected: {
+            console.log("Editting rejected")
+        }
     } // DialogEditWallet
 
     // Roles: address, addressSky, addressCoinHours
