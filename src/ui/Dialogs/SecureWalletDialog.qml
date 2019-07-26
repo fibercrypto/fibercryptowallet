@@ -4,7 +4,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 Dialog {
-    id: root
+    id: secureWalletDialog
 
     property string deviceName: "<NULL>"
     property bool enableBackupWarning: true
@@ -133,5 +133,13 @@ Dialog {
                 } // ColumnLayout (options)
             } // ColumnLayouts (warnings + options)
         } // ColumnLayout (root)
+
+        ScrollIndicator.vertical: ScrollIndicator {
+            parent: secureWalletDialog.contentItem
+            anchors.top: flickable.top
+            anchors.bottom: flickable.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: -secureWalletDialog.rightPadding + 1
+        }
     } // Flickable
 }
