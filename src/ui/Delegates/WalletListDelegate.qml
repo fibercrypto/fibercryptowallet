@@ -111,7 +111,10 @@ Item {
         focus: true
 
         onAccepted: {
-            // ...
+            console.log("Editting accepted")
+        }
+        onRejected: {
+            console.log("Editting rejected")
         }
     }
 
