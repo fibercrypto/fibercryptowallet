@@ -74,7 +74,7 @@ func (wlt Wallet) ListAssets() []string {
 	return []string{"Sky", "CoinHour"}
 }
 
-func (wlt Wallet) ScanUnspentOutpus() core.TransactionOutputIterator {
+func (wlt Wallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 	return nil
 }
 
@@ -84,6 +84,10 @@ func (wlt Wallet) ListTransactions() core.TransactionIterator {
 
 func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint32) core.AddressIterator {
 	return nil
+}
+
+func (wlt Wallet) GetCryptoAccount() core.CryptoAccount {
+	return wlt
 }
 
 func newWalletAddress(label string, n int, password string) {
