@@ -6,12 +6,13 @@ type WalletIterator interface {
 
 type WalletSet interface {
 	ListWallets() WalletIterator
+	CreateWallet(name string, seed string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int)
 }
 
 type WalletStorage interface {
 	Encrypt(walletName, password string)
 	Decrypt(walletName, password string)
-	IsEncrypted(walletName string)
+	IsEncrypted(walletName string) bool
 }
 
 type Wallet interface {
