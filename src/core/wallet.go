@@ -19,8 +19,9 @@ type WalletStorage interface {
 
 type Wallet interface {
 	ScanAddresses(startIndex, count int) AddressIterator
-	GetName() string
-	SetName(wltName string)
+	GetId() string
+	GetLabel() string
+	SetLabel(wltName string)
 	Transfer(to Address, amount uint64)
 	SendFromAddress(from, to Address, amount uint64)
 	Spend(unspent, new []TransactionOutput)
