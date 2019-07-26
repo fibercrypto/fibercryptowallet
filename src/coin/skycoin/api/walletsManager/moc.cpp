@@ -22,6 +22,11 @@
 	#include <QQmlEngine>
 #endif
 
+class QWallet445aa6: public QObject{
+public:
+	QWallet445aa6(QObject *parent) : QObject(parent) {};
+
+};
 
 class WalletManager64bdd5: public QObject
 {
@@ -41,11 +46,10 @@ public:
 	void timerEvent(QTimerEvent * event) { callbackWalletManager64bdd5_TimerEvent(this, event); };
 signals:
 public slots:
-	void createEncryptedWallet(QString seed, QString label, QString password, qint32 scanN) { QByteArray t92713d = seed.toUtf8(); Moc_PackedString seedPacked = { const_cast<char*>(t92713d.prepend("WHITESPACE").constData()+10), t92713d.size()-10 };QByteArray t64c653 = label.toUtf8(); Moc_PackedString labelPacked = { const_cast<char*>(t64c653.prepend("WHITESPACE").constData()+10), t64c653.size()-10 };QByteArray t5baa61 = password.toUtf8(); Moc_PackedString passwordPacked = { const_cast<char*>(t5baa61.prepend("WHITESPACE").constData()+10), t5baa61.size()-10 };callbackWalletManager64bdd5_CreateEncryptedWallet(this, seedPacked, labelPacked, passwordPacked, scanN); };
-	quintptr createUnencryptedWallet(QString seed, QString label, qint32 scanN) { QByteArray t92713d = seed.toUtf8(); Moc_PackedString seedPacked = { const_cast<char*>(t92713d.prepend("WHITESPACE").constData()+10), t92713d.size()-10 };QByteArray t64c653 = label.toUtf8(); Moc_PackedString labelPacked = { const_cast<char*>(t64c653.prepend("WHITESPACE").constData()+10), t64c653.size()-10 };return callbackWalletManager64bdd5_CreateUnencryptedWallet(this, seedPacked, labelPacked, scanN); };
+	QWallet445aa6* createEncryptedWallet(QString seed, QString label, QString password, qint32 scanN) { QByteArray t92713d = seed.toUtf8(); Moc_PackedString seedPacked = { const_cast<char*>(t92713d.prepend("WHITESPACE").constData()+10), t92713d.size()-10 };QByteArray t64c653 = label.toUtf8(); Moc_PackedString labelPacked = { const_cast<char*>(t64c653.prepend("WHITESPACE").constData()+10), t64c653.size()-10 };QByteArray t5baa61 = password.toUtf8(); Moc_PackedString passwordPacked = { const_cast<char*>(t5baa61.prepend("WHITESPACE").constData()+10), t5baa61.size()-10 };return static_cast<QWallet445aa6*>(callbackWalletManager64bdd5_CreateEncryptedWallet(this, seedPacked, labelPacked, passwordPacked, scanN)); };
+	QWallet445aa6* createUnencryptedWallet(QString seed, QString label, qint32 scanN) { QByteArray t92713d = seed.toUtf8(); Moc_PackedString seedPacked = { const_cast<char*>(t92713d.prepend("WHITESPACE").constData()+10), t92713d.size()-10 };QByteArray t64c653 = label.toUtf8(); Moc_PackedString labelPacked = { const_cast<char*>(t64c653.prepend("WHITESPACE").constData()+10), t64c653.size()-10 };return static_cast<QWallet445aa6*>(callbackWalletManager64bdd5_CreateUnencryptedWallet(this, seedPacked, labelPacked, scanN)); };
 	QString getNewSeed(qint32 entropy) { return ({ Moc_PackedString tempVal = callbackWalletManager64bdd5_GetNewSeed(this, entropy); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
 	qint32 verifySeed(QString seed) { QByteArray t92713d = seed.toUtf8(); Moc_PackedString seedPacked = { const_cast<char*>(t92713d.prepend("WHITESPACE").constData()+10), t92713d.size()-10 };return callbackWalletManager64bdd5_VerifySeed(this, seedPacked); };
-	void newWalletAddress(QString id, qint32 n, QString password) { QByteArray t87ea5d = id.toUtf8(); Moc_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };QByteArray t5baa61 = password.toUtf8(); Moc_PackedString passwordPacked = { const_cast<char*>(t5baa61.prepend("WHITESPACE").constData()+10), t5baa61.size()-10 };callbackWalletManager64bdd5_NewWalletAddress(this, idPacked, n, passwordPacked); };
 	void encryptWallet(QString id, QString password) { QByteArray t87ea5d = id.toUtf8(); Moc_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };QByteArray t5baa61 = password.toUtf8(); Moc_PackedString passwordPacked = { const_cast<char*>(t5baa61.prepend("WHITESPACE").constData()+10), t5baa61.size()-10 };callbackWalletManager64bdd5_EncryptWallet(this, idPacked, passwordPacked); };
 	void decryptWallet(QString id, QString password) { QByteArray t87ea5d = id.toUtf8(); Moc_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };QByteArray t5baa61 = password.toUtf8(); Moc_PackedString passwordPacked = { const_cast<char*>(t5baa61.prepend("WHITESPACE").constData()+10), t5baa61.size()-10 };callbackWalletManager64bdd5_DecryptWallet(this, idPacked, passwordPacked); };
 private:
@@ -57,15 +61,17 @@ Q_DECLARE_METATYPE(WalletManager64bdd5*)
 void WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaTypes() {
 }
 
-void WalletManager64bdd5_CreateEncryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, struct Moc_PackedString password, int scanN)
+void* WalletManager64bdd5_CreateEncryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, struct Moc_PackedString password, int scanN)
 {
-	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "createEncryptedWallet", Q_ARG(QString, QString::fromUtf8(seed.data, seed.len)), Q_ARG(QString, QString::fromUtf8(label.data, label.len)), Q_ARG(QString, QString::fromUtf8(password.data, password.len)), Q_ARG(qint32, scanN));
+	QWallet445aa6* returnArg;
+	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "createEncryptedWallet", Q_RETURN_ARG(QWallet445aa6*, returnArg), Q_ARG(QString, QString::fromUtf8(seed.data, seed.len)), Q_ARG(QString, QString::fromUtf8(label.data, label.len)), Q_ARG(QString, QString::fromUtf8(password.data, password.len)), Q_ARG(qint32, scanN));
+	return returnArg;
 }
 
-uintptr_t WalletManager64bdd5_CreateUnencryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, int scanN)
+void* WalletManager64bdd5_CreateUnencryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, int scanN)
 {
-	quintptr returnArg;
-	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "createUnencryptedWallet", Q_RETURN_ARG(quintptr, returnArg), Q_ARG(QString, QString::fromUtf8(seed.data, seed.len)), Q_ARG(QString, QString::fromUtf8(label.data, label.len)), Q_ARG(qint32, scanN));
+	QWallet445aa6* returnArg;
+	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "createUnencryptedWallet", Q_RETURN_ARG(QWallet445aa6*, returnArg), Q_ARG(QString, QString::fromUtf8(seed.data, seed.len)), Q_ARG(QString, QString::fromUtf8(label.data, label.len)), Q_ARG(qint32, scanN));
 	return returnArg;
 }
 
@@ -81,11 +87,6 @@ int WalletManager64bdd5_VerifySeed(void* ptr, struct Moc_PackedString seed)
 	qint32 returnArg;
 	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "verifySeed", Q_RETURN_ARG(qint32, returnArg), Q_ARG(QString, QString::fromUtf8(seed.data, seed.len)));
 	return returnArg;
-}
-
-void WalletManager64bdd5_NewWalletAddress(void* ptr, struct Moc_PackedString id, int n, struct Moc_PackedString password)
-{
-	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "newWalletAddress", Q_ARG(QString, QString::fromUtf8(id.data, id.len)), Q_ARG(qint32, n), Q_ARG(QString, QString::fromUtf8(password.data, password.len)));
 }
 
 void WalletManager64bdd5_EncryptWallet(void* ptr, struct Moc_PackedString id, struct Moc_PackedString password)

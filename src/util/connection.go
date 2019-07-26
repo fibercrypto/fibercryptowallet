@@ -1,4 +1,4 @@
-package util
+package pluginutil
 
 import (
 	"github.com/skycoin/skycoin/src/api"

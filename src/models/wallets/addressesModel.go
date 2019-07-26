@@ -1,51 +1,45 @@
 package wallets
 
 import (
-		"github.com/therecipe/qt/core"
-		"github.com/fibercrypto/FiberCryptoWallet/src/util"
-		"fmt"		
+	pluginutil "github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/therecipe/qt/core"
 )
 
 const (
-	Address = int(core.Qt__UserRole) + 1
-	ASky = int(core.Qt__UserRole) + 2
+	Address    = int(core.Qt__UserRole) + 1
+	ASky       = int(core.Qt__UserRole) + 2
 	ACoinHours = int(core.Qt__UserRole) + 3
 )
 
-
-
-type AddressesModel struct{
+type AddressesModel struct {
 	core.QAbstractListModel
 
 	_ func() `constructor:"init"`
 
 	_ map[int]*core.QByteArray `property:"roles"`
-	_ []*QAddress	`property:"addresses"`
+	_ []*QAddress              `property:"addresses"`
 
-	_ int	`property:"loaded"`
+	_ int `property:"loaded"`
 
-	_ func(*QAddress)	`slot:"addAddress"`
-	_ func(int)	`slot:"removeAddress"`
-	_ func(int, string, uint64, uint64)	`slot:"editAddress"`
-	_ func(string)	`slot:"loadModel"`
+	_           func(*QAddress)                   `slot:"addAddress"`
+	_           func(int)                         `slot:"removeAddress"`
+	_           func(int, string, uint64, uint64) `slot:"editAddress"`
+	_           func(string)                      `slot:"loadModel"`
 	startUpdate bool
-
-
 }
 
-
-type QAddress struct{
+type QAddress struct {
 	core.QObject
 
 	_ string `property:"address"`
-	_ uint64	`property:"addressSky"`
-	_ uint64	`property:"addressCoinHours"`
+	_ uint64 `property:"addressSky"`
+	_ uint64 `property:"addressCoinHours"`
 }
 
-func (m *AddressesModel) init(){
+func (m *AddressesModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
-		Address: core.NewQByteArray2("address", -1),
-		ASky: core.NewQByteArray2("addressSky", -1),
+		Address:    core.NewQByteArray2("address", -1),
+		ASky:       core.NewQByteArray2("addressSky", -1),
 		ACoinHours: core.NewQByteArray2("addressCoinHours", -1),
 	})
 
@@ -61,26 +55,22 @@ func (m *AddressesModel) init(){
 
 	m.SetLoaded(0)
 	m.startUpdate = false
-	
-
-
 
 }
-
 
 func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Addresses()){
+	if index.Row() >= len(m.Addresses()) {
 		return core.NewQVariant()
 	}
 
 	var a = m.Addresses()[index.Row()]
 
-	switch role{
-	
+	switch role {
+
 	case Address:
 		{
 			return core.NewQVariant1(a.Address())
@@ -124,24 +114,23 @@ func (m *AddressesModel) removeAddress(row int) {
 	m.EndRemoveRows()
 }
 
-func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64){
+func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64) {
 	a := m.Addresses()[row]
 	a.SetAddress(address)
 	a.SetAddressSky(sky)
 	a.SetAddressCoinHours(coinHours)
-	
+
 	pIndex := m.Index(row, 0, core.NewQModelIndex())
-	m.DataChanged(pIndex, pIndex, []int {Address, ASky, ACoinHours})
+	m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
 }
 
-func (m *AddressesModel) loadModel(wallet string){
-	fmt.Println("loading address")
+func (m *AddressesModel) loadModel(wallet string) {
+
 	Qaddresses, err := getQAddresses(wallet)
 	if err != nil {
 		return
 	}
-	
-	
+
 	addresses := make([]*QAddress, 0)
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")
@@ -149,18 +138,17 @@ func (m *AddressesModel) loadModel(wallet string){
 	address.SetAddressCoinHours(0)
 	addresses = append(addresses, address)
 	addresses = append(addresses, Qaddresses...)
-	
+
 	m.BeginResetModel()
 	m.SetAddresses(addresses)
 	m.EndResetModel()
-	
+
 	m.SetLoaded(1)
-	
 
 }
 
 func getQAddresses(wallet string) ([]*QAddress, error) {
-	c := util.NewClient()
+	c := pluginutil.NewClient()
 	wlt, err := c.Wallet(wallet)
 	if err != nil {
 		return nil, err
@@ -183,6 +171,3 @@ func getQAddresses(wallet string) ([]*QAddress, error) {
 
 	return Qaddresses, nil
 }
-
-
-

@@ -1,11 +1,13 @@
 package wallet
 
+import "github.com/fibercrypto/FiberCryptoWallet/src/core"
+
 type SkycoinWalletIterator struct {
 	current int
 	wallets []Wallet
 }
 
-func (it *SkycoinWalletIterator) Value() Wallet {
+func (it *SkycoinWalletIterator) Value() core.Wallet {
 	return it.wallets[it.current]
 }
 
@@ -24,6 +26,6 @@ func (it *SkycoinWalletIterator) HasNext() bool {
 	return true
 }
 
-func NewSkycoinWalletIterator(wallets []Wallet) *NewSkycoinWalletIterator {
+func NewSkycoinWalletIterator(wallets []Wallet) *SkycoinWalletIterator {
 	return &SkycoinWalletIterator{wallets: wallets, current: -1}
 }

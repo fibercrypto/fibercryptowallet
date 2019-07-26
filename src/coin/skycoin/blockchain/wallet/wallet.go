@@ -1,18 +1,19 @@
 package wallet
 
 import (
-	util "github.com/fibercrypto/FiberCryptoWallet/src/util/connection.go"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
-	"github.com/fibercrypt/FiberCryptoWallet/src/core"
 )
 
 const (
-	Sky = "Sky"
+	Sky      = "Sky"
 	CoinHour = "CoinHour"
 )
 
-type errorTickerInvalid{}
-func (err errorTickerInvalid) Error() string{
+type errorTickerInvalid struct{}
+
+func (err errorTickerInvalid) Error() string {
 	return "Ticker invalid"
 }
 
@@ -23,63 +24,66 @@ type Wallet struct {
 	Encrypted bool
 }
 
-func (wlt *Wallet) GetLabel() string {
+func (wlt Wallet) GetLabel() string {
 	return wlt.Label
 }
 
-func (wlt *Wallet) SetLabel(name string) {
+func (wlt Wallet) SetLabel(name string) {
 	c := util.NewClient()
-	err := c.UpdateWallet(wlt.Id, name)
+	_ = c.UpdateWallet(wlt.Id, name)
 }
 
-func (wlt *Wallet) GetId() string {
+func (wlt Wallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt *Wallet) Transfer(to Address, amount uint64) {
+func (wlt Wallet) Transfer(to core.Address, amount uint64) {
 	return
 }
 
-func (wlt *Wallet) SpendFormAddress(from, to core.Address, amount uint64) {
+func (wlt Wallet) SendFromAddress(from, to core.Address, amount uint64) {
 	return
 }
 
-func (wlt *Wallet) Spend(unspent, new []core.TransactionOutput) {
+func (wlt Wallet) Spend(unspent, new []core.TransactionOutput) {
 	return
 }
 
-func (wlt *Wallet) GenChangeAddress() Address {
-	return
+func (wlt Wallet) GenChangeAddress() core.Address {
+	return nil
 }
 
-func (wlt *Wallet) GetBalance(ticker string) uint64{
+func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
 	c := util.NewClient()
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	if ticker == Sky{
-		return bl.Confirmed.Coins
-	} else if ticker == CoinHour{
-		return bl.Confirmed.Hours
-	} else{
-		return errorTickerInvalid{}
+	if ticker == Sky {
+		return bl.Confirmed.Coins, nil
+	} else if ticker == CoinHour {
+		return bl.Confirmed.Hours, nil
+	} else {
+		return 0, errorTickerInvalid{}
 	}
-	
 
 }
 
-func (wlt *Wallet) ListAssets() []string {
+func (wlt Wallet) ListAssets() []string {
 	return []string{"Sky", "CoinHour"}
 }
 
-func (wlt *Wallet) ScanUnspentOutpus() core.TransanctionOutputIterator{
-	return
+func (wlt Wallet) ScanUnspentOutpus() core.TransactionOutputIterator {
+	return nil
 }
 
-func (wlt *Wallet) ListTransactions() core.TransactionIterator{
-	return
+func (wlt Wallet) ListTransactions() core.TransactionIterator {
+	return nil
+}
+
+func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint32) core.AddressIterator {
+	return nil
 }
 
 func newWalletAddress(label string, n int, password string) {
@@ -92,7 +96,7 @@ func newWalletAddress(label string, n int, password string) {
 }
 
 func walletResponseToWallet(wltR api.WalletResponse) Wallet {
-	wlt := new(Wallet)
+	wlt := Wallet{}
 	wlt.CoinType = wltR.Meta.Coin
 	wlt.Encrypted = wltR.Meta.Encrypted
 	wlt.Label = wltR.Meta.Label

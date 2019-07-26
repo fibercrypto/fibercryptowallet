@@ -1,7 +1,7 @@
 package wallets
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	pluginutil "github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/therecipe/qt/core"
 )
@@ -22,7 +22,7 @@ type WalletModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QWallet               `property:"wallets"`
 
-	_ func(*util.Wallet)                                                        `slot:"addWallet"`
+	_ func(*QWallet)                                                            `slot:"addWallet"`
 	_ func(row int, name string, encryptionEnabled bool, sky, coinHours uint64) `slot:"editWallet"`
 	_ func(row int)                                                             `slot:"removeWallet"`
 	_ func()                                                                    `slot:"loadModel"`
@@ -148,7 +148,7 @@ func (m *WalletModel) removeWallet(row int) {
 }
 
 func getWalletsModel() ([]*QWallet, error) {
-	c := util.NewClient()
+	c := pluginutil.NewClient()
 	wallets, err := c.Wallets()
 	if err != nil {
 		return nil, err
@@ -183,7 +183,7 @@ func (m *WalletModel) updateCount() {
 }
 
 func WalletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error) {
-	c := util.NewClient()
+	c := pluginutil.NewClient()
 	qwallet := NewQWallet(nil)
 	qwallet.SetFileName(wr.Meta.Filename)
 	qwallet.SetName(wr.Meta.Label)

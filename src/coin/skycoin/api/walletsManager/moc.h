@@ -15,11 +15,10 @@ extern "C" {
 
 struct Moc_PackedString { char* data; long long len; };
 struct Moc_PackedList { void* data; long long len; };
-void WalletManager64bdd5_CreateEncryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, struct Moc_PackedString password, int scanN);
-uintptr_t WalletManager64bdd5_CreateUnencryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, int scanN);
+void* WalletManager64bdd5_CreateEncryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, struct Moc_PackedString password, int scanN);
+void* WalletManager64bdd5_CreateUnencryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, int scanN);
 struct Moc_PackedString WalletManager64bdd5_GetNewSeed(void* ptr, int entropy);
 int WalletManager64bdd5_VerifySeed(void* ptr, struct Moc_PackedString seed);
-void WalletManager64bdd5_NewWalletAddress(void* ptr, struct Moc_PackedString id, int n, struct Moc_PackedString password);
 void WalletManager64bdd5_EncryptWallet(void* ptr, struct Moc_PackedString id, struct Moc_PackedString password);
 void WalletManager64bdd5_DecryptWallet(void* ptr, struct Moc_PackedString id, struct Moc_PackedString password);
 int WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType();

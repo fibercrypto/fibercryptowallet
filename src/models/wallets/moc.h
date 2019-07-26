@@ -86,7 +86,7 @@ void QWallet445aa6_DisconnectNotifyDefault(void* ptr, void* sign);
 char QWallet445aa6_EventDefault(void* ptr, void* e);
 char QWallet445aa6_EventFilterDefault(void* ptr, void* watched, void* event);
 void QWallet445aa6_TimerEventDefault(void* ptr, void* event);
-void WalletModel445aa6_AddWallet(void* ptr, uintptr_t v0);
+void WalletModel445aa6_AddWallet(void* ptr, void* v0);
 void WalletModel445aa6_EditWallet(void* ptr, int row, struct Moc_PackedString name, char encryptionEnabled, unsigned long long sky, unsigned long long coinHours);
 void WalletModel445aa6_RemoveWallet(void* ptr, int row);
 void WalletModel445aa6_LoadModel(void* ptr);
