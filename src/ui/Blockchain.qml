@@ -5,16 +5,19 @@ import QtQuick.Layouts 1.12
 import BlockchainModels 1.0
 
 Page {
-    id: root
+    id: blockchain
 
-    property string numberOfBlocks;//: model.numberOfBlocks
-    property date timestampLastBlock;//: model.timestampLastBlock
-    property string hashLastBlock;//: model.hashLastBlock
+    property BlockchainStatusModel model: null
+    onModelChanged: console.log("Model changed")
 
-    property string currentSkySupply;//: model.currentSkySupply
-    property string totalSkySupply;//: model.totalSkySupply
-    property string currentCoinHoursSupply;//: model.currentCoinHoursSupply
-    property string totalCoinHoursSupply;//: model.totalCoinHoursSupply
+    property string numberOfBlocks: model.numberOfBlocks
+    property date timestampLastBlock: model.timestampLastBlock
+    property string hashLastBlock: model.hashLastBlock
+
+    property string currentSkySupply: model.currentSkySupply
+    property string totalSkySupply: model.totalSkySupply
+    property string currentCoinHoursSupply: model.currentCoinHoursSupply
+    property string totalCoinHoursSupply: model.totalCoinHoursSupply
 
     signal backRequested()
 
