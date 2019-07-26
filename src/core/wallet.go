@@ -1,7 +1,9 @@
 package core
 
 type WalletIterator interface {
-	// TODO: Define
+	Value() Wallet
+	Next() bool
+	HasNext() bool
 }
 
 type WalletSet interface {
