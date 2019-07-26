@@ -14,7 +14,7 @@ type WalletSet interface {
 type WalletStorage interface {
 	Encrypt(walletName, password string)
 	Decrypt(walletName, password string)
-	IsEncrypted(walletName string) bool
+	IsEncrypted(walletName string) (bool, error)
 }
 
 type AddressType uint32
