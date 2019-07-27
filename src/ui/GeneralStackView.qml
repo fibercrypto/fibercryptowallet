@@ -47,7 +47,7 @@ Item {
                 height: 400
 
                 onWalletCreationRequested: {
-                    stackView.push(componentGeneralSwipeView)
+                    stackView.replace(componentGeneralSwipeView)
                 }
             }
         }
