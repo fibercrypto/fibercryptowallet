@@ -32,17 +32,19 @@ Item {
 
     StackView {
         id: stackView
-        initialItem: componentCreateLoadWallet
+        initialItem: componentPageCreateLoadWallet
         anchors.fill: parent
     }
 
     Component {
-        id: componentCreateLoadWallet
+        id: componentPageCreateLoadWallet
 
         Rectangle {
-            CreateLoadWallet {
-                id: createLoadWallet
+            PageCreateLoadWallet {
+                id: pageCreateLoadWallet
                 anchors.centerIn: parent
+                width: 400
+                height: 400
 
                 onWalletCreationRequested: {
                     stackView.push(componentGeneralSwipeView)
