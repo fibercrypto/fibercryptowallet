@@ -21,8 +21,6 @@ type PendingTransactionList struct {
 
 	_ map[int]*core.QByteArray  `property:"roles"`
 	_ []*PendingTransaction     `property:"transactions"`
-
-	_ func()                    `slot:"getAll"`
 }
 
 type PendingTransaction struct {
@@ -31,7 +29,7 @@ type PendingTransaction struct {
 	_ int              `property:"sky"`
 	_ int              `property:"coinHours"`
 	_ *core.QDateTime  `property:"timeStamp"`
-	_ string              `property:"transactionID"`
+	_ string           `property:"transactionID"`
 }
 
 func (m *PendingTransactionList) init() {
@@ -45,9 +43,6 @@ func (m *PendingTransactionList) init() {
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
-	m.ConnectGetAll(m.getAll)
-
-	m.addExamples()
 }
 
 func (m *PendingTransactionList) rowCount(*core.QModelIndex) int {
@@ -67,7 +62,7 @@ func (m *PendingTransactionList) data(index *core.QModelIndex, role int) *core.Q
 		return core.NewQVariant()
 	}
 
-	var pt = m.Transactions()[index.Row()]
+	pt := m.Transactions()[index.Row()]
 
 	switch role{
 	case Sky:
@@ -105,7 +100,7 @@ func getAll() ([]*PendingTransaction, error) {
 		ptModel := UnconfirmedTransactionToPendingTransaction(&pt)
 		ptModels = append(ptModels, ptModel)
 	}
-	return ptModel, nil
+	return ptModels, nil
 }
 
 func getMine() ([]*PendingTransaction, error) {
@@ -125,7 +120,7 @@ func getMine() ([]*PendingTransaction, error) {
 			ptModels = append(ptModels, ptModel)
 		}
 	}
-	return ptModel, nil
+	return ptModels, nil
 }
 
 func UnconfirmedTransactionToPendingTransaction(ut *readable.UnconfirmedTransactionVerbose) *PendingTransaction {
