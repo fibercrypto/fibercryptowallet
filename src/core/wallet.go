@@ -32,12 +32,11 @@ type Wallet interface {
 	SendFromAddress(from, to Address, amount uint64)
 	Spend(unspent, new []TransactionOutput)
 	GenAddresses(addrType AddressType, startIndex, count uint32) AddressIterator
-	GetCryptoAccount() CryptoAccount
 }
 
 type SeedGenerator interface {
 	GenerateMnemonic(wordCount int) (string, error)
-	VerifyMnemonic(seed string) error
+	VerifyMnemonic(seed string) (bool, error)
 }
 
 type WalletEnv interface {
