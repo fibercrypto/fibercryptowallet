@@ -39,7 +39,7 @@ Item {
     Component {
         id: componentPageCreateLoadWallet
 
-        Rectangle {
+        Item {
             PageCreateLoadWallet {
                 id: pageCreateLoadWallet
                 anchors.centerIn: parent
