@@ -1,7 +1,7 @@
 package pluginutil
 
 import (
-	"github.com/FiberCrypto/FibercryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 )
 
 func AltcoinCaption(ticker string) string {

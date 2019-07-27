@@ -1,8 +1,8 @@
 package skycoin
 
 import (
-	"github.com/FiberCrypto/FiberCryptoWallet/src/core"
-	"github.com/FiberCrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 type SkyFiberPlugin struct {
@@ -10,14 +10,14 @@ type SkyFiberPlugin struct {
 }
 
 func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
-	return []AltcoinMetadata{
-		AltcoinMetadata{
+	return []core.AltcoinMetadata{
+		core.AltcoinMetadata{
 			Name:     SkycoinName,
 			Ticker:   SkycoinTicker,
 			Family:   SkycoinFamily,
 			HasBip44: false,
 		},
-		AltcoinMetadata{
+		core.AltcoinMetadata{
 			Name:     CoinHoursName,
 			Ticker:   CoinHoursTicker,
 			Family:   CoinHoursFamily,
@@ -32,7 +32,7 @@ func (p *SkyFiberPlugin) ListSupportedFamilies() []string {
 
 func (p *SkyFiberPlugin) RegisterTo(manager core.AltcoinManager) {
 	for _, info := range p.ListSupportedAltcoins() {
-		manager.RegisterAltcoin(info.Ticker, info, p)
+		manager.RegisterAltcoin(info, p)
 	}
 }
 
@@ -49,8 +49,8 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 	return nil
 }
 
-func NewSkyFiberPlugin(params SkyFiberParams) {
-	return SkyFiberPlugin{
+func NewSkyFiberPlugin(params SkyFiberParams) core.AltcoinPlugin {
+	return &SkyFiberPlugin{
 		Params: params,
 	}
 }

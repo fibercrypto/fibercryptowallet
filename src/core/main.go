@@ -19,7 +19,7 @@ type AltcoinPlugin interface {
 
 type AltcoinManager interface {
 	RegisterPlugin(p AltcoinPlugin)
-	RegisterAltcoin(ticker, info AltcoinMetadata, plugin AltcoinPlugin)
+	RegisterAltcoin(info AltcoinMetadata, plugin AltcoinPlugin)
 	ListRegisteredPlugins() []AltcoinPlugin
 	LookupAltcoinManager(ticker string) (AltcoinPlugin, bool)
 	DescribeAltcoin(ticker string) (AltcoinMetadata, bool)
@@ -45,7 +45,7 @@ func (m *fibercryptoAltcoinManager) RegisterPlugin(p AltcoinPlugin) {
 	m.registeredPlugins = append(m.registeredPlugins, p)
 }
 
-func (m *fibercryptoAltcoinManager) RegisterAltcoin(ticker, info AltcoinMetadata, plugin AltcoinPlugin) {
+func (m *fibercryptoAltcoinManager) RegisterAltcoin(info AltcoinMetadata, plugin AltcoinPlugin) {
 	m.altcoinMap[info.Ticker] = altcoinRecord{
 		Manager:  plugin,
 		Metadata: info,
@@ -71,5 +71,8 @@ func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (AltcoinMetad
 }
 
 func LoadAltcoinManager() AltcoinManager {
+	if manager.altcoinMap == nil {
+		manager.altcoinMap = make(map[string]altcoinRecord, 5)
+	}
 	return &manager
 }
