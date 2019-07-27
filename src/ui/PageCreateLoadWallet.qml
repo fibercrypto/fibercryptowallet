@@ -11,6 +11,7 @@ Item {
     implicitHeight: 400
 
     signal walletCreationRequested()
+    signal walletLoadingRequested()
 
     Column {
         anchors.fill: parent
@@ -52,7 +53,11 @@ Item {
             highlighted: true
 
             onClicked: {
-                walletCreationRequested()
+                if (createLoadWallet.mode === CreateLoadWallet.Create) {
+                    walletCreationRequested()
+                } else {
+                    walletLoadingRequested()
+                }
             }
         }
     } // Column
