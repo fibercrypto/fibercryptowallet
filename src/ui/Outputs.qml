@@ -9,6 +9,11 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 
 Page {
     id: outputs
+    
+    readonly property real listOutputsLeftMargin: 20
+    readonly property real listOutputsRightMargin: 50
+    readonly property real listOutputsSpacing: 20
+    readonly property real internalLabelsWidth: 70
 
     Frame {
         anchors.fill: parent
@@ -25,14 +30,7 @@ Page {
                 clip: true
 
                 model: modelOutputs
-                delegate: OutputsListDelegate {
-                //     modelIp: ip
-                //     modelPort: port
-                //     modelSource: source
-                //     modelBlock: block
-                //     modelLastSeenIn: lastSeenIn
-                //     modelLastSeenOut: lastSeenOut
-                }
+                delegate: OutputsListDelegate { }
             } // ListView
         } // ScrollView
     } // Frame
