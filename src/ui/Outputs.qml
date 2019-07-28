@@ -16,23 +16,70 @@ Page {
     readonly property real internalLabelsWidth: 70
 
     Frame {
+        id: frame
         anchors.fill: parent
         anchors.margins: 20
         clip: true
 
-        ScrollView {
-            id: scrollView
+        ColumnLayout {
+            id: columnLayoutFrame
             anchors.fill: parent
-            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-            ListView {
-                id: listOutputs
-                anchors.fill: parent
-                clip: true
 
-                model: modelOutputs
-                delegate: OutputsListDelegate { }
-            } // ListView
-        } // ScrollView
+            ColumnLayout {
+                id: columnLayoutHeader
+
+                RowLayout {
+                    spacing: listOutputsSpacing
+                    Layout.topMargin: 30
+
+                    Label {
+                        text: qsTr("No.")
+                        font.pointSize: 9
+                        Layout.leftMargin: listOutputsLeftMargin
+                        Layout.preferredWidth: 45 // Obtained empirically
+                    }
+                    Label {
+                        text: qsTr("Addresses")
+                        font.pointSize: 9
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: qsTr("Sky")
+                        font.pointSize: 9
+                        horizontalAlignment: Text.AlignRight
+                        Layout.preferredWidth: internalLabelsWidth
+                    }
+                    Label {
+                        text: qsTr("Coin hours")
+                        font.pointSize: 9
+                        horizontalAlignment: Text.AlignRight
+                        Layout.rightMargin: listOutputsRightMargin
+                        Layout.preferredWidth: internalLabelsWidth
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 1
+                    color: "#DDDDDD"
+                }
+            } // ColumnLayout (header)
+
+            ScrollView {
+                id: scrollView
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                ListView {
+                    id: listOutputs
+                    anchors.fill: parent
+                    clip: true
+
+                    model: modelOutputs
+                    delegate: OutputsListDelegate { }
+                } // ListView
+            } // ScrollView
+        }
     } // Frame
 
     // Roles: name
