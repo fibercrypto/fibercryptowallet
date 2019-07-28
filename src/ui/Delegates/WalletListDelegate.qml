@@ -114,12 +114,27 @@ Item {
         focus: true
 
         onAccepted: {
+            console.log("Adding accepted")
+        }
+        onRejected: {
+            console.log("Adding rejected")
+        }
+    } // DialogAddAddresses
+
+    DialogEditWallet {
+        id: dialogEditWallet
+        anchors.centerIn: Overlay.overlay
+
+        focus: true
+        modal: true
+
+        onAccepted: {
             console.log("Editting accepted")
         }
         onRejected: {
             console.log("Editting rejected")
         }
-    } // DialogAddAddresses
+    } // DialogEditWallet
 
     // Roles: address, addressSky, addressCoinHours
     // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
