@@ -33,6 +33,7 @@ type Wallet interface {
 	Spend(unspent, new []TransactionOutput)
 	GenAddresses(addrType AddressType, startIndex, count uint32) AddressIterator
 	GetCryptoAccount() CryptoAccount
+	GetLoadedAddresses() AddressIterator
 }
 
 type SeedGenerator interface {
