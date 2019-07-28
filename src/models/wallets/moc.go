@@ -3946,199 +3946,6 @@ func (ptr *QWallet) FileNameChanged(fileName string) {
 	}
 }
 
-//export callbackQWallet445aa6_Addresses
-func callbackQWallet445aa6_Addresses(ptr unsafe.Pointer) unsafe.Pointer {
-	if signal := qt.GetSignal(ptr, "addresses"); signal != nil {
-		return func() unsafe.Pointer {
-			tmpList := NewQWalletFromPointer(NewQWalletFromPointer(nil).__addresses_newList())
-			for _, v := range (*(*func() []*QAddress)(signal))() {
-				tmpList.__addresses_setList(v)
-			}
-			return tmpList.Pointer()
-		}()
-	}
-
-	return func() unsafe.Pointer {
-		tmpList := NewQWalletFromPointer(NewQWalletFromPointer(nil).__addresses_newList())
-		for _, v := range NewQWalletFromPointer(ptr).AddressesDefault() {
-			tmpList.__addresses_setList(v)
-		}
-		return tmpList.Pointer()
-	}()
-}
-
-func (ptr *QWallet) ConnectAddresses(f func() []*QAddress) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "addresses"); signal != nil {
-			f := func() []*QAddress {
-				(*(*func() []*QAddress)(signal))()
-				return f()
-			}
-			qt.ConnectSignal(ptr.Pointer(), "addresses", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "addresses", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QWallet) DisconnectAddresses() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "addresses")
-	}
-}
-
-func (ptr *QWallet) Addresses() []*QAddress {
-	if ptr.Pointer() != nil {
-		return func(l C.struct_Moc_PackedList) []*QAddress {
-			out := make([]*QAddress, int(l.len))
-			tmpList := NewQWalletFromPointer(l.data)
-			for i := 0; i < len(out); i++ {
-				out[i] = tmpList.__addresses_atList(i)
-			}
-			return out
-		}(C.QWallet445aa6_Addresses(ptr.Pointer()))
-	}
-	return make([]*QAddress, 0)
-}
-
-func (ptr *QWallet) AddressesDefault() []*QAddress {
-	if ptr.Pointer() != nil {
-		return func(l C.struct_Moc_PackedList) []*QAddress {
-			out := make([]*QAddress, int(l.len))
-			tmpList := NewQWalletFromPointer(l.data)
-			for i := 0; i < len(out); i++ {
-				out[i] = tmpList.__addresses_atList(i)
-			}
-			return out
-		}(C.QWallet445aa6_AddressesDefault(ptr.Pointer()))
-	}
-	return make([]*QAddress, 0)
-}
-
-//export callbackQWallet445aa6_SetAddresses
-func callbackQWallet445aa6_SetAddresses(ptr unsafe.Pointer, addresses C.struct_Moc_PackedList) {
-	if signal := qt.GetSignal(ptr, "setAddresses"); signal != nil {
-		(*(*func([]*QAddress))(signal))(func(l C.struct_Moc_PackedList) []*QAddress {
-			out := make([]*QAddress, int(l.len))
-			tmpList := NewQWalletFromPointer(l.data)
-			for i := 0; i < len(out); i++ {
-				out[i] = tmpList.__setAddresses_addresses_atList(i)
-			}
-			return out
-		}(addresses))
-	} else {
-		NewQWalletFromPointer(ptr).SetAddressesDefault(func(l C.struct_Moc_PackedList) []*QAddress {
-			out := make([]*QAddress, int(l.len))
-			tmpList := NewQWalletFromPointer(l.data)
-			for i := 0; i < len(out); i++ {
-				out[i] = tmpList.__setAddresses_addresses_atList(i)
-			}
-			return out
-		}(addresses))
-	}
-}
-
-func (ptr *QWallet) ConnectSetAddresses(f func(addresses []*QAddress)) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "setAddresses"); signal != nil {
-			f := func(addresses []*QAddress) {
-				(*(*func([]*QAddress))(signal))(addresses)
-				f(addresses)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "setAddresses", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "setAddresses", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QWallet) DisconnectSetAddresses() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "setAddresses")
-	}
-}
-
-func (ptr *QWallet) SetAddresses(addresses []*QAddress) {
-	if ptr.Pointer() != nil {
-		C.QWallet445aa6_SetAddresses(ptr.Pointer(), func() unsafe.Pointer {
-			tmpList := NewQWalletFromPointer(NewQWalletFromPointer(nil).__setAddresses_addresses_newList())
-			for _, v := range addresses {
-				tmpList.__setAddresses_addresses_setList(v)
-			}
-			return tmpList.Pointer()
-		}())
-	}
-}
-
-func (ptr *QWallet) SetAddressesDefault(addresses []*QAddress) {
-	if ptr.Pointer() != nil {
-		C.QWallet445aa6_SetAddressesDefault(ptr.Pointer(), func() unsafe.Pointer {
-			tmpList := NewQWalletFromPointer(NewQWalletFromPointer(nil).__setAddresses_addresses_newList())
-			for _, v := range addresses {
-				tmpList.__setAddresses_addresses_setList(v)
-			}
-			return tmpList.Pointer()
-		}())
-	}
-}
-
-//export callbackQWallet445aa6_AddressesChanged
-func callbackQWallet445aa6_AddressesChanged(ptr unsafe.Pointer, addresses C.struct_Moc_PackedList) {
-	if signal := qt.GetSignal(ptr, "addressesChanged"); signal != nil {
-		(*(*func([]*QAddress))(signal))(func(l C.struct_Moc_PackedList) []*QAddress {
-			out := make([]*QAddress, int(l.len))
-			tmpList := NewQWalletFromPointer(l.data)
-			for i := 0; i < len(out); i++ {
-				out[i] = tmpList.__addressesChanged_addresses_atList(i)
-			}
-			return out
-		}(addresses))
-	}
-
-}
-
-func (ptr *QWallet) ConnectAddressesChanged(f func(addresses []*QAddress)) {
-	if ptr.Pointer() != nil {
-
-		if !qt.ExistsSignal(ptr.Pointer(), "addressesChanged") {
-			C.QWallet445aa6_ConnectAddressesChanged(ptr.Pointer())
-		}
-
-		if signal := qt.LendSignal(ptr.Pointer(), "addressesChanged"); signal != nil {
-			f := func(addresses []*QAddress) {
-				(*(*func([]*QAddress))(signal))(addresses)
-				f(addresses)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "addressesChanged", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "addressesChanged", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *QWallet) DisconnectAddressesChanged() {
-	if ptr.Pointer() != nil {
-		C.QWallet445aa6_DisconnectAddressesChanged(ptr.Pointer())
-		qt.DisconnectSignal(ptr.Pointer(), "addressesChanged")
-	}
-}
-
-func (ptr *QWallet) AddressesChanged(addresses []*QAddress) {
-	if ptr.Pointer() != nil {
-		C.QWallet445aa6_AddressesChanged(ptr.Pointer(), func() unsafe.Pointer {
-			tmpList := NewQWalletFromPointer(NewQWalletFromPointer(nil).__addressesChanged_addresses_newList())
-			for _, v := range addresses {
-				tmpList.__addressesChanged_addresses_setList(v)
-			}
-			return tmpList.Pointer()
-		}())
-	}
-}
-
 func QWallet_QRegisterMetaType() int {
 	return int(int32(C.QWallet445aa6_QWallet445aa6_QRegisterMetaType()))
 }
@@ -4302,69 +4109,6 @@ func (ptr *QWallet) __qFindChildren_setList2(i std_core.QObject_ITF) {
 
 func (ptr *QWallet) __qFindChildren_newList2() unsafe.Pointer {
 	return C.QWallet445aa6___qFindChildren_newList2(ptr.Pointer())
-}
-
-func (ptr *QWallet) __addresses_atList(i int) *QAddress {
-	if ptr.Pointer() != nil {
-		tmpValue := NewQAddressFromPointer(C.QWallet445aa6___addresses_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QWallet) __addresses_setList(i QAddress_ITF) {
-	if ptr.Pointer() != nil {
-		C.QWallet445aa6___addresses_setList(ptr.Pointer(), PointerFromQAddress(i))
-	}
-}
-
-func (ptr *QWallet) __addresses_newList() unsafe.Pointer {
-	return C.QWallet445aa6___addresses_newList(ptr.Pointer())
-}
-
-func (ptr *QWallet) __setAddresses_addresses_atList(i int) *QAddress {
-	if ptr.Pointer() != nil {
-		tmpValue := NewQAddressFromPointer(C.QWallet445aa6___setAddresses_addresses_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QWallet) __setAddresses_addresses_setList(i QAddress_ITF) {
-	if ptr.Pointer() != nil {
-		C.QWallet445aa6___setAddresses_addresses_setList(ptr.Pointer(), PointerFromQAddress(i))
-	}
-}
-
-func (ptr *QWallet) __setAddresses_addresses_newList() unsafe.Pointer {
-	return C.QWallet445aa6___setAddresses_addresses_newList(ptr.Pointer())
-}
-
-func (ptr *QWallet) __addressesChanged_addresses_atList(i int) *QAddress {
-	if ptr.Pointer() != nil {
-		tmpValue := NewQAddressFromPointer(C.QWallet445aa6___addressesChanged_addresses_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *QWallet) __addressesChanged_addresses_setList(i QAddress_ITF) {
-	if ptr.Pointer() != nil {
-		C.QWallet445aa6___addressesChanged_addresses_setList(ptr.Pointer(), PointerFromQAddress(i))
-	}
-}
-
-func (ptr *QWallet) __addressesChanged_addresses_newList() unsafe.Pointer {
-	return C.QWallet445aa6___addressesChanged_addresses_newList(ptr.Pointer())
 }
 
 func NewQWallet(parent std_core.QObject_ITF) *QWallet {
@@ -4656,27 +4400,20 @@ func (ptr *WalletModel) AddWallet(v0 QWallet_ITF) {
 }
 
 //export callbackWalletModel445aa6_EditWallet
-func callbackWalletModel445aa6_EditWallet(ptr unsafe.Pointer, row C.int, name C.struct_Moc_PackedString, encryptionEnabled C.char, sky C.ulonglong, coinHours C.ulonglong, addresses C.struct_Moc_PackedList) {
+func callbackWalletModel445aa6_EditWallet(ptr unsafe.Pointer, row C.int, name C.struct_Moc_PackedString, encryptionEnabled C.char, sky C.ulonglong, coinHours C.ulonglong) {
 	if signal := qt.GetSignal(ptr, "editWallet"); signal != nil {
-		(*(*func(int, string, bool, uint64, uint64, []*QAddress))(signal))(int(int32(row)), cGoUnpackString(name), int8(encryptionEnabled) != 0, uint64(sky), uint64(coinHours), func(l C.struct_Moc_PackedList) []*QAddress {
-			out := make([]*QAddress, int(l.len))
-			tmpList := NewWalletModelFromPointer(l.data)
-			for i := 0; i < len(out); i++ {
-				out[i] = tmpList.__editWallet_addresses_atList(i)
-			}
-			return out
-		}(addresses))
+		(*(*func(int, string, bool, uint64, uint64))(signal))(int(int32(row)), cGoUnpackString(name), int8(encryptionEnabled) != 0, uint64(sky), uint64(coinHours))
 	}
 
 }
 
-func (ptr *WalletModel) ConnectEditWallet(f func(row int, name string, encryptionEnabled bool, sky uint64, coinHours uint64, addresses []*QAddress)) {
+func (ptr *WalletModel) ConnectEditWallet(f func(row int, name string, encryptionEnabled bool, sky uint64, coinHours uint64)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "editWallet"); signal != nil {
-			f := func(row int, name string, encryptionEnabled bool, sky uint64, coinHours uint64, addresses []*QAddress) {
-				(*(*func(int, string, bool, uint64, uint64, []*QAddress))(signal))(row, name, encryptionEnabled, sky, coinHours, addresses)
-				f(row, name, encryptionEnabled, sky, coinHours, addresses)
+			f := func(row int, name string, encryptionEnabled bool, sky uint64, coinHours uint64) {
+				(*(*func(int, string, bool, uint64, uint64))(signal))(row, name, encryptionEnabled, sky, coinHours)
+				f(row, name, encryptionEnabled, sky, coinHours)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "editWallet", unsafe.Pointer(&f))
 		} else {
@@ -4692,20 +4429,14 @@ func (ptr *WalletModel) DisconnectEditWallet() {
 	}
 }
 
-func (ptr *WalletModel) EditWallet(row int, name string, encryptionEnabled bool, sky uint64, coinHours uint64, addresses []*QAddress) {
+func (ptr *WalletModel) EditWallet(row int, name string, encryptionEnabled bool, sky uint64, coinHours uint64) {
 	if ptr.Pointer() != nil {
 		var nameC *C.char
 		if name != "" {
 			nameC = C.CString(name)
 			defer C.free(unsafe.Pointer(nameC))
 		}
-		C.WalletModel445aa6_EditWallet(ptr.Pointer(), C.int(int32(row)), C.struct_Moc_PackedString{data: nameC, len: C.longlong(len(name))}, C.char(int8(qt.GoBoolToInt(encryptionEnabled))), C.ulonglong(sky), C.ulonglong(coinHours), func() unsafe.Pointer {
-			tmpList := NewWalletModelFromPointer(NewWalletModelFromPointer(nil).__editWallet_addresses_newList())
-			for _, v := range addresses {
-				tmpList.__editWallet_addresses_setList(v)
-			}
-			return tmpList.Pointer()
-		}())
+		C.WalletModel445aa6_EditWallet(ptr.Pointer(), C.int(int32(row)), C.struct_Moc_PackedString{data: nameC, len: C.longlong(len(name))}, C.char(int8(qt.GoBoolToInt(encryptionEnabled))), C.ulonglong(sky), C.ulonglong(coinHours))
 	}
 }
 
@@ -5805,27 +5536,6 @@ func (ptr *WalletModel) __qFindChildren_setList2(i std_core.QObject_ITF) {
 
 func (ptr *WalletModel) __qFindChildren_newList2() unsafe.Pointer {
 	return C.WalletModel445aa6___qFindChildren_newList2(ptr.Pointer())
-}
-
-func (ptr *WalletModel) __editWallet_addresses_atList(i int) *QAddress {
-	if ptr.Pointer() != nil {
-		tmpValue := NewQAddressFromPointer(C.WalletModel445aa6___editWallet_addresses_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *WalletModel) __editWallet_addresses_setList(i QAddress_ITF) {
-	if ptr.Pointer() != nil {
-		C.WalletModel445aa6___editWallet_addresses_setList(ptr.Pointer(), PointerFromQAddress(i))
-	}
-}
-
-func (ptr *WalletModel) __editWallet_addresses_newList() unsafe.Pointer {
-	return C.WalletModel445aa6___editWallet_addresses_newList(ptr.Pointer())
 }
 
 func (ptr *WalletModel) __loadModel_v0_atList(i int) *QWallet {

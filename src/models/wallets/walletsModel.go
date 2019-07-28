@@ -20,11 +20,11 @@ type WalletModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QWallet               `property:"wallets"`
 
-	_ func(*QWallet)                                                                                   `slot:"addWallet"`
-	_ func(row int, name string, encryptionEnabled bool, sky, coinHours uint64, addresses []*QAddress) `slot:"editWallet"`
-	_ func(row int)                                                                                    `slot:"removeWallet"`
-	_ func([]*QWallet)                                                                                 `slot:"loadModel"`
-	_ int                                                                                              `property:"count"`
+	_ func(*QWallet)                                                            `slot:"addWallet"`
+	_ func(row int, name string, encryptionEnabled bool, sky, coinHours uint64) `slot:"editWallet"`
+	_ func(row int)                                                             `slot:"removeWallet"`
+	_ func([]*QWallet)                                                          `slot:"loadModel"`
+	_ int                                                                       `property:"count"`
 }
 
 type QWallet struct {
