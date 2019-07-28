@@ -24,6 +24,7 @@ type WalletManager struct {
 	_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
 	_ func(id string, password string)                                             `slot:"encryptWallet"`
 	_ func(id string, password string)                                             `slot:"decryptWallet"`
+	_ func() []*wallets.QWallet                                                    `slot:getWallets`
 }
 
 func (walletM *WalletManager) init() {
@@ -34,6 +35,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectNewWalletAddress(walletM.newWalletAddress)
 	walletM.ConnectEncryptWallet(walletM.encryptWallet)
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
+	walletM.ConnectGetWallets(walletM.getWallets())
 
 	walletM.WalletEnv = new(api.WalletNode)
 	walletM.SeedGenerator = new(api.SeedService)
@@ -114,6 +116,14 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 		wltEntrieslen++
 	}
 	wlt.GenAddresses(core.AccountAddress, uint32(wltEntrieslen), uint32(n), pwd)
+}
+
+func (walletM *WalletManager) getWallets() []*wallets.QWallet {
+	qwallets := make([]*wallets.QWallet, 0)
+	for _, wlt := range walletM.WalletEnv.GetWalletSet().ListWallets() {
+		qwallets = append(qwallets, fromWalletToQWallet(wlt))
+	}
+
 }
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
