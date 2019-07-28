@@ -18,14 +18,13 @@ ApplicationWindow {
         id: customMenuBar
 
         onOutputsRequested: {
-            if (false) {
-                menuBarColor = Material.color(Material.Teal)
-                customHeader.text = qsTr("Outputs")
-                
-                enableOutputs = false
-                enableBlockchain = true
-                enableNetworking = true
-            }
+            generalStackView.openOutputsPage()
+            menuBarColor = Material.color(Material.Teal)
+            customHeader.text = qsTr("Outputs")
+            
+            enableOutputs = false
+            enableBlockchain = true
+            enableNetworking = true
         }
 
         onBlockchainRequested: {
