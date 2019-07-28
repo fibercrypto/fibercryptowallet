@@ -159,10 +159,13 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
 	if err != nil {
 		return nil
 	}
-	for it.Next(){
+	for it.Next() {
+		addr := it.Value()
 		qaddress := new(wallets.QAddress)
-		qaddress.Set
-		qaddresses = append(qaddresses
+		qaddress.SetAddress(addr.String())
+		qaddress.SetAddressSky(addr.GetCryptoAccount().GetBalance("Sky"))
+		qaddress.SetAddressCoinHours(addr.GetCryptoAccount().GetBalance("CoinHour"))
+		qaddresses = append(qaddresses, qaddress)
 	}
 	return qwallet
 }
