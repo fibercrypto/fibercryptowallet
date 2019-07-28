@@ -12,7 +12,7 @@ Item {
     // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
 
-    width: walletList.width
+    width: listOutputs.width
     height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
 
     Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -30,29 +30,14 @@ Item {
             RowLayout {
                 id: delegateRowLayout
                 anchors.fill: parent
-                anchors.leftMargin: listWalletLeftMargin
-                anchors.rightMargin: listWalletRightMargin
-                spacing: listWalletSpacing
+                anchors.leftMargin: listOutputsLeftMargin
+                anchors.rightMargin: listOutputsRightMargin
+                spacing: listOutputsSpacing
 
                 Label {
                     id: labelWalletName
                     text: name // a role of the model
                     Layout.fillWidth: true
-                }
-
-                Label {
-                    id: labelSky
-                    text: sky // a role of the model
-                    color: Material.accent
-                    horizontalAlignment: Text.AlignRight
-                    Layout.preferredWidth: internalLabelsWidth
-                }
-
-                Label {
-                    id: labelCoins
-                    text: coinHours // a role of the model
-                    horizontalAlignment: Text.AlignRight
-                    Layout.preferredWidth: internalLabelsWidth
                 }
             }
 
@@ -74,8 +59,8 @@ Item {
             Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
             Behavior on opacity { NumberAnimation { duration: expanded ? 250 : 1000; easing.type: Easing.OutQuint } }
 
-            delegate: WalletListAddressDelegate {
-                width: walletList.width
+            delegate: OutputsListAddressDelegate {
+                width: listOutputs.width
                 height: visible ? delegateHeight : 0
             }
         }
