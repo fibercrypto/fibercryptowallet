@@ -15,9 +15,12 @@
         <file>src/ui/ControlCustomSwitch.qml</file>
         <file>src/ui/ControlGenerateSeed.qml</file>
         <file>src/ui/CreateLoadWallet.qml</file>
+        <file>src/ui/Outputs.qml</file>
         <file>src/ui/Blockchain.qml</file>
         <file>src/ui/Delegates/WalletListDelegate.qml</file>
         <file>src/ui/Delegates/WalletListAddressDelegate.qml</file>
+        <file>src/ui/Delegates/OutputsListDelegate.qml</file>
+        <file>src/ui/Delegates/OutputsListAddressDelegate.qml</file>
         <file>src/ui/Delegates/DestinationListDelegate.qml</file>
         <file>src/ui/Delegates/InputOutputDelegate.qml</file>
         <file>src/ui/Delegates/HistoryListDelegate.qml</file>
