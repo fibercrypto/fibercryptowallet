@@ -9,6 +9,8 @@ Item {
     readonly property bool itemVisible: index === 0 || addressSky > 0 || emptyAddressVisible
     property bool showOnlyAddresses: false
 
+    signal editWalletRequested()
+
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
 
@@ -64,6 +66,10 @@ Item {
             icon.source: "qrc:/images/resources/images/icons/edit.svg"
             Material.foreground: Material.Blue
             Layout.fillWidth: true
+
+            onClicked: {
+                editWalletRequested()
+            }
         }
     } // RowLayout (menu)
 

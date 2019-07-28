@@ -3,6 +3,11 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/"
+// import "qrc:/ui/src/ui/Dialogs"
+import "../Dialogs/" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: root
 
@@ -67,7 +72,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
                 }
-            }
+            } // RowLayout
 
             onClicked: {
                 expanded = !expanded
@@ -90,9 +95,29 @@ Item {
             delegate: WalletListAddressDelegate {
                 width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
+
+                onEditWalletRequested: {
+                    dialogEditWallet.initialText = name
+                    dialogEditWallet.open()
+                }
             }
-        }
+        } // ListView
     } // ColumnLayout
+
+    DialogEditWallet {
+        id: dialogEditWallet
+        anchors.centerIn: Overlay.overlay
+
+        focus: true
+        modal: true
+
+        onAccepted: {
+            console.log("Editting accepted")
+        }
+        onRejected: {
+            console.log("Editting rejected")
+        }
+    } // DialogEditWallet
 
     // Roles: address, addressSky, addressCoinHours
     // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
