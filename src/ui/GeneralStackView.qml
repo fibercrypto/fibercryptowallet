@@ -14,6 +14,11 @@ Item {
         toolPageOpened = true
     }
 
+    function openNetworkingPage() {
+        stackView.push(componentNetworking)
+        toolPageOpened = true
+    }
+
     StackView {
         id: stackView
         initialItem: componentCreateLoadWallet
@@ -48,6 +53,19 @@ Item {
 
         Blockchain {
             id: blockchain
+
+            onBackRequested: {
+                stackView.pop()
+                toolPageOpened = false
+            }
+        }
+    }
+
+    Component {
+        id: componentNetworking
+
+        Networking {
+            id: networking
 
             onBackRequested: {
                 stackView.pop()

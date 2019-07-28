@@ -1,17 +1,18 @@
 package main
 
 import (
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/blockchain"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
-	
+
 	"os"
+
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/api/walletsManager"
-	
 )
 
 func main() {
-	
+
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 
 	app := gui.NewQGuiApplication(len(os.Args), os.Args)
