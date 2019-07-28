@@ -8,6 +8,7 @@ type WalletIterator interface {
 
 type WalletSet interface {
 	ListWallets() WalletIterator
+	GetWallet(id string) Wallet
 	CreateWallet(name string, seed string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int) (Wallet, error)
 }
 
@@ -33,7 +34,7 @@ type Wallet interface {
 	Spend(unspent, new []TransactionOutput)
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
-	GetLoadedAddresses() AddressIterator
+	GetLoadedAddresses() (AddressIterator, error)
 }
 
 type SeedGenerator interface {
