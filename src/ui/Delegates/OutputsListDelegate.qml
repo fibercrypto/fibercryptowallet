@@ -4,10 +4,9 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 Item {
-    id: root
+    id: outputsListDelegate
 
     readonly property real delegateHeight: 30
-    property bool emptyAddressVisible: true
     property bool expanded: false
     // The following property is used to avoid a binding conflict with the `height` property.
     // Also avoids a bug with the animation when collapsing a wallet
@@ -35,22 +34,10 @@ Item {
                 anchors.rightMargin: listWalletRightMargin
                 spacing: listWalletSpacing
 
-                Image {
-                    id: status
-                    source: statusIcon
-                    sourceSize: "24x24"
-                }
-
                 Label {
                     id: labelWalletName
                     text: name // a role of the model
                     Layout.fillWidth: true
-                }
-
-                Image {
-                    id: lockIcon
-                    source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
-                    sourceSize: "24x24"
                 }
 
                 Label {
@@ -89,7 +76,7 @@ Item {
 
             delegate: WalletListAddressDelegate {
                 width: walletList.width
-                height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
+                height: visible ? delegateHeight : 0
             }
         }
     } // ColumnLayout
