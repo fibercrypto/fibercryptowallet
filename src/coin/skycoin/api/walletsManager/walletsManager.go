@@ -101,7 +101,19 @@ func (walletM *WalletManager) decryptWallet(id, password string) {
 }
 
 func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {
-
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
+	pwd := func(message string) string {
+		return password
+	}
+	wltEntrieslen := 0
+	it, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	for it.Next() {
+		wltEntrieslen++
+	}
+	wlt.GenAddress(core.AccountAddress, wltEntrieslen, n, pwd)
 }
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
