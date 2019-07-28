@@ -6,82 +6,43 @@ import QtQuick.Layouts 1.12
 ItemDelegate {
     id: root
 
-    property string modelIp: "0.0.0.0"
-    property int modelPort: 0
-    property string modelSource: qsTr("Default peer")
-    property int modelBlock: 0
-    property string modelLastSeenIn
-    property string modelLastSeenOut
-    
-
-    width: parent.width
-    height: columnLayoutLastSeen.height + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
+    property string modelTransactionID
+    property int modelSky
+    property int modelCoinHours
+    property date modelTimestamp
 
     RowLayout {
         id: rowLayoutRoot
         anchors.fill: parent
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-        anchors.topMargin: 10
-        anchors.bottomMargin: 12
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
 
         spacing: 20
 
-        Image {
-            source: "qrc:/images/resources/images/icons/send-blue.svg"
-            sourceSize: "32x32"
-            fillMode: Image.PreserveAspectFit
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-        }
-
         Label {
             Material.foreground: Material.Grey
-            text: modelIp + ':' + modelPort // model's roles
+            text: modelTransactionID // model's roles
+            font.family: "Code New Roman"
+            font.pointSize: Qt.application.font.pointSize * 0.9
+            wrapMode: Label.WrapAnywhere
             Layout.fillWidth: true
-            Layout.minimumWidth: 160
+            Layout.minimumWidth: implicitWidth/2 // As the font is monospaced, this should work fine
         }
 
         Label {
-            text: modelSource // model's role
+            text: modelSky // model's role
             Layout.preferredWidth: 100
         }
 
         Label {
-            text: modelBlock // model's role
+            text: modelCoinHours // model's role
             Layout.preferredWidth: 80
         }
 
-        ColumnLayout {
-            id: columnLayoutLastSeen
-            Layout.preferredWidth: 160
-            spacing: 0
-
-            RowLayout {
-                Image {
-                    source: "qrc:/images/resources/images/icons/up.svg"
-                    sourceSize: Qt.size(labelLastSeenOut.font.pixelSize, labelLastSeenOut.font.pixelSize)
-                    fillMode: Image.PreserveAspectFit
-                }
-                Label {
-                    id: labelLastSeenOut
-                    text: modelLastSeenOut // model's role
-                }
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            }
-
-            RowLayout {
-                Image {
-                    source: "qrc:/images/resources/images/icons/down.svg"
-                    sourceSize: Qt.size(labelLastSeenIn.font.pixelSize, labelLastSeenIn.font.pixelSize)
-                    fillMode: Image.PreserveAspectFit
-                }
-                Label {
-                    id: labelLastSeenIn
-                    text: modelLastSeenIn // model's role
-                }
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-            }
-        } // ColumnLayout
+        Label {
+            text: modelTimestamp // model's role
+            Layout.preferredWidth: 150
+        }
 
     } // RowLayout (root)
 }
