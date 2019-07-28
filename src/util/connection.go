@@ -7,7 +7,7 @@ import (
 
 //Return address of daemon node----TODO
 func nodeAddress() string {
-	return "http://127.0.0.1:40805"
+	return "http://127.0.0.1:34805"
 }
 
 //Return username of daemon node----TODO

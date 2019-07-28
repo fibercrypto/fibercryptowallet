@@ -49,10 +49,6 @@ func (wlt Wallet) Spend(unspent, new []core.TransactionOutput) {
 	return
 }
 
-func (wlt Wallet) GenChangeAddress() core.Address {
-	return nil
-}
-
 func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
 	c := util.NewClient()
 	bl, err := c.WalletBalance(wlt.Id)
@@ -82,12 +78,20 @@ func (wlt Wallet) ListTransactions() core.TransactionIterator {
 	return nil
 }
 
-func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint32) core.AddressIterator {
+func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	return nil
 }
 
 func (wlt Wallet) GetCryptoAccount() core.CryptoAccount {
 	return wlt
+}
+
+func (wlt Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
+	c := util.NewClient()
+	wltR, err := c.Wallet(wlt.Id)
+	if err != nil {
+		return nil, err
+	}
 }
 
 func newWalletAddress(label string, n int, password string) {

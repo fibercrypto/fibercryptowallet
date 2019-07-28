@@ -21,9 +21,9 @@ type WalletManager struct {
 	_ func(seed string, label string, scanN int) *wallets.QWallet                  `slot:"createUnencryptedWallet"`
 	_ func(entropy int) string                                                     `slot:"getNewSeed"`
 	_ func(seed string) int                                                        `slot:"verifySeed"`
-	//_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
-	_ func(id string, password string) `slot:"encryptWallet"`
-	_ func(id string, password string) `slot:"decryptWallet"`
+	_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
+	_ func(id string, password string)                                             `slot:"encryptWallet"`
+	_ func(id string, password string)                                             `slot:"decryptWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -31,7 +31,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
 	walletM.ConnectGetNewSeed(walletM.getNewSeed)
 	walletM.ConnectVerifySeed(walletM.verifySeed)
-	//walletM.ConnectNewWalletAddress(newWalletAddress)
+	walletM.ConnectNewWalletAddress(walletM.newWalletAddress)
 	walletM.ConnectEncryptWallet(walletM.encryptWallet)
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 
@@ -49,25 +49,27 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 		return nil
 	}
 
-	return fromWalletToQWallet(wlt)
+	return fromWalletToQWallet(wlt, true)
+
 }
 
 func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *wallets.QWallet {
 	pwd := func(message string) (string, error) {
-		return nil, nil
+		return "", nil
 	}
 
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, false, pwd, scanN)
 	if err != nil {
-		return err
+		return nil
 	}
-	return fromWalletToQWallet(wlt)
+	return fromWalletToQWallet(wlt, false)
+
 }
 
 func (walletM *WalletManager) getNewSeed(entropy int) string {
 	seed, err := walletM.SeedGenerator.GenerateMnemonic(entropy)
 	if err != nil {
-		return nil
+		return ""
 	}
 	return seed
 }
@@ -75,7 +77,7 @@ func (walletM *WalletManager) getNewSeed(entropy int) string {
 func (walletM *WalletManager) verifySeed(seed string) int {
 	ok, err := walletM.SeedGenerator.VerifyMnemonic(seed)
 	if err != nil {
-		return nil
+		return 0
 	}
 	if ok {
 		return 1
@@ -98,17 +100,27 @@ func (walletM *WalletManager) decryptWallet(id, password string) {
 	walletM.WalletEnv.GetStorage().Decrypt(id, pwd)
 }
 
-func fromWalletToQWallet(wlt *walletWithBalance) {
-	qwallet = wallets.NewQWallet(nil)
-	qwallet.SetName(wlt.GetLabel())
-	qwallet.SetFileName(wlt.GetId())
-	qwallet.SetEncryptionEnabled(wlt.IsEncrypted())
-	qwallet.SetSky(wlt.GetBalance("Sky"))
-	qwallet.SetCoinHours(wlt.GetBalance("CoinHours"))
-	return qwallet
+func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {
+
 }
 
-type walletWithBalance interface {
-	core.Wallet
-	core.CryptoAccount
+func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
+	qwallet := wallets.NewQWallet(nil)
+	qwallet.SetName(wlt.GetLabel())
+	qwallet.SetFileName(wlt.GetId())
+	qwallet.SetEncryptionEnabled(0)
+	if isEncrypted {
+		qwallet.SetEncryptionEnabled(1)
+	}
+	bl, err := wlt.GetCryptoAccount().GetBalance("Sky")
+	if err != nil {
+		bl = 0
+	}
+	qwallet.SetSky(bl)
+	bl, err = wlt.GetCryptoAccount().GetBalance("CoinHour")
+	if err != nil {
+		bl = 0
+	}
+	qwallet.SetCoinHours(bl)
+	return qwallet
 }
