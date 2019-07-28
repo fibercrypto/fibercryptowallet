@@ -10,6 +10,7 @@ const (
 	Sky               = int(core.Qt__UserRole) + 3
 	CoinHours         = int(core.Qt__UserRole) + 4
 	FileName          = int(core.Qt__UserRole) + 5
+	Addresses         = int(core.Qt__UserRole) + 6
 )
 
 type WalletModel struct {
@@ -30,11 +31,12 @@ type WalletModel struct {
 type QWallet struct {
 	core.QObject
 
-	_ string `property:"name"`
-	_ int    `property:"encryptionEnabled"`
-	_ uint64 `property:"sky"`
-	_ uint64 `property:"coinHours"`
-	_ string `property:"fileName"`
+	_ string      `property:"name"`
+	_ int         `property:"encryptionEnabled"`
+	_ uint64      `property:"sky"`
+	_ uint64      `property:"coinHours"`
+	_ string      `property:"fileName"`
+	_ []*QAddress `property:"addresses"`
 }
 
 func (m *WalletModel) init() {
@@ -44,6 +46,7 @@ func (m *WalletModel) init() {
 		Sky:               core.NewQByteArray2("sky", -1),
 		CoinHours:         core.NewQByteArray2("coinHours", -1),
 		FileName:          core.NewQByteArray2("fileName", -1),
+		Addresses:         core.NewQByteArray2("addresses", -1),
 	})
 
 	m.ConnectData(m.data)
@@ -93,6 +96,10 @@ func (m *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		{
 			return core.NewQVariant1(w.FileName())
 		}
+	case Addresses:
+		{
+			return core.NewQVariant1(w.Addresses())
+		}
 	default:
 		{
 			return core.NewQVariant()
@@ -120,7 +127,7 @@ func (m *WalletModel) addWallet(w *QWallet) {
 
 }
 
-func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky, coinHours uint64) {
+func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky, coinHours uint64, addresses []*QAddress) {
 	w := m.Wallets()[row]
 	w.SetName(name)
 	w.SetEncryptionEnabled(0)
@@ -130,8 +137,9 @@ func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky, coin
 	w.SetSky(sky)
 	w.SetCoinHours(coinHours)
 	w.SetFileName(w.FileName())
+	w.SetAddresses(addresses)
 	pIndex := m.Index(row, 0, core.NewQModelIndex())
-	m.DataChanged(pIndex, pIndex, []int{Name, EncryptionEnabled, Sky, CoinHours, FileName})
+	m.DataChanged(pIndex, pIndex, []int{Name, EncryptionEnabled, Sky, CoinHours, FileName, Addresses})
 	m.updateCount()
 }
 

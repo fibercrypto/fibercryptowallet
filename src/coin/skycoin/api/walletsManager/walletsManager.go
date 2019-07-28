@@ -154,5 +154,15 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
 		bl = 0
 	}
 	qwallet.SetCoinHours(bl)
+	qaddresses := make([]*wallets.QAddress, 0)
+	it, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	for it.Next(){
+		qaddress := new(wallets.QAddress)
+		qaddress.Set
+		qaddresses = append(qaddresses
+	}
 	return qwallet
 }

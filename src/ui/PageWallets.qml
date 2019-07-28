@@ -94,22 +94,29 @@ Page {
         }
     }
 
-    Timer {
-        interval: 10000
-        repeat: true
-        running: true
-        onTriggered: walletModel.loadModel(walletManager.getWallets())
-        
-    }
-    WalletModel{
-        id: walletModel
-        
-               
-    }
-
+    
     WalletManager{
         id: walletManager
     }
+
+    WalletModel{
+        id: walletModel
+        property Timer timer: Timer {
+        
+                                    id: walletModelTimer
+                                    repeat: false
+                                    running: true
+                                    interval: 0
+                                    onTriggered: {
+                                        walletModel.loadModel(walletManager.getWallets())
+                                        walletModelTimer.running = false
+                                    }
+            
+                                }
+    }
+
+    
+    
     // Roles: name, encryptionEnabled, sky, coinHours
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
