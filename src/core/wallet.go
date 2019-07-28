@@ -13,8 +13,8 @@ type WalletSet interface {
 }
 
 type WalletStorage interface {
-	Encrypt(walletName, password PasswordReader)
-	Decrypt(walletName, password PasswordReader)
+	Encrypt(walletName string, password PasswordReader)
+	Decrypt(walletName string, password PasswordReader)
 	IsEncrypted(walletName string) (bool, error)
 }
 
