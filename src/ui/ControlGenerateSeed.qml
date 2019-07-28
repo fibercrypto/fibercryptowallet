@@ -18,6 +18,10 @@ Item {
     readonly property alias inputControlWidth: textArea.width
     readonly property alias inputControlHeight: textArea.height
 
+    function clear() {
+        textArea.clear()
+    }
+
     Row {
         id: rowButtons
         anchors.bottom: textArea.top
