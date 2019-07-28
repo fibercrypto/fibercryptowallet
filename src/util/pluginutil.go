@@ -10,3 +10,7 @@ func AltcoinCaption(ticker string) string {
 	}
 	return ticker + " <Unregistered>"
 }
+
+func RegisterAltcoin(p core.AltcoinPlugin) {
+	core.LoadAltcoinManager().RegisterPlugin(p)
+}

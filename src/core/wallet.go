@@ -31,8 +31,9 @@ type Wallet interface {
 	Transfer(to Address, amount uint64)
 	SendFromAddress(from, to Address, amount uint64)
 	Spend(unspent, new []TransactionOutput)
-	GenAddresses(addrType AddressType, startIndex, count uint32) AddressIterator
+	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
+	GetLoadedAddresses() AddressIterator
 }
 
 type SeedGenerator interface {
