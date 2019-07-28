@@ -5,10 +5,18 @@ import QtQuick.Controls 2.12
 // import "qrc:/ui/src/ui/"
 
 Item {
-    id: root
+    id: generalStackView
 
     property alias depth: stackView.depth
     property alias busy: stackView.busy
+
+    function openOutputsPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentOutputs)
+        } else {
+            stackView.push(componentOutputs)
+        }
+    }
 
     function openBlockchainPage() {
         if (stackView.depth > 1) {
@@ -58,6 +66,14 @@ Item {
 
         GeneralSwipeView {
             id: generalSwipeView
+        }
+    }
+
+    Component {
+        id: componentOutputs
+
+        Outputs {
+            id: outputs
         }
     }
 
