@@ -15,21 +15,26 @@ Page {
         anchors.margins: 20
         clip: true
 
-        ListView {
-            id: listOutputs
+        ScrollView {
+            id: scrollView
             anchors.fill: parent
-            clip: true
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+            ListView {
+                id: listOutputs
+                anchors.fill: parent
+                clip: true
 
-            model: modelOutputs
-            delegate: OutputsListDelegate {
-            //     modelIp: ip
-            //     modelPort: port
-            //     modelSource: source
-            //     modelBlock: block
-            //     modelLastSeenIn: lastSeenIn
-            //     modelLastSeenOut: lastSeenOut
-            }
-        }
+                model: modelOutputs
+                delegate: OutputsListDelegate {
+                //     modelIp: ip
+                //     modelPort: port
+                //     modelSource: source
+                //     modelBlock: block
+                //     modelLastSeenIn: lastSeenIn
+                //     modelLastSeenOut: lastSeenOut
+                }
+            } // ListView
+        } // ScrollView
     } // Frame
 
     // Roles: name
