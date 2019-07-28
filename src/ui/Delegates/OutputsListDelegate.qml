@@ -3,85 +3,107 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
-ItemDelegate {
+Item {
     id: root
 
-    property string modelIp: "0.0.0.0"
-    property int modelPort: 0
-    property string modelSource: qsTr("Default peer")
-    property int modelBlock: 0
-    property string modelLastSeenIn
-    property string modelLastSeenOut
-    
+    readonly property real delegateHeight: 30
+    property bool emptyAddressVisible: true
+    property bool expanded: false
+    // The following property is used to avoid a binding conflict with the `height` property.
+    // Also avoids a bug with the animation when collapsing a wallet
+    readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
 
-    width: parent.width
-    height: columnLayoutLastSeen.height + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
+    width: walletList.width
+    height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
 
-    RowLayout {
-        id: rowLayoutRoot
+    Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+    ColumnLayout {
+        id: delegateColumnLayout
         anchors.fill: parent
-        anchors.leftMargin: 20
-        anchors.rightMargin: 20
-        anchors.topMargin: 10
-        anchors.bottomMargin: 12
 
-        spacing: 20
-
-        Image {
-            source: "qrc:/images/resources/images/icons/send-blue.svg"
-            sourceSize: "32x32"
-            fillMode: Image.PreserveAspectFit
-            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
-        }
-
-        Label {
-            Material.foreground: Material.Grey
-            text: modelIp + ':' + modelPort // model's roles
+        ItemDelegate {
+            id: itemDelegateMainButton
             Layout.fillWidth: true
-            Layout.minimumWidth: 160
-        }
-
-        Label {
-            text: modelSource // model's role
-            Layout.preferredWidth: 100
-        }
-
-        Label {
-            text: modelBlock // model's role
-            Layout.preferredWidth: 80
-        }
-
-        ColumnLayout {
-            id: columnLayoutLastSeen
-            Layout.preferredWidth: 160
-            spacing: 0
+            Layout.alignment: Qt.AlignTop
+            font.bold: expanded
 
             RowLayout {
+                id: delegateRowLayout
+                anchors.fill: parent
+                anchors.leftMargin: listWalletLeftMargin
+                anchors.rightMargin: listWalletRightMargin
+                spacing: listWalletSpacing
+
                 Image {
-                    source: "qrc:/images/resources/images/icons/up.svg"
-                    sourceSize: Qt.size(labelLastSeenOut.font.pixelSize, labelLastSeenOut.font.pixelSize)
-                    fillMode: Image.PreserveAspectFit
+                    id: status
+                    source: statusIcon
+                    sourceSize: "24x24"
                 }
+
                 Label {
-                    id: labelLastSeenOut
-                    text: modelLastSeenOut // model's role
+                    id: labelWalletName
+                    text: name // a role of the model
+                    Layout.fillWidth: true
                 }
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+
+                Image {
+                    id: lockIcon
+                    source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
+                    sourceSize: "24x24"
+                }
+
+                Label {
+                    id: labelSky
+                    text: sky // a role of the model
+                    color: Material.accent
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: internalLabelsWidth
+                }
+
+                Label {
+                    id: labelCoins
+                    text: coinHours // a role of the model
+                    horizontalAlignment: Text.AlignRight
+                    Layout.preferredWidth: internalLabelsWidth
+                }
             }
 
-            RowLayout {
-                Image {
-                    source: "qrc:/images/resources/images/icons/down.svg"
-                    sourceSize: Qt.size(labelLastSeenIn.font.pixelSize, labelLastSeenIn.font.pixelSize)
-                    fillMode: Image.PreserveAspectFit
-                }
-                Label {
-                    id: labelLastSeenIn
-                    text: modelLastSeenIn // model's role
-                }
-                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            onClicked: {
+                expanded = !expanded
             }
-        } // ColumnLayout
+        } // ItemDelegate
 
-    } // RowLayout (root)
+        ListView {
+            id: addressList
+            model: listAddresses
+            implicitHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+            opacity: expanded ? 1.0 : 0.0
+            clip: true
+            interactive: false
+            Layout.fillWidth: true
+            Layout.alignment: Qt.AlignTop
+
+            Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+            Behavior on opacity { NumberAnimation { duration: expanded ? 250 : 1000; easing.type: Easing.OutQuint } }
+
+            delegate: WalletListAddressDelegate {
+                width: walletList.width
+                height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
+            }
+        }
+    } // ColumnLayout
+
+    // Roles: address, addressSky, addressCoinHours
+    // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
+    // Or implement the model in the backend (a more recommendable approach)
+    ListModel {
+        id: listAddresses
+        // The first element must exist but will not be used
+        ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
+        ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
+        ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
+        ListElement { address: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
+        ListElement { address: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
+    }
 }
