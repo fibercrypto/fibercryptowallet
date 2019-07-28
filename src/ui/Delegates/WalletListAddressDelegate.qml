@@ -10,6 +10,7 @@ Item {
     property bool showOnlyAddresses: false
 
     signal addAddressesRequested()
+    signal editWalletRequested()
 
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
