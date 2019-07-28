@@ -19,13 +19,10 @@ type AddressesModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QAddress              `property:"addresses"`
 
-	_ int `property:"loaded"`
-
-	_           func(*QAddress)                   `slot:"addAddress"`
-	_           func(int)                         `slot:"removeAddress"`
-	_           func(int, string, uint64, uint64) `slot:"editAddress"`
-	_           func(string)                      `slot:"loadModel"`
-	startUpdate bool
+	_ func(*QAddress)                   `slot:"addAddress"`
+	_ func(int)                         `slot:"removeAddress"`
+	_ func(int, string, uint64, uint64) `slot:"editAddress"`
+	_ func([]*QAddress)                      `slot:"loadModel"`
 }
 
 type QAddress struct {
@@ -52,9 +49,6 @@ func (m *AddressesModel) init() {
 	m.ConnectEditAddress(m.editAddress)
 	m.ConnectRemoveAddress(m.removeAddress)
 	m.ConnectLoadModel(m.loadModel)
-
-	m.SetLoaded(0)
-	m.startUpdate = false
 
 }
 
@@ -124,13 +118,9 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 	m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
 }
 
-func (m *AddressesModel) loadModel(wallet string) {
+func (m *AddressesModel) loadModel(Qaddresses[]*QAddress]) {
 
-	Qaddresses, err := getQAddresses(wallet)
-	if err != nil {
-		return
-	}
-
+	
 	addresses := make([]*QAddress, 0)
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")
@@ -143,31 +133,8 @@ func (m *AddressesModel) loadModel(wallet string) {
 	m.SetAddresses(addresses)
 	m.EndResetModel()
 
-	m.SetLoaded(1)
+	
 
 }
 
-func getQAddresses(wallet string) ([]*QAddress, error) {
-	c := pluginutil.NewClient()
-	wlt, err := c.Wallet(wallet)
-	if err != nil {
-		return nil, err
-	}
-	Qaddresses := make([]*QAddress, 0)
-	entries := wlt.Entries
-	for _, entry := range entries {
-		address := NewQAddress(nil)
-		address.SetAddress(entry.Address)
-		addresses := make([]string, 0)
-		addresses = append(addresses, entry.Address)
-		bl, err := c.Balance(addresses)
-		if err != nil {
-			return nil, err
-		}
-		address.SetAddressSky(bl.Confirmed.Coins)
-		address.SetAddressCoinHours(bl.Confirmed.Hours)
-		Qaddresses = append(Qaddresses, address)
-	}
 
-	return Qaddresses, nil
-}
