@@ -1,7 +1,7 @@
 package walletsManager
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/blockchain/wallet"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/blockchain/api"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/wallets"
 	qtcore "github.com/therecipe/qt/core"
@@ -21,9 +21,9 @@ type WalletManager struct {
 	_ func(seed string, label string, scanN int) *wallets.QWallet                  `slot:"createUnencryptedWallet"`
 	_ func(entropy int) string                                                     `slot:"getNewSeed"`
 	_ func(seed string) int                                                        `slot:"verifySeed"`
-	//_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
-	_ func(id string, password string) `slot:"encryptWallet"`
-	_ func(id string, password string) `slot:"decryptWallet"`
+	_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
+	_ func(id string, password string)                                             `slot:"encryptWallet"`
+	_ func(id string, password string)                                             `slot:"decryptWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -31,16 +31,12 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
 	walletM.ConnectGetNewSeed(walletM.getNewSeed)
 	walletM.ConnectVerifySeed(walletM.verifySeed)
-<<<<<<< Updated upstream
 	walletM.ConnectNewWalletAddress(walletM.newWalletAddress)
-=======
-	//walletM.ConnectNewWalletAddress(newWalletAddress)
->>>>>>> Stashed changes
 	walletM.ConnectEncryptWallet(walletM.encryptWallet)
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 
-	walletM.WalletEnv = new(wallet.WalletNode)
-	walletM.SeedGenerator = new(wallet.SeedService)
+	walletM.WalletEnv = new(api.WalletNode)
+	walletM.SeedGenerator = new(api.SeedService)
 
 }
 
@@ -106,18 +102,18 @@ func (walletM *WalletManager) decryptWallet(id, password string) {
 
 func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-	pwd := func(message string) string {
-		return password
+	pwd := func(message string) (string, error) {
+		return password, nil
 	}
 	wltEntrieslen := 0
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
-		return nil
+		return
 	}
 	for it.Next() {
 		wltEntrieslen++
 	}
-	wlt.GenAddress(core.AccountAddress, wltEntrieslen, n, pwd)
+	wlt.GenAddresses(core.AccountAddress, uint32(wltEntrieslen), uint32(n), pwd)
 }
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {

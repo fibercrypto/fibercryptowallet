@@ -1,4 +1,4 @@
-package wallet
+package api
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"

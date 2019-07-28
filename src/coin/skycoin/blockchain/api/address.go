@@ -1,4 +1,4 @@
-package wallet
+package api
 
 type Address struct {
 	address string
