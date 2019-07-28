@@ -5,13 +5,37 @@ import QtQuick.Controls 2.12
 // import "qrc:/ui/src/ui/"
 
 Item {
-    id: root
+    id: generalStackView
 
-    property bool toolPageOpened: false
+    property alias depth: stackView.depth
+    property alias busy: stackView.busy
+
+    function openOutputsPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentOutputs)
+        } else {
+            stackView.push(componentOutputs)
+        }
+    }
 
     function openBlockchainPage() {
-        stackView.push(componentBlockchain)
-        toolPageOpened = true
+        if (stackView.depth > 1) {
+            stackView.replace(componentBlockchain)
+        } else {
+            stackView.push(componentBlockchain)
+        }
+    }
+
+    function openNetworkingPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentNetworking)
+        } else {
+            stackView.push(componentNetworking)
+        }
+    }
+
+    function pop() {
+        stackView.pop()
     }
 
     function openNetworkingPage() {
@@ -21,20 +45,22 @@ Item {
 
     StackView {
         id: stackView
-        initialItem: componentCreateLoadWallet
+        initialItem: componentPageCreateLoadWallet
         anchors.fill: parent
     }
 
     Component {
-        id: componentCreateLoadWallet
+        id: componentPageCreateLoadWallet
 
-        Rectangle {
-            CreateLoadWallet {
-                id: createLoadWallet
+        Item {
+            PageCreateLoadWallet {
+                id: pageCreateLoadWallet
                 anchors.centerIn: parent
+                width: 400
+                height: 400
 
                 onWalletCreationRequested: {
-                    stackView.push(componentGeneralSwipeView)
+                    stackView.replace(componentGeneralSwipeView)
                 }
             }
         }
@@ -49,15 +75,26 @@ Item {
     }
 
     Component {
+        id: componentOutputs
+
+        Outputs {
+            id: outputs
+        }
+    }
+
+    Component {
         id: componentBlockchain
 
         Blockchain {
             id: blockchain
+        }
+    }
 
-            onBackRequested: {
-                stackView.pop()
-                toolPageOpened = false
-            }
+    Component {
+        id: componentNetworking
+
+        Networking {
+            id: networking
         }
     }
 

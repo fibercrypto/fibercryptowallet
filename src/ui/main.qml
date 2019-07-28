@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -13,31 +14,133 @@ ApplicationWindow {
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
 
-    menuBar: MenuBar {
-        clip: true
-        height: general.toolPageOpened ? 0 : implicitHeight
-        Behavior on height { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
-        Menu {
-            id: menuTools
-            title: qsTr("&Tools")
-            MenuItem { text: qsTr("Outputs") }
-            MenuItem { text: qsTr("Blockchain"); onClicked: general.openBlockchainPage() }
-            MenuItem { text: qsTr("Networking"); onClicked: general.openNetworkingPage() }
+
+    menuBar: CustomMenuBar {
+        id: customMenuBar
+
+        onOutputsRequested: {
+            generalStackView.openOutputsPage()
+            menuBarColor = Material.color(Material.Teal)
+            customHeader.text = qsTr("Outputs")
+            
+            enableOutputs = false
+            enableBlockchain = true
+            enableNetworking = true
+
         }
-        Menu {
-            id: menuHelp
-            title: qsTr("&Help")
-            MenuItem { text: qsTr("About FiberCrypto"); onClicked: dialogAbout.open() }
-            MenuItem { text: qsTr("About Qt"); onClicked: dialogAboutQt.open() }
+
+        onBlockchainRequested: {
+            generalStackView.openBlockchainPage()
+            menuBarColor = Material.color(Material.Red)
+            customHeader.text = qsTr("Blockchain")
+
+            enableOutputs = true
+            enableBlockchain = false
+            enableNetworking = true
         }
-    }
+
+        onNetworkingRequested: {
+            generalStackView.openNetworkingPage()
+            menuBarColor = Material.color(Material.Blue)
+            customHeader.text = qsTr("Networking")
+
+            enableOutputs = true
+            enableBlockchain = true
+            enableNetworking = false
+        }
+
+        onAboutRequested: {
+            dialogAbout.open()
+        }
+
+        onAboutQtRequested: {
+            dialogAboutQt.open()
+        }
+    } // CustomMenuBar
+
+    CustomHeader {
+        id: customHeader
+    } // CustomHeader
 
     GeneralStackView {
-        id: general
+        id: generalStackView
         anchors.fill: parent
     }
 
     //! Dialogs
+
+    // Message dialogs
+
+    MsgDialog {
+        id: msgDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+
+        text: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                 + "sed eiusmod tempor incidunt ut labore et dolore magna aliqua. "
+                 + "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris "
+                 + "nisi ut aliquid ex ea commodi consequat. "
+                 + "Quis aute iure reprehenderit in voluptate velit esse cillum dolore "
+                 + "eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, "
+                 + "sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    }
+
+    // Hardware dialogs
+
+    DialogUnconfiguredWallet {
+        id: dialogUnconfiguredWallet
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 690 ? 690 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 420 ? 420 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+    NumPadDialog {
+        id: numPadDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 540 ? 540 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+    RestoreBackupWordsDialog {
+        id: restoreBackupWordsDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 460 ? 460 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+    SecureWalletDialog {
+        id: secureWalletDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
+        height: (applicationWindow.height > 590 ? 590 - 40 : applicationWindow.height - 40) - (enableBackupWarning ^ enablePINWarning ? 100 : 0) - (!enableBackupWarning && !enablePINWarning ? 240 : 0)
+        
+        focus: true
+        modal: true
+    }
+
+    WalletCreatedDialog {
+        id: walletCreatedDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 360 ? 360 - 40 : applicationWindow.height - 40
+        
+        focus: true
+        modal: true
+    }
+
 
     // Help dialogs
 

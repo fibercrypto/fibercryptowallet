@@ -4,6 +4,11 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
 
+// Resource imports
+// import "qrc:/ui/src/ui/"
+// import "qrc:/ui/src/ui/Dialogs"
+import "../Dialogs/" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: root
 
@@ -68,7 +73,7 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
                 }
-            }
+            } // RowLayout
 
             onClicked: {
                         
@@ -92,13 +97,53 @@ Item {
             delegate: WalletListAddressDelegate {
                 width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
+
+                onAddAddressesRequested: {
+                    dialogAddAddresses.open()
+                }
+                onEditWalletRequested: {
+                    dialogEditWallet.open()
+                }
             }
 
-            
-        }
+        } // ListView
     } // ColumnLayout
 
+    DialogAddAddresses {
+        id: dialogAddAddresses
+        anchors.centerIn: Overlay.overlay
+
+        modal: true
+        focus: true
+
+        onAccepted: {
+            console.log("Adding accepted")
+        }
+        onRejected: {
+            console.log("Adding rejected")
+        }
+    } // DialogAddAddresses
+
+    DialogEditWallet {
+        id: dialogEditWallet
+        anchors.centerIn: Overlay.overlay
+
+        focus: true
+        modal: true
+
+        onAccepted: {
+            console.log("Editting accepted")
+        }
+        onRejected: {
+            console.log("Editting rejected")
+        }
+    } // DialogEditWallet
+
+    // Roles: address, addressSky, addressCoinHours
+    // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
+    // Or implement the model in the backend (a more recommendable approach)
     AddressModel {
+
         id: listAddresses
         property Timer timer: Timer {
                                 id: addressModelTimer

@@ -2,30 +2,27 @@ package util
 
 import (
 	"github.com/skycoin/skycoin/src/api"
-	//"github.com/therecipe/qt/core"
 )
 
-//Return address of daemon node----TODO
+//Return address of daemon node
 func nodeAddress() string {
-	return "http://127.0.0.1:33411"
+	return "http://node.skycoin.net" // example only
 }
 
-//Return username of daemon node----TODO
+//Return username of daemon node
 func nodeUsername() string {
-	return "Kid"
+	return "user"   // example only
 }
 
-//Return password of daemon node-----TODO
+//Return password of daemon node
 func nodePassword() string {
-	return "P@ssw0rd!"
+	return "password"   // example only
 }
 
 func NewClient() *api.Client {
 	c := api.NewClient(nodeAddress())
-	//c.SetAuth(nodeUsername(), nodePassword())
+	c.SetAuth(nodeUsername(), nodePassword())
 	return c
 }
 
-type Wallet struct {
-	Sky uint64
-}
+

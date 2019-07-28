@@ -15,33 +15,11 @@ Page {
     property date timestampLastBlock: blockchain_status.timestampLastBlock
     property string hashLastBlock: blockchain_status.hashLastBlock
 
+
     property string currentSkySupply: blockchain_status.currentSkySupply
     property string totalSkySupply: blockchain_status.totalSkySupply
     property string currentCoinHoursSupply: blockchain_status.currentCoinHoursSupply
     property string totalCoinHoursSupply: blockchain_status.totalCoinHoursSupply
-
-    signal backRequested()
-
-    header: RowLayout {
-        spacing: 20
-        ToolButton {
-            id: toolButtonBack
-            icon.source: "qrc:/images/resources/images/icons/back.svg"
-            Layout.alignment: Qt.AlignLeft
-
-            onClicked: {
-                backRequested()
-            }
-        }
-
-        Label {
-            text: qsTr("Blockchain")
-            font.pointSize: Qt.application.font.pointSize * 2
-            horizontalAlignment: Text.AlignHCenter
-            leftPadding: -(toolButtonBack.width + parent.spacing)
-            Layout.fillWidth: true
-        }
-    }
 
     ColumnLayout {
         id: columnLayoutRoot

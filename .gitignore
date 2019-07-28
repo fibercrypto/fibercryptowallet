@@ -46,6 +46,8 @@ rcc.qrc
 rcc_cgo_linux_linux_amd64.go
 rcc_*.cpp
 rcc__*
+*moc.*
+*moc_*
 
 # Temporary files
 *.swp
