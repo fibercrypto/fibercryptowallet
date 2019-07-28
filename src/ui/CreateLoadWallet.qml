@@ -12,6 +12,12 @@ Item {
 
     signal walletCreationRequested()
 
+    function clear() {
+        walletName.clear()
+        walletSeed.clear()
+        walletSeedConfirm.clear()
+    }
+
     implicitHeight: walletName.height + walletSeed.height + (mode === CreateLoadWallet.Create ? walletSeedConfirm.height : 0) + 2*column.spacing
     Behavior on implicitHeight { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
     clip: true
