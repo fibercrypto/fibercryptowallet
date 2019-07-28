@@ -35,6 +35,83 @@
 
 typedef QMap<qint32, QByteArray> type378cdd;
 typedef QMap<qint32, QByteArray> type378cdd;
+class QWallet445aa6: public QObject
+{
+Q_OBJECT
+Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
+Q_PROPERTY(qint32 encryptionEnabled READ encryptionEnabled WRITE setEncryptionEnabled NOTIFY encryptionEnabledChanged)
+Q_PROPERTY(quint64 sky READ sky WRITE setSky NOTIFY skyChanged)
+Q_PROPERTY(quint64 coinHours READ coinHours WRITE setCoinHours NOTIFY coinHoursChanged)
+Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
+Q_PROPERTY(QList<QAddress445aa6*> addresses READ addresses WRITE setAddresses NOTIFY addressesChanged)
+public:
+	QWallet445aa6(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");QWallet445aa6_QWallet445aa6_QRegisterMetaType();QWallet445aa6_QWallet445aa6_QRegisterMetaTypes();callbackQWallet445aa6_Constructor(this);};
+	QString name() { return ({ Moc_PackedString tempVal = callbackQWallet445aa6_Name(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setName(QString name) { QByteArray t6ae999 = name.toUtf8(); Moc_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackQWallet445aa6_SetName(this, namePacked); };
+	void Signal_NameChanged(QString name) { QByteArray t6ae999 = name.toUtf8(); Moc_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackQWallet445aa6_NameChanged(this, namePacked); };
+	qint32 encryptionEnabled() { return callbackQWallet445aa6_EncryptionEnabled(this); };
+	void setEncryptionEnabled(qint32 encryptionEnabled) { callbackQWallet445aa6_SetEncryptionEnabled(this, encryptionEnabled); };
+	void Signal_EncryptionEnabledChanged(qint32 encryptionEnabled) { callbackQWallet445aa6_EncryptionEnabledChanged(this, encryptionEnabled); };
+	quint64 sky() { return callbackQWallet445aa6_Sky(this); };
+	void setSky(quint64 sky) { callbackQWallet445aa6_SetSky(this, sky); };
+	void Signal_SkyChanged(quint64 sky) { callbackQWallet445aa6_SkyChanged(this, sky); };
+	quint64 coinHours() { return callbackQWallet445aa6_CoinHours(this); };
+	void setCoinHours(quint64 coinHours) { callbackQWallet445aa6_SetCoinHours(this, coinHours); };
+	void Signal_CoinHoursChanged(quint64 coinHours) { callbackQWallet445aa6_CoinHoursChanged(this, coinHours); };
+	QString fileName() { return ({ Moc_PackedString tempVal = callbackQWallet445aa6_FileName(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
+	void setFileName(QString fileName) { QByteArray td83e09 = fileName.toUtf8(); Moc_PackedString fileNamePacked = { const_cast<char*>(td83e09.prepend("WHITESPACE").constData()+10), td83e09.size()-10 };callbackQWallet445aa6_SetFileName(this, fileNamePacked); };
+	void Signal_FileNameChanged(QString fileName) { QByteArray td83e09 = fileName.toUtf8(); Moc_PackedString fileNamePacked = { const_cast<char*>(td83e09.prepend("WHITESPACE").constData()+10), td83e09.size()-10 };callbackQWallet445aa6_FileNameChanged(this, fileNamePacked); };
+	QList<QAddress445aa6*> addresses() { return ({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(callbackQWallet445aa6_Addresses(this)); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	void setAddresses(QList<QAddress445aa6*> addresses) { callbackQWallet445aa6_SetAddresses(this, ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	void Signal_AddressesChanged(QList<QAddress445aa6*> addresses) { callbackQWallet445aa6_AddressesChanged(this, ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	 ~QWallet445aa6() { callbackQWallet445aa6_DestroyQWallet(this); };
+	void childEvent(QChildEvent * event) { callbackQWallet445aa6_ChildEvent(this, event); };
+	void connectNotify(const QMetaMethod & sign) { callbackQWallet445aa6_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	void customEvent(QEvent * event) { callbackQWallet445aa6_CustomEvent(this, event); };
+	void deleteLater() { callbackQWallet445aa6_DeleteLater(this); };
+	void Signal_Destroyed(QObject * obj) { callbackQWallet445aa6_Destroyed(this, obj); };
+	void disconnectNotify(const QMetaMethod & sign) { callbackQWallet445aa6_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	bool event(QEvent * e) { return callbackQWallet445aa6_Event(this, e) != 0; };
+	bool eventFilter(QObject * watched, QEvent * event) { return callbackQWallet445aa6_EventFilter(this, watched, event) != 0; };
+	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQWallet445aa6_ObjectNameChanged(this, objectNamePacked); };
+	void timerEvent(QTimerEvent * event) { callbackQWallet445aa6_TimerEvent(this, event); };
+	QString nameDefault() { return _name; };
+	void setNameDefault(QString p) { if (p != _name) { _name = p; nameChanged(_name); } };
+	qint32 encryptionEnabledDefault() { return _encryptionEnabled; };
+	void setEncryptionEnabledDefault(qint32 p) { if (p != _encryptionEnabled) { _encryptionEnabled = p; encryptionEnabledChanged(_encryptionEnabled); } };
+	quint64 skyDefault() { return _sky; };
+	void setSkyDefault(quint64 p) { if (p != _sky) { _sky = p; skyChanged(_sky); } };
+	quint64 coinHoursDefault() { return _coinHours; };
+	void setCoinHoursDefault(quint64 p) { if (p != _coinHours) { _coinHours = p; coinHoursChanged(_coinHours); } };
+	QString fileNameDefault() { return _fileName; };
+	void setFileNameDefault(QString p) { if (p != _fileName) { _fileName = p; fileNameChanged(_fileName); } };
+	QList<QAddress445aa6*> addressesDefault() { return _addresses; };
+	void setAddressesDefault(QList<QAddress445aa6*> p) { if (p != _addresses) { _addresses = p; addressesChanged(_addresses); } };
+signals:
+	void nameChanged(QString name);
+	void encryptionEnabledChanged(qint32 encryptionEnabled);
+	void skyChanged(quint64 sky);
+	void coinHoursChanged(quint64 coinHours);
+	void fileNameChanged(QString fileName);
+	void addressesChanged(QList<QAddress445aa6*> addresses);
+public slots:
+private:
+	QString _name;
+	qint32 _encryptionEnabled;
+	quint64 _sky;
+	quint64 _coinHours;
+	QString _fileName;
+	QList<QAddress445aa6*> _addresses;
+};
+
+Q_DECLARE_METATYPE(QWallet445aa6*)
+
+
+void QWallet445aa6_QWallet445aa6_QRegisterMetaTypes() {
+	qRegisterMetaType<QList<QObject*>>("QList<QAddress445aa6*>");
+	qRegisterMetaType<QString>();
+}
+
 class WalletModel445aa6: public QAbstractListModel
 {
 Q_OBJECT
@@ -128,7 +205,7 @@ signals:
 	void countChanged(qint32 count);
 public slots:
 	void addWallet(QWallet445aa6* v0) { callbackWalletModel445aa6_AddWallet(this, v0); };
-	void editWallet(qint32 row, QString name, bool encryptionEnabled, quint64 sky, quint64 coinHours) { QByteArray t6ae999 = name.toUtf8(); Moc_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackWalletModel445aa6_EditWallet(this, row, namePacked, encryptionEnabled, sky, coinHours); };
+	void editWallet(qint32 row, QString name, bool encryptionEnabled, quint64 sky, quint64 coinHours, QList<QAddress445aa6*> addresses) { QByteArray t6ae999 = name.toUtf8(); Moc_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackWalletModel445aa6_EditWallet(this, row, namePacked, encryptionEnabled, sky, coinHours, ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 	void removeWallet(qint32 row) { callbackWalletModel445aa6_RemoveWallet(this, row); };
 	void loadModel(QList<QWallet445aa6*> v0) { callbackWalletModel445aa6_LoadModel(this, ({ QList<QWallet445aa6*>* tmpValue = new QList<QWallet445aa6*>(v0); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 private:
@@ -141,6 +218,7 @@ Q_DECLARE_METATYPE(WalletModel445aa6*)
 
 
 void WalletModel445aa6_WalletModel445aa6_QRegisterMetaTypes() {
+	qRegisterMetaType<QList<QObject*>>("QList<QAddress445aa6*>");
 	qRegisterMetaType<QList<QObject*>>("QList<QWallet445aa6*>");
 	qRegisterMetaType<type378cdd>("type378cdd");
 }
@@ -150,7 +228,6 @@ class AddressesModel445aa6: public QAbstractListModel
 Q_OBJECT
 Q_PROPERTY(type378cdd roles READ roles WRITE setRoles NOTIFY rolesChanged)
 Q_PROPERTY(QList<QAddress445aa6*> addresses READ addresses WRITE setAddresses NOTIFY addressesChanged)
-Q_PROPERTY(qint32 loaded READ loaded WRITE setLoaded NOTIFY loadedChanged)
 public:
 	AddressesModel445aa6(QObject *parent = Q_NULLPTR) : QAbstractListModel(parent) {qRegisterMetaType<quintptr>("quintptr");AddressesModel445aa6_AddressesModel445aa6_QRegisterMetaType();AddressesModel445aa6_AddressesModel445aa6_QRegisterMetaTypes();callbackAddressesModel445aa6_Constructor(this);};
 	type378cdd roles() { return ({ QMap<qint32, QByteArray>* tmpP = static_cast<QMap<qint32, QByteArray>*>(callbackAddressesModel445aa6_Roles(this)); QMap<qint32, QByteArray> tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; }); };
@@ -159,9 +236,6 @@ public:
 	QList<QAddress445aa6*> addresses() { return ({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(callbackAddressesModel445aa6_Addresses(this)); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 	void setAddresses(QList<QAddress445aa6*> addresses) { callbackAddressesModel445aa6_SetAddresses(this, ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 	void Signal_AddressesChanged(QList<QAddress445aa6*> addresses) { callbackAddressesModel445aa6_AddressesChanged(this, ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
-	qint32 loaded() { return callbackAddressesModel445aa6_Loaded(this); };
-	void setLoaded(qint32 loaded) { callbackAddressesModel445aa6_SetLoaded(this, loaded); };
-	void Signal_LoadedChanged(qint32 loaded) { callbackAddressesModel445aa6_LoadedChanged(this, loaded); };
 	 ~AddressesModel445aa6() { callbackAddressesModel445aa6_DestroyAddressesModel(this); };
 	bool dropMimeData(const QMimeData * data, Qt::DropAction action, int row, int column, const QModelIndex & parent) { return callbackAddressesModel445aa6_DropMimeData(this, const_cast<QMimeData*>(data), action, row, column, const_cast<QModelIndex*>(&parent)) != 0; };
 	Qt::ItemFlags flags(const QModelIndex & index) const { return static_cast<Qt::ItemFlag>(callbackAddressesModel445aa6_Flags(const_cast<void*>(static_cast<const void*>(this)), const_cast<QModelIndex*>(&index))); };
@@ -230,29 +304,25 @@ public:
 	void setRolesDefault(type378cdd p) { if (p != _roles) { _roles = p; rolesChanged(_roles); } };
 	QList<QAddress445aa6*> addressesDefault() { return _addresses; };
 	void setAddressesDefault(QList<QAddress445aa6*> p) { if (p != _addresses) { _addresses = p; addressesChanged(_addresses); } };
-	qint32 loadedDefault() { return _loaded; };
-	void setLoadedDefault(qint32 p) { if (p != _loaded) { _loaded = p; loadedChanged(_loaded); } };
 signals:
 	void rolesChanged(type378cdd roles);
 	void addressesChanged(QList<QAddress445aa6*> addresses);
-	void loadedChanged(qint32 loaded);
 public slots:
 	void addAddress(QAddress445aa6* v0) { callbackAddressesModel445aa6_AddAddress(this, v0); };
 	void removeAddress(qint32 v0) { callbackAddressesModel445aa6_RemoveAddress(this, v0); };
 	void editAddress(qint32 v0, QString v1, quint64 v2, quint64 v3) { QByteArray t5a6df7 = v1.toUtf8(); Moc_PackedString v1Packed = { const_cast<char*>(t5a6df7.prepend("WHITESPACE").constData()+10), t5a6df7.size()-10 };callbackAddressesModel445aa6_EditAddress(this, v0, v1Packed, v2, v3); };
-	void loadModel(QString v0) { QByteArray tea1dd7 = v0.toUtf8(); Moc_PackedString v0Packed = { const_cast<char*>(tea1dd7.prepend("WHITESPACE").constData()+10), tea1dd7.size()-10 };callbackAddressesModel445aa6_LoadModel(this, v0Packed); };
+	void loadModel(QList<QAddress445aa6*> v0) { callbackAddressesModel445aa6_LoadModel(this, ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(v0); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 private:
 	type378cdd _roles;
 	QList<QAddress445aa6*> _addresses;
-	qint32 _loaded;
 };
 
 Q_DECLARE_METATYPE(AddressesModel445aa6*)
 
 
 void AddressesModel445aa6_AddressesModel445aa6_QRegisterMetaTypes() {
-	qRegisterMetaType<type378cdd>("type378cdd");
 	qRegisterMetaType<QList<QObject*>>("QList<QAddress445aa6*>");
+	qRegisterMetaType<type378cdd>("type378cdd");
 }
 
 class QAddress445aa6: public QObject
@@ -304,74 +374,6 @@ Q_DECLARE_METATYPE(QAddress445aa6*)
 
 
 void QAddress445aa6_QAddress445aa6_QRegisterMetaTypes() {
-	qRegisterMetaType<QString>();
-}
-
-class QWallet445aa6: public QObject
-{
-Q_OBJECT
-Q_PROPERTY(QString name READ name WRITE setName NOTIFY nameChanged)
-Q_PROPERTY(qint32 encryptionEnabled READ encryptionEnabled WRITE setEncryptionEnabled NOTIFY encryptionEnabledChanged)
-Q_PROPERTY(quint64 sky READ sky WRITE setSky NOTIFY skyChanged)
-Q_PROPERTY(quint64 coinHours READ coinHours WRITE setCoinHours NOTIFY coinHoursChanged)
-Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
-public:
-	QWallet445aa6(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");QWallet445aa6_QWallet445aa6_QRegisterMetaType();QWallet445aa6_QWallet445aa6_QRegisterMetaTypes();callbackQWallet445aa6_Constructor(this);};
-	QString name() { return ({ Moc_PackedString tempVal = callbackQWallet445aa6_Name(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
-	void setName(QString name) { QByteArray t6ae999 = name.toUtf8(); Moc_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackQWallet445aa6_SetName(this, namePacked); };
-	void Signal_NameChanged(QString name) { QByteArray t6ae999 = name.toUtf8(); Moc_PackedString namePacked = { const_cast<char*>(t6ae999.prepend("WHITESPACE").constData()+10), t6ae999.size()-10 };callbackQWallet445aa6_NameChanged(this, namePacked); };
-	qint32 encryptionEnabled() { return callbackQWallet445aa6_EncryptionEnabled(this); };
-	void setEncryptionEnabled(qint32 encryptionEnabled) { callbackQWallet445aa6_SetEncryptionEnabled(this, encryptionEnabled); };
-	void Signal_EncryptionEnabledChanged(qint32 encryptionEnabled) { callbackQWallet445aa6_EncryptionEnabledChanged(this, encryptionEnabled); };
-	quint64 sky() { return callbackQWallet445aa6_Sky(this); };
-	void setSky(quint64 sky) { callbackQWallet445aa6_SetSky(this, sky); };
-	void Signal_SkyChanged(quint64 sky) { callbackQWallet445aa6_SkyChanged(this, sky); };
-	quint64 coinHours() { return callbackQWallet445aa6_CoinHours(this); };
-	void setCoinHours(quint64 coinHours) { callbackQWallet445aa6_SetCoinHours(this, coinHours); };
-	void Signal_CoinHoursChanged(quint64 coinHours) { callbackQWallet445aa6_CoinHoursChanged(this, coinHours); };
-	QString fileName() { return ({ Moc_PackedString tempVal = callbackQWallet445aa6_FileName(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
-	void setFileName(QString fileName) { QByteArray td83e09 = fileName.toUtf8(); Moc_PackedString fileNamePacked = { const_cast<char*>(td83e09.prepend("WHITESPACE").constData()+10), td83e09.size()-10 };callbackQWallet445aa6_SetFileName(this, fileNamePacked); };
-	void Signal_FileNameChanged(QString fileName) { QByteArray td83e09 = fileName.toUtf8(); Moc_PackedString fileNamePacked = { const_cast<char*>(td83e09.prepend("WHITESPACE").constData()+10), td83e09.size()-10 };callbackQWallet445aa6_FileNameChanged(this, fileNamePacked); };
-	 ~QWallet445aa6() { callbackQWallet445aa6_DestroyQWallet(this); };
-	void childEvent(QChildEvent * event) { callbackQWallet445aa6_ChildEvent(this, event); };
-	void connectNotify(const QMetaMethod & sign) { callbackQWallet445aa6_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	void customEvent(QEvent * event) { callbackQWallet445aa6_CustomEvent(this, event); };
-	void deleteLater() { callbackQWallet445aa6_DeleteLater(this); };
-	void Signal_Destroyed(QObject * obj) { callbackQWallet445aa6_Destroyed(this, obj); };
-	void disconnectNotify(const QMetaMethod & sign) { callbackQWallet445aa6_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	bool event(QEvent * e) { return callbackQWallet445aa6_Event(this, e) != 0; };
-	bool eventFilter(QObject * watched, QEvent * event) { return callbackQWallet445aa6_EventFilter(this, watched, event) != 0; };
-	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackQWallet445aa6_ObjectNameChanged(this, objectNamePacked); };
-	void timerEvent(QTimerEvent * event) { callbackQWallet445aa6_TimerEvent(this, event); };
-	QString nameDefault() { return _name; };
-	void setNameDefault(QString p) { if (p != _name) { _name = p; nameChanged(_name); } };
-	qint32 encryptionEnabledDefault() { return _encryptionEnabled; };
-	void setEncryptionEnabledDefault(qint32 p) { if (p != _encryptionEnabled) { _encryptionEnabled = p; encryptionEnabledChanged(_encryptionEnabled); } };
-	quint64 skyDefault() { return _sky; };
-	void setSkyDefault(quint64 p) { if (p != _sky) { _sky = p; skyChanged(_sky); } };
-	quint64 coinHoursDefault() { return _coinHours; };
-	void setCoinHoursDefault(quint64 p) { if (p != _coinHours) { _coinHours = p; coinHoursChanged(_coinHours); } };
-	QString fileNameDefault() { return _fileName; };
-	void setFileNameDefault(QString p) { if (p != _fileName) { _fileName = p; fileNameChanged(_fileName); } };
-signals:
-	void nameChanged(QString name);
-	void encryptionEnabledChanged(qint32 encryptionEnabled);
-	void skyChanged(quint64 sky);
-	void coinHoursChanged(quint64 coinHours);
-	void fileNameChanged(QString fileName);
-public slots:
-private:
-	QString _name;
-	qint32 _encryptionEnabled;
-	quint64 _sky;
-	quint64 _coinHours;
-	QString _fileName;
-};
-
-Q_DECLARE_METATYPE(QWallet445aa6*)
-
-
-void QWallet445aa6_QWallet445aa6_QRegisterMetaTypes() {
 	qRegisterMetaType<QString>();
 }
 
@@ -829,6 +831,41 @@ void QWallet445aa6_FileNameChanged(void* ptr, struct Moc_PackedString fileName)
 	static_cast<QWallet445aa6*>(ptr)->fileNameChanged(QString::fromUtf8(fileName.data, fileName.len));
 }
 
+struct Moc_PackedList QWallet445aa6_Addresses(void* ptr)
+{
+	return ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(static_cast<QWallet445aa6*>(ptr)->addresses()); Moc_PackedList { tmpValue, tmpValue->size() }; });
+}
+
+struct Moc_PackedList QWallet445aa6_AddressesDefault(void* ptr)
+{
+	return ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(static_cast<QWallet445aa6*>(ptr)->addressesDefault()); Moc_PackedList { tmpValue, tmpValue->size() }; });
+}
+
+void QWallet445aa6_SetAddresses(void* ptr, void* addresses)
+{
+	static_cast<QWallet445aa6*>(ptr)->setAddresses(({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(addresses); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
+}
+
+void QWallet445aa6_SetAddressesDefault(void* ptr, void* addresses)
+{
+	static_cast<QWallet445aa6*>(ptr)->setAddressesDefault(({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(addresses); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
+}
+
+void QWallet445aa6_ConnectAddressesChanged(void* ptr)
+{
+	QObject::connect(static_cast<QWallet445aa6*>(ptr), static_cast<void (QWallet445aa6::*)(QList<QAddress445aa6*>)>(&QWallet445aa6::addressesChanged), static_cast<QWallet445aa6*>(ptr), static_cast<void (QWallet445aa6::*)(QList<QAddress445aa6*>)>(&QWallet445aa6::Signal_AddressesChanged));
+}
+
+void QWallet445aa6_DisconnectAddressesChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QWallet445aa6*>(ptr), static_cast<void (QWallet445aa6::*)(QList<QAddress445aa6*>)>(&QWallet445aa6::addressesChanged), static_cast<QWallet445aa6*>(ptr), static_cast<void (QWallet445aa6::*)(QList<QAddress445aa6*>)>(&QWallet445aa6::Signal_AddressesChanged));
+}
+
+void QWallet445aa6_AddressesChanged(void* ptr, void* addresses)
+{
+	static_cast<QWallet445aa6*>(ptr)->addressesChanged(({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(addresses); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
+}
+
 int QWallet445aa6_QWallet445aa6_QRegisterMetaType()
 {
 	return qRegisterMetaType<QWallet445aa6*>();
@@ -937,6 +974,54 @@ void* QWallet445aa6___qFindChildren_newList2(void* ptr)
 	return new QList<QObject*>();
 }
 
+void* QWallet445aa6___addresses_atList(void* ptr, int i)
+{
+	return ({QAddress445aa6* tmp = static_cast<QList<QAddress445aa6*>*>(ptr)->at(i); if (i == static_cast<QList<QAddress445aa6*>*>(ptr)->size()-1) { static_cast<QList<QAddress445aa6*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void QWallet445aa6___addresses_setList(void* ptr, void* i)
+{
+	static_cast<QList<QAddress445aa6*>*>(ptr)->append(static_cast<QAddress445aa6*>(i));
+}
+
+void* QWallet445aa6___addresses_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QAddress445aa6*>();
+}
+
+void* QWallet445aa6___setAddresses_addresses_atList(void* ptr, int i)
+{
+	return ({QAddress445aa6* tmp = static_cast<QList<QAddress445aa6*>*>(ptr)->at(i); if (i == static_cast<QList<QAddress445aa6*>*>(ptr)->size()-1) { static_cast<QList<QAddress445aa6*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void QWallet445aa6___setAddresses_addresses_setList(void* ptr, void* i)
+{
+	static_cast<QList<QAddress445aa6*>*>(ptr)->append(static_cast<QAddress445aa6*>(i));
+}
+
+void* QWallet445aa6___setAddresses_addresses_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QAddress445aa6*>();
+}
+
+void* QWallet445aa6___addressesChanged_addresses_atList(void* ptr, int i)
+{
+	return ({QAddress445aa6* tmp = static_cast<QList<QAddress445aa6*>*>(ptr)->at(i); if (i == static_cast<QList<QAddress445aa6*>*>(ptr)->size()-1) { static_cast<QList<QAddress445aa6*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void QWallet445aa6___addressesChanged_addresses_setList(void* ptr, void* i)
+{
+	static_cast<QList<QAddress445aa6*>*>(ptr)->append(static_cast<QAddress445aa6*>(i));
+}
+
+void* QWallet445aa6___addressesChanged_addresses_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QAddress445aa6*>();
+}
+
 void* QWallet445aa6_NewQWallet(void* parent)
 {
 	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
@@ -1008,9 +1093,9 @@ void WalletModel445aa6_AddWallet(void* ptr, void* v0)
 	QMetaObject::invokeMethod(static_cast<WalletModel445aa6*>(ptr), "addWallet", Q_ARG(QWallet445aa6*, static_cast<QWallet445aa6*>(v0)));
 }
 
-void WalletModel445aa6_EditWallet(void* ptr, int row, struct Moc_PackedString name, char encryptionEnabled, unsigned long long sky, unsigned long long coinHours)
+void WalletModel445aa6_EditWallet(void* ptr, int row, struct Moc_PackedString name, char encryptionEnabled, unsigned long long sky, unsigned long long coinHours, void* addresses)
 {
-	QMetaObject::invokeMethod(static_cast<WalletModel445aa6*>(ptr), "editWallet", Q_ARG(qint32, row), Q_ARG(QString, QString::fromUtf8(name.data, name.len)), Q_ARG(bool, encryptionEnabled != 0), Q_ARG(quint64, sky), Q_ARG(quint64, coinHours));
+	QMetaObject::invokeMethod(static_cast<WalletModel445aa6*>(ptr), "editWallet", Q_ARG(qint32, row), Q_ARG(QString, QString::fromUtf8(name.data, name.len)), Q_ARG(bool, encryptionEnabled != 0), Q_ARG(quint64, sky), Q_ARG(quint64, coinHours), Q_ARG(QList<QAddress445aa6*>, ({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(addresses); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; })));
 }
 
 void WalletModel445aa6_RemoveWallet(void* ptr, int row)
@@ -1507,6 +1592,22 @@ void* WalletModel445aa6___qFindChildren_newList2(void* ptr)
 	return new QList<QObject*>();
 }
 
+void* WalletModel445aa6___editWallet_addresses_atList(void* ptr, int i)
+{
+	return ({QAddress445aa6* tmp = static_cast<QList<QAddress445aa6*>*>(ptr)->at(i); if (i == static_cast<QList<QAddress445aa6*>*>(ptr)->size()-1) { static_cast<QList<QAddress445aa6*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void WalletModel445aa6___editWallet_addresses_setList(void* ptr, void* i)
+{
+	static_cast<QList<QAddress445aa6*>*>(ptr)->append(static_cast<QAddress445aa6*>(i));
+}
+
+void* WalletModel445aa6___editWallet_addresses_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QAddress445aa6*>();
+}
+
 void* WalletModel445aa6___loadModel_v0_atList(void* ptr, int i)
 {
 	return ({QWallet445aa6* tmp = static_cast<QList<QWallet445aa6*>*>(ptr)->at(i); if (i == static_cast<QList<QWallet445aa6*>*>(ptr)->size()-1) { static_cast<QList<QWallet445aa6*>*>(ptr)->~QList(); free(ptr); }; tmp; });
@@ -1943,9 +2044,9 @@ void AddressesModel445aa6_EditAddress(void* ptr, int v0, struct Moc_PackedString
 	QMetaObject::invokeMethod(static_cast<AddressesModel445aa6*>(ptr), "editAddress", Q_ARG(qint32, v0), Q_ARG(QString, QString::fromUtf8(v1.data, v1.len)), Q_ARG(quint64, v2), Q_ARG(quint64, v3));
 }
 
-void AddressesModel445aa6_LoadModel(void* ptr, struct Moc_PackedString v0)
+void AddressesModel445aa6_LoadModel(void* ptr, void* v0)
 {
-	QMetaObject::invokeMethod(static_cast<AddressesModel445aa6*>(ptr), "loadModel", Q_ARG(QString, QString::fromUtf8(v0.data, v0.len)));
+	QMetaObject::invokeMethod(static_cast<AddressesModel445aa6*>(ptr), "loadModel", Q_ARG(QList<QAddress445aa6*>, ({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(v0); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; })));
 }
 
 struct Moc_PackedList AddressesModel445aa6_Roles(void* ptr)
@@ -2016,41 +2117,6 @@ void AddressesModel445aa6_DisconnectAddressesChanged(void* ptr)
 void AddressesModel445aa6_AddressesChanged(void* ptr, void* addresses)
 {
 	static_cast<AddressesModel445aa6*>(ptr)->addressesChanged(({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(addresses); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }));
-}
-
-int AddressesModel445aa6_Loaded(void* ptr)
-{
-	return static_cast<AddressesModel445aa6*>(ptr)->loaded();
-}
-
-int AddressesModel445aa6_LoadedDefault(void* ptr)
-{
-	return static_cast<AddressesModel445aa6*>(ptr)->loadedDefault();
-}
-
-void AddressesModel445aa6_SetLoaded(void* ptr, int loaded)
-{
-	static_cast<AddressesModel445aa6*>(ptr)->setLoaded(loaded);
-}
-
-void AddressesModel445aa6_SetLoadedDefault(void* ptr, int loaded)
-{
-	static_cast<AddressesModel445aa6*>(ptr)->setLoadedDefault(loaded);
-}
-
-void AddressesModel445aa6_ConnectLoadedChanged(void* ptr)
-{
-	QObject::connect(static_cast<AddressesModel445aa6*>(ptr), static_cast<void (AddressesModel445aa6::*)(qint32)>(&AddressesModel445aa6::loadedChanged), static_cast<AddressesModel445aa6*>(ptr), static_cast<void (AddressesModel445aa6::*)(qint32)>(&AddressesModel445aa6::Signal_LoadedChanged));
-}
-
-void AddressesModel445aa6_DisconnectLoadedChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<AddressesModel445aa6*>(ptr), static_cast<void (AddressesModel445aa6::*)(qint32)>(&AddressesModel445aa6::loadedChanged), static_cast<AddressesModel445aa6*>(ptr), static_cast<void (AddressesModel445aa6::*)(qint32)>(&AddressesModel445aa6::Signal_LoadedChanged));
-}
-
-void AddressesModel445aa6_LoadedChanged(void* ptr, int loaded)
-{
-	static_cast<AddressesModel445aa6*>(ptr)->loadedChanged(loaded);
 }
 
 int AddressesModel445aa6_AddressesModel445aa6_QRegisterMetaType()
@@ -2430,6 +2496,22 @@ void* AddressesModel445aa6___qFindChildren_newList2(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QObject*>();
+}
+
+void* AddressesModel445aa6___loadModel_v0_atList(void* ptr, int i)
+{
+	return ({QAddress445aa6* tmp = static_cast<QList<QAddress445aa6*>*>(ptr)->at(i); if (i == static_cast<QList<QAddress445aa6*>*>(ptr)->size()-1) { static_cast<QList<QAddress445aa6*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void AddressesModel445aa6___loadModel_v0_setList(void* ptr, void* i)
+{
+	static_cast<QList<QAddress445aa6*>*>(ptr)->append(static_cast<QAddress445aa6*>(i));
+}
+
+void* AddressesModel445aa6___loadModel_v0_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QAddress445aa6*>();
 }
 
 void* AddressesModel445aa6___roles_atList(void* ptr, int v, int i)

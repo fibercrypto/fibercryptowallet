@@ -22,6 +22,11 @@
 	#include <QQmlEngine>
 #endif
 
+class QAddress445aa6: public QObject{
+public:
+	QAddress445aa6(QObject *parent) : QObject(parent) {};
+
+};
 class QWallet445aa6: public QObject{
 public:
 	QWallet445aa6(QObject *parent) : QObject(parent) {};
@@ -54,6 +59,7 @@ public slots:
 	void encryptWallet(QString id, QString password) { QByteArray t87ea5d = id.toUtf8(); Moc_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };QByteArray t5baa61 = password.toUtf8(); Moc_PackedString passwordPacked = { const_cast<char*>(t5baa61.prepend("WHITESPACE").constData()+10), t5baa61.size()-10 };callbackWalletManager64bdd5_EncryptWallet(this, idPacked, passwordPacked); };
 	void decryptWallet(QString id, QString password) { QByteArray t87ea5d = id.toUtf8(); Moc_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };QByteArray t5baa61 = password.toUtf8(); Moc_PackedString passwordPacked = { const_cast<char*>(t5baa61.prepend("WHITESPACE").constData()+10), t5baa61.size()-10 };callbackWalletManager64bdd5_DecryptWallet(this, idPacked, passwordPacked); };
 	QList<QWallet445aa6*> getWallets() { return ({ QList<QWallet445aa6*>* tmpP = static_cast<QList<QWallet445aa6*>*>(callbackWalletManager64bdd5_GetWallets(this)); QList<QWallet445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	QList<QAddress445aa6*> getAddresses(QString id) { QByteArray t87ea5d = id.toUtf8(); Moc_PackedString idPacked = { const_cast<char*>(t87ea5d.prepend("WHITESPACE").constData()+10), t87ea5d.size()-10 };return ({ QList<QAddress445aa6*>* tmpP = static_cast<QList<QAddress445aa6*>*>(callbackWalletManager64bdd5_GetAddresses(this, idPacked)); QList<QAddress445aa6*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 private:
 };
 
@@ -62,6 +68,7 @@ Q_DECLARE_METATYPE(WalletManager64bdd5*)
 
 void WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaTypes() {
 	qRegisterMetaType<QList<QObject*>>("QList<QWallet445aa6*>");
+	qRegisterMetaType<QList<QObject*>>("QList<QAddress445aa6*>");
 }
 
 void* WalletManager64bdd5_CreateEncryptedWallet(void* ptr, struct Moc_PackedString seed, struct Moc_PackedString label, struct Moc_PackedString password, int scanN)
@@ -112,6 +119,13 @@ struct Moc_PackedList WalletManager64bdd5_GetWallets(void* ptr)
 	QList<QWallet445aa6*> returnArg;
 	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "getWallets", Q_RETURN_ARG(QList<QWallet445aa6*>, returnArg));
 	return ({ QList<QWallet445aa6*>* tmpValue = new QList<QWallet445aa6*>(returnArg); Moc_PackedList { tmpValue, tmpValue->size() }; });
+}
+
+struct Moc_PackedList WalletManager64bdd5_GetAddresses(void* ptr, struct Moc_PackedString id)
+{
+	QList<QAddress445aa6*> returnArg;
+	QMetaObject::invokeMethod(static_cast<WalletManager64bdd5*>(ptr), "getAddresses", Q_RETURN_ARG(QList<QAddress445aa6*>, returnArg), Q_ARG(QString, QString::fromUtf8(id.data, id.len)));
+	return ({ QList<QAddress445aa6*>* tmpValue = new QList<QAddress445aa6*>(returnArg); Moc_PackedList { tmpValue, tmpValue->size() }; });
 }
 
 int WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType()
@@ -236,6 +250,22 @@ void* WalletManager64bdd5___getWallets_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<QWallet445aa6*>();
+}
+
+void* WalletManager64bdd5___getAddresses_atList(void* ptr, int i)
+{
+	return ({QAddress445aa6* tmp = static_cast<QList<QAddress445aa6*>*>(ptr)->at(i); if (i == static_cast<QList<QAddress445aa6*>*>(ptr)->size()-1) { static_cast<QList<QAddress445aa6*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void WalletManager64bdd5___getAddresses_setList(void* ptr, void* i)
+{
+	static_cast<QList<QAddress445aa6*>*>(ptr)->append(static_cast<QAddress445aa6*>(i));
+}
+
+void* WalletManager64bdd5___getAddresses_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QAddress445aa6*>();
 }
 
 void* WalletManager64bdd5_NewWalletManager(void* parent)

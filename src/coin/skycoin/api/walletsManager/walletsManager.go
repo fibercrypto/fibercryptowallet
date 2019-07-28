@@ -25,6 +25,7 @@ type WalletManager struct {
 	_ func(id string, password string)                                             `slot:"encryptWallet"`
 	_ func(id string, password string)                                             `slot:"decryptWallet"`
 	_ func() []*wallets.QWallet                                                    `slot:"getWallets"`
+	_ func(id string) []*wallets.QAddress                                          `slot:"getAddresses"`
 }
 
 func (walletM *WalletManager) init() {
@@ -36,6 +37,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectEncryptWallet(walletM.encryptWallet)
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 	walletM.ConnectGetWallets(walletM.getWallets)
+	walletM.ConnectGetAddresses(walletM.getAddresses)
 
 	walletM.WalletEnv = new(api.WalletNode)
 	walletM.SeedGenerator = new(api.SeedService)
@@ -136,6 +138,33 @@ func (walletM *WalletManager) getWallets() []*wallets.QWallet {
 	return qwallets
 }
 
+func (walletM *WalletManager) getAddresses(Id string) []*wallets.QAddress {
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
+	qaddresses := make([]*wallets.QAddress, 0)
+	it, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	for it.Next() {
+		addr := it.Value()
+		qaddress := wallets.NewQAddress(nil)
+		qaddress.SetAddress(addr.String())
+		sky, err := addr.GetCryptoAccount().GetBalance("Sky")
+		if err != nil {
+			continue
+		}
+		qaddress.SetAddressSky(sky)
+		coinH, err := addr.GetCryptoAccount().GetBalance("CoinHour")
+		if err != nil {
+			continue
+		}
+		qaddress.SetAddressCoinHours(coinH)
+		qaddresses = append(qaddresses, qaddress)
+
+	}
+	return qaddresses
+}
+
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
 	qwallet := wallets.NewQWallet(nil)
 	qwallet.SetName(wlt.GetLabel())
@@ -161,11 +190,22 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
 	}
 	for it.Next() {
 		addr := it.Value()
-		qaddress := new(wallets.QAddress)
+		qaddress := wallets.NewQAddress(nil)
 		qaddress.SetAddress(addr.String())
-		qaddress.SetAddressSky(addr.GetCryptoAccount().GetBalance("Sky"))
-		qaddress.SetAddressCoinHours(addr.GetCryptoAccount().GetBalance("CoinHour"))
+		sky, err := addr.GetCryptoAccount().GetBalance("Sky")
+		if err != nil {
+			continue
+		}
+		qaddress.SetAddressSky(sky)
+		coinH, err := addr.GetCryptoAccount().GetBalance("CoinHour")
+		if err != nil {
+			continue
+		}
+		qaddress.SetAddressCoinHours(coinH)
 		qaddresses = append(qaddresses, qaddress)
+
 	}
+	qwallet.SetAddresses(qaddresses)
+
 	return qwallet
 }

@@ -71,10 +71,7 @@ Item {
             }
 
             onClicked: {
-                if (!listAddresses.loaded){
-                    listAddresses.loadModel(fileName)
-                }
-                
+                        
                 expanded = !expanded
             }
         } // ItemDelegate
@@ -103,14 +100,20 @@ Item {
 
     AddressModel {
         id: listAddresses
+        property Timer timer: Timer {
+                                id: addressModelTimer
+                                interval: 0
+                                repeat: false
+                                running: true
+                                onTriggered: {
+                                    listAddresses.loadModel(walletManager.getAddresses(fileName))
+                                    addressModelTimer.running = false 
+                                       
+                                    }
+                            }
     }
 
-    Timer {
-        interval: 10000
-        repeat: true
-        running: true
-        onTriggered: listAddresses.loadModel(filename)
-    }
+    
 
      //Roles: address, addressSky, addressCoinHours
      //Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )

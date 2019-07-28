@@ -118,7 +118,6 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 }
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
-
 	addresses := make([]*QAddress, 0)
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")

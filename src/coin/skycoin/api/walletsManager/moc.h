@@ -23,6 +23,7 @@ void WalletManager64bdd5_NewWalletAddress(void* ptr, struct Moc_PackedString id,
 void WalletManager64bdd5_EncryptWallet(void* ptr, struct Moc_PackedString id, struct Moc_PackedString password);
 void WalletManager64bdd5_DecryptWallet(void* ptr, struct Moc_PackedString id, struct Moc_PackedString password);
 struct Moc_PackedList WalletManager64bdd5_GetWallets(void* ptr);
+struct Moc_PackedList WalletManager64bdd5_GetAddresses(void* ptr, struct Moc_PackedString id);
 int WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType();
 int WalletManager64bdd5_WalletManager64bdd5_QRegisterMetaType2(char* typeName);
 int WalletManager64bdd5_WalletManager64bdd5_QmlRegisterType();
@@ -45,6 +46,9 @@ void* WalletManager64bdd5___qFindChildren_newList2(void* ptr);
 void* WalletManager64bdd5___getWallets_atList(void* ptr, int i);
 void WalletManager64bdd5___getWallets_setList(void* ptr, void* i);
 void* WalletManager64bdd5___getWallets_newList(void* ptr);
+void* WalletManager64bdd5___getAddresses_atList(void* ptr, int i);
+void WalletManager64bdd5___getAddresses_setList(void* ptr, void* i);
+void* WalletManager64bdd5___getAddresses_newList(void* ptr);
 void* WalletManager64bdd5_NewWalletManager(void* parent);
 void WalletManager64bdd5_DestroyWalletManager(void* ptr);
 void WalletManager64bdd5_DestroyWalletManagerDefault(void* ptr);
