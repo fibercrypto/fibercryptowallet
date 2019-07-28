@@ -6,95 +6,22 @@ import QtQuick.Layouts 1.12
 Item {
     id: root
 
-    readonly property bool itemVisible: index === 0 || addressSky > 0 || emptyAddressVisible
-    property bool showOnlyAddresses: false
-
-    signal addAddressesRequested()
-    signal editWalletRequested()
-
-    visible: itemVisible || opacity > 0.0
-    opacity: itemVisible ? 1.0 : 0.0
-
     Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutQuint } }
-
-    RowLayout {
-        id: delegateAddressMenuRowLayout
-        anchors.fill: parent
-        anchors.leftMargin: listWalletLeftMargin
-        anchors.rightMargin: listWalletRightMargin
-        spacing: listWalletSpacing
-        visible: index === 0 && !showOnlyAddresses
-
-        ToolButton {
-            id: buttonAddAddress
-            text: qsTr("Add wallet")
-            icon.source: "qrc:/images/resources/images/icons/add.svg"
-            Material.foreground: Material.Teal
-            Layout.fillWidth: true
-
-            onClicked: {
-                addAddressesRequested()
-            }
-        }
-        ToolButton {
-            id: buttonToggleVisibility
-            text: qsTr("Show empty")
-            checkable: true
-            checked: emptyAddressVisible
-            icon.source: "qrc:/images/resources/images/icons/visible" + (checked ? "On" : "Off") + ".svg"
-            Material.accent: Material.Indigo
-            Material.foreground: Material.Grey
-            Layout.fillWidth: true
-
-            onCheckedChanged: {
-                emptyAddressVisible = checked
-            }
-        }
-        ToolButton {
-            id: buttonToggleEncryption
-            text: qsTr("Encrypt wallet")
-            checkable: true
-            checked: encryptionEnabled
-            icon.source: "qrc:/images/resources/images/icons/lock" + (checked ? "On" : "Off") + ".svg"
-            Material.accent: Material.Amber
-            Material.foreground: Material.Grey
-            Layout.fillWidth: true
-
-            onCheckedChanged: {
-                encryptionEnabled = checked
-            }
-        }
-        ToolButton {
-            id: buttonEdit
-            text: qsTr("Edit wallet")
-            icon.source: "qrc:/images/resources/images/icons/edit.svg"
-            Material.foreground: Material.Blue
-            Layout.fillWidth: true
-
-            onClicked: {
-                editWalletRequested()
-            }
-        }
-    } // RowLayout (menu)
 
     RowLayout {
         id: delegateAddressRowLayout
         anchors.fill: parent
-        anchors.leftMargin: listWalletLeftMargin
-        anchors.rightMargin: listWalletRightMargin
-        spacing: listWalletSpacing
-        visible: root.visible && index > 0
+        anchors.leftMargin: listOutputsLeftMargin
+        anchors.rightMargin: listOutputsRightMargin
+        spacing: listOutputsSpacing
 
         Label {
             id: labelNumber
-            visible:  !showOnlyAddresses
-            text: index
+            text: index + 1
         }
 
         Image {
             id: qrIcon
-            visible:  !showOnlyAddresses
             source: "qrc:/images/resources/images/icons/qr.svg"
             sourceSize: "16x16"
         }
@@ -108,7 +35,6 @@ Item {
             }
             ToolButton {
                 id: toolButtonCopy
-                visible:  !showOnlyAddresses
                 icon.source: "qrc:/images/resources/images/icons/copy.svg"
                 Layout.alignment: Qt.AlignLeft
                 ToolTip.text: qsTr("Copy to clipboard")
@@ -118,7 +44,6 @@ Item {
                 Image {
                     id: imageCopied
                     anchors.centerIn: parent
-                    visible:  !showOnlyAddresses
                     source: "qrc:/images/resources/images/icons/check-simple.svg"
                     fillMode: Image.PreserveAspectFit
                     sourceSize: Qt.size(toolButtonCopy.icon.width*1.5, toolButtonCopy.icon.height*1.5)
@@ -147,14 +72,12 @@ Item {
             } // ToolButton
             Rectangle {
                 id: spacer
-                visible:  !showOnlyAddresses
                 Layout.fillWidth: true
             }
         }
 
         Label {
             id: labelAddressSky
-            visible:  !showOnlyAddresses
             text: addressSky // a role of the model
             color: Material.accent
             horizontalAlignment: Text.AlignRight
@@ -163,7 +86,6 @@ Item {
 
         Label {
             id: labelAddressCoins
-            visible:  !showOnlyAddresses
             text: addressCoinHours // a role of the model
             horizontalAlignment: Text.AlignRight
             Layout.preferredWidth: internalLabelsWidth
