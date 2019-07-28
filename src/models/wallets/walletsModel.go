@@ -1,8 +1,6 @@
 package wallets
 
 import (
-	pluginutil "github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/skycoin/skycoin/src/api"
 	"github.com/therecipe/qt/core"
 )
 
@@ -25,7 +23,7 @@ type WalletModel struct {
 	_ func(*QWallet)                                                            `slot:"addWallet"`
 	_ func(row int, name string, encryptionEnabled bool, sky, coinHours uint64) `slot:"editWallet"`
 	_ func(row int)                                                             `slot:"removeWallet"`
-	_ func()                                                                    `slot:"loadModel"`
+	_ func([]*QWallet)                                                          `slot:"loadModel"`
 	_ int                                                                       `property:"count"`
 }
 
@@ -147,32 +145,10 @@ func (m *WalletModel) removeWallet(row int) {
 
 }
 
-func getWalletsModel() ([]*QWallet, error) {
-	c := pluginutil.NewClient()
-	wallets, err := c.Wallets()
-	if err != nil {
-		return nil, err
-	}
-	walletsModels := make([]*QWallet, 0)
-	for _, w := range wallets {
-		wlt, err := WalletResponseToQWallet(&w)
-		if err != nil {
-			return nil, err
-		}
-		walletsModels = append(walletsModels, wlt)
-	}
-	return walletsModels, nil
-
-}
-
-func (m *WalletModel) loadModel() {
-	wltsModels, err := getWalletsModel()
-	if err != nil {
-		return
-	}
+func (m *WalletModel) loadModel(wallets []*QWallet) {
 
 	m.BeginResetModel()
-	m.SetWallets(wltsModels)
+	m.SetWallets(wallets)
 	m.EndResetModel()
 	m.updateCount()
 
@@ -180,23 +156,4 @@ func (m *WalletModel) loadModel() {
 
 func (m *WalletModel) updateCount() {
 	m.SetCount(len(m.Wallets()))
-}
-
-func WalletResponseToQWallet(wr *api.WalletResponse) (*QWallet, error) {
-	c := pluginutil.NewClient()
-	qwallet := NewQWallet(nil)
-	qwallet.SetFileName(wr.Meta.Filename)
-	qwallet.SetName(wr.Meta.Label)
-	qwallet.SetEncryptionEnabled(0)
-	if wr.Meta.Encrypted {
-		qwallet.SetEncryptionEnabled(1)
-	}
-	bl, err := c.WalletBalance(wr.Meta.Filename)
-	if err != nil {
-		return nil, err
-	}
-	qwallet.SetSky(bl.Confirmed.Coins)
-	qwallet.SetCoinHours(bl.Confirmed.Hours)
-	return qwallet, nil
-
 }
