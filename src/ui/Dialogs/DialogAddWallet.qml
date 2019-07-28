@@ -13,7 +13,7 @@ Dialog {
     standardButtons: Dialog.Ok | Dialog.Cancel
 
     onAboutToShow: {
-        textFieldName.forceActiveFocus()
+        createLoadWallet.clear()
     }
 
     ColumnLayout {
