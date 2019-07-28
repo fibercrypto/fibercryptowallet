@@ -5,7 +5,9 @@ import QtQuick.Layouts 1.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: root
@@ -62,6 +64,10 @@ Page {
                 text: qsTr("Add wallet")
                 icon.source: "qrc:/images/resources/images/icons/add.svg"
                 Layout.fillWidth: true
+
+                onClicked: {
+                    dialogAddWallet.open()
+                }
             }
             ToolButton {
                 id: buttonLoadWallet
@@ -83,6 +89,17 @@ Page {
             model: listWallets
             delegate: WalletListDelegate {}
         }
+    }
+
+    DialogAddWallet {
+        id: dialogAddWallet
+        anchors.centerIn: Overlay.overlay
+
+        modal: true
+        focus: true
+
+        width: 500
+        height: 400
     }
 
     // Roles: name, encryptionEnabled, sky, coinHours
