@@ -1,7 +1,6 @@
 package wallets
 
 import (
-	pluginutil "github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/therecipe/qt/core"
 )
 
@@ -22,7 +21,7 @@ type AddressesModel struct {
 	_ func(*QAddress)                   `slot:"addAddress"`
 	_ func(int)                         `slot:"removeAddress"`
 	_ func(int, string, uint64, uint64) `slot:"editAddress"`
-	_ func([]*QAddress)                      `slot:"loadModel"`
+	_ func([]*QAddress)                 `slot:"loadModel"`
 }
 
 type QAddress struct {
@@ -118,9 +117,8 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 	m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
 }
 
-func (m *AddressesModel) loadModel(Qaddresses[]*QAddress]) {
+func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
 
-	
 	addresses := make([]*QAddress, 0)
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")
@@ -133,8 +131,4 @@ func (m *AddressesModel) loadModel(Qaddresses[]*QAddress]) {
 	m.SetAddresses(addresses)
 	m.EndResetModel()
 
-	
-
 }
-
-
