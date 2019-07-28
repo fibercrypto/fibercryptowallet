@@ -75,3 +75,11 @@ func (wltSrv *WalletService) IsEncrypted(walletName string) (bool, error) {
 	}
 	return wlt.Meta.Encrypted, nil
 }
+func (wltSrv *WalletService) GetWallet(id string) core.Wallet {
+	c := util.NewClient()
+	wltR, err := c.Wallet(id)
+	if err != nil {
+		return nil
+	}
+	return walletResponseToWallet(*wltR)
+}
