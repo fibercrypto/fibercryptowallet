@@ -26,27 +26,27 @@ Page {
                     Layout.topMargin: 30
 
                     Label {
-                        text: qsTr("IP address and port")
+                        text: qsTr("Transaction ID")
                         font.pointSize: 9
-                        Layout.leftMargin: 75 // Empirically obtained
+                        Layout.leftMargin: 10 // Empirically obtained
                         Layout.fillWidth: true
                     }
                     Label {
-                        text: qsTr("Source")
+                        text: qsTr("Sky")
                         font.pointSize: 9
-                        Layout.rightMargin: 75
+                        Layout.rightMargin: 92
                     }
                     Label {
-                        text: qsTr("Block")
+                        text: qsTr("Coin hours")
                         font.pointSize: 9
-                        Layout.rightMargin: 65
+                        Layout.rightMargin: 33
                     }
                     Label {
-                        text: qsTr("Last seen")
+                        text: qsTr("Timestamp")
                         font.pointSize: 9
-                        Layout.rightMargin: 90
+                        Layout.rightMargin: 98
                     }
-                }
+                } // RowLayout
 
                 Rectangle {
                     Layout.fillWidth: true
@@ -62,30 +62,39 @@ Page {
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
                 ListView {
-                    id: listNetworking
+                    id: listPendingTransactions
                     anchors.fill: parent
                     clip: true
 
-                    model: modelNetworking
-                    delegate: NetworkingListDelegate {
-                        modelIp: ip
-                        modelPort: port
-                        modelSource: source
-                        modelBlock: block
-                        modelLastSeenIn: lastSeenIn
-                        modelLastSeenOut: lastSeenOut
+                    model: modelPendingTransactions
+                    delegate: PendingTransactionsDelegate {
+                        width: parent.width
+
+                        modelTransactionID: transactionID
+                        modelSky: sky
+                        modelCoinHours: coinHours
+                        modelTimestamp: timestamp
                     }
                 } // ListView
             } // ScrollView
         } // ColumnLayout (frame)
     } // Frame
 
-    // Roles: ip, port, source, block, lastSeenIn, lastSeenOut
+    // Roles: transactionID, sky, coinHours, timestamp
     // Implement the model in the backend (a more recommendable approach)
     ListModel { // EXAMPLE
-        id: modelNetworking
-        ListElement { ip: "192.168.137.1"; port: "8080"; source: qsTr("Default peer"); block: 17700; lastSeenIn: "a few seconds ago"; lastSeenOut: "two minutes ago" }
-        ListElement { ip: "255.255.255.255"; port: "65535"; source: qsTr("Default peer"); block: 60978432; lastSeenIn: "a few seconds ago"; lastSeenOut: "a few seconds ago" }
-        ListElement { ip: "192.168.137.3"; port: "5"; source: qsTr("Default peer"); block: 500; lastSeenIn: "4 days ago"; lastSeenOut: "one day ago" }
+        id: modelPendingTransactions
+        ListElement { transactionID: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"; sky: 100000; coinHours: 3545; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"; sky: 9999999; coinHours: 3576852; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC"; sky: 56; coinHours: 35435; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"; sky: 6875342; coinHours: 5469; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE"; sky: 65; coinHours: 35; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"; sky: 10; coinHours: 357232; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG"; sky: 1; coinHours: 2103835; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH"; sky: 26987530; coinHours: 9753212; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII"; sky: 357; coinHours: 3108465; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ"; sky: 64588; coinHours: 687985; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK"; sky: 47; coinHours: 67635; timestamp: "2019-03-02 10:19" }
+        ListElement { transactionID: "LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL"; sky: 9; coinHours: 3543542; timestamp: "2019-03-02 10:19" }
     }
 }
