@@ -183,29 +183,6 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
 		bl = 0
 	}
 	qwallet.SetCoinHours(bl)
-	qaddresses := make([]*wallets.QAddress, 0)
-	it, err := wlt.GetLoadedAddresses()
-	if err != nil {
-		return nil
-	}
-	for it.Next() {
-		addr := it.Value()
-		qaddress := wallets.NewQAddress(nil)
-		qaddress.SetAddress(addr.String())
-		sky, err := addr.GetCryptoAccount().GetBalance("Sky")
-		if err != nil {
-			continue
-		}
-		qaddress.SetAddressSky(sky)
-		coinH, err := addr.GetCryptoAccount().GetBalance("CoinHour")
-		if err != nil {
-			continue
-		}
-		qaddress.SetAddressCoinHours(coinH)
-		qaddresses = append(qaddresses, qaddress)
-
-	}
-	qwallet.SetAddresses(qaddresses)
 
 	return qwallet
 }
