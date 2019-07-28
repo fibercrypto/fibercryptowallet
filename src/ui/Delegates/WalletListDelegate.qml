@@ -99,6 +99,9 @@ Item {
                 onAddAddressesRequested: {
                     dialogAddAddresses.open()
                 }
+                onEditWalletRequested: {
+                    dialogEditWallet.open()
+                }
             }
         } // ListView
     } // ColumnLayout
