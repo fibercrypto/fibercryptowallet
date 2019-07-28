@@ -32,7 +32,7 @@
         <file>src/ui/Dialogs/SecureWalletDialog.qml</file>
         <file>src/ui/Dialogs/WalletCreatedDialog.qml</file>
         <file>src/ui/Dialogs/NumPadDialog.qml</file>
-        <file>src/ui/Dialogs/DialogEditWallet.qml</file>
+        <file>src/ui/Dialogs/DialogAddAddresses.qml</file>
         <file>src/ui/Dialogs/DialogUnconfiguredWallet.qml</file>
         <file>src/ui/Dialogs/DialogSendTransaction.qml</file>
         <file>src/ui/Dialogs/DialogAbout.qml</file>

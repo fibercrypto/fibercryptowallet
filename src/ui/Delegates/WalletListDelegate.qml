@@ -96,20 +96,19 @@ Item {
                 width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
 
-                onEditWalletRequested: {
-                    dialogEditWallet.initialText = name
-                    dialogEditWallet.open()
+                onAddAddressesRequested: {
+                    dialogAddAddresses.open()
                 }
             }
         } // ListView
     } // ColumnLayout
 
-    DialogEditWallet {
-        id: dialogEditWallet
+    DialogAddAddresses {
+        id: dialogAddAddresses
         anchors.centerIn: Overlay.overlay
 
-        focus: true
         modal: true
+        focus: true
 
         onAccepted: {
             console.log("Editting accepted")
@@ -117,7 +116,7 @@ Item {
         onRejected: {
             console.log("Editting rejected")
         }
-    } // DialogEditWallet
+    } // DialogAddAddresses
 
     // Roles: address, addressSky, addressCoinHours
     // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
