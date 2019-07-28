@@ -51,16 +51,18 @@ func (wltSrv *WalletService) createUnencryptedWallet(seed, label string, scanN i
 	return &wlt, nil
 }
 
-func (wltSrv *WalletService) Encrypt(walletName, password string) {
+func (wltSrv *WalletService) Encrypt(walletName string, pwd core.PasswordReader) {
 	c := util.NewClient()
+	password, _ := pwd("Insert password")
 	_, err := c.EncryptWallet(walletName, password)
 	if err != nil {
 		return
 	}
 }
 
-func (wltSrv *WalletService) Decrypt(walletName, password string) {
+func (wltSrv *WalletService) Decrypt(walletName string, pwd core.PasswordReader) {
 	c := util.NewClient()
+	password, _ := pwd("Insert password")
 	_, err := c.DecryptWallet(walletName, password)
 	if err != nil {
 		return

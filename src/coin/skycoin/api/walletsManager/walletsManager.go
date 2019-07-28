@@ -21,9 +21,9 @@ type WalletManager struct {
 	_ func(seed string, label string, scanN int) *wallets.QWallet                  `slot:"createUnencryptedWallet"`
 	_ func(entropy int) string                                                     `slot:"getNewSeed"`
 	_ func(seed string) int                                                        `slot:"verifySeed"`
-	_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
-	_ func(id string, password string)                                             `slot:"encryptWallet"`
-	_ func(id string, password string)                                             `slot:"decryptWallet"`
+	//_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
+	_ func(id string, password string) `slot:"encryptWallet"`
+	_ func(id string, password string) `slot:"decryptWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -31,7 +31,11 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
 	walletM.ConnectGetNewSeed(walletM.getNewSeed)
 	walletM.ConnectVerifySeed(walletM.verifySeed)
+<<<<<<< Updated upstream
 	walletM.ConnectNewWalletAddress(walletM.newWalletAddress)
+=======
+	//walletM.ConnectNewWalletAddress(newWalletAddress)
+>>>>>>> Stashed changes
 	walletM.ConnectEncryptWallet(walletM.encryptWallet)
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 
