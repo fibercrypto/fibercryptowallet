@@ -98,7 +98,7 @@ Page {
         interval: 10000
         repeat: true
         running: true
-        onTriggered: walletModel.loadModel()
+        onTriggered: walletModel.loadModel(walletManager.getWallets())
         
     }
     WalletModel{

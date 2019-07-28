@@ -4576,20 +4576,27 @@ func (ptr *WalletModel) RemoveWallet(row int) {
 }
 
 //export callbackWalletModel445aa6_LoadModel
-func callbackWalletModel445aa6_LoadModel(ptr unsafe.Pointer) {
+func callbackWalletModel445aa6_LoadModel(ptr unsafe.Pointer, v0 C.struct_Moc_PackedList) {
 	if signal := qt.GetSignal(ptr, "loadModel"); signal != nil {
-		(*(*func())(signal))()
+		(*(*func([]*QWallet))(signal))(func(l C.struct_Moc_PackedList) []*QWallet {
+			out := make([]*QWallet, int(l.len))
+			tmpList := NewWalletModelFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__loadModel_v0_atList(i)
+			}
+			return out
+		}(v0))
 	}
 
 }
 
-func (ptr *WalletModel) ConnectLoadModel(f func()) {
+func (ptr *WalletModel) ConnectLoadModel(f func(v0 []*QWallet)) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "loadModel"); signal != nil {
-			f := func() {
-				(*(*func())(signal))()
-				f()
+			f := func(v0 []*QWallet) {
+				(*(*func([]*QWallet))(signal))(v0)
+				f(v0)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "loadModel", unsafe.Pointer(&f))
 		} else {
@@ -4605,9 +4612,15 @@ func (ptr *WalletModel) DisconnectLoadModel() {
 	}
 }
 
-func (ptr *WalletModel) LoadModel() {
+func (ptr *WalletModel) LoadModel(v0 []*QWallet) {
 	if ptr.Pointer() != nil {
-		C.WalletModel445aa6_LoadModel(ptr.Pointer())
+		C.WalletModel445aa6_LoadModel(ptr.Pointer(), func() unsafe.Pointer {
+			tmpList := NewWalletModelFromPointer(NewWalletModelFromPointer(nil).__loadModel_v0_newList())
+			for _, v := range v0 {
+				tmpList.__loadModel_v0_setList(v)
+			}
+			return tmpList.Pointer()
+		}())
 	}
 }
 
@@ -5622,6 +5635,27 @@ func (ptr *WalletModel) __qFindChildren_setList2(i std_core.QObject_ITF) {
 
 func (ptr *WalletModel) __qFindChildren_newList2() unsafe.Pointer {
 	return C.WalletModel445aa6___qFindChildren_newList2(ptr.Pointer())
+}
+
+func (ptr *WalletModel) __loadModel_v0_atList(i int) *QWallet {
+	if ptr.Pointer() != nil {
+		tmpValue := NewQWalletFromPointer(C.WalletModel445aa6___loadModel_v0_atList(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *WalletModel) __loadModel_v0_setList(i QWallet_ITF) {
+	if ptr.Pointer() != nil {
+		C.WalletModel445aa6___loadModel_v0_setList(ptr.Pointer(), PointerFromQWallet(i))
+	}
+}
+
+func (ptr *WalletModel) __loadModel_v0_newList() unsafe.Pointer {
+	return C.WalletModel445aa6___loadModel_v0_newList(ptr.Pointer())
 }
 
 func (ptr *WalletModel) __roles_atList(v int, i int) *std_core.QByteArray {

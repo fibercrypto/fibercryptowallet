@@ -283,6 +283,52 @@ func (ptr *WalletManager) VerifySeed(seed string) int {
 	return 0
 }
 
+//export callbackWalletManager64bdd5_NewWalletAddress
+func callbackWalletManager64bdd5_NewWalletAddress(ptr unsafe.Pointer, id C.struct_Moc_PackedString, n C.int, password C.struct_Moc_PackedString) {
+	if signal := qt.GetSignal(ptr, "newWalletAddress"); signal != nil {
+		(*(*func(string, int, string))(signal))(cGoUnpackString(id), int(int32(n)), cGoUnpackString(password))
+	}
+
+}
+
+func (ptr *WalletManager) ConnectNewWalletAddress(f func(id string, n int, password string)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "newWalletAddress"); signal != nil {
+			f := func(id string, n int, password string) {
+				(*(*func(string, int, string))(signal))(id, n, password)
+				f(id, n, password)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "newWalletAddress", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "newWalletAddress", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *WalletManager) DisconnectNewWalletAddress() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "newWalletAddress")
+	}
+}
+
+func (ptr *WalletManager) NewWalletAddress(id string, n int, password string) {
+	if ptr.Pointer() != nil {
+		var idC *C.char
+		if id != "" {
+			idC = C.CString(id)
+			defer C.free(unsafe.Pointer(idC))
+		}
+		var passwordC *C.char
+		if password != "" {
+			passwordC = C.CString(password)
+			defer C.free(unsafe.Pointer(passwordC))
+		}
+		C.WalletManager64bdd5_NewWalletAddress(ptr.Pointer(), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.int(int32(n)), C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
+	}
+}
+
 //export callbackWalletManager64bdd5_EncryptWallet
 func callbackWalletManager64bdd5_EncryptWallet(ptr unsafe.Pointer, id C.struct_Moc_PackedString, password C.struct_Moc_PackedString) {
 	if signal := qt.GetSignal(ptr, "encryptWallet"); signal != nil {
@@ -373,6 +419,63 @@ func (ptr *WalletManager) DecryptWallet(id string, password string) {
 		}
 		C.WalletManager64bdd5_DecryptWallet(ptr.Pointer(), C.struct_Moc_PackedString{data: idC, len: C.longlong(len(id))}, C.struct_Moc_PackedString{data: passwordC, len: C.longlong(len(password))})
 	}
+}
+
+//export callbackWalletManager64bdd5_GetWallets
+func callbackWalletManager64bdd5_GetWallets(ptr unsafe.Pointer) unsafe.Pointer {
+	if signal := qt.GetSignal(ptr, "getWallets"); signal != nil {
+		return func() unsafe.Pointer {
+			tmpList := NewWalletManagerFromPointer(NewWalletManagerFromPointer(nil).__getWallets_newList())
+			for _, v := range (*(*func() []*custom_wallets_445aa6m.QWallet)(signal))() {
+				tmpList.__getWallets_setList(v)
+			}
+			return tmpList.Pointer()
+		}()
+	}
+
+	return func() unsafe.Pointer {
+		tmpList := NewWalletManagerFromPointer(NewWalletManagerFromPointer(nil).__getWallets_newList())
+		for _, v := range make([]*custom_wallets_445aa6m.QWallet, 0) {
+			tmpList.__getWallets_setList(v)
+		}
+		return tmpList.Pointer()
+	}()
+}
+
+func (ptr *WalletManager) ConnectGetWallets(f func() []*custom_wallets_445aa6m.QWallet) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "getWallets"); signal != nil {
+			f := func() []*custom_wallets_445aa6m.QWallet {
+				(*(*func() []*custom_wallets_445aa6m.QWallet)(signal))()
+				return f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "getWallets", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "getWallets", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *WalletManager) DisconnectGetWallets() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "getWallets")
+	}
+}
+
+func (ptr *WalletManager) GetWallets() []*custom_wallets_445aa6m.QWallet {
+	if ptr.Pointer() != nil {
+		return func(l C.struct_Moc_PackedList) []*custom_wallets_445aa6m.QWallet {
+			out := make([]*custom_wallets_445aa6m.QWallet, int(l.len))
+			tmpList := NewWalletManagerFromPointer(l.data)
+			for i := 0; i < len(out); i++ {
+				out[i] = tmpList.__getWallets_atList(i)
+			}
+			return out
+		}(C.WalletManager64bdd5_GetWallets(ptr.Pointer()))
+	}
+	return make([]*custom_wallets_445aa6m.QWallet, 0)
 }
 
 func WalletManager_QRegisterMetaType() int {
@@ -538,6 +641,27 @@ func (ptr *WalletManager) __qFindChildren_setList2(i std_core.QObject_ITF) {
 
 func (ptr *WalletManager) __qFindChildren_newList2() unsafe.Pointer {
 	return C.WalletManager64bdd5___qFindChildren_newList2(ptr.Pointer())
+}
+
+func (ptr *WalletManager) __getWallets_atList(i int) *custom_wallets_445aa6m.QWallet {
+	if ptr.Pointer() != nil {
+		tmpValue := custom_wallets_445aa6m.NewQWalletFromPointer(C.WalletManager64bdd5___getWallets_atList(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *WalletManager) __getWallets_setList(i custom_wallets_445aa6m.QWallet_ITF) {
+	if ptr.Pointer() != nil {
+		C.WalletManager64bdd5___getWallets_setList(ptr.Pointer(), custom_wallets_445aa6m.PointerFromQWallet(i))
+	}
+}
+
+func (ptr *WalletManager) __getWallets_newList() unsafe.Pointer {
+	return C.WalletManager64bdd5___getWallets_newList(ptr.Pointer())
 }
 
 func NewWalletManager(parent std_core.QObject_ITF) *WalletManager {

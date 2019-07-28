@@ -56,8 +56,6 @@ func (m *WalletModel) init() {
 	m.ConnectRemoveWallet(m.removeWallet)
 	m.ConnectLoadModel(m.loadModel)
 
-	m.loadModel()
-
 }
 
 func (m *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
