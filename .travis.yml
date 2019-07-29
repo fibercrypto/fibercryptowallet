@@ -8,24 +8,24 @@ matrix:
     - sudo apt-get install devscripts build-essential lintian dh-make
     - sudo apt-get install qtdeclarative5-dev qt5-default libjack-jackd2-dev
     - sudo apt install libgl-dev libglu-dev libglib2.0-dev libsm-dev libxrender-dev libfontconfig1-dev libxext-dev
-    - ./.travis/install-linux.sh
+      #    - ./.travis/install-linux.sh
     compiler:
     - clang
     - gcc
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
     - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
-    - go get -u -v github.com/therecipe/qt/cmd/... 
+    - go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup -test=false 
     - go get -t ./...
     - make build-wallet
   - os: osx
     osx_image: xcode10.2
     before_install:
-    - ./.travis/install-os.sh
+            #- ./.travis/install-os.sh
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
     - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
-    - xcode-select --install; go get -u -v github.com/therecipe/qt/cmd/...  
+    - xcode-select --install; go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup -test=false
     - go get -t ./...
     - make build-wallet 
 #  - os: windows
