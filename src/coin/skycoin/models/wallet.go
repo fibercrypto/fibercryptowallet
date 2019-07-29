@@ -186,15 +186,15 @@ func (wlt Wallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt Wallet) Transfer(to core.Address, amount uint64) {
+func (wlt Wallet) Transfer(to core.Address, amount uint64) { //------TODO
 	return
 }
 
-func (wlt Wallet) SendFromAddress(from, to core.Address, amount uint64) {
+func (wlt Wallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
 	return
 }
 
-func (wlt Wallet) Spend(unspent, new []core.TransactionOutput) {
+func (wlt Wallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
 	return
 }
 
@@ -242,15 +242,6 @@ func (wlt Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
 
 	return NewSkycoinAddressIterator(addresses), nil
 }
-
-//func newWalletAddress(label string, n int, password string) {
-//	c := util.NewClient()
-//	_, err := c.NewWalletAddress(label, n, password)
-//	if err != nil {
-//		return
-//	}
-//
-//}
 
 func walletResponseToWallet(wltR api.WalletResponse) Wallet {
 	wlt := Wallet{}

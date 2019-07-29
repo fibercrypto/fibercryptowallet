@@ -23,10 +23,10 @@ func (addr Address) GetBalance(ticker string) (uint64, error) {
 func (addr Address) ListAssets() []string {
 	return []string{"Sky", "CoinHour"}
 }
-func (addr Address) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (addr Address) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
 	return nil
 }
-func (addr Address) ListTransactions() core.TransactionIterator {
+func (addr Address) ListTransactions() core.TransactionIterator { //------TODO
 	return nil
 }
 
@@ -51,10 +51,10 @@ func (wlt Wallet) ListAssets() []string {
 	return []string{"Sky", "CoinHour"}
 }
 
-func (wlt Wallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (wlt Wallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
 	return nil
 }
 
-func (wlt Wallet) ListTransactions() core.TransactionIterator {
+func (wlt Wallet) ListTransactions() core.TransactionIterator { //------TODO
 	return nil
 }
