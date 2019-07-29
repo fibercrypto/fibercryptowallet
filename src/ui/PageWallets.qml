@@ -43,14 +43,14 @@ Page {
                 Layout.rightMargin: listWalletRightMargin
                 Layout.preferredWidth: internalLabelsWidth
             }
-        }
+        } // RowLayout
 
         Rectangle {
             Layout.fillWidth: true
             height: 1
             color: "#DDDDDD"
         }
-    }
+    } // ColumnLayout (header)
 
     footer: ToolBar {
         id: tabBarCreateUpload
@@ -107,6 +107,11 @@ Page {
 
         width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 640 ? 640 - 40 : applicationWindow.height - 40
+
+        onAccepted: {
+            console.log("Add wallet")
+            listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
+        }
     }
 
     // Roles: name, encryptionEnabled, sky, coinHours
