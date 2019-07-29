@@ -8,7 +8,7 @@ import (
 
 	"os"
 
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/api/walletsManager"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
 )
 
 func main() {

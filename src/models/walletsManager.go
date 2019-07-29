@@ -1,31 +1,26 @@
-package walletsManager
+package models
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/blockchain/api"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/models/wallets"
 	qtcore "github.com/therecipe/qt/core"
 )
-
-func init() {
-	WalletManager_QmlRegisterType2("WalletsManager", 1, 0, "WalletManager")
-}
 
 type WalletManager struct {
 	qtcore.QObject
 	WalletEnv     core.WalletEnv
 	SeedGenerator core.SeedGenerator
 
-	_ func()                                                                       `constructor:"init"`
-	_ func(seed string, label string, password string, scanN int) *wallets.QWallet `slot:"createEncryptedWallet"`
-	_ func(seed string, label string, scanN int) *wallets.QWallet                  `slot:"createUnencryptedWallet"`
-	_ func(entropy int) string                                                     `slot:"getNewSeed"`
-	_ func(seed string) int                                                        `slot:"verifySeed"`
-	_ func(id string, n int, password string)                                      `slot:"newWalletAddress"`
-	_ func(id string, password string)                                             `slot:"encryptWallet"`
-	_ func(id string, password string)                                             `slot:"decryptWallet"`
-	_ func() []*wallets.QWallet                                                    `slot:"getWallets"`
-	_ func(id string) []*wallets.QAddress                                          `slot:"getAddresses"`
+	_ func()                                                               `constructor:"init"`
+	_ func(seed string, label string, password string, scanN int) *QWallet `slot:"createEncryptedWallet"`
+	_ func(seed string, label string, scanN int) *QWallet                  `slot:"createUnencryptedWallet"`
+	_ func(entropy int) string                                             `slot:"getNewSeed"`
+	_ func(seed string) int                                                `slot:"verifySeed"`
+	_ func(id string, n int, password string)                              `slot:"newWalletAddress"`
+	_ func(id string, password string)                                     `slot:"encryptWallet"`
+	_ func(id string, password string)                                     `slot:"decryptWallet"`
+	_ func() []*QWallet                                                    `slot:"getWallets"`
+	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
 }
 
 func (walletM *WalletManager) init() {
@@ -44,7 +39,7 @@ func (walletM *WalletManager) init() {
 
 }
 
-func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *wallets.QWallet {
+func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
@@ -57,7 +52,7 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 
 }
 
-func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *wallets.QWallet {
+func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *QWallet {
 	pwd := func(message string) (string, error) {
 		return "", nil
 	}
@@ -120,8 +115,8 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 	wlt.GenAddresses(core.AccountAddress, uint32(wltEntrieslen), uint32(n), pwd)
 }
 
-func (walletM *WalletManager) getWallets() []*wallets.QWallet {
-	qwallets := make([]*wallets.QWallet, 0)
+func (walletM *WalletManager) getWallets() []*QWallet {
+	qwallets := make([]*QWallet, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 	for it.Next() {
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
@@ -138,16 +133,16 @@ func (walletM *WalletManager) getWallets() []*wallets.QWallet {
 	return qwallets
 }
 
-func (walletM *WalletManager) getAddresses(Id string) []*wallets.QAddress {
+func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
-	qaddresses := make([]*wallets.QAddress, 0)
+	qaddresses := make([]*QAddress, 0)
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		return nil
 	}
 	for it.Next() {
 		addr := it.Value()
-		qaddress := wallets.NewQAddress(nil)
+		qaddress := NewQAddress(nil)
 		qaddress.SetAddress(addr.String())
 		sky, err := addr.GetCryptoAccount().GetBalance("Sky")
 		if err != nil {
@@ -165,8 +160,8 @@ func (walletM *WalletManager) getAddresses(Id string) []*wallets.QAddress {
 	return qaddresses
 }
 
-func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *wallets.QWallet {
-	qwallet := wallets.NewQWallet(nil)
+func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
+	qwallet := NewQWallet(nil)
 	qwallet.SetName(wlt.GetLabel())
 	qwallet.SetFileName(wlt.GetId())
 	qwallet.SetEncryptionEnabled(0)

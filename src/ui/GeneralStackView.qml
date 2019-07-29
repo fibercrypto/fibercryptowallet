@@ -38,11 +38,7 @@ Item {
         stackView.pop()
     }
 
-    function openNetworkingPage() {
-        stackView.push(componentNetworking)
-        toolPageOpened = true
-    }
-
+    
     StackView {
         id: stackView
         initialItem: componentPageCreateLoadWallet
@@ -98,16 +94,5 @@ Item {
         }
     }
 
-    Component {
-        id: componentNetworking
-
-        Networking {
-            id: networking
-
-            onBackRequested: {
-                stackView.pop()
-                toolPageOpened = false
-            }
-        }
-    }
+    
 }
