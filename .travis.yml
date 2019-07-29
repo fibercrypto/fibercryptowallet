@@ -1,4 +1,8 @@
-language: go 
+language: go
+
+go:
+- 1.12.x
+
 matrix:
   include:
   - os: linux
@@ -8,6 +12,7 @@ matrix:
     - sudo apt-get install devscripts build-essential lintian dh-make
     - sudo apt-get install qtdeclarative5-dev qt5-default libjack-jackd2-dev
     - sudo apt install libgl-dev libglu-dev libglib2.0-dev libsm-dev libxrender-dev libfontconfig1-dev libxext-dev
+    - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
       #    - ./.travis/install-linux.sh
     compiler:
     - clang
