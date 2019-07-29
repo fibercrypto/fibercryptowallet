@@ -1,4 +1,4 @@
-package blockchain
+package models
 
 import (
 	"strconv"
@@ -7,10 +7,6 @@ import (
 
 	"github.com/therecipe/qt/core"
 )
-
-func init() {
-	BlockchainStatusModel_QmlRegisterType2("BlockchainModels", 1, 0, "BlockchainStatusModel")
-}
 
 // BlockchainStatusModel Contains info about the blockchain to be show.
 type BlockchainStatusModel struct {
