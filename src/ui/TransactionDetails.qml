@@ -32,11 +32,9 @@ Item {
     }
 
     implicitHeight: 80 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
+    Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
 
-    // TODO: Fix performance problem with the animation
-    //Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
-
-    implicitWidth: 650
+    implicitWidth: 600
     clip: true
 
     ColumnLayout {
@@ -160,7 +158,11 @@ Item {
             Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
 
+            opacity: expanded ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+
             ColumnLayout {
+                id: columnLayoutInputs
                 Layout.alignment: Qt.AlignTop
                 Layout.fillWidth: true
 
@@ -189,10 +191,11 @@ Item {
                             width: ListView.view.width
                         }
                     }
-                }
-            }
+                } // ScrollView
+            } // ColumnLayout (inputs)
 
             ColumnLayout {
+                id: columnLayoutOutputs
                 Layout.alignment: Qt.AlignTop
                 Layout.fillWidth: true
 
@@ -221,9 +224,9 @@ Item {
                             width: ListView.view.width
                         }
                     }
-                }
-            }
-        } // RowLayout
+                } // ScrollView
+            } // ColumnLayout (outputs)
+        } // RowLayout (details)
     } // ColumnLayout (root)
 
     // Roles: address, addressSky, addressCoinHours
