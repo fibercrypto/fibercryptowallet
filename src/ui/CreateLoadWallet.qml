@@ -8,8 +8,13 @@ Item {
 
     enum Mode { Create, Load }
 
+    property Item nextTabItem
     property int mode: CreateLoadWallet.Create
+    property alias name: walletName.text
+    property alias seed: walletSeed.text
+    property alias seedConfirm: walletSeedConfirm.text
 
+    signal dataModified()
     signal walletCreationRequested()
 
     function clear() {
@@ -34,6 +39,10 @@ Item {
             selectByMouse: true
             placeholderText: qsTr("Wallet's name")
             focus: true
+
+            onTextChanged: {
+                dataModified()
+            }
         }
 
         ControlGenerateSeed {
@@ -45,6 +54,7 @@ Item {
             buttonLeftText: qsTr("12 words")
             buttonRightText: qsTr("24 words")
             buttonsVisible: mode === CreateLoadWallet.Create
+            nextTabItem: walletSeedConfirm
         }
 
         TextArea {
@@ -60,6 +70,13 @@ Item {
             visible: opacity > 0
 
             Behavior on opacity { NumberAnimation { duration: 100 } }
+
+            KeyNavigation.priority: KeyNavigation.BeforeItem
+            KeyNavigation.tab: nextTabItem
+
+            onTextChanged: {
+                dataModified()
+            }
         } // TextArea
     } // Column
 }
