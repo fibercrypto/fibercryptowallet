@@ -23,6 +23,18 @@ ApplicationWindow {
             customHeader.text = qsTr("Outputs")
             
             enableOutputs = false
+            enablePendingTransactions = true
+            enableBlockchain = true
+            enableNetworking = true
+        }
+
+        onPendingTransactionsRequested: {
+            generalStackView.openPendingTransactionsPage()
+            menuBarColor = Material.color(Material.Purple)
+            customHeader.text = qsTr("Pending transactions")
+            
+            enableOutputs = true
+            enablePendingTransactions = false
             enableBlockchain = true
             enableNetworking = true
         }
@@ -33,6 +45,7 @@ ApplicationWindow {
             customHeader.text = qsTr("Blockchain")
 
             enableOutputs = true
+            enablePendingTransactions = true
             enableBlockchain = false
             enableNetworking = true
         }
@@ -43,6 +56,7 @@ ApplicationWindow {
             customHeader.text = qsTr("Networking")
 
             enableOutputs = true
+            enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = false
         }
