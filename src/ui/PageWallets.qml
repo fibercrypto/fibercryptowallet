@@ -56,6 +56,7 @@ Page {
         id: tabBarCreateUpload
         Material.primary: Material.Blue
         Material.accent: Material.Yellow
+        Material.elevation: 0
 
         RowLayout {
             anchors.fill: parent
@@ -66,8 +67,8 @@ Page {
                 Layout.fillWidth: true
 
                 onClicked: {
-                    dialogAddWallet.mode = CreateLoadWallet.Create
-                    dialogAddWallet.open()
+                    dialogAddLoadWallet.mode = CreateLoadWallet.Create
+                    dialogAddLoadWallet.open()
                 }
             }
             ToolButton {
@@ -77,8 +78,8 @@ Page {
                 Layout.fillWidth: true
 
                 onClicked: {
-                    dialogAddWallet.mode = CreateLoadWallet.Load
-                    dialogAddWallet.open()
+                    dialogAddLoadWallet.mode = CreateLoadWallet.Load
+                    dialogAddLoadWallet.open()
                 }
             }
         } // RowLayout
@@ -98,7 +99,7 @@ Page {
     }
 
     DialogAddLoadWallet {
-        id: dialogAddWallet
+        id: dialogAddLoadWallet
         anchors.centerIn: Overlay.overlay
 
         modal: true
