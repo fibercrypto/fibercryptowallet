@@ -1,12 +1,10 @@
-sudo apt-get update
-sudo apt-get -y upgrade
+# Install QT 5.13.0
 
-wget https://dl.google.com/go/go1.12.6.linux-amd64.tar.gz
+sudo apt install python3-requests p7zip-full wget
 
-sudo tar -xvf go1.12.6.linux-amd64.tar.gz
-sudo mv go /usr/local
+wget https://git.kaidan.im/lnj/qli-installer/raw/master/qli-installer.py
+chmod +x qli-installer.py
 
-export GOROOT=/usr/local/go
-export GOPATH=$HOME/go
-export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+./qli-installer.py 5.13.0 linux desktop
 
+export PATH=./5.13.0/gcc_64/bin:$PATH
