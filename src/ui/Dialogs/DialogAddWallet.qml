@@ -9,6 +9,8 @@ import "../" // For quick UI development, switch back to resources when making a
 Dialog {
     id: dialogAddWallet
 
+    property alias mode: createLoadWallet.mode
+
     title: Qt.application.name
     standardButtons: Dialog.Ok | Dialog.Cancel
 
