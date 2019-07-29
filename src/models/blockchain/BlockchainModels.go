@@ -3,7 +3,7 @@ package blockchain
 import (
 	"strconv"
 
-	"github.com/simelo/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	"github.com/therecipe/qt/core"
 )
@@ -29,8 +29,6 @@ type BlockchainStatusModel struct {
 }
 
 func (bs *BlockchainStatusModel) init() {
-	println("init-BlockchainStatusModel")
-
 	// block details
 	bs.SetNumberOfBlocksDefault("0")
 	bs.SetTimestampLastBlockDefault(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(0, 0, 0, 0), core.Qt__LocalTime))
@@ -85,8 +83,6 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	bs.SetTotalSkySupply(totalSkySupply)
 	bs.SetCurrentCoinHoursSupply(currentCoinHoursSupply)
 	bs.SetTotalCoinHoursSupply(totalCoinHoursSupply)
-
-	println("Status-updated")
 
 	return nil
 }
