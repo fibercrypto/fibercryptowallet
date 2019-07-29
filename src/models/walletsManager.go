@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/blockchain/api"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
 )
@@ -34,8 +34,8 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 
-	walletM.WalletEnv = new(api.WalletNode)
-	walletM.SeedGenerator = new(api.SeedService)
+	walletM.WalletEnv = new(models.WalletNode)
+	walletM.SeedGenerator = new(models.SeedService)
 
 }
 
