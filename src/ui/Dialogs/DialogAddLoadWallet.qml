@@ -11,6 +11,8 @@ Dialog {
     id: dialogAddWallet
 
     property alias mode: createLoadWallet.mode
+    property alias name: createLoadWallet.name
+    property alias encryptionEnabled: checkBoxEncryptWallet.checked
 
     Component.onCompleted: {
         standardButton(Dialog.Ok).text = mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
