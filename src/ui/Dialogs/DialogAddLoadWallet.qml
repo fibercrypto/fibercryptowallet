@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
@@ -18,6 +19,30 @@ Dialog {
     onModeChanged: {
         standardButton(Dialog.Ok).text = mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
     }
+
+    function updateAcceptButtonStatus() {
+        var walletName = createLoadWallet.name
+        var walletSeed = createLoadWallet.seed
+        var walletSeedConfirm = createLoadWallet.seedConfirm
+        
+        var words = walletSeed.split(' ')
+
+        var invalidNumberOfWords = words.length != 12 && words.length != 24
+        var invalidChars = walletSeed.search("[^a-z ]|[ ]{2}") != -1
+        var unconventionalSeed = invalidNumberOfWords || invalidChars
+        var continueWithUnconventionalSeed = checkBoxContinueWithSeedWarning.checked
+        
+        var seedMatchConfirmation = walletSeed === walletSeedConfirm
+
+        var passwordNeeded = checkBoxEncryptWallet.checked
+        var passwordSet = textFieldPassword.text
+        var passwordMatchConfirmation = textFieldPassword.text === textFieldConfirmPassword.text
+
+        columnLayoutSeedWarning.warn = walletName && walletSeed && seedMatchConfirmation && !(!unconventionalSeed)
+
+        var okButton = standardButton(Dialog.Ok)
+        okButton.enabled = walletName && walletSeed && seedMatchConfirmation && ((passwordSet && passwordMatchConfirmation) || !passwordNeeded) && (!unconventionalSeed || continueWithUnconventionalSeed)
+    } // function updateAcceptButtonStatus()
 
     title: Qt.application.name
     standardButtons: Dialog.Ok | Dialog.Cancel
@@ -39,7 +64,53 @@ Dialog {
             CreateLoadWallet {
                 id: createLoadWallet
                 Layout.fillWidth: true
+                nextTabItem: columnLayoutSeedWarning.warn ? checkBoxContinueWithSeedWarning : checkBoxEncryptWallet
+
+                onDataModified: {
+                    updateAcceptButtonStatus()
+                }
             }
+
+            ColumnLayout {
+                id: columnLayoutSeedWarning
+
+                property bool warn: false
+
+                Layout.fillWidth: true
+                Layout.preferredHeight: warn ? implicitHeight : 0
+                Behavior on Layout.preferredHeight { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+                opacity: warn ? 1 : 0
+                Behavior on opacity { NumberAnimation {} }
+                clip: true
+                
+                Material.foreground: Material.Pink
+                Material.accent: Material.Pink
+
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("Warning")
+                    font.pointSize: 14
+                    font.bold: true
+                    wrapMode: Text.WordWrap
+                }
+                Label {
+                    Layout.fillWidth: true
+                    text: qsTr("You introduced an unconventional seed. "
+                             + "If you did it for any special reason, "
+                             + "you can continue (only recommended for advanced users). "
+                             + "However, if your intention is to use a normal system seed, "
+                             + "you must delete all the additional text and special characters.")
+                    wrapMode: Text.WordWrap
+                }
+                CheckBox {
+                    id: checkBoxContinueWithSeedWarning
+                    text: qsTr("Continue with the unconventional seed")
+
+                    onCheckedChanged: {
+                        updateAcceptButtonStatus()
+                    }
+                }
+            } // ColumnLayoutSeedWarning
 
             CheckBox {
                 id: checkBoxEncryptWallet
@@ -47,6 +118,7 @@ Dialog {
                 checked: true
 
                 onCheckedChanged: {
+                    updateAcceptButtonStatus()
                     if (checked && visible) {
                         textFieldPassword.forceActiveFocus()
                     }
@@ -64,6 +136,7 @@ Dialog {
 
             RowLayout {
                 id: rowLayoutPassword
+                Layout.fillWidth: true
                 spacing: 10
                 enabled: checkBoxEncryptWallet.checked
 
@@ -74,6 +147,10 @@ Dialog {
                     placeholderText: qsTr("Password")
                     echoMode: TextField.Password
                     selectByMouse: true
+
+                    onTextChanged: {
+                        updateAcceptButtonStatus()
+                    }
                 }
                 TextField {
                     id: textFieldConfirmPassword
@@ -82,6 +159,10 @@ Dialog {
                     placeholderText: qsTr("Confirm password")
                     echoMode: TextField.Password
                     selectByMouse: true
+
+                    onTextChanged: {
+                        updateAcceptButtonStatus()
+                    }
                 }
             } // RowLayout
         } // ColumnLayout (root)
