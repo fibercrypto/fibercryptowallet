@@ -161,12 +161,11 @@ func (seedService *SeedService) GenerateMnemonic(entropyBits int) (string, error
 }
 
 func (seedService *SeedService) VerifyMnemonic(seed string) (bool, error) {
-	c := util.NewClient()
-	ok, err := c.VerifySeed(seed)
+	err := bip39.ValidateMnemonic(seed)
 	if err != nil {
 		return false, err
 	}
-	return ok, nil
+	return true, nil
 }
 
 type errorTickerInvalid struct {
