@@ -98,8 +98,8 @@ Page {
         modal: true
         focus: true
 
-        width: 500
-        height: 400
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 640 ? 640 - 40 : applicationWindow.height - 40
     }
 
     // Roles: name, encryptionEnabled, sky, coinHours
