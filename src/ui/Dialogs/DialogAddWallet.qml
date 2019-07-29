@@ -11,6 +11,14 @@ Dialog {
 
     property alias mode: createLoadWallet.mode
 
+    Component.onCompleted: {
+        standardButton(Dialog.Ok).text = mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
+    }
+
+    onModeChanged: {
+        standardButton(Dialog.Ok).text = mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
+    }
+
     title: Qt.application.name
     standardButtons: Dialog.Ok | Dialog.Cancel
 
@@ -36,9 +44,10 @@ Dialog {
             CheckBox {
                 id: checkBoxEncryptWallet
                 text: qsTr("Encrypt wallet")
+                checked: true
 
                 onCheckedChanged: {
-                    if (checked) {
+                    if (checked && visible) {
                         textFieldPassword.forceActiveFocus()
                     }
                 }
