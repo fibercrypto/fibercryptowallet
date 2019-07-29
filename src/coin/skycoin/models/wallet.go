@@ -160,10 +160,20 @@ func (seedService *SeedService) VerifyMnemonic(seed string) (bool, error) {
 	return ok, nil
 }
 
-type errorTickerInvalid struct{}
+type errorTickerInvalid struct {
+	tickerUsed   string
+	validTickers []string
+}
 
 func (err errorTickerInvalid) Error() string {
-	return "Ticker invalid"
+	return (err.tickerUsed + " is an invalid ticker. Use one of this " + err.validTickersString())
+}
+func (err errorTickerInvalid) validTickersString() string {
+	tickersString := err.validTickers[0]
+	for _, tick := range err.validTickers[1:] {
+		tickersString += tickersString + ", " + tick
+	}
+	return tickersString
 }
 
 type Wallet struct { //Implements Wallet and CryptoAccount interfaces
