@@ -66,6 +66,7 @@ Page {
                 Layout.fillWidth: true
 
                 onClicked: {
+                    dialogAddWallet.mode = CreateLoadWallet.Create
                     dialogAddWallet.open()
                 }
             }
@@ -74,9 +75,14 @@ Page {
                 text: qsTr("Load wallet")
                 icon.source: "qrc:/images/resources/images/icons/upload.svg"
                 Layout.fillWidth: true
+
+                onClicked: {
+                    dialogAddWallet.mode = CreateLoadWallet.Load
+                    dialogAddWallet.open()
+                }
             }
-        }
-    }
+        } // RowLayout
+    } // ToolBar (footer)
 
     ScrollView {
         id: scrollItem
@@ -91,7 +97,7 @@ Page {
         }
     }
 
-    DialogAddWallet {
+    DialogAddLoadWallet {
         id: dialogAddWallet
         anchors.centerIn: Overlay.overlay
 
