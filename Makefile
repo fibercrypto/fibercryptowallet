@@ -20,6 +20,8 @@ clean: ## Clean project FiberCrypto Wallet.
 	rm -rf rcc_cgo_linux_linux_amd64.go
 	rm -rf rcc_*.cpp
 	rm -rf rcc__*
+	find . -path "*moc.*"
+	find . -path "*moc_*"
 	@echo "Done."
 
 help:
