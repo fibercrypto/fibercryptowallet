@@ -1,9 +1,12 @@
 package models
 
 import (
+	"errors"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
+	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/readable"
 )
 
@@ -141,14 +144,20 @@ func (wltEnv *WalletNode) GetWalletSet() core.WalletSet {
 
 type SeedService struct{} //Implements SeedGenerator interface
 
-func (seedService *SeedService) GenerateMnemonic(entropy int) (string, error) {
-	c := util.NewClient()
-	seed, err := c.NewSeed(entropy)
+func (seedService *SeedService) GenerateMnemonic(entropyBits int) (string, error) {
+	if entropyBits != 128 && entropyBits != 256 {
+		return "", errors.New("Entropy must be 128 or 256")
+	}
+
+	entropy, err := bip39.NewEntropy(entropyBits)
 	if err != nil {
 		return "", err
 	}
-
-	return seed, nil
+	mnemonic, err := bip39.NewMnemonic(entropy)
+	if err != nil {
+		return "", err
+	}
+	return mnemonic, nil
 }
 
 func (seedService *SeedService) VerifyMnemonic(seed string) (bool, error) {

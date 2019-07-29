@@ -17,7 +17,7 @@ func (addr Address) GetBalance(ticker string) (uint64, error) {
 	} else if ticker == CoinHour {
 		return bl.Confirmed.Hours, nil
 	} else {
-		return 0, errorTickerInvalid{}
+		return 0, errorTickerInvalid{ticker, addr.ListAssets()}
 	}
 }
 func (addr Address) ListAssets() []string {
@@ -42,7 +42,7 @@ func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
 	} else if ticker == CoinHour {
 		return bl.Confirmed.Hours, nil
 	} else {
-		return 0, errorTickerInvalid{}
+		return 0, errorTickerInvalid{ticker, wlt.ListAssets()}
 	}
 
 }
