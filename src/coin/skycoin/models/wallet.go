@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/readable"
@@ -44,17 +43,24 @@ func NewSkycoinWalletIterator(wallets []Wallet) *SkycoinWalletIterator {
 }
 
 type WalletService struct { //Implements WalletStorage and WalletSet interfaces
+	nodeAddress string
+}
+
+func (wltSrv *WalletService) newClient() *api.Client {
+	return api.NewClient(wltSrv.nodeAddress)
 }
 
 func (wltSrv *WalletService) ListWallets() core.WalletIterator {
-	c := util.NewClient()
+	c := wltSrv.newClient()
 	wlts, err := c.Wallets()
 	if err != nil {
 		return nil
 	}
 	wallets := make([]Wallet, 0)
 	for _, wlt := range wlts {
-		wallets = append(wallets, walletResponseToWallet(wlt))
+		nwlt := walletResponseToWallet(wlt)
+		nwlt.nodeAddress = wltSrv.nodeAddress
+		wallets = append(wallets, nwlt)
 	}
 	return NewSkycoinWalletIterator(wallets)
 }
@@ -68,7 +74,7 @@ func (wltSrv *WalletService) CreateWallet(label string, seed string, IsEncrypted
 	}
 }
 func (wltSrv *WalletService) createEncryptedWallet(seed, label, password string, scanN int) (core.Wallet, error) {
-	c := util.NewClient()
+	c := wltSrv.newClient()
 	wltR, err := c.CreateEncryptedWallet(seed, label, password, scanN)
 	if err != nil {
 		return nil, err
@@ -80,7 +86,7 @@ func (wltSrv *WalletService) createEncryptedWallet(seed, label, password string,
 }
 
 func (wltSrv *WalletService) createUnencryptedWallet(seed, label string, scanN int) (core.Wallet, error) {
-	c := util.NewClient()
+	c := wltSrv.newClient()
 	wltR, err := c.CreateUnencryptedWallet(seed, label, scanN)
 	if err != nil {
 		return nil, err
@@ -90,7 +96,7 @@ func (wltSrv *WalletService) createUnencryptedWallet(seed, label string, scanN i
 }
 
 func (wltSrv *WalletService) Encrypt(walletName string, pwd core.PasswordReader) {
-	c := util.NewClient()
+	c := wltSrv.newClient()
 	password, _ := pwd("Insert password")
 	_, err := c.EncryptWallet(walletName, password)
 	if err != nil {
@@ -99,7 +105,7 @@ func (wltSrv *WalletService) Encrypt(walletName string, pwd core.PasswordReader)
 }
 
 func (wltSrv *WalletService) Decrypt(walletName string, pwd core.PasswordReader) {
-	c := util.NewClient()
+	c := wltSrv.newClient()
 	password, _ := pwd("Insert password")
 	_, err := c.DecryptWallet(walletName, password)
 	if err != nil {
@@ -108,7 +114,7 @@ func (wltSrv *WalletService) Decrypt(walletName string, pwd core.PasswordReader)
 }
 
 func (wltSrv *WalletService) IsEncrypted(walletName string) (bool, error) {
-	c := util.NewClient()
+	c := wltSrv.newClient()
 	wlt, err := c.Wallet(walletName)
 	if err != nil {
 		return false, err
@@ -116,21 +122,25 @@ func (wltSrv *WalletService) IsEncrypted(walletName string) (bool, error) {
 	return wlt.Meta.Encrypted, nil
 }
 func (wltSrv *WalletService) GetWallet(id string) core.Wallet {
-	c := util.NewClient()
+	c := wltSrv.newClient()
 	wltR, err := c.Wallet(id)
 	if err != nil {
 		return nil
 	}
-	return walletResponseToWallet(*wltR)
+	nwlt := walletResponseToWallet(*wltR)
+	nwlt.nodeAddress = wltSrv.nodeAddress
+	return nwlt
 }
 
 type WalletNode struct { //Implements WallentEnv interface
-	wltService *WalletService
+	wltService  *WalletService
+	nodeAddress string
 }
 
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(WalletService)
+		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
 	}
 	return wltEnv.wltService
 }
@@ -138,6 +148,7 @@ func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 func (wltEnv *WalletNode) GetWalletSet() core.WalletSet {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(WalletService)
+		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
 	}
 	return wltEnv.wltService
 }
@@ -185,18 +196,22 @@ func (err errorTickerInvalid) validTickersString() string {
 }
 
 type Wallet struct { //Implements Wallet and CryptoAccount interfaces
-	Id        string
-	Label     string
-	CoinType  string
-	Encrypted bool
+	Id          string
+	Label       string
+	CoinType    string
+	Encrypted   bool
+	nodeAddress string
 }
 
+func (wlt Wallet) newClient() *api.Client {
+	return api.NewClient(wlt.nodeAddress)
+}
 func (wlt Wallet) GetLabel() string {
 	return wlt.Label
 }
 
 func (wlt Wallet) SetLabel(name string) {
-	c := util.NewClient()
+	c := wlt.newClient()
 	_ = c.UpdateWallet(wlt.Id, name)
 }
 
@@ -217,7 +232,7 @@ func (wlt Wallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
 }
 
 func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
-	c := util.NewClient()
+	c := wlt.newClient()
 	password, _ := pwd("Insert password")
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
@@ -248,7 +263,7 @@ func (wlt Wallet) GetCryptoAccount() core.CryptoAccount {
 }
 
 func (wlt Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
-	c := util.NewClient()
+	c := wlt.newClient()
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
 		return nil, err

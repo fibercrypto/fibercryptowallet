@@ -34,7 +34,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 
-	walletM.WalletEnv = new(models.WalletNode)
+	walletM.WalletEnv = new(models.WalletNode) //Set the nodeAddress field to WalletNode type
 	walletM.SeedGenerator = new(models.SeedService)
 
 }
