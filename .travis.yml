@@ -1,0 +1,53 @@
+language: go
+
+go:
+- 1.12.x
+
+matrix:
+  include:
+  - os: linux
+    dist: xenial
+    before_install:
+    - sudo apt-get update -qq
+    - sudo apt-get install devscripts build-essential lintian dh-make
+    - sudo apt-get install qtdeclarative5-dev qt5-default libjack-jackd2-dev
+    - sudo apt install libgl-dev libglu-dev libglib2.0-dev libsm-dev libxrender-dev libfontconfig1-dev libxext-dev
+    - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
+      #    - ./.travis/install-linux.sh
+    compiler:
+    - clang
+    - gcc
+    script:
+    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+    - go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup test && $(go env GOPATH)/bin/qtsetup -test=false
+    - go get -t -d -v ./...
+    - make build-wallet
+  - os: osx
+    osx_image: xcode10.2
+    #    before_install:
+            #- ./.travis/install-os.sh
+    script:
+    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+    - xcode-select --install; go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup -test=false
+    - go get -t -d -v ./...
+    - make build-wallet 
+#  - os: windows
+#    before_install:
+#    - dir C:/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.17134.0/x64
+#    - cmd.exe /C 'cd && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
+#      x86 && cd && cd "C:/Users/travis/build/braindef/jamulus" && dir'
+#    - curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+#    - curl -vLO http://www.steinberg.net/sdk_downloads/ASIOSDK2.3.2.zip
+#    - unzip ASIOSDK2.3.2.zip
+#    - mkdir windows/ASIOSDK2
+#    - cp -rvu ASIOSDK2.3.2/* windows/ASIOSDK2
+#    - "./qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
+#    - ls -la C:/Qt/5.12.3/msvc2017/bin/qtenv2.bat
+#    script:
+#    - cmd.exe /C 'cd && "C:\Qt\5.12.3\msvc2017\bin\qtenv2.bat" && cd && "C:\Program
+#      Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
+#      x86 && cd "C:\Users\travis\build\braindef\jamulus" && cd && qmake Jamulus.pro
+#      && nmake'
+#
