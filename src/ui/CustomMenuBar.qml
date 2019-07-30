@@ -12,11 +12,13 @@ RowLayout {
     property alias menuBarColor: menuBarReal.color
 
     property alias enableOutputs: menuItemOutputs.enabled
+    property alias enablePendingTransactions: menuItemPendingTransactions.enabled
     property alias enableBlockchain: menuItemBlockchain.enabled
     property alias enableNetworking: menuItemNetworking.enabled
 
     // Signals
     signal outputsRequested()
+    signal pendingTransactionsRequested()
     signal networkingRequested()
     signal blockchainRequested()
     signal aboutRequested()
@@ -62,6 +64,7 @@ RowLayout {
             generalStackView.pop()
 
             enableOutputs = true
+            enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = true
         }
@@ -97,6 +100,13 @@ RowLayout {
                 iconSource: "qrc:/images/resources/images/icons/outputs.svg"
 
                 onClicked: outputsRequested()
+            }
+            CustomMenuItem {
+                id: menuItemPendingTransactions
+                text: qsTr("&Pending transactions")
+                iconSource: "qrc:/images/resources/images/icons/pending-transactions.svg"
+
+                onClicked: pendingTransactionsRequested()
             }
             CustomMenuItem {
                 id: menuItemBlockchain

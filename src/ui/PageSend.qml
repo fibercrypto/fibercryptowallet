@@ -16,6 +16,7 @@ Page {
         id: tabBarSend
         Material.primary: Material.Blue
         Material.accent: Material.Yellow
+        Material.elevation: 0
 
         ToolButton {
             id: buttonAddWallet

@@ -6,7 +6,9 @@ import WalletsManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: root
@@ -42,7 +44,7 @@ Page {
                 Layout.rightMargin: listWalletRightMargin
                 Layout.preferredWidth: internalLabelsWidth
             }
-        }
+        } // RowLayout
 
         Rectangle {
             id: rect
@@ -50,12 +52,13 @@ Page {
             height: 1
             color: "#DDDDDD"
         }
-    }
+    } // ColumnLayout (header)
 
     footer: ToolBar {
         id: tabBarCreateUpload
         Material.primary: Material.Blue
         Material.accent: Material.Yellow
+        Material.elevation: 0
 
         RowLayout {
             anchors.fill: parent
@@ -65,16 +68,28 @@ Page {
                 icon.source: "qrc:/images/resources/images/icons/add.svg"
                 Layout.fillWidth: true
 
+
                 
+
+                onClicked: {
+                    dialogAddLoadWallet.mode = CreateLoadWallet.Create
+                    dialogAddLoadWallet.open()
+                }
+
             }
             ToolButton {
                 id: buttonLoadWallet
                 text: qsTr("Load wallet")
                 icon.source: "qrc:/images/resources/images/icons/upload.svg"
                 Layout.fillWidth: true
+
+                onClicked: {
+                    dialogAddLoadWallet.mode = CreateLoadWallet.Load
+                    dialogAddLoadWallet.open()
+                }
             }
-        }
-    }
+        } // RowLayout
+    } // ToolBar (footer)
 
     ScrollView {
         id: scrollItem
@@ -89,6 +104,7 @@ Page {
             
         }
     }
+
 
     
     WalletManager{
@@ -113,6 +129,24 @@ Page {
 
     
     
+
+    DialogAddLoadWallet {
+        id: dialogAddLoadWallet
+        anchors.centerIn: Overlay.overlay
+
+        modal: true
+        focus: true
+
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 640 ? 640 - 40 : applicationWindow.height - 40
+
+        onAccepted: {
+            console.log("Add wallet")
+            listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
+        }
+    }
+
+
     // Roles: name, encryptionEnabled, sky, coinHours
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
