@@ -20,7 +20,8 @@ matrix:
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
     - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
-    - go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup -test=false -qt_dir="~/5.13.0/gcc_64/" prep && $(go env GOPATH)/bin/qtsetup -test=false -qt_dir="~/5.13.0/gcc_64/" generate && $(go env GOPATH)/bin/qtsetup -test=false -qt_dir="~/5.13.0/gcc_64/" check && $(go env GOPATH)/bin/qtsetup -test=false -qt_dir="~/5.13.0/gcc_64/" install
+    - export QT_DIR="~/5.13.0/gcc_64/"
+    - go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup -test=false prep && $(go env GOPATH)/bin/qtsetup -test=false generate && $(go env GOPATH)/bin/qtsetup -test=false check && $(go env GOPATH)/bin/qtsetup -test=false install
     - go get -t -d -v ./...
     - make build-wallet
   - os: osx
