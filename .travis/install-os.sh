@@ -18,5 +18,7 @@ pyenv global 3.6.8
 
 pip install requests
 
-(cd $HOME && wget https://git.kaidan.im/lnj/qli-installer/raw/master/qli-installer.py && chmod +x qli-installer.py && ./qli-installer.py 5.13.0 mac desktop)
+(cd $HOME && wget https://git.kaidan.im/lnj/qli-installer/raw/master/qli-installer.py && python3 qli-installer.py 5.13.0 mac desktop)
+
+ls $HOME/5.13.0
 
