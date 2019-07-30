@@ -20,8 +20,8 @@ matrix:
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
     - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
-    - go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup -test=false 
-    - go get -t ./...
+    - go get -u -v github.com/therecipe/qt/cmd/... && $(go env GOPATH)/bin/qtsetup test && $(go env GOPATH)/bin/qtsetup -test=false
+#    - go get -t ./...
     - make build-wallet
   - os: osx
     osx_image: xcode10.2
