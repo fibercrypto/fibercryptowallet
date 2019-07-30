@@ -7,4 +7,4 @@ chmod +x qli-installer.py
 
 ./qli-installer.py 5.13.0 linux desktop
 
-export PATH=./5.13.0/gcc_64/bin:$PATH
+export PATH=~/5.13.0/gcc_64/bin:$PATH

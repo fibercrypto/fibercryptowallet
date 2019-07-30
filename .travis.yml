@@ -13,7 +13,7 @@ matrix:
     - sudo apt-get install qtdeclarative5-dev qt5-default libjack-jackd2-dev
     - sudo apt install libgl-dev libglu-dev libglib2.0-dev libsm-dev libxrender-dev libfontconfig1-dev libxext-dev
     - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
-      #    - ./.travis/install-linux.sh
+    - (cd $HOME && ./.travis/install-linux.sh)
     compiler:
     - clang
     - gcc
@@ -25,8 +25,8 @@ matrix:
     - make build-wallet
   - os: osx
     osx_image: xcode10.2
-    #    before_install:
-            #- ./.travis/install-os.sh
+    before_install:
+    - ./.travis/install-os.sh
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
     - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
