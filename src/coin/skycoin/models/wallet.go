@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/readable"
@@ -239,7 +240,7 @@ func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint
 		return nil
 	}
 	addresses := make([]SkycoinAddress, 0)
-	for _, entry := range wltR.Entries[startIndex:int(min(len(wltR.Entries), int(startIndex+count)))] {
+	for _, entry := range wltR.Entries[startIndex:int(util.Min(len(wltR.Entries), int(startIndex+count)))] {
 		addresses = append(addresses, walletEntryToAddress(entry))
 	}
 	//Checking if all the neccesary addresses exists
@@ -287,11 +288,4 @@ func walletResponseToWallet(wltR api.WalletResponse) Wallet {
 
 func walletEntryToAddress(wltE readable.WalletEntry) SkycoinAddress {
 	return SkycoinAddress{wltE.Address}
-}
-
-func min(a, b int) int {
-	if a <= b {
-		return a
-	}
-	return b
 }
