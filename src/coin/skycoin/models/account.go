@@ -17,7 +17,7 @@ func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	} else if ticker == CoinHour {
 		return bl.Confirmed.Hours, nil
 	} else {
-		return 0, errorTickerInvalid{ticker, addr.ListAssets()}
+		return 0, errorTickerInvalid{ticker}
 	}
 }
 func (addr SkycoinAddress) ListAssets() []string {
@@ -42,7 +42,7 @@ func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
 	} else if ticker == CoinHour {
 		return bl.Confirmed.Hours, nil
 	} else {
-		return 0, errorTickerInvalid{ticker, wlt.ListAssets()}
+		return 0, errorTickerInvalid{ticker}
 	}
 
 }

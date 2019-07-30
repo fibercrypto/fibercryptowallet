@@ -12,8 +12,15 @@ import (
 )
 
 const (
-	Sky      = skycoin.SkycoinTicker
-	CoinHour = skycoin.CoinHoursTicker
+	Sky                     = skycoin.SkycoinTicker
+	CoinHour                = skycoin.CoinHoursTicker
+	WalletTypeDeterministic = "deterministic"
+
+	WalletTypeCollection = "collection"
+
+	WalletTypeBip44 = "bip44"
+
+	WalletTypeXPub = "xpub"
 )
 
 type SkycoinWalletIterator struct { //Implements WalletIterator interface
@@ -68,32 +75,38 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 }
 
 func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+	wlt := Wallet{}
 	if IsEncrypted {
 		password, _ := pwd("Enter your password")
-		return wltSrv.createEncryptedWallet(seed, label, password, scanAddressesN)
+		wltOpt := api.CreateWalletOptions{}
+		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Seed = seed
+		wltOpt.Password = password
+		wltOpt.Encrypt = true
+		wltOpt.Label = label
+		wltOpt.ScanN = scanAddressesN
+		c := wltSrv.newClient()
+		wltR, err := c.CreateWallet(wltOpt)
+		if err != nil {
+			return nil, err
+		}
+		wlt = walletResponseToWallet(*wltR)
+
 	} else {
-		return wltSrv.createUnencryptedWallet(seed, label, scanAddressesN)
-	}
-}
-func (wltSrv *SkycoinRemoteWallet) createEncryptedWallet(seed, label, password string, scanN int) (core.Wallet, error) {
-	c := wltSrv.newClient()
-	wltR, err := c.CreateEncryptedWallet(seed, label, password, scanN)
-	if err != nil {
-		return nil, err
+		wltOpt := api.CreateWalletOptions{}
+		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Seed = seed
+		wltOpt.Encrypt = false
+		wltOpt.Label = label
+		wltOpt.ScanN = scanAddressesN
+		c := wltSrv.newClient()
+		wltR, err := c.CreateWallet(wltOpt)
+		if err != nil {
+			return nil, err
+		}
+		wlt = walletResponseToWallet(*wltR)
 	}
 
-	wlt := walletResponseToWallet(*wltR)
-	return &wlt, nil
-
-}
-
-func (wltSrv *SkycoinRemoteWallet) createUnencryptedWallet(seed, label string, scanN int) (core.Wallet, error) {
-	c := wltSrv.newClient()
-	wltR, err := c.CreateUnencryptedWallet(seed, label, scanN)
-	if err != nil {
-		return nil, err
-	}
-	wlt := walletResponseToWallet(*wltR)
 	return &wlt, nil
 }
 
@@ -272,7 +285,7 @@ func (wlt Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
 
 func walletResponseToWallet(wltR api.WalletResponse) Wallet {
 	wlt := Wallet{}
-	wlt.CoinType = wltR.Meta.Coin
+	wlt.CoinType = string(wltR.Meta.Coin)
 	wlt.Encrypted = wltR.Meta.Encrypted
 	wlt.Label = wltR.Meta.Label
 	wlt.Id = wltR.Meta.Filename
