@@ -21,7 +21,7 @@ func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	}
 }
 func (addr SkycoinAddress) ListAssets() []string {
-	return []string{"Sky", "CoinHour"}
+	return []string{Sky, CoinHour}
 }
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
 	return nil
@@ -48,7 +48,7 @@ func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
 }
 
 func (wlt Wallet) ListAssets() []string {
-	return []string{"Sky", "CoinHour"}
+	return []string{Sky, CoinHour}
 }
 
 func (wlt Wallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO

@@ -3,6 +3,7 @@ package models
 import (
 	"errors"
 
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
@@ -11,8 +12,8 @@ import (
 )
 
 const (
-	Sky      = "Sky"
-	CoinHour = "CoinHour"
+	Sky      = skycoin.SkycoinTicker
+	CoinHour = skycoin.CoinHoursTicker
 )
 
 type SkycoinWalletIterator struct { //Implements WalletIterator interface
@@ -43,15 +44,15 @@ func NewSkycoinWalletIterator(wallets []Wallet) *SkycoinWalletIterator {
 	return &SkycoinWalletIterator{wallets: wallets, current: -1}
 }
 
-type WalletService struct { //Implements WalletStorage and WalletSet interfaces
+type SkycoinRemoteWallet struct { //Implements WalletStorage and WalletSet interfaces
 	nodeAddress string
 }
 
-func (wltSrv *WalletService) newClient() *api.Client {
+func (wltSrv *SkycoinRemoteWallet) newClient() *api.Client {
 	return api.NewClient(wltSrv.nodeAddress)
 }
 
-func (wltSrv *WalletService) ListWallets() core.WalletIterator {
+func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	c := wltSrv.newClient()
 	wlts, err := c.Wallets()
 	if err != nil {
@@ -66,7 +67,7 @@ func (wltSrv *WalletService) ListWallets() core.WalletIterator {
 	return NewSkycoinWalletIterator(wallets)
 }
 
-func (wltSrv *WalletService) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	if IsEncrypted {
 		password, _ := pwd("Enter your password")
 		return wltSrv.createEncryptedWallet(seed, label, password, scanAddressesN)
@@ -74,7 +75,7 @@ func (wltSrv *WalletService) CreateWallet(label string, seed string, IsEncrypted
 		return wltSrv.createUnencryptedWallet(seed, label, scanAddressesN)
 	}
 }
-func (wltSrv *WalletService) createEncryptedWallet(seed, label, password string, scanN int) (core.Wallet, error) {
+func (wltSrv *SkycoinRemoteWallet) createEncryptedWallet(seed, label, password string, scanN int) (core.Wallet, error) {
 	c := wltSrv.newClient()
 	wltR, err := c.CreateEncryptedWallet(seed, label, password, scanN)
 	if err != nil {
@@ -86,7 +87,7 @@ func (wltSrv *WalletService) createEncryptedWallet(seed, label, password string,
 
 }
 
-func (wltSrv *WalletService) createUnencryptedWallet(seed, label string, scanN int) (core.Wallet, error) {
+func (wltSrv *SkycoinRemoteWallet) createUnencryptedWallet(seed, label string, scanN int) (core.Wallet, error) {
 	c := wltSrv.newClient()
 	wltR, err := c.CreateUnencryptedWallet(seed, label, scanN)
 	if err != nil {
@@ -96,7 +97,7 @@ func (wltSrv *WalletService) createUnencryptedWallet(seed, label string, scanN i
 	return &wlt, nil
 }
 
-func (wltSrv *WalletService) Encrypt(walletName string, pwd core.PasswordReader) {
+func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordReader) {
 	c := wltSrv.newClient()
 	password, _ := pwd("Insert password")
 	_, err := c.EncryptWallet(walletName, password)
@@ -105,7 +106,7 @@ func (wltSrv *WalletService) Encrypt(walletName string, pwd core.PasswordReader)
 	}
 }
 
-func (wltSrv *WalletService) Decrypt(walletName string, pwd core.PasswordReader) {
+func (wltSrv *SkycoinRemoteWallet) Decrypt(walletName string, pwd core.PasswordReader) {
 	c := wltSrv.newClient()
 	password, _ := pwd("Insert password")
 	_, err := c.DecryptWallet(walletName, password)
@@ -114,7 +115,7 @@ func (wltSrv *WalletService) Decrypt(walletName string, pwd core.PasswordReader)
 	}
 }
 
-func (wltSrv *WalletService) IsEncrypted(walletName string) (bool, error) {
+func (wltSrv *SkycoinRemoteWallet) IsEncrypted(walletName string) (bool, error) {
 	c := wltSrv.newClient()
 	wlt, err := c.Wallet(walletName)
 	if err != nil {
@@ -122,7 +123,7 @@ func (wltSrv *WalletService) IsEncrypted(walletName string) (bool, error) {
 	}
 	return wlt.Meta.Encrypted, nil
 }
-func (wltSrv *WalletService) GetWallet(id string) core.Wallet {
+func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
 	c := wltSrv.newClient()
 	wltR, err := c.Wallet(id)
 	if err != nil {
@@ -134,13 +135,13 @@ func (wltSrv *WalletService) GetWallet(id string) core.Wallet {
 }
 
 type WalletNode struct { //Implements WallentEnv interface
-	wltService  *WalletService
+	wltService  *SkycoinRemoteWallet
 	nodeAddress string
 }
 
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 	if wltEnv.wltService == nil {
-		wltEnv.wltService = new(WalletService)
+		wltEnv.wltService = new(SkycoinRemoteWallet)
 		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
 	}
 	return wltEnv.wltService
@@ -148,7 +149,7 @@ func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 
 func (wltEnv *WalletNode) GetWalletSet() core.WalletSet {
 	if wltEnv.wltService == nil {
-		wltEnv.wltService = new(WalletService)
+		wltEnv.wltService = new(SkycoinRemoteWallet)
 		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
 	}
 	return wltEnv.wltService
@@ -181,19 +182,11 @@ func (seedService *SeedService) VerifyMnemonic(seed string) (bool, error) {
 }
 
 type errorTickerInvalid struct {
-	tickerUsed   string
-	validTickers []string
+	tickerUsed string
 }
 
 func (err errorTickerInvalid) Error() string {
-	return (err.tickerUsed + " is an invalid ticker. Use one of this " + err.validTickersString())
-}
-func (err errorTickerInvalid) validTickersString() string {
-	tickersString := err.validTickers[0]
-	for _, tick := range err.validTickers[1:] {
-		tickersString += tickersString + ", " + tick
-	}
-	return tickersString
+	return (err.tickerUsed + " is an invalid ticker. Use " + Sky + " or " + CoinHour)
 }
 
 type Wallet struct { //Implements Wallet and CryptoAccount interfaces
