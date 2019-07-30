@@ -238,7 +238,7 @@ func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint
 	if err != nil {
 		return nil
 	}
-	addresses := make([]Address, 0)
+	addresses := make([]SkycoinAddress, 0)
 	for _, entry := range wltR.Entries[startIndex:int(min(len(wltR.Entries), int(startIndex+count)))] {
 		addresses = append(addresses, walletEntryToAddress(entry))
 	}
@@ -250,7 +250,7 @@ func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint
 			return nil
 		}
 		for _, addr := range newAddrs {
-			addresses = append(addresses, Address{addr})
+			addresses = append(addresses, SkycoinAddress{addr})
 		}
 	}
 
@@ -268,7 +268,7 @@ func (wlt Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	if err != nil {
 		return nil, err
 	}
-	addresses := make([]Address, 0)
+	addresses := make([]SkycoinAddress, 0)
 	for _, entry := range wltR.Entries {
 		addresses = append(addresses, walletEntryToAddress(entry))
 	}
@@ -285,8 +285,8 @@ func walletResponseToWallet(wltR api.WalletResponse) Wallet {
 	return wlt
 }
 
-func walletEntryToAddress(wltE readable.WalletEntry) Address {
-	return Address{wltE.Address}
+func walletEntryToAddress(wltE readable.WalletEntry) SkycoinAddress {
+	return SkycoinAddress{wltE.Address}
 }
 
 func min(a, b int) int {

@@ -6,7 +6,7 @@ import (
 
 type SkycoinAddressIterator struct { //Implements AddressIterator interfaces
 	current   int
-	addresses []Address
+	addresses []SkycoinAddress
 }
 
 func (it *SkycoinAddressIterator) Value() core.Address {
@@ -28,22 +28,22 @@ func (it *SkycoinAddressIterator) HasNext() bool {
 	return true
 }
 
-func NewSkycoinAddressIterator(addresses []Address) *SkycoinAddressIterator {
+func NewSkycoinAddressIterator(addresses []SkycoinAddress) *SkycoinAddressIterator {
 	return &SkycoinAddressIterator{addresses: addresses, current: -1}
 }
 
-type Address struct { //Implements Address and CryptoAccount interfaces
+type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
 	address string
 }
 
-func (addr Address) IsBip32() bool {
+func (addr SkycoinAddress) IsBip32() bool {
 	return true
 }
 
-func (addr Address) String() string {
+func (addr SkycoinAddress) String() string {
 	return addr.address
 }
 
-func (addr Address) GetCryptoAccount() core.CryptoAccount {
+func (addr SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
 }

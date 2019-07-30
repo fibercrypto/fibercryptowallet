@@ -5,7 +5,7 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
-func (addr Address) GetBalance(ticker string) (uint64, error) {
+func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	c := util.NewClient()
 	bl, err := c.Balance([]string{addr.address})
 	if err != nil {
@@ -20,13 +20,13 @@ func (addr Address) GetBalance(ticker string) (uint64, error) {
 		return 0, errorTickerInvalid{ticker, addr.ListAssets()}
 	}
 }
-func (addr Address) ListAssets() []string {
+func (addr SkycoinAddress) ListAssets() []string {
 	return []string{"Sky", "CoinHour"}
 }
-func (addr Address) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
+func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
 	return nil
 }
-func (addr Address) ListTransactions() core.TransactionIterator { //------TODO
+func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //------TODO
 	return nil
 }
 
