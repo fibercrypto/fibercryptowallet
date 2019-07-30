@@ -37,7 +37,7 @@ type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
 }
 
 func (addr SkycoinAddress) IsBip32() bool {
-	return true
+	return false
 }
 
 func (addr SkycoinAddress) String() string {
