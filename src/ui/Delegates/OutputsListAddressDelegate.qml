@@ -4,91 +4,67 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 Item {
-    id: root
+    id: outputsListAddressDelegate
 
-    Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+    property bool expanded: false
+    
+    implicitHeight: itemDelegateAddress.height + (expanded ? listViewAddressOutputs.height : 0)
+    Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
-    RowLayout {
-        id: delegateAddressRowLayout
-        anchors.fill: parent
-        anchors.leftMargin: listOutputsLeftMargin
-        anchors.rightMargin: listOutputsRightMargin
-        spacing: listOutputsSpacing
+    clip: true
 
-        Label {
-            id: labelNumber
-            text: index + 1
+    ItemDelegate {
+        id: itemDelegateAddress
+
+        property color textColor: expanded ? parent.Material.accent : parent.Material.foreground
+        Behavior on textColor { ColorAnimation {} }
+
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.leftMargin: 10
+        anchors.right: parent.right
+
+        Material.foreground: textColor
+        icon.source: "qrc:/images/resources/images/icons/qr.svg"
+        icon.width: 16
+        icon.height: 16
+        text: address // a role of the model
+        font.family: "Code New Roman"
+        font.bold: expanded
+
+        onClicked: {
+            expanded = !expanded
         }
+    } // ItemDelegate
+    
+    ListView {
+        id: listViewAddressOutputs
+        anchors.top: itemDelegateAddress.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
+        height: contentItem.height
+        
+        opacity: expanded ? 1.0 : 0.0
+        Behavior on opacity { NumberAnimation { duration: expanded ? 250 : 1000; easing.type: Easing.OutQuint } }
 
-        Image {
-            id: qrIcon
-            source: "qrc:/images/resources/images/icons/qr.svg"
-            sourceSize: "16x16"
+        clip: true
+        interactive: false
+        model: modelOutputs
+
+        delegate: OutputsListAddressOutputDelegate {
+            width: listViewAddressOutputs.width
         }
+    } // ListView
 
-        RowLayout {
-            TextInput {
-                id: textAddress
-                text: address // a role of the model
-                readOnly: true
-                font.family: "Code New Roman"
-            }
-            ToolButton {
-                id: toolButtonCopy
-                icon.source: "qrc:/images/resources/images/icons/copy.svg"
-                Layout.alignment: Qt.AlignLeft
-                ToolTip.text: qsTr("Copy to clipboard")
-                ToolTip.visible: hovered // TODO: pressed when mobile?
-                ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
-
-                Image {
-                    id: imageCopied
-                    anchors.centerIn: parent
-                    source: "qrc:/images/resources/images/icons/check-simple.svg"
-                    fillMode: Image.PreserveAspectFit
-                    sourceSize: Qt.size(toolButtonCopy.icon.width*1.5, toolButtonCopy.icon.height*1.5)
-                    z: 1
-
-                    opacity: 0.0
-                }
-
-                onClicked: {
-                    textAddress.selectAll()
-                    textAddress.copy()
-                    textAddress.deselect()
-                    if (copyAnimation.running) {
-                        copyAnimation.restart()
-                    } else {
-                        copyAnimation.start()
-                    }
-                }
-
-                SequentialAnimation {
-                    id: copyAnimation
-                    NumberAnimation { target: imageCopied; property: "opacity"; to: 1.0; easing.type: Easing.OutCubic }
-                    PauseAnimation { duration: 1000 }
-                    NumberAnimation { target: imageCopied; property: "opacity"; to: 0.0; easing.type: Easing.OutCubic }
-                }
-            } // ToolButton
-            Rectangle {
-                id: spacer
-                Layout.fillWidth: true
-            }
-        }
-
-        Label {
-            id: labelAddressSky
-            text: addressSky // a role of the model
-            color: Material.accent
-            horizontalAlignment: Text.AlignRight
-            Layout.preferredWidth: internalLabelsWidth
-        }
-
-        Label {
-            id: labelAddressCoins
-            text: addressCoinHours // a role of the model
-            horizontalAlignment: Text.AlignRight
-            Layout.preferredWidth: internalLabelsWidth
-        }
-    } // RowLayout (addresses)
+    // Roles: outputID, addressSky, addressCoinHours
+    // Use listModel.append( { "outputID": value, "addressSky": value, "addressCoinHours": value } )
+    // Or implement the model in the backend (a more recommendable approach)
+    ListModel {
+        id: modelOutputs
+        // The first element must exist but will not be used
+        ListElement { outputID: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
+        ListElement { outputID: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
+        ListElement { outputID: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
+        ListElement { outputID: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
+    }
 }
