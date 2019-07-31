@@ -31,7 +31,7 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //-----
 }
 
 func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
-	c := util.NewClient()
+	c := wlt.newClient()
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
 		return 0, err

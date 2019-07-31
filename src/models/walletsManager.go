@@ -34,7 +34,8 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 
-	walletM.WalletEnv = new(models.WalletNode) //Set the nodeAddress field to WalletNode type
+	walletM.WalletEnv = &models.WalletNode{NodeAddress: "http://127.0.0.1:6420"} //just example
+
 	walletM.SeedGenerator = new(models.SeedService)
 
 }
@@ -116,13 +117,16 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 }
 
 func (walletM *WalletManager) getWallets() []*QWallet {
+
 	qwallets := make([]*QWallet, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 	for it.Next() {
+
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {
 			continue
 		}
+
 		if encrypted {
 			qwallets = append(qwallets, fromWalletToQWallet(it.Value(), true))
 		} else {
@@ -130,6 +134,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		}
 
 	}
+
 	return qwallets
 }
 
@@ -161,18 +166,23 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 }
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
+
 	qwallet := NewQWallet(nil)
 	qwallet.SetName(wlt.GetLabel())
+
 	qwallet.SetFileName(wlt.GetId())
+
 	qwallet.SetEncryptionEnabled(0)
 	if isEncrypted {
 		qwallet.SetEncryptionEnabled(1)
 	}
+
 	bl, err := wlt.GetCryptoAccount().GetBalance("Sky")
 	if err != nil {
 		bl = 0
 	}
 	qwallet.SetSky(bl)
+
 	bl, err = wlt.GetCryptoAccount().GetBalance("CoinHour")
 	if err != nil {
 		bl = 0

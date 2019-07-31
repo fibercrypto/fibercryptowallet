@@ -71,6 +71,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 		nwlt.nodeAddress = wltSrv.nodeAddress
 		wallets = append(wallets, nwlt)
 	}
+
 	return NewSkycoinWalletIterator(wallets)
 }
 
@@ -149,13 +150,13 @@ func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
 
 type WalletNode struct { //Implements WallentEnv interface
 	wltService  *SkycoinRemoteWallet
-	nodeAddress string
+	NodeAddress string
 }
 
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(SkycoinRemoteWallet)
-		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
+		wltEnv.wltService.nodeAddress = wltEnv.NodeAddress
 	}
 	return wltEnv.wltService
 }
@@ -163,7 +164,7 @@ func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 func (wltEnv *WalletNode) GetWalletSet() core.WalletSet {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(SkycoinRemoteWallet)
-		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
+		wltEnv.wltService.nodeAddress = wltEnv.NodeAddress
 	}
 	return wltEnv.wltService
 }
