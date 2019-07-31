@@ -1,4 +1,4 @@
-package pluginutil
+package util
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
