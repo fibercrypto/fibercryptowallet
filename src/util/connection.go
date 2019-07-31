@@ -1,9 +1,26 @@
 package util
 
-import "github.com/skycoin/skycoin/src/api"
+import (
+	"github.com/skycoin/skycoin/src/api"
+)
 
-// NewClient returns a new client
+//Return address of daemon node----TODO
+func nodeAddress() string {
+	return "http://127.0.0.1:39079"
+}
+
+//Return username of daemon node----TODO
+func nodeUsername() string {
+	return "Kid"
+}
+
+//Return password of daemon node-----TODO
+func nodePassword() string {
+	return "P@ssw0rd!"
+}
+
 func NewClient() *api.Client {
-	addr := "http://node.skycoin.net" // example only
-	return api.NewClient(addr)
+	c := api.NewClient(nodeAddress())
+	//c.SetAuth(nodeUsername(), nodePassword())
+	return c
 }
