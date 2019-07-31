@@ -28,8 +28,8 @@ type PendingTransactionList struct {
 type PendingTransaction struct {
 	core.QObject
 	
-	_ int              `property:"sky"`
-	_ int              `property:"coinHours"`
+	_ float64          `property:"sky"`
+	_ uint64           `property:"coinHours"`
 	_ *core.QDateTime  `property:"timeStamp"`
 	_ string           `property:"transactionID"`
 }
@@ -139,16 +139,14 @@ func getMine() ([]*PendingTransaction, error) {
 
 func UnconfirmedTransactionToPendingTransaction(ut *readable.UnconfirmedTransactionVerbose) *PendingTransaction {
 	pt := NewPendingTransaction(nil)
-	//pt.SetTimeStamp(ut.Received)
-	//year, month, day, h, m, s := util.ParseDate(ut.Received)
-	pt.SetTimeStamp(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(10, 0, 0, 0), core.Qt__LocalTime))
-	//bs.SetTimeStamp(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, s, 0), core.Qt__LocalTime))
+	year, month, day, h, m, s := util.ParseDate(ut.Received.Unix())
+	pt.SetTimeStamp(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, s, 0), core.Qt__LocalTime))
 	pt.SetTransactionID(ut.Transaction.Hash)
-	coins, hours := 0, 0
+	coins, hours := 0.1, uint64(0)
 	for _, output := range ut.Transaction.Out {
-		outCoin, _ := strconv.Atoi(output.Coins)
+		outCoin, _ := strconv.ParseFloat(output.Coins, 64)
 		coins = coins + outCoin
-		hours = hours + int(output.Hours)
+		hours = hours + output.Hours
 	}
 	pt.SetSky(coins)
 	pt.SetCoinHours(hours)
