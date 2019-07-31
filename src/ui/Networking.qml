@@ -80,6 +80,11 @@ Page {
         } // ColumnLayout (frame)
     } // Frame
 
+    NetworkingManager{
+        id: networkingManager
+    }
+
+
     // Roles: ip, port, source, block, lastSeenIn, lastSeenOut
     // Implement the model in the backend (a more recommendable approach)
     ListModel { // EXAMPLE
