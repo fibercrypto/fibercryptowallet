@@ -49,3 +49,7 @@ matrix:
 #      x86 && cd "C:\Users\travis\build\braindef\jamulus" && cd && qmake Jamulus.pro
 #      && nmake'
 #
+notifications:
+  email: false
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+
