@@ -19,7 +19,7 @@ type NetworkingManager struct {
 	_ func(id string, n int, password string)                              `slot:"newWalletAddress"`
 	_ func(id string, password string)                                     `slot:"encryptWallet"`
 	_ func(id string, password string)                                     `slot:"decryptWallet"`
-	_ func() []*QWallet                                                    `slot:"getWallets"`
+	_ func() []*QNetworking                                                    `slot:"getNetworks"`
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
 }
 
@@ -115,8 +115,8 @@ func (walletM *NetworkingManager) newWalletAddress(id string, n int, password st
 	wlt.GenAddresses(core.AccountAddress, uint32(wltEntrieslen), uint32(n), pwd)
 }
 
-func (walletM *WalletManager) getWallets() []*QWallet {
-	qwallets := make([]*QWallet, 0)
+func (walletM *NetworkingManager) getNetworks() []*QNetworking {
+	networks := make([]*QNetworking, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 	for it.Next() {
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())

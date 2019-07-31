@@ -30,9 +30,9 @@ type QNetworking struct {
 	core.QObject
 // ip, port, source, block, lastSeenIn, lastSeenOut
 	_ string `property:"ip"`
-	_ int    `property:"port"`
-	_ uint64 `property:"source"`
-	_ uint64 `property:"block"`
+	_ string `property:"port"`
+	_ string `property:"source"`
+	_ string `property:"block"`
 	_ string `property:"lastSeenIn"`
 	_ string `property:"lastSeenOut"`
 }
