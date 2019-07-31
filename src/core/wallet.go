@@ -8,12 +8,13 @@ type WalletIterator interface {
 
 type WalletSet interface {
 	ListWallets() WalletIterator
+	GetWallet(id string) Wallet
 	CreateWallet(name string, seed string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int) (Wallet, error)
 }
 
 type WalletStorage interface {
-	Encrypt(walletName, password string)
-	Decrypt(walletName, password string)
+	Encrypt(walletName string, password PasswordReader)
+	Decrypt(walletName string, password PasswordReader)
 	IsEncrypted(walletName string) (bool, error)
 }
 
@@ -31,13 +32,14 @@ type Wallet interface {
 	Transfer(to Address, amount uint64)
 	SendFromAddress(from, to Address, amount uint64)
 	Spend(unspent, new []TransactionOutput)
-	GenAddresses(addrType AddressType, startIndex, count uint32) AddressIterator
+	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
+	GetLoadedAddresses() (AddressIterator, error)
 }
 
 type SeedGenerator interface {
 	GenerateMnemonic(wordCount int) (string, error)
-	VerifyMnemonic(seed string) error
+	VerifyMnemonic(seed string) (bool, error)
 }
 
 type WalletEnv interface {
