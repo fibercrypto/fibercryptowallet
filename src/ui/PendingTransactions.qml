@@ -11,10 +11,20 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 Page {
     id: root
 
-    Frame {
+    property bool showOnlyMine: false
+
+    GroupBox {
         anchors.fill: parent
         anchors.margins: 20
         clip: true
+
+        label: CheckDelegate {
+            text: qsTr("Show only mine")
+            checked: showOnlyMine
+            onCheckedChanged: {
+                showOnlyMine = checked
+            }
+        }
 
         ColumnLayout {
             id: columnLayoutFrame
@@ -69,19 +79,29 @@ Page {
 
                     model: modelPendingTransactions
                     delegate: PendingTransactionsDelegate {
+                        property bool hide: !modelMine && showOnlyMine
+
                         width: parent.width
 
+                        modelMine: mine
                         modelTransactionID: transactionID
                         modelSky: sky
                         modelCoinHours: coinHours
                         modelTimestamp: timestamp
+
+                        height: hide ? 0 : implicitHeight
+                        Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+                        opacity: hide ? 0 : 1
+                        Behavior on opacity { NumberAnimation { duration: 100 } }
+
+                        clip: true
                     }
                 } // ListView
             } // ScrollView
         } // ColumnLayout (frame)
     } // Frame
 
-    // Roles: transactionID, sky, coinHours, timestamp
+    // Roles: mine, transactionID, sky, coinHours, timestamp
     // Implement the model in the backend (a more recommendable approach)
     QPendingList{
         id: modelPendingTransactions
