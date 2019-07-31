@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.12
 ItemDelegate {
     id: root
 
+    property bool modelMine
     property string modelTransactionID
     property int modelSky
     property int modelCoinHours
