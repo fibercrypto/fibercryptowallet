@@ -22,7 +22,8 @@ type PendingTransactionList struct {
 	_ map[int]*core.QByteArray  `property:"roles"`
 	_ []*PendingTransaction     `property:"transactions"`
 
-	_ func()                    `slot:"load"`
+	_ func()                    `slot:"getMine"`
+	_ func()                    `slot:"getAll"`
 }
 
 type PendingTransaction struct {
@@ -46,18 +47,11 @@ func (m *PendingTransactionList) init() {
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 
-	m.ConnectLoad(m.load)
-	m.load()
+	m.ConnectGetMine(m.getMine)
+	m.ConnectGetAll(m.getAll)
+	m.getAll()
 }
 
-func (m *PendingTransactionList) load() {
-	transactions, err := getAll()
-	if err != nil {
-		return 
-	}
-	
-	m.SetTransactions(transactions)
-}
 
 func (m *PendingTransactionList) rowCount(*core.QModelIndex) int {
 	return len(m.Transactions())
@@ -103,38 +97,40 @@ func (m *PendingTransactionList) data(index *core.QModelIndex, role int) *core.Q
 	}
 }
 
-func getAll() ([]*PendingTransaction, error) {
+func (m *PendingTransactionList) getAll() {
+	println("getAll")
 	c := util.NewClient()
 	transactions, err := c.PendingTransactionsVerbose()
 	if err != nil {
-		return nil, err
+		return
 	}
 	ptModels := make([]*PendingTransaction, 0)
 	for _, pt := range transactions {
 		ptModel := UnconfirmedTransactionToPendingTransaction(&pt)
 		ptModels = append(ptModels, ptModel)
 	}
-	return ptModels, nil
+	m.SetTransactions(ptModels)
 }
 
-func getMine() ([]*PendingTransaction, error) {
+func (m *PendingTransactionList) getMine() {
+	println("getMine")
 	c := util.NewClient()
 	wallets, err := c.Wallets()
 	if err != nil {
-		return nil, err
+		return
 	}
 	ptModels := make([]*PendingTransaction, 0)
 	for _, w := range wallets {
 		response, err := c.WalletUnconfirmedTransactionsVerbose(w.Meta.Filename)
 		if err != nil {
-			return nil, err
+			return
 		}
 		for _, pt := range response.Transactions {
 			ptModel := UnconfirmedTransactionToPendingTransaction(&pt)
 			ptModels = append(ptModels, ptModel)
 		}
 	}
-	return ptModels, nil
+	m.SetTransactions(ptModels)
 }
 
 func UnconfirmedTransactionToPendingTransaction(ut *readable.UnconfirmedTransactionVerbose) *PendingTransaction {
@@ -142,7 +138,7 @@ func UnconfirmedTransactionToPendingTransaction(ut *readable.UnconfirmedTransact
 	year, month, day, h, m, s := util.ParseDate(ut.Received.Unix())
 	pt.SetTimeStamp(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, s, 0), core.Qt__LocalTime))
 	pt.SetTransactionID(ut.Transaction.Hash)
-	coins, hours := 0.1, uint64(0)
+	coins, hours := 0.0, uint64(0)
 	for _, output := range ut.Transaction.Out {
 		outCoin, _ := strconv.ParseFloat(output.Coins, 64)
 		coins = coins + outCoin
