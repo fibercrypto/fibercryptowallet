@@ -8,7 +8,7 @@ type NetworkIterator interface {
 }
 
 type NetworkSet interface {
-	ListNetwork() NetworkIterator
+	ListNetworks() NetworkIterator
 }
 
 type Network interface {
