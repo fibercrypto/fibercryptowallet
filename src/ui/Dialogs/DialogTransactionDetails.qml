@@ -4,10 +4,11 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
-import "qrc:/ui/src/ui/"
+// import "qrc:/ui/src/ui/"
+import "../" // For quick UI development, switch back to resources when making a release
 
 Dialog {
-    id: root
+    id: dialogTransactionsDetails
 
     property alias date: transactionDetails.date
     property alias status: transactionDetails.status
@@ -17,23 +18,42 @@ Dialog {
     property alias hoursBurned: transactionDetails.hoursBurned
     property alias transactionID: transactionDetails.transactionID
 
+    property alias expanded: transactionDetails.expanded
+
     title: qsTr("Transaction details")
+    standardButtons: Dialog.Ok
 
-    ColumnLayout {
+    Flickable {
+        id: flickable
         anchors.fill: parent
-        spacing: 20
+        clip: true
+        contentHeight: columnLayoutRoot.height
 
-        TransactionDetails {
-            id: transactionDetails
-            implicitWidth: 500
-            Layout.fillWidth: true
-        }
+        ColumnLayout {
+            id: columnLayoutRoot
+            width: parent.width
+            spacing: 20
 
-        Rectangle {
-            visible: transactionDetails.expanded
-            height: 1
-            color: Material.color(Material.Grey)
-            Layout.fillWidth: true
+            TransactionDetails {
+                id: transactionDetails
+                implicitWidth: 500
+                Layout.fillWidth: true
+            }
+
+            Rectangle {
+                visible: transactionDetails.expanded
+                height: 1
+                color: Material.color(Material.Grey)
+                Layout.fillWidth: true
+            }
+        } // ColumnLayout
+
+        ScrollIndicator.vertical: ScrollIndicator {
+            parent: dialogTransactionsDetails.contentItem
+            anchors.top: flickable.top
+            anchors.bottom: flickable.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: -dialogTransactionsDetails.rightPadding + 1
         }
     }
 }

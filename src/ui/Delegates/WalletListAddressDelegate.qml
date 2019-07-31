@@ -9,6 +9,9 @@ Item {
     readonly property bool itemVisible: index === 0 || addressSky > 0 || emptyAddressVisible
     property bool showOnlyAddresses: false
 
+    signal addAddressesRequested()
+    signal editWalletRequested()
+
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
 
@@ -29,6 +32,10 @@ Item {
             icon.source: "qrc:/images/resources/images/icons/add.svg"
             Material.foreground: Material.Teal
             Layout.fillWidth: true
+
+            onClicked: {
+                addAddressesRequested()
+            }
         }
         ToolButton {
             id: buttonToggleVisibility
@@ -64,6 +71,10 @@ Item {
             icon.source: "qrc:/images/resources/images/icons/edit.svg"
             Material.foreground: Material.Blue
             Layout.fillWidth: true
+
+            onClicked: {
+                editWalletRequested()
+            }
         }
     } // RowLayout (menu)
 
@@ -100,6 +111,9 @@ Item {
                 visible:  !showOnlyAddresses
                 icon.source: "qrc:/images/resources/images/icons/copy.svg"
                 Layout.alignment: Qt.AlignLeft
+                ToolTip.text: qsTr("Copy to clipboard")
+                ToolTip.visible: hovered // TODO: pressed when mobile?
+                ToolTip.delay: Qt.styleHints.mousePressAndHoldInterval
 
                 Image {
                     id: imageCopied
@@ -130,8 +144,7 @@ Item {
                     PauseAnimation { duration: 1000 }
                     NumberAnimation { target: imageCopied; property: "opacity"; to: 0.0; easing.type: Easing.OutCubic }
                 }
-
-            }
+            } // ToolButton
             Rectangle {
                 id: spacer
                 visible:  !showOnlyAddresses

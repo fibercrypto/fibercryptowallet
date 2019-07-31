@@ -4,8 +4,10 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
-import "qrc:/ui/src/ui/Dialogs"
-import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Dialogs"
+// import "qrc:/ui/src/ui/Delegates"
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
+import "Delegates/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: root
@@ -51,46 +53,37 @@ Page {
     } // GroupBox
 
 
-    ToolTip {
+    Dialog {
         id: toolTipFilters
 
         anchors.centerIn: Overlay.overlay
-        height: 16 + (filter.count > 5 ? filter.delegateHeight * 5 : filter.delegateHeight * filter.count)
-        clip: true
+
+        readonly property real minimumHeight: Math.min(applicationWindow.height - 100, filter.contentHeight + 150)
+        width: 300
+        height: minimumHeight
+
         modal: true
+        standardButtons: Dialog.Close
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        title: qsTr("Available filters")
 
-        ColumnLayout {
+        HistoryFilterList {
+            id: filter
             anchors.fill: parent
-
-            Label {
-                font.pointSize: Qt.application.font.pointSize * 1.25
-                font.bold: true
-                text: qsTr("Available filters")
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
-            }
-
-            ScrollView {
-                Layout.alignment: Qt.AlignCenter
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                clip: true
-                contentHeight: filter.implicitHeight
-                HistoryFilterList {
-                    id: filter
-                    interactive: false
-                }
-            }
-        } // ColumnLayout
+        }
     } // ToolTip
 
     DialogTransactionDetails {
         id: dialogTransactionDetails
         anchors.centerIn: Overlay.overlay
 
+        readonly property real maxHeight: expanded ? 590 : 370
+        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
+        Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+
         modal: true
         focus: true
-        standardButtons: Dialog.Ok
 
         date: listTransactions.currentItem.modelDate
         status: listTransactions.currentItem.modelStatus
