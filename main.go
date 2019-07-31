@@ -9,6 +9,7 @@ import (
 	//"github.com/therecipe/qt/quick"
 	//"github.com/therecipe/qt/widgets"
 	"os"
+	_ "github.com/FiberCryptoWallet/pkg/networking"
 )
 
 func main() {
