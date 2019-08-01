@@ -4,7 +4,7 @@ import (
 	"github.com/therecipe/qt/core"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/readable"
-	"github.com/simelo/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 const (
