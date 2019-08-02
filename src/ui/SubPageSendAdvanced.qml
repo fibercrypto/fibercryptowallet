@@ -35,8 +35,24 @@ Page {
                 id: comboBoxWalletsAddressesSendFrom
                 Layout.fillWidth: true
                 Layout.topMargin: -12
-            }
-        }
+
+                textRole: "address"
+                model: modelAddressesByWallet
+
+                // Taken from Qt 5.13.0 source code:
+                delegate: MenuItem {
+                    width: parent.width
+                    text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
+                    Material.foreground: comboBoxWalletsAddressesSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
+                    highlighted: comboBoxWalletsAddressesSendFrom.highlightedIndex === index
+                    hoverEnabled: comboBoxWalletsAddressesSendFrom.hoverEnabled
+                    leftPadding: highlighted ? 2*padding : padding // added
+                    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+                }
+
+                popup: CustomComboBoxDropDown { comboBox: comboBoxWalletsAddressesSendFrom }
+            } // ComboBox
+        } // ColumnLayout (send from)
 
         ColumnLayout {
             id: columnLayoutDestinations
@@ -102,7 +118,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -16
             }
-        }
+        } // ColumnLayout (custom change address)
 
         ColumnLayout {
             id: columnLayoutAutomaticCoinHoursAllocation
@@ -125,8 +141,8 @@ Page {
                         toolTipAutomaticCoinHoursAllocation.show("Coin hours share factor")
                     }
                 }
-            }
-        }
+            } // RowLayout
+        } // ColumnLayout (automatic coin hours allocation)
     } // ColumnLayout (root)
 
     ListModel {
@@ -179,6 +195,21 @@ Page {
             Label {
                 text: sliderCoinHoursShareFactor.value.toFixed(2)
             }
-        }
-    }
+        } // RowLayout (slider)
+    } // ToolTip (automatic coin hours allocation)
+
+    // Roles: wallet, address
+    // Implement the model in the backend (a more recommendable approach)
+    ListModel { // EXAMPLE
+        id: modelAddressesByWallet
+        ListElement { wallet: "Wallet A"; address: "qrxw7364w8xerusftaxkw87ues" }
+        ListElement { wallet: "Wallet A"; address: "8745yuetsrk8tcsku4ryj48ije" }
+        ListElement { wallet: "Wallet A"; address: "gfdhgs343kweru38200384uwqd" }
+        ListElement { wallet: "Wallet B"; address: "00qdqsdjkssvmchskjkxxdg374" }
+        ListElement { wallet: "Wallet B"; address: "hkdti34aoliwuiu3qsoiemdfhc" }
+        ListElement { wallet: "Wallet C"; address: "1oiwrelkrir73o8ielukaur9qq" }
+        ListElement { wallet: "Wallet C"; address: "piur948o9q8m0a8qsye8q3omxs" }
+        ListElement { wallet: "Wallet C"; address: "4ntd4im93usppturm83ysniroe" }
+        ListElement { wallet: "Wallet C"; address: "meje73o50ejdwumfle92rndlwm" }
+    }        
 }
