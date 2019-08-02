@@ -3,8 +3,14 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+import "../" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: root
+
+    signal qrCodeRequested(var data)
+
     clip: true
 
     RowLayout {
@@ -21,9 +27,15 @@ Item {
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
-            Image {
-                source: "qrc:/images/resources/images/icons/qr.svg"
-                sourceSize: "24x24"
+
+            ToolButtonQR {
+                id: toolButtonQR
+
+                iconSize: "24x24"
+
+                onClicked: {
+                    qrCodeRequested(address)
+                }
             }
             TextField {
                 id: textFieldDestinationAddress

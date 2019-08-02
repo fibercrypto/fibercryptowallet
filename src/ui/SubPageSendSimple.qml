@@ -5,6 +5,8 @@ import QtQuick.Layouts 1.12
 Page {
     id: root
 
+    signal qrCodeRequested(var data)
+
     ColumnLayout {
         id: columnLayoutRoot
         anchors.fill: parent
@@ -35,11 +37,18 @@ Page {
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
-                Image {
-                    source: "qrc:/images/resources/images/icons/qr.svg"
-                    sourceSize: "24x24"
+
+                ToolButtonQR {
+                    id: toolButtonQR
                     Layout.bottomMargin: 4
+
+                    iconSize: "24x24"
+
+                    onClicked: {
+                        qrCodeRequested(textFieldWalletsSendTo.text)
+                    }
                 }
+                
                 TextField {
                     id: textFieldWalletsSendTo
                     font.family: "Code New Roman"

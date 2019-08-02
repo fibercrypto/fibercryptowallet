@@ -19,6 +19,8 @@ ItemDelegate {
     property int modelHoursBurned: hoursBurned
     property string modelTransactionID
 
+    signal qrCodeRequested(var data)
+
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
 
@@ -65,10 +67,17 @@ ItemDelegate {
                 RowLayout {
                     id: rowLayoutSent
                     visible: modelType === TransactionDetails.Type.Send
-                    Image {
-                        source: "qrc:/images/resources/images/icons/qr.svg"
-                        sourceSize: "24x24"
+
+                    ToolButtonQR {
+                        id: toolButtonQRSent
+
+                        iconSize: "24x24"
+
+                        onClicked: {
+                            qrCodeRequested(sentAddress)
+                        }
                     }
+
                     Label {
                         text: sentAddress // model's role
                         font.family: "Code New Roman"
@@ -77,10 +86,17 @@ ItemDelegate {
                 }
                 RowLayout {
                     id: rowLayoutReceive
-                    Image {
-                        source: "qrc:/images/resources/images/icons/qr.svg"
-                        sourceSize: "24x24"
+
+                    ToolButtonQR {
+                        id: toolButtonQRReceived
+
+                        iconSize: "24x24"
+
+                        onClicked: {
+                            qrCodeRequested(receivedAddress)
+                        }
                     }
+                    
                     Label {
                         text: receivedAddress // model's role
                         font.family: "Code New Roman"
