@@ -22,6 +22,8 @@ Rectangle {
     property color pressedColor: "#1A000000"
     property real controlRadius: 40
 
+    signal toggled()
+
     color: backgroundColor
     radius: controlRadius
 
@@ -45,6 +47,7 @@ Rectangle {
 
         onClicked: {
             root.isInLeftSide = !root.isInLeftSide
+            parent.toggled()
         }
 
         contentItem: IconLabel {
@@ -77,6 +80,6 @@ Rectangle {
 
                 Behavior on color { ColorAnimation { duration: animationsSpeed } }
             }
-        }
-    }
+        } // Rectangle (button's background)
+    } // Button
 }

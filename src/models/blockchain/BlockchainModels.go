@@ -3,7 +3,7 @@ package blockchain
 import (
 	"strconv"
 
-	"github.com/simelo/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	"github.com/therecipe/qt/core"
 )

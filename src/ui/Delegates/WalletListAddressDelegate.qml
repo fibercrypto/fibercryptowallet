@@ -3,11 +3,18 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+import "../" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: root
 
     readonly property bool itemVisible: index === 0 || addressSky > 0 || emptyAddressVisible
     property bool showOnlyAddresses: false
+
+    signal addAddressesRequested()
+    signal editWalletRequested()
+    signal qrCodeRequested(var data)
 
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
@@ -29,6 +36,10 @@ Item {
             icon.source: "qrc:/images/resources/images/icons/add.svg"
             Material.foreground: Material.Teal
             Layout.fillWidth: true
+
+            onClicked: {
+                addAddressesRequested()
+            }
         }
         ToolButton {
             id: buttonToggleVisibility
@@ -64,6 +75,10 @@ Item {
             icon.source: "qrc:/images/resources/images/icons/edit.svg"
             Material.foreground: Material.Blue
             Layout.fillWidth: true
+
+            onClicked: {
+                editWalletRequested()
+            }
         }
     } // RowLayout (menu)
 
@@ -81,11 +96,12 @@ Item {
             text: index
         }
 
-        Image {
-            id: qrIcon
-            visible:  !showOnlyAddresses
-            source: "qrc:/images/resources/images/icons/qr.svg"
-            sourceSize: "16x16"
+        ToolButtonQR {
+            id: toolButtonQR
+
+            onClicked: {
+                qrCodeRequested(address)
+            }
         }
 
         RowLayout {

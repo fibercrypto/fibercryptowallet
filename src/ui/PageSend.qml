@@ -16,6 +16,7 @@ Page {
         id: tabBarSend
         Material.primary: Material.Blue
         Material.accent: Material.Yellow
+        Material.elevation: 0
 
         ToolButton {
             id: buttonAddWallet
@@ -24,7 +25,7 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                dialogSend.open()
+                dialogSendTransaction.open()
             }
         }
     }
@@ -87,11 +88,19 @@ Page {
                     }
                 }
             }
-        }
+        } // StackView
     } // GroupBox
 
     DialogSendTransaction {
-        id: dialogSend
+        id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
+
+        readonly property real maxHeight: expanded ? 690 : 490
+        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
+        Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+        
+        modal: true
+        focus: true
     }
 }

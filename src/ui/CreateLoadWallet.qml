@@ -1,93 +1,82 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
-
+import QtQuick.Layouts 1.12
 
 Item {
-    id: root
+    id: createLoadWallet
 
-    implicitWidth: 400
-    implicitHeight: 400
+    enum Mode { Create, Load }
 
+    property Item nextTabItem
+    property int mode: CreateLoadWallet.Create
+    property alias name: walletName.text
+    property alias seed: walletSeed.text
+    property alias seedConfirm: walletSeedConfirm.text
+
+    signal dataModified()
     signal walletCreationRequested()
 
+    function clear() {
+        walletName.clear()
+        walletSeed.clear()
+        walletSeedConfirm.clear()
+    }
+
+    implicitHeight: walletName.height + walletSeed.height + (mode === CreateLoadWallet.Create ? walletSeedConfirm.height : 0) + 2*column.spacing
+    Behavior on implicitHeight { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+    clip: true
+
     Column {
+        id: column
         anchors.fill: parent
         spacing: 30
-        ControlCustomSwitch {
-            id: switchNewLoadWallet
-            width: 300
-            height: 70
-            anchors.left: parent.left
-            anchors.right: parent.right
-
-            leftText: qsTr("New wallet")
-            rightText: qsTr("Load wallet")
-
-            backgroundColor: Material.accent
-            leftColor: "white"
-            rightColor: "white"
-
-            textColor: Material.accent
-        }
 
         TextField {
             id: walletName
-            anchors.left: parent.left
-            anchors.right: parent.right
+            width: parent.width
 
             selectByMouse: true
             placeholderText: qsTr("Wallet's name")
             focus: true
+
+            onTextChanged: {
+                dataModified()
+            }
         }
 
         ControlGenerateSeed {
             id: walletSeed
-            anchors.left: parent.left
-            anchors.right: parent.right
-            width: 100
+            width: parent.width
             height: inputControlHeight - 10
 
             placeholderText: qsTr("Wallet's seed")
             buttonLeftText: qsTr("12 words")
             buttonRightText: qsTr("24 words")
-            buttonsVisible: switchNewLoadWallet.isInLeftSide
+            buttonsVisible: mode === CreateLoadWallet.Create
+            nextTabItem: walletSeedConfirm
         }
 
         TextArea {
             id: walletSeedConfirm
-            anchors.left: parent.left
-            anchors.right: parent.right
-            height: walletSeed.inputControlHeight
+            width: parent.width
+            height: walletSeed.inputControlHeight - 10
 
+            clip: true
             selectByMouse: true
             wrapMode: TextArea.Wrap
             placeholderText: qsTr("Confirm the wallet's seed")
-            opacity: switchNewLoadWallet.isInLeftSide ? 1.0 : 0.0
-            visible: opacity > 0.0
+            opacity: mode === CreateLoadWallet.Create ? 1 : 0
+            visible: opacity > 0
 
             Behavior on opacity { NumberAnimation { duration: 100 } }
-        }
 
-        Button {
-            id: buttonCreateWallet
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 120
-            height: 60
-            font.bold: true
-            font.pointSize: 12
+            KeyNavigation.priority: KeyNavigation.BeforeItem
+            KeyNavigation.tab: nextTabItem
 
-            text: qsTr("Create")
-            highlighted: true
-
-            onClicked: {
-                walletCreationRequested()
+            onTextChanged: {
+                dataModified()
             }
-        }
-
-        move: Transition {
-            NumberAnimation { properties: "x,y"; duration: 250; easing.type: Easing.OutQuint }
-            PropertyAction { property: "text"; value: (switchNewLoadWallet.isInLeftSide ? qsTr("Create") : qsTr("Load")) }
-        }
-    }
+        } // TextArea
+    } // Column
 }

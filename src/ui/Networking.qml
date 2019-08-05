@@ -10,49 +10,74 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 Page {
     id: root
 
-    signal backRequested()
-
-    header: RowLayout {
-        spacing: 20
-        ToolButton {
-            id: toolButtonBack
-            icon.source: "qrc:/images/resources/images/icons/back.svg"
-            Layout.alignment: Qt.AlignLeft
-
-            onClicked: {
-                backRequested()
-            }
-        }
-
-        Label {
-            text: qsTr("Networking")
-            font.pointSize: Qt.application.font.pointSize * 2
-            horizontalAlignment: Text.AlignHCenter
-            leftPadding: -(toolButtonBack.width + parent.spacing)
-            Layout.fillWidth: true
-        }
-    }
-
     Frame {
         anchors.fill: parent
         anchors.margins: 20
         clip: true
 
-        ListView {
-            id: listNetworking
+        ColumnLayout {
+            id: columnLayoutFrame
             anchors.fill: parent
-            clip: true
 
-            model: modelNetworking
-            delegate: NetworkingListDelegate {
-                modelIp: ip
-                modelPort: port
-                modelSource: source
-                modelBlock: block
-                modelLastSeenIn: lastSeenIn
-                modelLastSeenOut: lastSeenOut
-            }
-        }
+            ColumnLayout {
+                id: columnLayoutHeader
+
+                RowLayout {
+                    Layout.topMargin: 30
+
+                    Label {
+                        text: qsTr("IP address and port")
+                        font.pointSize: 9
+                        Layout.leftMargin: 75 // Empirically obtained
+                        Layout.fillWidth: true
+                    }
+                    Label {
+                        text: qsTr("Source")
+                        font.pointSize: 9
+                        Layout.rightMargin: 75
+                    }
+                    Label {
+                        text: qsTr("Block")
+                        font.pointSize: 9
+                        Layout.rightMargin: 65
+                    }
+                    Label {
+                        text: qsTr("Last seen")
+                        font.pointSize: 9
+                        Layout.rightMargin: 90
+                    }
+                }
+
+                Rectangle {
+                    Layout.fillWidth: true
+                    height: 1
+                    color: "#DDDDDD"
+                }
+            } // ColumnLayout (header)
+
+            ScrollView {
+                id: scrollItem
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+                ListView {
+                    id: listNetworking
+                    anchors.fill: parent
+                    clip: true
+
+                    model: modelNetworking
+                    delegate: NetworkingListDelegate {
+                        modelIp: ip
+                        modelPort: port
+                        modelSource: source
+                        modelBlock: block
+                        modelLastSeenIn: lastSeenIn
+                        modelLastSeenOut: lastSeenOut
+                    }
+                } // ListView
+            } // ScrollView
+        } // ColumnLayout (frame)
     } // Frame
 
     // Roles: ip, port, source, block, lastSeenIn, lastSeenOut
