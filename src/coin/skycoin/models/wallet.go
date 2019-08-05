@@ -1,14 +1,22 @@
 package models
 
 import (
+	"encoding/hex"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"path/filepath"
+	"strings"
+	"time"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
+	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/readable"
+	"github.com/skycoin/skycoin/src/wallet"
 )
 
 const (
@@ -20,7 +28,9 @@ const (
 
 	WalletTypeBip44 = "bip44"
 
-	WalletTypeXPub = "xpub"
+	WalletTypeXPub        = "xpub"
+	walletExt             = ".wlt"
+	WalletTimestampFormat = "2006_01_02"
 )
 
 type SkycoinWalletIterator struct { //Implements WalletIterator interface
@@ -318,4 +328,102 @@ func (wltDir *WalletDirectory) GetWalletSet() core.WalletSet {
 
 type SkycoinLocalWallet struct { //Implements WalletStorage and WalletSet interfaces
 	walletDir string
+}
+
+func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
+	wallets := make([]core.Wallet, 0)
+	entries, err := ioutil.ReadDir(wltSrv.walletDir)
+	if err != nil {
+		return nil
+	}
+
+	for _, e := range entries {
+		if e.Mode().IsRegular() {
+			name := e.Name()
+			if !strings.HasSuffix(name, walletExt) {
+				continue
+			}
+
+			path := filepath.Join(wltSrv.walletDir, name)
+			w, err := wallet.Load(path)
+			if err != nil {
+				return nil
+			}
+			wallets = append(wallets, LocalWallet{
+				Id:        name,
+				Label:     w.Label(),
+				Encrypted: w.IsEncrypted(),
+				Type:      w.Type(),
+				CoinType:  string(w.Coin()),
+			})
+		}
+	}
+
+	return NewSkycoinWalletIterator(wallets)
+}
+
+func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
+	path := filepath.Join(wltSrv.walletDir, id)
+	w, err := wallet.Load(path)
+	if err != nil {
+		return nil
+	}
+	return LocalWallet{
+		Id:        id,
+		Label:     w.Label(),
+		Encrypted: w.IsEncrypted(),
+		Type:      w.Type(),
+		CoinType:  string(w.Coin()),
+	}
+}
+
+func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+	password, _ := pwd("Insert Password")
+	passwordByte := []byte(password)
+	opts := wallet.Options{
+		Label:    label,
+		Seed:     seed,
+		Encrypt:  IsEncrypted,
+		Type:     WalletTypeDeterministic,
+		Password: passwordByte,
+		ScanN:    uint64(scanAddressesN),
+	}
+	wltName := wltSrv.newUnicWalletFilename()
+	wlt, err := wallet.NewWallet(wltName, opts)
+	if err != nil {
+		return nil, err
+	}
+	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
+		return nil, err
+	}
+
+	return LocalWallet{
+		Id:        wltName,
+		Label:     wlt.Label(),
+		Encrypted: wlt.IsEncrypted(),
+		Type:      wlt.Type(),
+		CoinType:  string(wlt.Coin()),
+	}, nil
+}
+
+func (wltSrv *SkycoinLocalWallet) newUnicWalletFilename() string {
+	name := ""
+	for {
+		timestamp := time.Now().Format(WalletTimestampFormat)
+		padding := hex.EncodeToString((cipher.RandByte(2)))
+		name = fmt.Sprintf("%s_%s.%s", timestamp, padding, walletExt[1:])
+		if w := wltSrv.GetWallet(name); w == nil {
+			break
+		}
+	}
+	return name
+
+}
+
+type LocalWallet struct {
+	Id        string
+	Label     string
+	CoinType  string
+	Encrypted bool
+	Type      string
 }
