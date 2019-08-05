@@ -8,7 +8,7 @@ run-wallet:  ## Run FiberCrypto Wallet.
 build-wallet:  ## Build FiberCrypto Wallet.
 	@echo "Building FiberCrypto Wallet..."
 	# Add the flag `-quickcompiler` when making a release
-	@qtdeploy -debug build desktop
+	@qtdeploy build desktop
 	@echo "Done."
 
 clean: ## Clean project FiberCrypto Wallet.
