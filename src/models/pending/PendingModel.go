@@ -104,7 +104,7 @@ func (m *PendingTransactionList) data(index *qtcore.QModelIndex, role int) *qtco
 
 func (m *PendingTransactionList) getAll() {
 	println("getAll")
-	transactions, err := m.PEX.getTxnPool()
+	transactions, err := m.PEX.GetTxnPool()
 	if err != nil {
 		return
 	}

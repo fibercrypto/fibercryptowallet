@@ -11,15 +11,15 @@ type SkycoinPEX struct { //Implements PEX interface
 
 } 
 
-func (spex *SkycoinPEX) getConnections()  {
+func (spex *SkycoinPEX) GetConnections()  {
 	//TODO
 }
 
-func (spex *SkycoinPEX) broadcastTxn(txn core.Transaction)  {
+func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction)  {
 	//TODO
 }
 
-func (spex *SkycoinPEX) getTxnPool() (core.TransactionIterator, error) {
+func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
 	c := util.NewClient()
 	txns, err := c.PendingTransactionsVerbose()
 	if err != nil {
