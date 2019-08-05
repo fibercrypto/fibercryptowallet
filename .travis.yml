@@ -8,13 +8,34 @@ services:
 
 matrix:
   include:
-  - os: linux
-    dist: xenial
+  - stage: "RPI"
     install:
-    - docker pull therecipe/qt:linux
     - docker pull therecipe/qt:rpi1
     - docker pull therecipe/qt:rpi2
     - docker pull therecipe/qt:rpi3
+    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    
+    script:
+    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+    - go get -t -d -v ./...
+    - $GOPATH/bin/qtdeploy -docker build rpi1
+    - $GOPATH/bin/qtdeploy -docker build rpi2
+    - $GOPATH/bin/qtdeploy -docker build rpi3
+  
+  - stage: "Linux"
+    install:
+    - docker pull therecipe/qt:linux
+    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    
+    script:
+    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+    - go get -t -d -v ./...
+    - $GOPATH/bin/qtdeploy -docker build linux
+  
+  - stage: "Windows"
+    install:
     - docker pull therecipe/qt:windows_32_shared
     - docker pull therecipe/qt:windows_32_static
     - docker pull therecipe/qt:windows_64_shared
@@ -24,15 +45,11 @@ matrix:
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
     - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
-    - $GOPATH/bin/qtdeploy -docker build linux
-    - $GOPATH/bin/qtdeploy -docker build rpi1
-    - $GOPATH/bin/qtdeploy -docker build rpi2
-    - $GOPATH/bin/qtdeploy -docker build rpi3
+    - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build windows_32_shared
     - $GOPATH/bin/qtdeploy -docker build windows_32_static
     - $GOPATH/bin/qtdeploy -docker build windows_64_shared
     - $GOPATH/bin/qtdeploy -docker build windows_64_static
-  
   - os: osx
     osx_image: xcode10.2
     script:
