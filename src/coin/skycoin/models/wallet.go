@@ -355,6 +355,7 @@ func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
 				Encrypted: w.IsEncrypted(),
 				Type:      w.Type(),
 				CoinType:  string(w.Coin()),
+				WalletDir: wltSrv.walletDir,
 			})
 		}
 	}
@@ -374,6 +375,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 		Encrypted: w.IsEncrypted(),
 		Type:      w.Type(),
 		CoinType:  string(w.Coin()),
+		WalletDir: wltSrv.walletDir,
 	}
 }
 
@@ -403,6 +405,7 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Encrypted: wlt.IsEncrypted(),
 		Type:      wlt.Type(),
 		CoinType:  string(wlt.Coin()),
+		WalletDir: wltSrv.walletDir,
 	}, nil
 }
 
@@ -483,4 +486,97 @@ type LocalWallet struct {
 	CoinType  string
 	Encrypted bool
 	Type      string
+	WalletDir string
+}
+
+func (wlt LocalWallet) GetId() string {
+	return wlt.Id
+}
+func (wlt LocalWallet) GetLabel() string {
+	return wlt.Label
+}
+func (wlt LocalWallet) SetLabel(wltName string) {
+	wlt.Label = wltName
+}
+func (wlt LocalWallet) Transfer(to core.Address, amount uint64) {
+
+}
+func (wlt LocalWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
+
+}
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
+
+}
+func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
+	walletLoaded, err := wallet.Load(walletName)
+	if err != nil {
+		return nil
+	}
+	addressCount := walletLoaded.EntriesLen()
+	if uint32(addressCount) < (startIndex + count) {
+		diff := (startIndex + count) - uint32(addressCount)
+		genAddressesInFile := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+			return w.GenerateAddresses(n)
+		}
+
+		if walletLoaded.IsEncrypted() {
+			genAddressesInFile = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+				password, err := pwd("Insert Password")
+				if err != nil {
+					return nil, nil
+				}
+				passwordBytes := []byte(password)
+				var addrs []cipher.Addresser
+				if err := wallet.GuardUpdate(w, passwordBytes, func(wlt wallet.Wallet) error {
+					var err error
+					addrs, err = wlt.GenerateAddresses(n)
+					return err
+				}); err != nil {
+					return nil, err
+				}
+
+				return addrs, nil
+			}
+		}
+		_, err := genAddressesInFile(walletLoaded, uint64(diff))
+
+		if err != nil {
+			return nil
+		}
+
+		if err := wallet.Save(walletLoaded, wlt.WalletDir); err != nil {
+			return nil
+		}
+	}
+
+	walletLoaded, err = wallet.Load(walletName)
+	if err != nil {
+		return nil
+	}
+
+	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
+	skyAddrs := make([]SkycoinAddress, 0)
+	for _, addr := range addrs {
+		skyAddrs = append(skyAddrs, SkycoinAddress{addr.String()})
+	}
+	return NewSkycoinAddressIterator(skyAddrs)
+
+}
+func (wlt LocalWallet) GetCryptoAccount() core.CryptoAccount {
+	return wlt
+}
+func (wlt LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
+	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
+	walletLoaded, err := wallet.Load(walletName)
+	if err != nil {
+		return nil, err
+	}
+	addrs := make([]SkycoinAddress, 0)
+	addresses := walletLoaded.GetAddresses()
+	for _, addr := range addresses {
+		addrs = append(addrs, SkycoinAddress{addr.String()})
+	}
+	return NewSkycoinAddressIterator(addrs), nil
+
 }
