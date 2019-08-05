@@ -36,14 +36,11 @@ matrix:
   - stage: "Windows"
     os: windows
     install:
-    - go get -u -v github.com/therecipe/qt/cmd/... 
+    - go get -u -v github.com/therecipe/qt/cmd/... && (for /f %v in ('go env GOPATH') do %v\bin\qtsetup -test=false | true )
     
     script:
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy build desktop 
-    - $GOPATH/bin/qtdeploy build desktop
-    - $GOPATH/bin/qtdeploy build desktop
-    - $GOPATH/bin/qtdeploy build desktop
 
   - stage: "MacOS"
     os: osx
