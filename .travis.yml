@@ -50,7 +50,8 @@ matrix:
     - $GOPATH/bin/qtdeploy -docker build windows_32_static
     - $GOPATH/bin/qtdeploy -docker build windows_64_shared
     - $GOPATH/bin/qtdeploy -docker build windows_64_static
-  - os: osx
+  - stage: "MacOS"
+    os: osx
     osx_image: xcode10.2
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
