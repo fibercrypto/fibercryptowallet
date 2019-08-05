@@ -1,8 +1,7 @@
 package models
-//
+
 //import (
-//"github.com/fibercrypto/FiberCryptoWallet/src/core"
-//qtcore "github.com/therecipe/qt/core"
+//	qtcore "github.com/therecipe/qt/core"
 //)
 //
 //type NetworkingManager struct {

@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -76,20 +76,20 @@ func (network Network)GetPort() uint16 {
 	return network.Port
 }
 
-func (network Network)GetSource() string{
-	return ""
-}
-
 func (network Network)GetBlock() uint64 {
 	return network.Block
 }
 
 func (network Network)IsTrusted() bool{
-	return true
+	return network.Source
 }
 
-func (network Network)GetAgent() string{
-	return ""
+func (network Network)GetLastSeenIn() int64{
+	return network.LastSeenIn
+}
+
+func (network Network)GetLastSeenOut() int64{
+	return network.LastSeenOut
 }
 
 

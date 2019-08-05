@@ -14,9 +14,9 @@ type NetworkSet interface {
 type INetwork interface {
 	GetIp() string
 	GetPort() uint16
-	GetSource() string
 	GetBlock() uint64
 	IsTrusted() bool
-	GetAgent() string
+	GetLastSeenIn() int64
+	GetLastSeenOut() int64
 }
 
