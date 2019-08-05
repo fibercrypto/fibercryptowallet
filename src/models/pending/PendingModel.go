@@ -104,13 +104,14 @@ func (m *PendingTransactionList) data(index *qtcore.QModelIndex, role int) *qtco
 
 func (m *PendingTransactionList) getAll() {
 	println("getAll")
-	transactions, err := m.PEX.GetTxnPool()
+	txns, err := m.PEX.GetTxnPool()
 	if err != nil {
+		println(err)
 		return
 	}
 	ptModels := make([]*PendingTransaction, 0)
-	for _, pt := range transactions {
-		ptModel := SkycoinTransactionToPendingTransaction(&pt)
+	for txns.Next() {
+		ptModel := TransactionToPendingTransaction(txns.Value())
 		ptModels = append(ptModels, ptModel)
 	}
 	m.SetTransactions(ptModels)
@@ -137,11 +138,11 @@ func (m *PendingTransactionList) getMine() {
 	// m.SetTransactions(ptModels)
 }
 
-func SkycoinTransactionToPendingTransaction(stxn *skycoin.SkycoinTransaction) *PendingTransaction {
+func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction {
 	pt := NewPendingTransaction(nil)
-	year, month, day, h, m, s := util.ParseDate(int64(stxn.Timestamp))
+	year, month, day, h, m, s := util.ParseDate(int64(stxn.GetTimestamp()))
 	pt.SetTimeStamp(qtcore.NewQDateTime3(qtcore.NewQDate3(year, month, day), qtcore.NewQTime3(h, m, s, 0), qtcore.Qt__LocalTime))
-	pt.SetTransactionID(stxn.Id)
+	pt.SetTransactionID(stxn.GetId())
 	pt.SetSky(stxn.ComputeFee("SKY"))
 	pt.SetCoinHours(stxn.ComputeFee("SKYCH"))
 	return pt

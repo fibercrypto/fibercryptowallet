@@ -60,5 +60,6 @@ func UnconfirmedTransactionToTransaction(ut *readable.UnconfirmedTransactionVerb
 		txnOutput.CoinHours = output.Hours
 		txnOutputs = append(txnOutputs, txnOutput)
 	}
+	txn.Outputs = txnOutputs
 	return txn
 }
