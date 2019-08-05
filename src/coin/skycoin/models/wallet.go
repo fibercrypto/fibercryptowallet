@@ -577,6 +577,7 @@ func (wlt LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	for _, addr := range addresses {
 		addrs = append(addrs, SkycoinAddress{addr.String()})
 	}
+
 	return NewSkycoinAddressIterator(addrs), nil
 
 }

@@ -151,7 +151,7 @@ Item {
                                 repeat: false
                                 running: true
                                 onTriggered: {
-                                    //listAddresses.loadModel(walletManager.getAddresses(fileName))
+                                    listAddresses.loadModel(walletManager.getAddresses(fileName))
                                     addressModelTimer.running = false 
                                        
                                     }

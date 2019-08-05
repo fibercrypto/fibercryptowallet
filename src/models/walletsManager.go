@@ -151,19 +151,22 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 		addr := it.Value()
 		qaddress := NewQAddress(nil)
 		qaddress.SetAddress(addr.String())
-		sky, err := addr.GetCryptoAccount().GetBalance("Sky")
+		sky, err := addr.GetCryptoAccount().GetBalance("SKY")
 		if err != nil {
+
 			continue
 		}
 		qaddress.SetAddressSky(sky)
-		coinH, err := addr.GetCryptoAccount().GetBalance("CoinHour")
+		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
 		if err != nil {
+
 			continue
 		}
 		qaddress.SetAddressCoinHours(coinH)
 		qaddresses = append(qaddresses, qaddress)
 
 	}
+
 	return qaddresses
 }
 
