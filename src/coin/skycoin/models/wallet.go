@@ -420,6 +420,63 @@ func (wltSrv *SkycoinLocalWallet) newUnicWalletFilename() string {
 
 }
 
+func (wltSrv *SkycoinLocalWallet) Encrypt(walletName string, password core.PasswordReader) {
+	wltName := filepath.Join(wltSrv.walletDir, walletName)
+	wlt, err := wallet.Load(wltName)
+	if err != nil {
+		return
+	}
+
+	if wlt.IsEncrypted() {
+		return
+	}
+
+	pwd, _ := password("Insert Password")
+	pwdBytes := []byte(pwd)
+
+	if err := wallet.Lock(wlt, pwdBytes, "scrypt-chacha20poly1305"); err != nil {
+		return
+	}
+
+	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
+		return
+	}
+
+}
+
+func (wltSrv *SkycoinLocalWallet) Decrypt(walletName string, password core.PasswordReader) {
+	wltName := filepath.Join(wltSrv.walletDir, walletName)
+	wlt, err := wallet.Load(wltName)
+	if err != nil {
+		return
+	}
+	if !wlt.IsEncrypted() {
+		return
+	}
+	pwd, err := password("Insert Password")
+	pwdBytes := []byte(pwd)
+
+	unlockedWallet, err := wallet.Unlock(wlt, pwdBytes)
+	if err != nil {
+		return
+	}
+	if err := wallet.Save(unlockedWallet, wltSrv.walletDir); err != nil {
+		return
+	}
+	return
+
+}
+
+func (wltSrv *SkycoinLocalWallet) IsEncrypted(walletName string) (bool, error) {
+	wltName := filepath.Join(wltSrv.walletDir, walletName)
+
+	wlt, err := wallet.Load(wltName)
+	if err != nil {
+		return false, err
+	}
+	return wlt.IsEncrypted(), nil
+}
+
 type LocalWallet struct {
 	Id        string
 	Label     string
