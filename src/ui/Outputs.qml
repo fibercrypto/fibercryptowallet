@@ -13,7 +13,7 @@ Page {
     readonly property real listOutputsLeftMargin: 20
     readonly property real listOutputsRightMargin: 50
     readonly property real listOutputsSpacing: 20
-    readonly property real internalLabelsWidth: 70
+    readonly property real internalLabelsWidth: 60
 
     Frame {
         id: frame
@@ -31,23 +31,18 @@ Page {
                 RowLayout {
                     spacing: listOutputsSpacing
                     Layout.topMargin: 30
-
+                    
                     Label {
-                        text: qsTr("No.")
+                        text: qsTr("Output ID")
                         font.pointSize: 9
-                        Layout.leftMargin: listOutputsLeftMargin
-                        Layout.preferredWidth: 45 // Obtained empirically
-                    }
-                    Label {
-                        text: qsTr("Addresses")
-                        font.pointSize: 9
+                        Layout.leftMargin: 38
                         Layout.fillWidth: true
                     }
                     Label {
                         text: qsTr("Sky")
                         font.pointSize: 9
                         horizontalAlignment: Text.AlignRight
-                        Layout.preferredWidth: internalLabelsWidth
+                        Layout.preferredWidth: internalLabelsWidth/2
                     }
                     Label {
                         text: qsTr("Coin hours")
@@ -70,22 +65,25 @@ Page {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                
                 ListView {
-                    id: listOutputs
+                    id: listViewWallets
                     anchors.fill: parent
                     clip: true
 
-                    model: modelOutputs
-                    delegate: OutputsListDelegate { }
+                    model: modelWallets
+                    delegate: OutputsListDelegate {
+                        width: listViewWallets.width
+                    }
                 } // ListView
             } // ScrollView
-        }
+        } // ColumnLayout (frame)
     } // Frame
 
     // Roles: name
     // Implement the model in the backend (a more recommendable approach)
     ListModel { // EXAMPLE
-        id: modelOutputs
+        id: modelWallets
         ListElement { name: "Wallet A" }
         ListElement { name: "Wallet B" }
         ListElement { name: "Wallet C" }

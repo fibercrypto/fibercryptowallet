@@ -21,7 +21,7 @@ matrix:
     - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
     - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true) 
     - go get -t -d -v ./...
-    - qtdeploy build desktop
+    - make build-wallet
   - os: osx
     osx_image: xcode10.2
     script:
