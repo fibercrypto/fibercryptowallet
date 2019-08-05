@@ -11,6 +11,7 @@ go_import_path: github.com/fibercrypto/FiberCryptoWallet
 matrix:
   include:
   - stage: "RPI"
+    if: branch = release*$
     install:
     - docker pull therecipe/qt:rpi1
     - docker pull therecipe/qt:rpi2
