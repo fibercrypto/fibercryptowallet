@@ -302,6 +302,20 @@ type WalletDirectory struct { //Implements WallentEnv interface
 	wltService *SkycoinLocalWallet
 }
 
-type SkycoinLocalWallet struct { //Implements WalletStorage and WalletSet interfaces
+func (wltDir *WalletDirectory) GetStorage() core.WalletStorage {
+	if wltDir.wltService == nil {
+		wltDir.wltService = &SkycoinLocalWallet{wltDir.walletDir}
+	}
+	return wltDir.wltService
+}
 
+func (wltDir *WalletDirectory) GetWalletSet() core.WalletSet {
+	if wltDir.wltService == nil {
+		wltDir.wltService = &SkycoinLocalWallet{wltDir.walletDir}
+	}
+	return wltDir.wltService
+}
+
+type SkycoinLocalWallet struct { //Implements WalletStorage and WalletSet interfaces
+	walletDir string
 }
