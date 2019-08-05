@@ -308,20 +308,20 @@ func walletEntryToAddress(wltE readable.WalletEntry) SkycoinAddress {
 }
 
 type WalletDirectory struct { //Implements WallentEnv interface
-	walletDir  string
+	WalletDir  string
 	wltService *SkycoinLocalWallet
 }
 
 func (wltDir *WalletDirectory) GetStorage() core.WalletStorage {
 	if wltDir.wltService == nil {
-		wltDir.wltService = &SkycoinLocalWallet{wltDir.walletDir}
+		wltDir.wltService = &SkycoinLocalWallet{wltDir.WalletDir}
 	}
 	return wltDir.wltService
 }
 
 func (wltDir *WalletDirectory) GetWalletSet() core.WalletSet {
 	if wltDir.wltService == nil {
-		wltDir.wltService = &SkycoinLocalWallet{wltDir.walletDir}
+		wltDir.wltService = &SkycoinLocalWallet{wltDir.WalletDir}
 	}
 	return wltDir.wltService
 }

@@ -34,7 +34,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 
-	walletM.WalletEnv = &models.WalletNode{NodeAddress: "http://127.0.0.1:6420"} //just example
+	walletM.WalletEnv = &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
 
 	walletM.SeedGenerator = new(models.SeedService)
 
@@ -120,6 +120,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 
 	qwallets := make([]*QWallet, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
+
 	for it.Next() {
 
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
@@ -139,6 +140,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 }
 
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
+
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
 	qaddresses := make([]*QAddress, 0)
 	it, err := wlt.GetLoadedAddresses()

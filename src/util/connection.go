@@ -6,7 +6,7 @@ import (
 
 //Return address of daemon node
 func nodeAddress() string {
-	return "http://node.skycoin.net" // example only
+	return "http://127.0.0.1:6420" // example only
 
 }
 
