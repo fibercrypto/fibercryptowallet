@@ -18,8 +18,8 @@ matrix:
     - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
     
     script:
-    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
-    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+            #    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+            #    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build rpi1
     - $GOPATH/bin/qtdeploy -docker build rpi2
@@ -31,8 +31,8 @@ matrix:
     - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
     
     script:
-    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
-    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+            #    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+            #    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build linux
   
@@ -45,13 +45,14 @@ matrix:
     - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
     
     script:
-    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
-    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
+            #    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
+            #    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build windows_32_shared
     - $GOPATH/bin/qtdeploy -docker build windows_32_static
     - $GOPATH/bin/qtdeploy -docker build windows_64_shared
     - $GOPATH/bin/qtdeploy -docker build windows_64_static
+      
   - stage: "MacOS"
     os: osx
     osx_image: xcode10.2
