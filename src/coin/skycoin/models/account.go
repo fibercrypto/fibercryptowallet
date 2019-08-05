@@ -30,7 +30,7 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //-----
 	return nil
 }
 
-func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
+func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	c := wlt.newClient()
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
@@ -47,14 +47,14 @@ func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
 
 }
 
-func (wlt Wallet) ListAssets() []string {
+func (wlt RemoteWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt Wallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
+func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
 	return nil
 }
 
-func (wlt Wallet) ListTransactions() core.TransactionIterator { //------TODO
+func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
 	return nil
 }

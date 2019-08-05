@@ -25,7 +25,7 @@ const (
 
 type SkycoinWalletIterator struct { //Implements WalletIterator interface
 	current int
-	wallets []Wallet
+	wallets []core.Wallet
 }
 
 func (it *SkycoinWalletIterator) Value() core.Wallet {
@@ -47,7 +47,7 @@ func (it *SkycoinWalletIterator) HasNext() bool {
 	return true
 }
 
-func NewSkycoinWalletIterator(wallets []Wallet) *SkycoinWalletIterator {
+func NewSkycoinWalletIterator(wallets []core.Wallet) *SkycoinWalletIterator {
 	return &SkycoinWalletIterator{wallets: wallets, current: -1}
 }
 
@@ -65,7 +65,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	if err != nil {
 		return nil
 	}
-	wallets := make([]Wallet, 0)
+	wallets := make([]core.Wallet, 0)
 	for _, wlt := range wlts {
 		nwlt := walletResponseToWallet(wlt)
 		nwlt.nodeAddress = wltSrv.nodeAddress
@@ -76,7 +76,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 }
 
 func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
-	wlt := Wallet{}
+	wlt := RemoteWallet{}
 	if IsEncrypted {
 		password, _ := pwd("Enter your password")
 		wltOpt := api.CreateWalletOptions{}
@@ -203,7 +203,7 @@ func (err errorTickerInvalid) Error() string {
 	return (err.tickerUsed + " is an invalid ticker. Use " + Sky + " or " + CoinHour)
 }
 
-type Wallet struct { //Implements Wallet and CryptoAccount interfaces
+type RemoteWallet struct { //Implements Wallet and CryptoAccount interfaces
 	Id          string
 	Label       string
 	CoinType    string
@@ -211,35 +211,35 @@ type Wallet struct { //Implements Wallet and CryptoAccount interfaces
 	nodeAddress string
 }
 
-func (wlt Wallet) newClient() *api.Client {
+func (wlt RemoteWallet) newClient() *api.Client {
 	return api.NewClient(wlt.nodeAddress)
 }
-func (wlt Wallet) GetLabel() string {
+func (wlt RemoteWallet) GetLabel() string {
 	return wlt.Label
 }
 
-func (wlt Wallet) SetLabel(name string) {
+func (wlt RemoteWallet) SetLabel(name string) {
 	c := wlt.newClient()
 	_ = c.UpdateWallet(wlt.Id, name)
 }
 
-func (wlt Wallet) GetId() string {
+func (wlt RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt Wallet) Transfer(to core.Address, amount uint64) { //------TODO
+func (wlt RemoteWallet) Transfer(to core.Address, amount uint64) { //------TODO
 	return
 }
 
-func (wlt Wallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
+func (wlt RemoteWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
 	return
 }
 
-func (wlt Wallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
+func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
 	return
 }
 
-func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	c := wlt.newClient()
 	password, _ := pwd("Insert password")
 	wltR, err := c.Wallet(wlt.Id)
@@ -266,11 +266,11 @@ func (wlt Wallet) GenAddresses(addrType core.AddressType, startIndex, count uint
 
 }
 
-func (wlt Wallet) GetCryptoAccount() core.CryptoAccount {
+func (wlt RemoteWallet) GetCryptoAccount() core.CryptoAccount {
 	return wlt
 }
 
-func (wlt Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
+func (wlt RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	c := wlt.newClient()
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
@@ -284,8 +284,8 @@ func (wlt Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	return NewSkycoinAddressIterator(addresses), nil
 }
 
-func walletResponseToWallet(wltR api.WalletResponse) Wallet {
-	wlt := Wallet{}
+func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
+	wlt := RemoteWallet{}
 	wlt.CoinType = string(wltR.Meta.Coin)
 	wlt.Encrypted = wltR.Meta.Encrypted
 	wlt.Label = wltR.Meta.Label
