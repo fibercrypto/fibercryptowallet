@@ -296,3 +296,12 @@ func walletResponseToWallet(wltR api.WalletResponse) Wallet {
 func walletEntryToAddress(wltE readable.WalletEntry) SkycoinAddress {
 	return SkycoinAddress{wltE.Address}
 }
+
+type WalletDirectory struct { //Implements WallentEnv interface
+	walletDir  string
+	wltService *SkycoinLocalWallet
+}
+
+type SkycoinLocalWallet struct { //Implements WalletStorage and WalletSet interfaces
+
+}
