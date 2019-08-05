@@ -31,7 +31,7 @@ matrix:
     
     script:
     - go get -t -d -v ./...
-    - $GOPATH/bin/qtdeploy -docker build linux
+    - $GOPATH/bin/qtdeploy build desktop
   
   - stage: "Windows"
     os: windows
@@ -40,7 +40,11 @@ matrix:
     
     script:
     - go get -t -d -v ./...
-    - make build-wallet  
+    - $GOPATH/bin/qtdeploy build desktop 
+    - $GOPATH/bin/qtdeploy build desktop
+    - $GOPATH/bin/qtdeploy build desktop
+    - $GOPATH/bin/qtdeploy build desktop
+
   - stage: "MacOS"
     os: osx
     osx_image: xcode10.2
@@ -50,7 +54,7 @@ matrix:
     - xcode-select --install | true
     - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true)
     - go get -t -d -v ./...
-    - make build-wallet 
+    - $GOPATH/bin/qtdeploy build desktop
 
 notifications:
   email: false
