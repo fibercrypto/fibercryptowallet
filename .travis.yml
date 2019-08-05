@@ -31,7 +31,7 @@ matrix:
     
     script:
     - go get -t -d -v ./...
-    - $GOPATH/bin/qtdeploy build desktop
+    - $GOPATH/bin/qtdeploy -docker build desktop
   
   - stage: "Windows"
     os: windows
