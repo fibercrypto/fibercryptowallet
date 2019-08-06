@@ -1,6 +1,8 @@
 package models
 
 import (
+	"time"
+
 	coin "github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/therecipe/qt/core"
 )
@@ -26,6 +28,7 @@ type NetworkingModel struct {
 	_ func(*QNetworking)   `slot:"addNetwork"`
 	_ func(row int)        `slot:"removeNetwork"`
 	_ func([]*QNetworking) `slot:"addMultipleNetworks"`
+	_ func()               `slot:"cleanNetworks"`
 	_ int                  `property:"count"`
 }
 
@@ -33,7 +36,7 @@ type QNetworking struct {
 	core.QObject
 	// ip, port, source, block, lastSeenIn, lastSeenOut
 	_ string `property:"ip"`
-	_ uint16 `property:"port"`
+	_ int    `property:"port"`
 	_ bool   `property:"source"`
 	_ uint64 `property:"block"`
 	_ int64  `property:"lastSeenIn"`
@@ -58,7 +61,7 @@ func (netModel *NetworkingModel) init() {
 	netModel.ConnectAddNetwork(netModel.addNetwork)
 	netModel.ConnectRemoveNetwork(netModel.removeNetwork)
 	netModel.ConnectAddMultipleNetworks(netModel.addMultipleNetworks)
-
+	netModel.ConnectCleanNetworks(netModel.cleanNetworks)
 }
 
 func (netModel *NetworkingModel) data(index *core.QModelIndex, role int) *core.QVariant {
@@ -128,31 +131,31 @@ func (netModel *NetworkingModel) addNetwork(w *QNetworking) {
 
 }
 
-<<<<<<< Updated upstream
-func (netModel *NetworkingModel) addMultipleNetworks(w []*QNetworking]) {
-	for _, qnet := range w{
+func (netModel *NetworkingModel) addMultipleNetworks(w []*QNetworking) {
+	for _, qnet := range w {
 		netModel.addNetwork(qnet)
-=======
-func (netModel *NetworkingModel) addMultipleNetworks(w coin.NetworkIterator) {
-	for {
-		if !w.HasNext() {
-			break
-		}
-		netModel.addNetwork(INetworkToQNetworking(w.Value()))
->>>>>>> Stashed changes
 	}
 }
 
 func INetworkToQNetworking(net coin.INetwork) *QNetworking {
 	q := NewQNetworking(nil)
 	q.SetIp(net.GetIp())
-	q.SetPort(net.GetPort())
+	q.SetPort(int(net.GetPort()))
 	q.SetSource(net.IsTrusted())
 	q.SetBlock(net.GetBlock())
-	q.SetLastSeenIn(net.GetLastSeenIn())
-	q.SetLastSeenOut(net.GetLastSeenOut())
+	now := time.Now().Unix()
+	lastSent := now - net.GetLastSeenIn()
+	lastReceive := now - net.GetLastSeenOut()
+	q.SetLastSeenIn(lastSent)
+	q.SetLastSeenOut(lastReceive)
 
 	return q
+}
+
+func (netModel *NetworkingModel) cleanNetworks() {
+	netModel.BeginRemoveRows(core.NewQModelIndex(), 0, len(netModel.Networks())-1)
+	netModel.SetNetworks(make([]*QNetworking, 0))
+	netModel.EndRemoveRows()
 }
 
 func (netModel *NetworkingModel) removeNetwork(row int) {

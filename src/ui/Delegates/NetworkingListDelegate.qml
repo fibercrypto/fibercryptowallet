@@ -64,7 +64,7 @@ ItemDelegate {
                 }
                 Label {
                     id: labelLastSeenOut
-                    text: modelLastSeenOut // model's role
+                    text: modelLastSeenOut +" seconds ago" // model's role
                 }
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             }
@@ -77,7 +77,7 @@ ItemDelegate {
                 }
                 Label {
                     id: labelLastSeenIn
-                    text: modelLastSeenIn // model's role
+                    text: modelLastSeenIn +" seconds ago"// model's role
                 }
                 Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             }

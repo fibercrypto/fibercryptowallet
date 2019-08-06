@@ -2,6 +2,7 @@ package skycoin
 
 import (
 	"log"
+	"strings"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/api"
@@ -38,7 +39,7 @@ func NewSkycoinNetworkIterator(network []core.INetwork) *SkycoinNetworkIterator 
 }
 
 type SkycoinRemoteNetwork struct {
-	//Implements WalletStorage and WalletSet interfaces
+	//Implements NetworkSet interface
 	nodeAddress string
 }
 
@@ -51,9 +52,12 @@ func (remoteNetwork *SkycoinRemoteNetwork) newClient() *api.Client {
 }
 
 func (remoteNetwork *SkycoinRemoteNetwork) ListNetworks() core.NetworkIterator {
+
 	c := remoteNetwork.newClient()
 	nets, err := c.NetworkConnections(nil)
+
 	if err != nil {
+
 		log.Print("Error getting connections")
 		return nil
 	}
@@ -61,6 +65,7 @@ func (remoteNetwork *SkycoinRemoteNetwork) ListNetworks() core.NetworkIterator {
 	for _, con := range nets.Connections {
 		netIterator = append(netIterator, connectionsToNetwork(con))
 	}
+
 	return NewSkycoinNetworkIterator(netIterator)
 }
 
@@ -99,7 +104,7 @@ func (network Network) GetLastSeenOut() int64 {
 
 func connectionsToNetwork(connection readable.Connection) Network {
 	return Network{
-		Ip:          connection.Addr,
+		Ip:          strings.Split(connection.Addr, ":")[0],
 		Port:        connection.ListenPort,
 		LastSeenIn:  connection.LastSent,
 		LastSeenOut: connection.LastReceived,

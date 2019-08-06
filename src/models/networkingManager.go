@@ -8,7 +8,7 @@ import (
 
 type NetworkingManager struct {
 	qtcore.QObject
-	Networks *core.NetworkSet
+	Networks core.NetworkSet
 	_        func()                `constructor:"init"`
 	_        func() []*QNetworking `slot:"getNetworks"`
 }
@@ -21,9 +21,13 @@ func (net *NetworkingManager) init() {
 
 func (net *NetworkingManager) getNetworks() []*QNetworking {
 	networks := make([]*QNetworking, 0)
+
 	netIterator := net.Networks.ListNetworks()
+
 	for netIterator.Next() {
+
 		networks = append(networks, INetworkToQNetworking(netIterator.Value()))
 	}
+
 	return networks
 }

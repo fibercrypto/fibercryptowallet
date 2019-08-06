@@ -95,7 +95,21 @@ Page {
     }
 
     NetworkManager {
-        id: NetworkManager
+        id: networkManager
+        property Timer timer: Timer{
+            id: networkTimer
+            repeat: true
+            running: true
+            interval: 3000
+            onTriggered: {
+                modelNetworking.cleanNetworks()
+                modelNetworking.addMultipleNetworks(networkManager.getNetworks())
+            }
+
+        }
     }
+
+   
+           
 
 }
