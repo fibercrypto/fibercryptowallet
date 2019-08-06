@@ -8,6 +8,9 @@ Item {
     implicitWidth: 100
     implicitHeight: 60
 
+    property Item nextTabItem
+    property alias textArea: textArea
+    property alias text: textArea.text
     property alias placeholderText: textArea.placeholderText
     property alias readOnly: textArea.readOnly
     property alias buttonLeftText: buttonLeft.text
@@ -17,6 +20,10 @@ Item {
 
     readonly property alias inputControlWidth: textArea.width
     readonly property alias inputControlHeight: textArea.height
+
+    function clear() {
+        textArea.clear()
+    }
 
     Row {
         id: rowButtons
@@ -59,8 +66,8 @@ Item {
                 font: buttonRight.font
                 color: buttonRight.enabled ? buttonRight.Material.foreground : buttonRight.Material.hintTextColor
             }
-        }
-    }
+        } // ItemDelegate
+    } // Row
 
     /*
     // Put the text area inside this to make it scrollable
@@ -89,5 +96,7 @@ Item {
         wrapMode: TextArea.Wrap
 
         selectByMouse: true
+        KeyNavigation.priority: KeyNavigation.BeforeItem
+        KeyNavigation.tab: nextTabItem
     }
 }
