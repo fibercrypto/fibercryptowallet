@@ -79,7 +79,7 @@ Page {
 
                     model: modelPendingTransactions
                     delegate: PendingTransactionsDelegate {
-                        property bool hide: !modelMine && showOnlyMine
+                        property bool hide: modelMine != showOnlyMine
 
                         width: parent.width
 

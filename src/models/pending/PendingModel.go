@@ -12,6 +12,7 @@ const (
 	CoinHours     = int(qtcore.Qt__UserRole) + 2
 	TimeStamp     = int(qtcore.Qt__UserRole) + 3
 	TransactionID = int(qtcore.Qt__UserRole) + 4
+	Mine          = int(qtcore.Qt__UserRole) + 5
 )
 
 type PendingTransactionList struct {
@@ -19,13 +20,12 @@ type PendingTransactionList struct {
 	PEX          core.PEX
 	WalletEnv    core.WalletEnv
 
-	_ func()                    `constructor:"init"`
+	_ func()                      `constructor:"init"`
 
 	_ map[int]*qtcore.QByteArray  `property:"roles"`
-	_ []*PendingTransaction     `property:"transactions"`
+	_ []*PendingTransaction       `property:"transactions"`
 
-	_ func()                    `slot:"getMine"`
-	_ func()                    `slot:"getAll"`
+	_ func()                      `slot:"loadModel"`
 }
 
 type PendingTransaction struct {
@@ -35,6 +35,7 @@ type PendingTransaction struct {
 	_ uint64             `property:"coinHours"`
 	_ *qtcore.QDateTime  `property:"timeStamp"`
 	_ string             `property:"transactionID"`
+	_ int                `property:"mine"`
 }
 
 func (m *PendingTransactionList) init() {
@@ -43,21 +44,21 @@ func (m *PendingTransactionList) init() {
 		CoinHours:       qtcore.NewQByteArray2("coinHours", -1),
 		TimeStamp:       qtcore.NewQByteArray2("timestamp", -1),
 		TransactionID:   qtcore.NewQByteArray2("transactionID", -1),
+		Mine:            qtcore.NewQByteArray2("mine", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 
-	m.ConnectGetMine(m.getMine)
-	m.ConnectGetAll(m.getAll)
+	m.ConnectLoadModel(m.loadModel)
 
 	//Set the correct NodeAddress
 	addr := "http://127.0.0.1:37039" 
 	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
 	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
 
-	m.getMine()
+	m.loadModel()
 }
 
 func (m *PendingTransactionList) rowCount(*qtcore.QModelIndex) int {
@@ -96,6 +97,10 @@ func (m *PendingTransactionList) data(index *qtcore.QModelIndex, role int) *qtco
 	case TransactionID:
 		{
 			return qtcore.NewQVariant1(pt.TransactionID())
+		}
+	case Mine:
+		{
+			return qtcore.NewQVariant1(pt.Mine())
 		} 
 	default:
 		{
@@ -104,7 +109,7 @@ func (m *PendingTransactionList) data(index *qtcore.QModelIndex, role int) *qtco
 	}
 }
 
-func (m *PendingTransactionList) getAll() {
+func (m *PendingTransactionList) loadModel() {
 	println("getAll")
 	txns, err := m.PEX.GetTxnPool()
 	if err != nil {
@@ -114,21 +119,18 @@ func (m *PendingTransactionList) getAll() {
 	ptModels := make([]*PendingTransaction, 0)
 	for txns.Next() {
 		ptModel := TransactionToPendingTransaction(txns.Value())
+		ptModel.SetMine(0)
 		ptModels = append(ptModels, ptModel)
 	}
-	m.SetTransactions(ptModels)
-}
-
-func (m *PendingTransactionList) getMine() {
+	println("finish")
 	println("getMine")
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
 		return
 	}
-	ptModels := make([]*PendingTransaction, 0)
 	for wallets.Next() {
 		crypto := wallets.Value().GetCryptoAccount()
-		txns := crypto.ListTransactions()
+		txns = crypto.ListTransactions()
 		if txns == nil {
 			return
 		}
@@ -136,11 +138,13 @@ func (m *PendingTransactionList) getMine() {
 			txn := txns.Value()
 			if txn.GetStatus() == core.TXN_STATUS_PENDING {
 				ptModel := TransactionToPendingTransaction(txn)
+				ptModel.SetMine(1)
 				ptModels = append(ptModels, ptModel)
 			}
 		}
 	}
 	m.SetTransactions(ptModels)
+	println("finish")
 }
 
 func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction {
