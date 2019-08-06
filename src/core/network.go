@@ -2,7 +2,7 @@ package core
 
 
 type NetworkIterator interface {
-	Value() Network
+	Value() INetwork
 	Next() bool
 	HasNext() bool
 }
@@ -11,12 +11,12 @@ type NetworkSet interface {
 	ListNetworks() NetworkIterator
 }
 
-type Network interface {
+type INetwork interface {
 	GetIp() string
-	GetPort() string
-	GetSource() string
-	GetBlock() string
+	GetPort() uint16
+	GetBlock() uint64
 	IsTrusted() bool
-	GetAgent() string
+	GetLastSeenIn() int64
+	GetLastSeenOut() int64
 }
 

@@ -1,6 +1,9 @@
 package models
 
-import "github.com/therecipe/qt/core"
+import (
+	coin "github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/therecipe/qt/core"
+	)
 
 // ip, port, source, block, lastSeenIn, lastSeenOut
 const (
@@ -22,7 +25,6 @@ type NetworkingModel struct {
 
 	_ func(*QNetworking)                                                        `slot:"addNetwork"`
 	_ func(row int)                                                             `slot:"removeNetwork"`
-	_ func([]*QNetworking)                                                      `slot:"loadModel"`
 	_ int                                                                       `property:"count"`
 }
 
@@ -30,15 +32,15 @@ type QNetworking struct {
 	core.QObject
 // ip, port, source, block, lastSeenIn, lastSeenOut
 	_ string `property:"ip"`
-	_ string `property:"port"`
-	_ string `property:"source"`
-	_ string `property:"block"`
-	_ string `property:"lastSeenIn"`
-	_ string `property:"lastSeenOut"`
+	_ uint16 `property:"port"`
+	_ bool `property:"source"`
+	_ uint64 `property:"block"`
+	_ int64 `property:"lastSeenIn"`
+	_ int64 `property:"lastSeenOut"`
 }
 
-func (m *NetworkingModel) init() {
-	m.SetRoles(map[int]*core.QByteArray{
+func (netModel *NetworkingModel) init() {
+	netModel.SetRoles(map[int]*core.QByteArray{
 		Ip:             core.NewQByteArray2("ip", -1),
 		Port: 			core.NewQByteArray2("port", -1),
 		Source:         core.NewQByteArray2("source", -1),
@@ -47,27 +49,26 @@ func (m *NetworkingModel) init() {
 		LastSeenOut:    core.NewQByteArray2("lastSeenOut", -1),
 	})
 
-	m.ConnectData(m.data)
-	m.ConnectRowCount(m.rowCount)
-	m.ConnectColumnCount(m.columnCount)
-	m.ConnectRoleNames(m.roleNames)
+	netModel.ConnectData(netModel.data)
+	netModel.ConnectRowCount(netModel.rowCount)
+	netModel.ConnectColumnCount(netModel.columnCount)
+	netModel.ConnectRoleNames(netModel.roleNames)
 
-	m.ConnectAddNetwork(m.addNetwork)
-	m.ConnectRemoveWallet(m.removeNetwork)
-	m.ConnectLoadModel(m.loadModel)
+	netModel.ConnectAddNetwork(netModel.addNetwork)
+	netModel.ConnectRemoveNetwork(netModel.removeNetwork)
 
 }
 
-func (m *NetworkingModel) data(index *core.QModelIndex, role int) *core.QVariant {
+func (netModel *NetworkingModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.networks()) {
+	if index.Row() >= len(netModel.Networks()) {
 		return core.NewQVariant()
 	}
 
-	var w = m.networks()[index.Row()]
+	var w = netModel.Networks()[index.Row()]
 
 	switch role {
 	case Ip:
@@ -82,7 +83,7 @@ func (m *NetworkingModel) data(index *core.QModelIndex, role int) *core.QVariant
 
 	case Source:
 		{
-			return core.NewQVariant1(w.Source())
+			return core.NewQVariant1(w.IsSource())
 		}
 
 	case Block:
@@ -105,43 +106,55 @@ func (m *NetworkingModel) data(index *core.QModelIndex, role int) *core.QVariant
 	}
 }
 
-func (m *NetworkingModel) rowCount(parent *core.QModelIndex) int {
-	return len(m.Networks())
+func (netModel *NetworkingModel) rowCount(parent *core.QModelIndex) int {
+	return len(netModel.Networks())
 }
 
-func (m *NetworkingModel) columnCount(parent *core.QModelIndex) int {
+func (netModel *NetworkingModel) columnCount(parent *core.QModelIndex) int {
 	return 1
 }
 
-func (m *NetworkingModel) roleNames() map[int]*core.QByteArray {
-	return m.Roles()
+func (netModel *NetworkingModel) roleNames() map[int]*core.QByteArray {
+	return netModel.Roles()
 }
 
-func (m *NetworkingModel) addNetwork(w *QNetworking) {
-	m.BeginInsertRows(core.NewQModelIndex(), len(m.Networks()), len(m.Networks()))
-	m.SetWallets(append(m.Networks(), w))
-	m.EndInsertRows()
-	m.updateCount()
-
-}
-
-func (m *WalletModel) removeNetwork(row int) {
-	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
-	m.SetWallets(append(m.Networks()[:row], m.Networks()[row+1:]...))
-	m.EndRemoveRows()
-	m.updateCount()
+func (netModel *NetworkingModel) addNetwork(w *QNetworking) {
+	netModel.BeginInsertRows(core.NewQModelIndex(), len(netModel.Networks()), len(netModel.Networks()))
+	netModel.SetNetworks(append(netModel.Networks(), w))
+	netModel.EndInsertRows()
+	netModel.updateCount()
 
 }
 
-func (m *NetworkingModel) loadModel(networks []*QNetworking) {
+func (netModel *NetworkingModel) addMultipleNetworks(w coin.NetworkIterator) {
+	for  {
+		if !w.HasNext() {
+			break
+		}
+		netModel.addNetwork(INetworkToQNetworking(w.Value()))
+	}
+}
 
-	m.BeginResetModel()
-	m.SetWallets(networks)
-	m.EndResetModel()
-	m.updateCount()
+func INetworkToQNetworking(net coin.INetwork) *QNetworking {
+	q := NewQNetworking(nil)
+	q.SetIp(net.GetIp())
+	q.SetPort(net.GetPort())
+	q.SetSource(net.IsTrusted())
+	q.SetBlock(net.GetBlock())
+	q.SetLastSeenIn(net.GetLastSeenIn())
+	q.SetLastSeenOut(net.GetLastSeenOut())
+
+	return q
+}
+
+func (netModel *NetworkingModel) removeNetwork(row int) {
+	netModel.BeginRemoveRows(core.NewQModelIndex(), row, row)
+	netModel.SetNetworks(append(netModel.Networks()[:row], netModel.Networks()[row+1:]...))
+	netModel.EndRemoveRows()
+	netModel.updateCount()
 
 }
 
-func (m *NetworkingModel) updateCount() {
-	m.SetCount(len(m.Networks()))
+func (netModel *NetworkingModel) updateCount() {
+	netModel.SetCount(len(netModel.Networks()))
 }

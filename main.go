@@ -1,15 +1,12 @@
 package main
 
 import (
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/blockchain"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
-
-	//"github.com/therecipe/qt/quick"
-	//"github.com/therecipe/qt/widgets"
 	"os"
-	_ "github.com/FiberCryptoWallet/pkg/networking"
 )
 
 func main() {
