@@ -3,10 +3,15 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+import "../" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: outputsListAddressDelegate
 
     property bool expanded: false
+
+    signal qrCodeRequested(var data)
     
     implicitHeight: itemDelegateAddress.height + (expanded ? listViewAddressOutputs.height : 0)
     Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
@@ -23,14 +28,23 @@ Item {
         anchors.left: parent.left
         anchors.leftMargin: 10
         anchors.right: parent.right
+        leftPadding: padding + toolButtonQR.width
 
         Material.foreground: textColor
-        icon.source: "qrc:/images/resources/images/icons/qr.svg"
-        icon.width: 16
-        icon.height: 16
         text: address // a role of the model
         font.family: "Code New Roman"
         font.bold: expanded
+
+        ToolButtonQR {
+            id: toolButtonQR
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.leftMargin: 10
+
+            onClicked: {
+                qrCodeRequested(address)
+            }
+        }
 
         onClicked: {
             expanded = !expanded
