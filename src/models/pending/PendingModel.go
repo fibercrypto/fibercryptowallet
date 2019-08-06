@@ -54,7 +54,7 @@ func (m *PendingTransactionList) init() {
 	m.ConnectLoadModel(m.loadModel)
 
 	//Set the correct NodeAddress
-	addr := "http://127.0.0.1:41160" 
+	addr := "http://127.0.0.1:46354" 
 	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
 	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
 

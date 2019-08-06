@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"fmt"
@@ -63,8 +63,20 @@ func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //
 	return nil
 }
 
-func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { 
+	/*TODO: Who need that method implent it to obtain al transactions
+	actually is only for pending transactions*/
+	c := wlt.newClient()
+	response, err := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for _, ut := range response.Transactions {
+		txn := UnconfirmedTransactionToTransaction(&ut)
+		txns = append(txns, txn)
+	}
+	return NewSkycoinTransactionIterator(txns)
 }
 
 func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
