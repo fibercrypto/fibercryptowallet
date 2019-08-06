@@ -2,48 +2,59 @@ package models
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 /*
 SkycoinTransaction
 */
-type SkycoinTransaction struct{}
+type SkycoinTransaction struct {
+	timeStamp uint64
+	status    core.TransactionStatus
+	inputs    []SkycoinTransactionInput
+	outputs   []SkycoinTransactionOutput
+	fee       uint64
+	id        string
+}
 
 func (txn *SkycoinTransaction) SupportedAssets() []string {
-	return []string{"SKY", "SKYCH"}
+	return []string{Sky, CoinHour}
 }
 
 func (txn *SkycoinTransaction) GetTimestamp() core.TransactionTimestamp {
-	return 1551626612
+	return core.TransactionTimestamp(txn.timeStamp)
 }
 
 func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
-	return core.TXN_STATUS_CONFIRMED
+	if txn.status == core.TXN_STATUS_CONFIRMED {
+		return txn.status
+	}
+
+	c := util.NewClient()
+	txnU, err := c.Transaction(txn.id)
+	if txnU.Status.Confirmed {
+		txn.status = core.TXN_STATUS_CONFIRMED
+		return txn.status
+	}
+	txn.status = core.TXN_STATUS_PENDING
+	return txn.status
 }
 
 func (txn *SkycoinTransaction) GetInputs() []core.TransactionInput {
-	return []core.TransactionInput{
-		&SkycoinTransactionInput{},
-		&SkycoinTransactionInput{},
-		&SkycoinTransactionInput{},
-	}
+	return txn.inputs
 }
 
 func (txn *SkycoinTransaction) GetOutputs() []core.TransactionOutput {
-	return []core.TransactionOutput{
-		&SkycoinTransactionOutput{},
-		&SkycoinTransactionOutput{},
-		&SkycoinTransactionOutput{},
-	}
+	return txn.outputs
 }
 
 func (txn *SkycoinTransaction) GetId() string {
-	return "32dae4040c49bfdca006e887fe8212a4f6a1b3a03665c21595f8f385dd9aefa8"
+	return txn.id
 }
 
 func (txn *SkycoinTransaction) ComputeFee(ticker string) uint64 {
-	if ticker == "SKYCH" {
-		return 12345
+	if ticker == CoinHour {
+		return txn.fee
 	}
 	return 0
 }
@@ -52,125 +63,138 @@ func (txn *SkycoinTransaction) ComputeFee(ticker string) uint64 {
  * SkycoinTransactionIterator
  */
 type SkycoinTransactionIterator struct {
-	index int
-	value *SkycoinTransaction
+	current int
+	data    []core.Transaction
 }
 
 func (iter *SkycoinTransactionIterator) Value() core.Transaction {
-	if iter.index == 0 && iter.value == nil {
-		iter.value = &SkycoinTransaction{}
-	}
-	return iter.value
+	return iter.data[iter.current]
 }
 
 func (iter *SkycoinTransactionIterator) Next() bool {
-	if iter.index < 3 {
-		iter.value = &SkycoinTransaction{}
-		iter.index++
+	if iter.HasNext() {
+		iter.current++
 		return true
 	}
 	return false
 }
 
 func (iter *SkycoinTransactionIterator) HasNext() bool {
-	return iter.index < 3
-}
-
-type SkycoinTransactionInput struct {
-}
-
-func (in *SkycoinTransactionInput) GetId() string {
-	return "f1a61f49cef012e4822b314ca6657d66fdbe3c4d46110a079052a064b9a51e66"
-}
-
-func (in *SkycoinTransactionInput) IsSpent() bool {
+	if (iter.current + 1) >= len(iter.data) {
+		return false
+	}
 	return true
 }
 
+func NewSkycoinTransactionIterator(txns []core.Transaction) *SkycoinTransactionIterator {
+	return &SkycoinTransactionIterator{data: txns, current: -1}
+}
+
+type SkycoinTransactionInput struct {
+	id          string
+	spentOutput *SkycoinTransactionOutput
+}
+
+func (in *SkycoinTransactionInput) GetId() string {
+	return in.id
+}
+
 func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
-	return &SkycoinTransactionOutput{}
+	return in.spentOutput
 }
 
 /**
  * SkycoinTransactionInputIterator
  */
 type SkycoinTransactionInputIterator struct {
-	index int
-	value *SkycoinTransactionInput
+	current int
+	data    []*SkycoinTransactionInput
 }
 
 func (iter *SkycoinTransactionInputIterator) Value() core.TransactionInput {
-	if iter.index == 0 && iter.value == nil {
-		iter.value = &SkycoinTransactionInput{}
-	}
-	return iter.value
+	return iter.data[iter.current]
 }
 
 func (iter *SkycoinTransactionInputIterator) Next() bool {
-	if iter.index < 3 {
-		iter.value = &SkycoinTransactionInput{}
-		iter.index++
+	if iter.HasNext() {
+		iter.current++
 		return true
 	}
 	return false
 }
 
 func (iter *SkycoinTransactionInputIterator) HasNext() bool {
-	return iter.index < 3
+	if (iter.current + 1) >= len(iter.data) {
+		return false
+	}
+	return true
+}
+
+func NewSkycoinTransactioninputIterator(ins []*SkycoinTransactionInput) *SkycoinTransactionInputIterator {
+	return &SkycoinTransactionInputIterator{data: ins, current: -1}
 }
 
 /**
  * SkycoinTransactionOutput
  */
 type SkycoinTransactionOutput struct {
+	id              string
+	amountSky       uint64
+	amountCoinHours uint64
+	address         SkycoinAddress
+	isSpent         bool
 }
 
-func (*SkycoinTransactionOutput) GetId() string {
-	return "249iEtdhniFppBTpkzq7syoiBaydLi6USnU"
+func (out *SkycoinTransactionOutput) GetId() string {
+	return out.id
 }
 
-func (*SkycoinTransactionOutput) GetAddress() core.Address {
-	return &SkycoinAddress{}
+func (out *SkycoinTransactionOutput) GetAddress() core.Address {
+	return out.address
 }
 
-func (*SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
-	if ticker == "SKY" {
-		return 20000000
+func (out *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
+	if ticker == Sky {
+		return out.amountSky
 	}
-	if ticker == "SKYCH" {
-		return 10000000
+	if ticker == CoinHour {
+		return out.amountCoinHours
 	}
 	return 0
 }
 
-func (*SkycoinTransactionOutput) GetSpentInput() core.TransactionInput {
-	return &SkycoinTransactionInput{}
+func (out *SkycoinTransactionOutput) IsSpent() bool {
+	return out.isSpent
 }
 
 /**
  * SkycoinTransactionOutputIterator
  */
 type SkycoinTransactionOutputIterator struct {
-	index int
-	value *SkycoinTransactionOutput
+	current int
+	data    []*SkycoinTransactionOutput
 }
 
 func (iter *SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
-	if iter.index == 0 && iter.value == nil {
-		iter.value = &SkycoinTransactionOutput{}
-	}
-	return iter.value
+	return iter.data[iter.current]
 }
 
 func (iter *SkycoinTransactionOutputIterator) Next() bool {
-	if iter.index < 3 {
-		iter.value = &SkycoinTransactionOutput{}
-		iter.index++
+	if iter.HasNext() {
+		iter.current++
 		return true
 	}
 	return false
 }
 
 func (iter *SkycoinTransactionOutputIterator) HasNext() bool {
-	return iter.index < 3
+	if iter.HasNext() {
+		iter.current++
+		return true
+	}
+	return false
+}
+
+func NewSkycoinTransactionOutputIterator(outs []*SkycoinTransactionOutput) *SkycoinTransactionOutputIterator {
+	return &SkycoinTransactionOutputIterator{data: outs, current: -1}
 }
