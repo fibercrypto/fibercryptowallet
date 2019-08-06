@@ -12,15 +12,15 @@ type SkycoinTransactionOutput struct { //Implements TransactionOutput interface
 	CoinHours uint64
 }
 
-func (sto SkycoinTransactionOutput) GetId() string {
+func (sto *SkycoinTransactionOutput) GetId() string {
 	return sto.Id
 }
 
-func (sto SkycoinTransactionOutput) GetAddress() Address {
+func (sto *SkycoinTransactionOutput) GetAddress() Address {
 	return sto.Address
 }
 
-func (sto SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
+func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 	if ticker == "Sky" {
 		return sto.Sky
 	}
@@ -32,7 +32,7 @@ type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIte
 	Outputs []SkycoinTransactionOutput
 }
 
-func (it SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
+func (it *SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
 	return it.Outputs[it.Current]
 }
 
@@ -44,6 +44,6 @@ func (it *SkycoinTransactionOutputIterator) Next() bool {
 	return false
 }
 
-func (it SkycoinTransactionOutputIterator) HasNext() bool {
+func (it *SkycoinTransactionOutputIterator) HasNext() bool {
 	return (it.Current + 1) < len(it.Outputs)
 }
