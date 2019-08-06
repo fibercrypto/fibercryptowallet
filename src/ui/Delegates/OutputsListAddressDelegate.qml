@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import OutputsModels 1.0
 
 // Resource imports
 import "../" // For quick UI development, switch back to resources when making a release
@@ -73,6 +74,10 @@ Item {
     // Roles: outputID, addressSky, addressCoinHours
     // Use listModel.append( { "outputID": value, "addressSky": value, "addressCoinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
+    QOutputs{
+        //id: modelOutputs
+    }
+
     ListModel {
         id: modelOutputs
         // The first element must exist but will not be used

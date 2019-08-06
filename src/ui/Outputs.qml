@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import OutputsModels 1.0
+
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
@@ -82,6 +84,10 @@ Page {
 
     // Roles: name
     // Implement the model in the backend (a more recommendable approach)
+    QWallets{
+        //id: modelWallets
+    }
+
     ListModel { // EXAMPLE
         id: modelWallets
         ListElement { name: "Wallet A" }

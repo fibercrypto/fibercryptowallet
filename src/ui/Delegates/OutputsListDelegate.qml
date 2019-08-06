@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import OutputsModels 1.0
+
 
 Item {
     id: outputsListDelegate
@@ -56,6 +58,10 @@ Item {
     // Roles: address
     // Use listModel.append( { "address": value } )
     // Or implement the model in the backend (a more recommendable approach)
+    QAddresses{
+        //id: modelAddresses
+    }
+
     ListModel {
         id: modelAddresses
         // The first element must exist but will not be used
