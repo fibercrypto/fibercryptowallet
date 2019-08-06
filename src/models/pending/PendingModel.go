@@ -110,7 +110,6 @@ func (m *PendingTransactionList) data(index *qtcore.QModelIndex, role int) *qtco
 }
 
 func (m *PendingTransactionList) loadModel() {
-	println("getAll")
 	txns, err := m.PEX.GetTxnPool()
 	if err != nil {
 		println(err)
@@ -122,8 +121,6 @@ func (m *PendingTransactionList) loadModel() {
 		ptModel.SetMine(0)
 		ptModels = append(ptModels, ptModel)
 	}
-	println("finish")
-	println("getMine")
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
 		return
@@ -144,7 +141,6 @@ func (m *PendingTransactionList) loadModel() {
 		}
 	}
 	m.SetTransactions(ptModels)
-	println("finish")
 }
 
 func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction {
