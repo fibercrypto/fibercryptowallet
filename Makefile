@@ -8,7 +8,7 @@ run-wallet:  ## Run FiberCrypto Wallet.
 build-wallet:  ## Build FiberCrypto Wallet.
 	@echo "Building FiberCrypto Wallet..."
 	# Add the flag `-quickcompiler` when making a release
-	@qtdeploy -debug build desktop
+	@qtdeploy build desktop
 	@echo "Done."
 
 clean: ## Clean project FiberCrypto Wallet.
@@ -20,8 +20,8 @@ clean: ## Clean project FiberCrypto Wallet.
 	rm -rf rcc_cgo_linux_linux_amd64.go
 	rm -rf rcc_*.cpp
 	rm -rf rcc__*
-	find . -path "*moc.*"
-	find . -path "*moc_*"
+	find . -path "*moc.*" -delete
+	find . -path "*moc_*" -delete
 	@echo "Done."
 
 help:
