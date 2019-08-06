@@ -9,44 +9,20 @@ import (
 
 const (
 	Name = int(core.Qt__UserRole) + 1
-	Entries = int(core.Qt__UserRole) + 2
 )
 
-type OutputsList struct {
+type ModelWallets struct {
 	core.QAbstractListModel
 
 	_ func()                    `constructor:"init"`
 
 	_ map[int]*core.QByteArray  `property:"roles"`
-	_ []*WalletsOutputs         `property:"wallets"`
+	_ []*ModelAddresses        `property:"addresses"`
 }
 
-type WalletsOutputs struct {
-	core.QObject
-	
-	_ string              `property:"name"`
-	_ []*QEntries         `property:"entries"`
-}
-
-type QEntries struct {
-	core.QObject
-	
-	_ string              `property:"address"`
-	_ []*QOutput          `property:"outputs"`
-}
-
-type QOutput struct {
-	core.QObject
-	
-	_ string       `property:"hash"`
-	_ int          `property:"sky"`
-	_ int          `property:"coinHours"`
-}
-
-func (m *OutputsList) init() {
+func (m *ModelWallets) init() {
 	m.SetRoles(map[int]*core.QByteArray{
 		Name: 			 core.NewQByteArray2("name", -1),
-		Entries:             core.NewQByteArray2("entries", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
@@ -55,33 +31,29 @@ func (m *OutputsList) init() {
 
 }
 
-func (m *OutputsList) rowCount(*core.QModelIndex) int {
+func (m *ModelWallets) rowCount(*core.QModelIndex) int {
 	return len(m.Transactions())
 }
 
-func (m *OutputsList) roleNames() map[int]*core.QByteArray {
+func (m *ModelWallets) roleNames() map[int]*core.QByteArray {
 	return m.Roles()
 }
 
-func (m *OutputsList) data(index *core.QModelIndex, role int) *core.QVariant {
+func (m *ModelWallets) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Wallets()){
+	if index.Row() >= len(m.Addresses()){
 		return core.NewQVariant()
 	}
 
-	wo := m.Wallets()[index.Row()]
+	w := m.Addresses()[index.Row()]
 
 	switch role{
 	case Name:
 		{
-			return core.NewQVariant1(wo.Name())
-		}
-	case Entries:
-		{
-			return core.NewQVariant1(wo.Entries())
+			return core.NewQVariant1(w.Name())
 		}
 	default:
 		{
