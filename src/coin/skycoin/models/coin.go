@@ -16,7 +16,7 @@ func (sto *SkycoinTransactionOutput) GetId() string {
 	return sto.Id
 }
 
-func (sto *SkycoinTransactionOutput) GetAddress() Address {
+func (sto *SkycoinTransactionOutput) GetAddress() core.Address {
 	return sto.Address
 }
 
