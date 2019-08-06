@@ -46,6 +46,7 @@ Item {
         stackView.pop()
     }
 
+    
     StackView {
         id: stackView
         initialItem: componentPageCreateLoadWallet
@@ -108,4 +109,6 @@ Item {
             id: networking
         }
     }
+
+    
 }

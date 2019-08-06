@@ -4,19 +4,20 @@ import (
 	"github.com/skycoin/skycoin/src/api"
 )
 
-//Return address of daemon node----TODO
+//Return address of daemon node
 func nodeAddress() string {
-	return "http://127.0.0.1:36732"
+	return "http://127.0.0.1:6420" // example only
+
 }
 
-//Return username of daemon node----TODO
+//Return username of daemon node
 func nodeUsername() string {
-	return "Kid"
+	return "user" // example only
 }
 
-//Return password of daemon node-----TODO
+//Return password of daemon node
 func nodePassword() string {
-	return "P@ssw0rd!"
+	return "password" // example only
 }
 
 func NewClient() *api.Client {

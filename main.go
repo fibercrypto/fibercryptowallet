@@ -7,12 +7,13 @@ import (
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
 
-	//"github.com/therecipe/qt/quick"
-	//"github.com/therecipe/qt/widgets"
 	"os"
+
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
 )
 
 func main() {
+
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 
 	app := gui.NewQGuiApplication(len(os.Args), os.Args)

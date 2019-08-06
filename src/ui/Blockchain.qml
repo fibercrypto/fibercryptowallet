@@ -15,6 +15,7 @@ Page {
     property date timestampLastBlock: blockchain_status.timestampLastBlock
     property string hashLastBlock: blockchain_status.hashLastBlock
 
+
     property string currentSkySupply: blockchain_status.currentSkySupply
     property string totalSkySupply: blockchain_status.totalSkySupply
     property string currentCoinHoursSupply: blockchain_status.currentCoinHoursSupply
