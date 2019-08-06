@@ -1,43 +1,29 @@
 package models
 
-//import (
-//	qtcore "github.com/therecipe/qt/core"
-//)
-//
-//type NetworkingManager struct {
-//	qtcore.QObject
-//
-//	_ func()                                                                   `constructor:"init"`
-//	_ func() []*QNetworking                                                    `slot:"getNetworks"`
-//}
-//
-//func (net *NetworkingManager) init() {
-//	net.ConnectGetNetworks(net.getNetworks)
-//
-//}
-//
-//
-//func (net *NetworkingManager) decryptWallet(id, password string) {
-//	pwd := func(message string) (string, error) {
-//		return password, nil
-//	}
-//	net.WalletEnv.GetStorage().Decrypt(id, pwd)
-//}
-//
-//func (net *NetworkingManager) getNetworks() []*QNetworking {
-//	networks := make([]*QNetworking, 0)
-//	it := net.WalletEnv.GetWalletSet().ListWallets()
-//	for it.Next() {
-//		encrypted, err := net.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
-//		if err != nil {
-//			continue
-//		}
-//		if encrypted {
-//			qwallets = append(qwallets, fromWalletToQWallet(it.Value(), true))
-//		} else {
-//			qwallets = append(qwallets, fromWalletToQWallet(it.Value(), false))
-//		}
-//
-//	}
-//	return qwallets
-//}
+import (
+	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	qtcore "github.com/therecipe/qt/core"
+)
+
+type NetworkingManager struct {
+	qtcore.QObject
+	Networks *core.NetworkSet
+	_        func()                `constructor:"init"`
+	_        func() []*QNetworking `slot:"getNetworks"`
+}
+
+func (net *NetworkingManager) init() {
+	net.ConnectGetNetworks(net.getNetworks)
+	net.Networks = skycoin.NewSkycoinRemoteNetwork("http://127.0.0.1:6420")
+
+}
+
+func (net *NetworkingManager) getNetworks() []*QNetworking {
+	networks := make([]*QNetworking, 0)
+	netIterator := net.Networks.ListNetworks()
+	for netIterator.Next() {
+		networks = append(networks, INetworkToQNetworking(netIterator.Value()))
+	}
+	return networks
+}

@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
-
+import NetworkingManager 1.0
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
@@ -83,10 +83,19 @@ Page {
 
     // Roles: ip, port, source, block, lastSeenIn, lastSeenOut
     // Implement the model in the backend (a more recommendable approach)
-    ListModel { // EXAMPLE
+    //ListModel { // EXAMPLE
+    //    id: modelNetworking
+//  //      ListElement { ip: "192.168.137.1"; port: "8080"; source: qsTr("Default peer"); block: 17700; lastSeenIn: "a few seconds ago"; lastSeenOut: "two minutes ago" }
+//  //      ListElement { ip: "255.255.255.255"; port: "65535"; source: qsTr("Default peer"); block: 60978432; lastSeenIn: "a few seconds ago"; lastSeenOut: "a few seconds ago" }
+//  //      ListElement { ip: "192.168.137.3"; port: "5"; source: qsTr("Default peer"); block: 500; lastSeenIn: "4 days ago"; lastSeenOut: "one day ago" }
+    //}
+
+    NetworkingModel {
         id: modelNetworking
-//        ListElement { ip: "192.168.137.1"; port: "8080"; source: qsTr("Default peer"); block: 17700; lastSeenIn: "a few seconds ago"; lastSeenOut: "two minutes ago" }
-//        ListElement { ip: "255.255.255.255"; port: "65535"; source: qsTr("Default peer"); block: 60978432; lastSeenIn: "a few seconds ago"; lastSeenOut: "a few seconds ago" }
-//        ListElement { ip: "192.168.137.3"; port: "5"; source: qsTr("Default peer"); block: 500; lastSeenIn: "4 days ago"; lastSeenOut: "one day ago" }
     }
+
+    NetworkManager {
+        id: NetworkManager
+    }
+
 }

@@ -1,10 +1,11 @@
 package skycoin
 
 import (
+	"log"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/readable"
-	"log"
 )
 
 type SkycoinNetworkIterator struct {
@@ -41,6 +42,10 @@ type SkycoinRemoteNetwork struct {
 	nodeAddress string
 }
 
+func NewSkycoinRemoteNetwork(nodeAddress string) *SkycoinRemoteNetwork {
+	return &SkycoinRemoteNetwork{nodeAddress}
+}
+
 func (remoteNetwork *SkycoinRemoteNetwork) newClient() *api.Client {
 	return api.NewClient(remoteNetwork.nodeAddress)
 }
@@ -68,39 +73,37 @@ type Network struct {
 	LastSeenOut int64
 }
 
-func (network Network)GetIp() string{
+func (network Network) GetIp() string {
 	return network.Ip
 }
 
-func (network Network)GetPort() uint16 {
+func (network Network) GetPort() uint16 {
 	return network.Port
 }
 
-func (network Network)GetBlock() uint64 {
+func (network Network) GetBlock() uint64 {
 	return network.Block
 }
 
-func (network Network)IsTrusted() bool{
+func (network Network) IsTrusted() bool {
 	return network.Source
 }
 
-func (network Network)GetLastSeenIn() int64{
+func (network Network) GetLastSeenIn() int64 {
 	return network.LastSeenIn
 }
 
-func (network Network)GetLastSeenOut() int64{
+func (network Network) GetLastSeenOut() int64 {
 	return network.LastSeenOut
 }
 
-
-
 func connectionsToNetwork(connection readable.Connection) Network {
 	return Network{
-		Ip:   connection.Addr,
-		Port: connection.ListenPort,
-		LastSeenIn: connection.LastSent,
+		Ip:          connection.Addr,
+		Port:        connection.ListenPort,
+		LastSeenIn:  connection.LastSent,
 		LastSeenOut: connection.LastReceived,
-		Block: connection.Height,
-		Source: connection.IsTrustedPeer,
+		Block:       connection.Height,
+		Source:      connection.IsTrustedPeer,
 	}
 }

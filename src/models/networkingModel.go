@@ -126,12 +126,9 @@ func (netModel *NetworkingModel) addNetwork(w *QNetworking) {
 
 }
 
-func (netModel *NetworkingModel) addMultipleNetworks(w coin.NetworkIterator) {
-	for  {
-		if !w.HasNext() {
-			break
-		}
-		netModel.addNetwork(INetworkToQNetworking(w.Value()))
+func (netModel *NetworkingModel) addMultipleNetworks(w []*QNetworking]) {
+	for _, qnet := range w{
+		netModel.addNetwork(qnet)
 	}
 }
 
