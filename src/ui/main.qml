@@ -14,6 +14,7 @@ ApplicationWindow {
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
 
+
     menuBar: CustomMenuBar {
         id: customMenuBar
 
@@ -37,6 +38,7 @@ ApplicationWindow {
             enablePendingTransactions = false
             enableBlockchain = true
             enableNetworking = true
+
         }
 
         onBlockchainRequested: {
