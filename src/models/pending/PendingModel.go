@@ -54,7 +54,7 @@ func (m *PendingTransactionList) init() {
 	m.ConnectLoadModel(m.loadModel)
 
 	//Set the correct NodeAddress
-	addr := "http://127.0.0.1:37039" 
+	addr := "http://127.0.0.1:41160" 
 	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
 	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
 
@@ -148,7 +148,14 @@ func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction 
 	year, month, day, h, m, s := util.ParseDate(int64(stxn.GetTimestamp()))
 	pt.SetTimeStamp(qtcore.NewQDateTime3(qtcore.NewQDate3(year, month, day), qtcore.NewQTime3(h, m, s, 0), qtcore.Qt__LocalTime))
 	pt.SetTransactionID(stxn.GetId())
-	pt.SetSky(stxn.ComputeFee("SKY"))
-	pt.SetCoinHours(stxn.ComputeFee("SKYCH"))
+	iter := skycoin.NewSkycoinTransactionOutputIterator(stxn.GetOutputs())
+	sky, coinHours := uint64(0), uint64(0)
+	for iter.Next() {
+		output := iter.Value()
+		sky = sky + output.GetCoins(skycoin.Sky)
+		coinHours = coinHours + output.GetCoins(skycoin.CoinHour)
+	}
+	pt.SetSky(sky)
+	pt.SetCoinHours(coinHours)
 	return pt
 }

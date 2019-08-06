@@ -43,6 +43,7 @@ func UnconfirmedTransactionToTransaction(ut *readable.UnconfirmedTransactionVerb
 	txn.Timestamp = core.TransactionTimestamp(ut.Received.Unix())
 	txn.Id = ut.Transaction.Hash
 	txn.Status = core.TXN_STATUS_PENDING
+	txn.Fee = ut.Transaction.Fee
 	
 	/*TODO: set Intputs using array ut.In
 		type TransactionInput struct {

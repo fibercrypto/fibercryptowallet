@@ -13,6 +13,7 @@ type SkycoinTransaction struct{ //Implements Transaction interface
 	Inputs    []core.TransactionInput
 	Outputs   []core.TransactionOutput
 	Id        string
+	Fee       uint64
 } 
  
 func (txn *SkycoinTransaction) SupportedAssets() []string { 
@@ -40,12 +41,10 @@ func (txn *SkycoinTransaction) GetId() string {
 } 
  
 func (txn *SkycoinTransaction) ComputeFee(ticker string) uint64 { 
-	iter := NewSkycoinTransactionOutputIterator(txn.Outputs)
-	amount := uint64(0)
-	for iter.Next() {
-		amount = amount + iter.Value().GetCoins(ticker)
+	if ticker == Sky {
+		return uint64(0);
 	}
-	return amount
+	return txn.Fee
 } 
  
 /** 
@@ -138,7 +137,7 @@ func (sto *SkycoinTransactionOutput) GetAddress() core.Address {
 } 
 
 func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 { 
-	if ticker == "SKY" { 
+	if ticker == Sky { 
 		return sto.Sky 
 	} 
 	return sto.CoinHours 
