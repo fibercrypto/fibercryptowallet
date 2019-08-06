@@ -27,7 +27,6 @@ type TransactionIterator interface {
 
 type TransactionInput interface {
 	GetId() string
-	IsSpent() bool
 	GetSpentOutput() TransactionOutput
 }
 
@@ -39,6 +38,7 @@ type TransactionInputIterator interface {
 
 type TransactionOutput interface {
 	GetId() string
+	IsSpent() bool
 	GetAddress() Address
 	GetCoins(ticker string) uint64
 }
