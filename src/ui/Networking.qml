@@ -10,10 +10,12 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 Page {
     id: root
 
+
     Frame {
         anchors.fill: parent
         anchors.margins: 20
         clip: true
+
 
         ColumnLayout {
             id: columnLayoutFrame
@@ -78,6 +80,7 @@ Page {
                 } // ListView
             } // ScrollView
         } // ColumnLayout (frame)
+
     } // Frame
 
     // Roles: ip, port, source, block, lastSeenIn, lastSeenOut

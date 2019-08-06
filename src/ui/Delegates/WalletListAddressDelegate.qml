@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
 
 // Resource imports
 import "../" // For quick UI development, switch back to resources when making a release
@@ -32,7 +33,7 @@ Item {
 
         ToolButton {
             id: buttonAddAddress
-            text: qsTr("Add wallet")
+            text: qsTr("Add address")
             icon.source: "qrc:/images/resources/images/icons/add.svg"
             Material.foreground: Material.Teal
             Layout.fillWidth: true
