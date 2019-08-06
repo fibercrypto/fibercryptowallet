@@ -8,9 +8,15 @@ import QtQuick.Layouts 1.12
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 
 Page {
-    id: root
+    id: outputs
+    
+    readonly property real listOutputsLeftMargin: 20
+    readonly property real listOutputsRightMargin: 50
+    readonly property real listOutputsSpacing: 20
+    readonly property real internalLabelsWidth: 60
 
     Frame {
+        id: frame
         anchors.fill: parent
         anchors.margins: 20
         clip: true
@@ -23,28 +29,27 @@ Page {
                 id: columnLayoutHeader
 
                 RowLayout {
+                    spacing: listOutputsSpacing
                     Layout.topMargin: 30
-
+                    
                     Label {
-                        text: qsTr("IP address and port")
+                        text: qsTr("Output ID")
                         font.pointSize: 9
-                        Layout.leftMargin: 75 // Empirically obtained
+                        Layout.leftMargin: 38
                         Layout.fillWidth: true
                     }
                     Label {
-                        text: qsTr("Source")
+                        text: qsTr("Sky")
                         font.pointSize: 9
-                        Layout.rightMargin: 75
+                        horizontalAlignment: Text.AlignRight
+                        Layout.preferredWidth: internalLabelsWidth/2
                     }
                     Label {
-                        text: qsTr("Block")
+                        text: qsTr("Coin hours")
                         font.pointSize: 9
-                        Layout.rightMargin: 65
-                    }
-                    Label {
-                        text: qsTr("Last seen")
-                        font.pointSize: 9
-                        Layout.rightMargin: 90
+                        horizontalAlignment: Text.AlignRight
+                        Layout.rightMargin: listOutputsRightMargin
+                        Layout.preferredWidth: internalLabelsWidth
                     }
                 }
 
@@ -56,36 +61,31 @@ Page {
             } // ColumnLayout (header)
 
             ScrollView {
-                id: scrollItem
+                id: scrollView
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-
+                
                 ListView {
-                    id: listNetworking
+                    id: listViewWallets
                     anchors.fill: parent
                     clip: true
 
-                    model: modelNetworking
-                    delegate: NetworkingListDelegate {
-                        modelIp: ip
-                        modelPort: port
-                        modelSource: source
-                        modelBlock: block
-                        modelLastSeenIn: lastSeenIn
-                        modelLastSeenOut: lastSeenOut
+                    model: modelWallets
+                    delegate: OutputsListDelegate {
+                        width: listViewWallets.width
                     }
                 } // ListView
             } // ScrollView
         } // ColumnLayout (frame)
     } // Frame
 
-    // Roles: ip, port, source, block, lastSeenIn, lastSeenOut
+    // Roles: name
     // Implement the model in the backend (a more recommendable approach)
     ListModel { // EXAMPLE
-        id: modelNetworking
-        ListElement { ip: "192.168.137.1"; port: "8080"; source: qsTr("Default peer"); block: 17700; lastSeenIn: "a few seconds ago"; lastSeenOut: "two minutes ago" }
-        ListElement { ip: "255.255.255.255"; port: "65535"; source: qsTr("Default peer"); block: 60978432; lastSeenIn: "a few seconds ago"; lastSeenOut: "a few seconds ago" }
-        ListElement { ip: "192.168.137.3"; port: "5"; source: qsTr("Default peer"); block: 500; lastSeenIn: "4 days ago"; lastSeenOut: "one day ago" }
+        id: modelWallets
+        ListElement { name: "Wallet A" }
+        ListElement { name: "Wallet B" }
+        ListElement { name: "Wallet C" }
     }
 }

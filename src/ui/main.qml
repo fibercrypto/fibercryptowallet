@@ -18,14 +18,25 @@ ApplicationWindow {
         id: customMenuBar
 
         onOutputsRequested: {
-            if (false) {
-                menuBarColor = Material.color(Material.Teal)
-                customHeader.text = qsTr("Outputs")
-                
-                enableOutputs = false
-                enableBlockchain = true
-                enableNetworking = true
-            }
+            generalStackView.openOutputsPage()
+            menuBarColor = Material.color(Material.Teal)
+            customHeader.text = qsTr("Outputs")
+            
+            enableOutputs = false
+            enablePendingTransactions = true
+            enableBlockchain = true
+            enableNetworking = true
+        }
+
+        onPendingTransactionsRequested: {
+            generalStackView.openPendingTransactionsPage()
+            menuBarColor = Material.color(Material.Purple)
+            customHeader.text = qsTr("Pending transactions")
+            
+            enableOutputs = true
+            enablePendingTransactions = false
+            enableBlockchain = true
+            enableNetworking = true
         }
 
         onBlockchainRequested: {
@@ -34,6 +45,7 @@ ApplicationWindow {
             customHeader.text = qsTr("Blockchain")
 
             enableOutputs = true
+            enablePendingTransactions = true
             enableBlockchain = false
             enableNetworking = true
         }
@@ -44,6 +56,7 @@ ApplicationWindow {
             customHeader.text = qsTr("Networking")
 
             enableOutputs = true
+            enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = false
         }
@@ -67,6 +80,91 @@ ApplicationWindow {
     }
 
     //! Dialogs
+
+    // Message dialogs
+
+    MsgDialog {
+        id: msgDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+
+        text: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
+                 + "sed eiusmod tempor incidunt ut labore et dolore magna aliqua. "
+                 + "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris "
+                 + "nisi ut aliquid ex ea commodi consequat. "
+                 + "Quis aute iure reprehenderit in voluptate velit esse cillum dolore "
+                 + "eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, "
+                 + "sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    }
+
+    // QR
+    DialogQR {
+        id: dialogQR
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        imagePath: "qrc:/images/resources/images/icons/qr.svg"
+    }
+
+    // Hardware dialogs
+
+    DialogUnconfiguredWallet {
+        id: dialogUnconfiguredWallet
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 690 ? 690 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 420 ? 420 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+    NumPadDialog {
+        id: numPadDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 540 ? 540 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+    RestoreBackupWordsDialog {
+        id: restoreBackupWordsDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 460 ? 460 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+    SecureWalletDialog {
+        id: secureWalletDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
+        height: (applicationWindow.height > 590 ? 590 - 40 : applicationWindow.height - 40) - (enableBackupWarning ^ enablePINWarning ? 100 : 0) - (!enableBackupWarning && !enablePINWarning ? 240 : 0)
+        
+        focus: true
+        modal: true
+    }
+
+    WalletCreatedDialog {
+        id: walletCreatedDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 360 ? 360 - 40 : applicationWindow.height - 40
+        
+        focus: true
+        modal: true
+    }
+
 
     // Help dialogs
 

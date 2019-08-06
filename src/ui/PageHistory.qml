@@ -78,9 +78,13 @@ Page {
         id: dialogTransactionDetails
         anchors.centerIn: Overlay.overlay
 
+        readonly property real maxHeight: expanded ? 590 : 370
+        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
+        Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
+
         modal: true
         focus: true
-        standardButtons: Dialog.Ok
 
         date: listTransactions.currentItem.modelDate
         status: listTransactions.currentItem.modelStatus

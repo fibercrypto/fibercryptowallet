@@ -8,12 +8,11 @@ import QtQuick.Layouts 1.12
 import "../" // For quick UI development, switch back to resources when making a release
 
 Dialog {
-    id: root
+    id: dialogSendTransaction
+
+    property alias expanded: transactionDetails.expanded
 
     title: qsTr("Password requested")
-    modal: true
-    clip: true
-    focus: true
     standardButtons: Dialog.Ok | Dialog.Cancel
 
     onOpened: {
@@ -26,51 +25,67 @@ Dialog {
         passwordRequester.clear()
     }
 
-    ColumnLayout {
+    Flickable {
+        id: flickable
         anchors.fill: parent
-        spacing: 20
-
-        TransactionDetails {
-            id: transactionDetail
-
-            // EXAMPLE
-            date: "2019-02-26 15:27"
-            status: TransactionDetails.Status.Preview
-            type: TransactionDetails.Type.Receive
-            amount: 10
-            hoursReceived: 16957
-            hoursBurned: 33901
-            transactionID: "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
-
-            Layout.fillWidth: true
-        }
-
-        Rectangle {
-            visible: transactionDetail.expanded
-            height: 1
-            color: Material.color(Material.Grey)
-            Layout.fillWidth: true
-        }
+        clip: true
+        contentHeight: columnLayoutRoot.height
 
         ColumnLayout {
-            id: columnLayoutPasswordField
-            Layout.fillWidth: true
+            id: columnLayoutRoot
+            width: parent.width
+            spacing: 20
 
-            Label {
-                text: qsTr("Enter the password to confirm the transaction")
-                font.bold: true
+            TransactionDetails {
+                id: transactionDetails
+
+                // EXAMPLE
+                date: "2019-02-26 15:27"
+                status: TransactionDetails.Status.Preview
+                type: TransactionDetails.Type.Receive
+                amount: 10
+                hoursReceived: 16957
+                hoursBurned: 33901
+                transactionID: "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
+
+                Layout.fillWidth: true
             }
 
-            PasswordRequester {
-                id: passwordRequester
+            Rectangle {
+                visible: expanded
+                height: 1
+                color: Material.color(Material.Grey)
+                Layout.fillWidth: true
+            }
 
-                Layout.topMargin: -10
+            ColumnLayout {
+                id: columnLayoutPasswordField
                 Layout.fillWidth: true
 
-                onTextChanged: {
-                    root.standardButton(Dialog.Ok).enabled = text !== ""
+                Label {
+                    text: qsTr("Enter the password to confirm the transaction")
+                    font.bold: true
                 }
-            }
+
+                PasswordRequester {
+                    id: passwordRequester
+
+                    Layout.topMargin: -10
+                    Layout.fillWidth: true
+
+                    onTextChanged: {
+                        dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== ""
+                    }
+                }
+            } // ColumnLayout
+        } // ColumnLayout (root)
+
+        ScrollIndicator.vertical: ScrollIndicator {
+            parent: dialogSendTransaction.contentItem
+            anchors.top: flickable.top
+            anchors.bottom: flickable.bottom
+            anchors.right: parent.right
+            anchors.rightMargin: -dialogSendTransaction.rightPadding + 1
         }
-    }
+    } // Flickable
 }
