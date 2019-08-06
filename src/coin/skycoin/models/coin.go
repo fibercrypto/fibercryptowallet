@@ -29,7 +29,7 @@ func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 
 type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface
 	Current interface
-	Outputs []SkycoinTransactionOutput
+	Outputs []core.TransactionOutput
 }
 
 func (it *SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
@@ -46,4 +46,8 @@ func (it *SkycoinTransactionOutputIterator) Next() bool {
 
 func (it *SkycoinTransactionOutputIterator) HasNext() bool {
 	return (it.Current + 1) < len(it.Outputs)
+}
+
+func NewSkycoinTransactionOutputIterator(outputs []core.TransactionOutput) *SkycoinTransactionOutputIterator {
+	return &SkycoinTransactionOutputIterator{Outputs: outputs, Current: -1}
 }
