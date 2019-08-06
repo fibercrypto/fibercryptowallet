@@ -1,41 +1,49 @@
-package skycoin
+package models
 
 import (
-	"github.com/FiberCrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 )
 
-type SkycoinAddress struct {
+type SkycoinAddressIterator struct { //Implements AddressIterator interfaces
+	current   int
+	addresses []SkycoinAddress
 }
 
-func (*SkycoinAddress) IsBip32() bool {
-	return false
+func (it *SkycoinAddressIterator) Value() core.Address {
+	return it.addresses[it.current]
 }
 
-func (*SkycoinAddress) String() string {
-	return "249iEtdhniFppBTpkzq7syoiBaydLi6USnU"
-}
-
-type SkycoinAddressIterator struct {
-	index int
-	value SkycoinAddress
-}
-
-func (iter *SkycoinAddressIterator) Value() core.Address {
-	if index == 0 && iter.value == nil {
-		iter.value = &SkycoinAddress{}
-	}
-	return iter.value
-}
-
-func (iter *SkycoinAddressIterator) Next() bool {
-	if iter.index < 3 {
-		iter.value = &SkycoinAddress{}
-		iter.index++
+func (it *SkycoinAddressIterator) Next() bool {
+	if it.HasNext() {
+		it.current++
 		return true
 	}
 	return false
 }
 
-func (iter *SkycoinAddressIterator) HasNext() bool {
-	return iter.index < 3
+func (it *SkycoinAddressIterator) HasNext() bool {
+	if (it.current + 1) >= len(it.addresses) {
+		return false
+	}
+	return true
+}
+
+func NewSkycoinAddressIterator(addresses []SkycoinAddress) *SkycoinAddressIterator {
+	return &SkycoinAddressIterator{addresses: addresses, current: -1}
+}
+
+type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
+	address string
+}
+
+func (addr SkycoinAddress) IsBip32() bool {
+	return false
+}
+
+func (addr SkycoinAddress) String() string {
+	return addr.address
+}
+
+func (addr SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
+	return addr
 }

@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
@@ -46,6 +47,7 @@ Page {
         } // RowLayout
 
         Rectangle {
+            id: rect
             Layout.fillWidth: true
             height: 1
             color: "#DDDDDD"
@@ -66,10 +68,14 @@ Page {
                 icon.source: "qrc:/images/resources/images/icons/add.svg"
                 Layout.fillWidth: true
 
+
+                
+
                 onClicked: {
                     dialogAddLoadWallet.mode = CreateLoadWallet.Create
                     dialogAddLoadWallet.open()
                 }
+
             }
             ToolButton {
                 id: buttonLoadWallet
@@ -93,10 +99,36 @@ Page {
             id: walletList
             anchors.fill: parent
             clip: true // limit the painting to it's bounding rectangle
-            model: listWallets
+            model: walletModel
             delegate: WalletListDelegate {}
+            
         }
     }
+
+
+    
+    WalletManager{
+        id: walletManager
+    }
+
+    WalletModel{
+        id: walletModel
+        property Timer timer: Timer {
+        
+                                    id: walletModelTimer
+                                    repeat: false
+                                    running: true
+                                    interval: 0
+                                    onTriggered: {
+                                        walletModel.loadModel(walletManager.getWallets())
+                                        walletModelTimer.running = false
+                                    }
+            
+                                }
+    }
+
+    
+    
 
     DialogAddLoadWallet {
         id: dialogAddLoadWallet
@@ -113,6 +145,7 @@ Page {
             listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
         }
     }
+
 
     // Roles: name, encryptionEnabled, sky, coinHours
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )
