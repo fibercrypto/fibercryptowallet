@@ -52,10 +52,12 @@ func (m *PendingTransactionList) init() {
 	m.ConnectGetMine(m.getMine)
 	m.ConnectGetAll(m.getAll)
 
-	m.PEX = new(skycoin.SkycoinPEX)
-	m.WalletEnv = new(skycoin.WalletNode)
+	//Set the correct NodeAddress
+	addr := "http://127.0.0.1:37039" 
+	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
+	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
 
-	m.getAll()
+	m.getMine()
 }
 
 func (m *PendingTransactionList) rowCount(*qtcore.QModelIndex) int {
@@ -118,24 +120,27 @@ func (m *PendingTransactionList) getAll() {
 }
 
 func (m *PendingTransactionList) getMine() {
-	// println("getMine")
-	// c := util.NewClient()
-	// wallets, err := c.Wallets()
-	// if err != nil {
-	// 	return
-	// }
-	// ptModels := make([]*PendingTransaction, 0)
-	// for _, w := range wallets {
-	// 	response, err := c.WalletUnconfirmedTransactionsVerbose(w.Meta.Filename)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// 	for _, pt := range response.Transactions {
-	// 		ptModel := SkycoinTransactionToPendingTransaction(&pt)
-	// 		ptModels = append(ptModels, ptModel)
-	// 	}
-	// }
-	// m.SetTransactions(ptModels)
+	println("getMine")
+	wallets := m.WalletEnv.GetWalletSet().ListWallets()
+	if wallets == nil {
+		return
+	}
+	ptModels := make([]*PendingTransaction, 0)
+	for wallets.Next() {
+		crypto := wallets.Value().GetCryptoAccount()
+		txns := crypto.ListTransactions()
+		if txns == nil {
+			return
+		}
+		for txns.Next() {
+			txn := txns.Value()
+			if txn.GetStatus() == core.TXN_STATUS_PENDING {
+				ptModel := TransactionToPendingTransaction(txn)
+				ptModels = append(ptModels, ptModel)
+			}
+		}
+	}
+	m.SetTransactions(ptModels)
 }
 
 func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction {

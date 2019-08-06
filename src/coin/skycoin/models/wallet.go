@@ -52,11 +52,11 @@ func NewSkycoinWalletIterator(wallets []Wallet) *SkycoinWalletIterator {
 }
 
 type SkycoinRemoteWallet struct { //Implements WalletStorage and WalletSet interfaces
-	nodeAddress string
+	NodeAddress string
 }
 
 func (wltSrv *SkycoinRemoteWallet) newClient() *api.Client {
-	return api.NewClient(wltSrv.nodeAddress)
+	return api.NewClient(wltSrv.NodeAddress)
 }
 
 func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
@@ -68,7 +68,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	wallets := make([]Wallet, 0)
 	for _, wlt := range wlts {
 		nwlt := walletResponseToWallet(wlt)
-		nwlt.nodeAddress = wltSrv.nodeAddress
+		nwlt.NodeAddress = wltSrv.NodeAddress
 		wallets = append(wallets, nwlt)
 	}
 	return NewSkycoinWalletIterator(wallets)
@@ -143,19 +143,19 @@ func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
 		return nil
 	}
 	nwlt := walletResponseToWallet(*wltR)
-	nwlt.nodeAddress = wltSrv.nodeAddress
+	nwlt.NodeAddress = wltSrv.NodeAddress
 	return nwlt
 }
 
 type WalletNode struct { //Implements WallentEnv interface
 	wltService  *SkycoinRemoteWallet
-	nodeAddress string
+	NodeAddress string
 }
 
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(SkycoinRemoteWallet)
-		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
+		wltEnv.wltService.NodeAddress = wltEnv.NodeAddress
 	}
 	return wltEnv.wltService
 }
@@ -163,7 +163,7 @@ func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 func (wltEnv *WalletNode) GetWalletSet() core.WalletSet {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(SkycoinRemoteWallet)
-		wltEnv.wltService.nodeAddress = wltEnv.nodeAddress
+		wltEnv.wltService.NodeAddress = wltEnv.NodeAddress
 	}
 	return wltEnv.wltService
 }
@@ -207,12 +207,13 @@ type Wallet struct { //Implements Wallet and CryptoAccount interfaces
 	Label       string
 	CoinType    string
 	Encrypted   bool
-	nodeAddress string
+	NodeAddress string
 }
 
 func (wlt Wallet) newClient() *api.Client {
-	return api.NewClient(wlt.nodeAddress)
+	return api.NewClient(wlt.NodeAddress)
 }
+
 func (wlt Wallet) GetLabel() string {
 	return wlt.Label
 }

@@ -31,7 +31,7 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //-----
 }
 
 func (wlt Wallet) GetBalance(ticker string) (uint64, error) {
-	c := util.NewClient()
+	c := wlt.newClient()
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
 		return 0, err
@@ -55,6 +55,18 @@ func (wlt Wallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------
 	return nil
 }
 
-func (wlt Wallet) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (wlt Wallet) ListTransactions() core.TransactionIterator { 
+	/*TODO: Who need that method implent it to obtain al transactions
+	actually is only for pending transactions*/
+	c := wlt.newClient()
+	response, err := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for _, ut := range response.Transactions {
+		txn := UnconfirmedTransactionToTransaction(&ut)
+		txns = append(txns, txn)
+	}
+	return NewSkycoinTransactionIterator(txns)
 }

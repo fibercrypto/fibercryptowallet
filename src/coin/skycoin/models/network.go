@@ -4,12 +4,17 @@ import (
 	"strconv"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/readable"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/skycoin/skycoin/src/api"
 )
 
 type SkycoinPEX struct { //Implements PEX interface
-
+	NodeAddress string
 } 
+
+func (spex *SkycoinPEX) NewClient() *api.Client {
+	c := api.NewClient(spex.NodeAddress)
+	return c
+}
 
 func (spex *SkycoinPEX) GetConnections()  {
 	//TODO
@@ -20,7 +25,7 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction)  {
 }
 
 func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
-	c := util.NewClient()
+	c := spex.NewClient()
 	txns, err := c.PendingTransactionsVerbose()
 	if err != nil {
 		return nil, err
@@ -55,7 +60,6 @@ func UnconfirmedTransactionToTransaction(ut *readable.UnconfirmedTransactionVerb
 		txnOutput.Id = output.Hash
 		txnOutput.Address = SkycoinAddress{address: output.Address}
 		coin, _ := strconv.ParseFloat(output.Coins, 64)
-		//TODO: ask if is correct to use uint64 instead of float64
 		txnOutput.Sky = uint64(coin)
 		txnOutput.CoinHours = output.Hours
 		txnOutputs = append(txnOutputs, txnOutput)
