@@ -3,16 +3,16 @@ package models
 import (
 	coin "github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/therecipe/qt/core"
-	)
+)
 
 // ip, port, source, block, lastSeenIn, lastSeenOut
 const (
-	Ip	              = int(core.Qt__UserRole) + 1
-	Port			  = int(core.Qt__UserRole) + 2
-	Source            = int(core.Qt__UserRole) + 3
-	Block	          = int(core.Qt__UserRole) + 4
-	LastSeenIn        = int(core.Qt__UserRole) + 5
-	LastSeenOut       = int(core.Qt__UserRole) + 6
+	Ip          = int(core.Qt__UserRole) + 1
+	Port        = int(core.Qt__UserRole) + 2
+	Source      = int(core.Qt__UserRole) + 3
+	Block       = int(core.Qt__UserRole) + 4
+	LastSeenIn  = int(core.Qt__UserRole) + 5
+	LastSeenOut = int(core.Qt__UserRole) + 6
 )
 
 type NetworkingModel struct {
@@ -23,30 +23,31 @@ type NetworkingModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QNetworking           `property:"networks"`
 
-	_ func(*QNetworking)                                                        `slot:"addNetwork"`
-	_ func(row int)                                                             `slot:"removeNetwork"`
-	_ int                                                                       `property:"count"`
+	_ func(*QNetworking)   `slot:"addNetwork"`
+	_ func(row int)        `slot:"removeNetwork"`
+	_ func([]*QNetworking) `slot:"addMultipleNetworks"`
+	_ int                  `property:"count"`
 }
 
 type QNetworking struct {
 	core.QObject
-// ip, port, source, block, lastSeenIn, lastSeenOut
+	// ip, port, source, block, lastSeenIn, lastSeenOut
 	_ string `property:"ip"`
 	_ uint16 `property:"port"`
-	_ bool `property:"source"`
+	_ bool   `property:"source"`
 	_ uint64 `property:"block"`
-	_ int64 `property:"lastSeenIn"`
-	_ int64 `property:"lastSeenOut"`
+	_ int64  `property:"lastSeenIn"`
+	_ int64  `property:"lastSeenOut"`
 }
 
 func (netModel *NetworkingModel) init() {
 	netModel.SetRoles(map[int]*core.QByteArray{
-		Ip:             core.NewQByteArray2("ip", -1),
-		Port: 			core.NewQByteArray2("port", -1),
-		Source:         core.NewQByteArray2("source", -1),
-		Block:          core.NewQByteArray2("block", -1),
-		LastSeenIn:     core.NewQByteArray2("lastSeenIn", -1),
-		LastSeenOut:    core.NewQByteArray2("lastSeenOut", -1),
+		Ip:          core.NewQByteArray2("ip", -1),
+		Port:        core.NewQByteArray2("port", -1),
+		Source:      core.NewQByteArray2("source", -1),
+		Block:       core.NewQByteArray2("block", -1),
+		LastSeenIn:  core.NewQByteArray2("lastSeenIn", -1),
+		LastSeenOut: core.NewQByteArray2("lastSeenOut", -1),
 	})
 
 	netModel.ConnectData(netModel.data)
@@ -56,6 +57,7 @@ func (netModel *NetworkingModel) init() {
 
 	netModel.ConnectAddNetwork(netModel.addNetwork)
 	netModel.ConnectRemoveNetwork(netModel.removeNetwork)
+	netModel.ConnectAddMultipleNetworks(netModel.addMultipleNetworks)
 
 }
 
@@ -126,9 +128,18 @@ func (netModel *NetworkingModel) addNetwork(w *QNetworking) {
 
 }
 
+<<<<<<< Updated upstream
 func (netModel *NetworkingModel) addMultipleNetworks(w []*QNetworking]) {
 	for _, qnet := range w{
 		netModel.addNetwork(qnet)
+=======
+func (netModel *NetworkingModel) addMultipleNetworks(w coin.NetworkIterator) {
+	for {
+		if !w.HasNext() {
+			break
+		}
+		netModel.addNetwork(INetworkToQNetworking(w.Value()))
+>>>>>>> Stashed changes
 	}
 }
 
