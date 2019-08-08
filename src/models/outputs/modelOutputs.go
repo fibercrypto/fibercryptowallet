@@ -2,9 +2,6 @@ package outputs
 
 import (
 	"github.com/therecipe/qt/core"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/readable"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 const (
@@ -61,20 +58,20 @@ func (m *ModelOutputs) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant()
 	}
 
-	ao := m.Outputs()[index.Row()]
+	qo := m.Outputs()[index.Row()]
 
 	switch role{
 	case OutputID:
 		{
-			return core.NewQVariant1(ao.OutputID())
+			return core.NewQVariant1(qo.OutputID())
 		}
 	case AddressSky:
 		{
-			return core.NewQVariant1(ao.AddressSky())
+			return core.NewQVariant1(qo.AddressSky())
 		}
 	case AddressCoinHours:
 		{
-			return core.NewQVariant1(ao.AddressCoinHours())
+			return core.NewQVariant1(qo.AddressCoinHours())
 		}
 	default:
 		{

@@ -2,9 +2,6 @@ package outputs
 
 import (
 	"github.com/therecipe/qt/core"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/readable"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 const (
