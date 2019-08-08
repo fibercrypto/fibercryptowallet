@@ -184,7 +184,7 @@ func (out SkycoinTransactionOutput) IsSpent() bool {
  */
 type SkycoinTransactionOutputIterator struct {
 	current int
-	data    []*SkycoinTransactionOutput
+	data    []core.TransactionOutput
 }
 
 func (iter *SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
@@ -207,6 +207,6 @@ func (iter *SkycoinTransactionOutputIterator) HasNext() bool {
 	return false
 }
 
-func NewSkycoinTransactionOutputIterator(outs []*SkycoinTransactionOutput) *SkycoinTransactionOutputIterator {
+func NewSkycoinTransactionOutputIterator(outs []core.TransactionOutput) *SkycoinTransactionOutputIterator {
 	return &SkycoinTransactionOutputIterator{data: outs, current: -1}
 }

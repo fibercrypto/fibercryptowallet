@@ -130,12 +130,35 @@ func (wlt RemoteWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	return nil
+func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	unOuts := make([]core.TransactionOutput, 0)
+	for addressesIter.Next() {
+		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		for outsIter.Next() {
+			unOuts = append(unOuts, outsIter.Value())
+		}
+	}
+	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
 func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for addressesIter.Next() {
+		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
+		for txnsIter.Next() {
+			txns = append(txns, txnsIter.Value())
+		}
+	}
+
+	return NewSkycoinTransactionIterator(txns)
 }
 
 func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
