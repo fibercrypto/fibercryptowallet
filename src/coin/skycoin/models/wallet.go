@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"encoding/hex"
@@ -258,7 +258,7 @@ func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	}
 	addresses := make([]SkycoinAddress, 0)
 	for _, entry := range wltR.Entries[startIndex:int(util.Min(len(wltR.Entries), int(startIndex+count)))] {
-		addresses = append(addresses, walletEntryToAddress(entry))
+		addresses = append(addresses, walletEntryToAddress(entry, wlt.nodeAddress))
 	}
 	//Checking if all the neccesary addresses exists
 	if uint32(len(wltR.Entries)) < (startIndex + count) {
@@ -268,7 +268,7 @@ func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 			return nil
 		}
 		for _, addr := range newAddrs {
-			addresses = append(addresses, SkycoinAddress{addr})
+			addresses = append(addresses, SkycoinAddress{address:addr})
 		}
 	}
 
@@ -288,7 +288,7 @@ func (wlt RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	}
 	addresses := make([]SkycoinAddress, 0)
 	for _, entry := range wltR.Entries {
-		addresses = append(addresses, walletEntryToAddress(entry))
+		addresses = append(addresses, walletEntryToAddress(entry, wlt.nodeAddress))
 	}
 
 	return NewSkycoinAddressIterator(addresses), nil
@@ -303,8 +303,8 @@ func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
 	return wlt
 }
 
-func walletEntryToAddress(wltE readable.WalletEntry) SkycoinAddress {
-	return SkycoinAddress{wltE.Address}
+func walletEntryToAddress(wltE readable.WalletEntry, nAddr string) SkycoinAddress {
+	return SkycoinAddress{address:wltE.Address, nodeAddress:nAddr}
 }
 
 type WalletDirectory struct { //Implements WallentEnv interface
@@ -558,7 +558,7 @@ func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count
 	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
 	skyAddrs := make([]SkycoinAddress, 0)
 	for _, addr := range addrs {
-		skyAddrs = append(skyAddrs, SkycoinAddress{addr.String()})
+		skyAddrs = append(skyAddrs, SkycoinAddress{address:addr.String()})
 	}
 	return NewSkycoinAddressIterator(skyAddrs)
 
@@ -575,7 +575,7 @@ func (wlt LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	addrs := make([]SkycoinAddress, 0)
 	addresses := walletLoaded.GetAddresses()
 	for _, addr := range addresses {
-		addrs = append(addrs, SkycoinAddress{addr.String()})
+		addrs = append(addrs, SkycoinAddress{address:addr.String()})
 	}
 
 	return NewSkycoinAddressIterator(addrs), nil
