@@ -2,13 +2,14 @@ package outputs
 
 import (
 	qtcore "github.com/therecipe/qt/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 )
 
 const (
 	Name = int(qtcore.Qt__UserRole) + 1
+	//Set the correct NodeAddress
+	ADDR = "http://127.0.0.1:46445"
 )
 
 type ModelWallets struct {
@@ -32,15 +33,13 @@ func (m *ModelWallets) init() {
 	m.ConnectData(m.data)
 	m.ConnectLoadModel(m.loadModel)
 
-	//Set the correct NodeAddress
-	addr := "http://127.0.0.1:37039"
-	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
+	m.WalletEnv = &skycoin.WalletNode{NodeAddress: ADDR}
 
 	m.loadModel()
 }
 
 func (m *ModelWallets) rowCount(*qtcore.QModelIndex) int {
-	return len(m.Transactions())
+	return len(m.Addresses())
 }
 
 func (m *ModelWallets) roleNames() map[int]*qtcore.QByteArray {
@@ -71,31 +70,32 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 }
 
 func (m *ModelWallets) loadModel() {
-	aModels = make([]*ModelAddresses, 0)
+	aModels := make([]*ModelAddresses, 0)
 
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
 		return
 	}
 	for wallets.Next() {
-		addresses, err = wallets.Value().GetLoadedAddresses()
+		addresses, err := wallets.Value().GetLoadedAddresses()
 		if err != nil {
 			println(err)
 			return
 		}
-		ma = NewModelAddresses(nil)
+		ma := NewModelAddresses(nil)
 		ma.SetName(wallets.Value().GetLabel())
-		oModels = make([]*ModelOutputs, 0)
+		oModels := make([]*ModelOutputs, 0)
 
 		for addresses.Next() {
-			outputs = addresses.Value().GetCryptoAccount().ScanUnspentOutputs()
-			mo = NewModelOutputs(nil)
-			mo.SetAddress(addresses.Value().String())
-			qOutputs = make([]*QOutput)
+			a := addresses.Value()
+			outputs := a.GetCryptoAccount().ScanUnspentOutputs()
+			mo := NewModelOutputs(nil)
+			mo.SetAddress(a.String())
+			qOutputs := make([]*QOutput, 0)
 
 			for outputs.Next() {
-				to = outputs.Value()
-				qo = NewQOutput(nil)
+				to := outputs.Value()
+				qo := NewQOutput(nil)
 				qo.SetOutputID(to.GetId())
 				qo.SetAddressSky(to.GetCoins("Sky"))
 				qo.SetAddressCoinHours(to.GetCoins(""))

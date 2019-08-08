@@ -21,7 +21,7 @@ type ModelOutputs struct {
 }
 
 type QOutput struct {
-	qtcore.QObject
+	core.QObject
 
 	_ string 	`property:"outputID"`
 	_ uint64 	`property:"addressSky"`
@@ -42,7 +42,7 @@ func (m *ModelOutputs) init() {
 }
 
 func (m *ModelOutputs) rowCount(*core.QModelIndex) int {
-	return len(m.Transactions())
+	return len(m.Outputs())
 }
 
 func (m *ModelOutputs) roleNames() map[int]*core.QByteArray {

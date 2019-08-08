@@ -30,7 +30,7 @@ func (m *ModelAddresses) init() {
 }
 
 func (m *ModelAddresses) rowCount(*core.QModelIndex) int {
-	return len(m.Transactions())
+	return len(m.Outputs())
 }
 
 func (m *ModelAddresses) roleNames() map[int]*core.QByteArray {
