@@ -115,8 +115,7 @@ func (ss *SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 		err := ss.requestSupplyInfo()
 		return nil, err
 	}
-	return nil, nil
-	// FIXME: return *ss.cachedStatus.LastBlockInfo, nil
+	return *ss.cachedStatus.LastBlockInfo, nil
 }
 
 func (ss *SkycoinBlockchainStatus) SetCacheTime(time uint64) {
