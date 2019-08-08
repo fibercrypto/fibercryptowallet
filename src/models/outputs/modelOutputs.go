@@ -19,10 +19,17 @@ type ModelOutputs struct {
 	_ func()                    `constructor:"init"`
 
 	_ map[int]*core.QByteArray  `property:"roles"`
-	_ []*Output       `property:"outputs"`
+	_ []*QOutput       			`property:"outputs"`
+	_ string					`property:"address"`
 }
 
-//TODO: Implement Output
+type QOutput struct {
+	qtcore.QObject
+
+	_ string 	`property:"outputID"`
+	_ uint64 	`property:"addressSky"`
+	_ uint64 	`property:"addressCoinHours"`
+}
 
 func (m *ModelOutputs) init() {
 	m.SetRoles(map[int]*core.QByteArray{
