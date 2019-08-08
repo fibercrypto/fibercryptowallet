@@ -1,7 +1,8 @@
-package models
+package skycoin
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/skycoin/skycoin/src/api"
 )
 
 type SkycoinAddressIterator struct { //Implements AddressIterator interfaces
@@ -34,6 +35,7 @@ func NewSkycoinAddressIterator(addresses []SkycoinAddress) *SkycoinAddressIterat
 
 type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
 	address string
+	nodeAddress string
 }
 
 func (addr SkycoinAddress) IsBip32() bool {
@@ -46,4 +48,9 @@ func (addr SkycoinAddress) String() string {
 
 func (addr SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
+}
+
+func (addr SkycoinAddress) newClient() *api.Client {
+	c := api.NewClient(addr.nodeAddress)
+	return c
 }
