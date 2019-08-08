@@ -40,7 +40,7 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	}
 
 	outs := outputSummary.SpendableOutputs()
-	skyOutputs := make([]*SkycoinTransactionOutput, 0)
+	skyOutputs := make([]core.TransactionOutput, 0)
 	for _, out := range outs {
 		sky, _ := strconv.ParseUint(out.Coins, 10, 64)
 		skyOutputs = append(skyOutputs, &SkycoinTransactionOutput{
@@ -145,7 +145,7 @@ func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
+func (wlt RemoteWallet) ListTransactions() core.TransactionIterator {
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		return nil
@@ -194,12 +194,35 @@ func (wlt LocalWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	return nil
+func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	unOuts := make([]core.TransactionOutput, 0)
+	for addressesIter.Next() {
+		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		for outsIter.Next() {
+			unOuts = append(unOuts, outsIter.Value())
+		}
+	}
+	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt LocalWallet) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for addressesIter.Next() {
+		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
+		for txnsIter.Next() {
+			txns = append(txns, txnsIter.Value())
+		}
+	}
+
+	return NewSkycoinTransactionIterator(txns)
 }
 
 func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string) (*cli.BalanceResult, error) {
