@@ -5,7 +5,8 @@ type AltcoinMetadata struct {
 	Ticker        string
 	Family        string
 	HasBip44      bool
-	Bip44CoinType int
+	Bip44CoinType int32
+	Accuracy      int32
 }
 
 type AltcoinPlugin interface {
