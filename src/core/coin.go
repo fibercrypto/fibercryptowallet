@@ -52,9 +52,9 @@ type TransactionOutputIterator interface {
 type Block interface {
 	GetHash() ([]byte, error)
 	GetPrevHash() ([]byte, error)
-	GetVersion() uint32
-	GetTime() Timestamp
-	GetHeight() uint64
+	GetVersion() (uint32, error)
+	GetTime() (Timestamp, error)
+	GetHeight() (uint64, error)
 	GetFee(ticker string) (uint64, error)
 	IsGenesisBlock() (bool, error)
 }
