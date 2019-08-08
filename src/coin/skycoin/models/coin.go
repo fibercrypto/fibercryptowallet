@@ -1,8 +1,7 @@
-package models
+package skycoin
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 type SkycoinTransactionOutput struct { //Implements TransactionOutput interface
@@ -27,8 +26,12 @@ func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 	return sto.CoinHours
 }
 
+func (sto *SkycoinTransactionOutput) IsSpent() bool {
+	return true
+}
+
 type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface
-	Current interface
+	Current int
 	Outputs []core.TransactionOutput
 }
 
