@@ -8,11 +8,8 @@ import (
 
 	"os"
 
-<<<<<<< HEAD
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/history"
-=======
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
->>>>>>> develop
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 )
 
 func main() {

@@ -142,7 +142,7 @@ type SkycoinTransactionOutput struct {
 	amountSky       uint64
 	amountCoinHours uint64
 	address         SkycoinAddress
-	isSpent         bool
+	spent           bool
 }
 
 func (out *SkycoinTransactionOutput) GetId() string {
@@ -164,7 +164,7 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 }
 
 func (out *SkycoinTransactionOutput) IsSpent() bool {
-	return out.isSpent
+	return false
 }
 
 /**

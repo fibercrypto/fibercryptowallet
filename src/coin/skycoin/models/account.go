@@ -31,11 +31,76 @@ func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 func (addr SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
-func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	return nil
+func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
+	c := util.NewClient()
+
+	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
+	if err != nil {
+		return nil
+	}
+
+	outs := outputSummary.SpendableOutputs()
+	skyOutputs := make([]*SkycoinTransactionOutput, 0)
+	for _, out := range outs {
+		sky, _ := strconv.ParseUint(out.Coins, 10, 64)
+		skyOutputs = append(skyOutputs, &SkycoinTransactionOutput{
+			address:         SkycoinAddress{out.Address},
+			amountCoinHours: out.Hours,
+			amountSky:       sky,
+			id:              out.Hash,
+			spent:           true,
+		})
+	}
+
+	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
-func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
+	c := util.NewClient()
+	transactions := make([]SkycoinTransaction, 0)
+	txn, err := c.TransactionsVerbose([]string{addr.String()})
+	for _, tx := range txn {
+		inputs := make([]SkycoinTransactionInput, 0)
+		for _, in := range tx.Transaction.In {
+			spentOut, err := c.UxOut(in.Hash)
+			if err != nil {
+				continue
+			}
+			inputs = append(inputs, SkycoinTransactionInput{
+				id: in.Hash,
+				spentOutput: &SkycoinTransactionOutput{
+					address:         SkycoinAddress{spentOut.OwnerAddress},
+					amountCoinHours: spentOut.Hours,
+					amountSky:       spentOut.Coins,
+					spent:           true,
+				},
+			})
+		}
+		outputs := make([]SkycoinTransactionOutput, 0)
+		for _, ou := range tx.Transaction.Out {
+			sky, err := strconv.ParseUint(ou.Coins, 10, 64)
+			if err != nil {
+				sky = 0
+			}
+			outputs = append(outputs, SkycoinTransactionOutput{
+				address:         SkycoinAddress{ou.Address},
+				amountCoinHours: ou.Hours,
+				amountSky:       sky,
+				id:              ou.Hash,
+				spent:           false,
+			})
+		}
+		transactions = append(transactions, SkycoinTransaction{
+			fee:       tx.Transaction.Fee,
+			id:        tx.Transaction.Hash,
+			inputs:    inputs,
+			outputs:   outputs,
+			timeStamp: tx.Time,
+		})
+
+	}
+
+	return NewSkycoinTransactionIterator(transactions)
+
 }
 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
@@ -244,3 +309,5 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 
 	return balRlt, nil
 }
+
+//func transactionWithStatusToSkycoinTransction(readable.TransactionWithStatus)
