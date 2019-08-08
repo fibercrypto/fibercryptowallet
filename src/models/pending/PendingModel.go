@@ -55,7 +55,7 @@ func (m *PendingTransactionList) init() {
 	m.ConnectLoadModel(m.loadModel)
 
 	//Set the correct NodeAddress
-	addr := "http://127.0.0.1:35806" 
+	addr := "http://127.0.0.1:46480" 
 	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
 	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
 
@@ -156,9 +156,13 @@ func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction 
 		sky = sky + output.GetCoins(skycoin.Sky)
 		coinHours = coinHours + output.GetCoins(skycoin.CoinHour)
 	}
-	val := float64(sky) / float64(1000000)
+	skyAccuracy, _ := util.AltcoinQuotient(skycoin.Sky)
+	//TODO: return err
+	val := float64(sky) / float64(skyAccuracy)
 	float_sky := strconv.FormatFloat(val, 'f', -1, 64)
 	pt.SetSky(float_sky)
-	pt.SetCoinHours(coinHours)
+	skychAccuracy, _ := util.AltcoinQuotient(skycoin.CoinHour)
+	//TODO: return err
+	pt.SetCoinHours(coinHours / skychAccuracy)
 	return pt
 }

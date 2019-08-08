@@ -1,9 +1,5 @@
 package core
 
-import (
-	"github.com/skycoin/skycoin/src/cipher"
-)
-
 type Timestamp uint64
 type TransactionStatus uint32
 

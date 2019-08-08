@@ -3,7 +3,8 @@ package skycoin
 import (
 	"strconv" 
 	"github.com/skycoin/skycoin/src/readable"
-  	"github.com/fibercrypto/FiberCryptoWallet/src/core" 
+	"github.com/fibercrypto/FiberCryptoWallet/src/core" 
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 ) 
  
 /* 
@@ -17,8 +18,8 @@ func (txn *SkycoinPendingTransaction) SupportedAssets() []string {
   	return []string{Sky, CoinHour} 
 } 
  
-func (txn *SkycoinPendingTransaction) GetTimestamp() core.TransactionTimestamp { 
-  	return core.TransactionTimestamp(txn.Transaction.Received.Unix())
+func (txn *SkycoinPendingTransaction) GetTimestamp() core.Timestamp { 
+  	return core.Timestamp(txn.Transaction.Received.Unix())
 } 
  
 func (txn *SkycoinPendingTransaction) GetStatus() core.TransactionStatus { 
@@ -145,11 +146,13 @@ func (sto *SkycoinTransactionOutput) GetAddress() core.Address {
 } 
 
 func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 { 
+	//TODO: return err here
+	accuracy, _ := util.AltcoinQuotient(ticker)
 	if ticker == Sky { 
-		coin, _ := strconv.ParseFloat(sto.Output.Coins, 64) 
-		return uint64(coin * 1000000)
+		coin, _ := strconv.ParseFloat(sto.Output.Coins, 64)
+		return uint64(coin * float64(accuracy))
 	} 
-	return sto.Output.Hours 
+	return sto.Output.Hours * accuracy
 } 
 
 type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface 
