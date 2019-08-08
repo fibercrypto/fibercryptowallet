@@ -20,10 +20,10 @@ type SkycoinBlock struct { //implements core.Block interface
 
 type SkycoinBlockchianInfo struct {
 	LastBlockInfo         *SkycoinBlock
-	CurrentSkySupply      string
-	TotalSkySupply        string
-	CurrentCoinHourSupply string
-	TotalCoinHourSupply   string
+	CurrentSkySupply      uint64
+	TotalSkySupply        uint64
+	CurrentCoinHourSupply uint64
+	TotalCoinHourSupply   uint64
 }
 
 type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
@@ -33,7 +33,7 @@ type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
 	cachedStatus            *SkycoinBlockchianInfo
 }
 
-func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (string, error) {
+func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (uint64, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.cacheTime {
 		err := ss.requestSupplyInfo()
@@ -79,10 +79,25 @@ func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
 		return err
 	}
 
-	ss.cachedStatus.CurrentCoinHourSupply = coinSupply.CurrentCoinHourSupply
-	ss.cachedStatus.TotalCoinHourSupply = coinSupply.TotalCoinHourSupply
-	ss.cachedStatus.CurrentSkySupply = coinSupply.CurrentSupply
-	ss.cachedStatus.TotalSkySupply = coinSupply.TotalSupply
+	ss.cachedStatus.CurrentCoinHourSupply, err = util.GetCoinValue(coinSupply.CurrentCoinHourSupply)
+	if err != nil {
+		return err
+	}
+
+	ss.cachedStatus.TotalCoinHourSupply, err = util.GetCoinValue(coinSupply.TotalCoinHourSupply)
+	if err != nil {
+		return err
+	}
+
+	ss.cachedStatus.CurrentSkySupply, err = util.GetCoinValue(coinSupply.CurrentSupply)
+	if err != nil {
+		return err
+	}
+
+	ss.cachedStatus.TotalSkySupply, err = util.GetCoinValue(coinSupply.TotalSupply)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
