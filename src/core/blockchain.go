@@ -6,8 +6,8 @@ type LastBlockState struct {
 	HashLastBlock  string
 }
 
-type SkycoinBlockchain interface {
+type BlockchainStatus interface {
 	GetBalance(ticker string) (uint64, error)
-	LastBlockStatus() (LastBlockState, error)
+	GetLastBlockStatus() (LastBlockState, error)
 	SetCacheTimeout(time uint64)
 }
