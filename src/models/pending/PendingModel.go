@@ -1,6 +1,7 @@
 package pending
 
 import (
+	"strconv"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -31,7 +32,7 @@ type PendingTransactionList struct {
 type PendingTransaction struct {
 	qtcore.QObject
 	
-	_ uint64             `property:"sky"`
+	_ string             `property:"sky"`
 	_ uint64             `property:"coinHours"`
 	_ *qtcore.QDateTime  `property:"timeStamp"`
 	_ string             `property:"transactionID"`
@@ -54,7 +55,7 @@ func (m *PendingTransactionList) init() {
 	m.ConnectLoadModel(m.loadModel)
 
 	//Set the correct NodeAddress
-	addr := "http://127.0.0.1:35545" 
+	addr := "http://127.0.0.1:35806" 
 	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
 	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
 
@@ -155,7 +156,9 @@ func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction 
 		sky = sky + output.GetCoins(skycoin.Sky)
 		coinHours = coinHours + output.GetCoins(skycoin.CoinHour)
 	}
-	pt.SetSky(sky / 1000000)
+	val := float64(sky) / float64(1000000)
+	float_sky := strconv.FormatFloat(val, 'f', -1, 64)
+	pt.SetSky(float_sky)
 	pt.SetCoinHours(coinHours)
 	return pt
 }

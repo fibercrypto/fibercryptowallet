@@ -8,7 +8,7 @@ ItemDelegate {
 
     property bool modelMine
     property string modelTransactionID
-    property int modelSky
+    property string modelSky
     property int modelCoinHours
     property date modelTimestamp
 
