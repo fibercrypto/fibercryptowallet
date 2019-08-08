@@ -56,16 +56,16 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 }
 func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
 	c := util.NewClient()
-	transactions := make([]SkycoinTransaction, 0)
-	txn, err := c.TransactionsVerbose([]string{addr.String()})
+	transactions := make([]core.Transaction, 0)
+	txn, _ := c.TransactionsVerbose([]string{addr.String()})
 	for _, tx := range txn {
-		inputs := make([]SkycoinTransactionInput, 0)
+		inputs := make([]core.TransactionInput, 0)
 		for _, in := range tx.Transaction.In {
 			spentOut, err := c.UxOut(in.Hash)
 			if err != nil {
 				continue
 			}
-			inputs = append(inputs, SkycoinTransactionInput{
+			inputs = append(inputs, &SkycoinTransactionInput{
 				id: in.Hash,
 				spentOutput: &SkycoinTransactionOutput{
 					address:         SkycoinAddress{spentOut.OwnerAddress},
@@ -75,13 +75,13 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
 				},
 			})
 		}
-		outputs := make([]SkycoinTransactionOutput, 0)
+		outputs := make([]core.TransactionOutput, 0)
 		for _, ou := range tx.Transaction.Out {
 			sky, err := strconv.ParseUint(ou.Coins, 10, 64)
 			if err != nil {
 				sky = 0
 			}
-			outputs = append(outputs, SkycoinTransactionOutput{
+			outputs = append(outputs, &SkycoinTransactionOutput{
 				address:         SkycoinAddress{ou.Address},
 				amountCoinHours: ou.Hours,
 				amountSky:       sky,
@@ -89,12 +89,18 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
 				spent:           false,
 			})
 		}
-		transactions = append(transactions, SkycoinTransaction{
+		st := core.TXN_STATUS_PENDING
+		if tx.Status.Confirmed {
+			st = core.TXN_STATUS_CONFIRMED
+		}
+
+		transactions = append(transactions, &SkycoinTransaction{
 			fee:       tx.Transaction.Fee,
 			id:        tx.Transaction.Hash,
 			inputs:    inputs,
 			outputs:   outputs,
 			timeStamp: tx.Time,
+			status:    st,
 		})
 
 	}

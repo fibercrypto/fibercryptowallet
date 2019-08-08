@@ -11,8 +11,8 @@ SkycoinTransaction
 type SkycoinTransaction struct {
 	timeStamp uint64
 	status    core.TransactionStatus
-	inputs    []SkycoinTransactionInput
-	outputs   []SkycoinTransactionOutput
+	inputs    []core.TransactionInput
+	outputs   []core.TransactionOutput
 	fee       uint64
 	id        string
 }
@@ -31,7 +31,7 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 	}
 
 	c := util.NewClient()
-	txnU, err := c.Transaction(txn.id)
+	txnU, _ := c.Transaction(txn.id)
 	if txnU.Status.Confirmed {
 		txn.status = core.TXN_STATUS_CONFIRMED
 		return txn.status
@@ -95,11 +95,11 @@ type SkycoinTransactionInput struct {
 	spentOutput *SkycoinTransactionOutput
 }
 
-func (in *SkycoinTransactionInput) GetId() string {
+func (in SkycoinTransactionInput) GetId() string {
 	return in.id
 }
 
-func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
+func (in SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 	return in.spentOutput
 }
 
@@ -145,15 +145,15 @@ type SkycoinTransactionOutput struct {
 	spent           bool
 }
 
-func (out *SkycoinTransactionOutput) GetId() string {
+func (out SkycoinTransactionOutput) GetId() string {
 	return out.id
 }
 
-func (out *SkycoinTransactionOutput) GetAddress() core.Address {
+func (out SkycoinTransactionOutput) GetAddress() core.Address {
 	return out.address
 }
 
-func (out *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
+func (out SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 	if ticker == Sky {
 		return out.amountSky
 	}
@@ -163,7 +163,19 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 	return 0
 }
 
-func (out *SkycoinTransactionOutput) IsSpent() bool {
+func (out SkycoinTransactionOutput) IsSpent() bool {
+	if out.spent {
+		return true
+	}
+	c := util.NewClient()
+	ou, err := c.UxOut(out.id)
+	if err != nil {
+		return false
+	}
+	if ou.SpentTxnID != "0000000000000000000000000000000000000000000000000000000000000000" {
+		out.spent = true
+		return true
+	}
 	return false
 }
 
