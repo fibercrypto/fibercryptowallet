@@ -59,15 +59,15 @@ Item {
     // Use listModel.append( { "address": value } )
     // Or implement the model in the backend (a more recommendable approach)
     QAddresses{
-        //id: modelAddresses
+        id: modelAddresses
     }
 
-    ListModel {
-        id: modelAddresses
-        // The first element must exist but will not be used
-        ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-        ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
-        ListElement { address: "gfdhgs343kweru38200384uwqd" }
-        ListElement { address: "00qdqsdjkssvmchskjkxxdg374" }
-    }
+    // ListModel {
+    //     id: modelAddresses
+    //     // The first element must exist but will not be used
+    //     ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
+    //     ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
+    //     ListElement { address: "gfdhgs343kweru38200384uwqd" }
+    //     ListElement { address: "00qdqsdjkssvmchskjkxxdg374" }
+    // }
 }

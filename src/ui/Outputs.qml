@@ -85,13 +85,13 @@ Page {
     // Roles: name
     // Implement the model in the backend (a more recommendable approach)
     QWallets{
-        //id: modelWallets
+        id: modelWallets
     }
 
-    ListModel { // EXAMPLE
-        id: modelWallets
-        ListElement { name: "Wallet A" }
-        ListElement { name: "Wallet B" }
-        ListElement { name: "Wallet C" }
-    }
+    // ListModel { // EXAMPLE
+    //     id: modelWallets
+    //     ListElement { name: "Wallet A" }
+    //     ListElement { name: "Wallet B" }
+    //     ListElement { name: "Wallet C" }
+    // }
 }
