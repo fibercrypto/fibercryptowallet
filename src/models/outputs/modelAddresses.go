@@ -17,7 +17,8 @@ type ModelAddresses struct {
 	_ func()                    `constructor:"init"`
 
 	_ map[int]*core.QByteArray  `property:"roles"`
-	_ []*ModelOutputs        `property:"outputs"`
+	_ []*ModelOutputs        	`property:"outputs"`
+	_ string					`property:"name"`
 }
 
 func (m *ModelAddresses) init() {
