@@ -32,17 +32,17 @@ func (addr SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
-	c := util.newClient()
-	outputs, err := c.OutputsForAddresses([addr.address])
-		return nil//, err
+	c := util.NewClient()
+	outputs, err := c.OutputsForAddresses([1]string{addr.address})
 	if err != nil {
+		return nil//, err
 	}
 	skyOutputs := make([]SkycoinTransactionOutput, 0)
 	for _, o := range outputs {
 		for _, unspentOutput := range o.HeadOutputs {
 			so := UnspentOutputToSkycoinTransactionOutput(unspentOutput)
-			skyOutputs = append(skyOutputs, so)
 			so.Address = addr
+			skyOutputs = append(skyOutputs, so)
 		}
 	}
 	return NewSkycoinTransactionOutputIterator(skyOutputs)//, nil
@@ -259,12 +259,13 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 }
 
 func UnspentOutputToSkycoinTransactionOutput(uo UnspentOutput) *SkycoinTransactionOutput {
-		Id: uo.Hash,
 	return &SkycoinTransactionOutput{
-		Sky: uint64(uo.Coins), //TODO: Check if this correct i.e uint64(string)
+		Id: uo.Hash,
+		Sky: strconv.ParseUint(uo.Coins, 10, 64), 
 		CoinHours: uo.Hours
 	}
 }
+
 func NewSkycoinTransactionOutputIterator(outputs []SkycoinTransactionOutput) *SkycoinTransactionOutputIterator {
-}
 	return &SkycoinTransactionOutputIterator{Outputs: outputs, Current: -1}
+}
