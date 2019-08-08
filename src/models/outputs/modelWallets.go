@@ -1,51 +1,59 @@
 package outputs
 
 import (
-	"github.com/therecipe/qt/core"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/readable"
+	qtcore "github.com/therecipe/qt/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 )
 
 const (
-	Name = int(core.Qt__UserRole) + 1
+	Name = int(qtcore.Qt__UserRole) + 1
 )
 
 type ModelWallets struct {
-	core.QAbstractListModel
+	qtcore.QAbstractListModel
 
-	_ func()                    `constructor:"init"`
+	WalletEnv core.WalletEnv
+	_ func()                      `constructor:"init"`
 
-	_ map[int]*core.QByteArray  `property:"roles"`
-	_ []*ModelAddresses        `property:"addresses"`
+	_ map[int]*qtcore.QByteArray  `property:"roles"`
+	_ []*ModelAddresses        	  `property:"addresses"`
+	_ func()				      `slot:"loadModel"`
 }
 
 func (m *ModelWallets) init() {
-	m.SetRoles(map[int]*core.QByteArray{
-		Name: 			 core.NewQByteArray2("name", -1),
+	m.SetRoles(map[int]*qtcore.QByteArray{
+		Name: 			 qtcore.NewQByteArray2("name", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
+	m.ConnectLoadModel(m.loadModel)
 
+	//Set the correct NodeAddress
+	addr := "http://127.0.0.1:37039"
+	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
+
+	m.loadModel()
 }
 
-func (m *ModelWallets) rowCount(*core.QModelIndex) int {
+func (m *ModelWallets) rowCount(*qtcore.QModelIndex) int {
 	return len(m.Transactions())
 }
 
-func (m *ModelWallets) roleNames() map[int]*core.QByteArray {
+func (m *ModelWallets) roleNames() map[int]*qtcore.QByteArray {
 	return m.Roles()
 }
 
-func (m *ModelWallets) data(index *core.QModelIndex, role int) *core.QVariant {
+func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
 	if !index.IsValid() {
-		return core.NewQVariant()
+		return qtcore.NewQVariant()
 	}
 
 	if index.Row() >= len(m.Addresses()){
-		return core.NewQVariant()
+		return qtcore.NewQVariant()
 	}
 
 	w := m.Addresses()[index.Row()]
@@ -53,63 +61,51 @@ func (m *ModelWallets) data(index *core.QModelIndex, role int) *core.QVariant {
 	switch role{
 	case Name:
 		{
-			return core.NewQVariant1(w.Name())
+			return qtcore.NewQVariant1(w.Name())
 		}
 	default:
 		{
-			return core.NewQVariant()
+			return qtcore.NewQVariant()
 		}
 	}
 }
 
-func getData() ([]*WalletsOutputs, error) {
-	c := util.newClient()
-	wallets, err := c.Wallets()
-	if err != nil {
-		return nil, err
+func (m *ModelWallets) loadModel() {
+	aModels = make([]*ModelAddresses, 0)
+
+	wallets := m.WalletEnv.GetWalletSet().ListWallets()
+	if wallets == nil {
+		return
 	}
-	woModels := make([]*WalletsOutputs, 0)
-	for _, w := range wallets {
-		wo := NewWalletsOutputs(nil)
-		wo.SetName(w.Meta.Label)
-		entries := make([]*QEntries, 0)
-		for _, e := range w.Entries {
-			entry := NewQEntries(nil)
-			entry.SetAddress(e.Address.Key)
-			outputs, err := getOutputs(e.Address.Key)
-			if err != nil {
-				return nil, err
+	for wallets.Next() {
+		addresses, err = wallets.Value().GetLoadedAddresses()
+		if err != nil {
+			println(err)
+			return
+		}
+		ma = NewModelAddresses(nil)
+		ma.SetName(wallets.Value().GetLabel())
+		oModels = make([]*ModelOutputs, 0)
+
+		for addresses.Next() {
+			outputs = addresses.Value().GetCryptoAccount().ScanUnspentOutputs()
+			mo = NewModelOutputs(nil)
+			mo.SetAddress(addresses.Value().String())
+			qOutputs = make([]*QOutput)
+
+			for outputs.Next() {
+				to = outputs.Value()
+				qo = NewQOutput(nil)
+				qo.SetOutputID(to.GetId())
+				qo.SetAddressSky(to.GetCoins("Sky"))
+				qo.SetAddressCoinHours(to.GetCoins(""))
+				qOutputs = append(qOutputs, qo)
 			}
-			entries = append(entries, entry)
+			mo.SetOutputs(qOutputs)
+			oModels = append(oModels, mo)
 		}
-		woModels = append(woModels, wo)
+		ma.SetOutputs(oModels)
+		aModels = append(aModels, ma)
 	}
-	return woModels, nil
+	m.SetAddresses(aModels)
 }
-
-func getOutputs(string address) ([]*QOutput, error) {
-	c := util.newClient()
-	outputs, err := c.Outputs([address])
-	if err != nil {
-		return nil, err
-	}
-	qOutputs := make([]*QOutput, 0)
-	for _, o := range outputs {
-		/*o --> UnspentOutputsSummary
-				* HeadOutputs are unspent outputs confirmed in the blockchain
-  					HeadOutputs UnspentOutputs json:"head_outputs"
-  				* OutgoingOutputs are unspent outputs being spent in unconfirmed transactions
-  					OutgoingOutputs UnspentOutputs json:"outgoing_outputs"
-  				* IncomingOutputs are unspent outputs being created by unconfirmed transactions
-  					IncomingOutputs UnspentOutputs json:"incoming_outputs"
-		*/
-		for _, unspentOutput := range o.HeadOutputs {
-			qo := NewQOutput(nil)
-			qo.SetHash(unspentOutput.Hash)
-			qo.SetSky(unspentOutput.Coins)
-			qo.SetCoinHours(unspentOutput.Hours)
-			qOutputs = append(qOutputs, qo)
-		}
-	}
-	return qOutputs, nil
-} 
