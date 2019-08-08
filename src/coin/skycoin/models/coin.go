@@ -1,50 +1,61 @@
 package skycoin 
  
-import ( 
+import (
+	"strconv" 
+	"github.com/skycoin/skycoin/src/readable"
   	"github.com/fibercrypto/FiberCryptoWallet/src/core" 
 ) 
  
 /* 
-SkycoinTransaction 
+SkycoinPendingTransaction 
 */ 
-type SkycoinTransaction struct{ //Implements Transaction interface
-	Timestamp core.TransactionTimestamp
-	Status    core.TransactionStatus
-	Inputs    []core.TransactionInput
-	Outputs   []core.TransactionOutput
-	Id        string
-	Fee       uint64
+type SkycoinPendingTransaction struct{ //Implements Transaction interface
+	Transaction readable.UnconfirmedTransactionVerbose
+	// Timestamp core.TransactionTimestamp
+	// Status    core.TransactionStatus
+	// Inputs    []core.TransactionInput
+	// Outputs   []core.TransactionOutput
+	// Id        string
+	// Fee       uint64
 } 
  
-func (txn *SkycoinTransaction) SupportedAssets() []string { 
-  	return []string{"SKY", "SKYCH"} 
+func (txn *SkycoinPendingTransaction) SupportedAssets() []string { 
+  	return []string{Sky, CoinHour} 
 } 
  
-func (txn *SkycoinTransaction) GetTimestamp() core.TransactionTimestamp { 
-  	return txn.Timestamp 
+func (txn *SkycoinPendingTransaction) GetTimestamp() core.TransactionTimestamp { 
+  	return core.TransactionTimestamp(txn.Transaction.Received.Unix())
 } 
  
-func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus { 
-  	return txn.Status
+func (txn *SkycoinPendingTransaction) GetStatus() core.TransactionStatus { 
+  	return core.TXN_STATUS_PENDING
 } 
  
-func (txn *SkycoinTransaction) GetInputs() []core.TransactionInput { 
-	return txn.Inputs
+func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput { 
+	inputs := make([]core.TransactionInput, 0)
+	for _ , input := range txn.Transaction.Transaction.In {
+		inputs = append(inputs, &SkycoinTransactionInput{Input: input})
+	}
+	return inputs
 } 
  
-func (txn *SkycoinTransaction) GetOutputs() []core.TransactionOutput { 
- 	return txn.Outputs
+func (txn *SkycoinPendingTransaction) GetOutputs() []core.TransactionOutput { 
+	outputs := make([]core.TransactionOutput, 0)
+	for _ , output := range txn.Transaction.Transaction.Out {
+		outputs = append(outputs, &SkycoinTransactionOutput{Output: output})
+	}
+	return outputs
 } 
  
-func (txn *SkycoinTransaction) GetId() string { 
-  	return txn.Id
+func (txn *SkycoinPendingTransaction) GetId() string { 
+  	return txn.Transaction.Transaction.Hash
 } 
  
-func (txn *SkycoinTransaction) ComputeFee(ticker string) uint64 { 
+func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) uint64 { 
 	if ticker == Sky {
 		return uint64(0);
 	}
-	return txn.Fee
+	return txn.Transaction.Transaction.Fee
 } 
  
 /** 
@@ -76,6 +87,7 @@ func NewSkycoinTransactionIterator(transactions []core.Transaction) *SkycoinTran
 }
 
 type SkycoinTransactionInput struct { //Implements TransactionInput interface
+	Input readable.TransactionInput
 } 
  
 func (in *SkycoinTransactionInput) GetId() string { 
@@ -122,25 +134,32 @@ func (iter *SkycoinTransactionInputIterator) HasNext() bool {
  * SkycoinTransactionOutput 
  */ 
 type SkycoinTransactionOutput struct { //Implements TransactionOutput interface 
-	Id        string 
-	Address   SkycoinAddress 
-	Sky       uint64 
-	CoinHours uint64 
+	Output readable.TransactionOutput
+	// Id        string 
+	// Address   SkycoinAddress 
+	// Sky       uint64 
+	// CoinHours uint64 
 } 
 
 func (sto *SkycoinTransactionOutput) GetId() string { 
-	return sto.Id 
+	return sto.Output.Hash 
+} 
+
+func (sto *SkycoinTransactionOutput) IsSpent() bool { 
+	//TODO:
+	return false 
 } 
 
 func (sto *SkycoinTransactionOutput) GetAddress() core.Address { 
-	return sto.Address 
+	return SkycoinAddress{address: sto.Output.Address}
 } 
 
 func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 { 
 	if ticker == Sky { 
-		return sto.Sky 
+		coin, _ := strconv.ParseFloat(sto.Output.Coins, 64) 
+		return uint64(coin * 1000000)
 	} 
-	return sto.CoinHours 
+	return sto.Output.Hours 
 } 
 
 type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface 
