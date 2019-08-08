@@ -14,11 +14,10 @@ const (
 	Status
 	Type
 	Amount
-	HoursReceived
+	HoursTraspassed
 	HoursBurned
 	TransactionID
-	SentAddress
-	ReceivedAddress
+	Addresses
 	Inputs
 	Outputs
 )
@@ -32,6 +31,7 @@ const (
 const (
 	TransactionTypeSend = iota
 	TransactionTypeReceive
+	TransactionTypeInternal
 )
 
 type TransactionDetails struct {
@@ -40,12 +40,11 @@ type TransactionDetails struct {
 	_ *core.QDateTime      `property:"date"`
 	_ int                  `property:"status"`
 	_ int                  `property:"type"`
-	_ int                  `property:"amount"`
-	_ int                  `property:"hoursReceived"`
-	_ int                  `property:"hoursBurned"`
+	_ string               `property:"amount"`
+	_ string               `property:"hoursTraspassed"`
+	_ string               `property:"hoursBurned"`
 	_ string               `property:"transactionID"`
-	_ string               `property:"sentAddress"`
-	_ string               `property:"receivedAddress"`
+	_ *address.AddressList `property:"addresses"`
 	_ *address.AddressList `property:"inputs"`
 	_ *address.AddressList `property:"outputs"`
 }

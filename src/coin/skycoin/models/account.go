@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"fmt"
@@ -361,5 +361,3 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 
 	return balRlt, nil
 }
-
-//func transactionWithStatusToSkycoinTransction(readable.TransactionWithStatus)

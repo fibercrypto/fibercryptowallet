@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"encoding/hex"
