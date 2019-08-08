@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/skycoin/skycoin/src/readable"
@@ -16,6 +17,57 @@ const (
 
 type SkycoinBlock struct { //implements core.Block interface
 	Block *readable.Block
+}
+
+func (sb *SkycoinBlock) GetHash() ([]byte, error) {
+	if sb.Block == nil {
+		return 0, errors.New("Block not setted or nil")
+	}
+	return []byte(sb.Block.Head.Hash), nil
+}
+
+func (sb *SkycoinBlock) GetPrevHash() ([]byte, error) {
+	if sb.Block == nil {
+		return 0, errors.New("Block not setted or nil")
+	}
+	return []byte(sb.Block.Head.PreviousHash), nil
+}
+
+func (sb *SkycoinBlock) GetVersion() (uint32, error) {
+	if sb.Block == nil {
+		return 0, errors.New("Block not setted or nil")
+	}
+	return sb.Block.Head.Version, nil
+}
+
+func (sb *SkycoinBlock) GetTime() (core.Timestamp, error) {
+	if sb.Block == nil {
+		return 0, errors.New("Block not setted or nil")
+	}
+	return core.Timestamp(sb.Block.Head.Time)
+}
+func (sb *SkycoinBlock) GetHeight() (uint64, error) {
+	if sb.Block == nil {
+		return 0, errors.New("Block not setted or nil")
+	}
+	return 0, nil //TODO ???
+}
+
+func (sb *SkycoinBlock) GetFee(ticker string) (uint64, error) {
+	if sb.Block == nil {
+		return 0, errors.New("Block not setted or nil")
+	}
+	if ticker == CoinHour {
+		return sb.Block.Head.Fee, nil // FIXME
+	}
+	return 0, nil
+}
+
+func (sb *SkycoinBlock) IsGenesisBlock() (bool, error) {
+	if sb.Block == nil {
+		return 0, errors.New("Block not setted or nil")
+	}
+	return 0, nil //TODO ???
 }
 
 type SkycoinBlockchianInfo struct {
