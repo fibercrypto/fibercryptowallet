@@ -11,12 +11,6 @@ SkycoinPendingTransaction
 */ 
 type SkycoinPendingTransaction struct{ //Implements Transaction interface
 	Transaction readable.UnconfirmedTransactionVerbose
-	// Timestamp core.TransactionTimestamp
-	// Status    core.TransactionStatus
-	// Inputs    []core.TransactionInput
-	// Outputs   []core.TransactionOutput
-	// Id        string
-	// Fee       uint64
 } 
  
 func (txn *SkycoinPendingTransaction) SupportedAssets() []string { 
@@ -135,10 +129,6 @@ func (iter *SkycoinTransactionInputIterator) HasNext() bool {
  */ 
 type SkycoinTransactionOutput struct { //Implements TransactionOutput interface 
 	Output readable.TransactionOutput
-	// Id        string 
-	// Address   SkycoinAddress 
-	// Sky       uint64 
-	// CoinHours uint64 
 } 
 
 func (sto *SkycoinTransactionOutput) GetId() string { 
