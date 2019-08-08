@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"fmt"
@@ -32,18 +32,19 @@ func (addr SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
-	c := util.NewClient()
-	outputs, err := c.OutputsForAddresses([1]string{addr.address})
+	c := addr.newClient()
+	// addrs := make([]string, 0)
+	// addrs = append(addrs, addr.address)
+	outputs, err := c.OutputsForAddresses([]string{addr.address})
 	if err != nil {
+		println(err)
 		return nil//, err
 	}
-	skyOutputs := make([]SkycoinTransactionOutput, 0)
-	for _, o := range outputs {
-		for _, unspentOutput := range o.HeadOutputs {
-			so := UnspentOutputToSkycoinTransactionOutput(unspentOutput)
-			so.Address = addr
-			skyOutputs = append(skyOutputs, so)
-		}
+	skyOutputs := make([]core.TransactionOutput, 0)
+	for _, unspentOutput := range outputs.HeadOutputs {
+		so := UnspentOutputToSkycoinTransactionOutput(unspentOutput)
+		so.Address = addr
+		skyOutputs = append(skyOutputs, so)
 	}
 	return NewSkycoinTransactionOutputIterator(skyOutputs)//, nil
 }
