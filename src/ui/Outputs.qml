@@ -80,7 +80,7 @@ Page {
 
                     Timer {
                         id: timer
-                        interval: 10000
+                        interval: 5000
                         onTriggered: {
                             listViewWallets.model = modelWallets
                             console.log('Model changed!')
