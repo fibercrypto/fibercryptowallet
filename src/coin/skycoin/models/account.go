@@ -77,7 +77,8 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
 		}
 		outputs := make([]core.TransactionOutput, 0)
 		for _, ou := range tx.Transaction.Out {
-			sky, err := strconv.ParseUint(ou.Coins, 10, 64)
+			skyF, err := strconv.ParseFloat(ou.Coins, 64)
+			sky := uint64(skyF * 1e6)
 			if err != nil {
 				sky = 0
 			}

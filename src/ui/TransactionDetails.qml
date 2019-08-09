@@ -34,7 +34,8 @@ Item {
     }
     enum Type {
         Send,
-        Receive
+        Receive,
+        Internal
     }
 
     implicitHeight: 80 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
@@ -118,6 +119,7 @@ Item {
 
             ColumnLayout {
                 Layout.alignment: Qt.AlignTop
+                Layout.topMargin: -10
                 Layout.rightMargin: 20
                 Image {
                     source: "qrc:/images/resources/images/icons/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
@@ -129,7 +131,7 @@ Item {
                 Label {
                     text: (type === TransactionDetails.Type.Receive ? "Receive" : "Send") + ' ' + amount + ' ' + qsTr("SKY")
                     font.bold: true
-                    font.pointSize: Qt.application.font.pointSize * 1.25
+                    font.pointSize: Qt.application.font.pointSize * 1.15
                     horizontalAlignment: Label.AlignHCenter
                     Layout.fillWidth: true
                 }

@@ -182,12 +182,17 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 	for addr, _ := range addresses {
 		find[addr] = struct{}{}
 	}
-
-	c := util.NewClient()
-	txns, err := c.TransactionsVerbose(filterAddresses)
-	if err != nil {
-		return nil
+	txns := make([]core.Transaction, 0)
+	wltIter := hm.walletEnv.GetWalletSet().ListWallets()
+	for wltIter.Next() {
+		txnsIter := wltIter.Value().GetCryptoAccount().ListTransactions()
+		for txnsIter.Next() {
+			txns = append(txns, txnsIter.Value())
+		}
 	}
+	fmt.Println("Cantidad de transcciones")
+	fmt.Println(len(txns))
+
 	txnsDetails := make([]*transactions.TransactionDetails, 0)
 	for _, txn := range txns {
 		traspassedHoursIn = 0
@@ -198,52 +203,63 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 		sent = false
 		txnDetails := transactions.NewTransactionDetails(nil)
 		txnAddresses := address.NewAddressList(nil)
+
 		inputs := address.NewAddressList(nil)
 		outputs := address.NewAddressList(nil)
-		for _, in := range txn.Transaction.In {
+		txnIns := txn.GetInputs()
+		for _, in := range txnIns {
 			qIn := address.NewAddressDetails(nil)
-			qIn.SetAddress(in.Address)
-			qIn.SetAddressSky(in.Coins)
-			qIn.SetAddressCoinHours(strconv.FormatUint(in.Hours, 10))
+			qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
+			skyUint64 := in.GetSpentOutput().GetCoins("SKY")
+			skyFloat := float64(skyUint64) / 1e6
+			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
+			chUint64 := in.GetSpentOutput().GetCoins("SKYCH")
+			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64, 10))
 			inputs.AddAddress(qIn)
-			_, ok := find[in.Address]
+			_, ok := find[in.GetSpentOutput().GetAddress().String()]
 			if ok {
+				skyAmountOut += skyUint64
 				sent = true
 				txnAddresses.AddAddress(qIn)
 			}
 		}
 		txnDetails.SetInputs(inputs)
 
-		for _, out := range txn.Transaction.Out {
+		for _, out := range txn.GetOutputs() {
 
-			fmt.Println(out.Coins)
-
-			skyf, _ := strconv.ParseFloat(out.Coins, 64)
-			sky := uint64(skyf * 1000000)
-
+			sky := out.GetCoins("SKY")
 			qOu := address.NewAddressDetails(nil)
-			qOu.SetAddress(out.Address)
-			qOu.SetAddressSky(out.Coins)
-			qOu.SetAddressCoinHours(strconv.FormatUint(out.Hours, 10))
+			qOu.SetAddress(out.GetAddress().String())
+			skyFloat := float64(sky) / 1e6
+			qOu.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
+			qOu.SetAddressCoinHours(strconv.FormatUint(out.GetCoins("SKYCH"), 10))
 			outputs.AddAddress(qOu)
-			_, ok := find[out.Address]
-			if ok {
-				traspassedHoursIn += out.Hours
-				skyAmountIn += sky
+			if sent {
+
+				if addresses[txn.GetInputs()[0].GetSpentOutput().GetAddress().String()] == addresses[out.GetAddress().String()] {
+					skyAmountOut -= sky
+
+				} else {
+					internally = false
+					traspassedHoursOut += out.GetCoins("SKYCH")
+				}
 			} else {
-				traspassedHoursOut += out.Hours
-				skyAmountOut += sky
-			}
-			if addresses[txn.Transaction.In[0].Address] != out.Address {
-				internally = false
+				_, ok := find[out.GetAddress().String()]
+				if ok {
+					traspassedHoursIn += out.GetCoins("SKYCH")
+					skyAmountIn += sky
+					txnAddresses.AddAddress(qOu)
+				}
+
 			}
 
 		}
 		txnDetails.SetOutputs(outputs)
-		t := time.Unix(int64(txn.Time), 0)
+		t := time.Unix(int64(txn.GetTimestamp()), 0)
 		txnDetails.SetDate(qtcore.NewQDateTime3(qtcore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtcore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtcore.Qt__LocalTime))
 		txnDetails.SetStatus(transactions.TransactionStatusPending)
-		if txn.Status.Confirmed {
+
+		if txn.GetStatus() == core.TXN_STATUS_CONFIRMED {
 			txnDetails.SetStatus(transactions.TransactionStatusConfirmed)
 		}
 		txnDetails.SetType(transactions.TransactionTypeReceive)
@@ -253,7 +269,7 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 				txnDetails.SetType(transactions.TransactionTypeInternal)
 			}
 		}
-		txnDetails.SetHoursBurned(strconv.FormatUint(txn.Transaction.Fee, 10))
+		txnDetails.SetHoursBurned(strconv.FormatUint(txn.ComputeFee("SKYCH"), 10))
 
 		switch txnDetails.Type() {
 		case transactions.TransactionTypeReceive:
@@ -262,7 +278,7 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 				val := float64(skyAmountIn)
 				val = val / 1000000
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
-				//fmt.Println(skyAmountIn)
+
 			}
 		case transactions.TransactionTypeInternal:
 			{
@@ -297,12 +313,11 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 				val := float64(skyAmountOut)
 				val = val / 1000000
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
-				//txnDetails.SetAmount(strconv.FormatUint(skyAmountOut, 10))
 
 			}
 		}
-
-		txnDetails.SetTransactionID(txn.Transaction.Hash)
+		txnDetails.SetAddresses(txnAddresses)
+		txnDetails.SetTransactionID(txn.GetId())
 		txnsDetails = append(txnsDetails, txnDetails)
 
 	}

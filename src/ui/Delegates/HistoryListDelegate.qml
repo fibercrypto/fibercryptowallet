@@ -70,45 +70,50 @@ ItemDelegate {
             }
 
             ColumnLayout {
-                RowLayout {
-                    id: rowLayoutSent
-                    visible: modelType === TransactionDetails.Type.Send
+                //RowLayout {
+                //    id: rowLayoutSent
+                //    visible: modelType === TransactionDetails.Type.Send
+//
+                //    ToolButtonQR {
+                //        id: toolButtonQRSent
+//
+                //        iconSize: "24x24"
+//
+                //        onClicked: {
+                //            qrCodeRequested(sentAddress)
+                //        }
+                //    }
 
-                    ToolButtonQR {
-                        id: toolButtonQRSent
-
-                        iconSize: "24x24"
-
-                        onClicked: {
-                            qrCodeRequested(sentAddress)
-                        }
-                    }
-
+                ListView{
+                    id: listViewAddresses
+                    model: modelAddresses
+                    delegate: TransactionAddressDelegate{}
+                }
                     //Label {
                     //    text: sentAddress // model's role
                     //    font.family: "Code New Roman"
                     //    Layout.fillWidth: true
                     //}
-                }
-                RowLayout {
-                    id: rowLayoutReceive
-
-                    ToolButtonQR {
-                        id: toolButtonQRReceived
-
-                        iconSize: "24x24"
-
-                        onClicked: {
-                            qrCodeRequested(receivedAddress)
-                        }
-                    }
-                    
-                    //Label {
-                    //    text: receivedAddress // model's role
-                    //    font.family: "Code New Roman"
-                    //    Layout.fillWidth: true
-                    //}
-                }
+                //}
+                //RowLayout {
+                //    id: rowLayoutReceive
+//
+                //    ToolButtonQR {
+                //        id: toolButtonQRReceived
+//
+                //        iconSize: "24x24"
+//
+                //        onClicked: {
+                //            qrCodeRequested(receivedAddress)
+                //        }
+                //    }
+                //    
+                //    //Label {
+                //    //    text: receivedAddress // model's role
+                //    //    font.family: "Code New Roman"
+                //    //    Layout.fillWidth: true
+                //    //}
+                //}
             } // ColumnLayout (addresses)
         } // ColumnLayout (main content)
 
