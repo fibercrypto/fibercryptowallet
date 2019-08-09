@@ -24,7 +24,7 @@ ItemDelegate {
     property QAddressList modelAddresses: addresses
     property QAddressList modelInputs: inputs
     property QAddressList modelOutputs: outputs
-
+    
     signal qrCodeRequested(var data)
 
     implicitWidth: parent.width
@@ -64,56 +64,19 @@ ItemDelegate {
 
                 Label {
                     Material.foreground: Material.Grey
-                    text: modelDate // model's role
+                    text: modelDate.toLocaleString("2000-01-01 00:00") // model's role
                     font.pointSize: Qt.application.font.pointSize * 0.9
                 }
             }
 
             ColumnLayout {
-                //RowLayout {
-                //    id: rowLayoutSent
-                //    visible: modelType === TransactionDetails.Type.Send
-//
-                //    ToolButtonQR {
-                //        id: toolButtonQRSent
-//
-                //        iconSize: "24x24"
-//
-                //        onClicked: {
-                //            qrCodeRequested(sentAddress)
-                //        }
-                //    }
-
+                
                 ListView{
                     id: listViewAddresses
                     model: modelAddresses
                     delegate: TransactionAddressDelegate{}
                 }
-                    //Label {
-                    //    text: sentAddress // model's role
-                    //    font.family: "Code New Roman"
-                    //    Layout.fillWidth: true
-                    //}
-                //}
-                //RowLayout {
-                //    id: rowLayoutReceive
-//
-                //    ToolButtonQR {
-                //        id: toolButtonQRReceived
-//
-                //        iconSize: "24x24"
-//
-                //        onClicked: {
-                //            qrCodeRequested(receivedAddress)
-                //        }
-                //    }
-                //    
-                //    //Label {
-                //    //    text: receivedAddress // model's role
-                //    //    font.family: "Code New Roman"
-                //    //    Layout.fillWidth: true
-                //    //}
-                //}
+                   
             } // ColumnLayout (addresses)
         } // ColumnLayout (main content)
 
