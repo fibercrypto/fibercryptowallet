@@ -105,10 +105,12 @@ func (m *ModelWallets) loadModel() {
 				qOutputs = append(qOutputs, qo)
 			}
 			mo.SetOutputs(qOutputs)
+			//println("Address of ModelOutputs ", a.String(), " --> ", &mo)
 			oModels = append(oModels, mo)
 		}
 		ma.SetOutputs(oModels)
 		aModels = append(aModels, ma)
+		println("Address of ModelAddresses on append --> ", &ma)
 	}
 	m.SetAddresses(aModels)
 }

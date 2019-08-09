@@ -30,6 +30,8 @@ func (m *ModelAddresses) init() {
 }
 
 func (m *ModelAddresses) rowCount(*core.QModelIndex) int {
+	println("Row count for ModelAddresses:", len(m.Outputs()))
+	println("Address of ModelAddresses: ", m)
 	return len(m.Outputs())
 }
 
@@ -38,6 +40,7 @@ func (m *ModelAddresses) roleNames() map[int]*core.QByteArray {
 }
 
 func (m *ModelAddresses) data(index *core.QModelIndex, role int) *core.QVariant {
+	println("data requested for ModelAddresses")
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
