@@ -73,24 +73,27 @@ Page {
                     anchors.fill: parent
                     clip: true
 
-                    // model: modelWallets
+                    model: modelWallets
                     delegate: OutputsListDelegate {
                         width: listViewWallets.width
                     }
 
-                    Timer {
-                        id: timer
-                        interval: 5000
-                        onTriggered: {
-                            listViewWallets.model = modelWallets
-                            console.log('Model changed!')
-                        }
-                    }
+                    // Timer {
+                    //     id: timer
+                    //     repeat: false
+                    //     running: true
+                    //     interval: 0
+                    //     onTriggered: {
+                    //         listViewWallets.model = modelWallets
 
-                    Component.onCompleted: {
-                        timer.start()
-                        console.log('Timer started (10s)')
-                    }
+                    //         console.log('Model changed!')
+                    //     }
+                    // }
+
+                    // Component.onCompleted: {
+                    //     timer.start()
+                    //     console.log('Timer started (10s)')
+                    // }
                 } // ListView
             } // ScrollView
         } // ColumnLayout (frame)
@@ -101,6 +104,7 @@ Page {
     QWallets{
         id: modelWallets
     }
+
 
     // ListModel { // EXAMPLE
     //     id: modelWallets
