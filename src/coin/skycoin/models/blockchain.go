@@ -21,14 +21,14 @@ type SkycoinBlock struct { //implements core.Block interface
 
 func (sb *SkycoinBlock) GetHash() ([]byte, error) {
 	if sb.Block == nil {
-		return 0, errors.New("Block not setted or nil")
+		return nil, errors.New("Block not setted or nil")
 	}
 	return []byte(sb.Block.Head.Hash), nil
 }
 
 func (sb *SkycoinBlock) GetPrevHash() ([]byte, error) {
 	if sb.Block == nil {
-		return 0, errors.New("Block not setted or nil")
+		return nil, errors.New("Block not setted or nil")
 	}
 	return []byte(sb.Block.Head.PreviousHash), nil
 }
@@ -44,7 +44,7 @@ func (sb *SkycoinBlock) GetTime() (core.Timestamp, error) {
 	if sb.Block == nil {
 		return 0, errors.New("Block not setted or nil")
 	}
-	return core.Timestamp(sb.Block.Head.Time)
+	return core.Timestamp(sb.Block.Head.Time), nil
 }
 func (sb *SkycoinBlock) GetHeight() (uint64, error) {
 	if sb.Block == nil {
@@ -65,9 +65,9 @@ func (sb *SkycoinBlock) GetFee(ticker string) (uint64, error) {
 
 func (sb *SkycoinBlock) IsGenesisBlock() (bool, error) {
 	if sb.Block == nil {
-		return 0, errors.New("Block not setted or nil")
+		return true, errors.New("Block not setted or nil")
 	}
-	return 0, nil //TODO ???
+	return true, nil //TODO ???
 }
 
 type SkycoinBlockchianInfo struct {
@@ -81,15 +81,16 @@ type SkycoinBlockchianInfo struct {
 type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
 	lastTimeStatusRequested uint64
 	lastTimeSupplyRequested uint64
-	cacheTime               uint64
+	CacheTime               uint64
 	cachedStatus            *SkycoinBlockchianInfo
 }
 
 func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (uint64, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.cacheTime {
-		err := ss.requestSupplyInfo()
-		return "", err
+		if err := ss.requestSupplyInfo(); err != nil {
+			return 0, err
+		}
 	}
 
 	switch ticker {
@@ -104,22 +105,22 @@ func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, tic
 		}
 		return ss.cachedStatus.TotalCoinHourSupply, nil
 	default:
-		return "", errorTickerInvalid{} //TODO: Customize error
+		return 0, errorTickerInvalid{} //TODO: Customize error
 	}
 }
 
 func (ss *SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
-
 	if elapsed > ss.cacheTime {
-		err := ss.requestSupplyInfo()
-		return nil, err
+		if err := ss.requestStatusInfo(); err != nil {
+			return nil, err
+		}
 	}
-	return *ss.cachedStatus.LastBlockInfo, nil
+	return ss.cachedStatus.LastBlockInfo, nil
 }
 
 func (ss *SkycoinBlockchainStatus) SetCacheTime(time uint64) {
-	ss.cacheTime = time
+	ss.CacheTime = time
 }
 
 func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
