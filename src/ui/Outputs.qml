@@ -73,9 +73,23 @@ Page {
                     anchors.fill: parent
                     clip: true
 
-                    model: modelWallets
+                    // model: modelWallets
                     delegate: OutputsListDelegate {
                         width: listViewWallets.width
+                    }
+
+                    Timer {
+                        id: timer
+                        interval: 10000
+                        onTriggered: {
+                            listViewWallets.model = modelWallets
+                            console.log('Model changed!')
+                        }
+                    }
+
+                    Component.onCompleted: {
+                        timer.start()
+                        console.log('Timer started (10s)')
                     }
                 } // ListView
             } // ScrollView
