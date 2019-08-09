@@ -20,7 +20,9 @@ type ModelWallets struct {
 
 	_ map[int]*qtcore.QByteArray  `property:"roles"`
 	_ []*ModelAddresses        	  `property:"addresses"`
+
 	_ func()				      `slot:"loadModel"`
+	_ func([]*ModelAddresses) 	  `slot:"addAddresses"`
 }
 
 func (m *ModelWallets) init() {
@@ -32,6 +34,7 @@ func (m *ModelWallets) init() {
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 	m.ConnectLoadModel(m.loadModel)
+	m.ConnectAddAddresses(m.addAddresses)
 
 	m.WalletEnv = &skycoin.WalletNode{NodeAddress: ADDR}
 
@@ -71,6 +74,12 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 	}
 }
 
+func (m *ModelWallets) insertRows(row int, count int) bool {
+	m.BeginInsertRows(qtcore.NewQModelIndex(), row, row + count)
+	m.EndInsertRows()
+	return true
+}
+
 func (m *ModelWallets) loadModel() {
 	aModels := make([]*ModelAddresses, 0)
 	println("loadModel")
@@ -104,13 +113,18 @@ func (m *ModelWallets) loadModel() {
 				qo.SetAddressCoinHours(to.GetCoins(""))
 				qOutputs = append(qOutputs, qo)
 			}
-			mo.SetOutputs(qOutputs)
+			mo.addOutputs(qOutputs)
 			//println("Address of ModelOutputs ", a.String(), " --> ", &mo)
 			oModels = append(oModels, mo)
 		}
-		ma.SetOutputs(oModels)
+		ma.addOutputs(oModels)
 		aModels = append(aModels, ma)
-		println("Address of ModelAddresses on append --> ", &ma)
+		//println("Address of ModelAddresses on append --> ", &ma)
 	}
-	m.SetAddresses(aModels)
+	m.addAddresses(aModels)
+}
+
+func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
+	m.SetAddresses(ma)
+	m.insertRows(len(m.Addresses()), len(ma))
 }

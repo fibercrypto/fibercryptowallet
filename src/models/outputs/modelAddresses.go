@@ -16,6 +16,8 @@ type ModelAddresses struct {
 	_ map[int]*core.QByteArray  `property:"roles"`
 	_ []*ModelOutputs        	`property:"outputs"`
 	_ string					`property:"name"`
+
+	_ func([]*ModelOutputs) 	`slot:"addOutputs"`
 }
 
 func (m *ModelAddresses) init() {
@@ -26,12 +28,12 @@ func (m *ModelAddresses) init() {
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
-
+	m.ConnectAddOutputs(m.addOutputs)
 }
 
 func (m *ModelAddresses) rowCount(*core.QModelIndex) int {
 	println("Row count for ModelAddresses:", len(m.Outputs()))
-	println("Address of ModelAddresses: ", m)
+	//println("Address of ModelAddresses: ", m)
 	return len(m.Outputs())
 }
 
@@ -61,4 +63,15 @@ func (m *ModelAddresses) data(index *core.QModelIndex, role int) *core.QVariant 
 			return core.NewQVariant()
 		}
 	}
+}
+
+func (m *ModelAddresses) insertRows(row int, count int) bool {
+	m.BeginInsertRows(core.NewQModelIndex(), row, row + count)
+	m.EndInsertRows()
+	return true
+}
+
+func (m *ModelAddresses) addOutputs(mo []*ModelOutputs) {
+	m.SetOutputs(mo)
+	m.insertRows(len(m.Outputs()), len(mo))
 }

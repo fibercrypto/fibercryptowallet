@@ -18,6 +18,8 @@ type ModelOutputs struct {
 	_ map[int]*core.QByteArray  `property:"roles"`
 	_ []*QOutput       			`property:"outputs"`
 	_ string					`property:"address"`
+
+	_ func([]*QOutput) 	`slot:"addOutputs"`
 }
 
 type QOutput struct {
@@ -38,7 +40,7 @@ func (m *ModelOutputs) init() {
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
-
+	m.ConnectAddOutputs(m.addOutputs)
 }
 
 func (m *ModelOutputs) rowCount(*core.QModelIndex) int {
@@ -78,4 +80,15 @@ func (m *ModelOutputs) data(index *core.QModelIndex, role int) *core.QVariant {
 			return core.NewQVariant()
 		}
 	}
+}
+
+func (m *ModelOutputs) insertRows(row int, count int) bool {
+	m.BeginInsertRows(core.NewQModelIndex(), row, row + count)
+	m.EndInsertRows()
+	return true
+}
+
+func (m *ModelOutputs) addOutputs(mo []*QOutput) {
+	m.SetOutputs(mo)
+	m.insertRows(len(m.Outputs()), len(mo))
 }
