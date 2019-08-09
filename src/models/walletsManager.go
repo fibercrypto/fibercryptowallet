@@ -3,6 +3,8 @@ package models
 import (
 	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+
+	//"github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -21,7 +23,7 @@ type WalletManager struct {
 	_ func(id string, password string)                                     `slot:"decryptWallet"`
 	_ func() []*QWallet                                                    `slot:"getWallets"`
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
-	_ func() map[string]string                                             `slot:"getAddressesWithWallets"`
+	//_ func() *history.Tes                                                  `slot:"getAddressesWithWallets"`
 }
 
 func (walletM *WalletManager) init() {
@@ -34,7 +36,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
-	walletM.ConnectGetAddressesWithWallets(walletM.getAddressesWithWallets)
+	//walletM.ConnectGetAddressesWithWallets(walletM.getAddressesWithWallets)
 
 	walletM.WalletEnv = &skycoin.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
 
@@ -139,6 +141,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 	}
 
 	return qwallets
+
 }
 
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
@@ -172,21 +175,22 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 	return qaddresses
 }
 
-func (walletM *WalletManager) getAddressesWithWallets() map[string]string {
-	response := make(map[string]string, 0)
-	it := walletM.WalletEnv.GetWalletSet().ListWallets()
-	for it.Next() {
-		wlt := it.Value()
-		addrs, _ := wlt.GetLoadedAddresses()
-
-		for addrs.Next() {
-			response[addrs.Value().String()] = wlt.GetId()
-		}
-
-	}
-
-	return response
-}
+//func (walletM *WalletManager) getAddressesWithWallets() *history.Tes {
+//	response := make(map[string]string, 0)
+//	it := walletM.WalletEnv.GetWalletSet().ListWallets()
+//	for it.Next() {
+//		wlt := it.Value()
+//		addrs, _ := wlt.GetLoadedAddresses()
+//
+//		for addrs.Next() {
+//			response[addrs.Value().String()] = wlt.GetId()
+//		}
+//
+//	}
+//	respon := history.NewTes(nil)
+//	respon.Data = response
+//	return respon
+//}
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 

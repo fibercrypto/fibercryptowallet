@@ -17,10 +17,11 @@ ItemDelegate {
     property int modelType: type
     property int modelStatus: status
     property var modelStatusString: [ qsTr("Confirmed"), qsTr("Pending"), qsTr("Preview") ]
-    property real modelAmount: amount
-    property int modelHoursReceived: hoursReceived
-    property int modelHoursBurned: hoursBurned
+    property string modelAmount: amount
+    property string modelHoursReceived: hoursTraspassed
+    property string modelHoursBurned: hoursBurned
     property string modelTransactionID: transactionID
+    property QAddressList modelAddresses: addresses
     property QAddressList modelInputs: inputs
     property QAddressList modelOutputs: outputs
 
@@ -58,7 +59,7 @@ ItemDelegate {
 
                 Label {
                     font.bold: true
-                    text: (modelType === TransactionDetails.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
+                    text: (modelType == TransactionDetails.Type.Receive ? qsTr("Received") : (modelType == TransactionDetails.Type.Send ? qsTr("Sent") : qsTr("Internal"))) + " SKY"
                 }
 
                 Label {
@@ -83,11 +84,11 @@ ItemDelegate {
                         }
                     }
 
-                    Label {
-                        text: sentAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
+                    //Label {
+                    //    text: sentAddress // model's role
+                    //    font.family: "Code New Roman"
+                    //    Layout.fillWidth: true
+                    //}
                 }
                 RowLayout {
                     id: rowLayoutReceive
@@ -102,11 +103,11 @@ ItemDelegate {
                         }
                     }
                     
-                    Label {
-                        text: receivedAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
+                    //Label {
+                    //    text: receivedAddress // model's role
+                    //    font.family: "Code New Roman"
+                    //    Layout.fillWidth: true
+                    //}
                 }
             } // ColumnLayout (addresses)
         } // ColumnLayout (main content)

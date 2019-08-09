@@ -1,12 +1,16 @@
 package history
 
 import (
+	"fmt"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
 	"github.com/therecipe/qt/core"
 )
 
 func init() {
 	TransactionList_QmlRegisterType2("HistoryModels", 1, 0, "QTransactionList")
+	HistoryManager_QmlRegisterType2("HistoryModels", 1, 0, "HistoryManager")
+
 }
 
 type TransactionList struct {
@@ -121,7 +125,11 @@ func (hm *TransactionList) data(index *core.QModelIndex, role int) *core.QVarian
 }
 
 func (hm *TransactionList) addMultipleTransactions(txns []*transactions.TransactionDetails) {
+	fmt.Println("Hola")
+	fmt.Println(len(txns))
 	for _, txn := range txns {
-		hm.AddTransaction(txn)
+		hm.addTransaction(txn)
+
 	}
+	fmt.Println("Done3")
 }

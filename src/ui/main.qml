@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import WalletsManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -13,7 +14,7 @@ ApplicationWindow {
     width: 680
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
-
+   
 
     menuBar: CustomMenuBar {
         id: customMenuBar
@@ -79,6 +80,12 @@ ApplicationWindow {
     GeneralStackView {
         id: generalStackView
         anchors.fill: parent
+        //property WalletManager  walletManger: WalletManager{
+        //id: walletManager
+        //}
+        WalletManager{
+            id: walletManager
+        }
     }
 
     //! Dialogs

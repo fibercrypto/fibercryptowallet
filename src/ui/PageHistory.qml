@@ -100,4 +100,24 @@ Page {
     QTransactionList {
         id: modelTransactions
     }
+
+    HistoryManager{
+        id:historyManager
+    }
+
+    Timer {
+        
+        id: qTraModelTimer
+        repeat: false
+        running: true
+        interval: 0
+        onTriggered: {
+            //walletManager.getAddressesWithWallets()
+            modelTransactions.addMultipleTransactions(historyManager.loadHistory())
+            
+            //modelTransactions.addMultipleTransactions(historyManager.loadHistory(walletManager.getAddressesWithWallets()))
+            qTraModelTimer.running = false
+            //console.log(historyManager)
+        }
+    }
 }
