@@ -22,8 +22,8 @@ QT_BEGIN_MOC_NAMESPACE
 QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_HistoryManager554044_t {
-    QByteArrayData data[8];
-    char stringdata0[127];
+    QByteArrayData data[6];
+    char stringdata0[106];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -36,16 +36,13 @@ QT_MOC_LITERAL(0, 0, 20), // "HistoryManager554044"
 QT_MOC_LITERAL(1, 21, 22), // "loadHistoryWithFilters"
 QT_MOC_LITERAL(2, 44, 32), // "QList<TransactionDetailsecff1c*>"
 QT_MOC_LITERAL(3, 77, 0), // ""
-QT_MOC_LITERAL(4, 78, 10), // "type424d06"
-QT_MOC_LITERAL(5, 89, 9), // "addresses"
-QT_MOC_LITERAL(6, 99, 15), // "filterAddresses"
-QT_MOC_LITERAL(7, 115, 11) // "loadHistory"
+QT_MOC_LITERAL(4, 78, 15), // "filterAddresses"
+QT_MOC_LITERAL(5, 94, 11) // "loadHistory"
 
     },
     "HistoryManager554044\0loadHistoryWithFilters\0"
     "QList<TransactionDetailsecff1c*>\0\0"
-    "type424d06\0addresses\0filterAddresses\0"
-    "loadHistory"
+    "filterAddresses\0loadHistory"
 };
 #undef QT_MOC_LITERAL
 
@@ -63,11 +60,11 @@ static const uint qt_meta_data_HistoryManager554044[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    2,   24,    3, 0x0a /* Public */,
-       7,    0,   29,    3, 0x0a /* Public */,
+       1,    1,   24,    3, 0x0a /* Public */,
+       5,    0,   27,    3, 0x0a /* Public */,
 
  // slots: parameters
-    0x80000000 | 2, 0x80000000 | 4, QMetaType::QStringList,    5,    6,
+    0x80000000 | 2, QMetaType::QStringList,    4,
     0x80000000 | 2,
 
        0        // eod
@@ -79,7 +76,7 @@ void HistoryManager554044::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
         auto *_t = static_cast<HistoryManager554044 *>(_o);
         Q_UNUSED(_t)
         switch (_id) {
-        case 0: { QList<TransactionDetailsecff1c*> _r = _t->loadHistoryWithFilters((*reinterpret_cast< type424d06(*)>(_a[1])),(*reinterpret_cast< QStringList(*)>(_a[2])));
+        case 0: { QList<TransactionDetailsecff1c*> _r = _t->loadHistoryWithFilters((*reinterpret_cast< QStringList(*)>(_a[1])));
             if (_a[0]) *reinterpret_cast< QList<TransactionDetailsecff1c*>*>(_a[0]) = std::move(_r); }  break;
         case 1: { QList<TransactionDetailsecff1c*> _r = _t->loadHistory();
             if (_a[0]) *reinterpret_cast< QList<TransactionDetailsecff1c*>*>(_a[0]) = std::move(_r); }  break;

@@ -17,7 +17,7 @@ extern "C" {
 
 struct Moc_PackedString { char* data; long long len; };
 struct Moc_PackedList { void* data; long long len; };
-struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr, void* addresses, struct Moc_PackedString filterAddresses);
+struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr, struct Moc_PackedString filterAddresses);
 struct Moc_PackedList HistoryManager554044_LoadHistory(void* ptr);
 int HistoryManager554044_HistoryManager554044_QRegisterMetaType();
 int HistoryManager554044_HistoryManager554044_QRegisterMetaType2(char* typeName);
@@ -41,16 +41,9 @@ void* HistoryManager554044___qFindChildren_newList2(void* ptr);
 void* HistoryManager554044___loadHistoryWithFilters_atList(void* ptr, int i);
 void HistoryManager554044___loadHistoryWithFilters_setList(void* ptr, void* i);
 void* HistoryManager554044___loadHistoryWithFilters_newList(void* ptr);
-void* HistoryManager554044___loadHistoryWithFilters_addresses_atList(void* ptr, struct Moc_PackedString v, int i);
-void HistoryManager554044___loadHistoryWithFilters_addresses_setList(void* ptr, struct Moc_PackedString key, void* i);
-void* HistoryManager554044___loadHistoryWithFilters_addresses_newList(void* ptr);
-struct Moc_PackedList HistoryManager554044___loadHistoryWithFilters_addresses_keyList(void* ptr);
 void* HistoryManager554044___loadHistory_atList(void* ptr, int i);
 void HistoryManager554044___loadHistory_setList(void* ptr, void* i);
 void* HistoryManager554044___loadHistory_newList(void* ptr);
-struct Moc_PackedString HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_atList(void* ptr, int i);
-void HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_setList(void* ptr, struct Moc_PackedString i);
-void* HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_newList(void* ptr);
 void* HistoryManager554044_NewHistoryManager(void* parent);
 void HistoryManager554044_DestroyHistoryManager(void* ptr);
 void HistoryManager554044_DestroyHistoryManagerDefault(void* ptr);

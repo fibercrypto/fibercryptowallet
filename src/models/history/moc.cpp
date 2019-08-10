@@ -38,7 +38,6 @@ public:
 
 };
 
-typedef QMap<QString, QVariant> type424d06;
 typedef QMap<qint32, QByteArray> type378cdd;
 class HistoryManager554044: public QObject
 {
@@ -58,7 +57,7 @@ public:
 	void timerEvent(QTimerEvent * event) { callbackHistoryManager554044_TimerEvent(this, event); };
 signals:
 public slots:
-	QList<TransactionDetailsecff1c*> loadHistoryWithFilters(type424d06 addresses, QStringList filterAddresses) { QByteArray t0bfc4c = filterAddresses.join("¡¦!").toUtf8(); Moc_PackedString filterAddressesPacked = { const_cast<char*>(t0bfc4c.prepend("WHITESPACE").constData()+10), t0bfc4c.size()-10 };return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistoryWithFilters(this, ({ QMap<QString, QVariant>* tmpValue = new QMap<QString, QVariant>(addresses); Moc_PackedList { tmpValue, tmpValue->size() }; }), filterAddressesPacked)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	QList<TransactionDetailsecff1c*> loadHistoryWithFilters(QStringList filterAddresses) { QByteArray t0bfc4c = filterAddresses.join("¡¦!").toUtf8(); Moc_PackedString filterAddressesPacked = { const_cast<char*>(t0bfc4c.prepend("WHITESPACE").constData()+10), t0bfc4c.size()-10 };return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistoryWithFilters(this, filterAddressesPacked)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 	QList<TransactionDetailsecff1c*> loadHistory() { return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistory(this)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 private:
 };
@@ -68,7 +67,6 @@ Q_DECLARE_METATYPE(HistoryManager554044*)
 
 void HistoryManager554044_HistoryManager554044_QRegisterMetaTypes() {
 	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetailsecff1c*>");
-	qRegisterMetaType<type424d06>("type424d06");
 }
 
 class TransactionList554044: public QAbstractListModel
@@ -174,10 +172,10 @@ void TransactionList554044_TransactionList554044_QRegisterMetaTypes() {
 	qRegisterMetaType<type378cdd>("type378cdd");
 }
 
-struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr, void* addresses, struct Moc_PackedString filterAddresses)
+struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr, struct Moc_PackedString filterAddresses)
 {
 	QList<TransactionDetailsecff1c*> returnArg;
-	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "loadHistoryWithFilters", Q_RETURN_ARG(QList<TransactionDetailsecff1c*>, returnArg), Q_ARG(type424d06, ({ type424d06* tmpP = static_cast<type424d06*>(addresses); type424d06 tmpV = *tmpP; tmpP->~QMap(); free(tmpP); tmpV; })), Q_ARG(QStringList, QString::fromUtf8(filterAddresses.data, filterAddresses.len).split("¡¦!", QString::SkipEmptyParts)));
+	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "loadHistoryWithFilters", Q_RETURN_ARG(QList<TransactionDetailsecff1c*>, returnArg), Q_ARG(QStringList, QString::fromUtf8(filterAddresses.data, filterAddresses.len).split("¡¦!", QString::SkipEmptyParts)));
 	return ({ QList<TransactionDetailsecff1c*>* tmpValue = new QList<TransactionDetailsecff1c*>(returnArg); Moc_PackedList { tmpValue, tmpValue->size() }; });
 }
 
@@ -312,27 +310,6 @@ void* HistoryManager554044___loadHistoryWithFilters_newList(void* ptr)
 	return new QList<TransactionDetailsecff1c*>();
 }
 
-void* HistoryManager554044___loadHistoryWithFilters_addresses_atList(void* ptr, struct Moc_PackedString v, int i)
-{
-	return new QVariant(({ QVariant tmp = static_cast<QMap<QString, QVariant>*>(ptr)->value(QString::fromUtf8(v.data, v.len)); if (i == static_cast<QMap<QString, QVariant>*>(ptr)->size()-1) { static_cast<QMap<QString, QVariant>*>(ptr)->~QMap(); free(ptr); }; tmp; }));
-}
-
-void HistoryManager554044___loadHistoryWithFilters_addresses_setList(void* ptr, struct Moc_PackedString key, void* i)
-{
-	static_cast<QMap<QString, QVariant>*>(ptr)->insert(QString::fromUtf8(key.data, key.len), *static_cast<QVariant*>(i));
-}
-
-void* HistoryManager554044___loadHistoryWithFilters_addresses_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QMap<QString, QVariant>();
-}
-
-struct Moc_PackedList HistoryManager554044___loadHistoryWithFilters_addresses_keyList(void* ptr)
-{
-	return ({ QList<QString>* tmpValue = new QList<QString>(static_cast<QMap<QString, QVariant>*>(ptr)->keys()); Moc_PackedList { tmpValue, tmpValue->size() }; });
-}
-
 void* HistoryManager554044___loadHistory_atList(void* ptr, int i)
 {
 	return ({TransactionDetailsecff1c* tmp = static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->at(i); if (i == static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->size()-1) { static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->~QList(); free(ptr); }; tmp; });
@@ -347,22 +324,6 @@ void* HistoryManager554044___loadHistory_newList(void* ptr)
 {
 	Q_UNUSED(ptr);
 	return new QList<TransactionDetailsecff1c*>();
-}
-
-struct Moc_PackedString HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_atList(void* ptr, int i)
-{
-	return ({ QByteArray t94aa5e = ({QString tmp = static_cast<QList<QString>*>(ptr)->at(i); if (i == static_cast<QList<QString>*>(ptr)->size()-1) { static_cast<QList<QString>*>(ptr)->~QList(); free(ptr); }; tmp; }).toUtf8(); Moc_PackedString { const_cast<char*>(t94aa5e.prepend("WHITESPACE").constData()+10), t94aa5e.size()-10 }; });
-}
-
-void HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_setList(void* ptr, struct Moc_PackedString i)
-{
-	static_cast<QList<QString>*>(ptr)->append(QString::fromUtf8(i.data, i.len));
-}
-
-void* HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QString>();
 }
 
 void* HistoryManager554044_NewHistoryManager(void* parent)

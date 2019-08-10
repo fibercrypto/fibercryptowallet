@@ -93,18 +93,11 @@ func callbackHistoryManager554044_Constructor(ptr unsafe.Pointer) {
 }
 
 //export callbackHistoryManager554044_LoadHistoryWithFilters
-func callbackHistoryManager554044_LoadHistoryWithFilters(ptr unsafe.Pointer, addresses C.struct_Moc_PackedList, filterAddresses C.struct_Moc_PackedString) unsafe.Pointer {
+func callbackHistoryManager554044_LoadHistoryWithFilters(ptr unsafe.Pointer, filterAddresses C.struct_Moc_PackedString) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "loadHistoryWithFilters"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewHistoryManagerFromPointer(NewHistoryManagerFromPointer(nil).__loadHistoryWithFilters_newList())
-			for _, v := range (*(*func(map[string]string, []string) []*custom_transactions_ecff1cm.TransactionDetails)(signal))(func(l C.struct_Moc_PackedList) map[string]string {
-				out := make(map[string]string, int(l.len))
-				tmpList := NewHistoryManagerFromPointer(l.data)
-				for i, v := range tmpList.__loadHistoryWithFilters_addresses_keyList() {
-					out[v] = tmpList.__loadHistoryWithFilters_addresses_atList(v, i).ToInterface().(string)
-				}
-				return out
-			}(addresses), unpackStringList(cGoUnpackString(filterAddresses))) {
+			for _, v := range (*(*func([]string) []*custom_transactions_ecff1cm.TransactionDetails)(signal))(unpackStringList(cGoUnpackString(filterAddresses))) {
 				tmpList.__loadHistoryWithFilters_setList(v)
 			}
 			return tmpList.Pointer()
@@ -120,13 +113,13 @@ func callbackHistoryManager554044_LoadHistoryWithFilters(ptr unsafe.Pointer, add
 	}()
 }
 
-func (ptr *HistoryManager) ConnectLoadHistoryWithFilters(f func(addresses map[string]string, filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails) {
+func (ptr *HistoryManager) ConnectLoadHistoryWithFilters(f func(filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "loadHistoryWithFilters"); signal != nil {
-			f := func(addresses map[string]string, filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails {
-				(*(*func(map[string]string, []string) []*custom_transactions_ecff1cm.TransactionDetails)(signal))(addresses, filterAddresses)
-				return f(addresses, filterAddresses)
+			f := func(filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails {
+				(*(*func([]string) []*custom_transactions_ecff1cm.TransactionDetails)(signal))(filterAddresses)
+				return f(filterAddresses)
 			}
 			qt.ConnectSignal(ptr.Pointer(), "loadHistoryWithFilters", unsafe.Pointer(&f))
 		} else {
@@ -142,7 +135,7 @@ func (ptr *HistoryManager) DisconnectLoadHistoryWithFilters() {
 	}
 }
 
-func (ptr *HistoryManager) LoadHistoryWithFilters(addresses map[string]string, filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails {
+func (ptr *HistoryManager) LoadHistoryWithFilters(filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails {
 	if ptr.Pointer() != nil {
 		filterAddressesC := C.CString(strings.Join(filterAddresses, "¡¦!"))
 		defer C.free(unsafe.Pointer(filterAddressesC))
@@ -153,13 +146,7 @@ func (ptr *HistoryManager) LoadHistoryWithFilters(addresses map[string]string, f
 				out[i] = tmpList.__loadHistoryWithFilters_atList(i)
 			}
 			return out
-		}(C.HistoryManager554044_LoadHistoryWithFilters(ptr.Pointer(), func() unsafe.Pointer {
-			tmpList := NewHistoryManagerFromPointer(NewHistoryManagerFromPointer(nil).__loadHistoryWithFilters_addresses_newList())
-			for k, v := range addresses {
-				tmpList.__loadHistoryWithFilters_addresses_setList(k, std_core.NewQVariant1(v))
-			}
-			return tmpList.Pointer()
-		}(), C.struct_Moc_PackedString{data: filterAddressesC, len: C.longlong(len(strings.Join(filterAddresses, "¡¦!")))}))
+		}(C.HistoryManager554044_LoadHistoryWithFilters(ptr.Pointer(), C.struct_Moc_PackedString{data: filterAddressesC, len: C.longlong(len(strings.Join(filterAddresses, "¡¦!")))}))
 	}
 	return make([]*custom_transactions_ecff1cm.TransactionDetails, 0)
 }
@@ -407,49 +394,6 @@ func (ptr *HistoryManager) __loadHistoryWithFilters_newList() unsafe.Pointer {
 	return C.HistoryManager554044___loadHistoryWithFilters_newList(ptr.Pointer())
 }
 
-func (ptr *HistoryManager) __loadHistoryWithFilters_addresses_atList(v string, i int) *std_core.QVariant {
-	if ptr.Pointer() != nil {
-		var vC *C.char
-		if v != "" {
-			vC = C.CString(v)
-			defer C.free(unsafe.Pointer(vC))
-		}
-		tmpValue := std_core.NewQVariantFromPointer(C.HistoryManager554044___loadHistoryWithFilters_addresses_atList(ptr.Pointer(), C.struct_Moc_PackedString{data: vC, len: C.longlong(len(v))}, C.int(int32(i))))
-		runtime.SetFinalizer(tmpValue, (*std_core.QVariant).DestroyQVariant)
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *HistoryManager) __loadHistoryWithFilters_addresses_setList(key string, i std_core.QVariant_ITF) {
-	if ptr.Pointer() != nil {
-		var keyC *C.char
-		if key != "" {
-			keyC = C.CString(key)
-			defer C.free(unsafe.Pointer(keyC))
-		}
-		C.HistoryManager554044___loadHistoryWithFilters_addresses_setList(ptr.Pointer(), C.struct_Moc_PackedString{data: keyC, len: C.longlong(len(key))}, std_core.PointerFromQVariant(i))
-	}
-}
-
-func (ptr *HistoryManager) __loadHistoryWithFilters_addresses_newList() unsafe.Pointer {
-	return C.HistoryManager554044___loadHistoryWithFilters_addresses_newList(ptr.Pointer())
-}
-
-func (ptr *HistoryManager) __loadHistoryWithFilters_addresses_keyList() []string {
-	if ptr.Pointer() != nil {
-		return func(l C.struct_Moc_PackedList) []string {
-			out := make([]string, int(l.len))
-			tmpList := NewHistoryManagerFromPointer(l.data)
-			for i := 0; i < len(out); i++ {
-				out[i] = tmpList.____loadHistoryWithFilters_addresses_keyList_atList(i)
-			}
-			return out
-		}(C.HistoryManager554044___loadHistoryWithFilters_addresses_keyList(ptr.Pointer()))
-	}
-	return make([]string, 0)
-}
-
 func (ptr *HistoryManager) __loadHistory_atList(i int) *custom_transactions_ecff1cm.TransactionDetails {
 	if ptr.Pointer() != nil {
 		tmpValue := custom_transactions_ecff1cm.NewTransactionDetailsFromPointer(C.HistoryManager554044___loadHistory_atList(ptr.Pointer(), C.int(int32(i))))
@@ -469,28 +413,6 @@ func (ptr *HistoryManager) __loadHistory_setList(i custom_transactions_ecff1cm.T
 
 func (ptr *HistoryManager) __loadHistory_newList() unsafe.Pointer {
 	return C.HistoryManager554044___loadHistory_newList(ptr.Pointer())
-}
-
-func (ptr *HistoryManager) ____loadHistoryWithFilters_addresses_keyList_atList(i int) string {
-	if ptr.Pointer() != nil {
-		return cGoUnpackString(C.HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_atList(ptr.Pointer(), C.int(int32(i))))
-	}
-	return ""
-}
-
-func (ptr *HistoryManager) ____loadHistoryWithFilters_addresses_keyList_setList(i string) {
-	if ptr.Pointer() != nil {
-		var iC *C.char
-		if i != "" {
-			iC = C.CString(i)
-			defer C.free(unsafe.Pointer(iC))
-		}
-		C.HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_setList(ptr.Pointer(), C.struct_Moc_PackedString{data: iC, len: C.longlong(len(i))})
-	}
-}
-
-func (ptr *HistoryManager) ____loadHistoryWithFilters_addresses_keyList_newList() unsafe.Pointer {
-	return C.HistoryManager554044_____loadHistoryWithFilters_addresses_keyList_newList(ptr.Pointer())
 }
 
 func NewHistoryManager(parent std_core.QObject_ITF) *HistoryManager {
