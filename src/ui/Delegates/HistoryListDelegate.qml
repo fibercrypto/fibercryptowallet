@@ -90,9 +90,7 @@ ItemDelegate {
                     id: listViewAddresses
                     model: modelAddresses
                     delegate:TransactionAddressDelegate{}
-                    Component.onCompleted:{
-                        console.log("addressCant :" +modelAddresses.rowCount() )
-                    }                    
+                                     
                 }
                 
                    

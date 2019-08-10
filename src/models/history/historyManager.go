@@ -53,10 +53,12 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 	for wltIter.Next() {
 		txnsIter := wltIter.Value().GetCryptoAccount().ListTransactions()
 		for txnsIter.Next() {
+
 			_, ok := txnFind[txnsIter.Value().GetId()]
 			if !ok {
-				txns = append(txns, txnsIter.Value())
+
 				txnFind[txnsIter.Value().GetId()] = struct{}{}
+				txns = append(txns, txnsIter.Value())
 			}
 
 		}
@@ -80,10 +82,10 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 		for _, in := range txnIns {
 			qIn := address.NewAddressDetails(nil)
 			qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
-			skyUint64 := in.GetSpentOutput().GetCoins("SKY")
+			skyUint64 := in.GetCoins("SKY")
 			skyFloat := float64(skyUint64) / 1e6
 			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			chUint64 := in.GetSpentOutput().GetCoins("SKYCH")
+			chUint64 := in.GetCoins("SKYCH")
 			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64, 10))
 			inputs.AddAddress(qIn)
 			_, ok := find[in.GetSpentOutput().GetAddress().String()]

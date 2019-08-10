@@ -1,20 +1,21 @@
 package skycoin
 
 import (
+	"strconv"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/skycoin/skycoin/src/readable"
 )
 
 /*
 SkycoinTransaction
 */
 type SkycoinTransaction struct {
-	timeStamp uint64
-	status    core.TransactionStatus
-	inputs    []core.TransactionInput
-	outputs   []core.TransactionOutput
-	fee       uint64
-	id        string
+	skyTxn  readable.TransactionVerbose
+	status  core.TransactionStatus
+	inputs  []core.TransactionInput
+	outputs []core.TransactionOutput
 }
 
 func (txn *SkycoinTransaction) SupportedAssets() []string {
@@ -22,16 +23,17 @@ func (txn *SkycoinTransaction) SupportedAssets() []string {
 }
 
 func (txn *SkycoinTransaction) GetTimestamp() core.TransactionTimestamp {
-	return core.TransactionTimestamp(txn.timeStamp)
+	return core.TransactionTimestamp(txn.skyTxn.Timestamp)
 }
 
 func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
+
 	if txn.status == core.TXN_STATUS_CONFIRMED {
 		return txn.status
 	}
 
 	c := util.NewClient()
-	txnU, _ := c.Transaction(txn.id)
+	txnU, _ := c.Transaction(txn.skyTxn.Hash)
 	if txnU.Status.Confirmed {
 		txn.status = core.TXN_STATUS_CONFIRMED
 		return txn.status
@@ -41,20 +43,45 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 }
 
 func (txn *SkycoinTransaction) GetInputs() []core.TransactionInput {
+	if txn.inputs == nil {
+		c := util.NewClient()
+		transaction, err := c.TransactionVerbose(txn.skyTxn.Hash)
+		if err != nil {
+			return nil
+		}
+		txn.inputs = make([]core.TransactionInput, 0)
+		for _, in := range transaction.Transaction.In {
+			txn.inputs = append(txn.inputs, SkycoinTransactionInput{
+				skyIn:       in,
+				spentOutput: nil,
+			})
+		}
+
+	}
+
 	return txn.inputs
 }
 
 func (txn *SkycoinTransaction) GetOutputs() []core.TransactionOutput {
+	if txn.outputs == nil {
+		txn.outputs = make([]core.TransactionOutput, 0)
+		for _, out := range txn.skyTxn.Out {
+			txn.outputs = append(txn.outputs, SkycoinTransactionOutput{
+				skyOut: out,
+				spent:  false,
+			})
+		}
+	}
 	return txn.outputs
 }
 
 func (txn *SkycoinTransaction) GetId() string {
-	return txn.id
+	return txn.skyTxn.Hash
 }
 
 func (txn *SkycoinTransaction) ComputeFee(ticker string) uint64 {
 	if ticker == CoinHour {
-		return txn.fee
+		return txn.skyTxn.Fee
 	}
 	return 0
 }
@@ -91,25 +118,45 @@ func NewSkycoinTransactionIterator(txns []core.Transaction) *SkycoinTransactionI
 }
 
 type SkycoinTransactionInput struct {
-	id              string
-	calculatedHours uint64
-	spentOutput     *SkycoinTransactionOutput
+	skyIn       readable.TransactionInput
+	spentOutput *SkycoinTransactionOutput
 }
 
 func (in SkycoinTransactionInput) GetId() string {
-	return in.id
+	return in.skyIn.Hash
 }
 
 func (in SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
+	if in.spentOutput == nil {
+		c := util.NewClient()
+
+		out, err := c.UxOut(in.skyIn.Hash)
+		if err != nil {
+			return nil
+		}
+
+		skyOut := &SkycoinTransactionOutput{
+			skyOut: readable.TransactionOutput{
+				Address: out.OwnerAddress,
+				Coins:   strconv.FormatFloat(float64(out.Coins/1e6), 'f', -1, 64),
+				Hours:   out.Hours,
+				Hash:    out.Uxid,
+			},
+			spent: true}
+		in.spentOutput = skyOut
+
+	}
 	return in.spentOutput
+
 }
 
 func (in SkycoinTransactionInput) GetCoins(ticker string) uint64 {
 	if ticker == Sky {
-		return in.spentOutput.GetCoins(Sky)
+		skyF, _ := strconv.ParseFloat(in.skyIn.Coins, 64)
+		return uint64(skyF * 1e6)
 	}
 	if ticker == CoinHour {
-		return in.calculatedHours
+		return in.skyIn.CalculatedHours
 	}
 	return 0
 }
@@ -149,27 +196,27 @@ func NewSkycoinTransactioninputIterator(ins []*SkycoinTransactionInput) *Skycoin
  * SkycoinTransactionOutput
  */
 type SkycoinTransactionOutput struct {
-	id              string
-	amountSky       uint64
-	amountCoinHours uint64
-	address         SkycoinAddress
-	spent           bool
+	skyOut readable.TransactionOutput
+	spent  bool
 }
 
 func (out SkycoinTransactionOutput) GetId() string {
-	return out.id
+	return out.skyOut.Hash
+
 }
 
 func (out SkycoinTransactionOutput) GetAddress() core.Address {
-	return out.address
+	return SkycoinAddress{out.skyOut.Address}
+
 }
 
 func (out SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 	if ticker == Sky {
-		return out.amountSky
+		skyF, _ := strconv.ParseFloat(out.skyOut.Coins, 64)
+		return uint64(skyF * 1e6)
 	}
 	if ticker == CoinHour {
-		return out.amountCoinHours
+		return out.skyOut.Hours
 	}
 	return 0
 }
@@ -178,8 +225,9 @@ func (out SkycoinTransactionOutput) IsSpent() bool {
 	if out.spent {
 		return true
 	}
+
 	c := util.NewClient()
-	ou, err := c.UxOut(out.id)
+	ou, err := c.UxOut(out.skyOut.Hash)
 	if err != nil {
 		return false
 	}

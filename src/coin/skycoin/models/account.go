@@ -42,13 +42,15 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	outs := outputSummary.SpendableOutputs()
 	skyOutputs := make([]core.TransactionOutput, 0)
 	for _, out := range outs {
-		sky, _ := strconv.ParseUint(out.Coins, 10, 64)
 		skyOutputs = append(skyOutputs, &SkycoinTransactionOutput{
-			address:         SkycoinAddress{out.Address},
-			amountCoinHours: out.Hours,
-			amountSky:       sky,
-			id:              out.Hash,
-			spent:           true,
+
+			skyOut: readable.TransactionOutput{
+				Address: out.Address,
+				Coins:   out.Coins,
+				Hours:   out.Hours,
+				Hash:    out.Hash,
+			},
+			spent: true,
 		})
 	}
 
@@ -58,51 +60,16 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
 	c := util.NewClient()
 	transactions := make([]core.Transaction, 0)
 	txn, _ := c.TransactionsVerbose([]string{addr.String()})
+
 	for _, tx := range txn {
-		inputs := make([]core.TransactionInput, 0)
-		for _, in := range tx.Transaction.In {
-			spentOut, err := c.UxOut(in.Hash)
-			if err != nil {
-				continue
-			}
-			inputs = append(inputs, &SkycoinTransactionInput{
-				id: in.Hash,
-				spentOutput: &SkycoinTransactionOutput{
-					address:         SkycoinAddress{spentOut.OwnerAddress},
-					amountCoinHours: spentOut.Hours,
-					amountSky:       spentOut.Coins,
-					spent:           true,
-				},
-				calculatedHours: in.CalculatedHours,
-			})
-		}
-		outputs := make([]core.TransactionOutput, 0)
-		for _, ou := range tx.Transaction.Out {
-			skyF, err := strconv.ParseFloat(ou.Coins, 64)
-			sky := uint64(skyF * 1e6)
-			if err != nil {
-				sky = 0
-			}
-			outputs = append(outputs, &SkycoinTransactionOutput{
-				address:         SkycoinAddress{ou.Address},
-				amountCoinHours: ou.Hours,
-				amountSky:       sky,
-				id:              ou.Hash,
-				spent:           false,
-			})
-		}
 		st := core.TXN_STATUS_PENDING
 		if tx.Status.Confirmed {
 			st = core.TXN_STATUS_CONFIRMED
 		}
 
 		transactions = append(transactions, &SkycoinTransaction{
-			fee:       tx.Transaction.Fee,
-			id:        tx.Transaction.Hash,
-			inputs:    inputs,
-			outputs:   outputs,
-			timeStamp: tx.Time,
-			status:    st,
+			skyTxn: tx.Transaction,
+			status: st,
 		})
 
 	}
@@ -220,9 +187,6 @@ func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
 	for addressesIter.Next() {
 		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
 		for txnsIter.Next() {
-			if txnsIter.Value().GetId() == "fab875eb079e2046c0907c37d22fb8b8aced3f58569a7f6054a862a75445c3ad" {
-				fmt.Println("I found you")
-			}
 			txns = append(txns, txnsIter.Value())
 		}
 	}
