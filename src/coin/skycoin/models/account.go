@@ -73,6 +73,7 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
 					amountSky:       spentOut.Coins,
 					spent:           true,
 				},
+				calculatedHours: in.CalculatedHours,
 			})
 		}
 		outputs := make([]core.TransactionOutput, 0)

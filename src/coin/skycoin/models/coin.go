@@ -91,8 +91,9 @@ func NewSkycoinTransactionIterator(txns []core.Transaction) *SkycoinTransactionI
 }
 
 type SkycoinTransactionInput struct {
-	id          string
-	spentOutput *SkycoinTransactionOutput
+	id              string
+	calculatedHours uint64
+	spentOutput     *SkycoinTransactionOutput
 }
 
 func (in SkycoinTransactionInput) GetId() string {
@@ -101,6 +102,16 @@ func (in SkycoinTransactionInput) GetId() string {
 
 func (in SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 	return in.spentOutput
+}
+
+func (in SkycoinTransactionInput) GetCoins(ticker string) uint64 {
+	if ticker == Sky {
+		return in.spentOutput.GetCoins(Sky)
+	}
+	if ticker == CoinHour {
+		return in.calculatedHours
+	}
+	return 0
 }
 
 /**
