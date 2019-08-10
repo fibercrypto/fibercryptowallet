@@ -52,8 +52,6 @@ matrix:
     - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true)
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy build desktop
-
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
-
