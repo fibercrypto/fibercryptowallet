@@ -1,7 +1,6 @@
 package history
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -9,7 +8,6 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -30,140 +28,7 @@ func (hm *HistoryManager) init() {
 }
 
 func (hm *HistoryManager) loadHistoryWithFilters(addresses map[string]string, filterAddresses []string) []*transactions.TransactionDetails {
-
-	var sent, internally bool
-	var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
-
-	find := make(map[string]struct{}, len(addresses))
-	for addr, _ := range addresses {
-		find[addr] = struct{}{}
-	}
-
-	c := util.NewClient()
-	txns, err := c.TransactionsVerbose(filterAddresses)
-	if err != nil {
-		return nil
-	}
-	txnsDetails := make([]*transactions.TransactionDetails, 0)
-	for _, txn := range txns {
-		traspassedHoursIn = 0
-		traspassedHoursOut = 0
-		skyAmountIn = 0
-		skyAmountOut = 0
-		internally = true
-		sent = false
-		txnDetails := transactions.NewTransactionDetails(nil)
-		txnAddresses := address.NewAddressList(nil)
-		inputs := address.NewAddressList(nil)
-		outputs := address.NewAddressList(nil)
-		for _, in := range txn.Transaction.In {
-			qIn := address.NewAddressDetails(nil)
-			qIn.SetAddress(in.Address)
-			qIn.SetAddressSky(in.Coins)
-			qIn.SetAddressCoinHours(strconv.FormatUint(in.Hours, 10))
-			inputs.AddAddress(qIn)
-			_, ok := find[in.Address]
-			if ok {
-				sent = true
-				txnAddresses.AddAddress(qIn)
-			}
-		}
-		txnDetails.SetInputs(inputs)
-
-		for _, out := range txn.Transaction.Out {
-
-			sky, _ := strconv.ParseUint(out.Coins, 10, 64)
-			//skyAmount += sky
-			qOu := address.NewAddressDetails(nil)
-			qOu.SetAddress(out.Address)
-			qOu.SetAddressSky(out.Coins)
-			qOu.SetAddressCoinHours(strconv.FormatUint(out.Hours, 10))
-			outputs.AddAddress(qOu)
-			_, ok := find[out.Address]
-			if ok {
-				traspassedHoursIn += out.Hours
-				skyAmountIn += sky
-			} else {
-				traspassedHoursOut += out.Hours
-				skyAmountOut += sky
-			}
-			if addresses[txn.Transaction.In[0].Address] != out.Address {
-				internally = false
-			}
-
-			//if !sent {
-			//	_, ok := find[out.Address]
-			//	if ok {
-			//		traspassedHoursIn += out.Hours
-			//		txnAddresses.AddAddress(qOu)
-			//	}
-			//} else {
-			//	traspassedHoursOut += out.Hours
-			//	if addresses[txn.Transaction.In[0].Address] != out.Address {
-			//		internally = false
-			//	}
-			//}
-		}
-		txnDetails.SetOutputs(outputs)
-		t := time.Unix(int64(txn.Time), 0)
-		txnDetails.SetDate(qtcore.NewQDateTime3(qtcore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtcore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtcore.Qt__LocalTime))
-		txnDetails.SetStatus(transactions.TransactionStatusPending)
-		if txn.Status.Confirmed {
-			txnDetails.SetStatus(transactions.TransactionStatusConfirmed)
-		}
-		txnDetails.SetType(transactions.TransactionTypeReceive)
-		if sent {
-			txnDetails.SetType(transactions.TransactionTypeSend)
-			if internally {
-				txnDetails.SetType(transactions.TransactionTypeInternal)
-			}
-		}
-		txnDetails.SetHoursBurned(strconv.FormatUint(txn.Transaction.Fee, 10))
-
-		switch txnDetails.Type() {
-		case transactions.TransactionTypeReceive:
-			{
-				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursIn, 10))
-				txnDetails.SetAmount(strconv.FormatUint(skyAmountIn, 10))
-			}
-		case transactions.TransactionTypeInternal:
-			{
-				var traspassedHoursMoved, skyAmountMoved uint64
-				traspassedHoursMoved = 0
-				skyAmountMoved = 0
-				ins := inputs.Addresses()
-				inFind := make(map[string]struct{}, len(ins))
-				for _, addr := range ins {
-					inFind[addr.Address()] = struct{}{}
-				}
-				outs := outputs.Addresses()
-				for _, addr := range outs {
-					_, ok := inFind[addr.Address()]
-					if !ok {
-						hours, _ := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
-						traspassedHoursMoved += hours
-						sky, _ := strconv.ParseUint(addr.AddressSky(), 10, 64)
-						skyAmountMoved += sky
-					}
-
-				}
-				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursMoved, 10))
-				txnDetails.SetAmount(strconv.FormatUint(skyAmountMoved, 10))
-
-			}
-		case transactions.TransactionTypeSend:
-			{
-				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursOut, 10))
-				txnDetails.SetAmount(strconv.FormatUint(skyAmountOut, 10))
-			}
-		}
-
-		txnDetails.SetTransactionID(txn.Transaction.Hash)
-		txnsDetails = append(txnsDetails, txnDetails)
-
-	}
-
-	return txnsDetails
+	return nil
 }
 
 func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
@@ -182,16 +47,20 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 	for addr, _ := range addresses {
 		find[addr] = struct{}{}
 	}
+	txnFind := make(map[string]struct{})
 	txns := make([]core.Transaction, 0)
 	wltIter := hm.walletEnv.GetWalletSet().ListWallets()
 	for wltIter.Next() {
 		txnsIter := wltIter.Value().GetCryptoAccount().ListTransactions()
 		for txnsIter.Next() {
-			txns = append(txns, txnsIter.Value())
+			_, ok := txnFind[txnsIter.Value().GetId()]
+			if !ok {
+				txns = append(txns, txnsIter.Value())
+				txnFind[txnsIter.Value().GetId()] = struct{}{}
+			}
+
 		}
 	}
-	fmt.Println("Cantidad de transcciones")
-	fmt.Println(len(txns))
 
 	txnsDetails := make([]*transactions.TransactionDetails, 0)
 	for _, txn := range txns {
@@ -203,10 +72,11 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 		sent = false
 		txnDetails := transactions.NewTransactionDetails(nil)
 		txnAddresses := address.NewAddressList(nil)
-
+		inAddresses := make(map[string]struct{}, 0)
 		inputs := address.NewAddressList(nil)
 		outputs := address.NewAddressList(nil)
 		txnIns := txn.GetInputs()
+
 		for _, in := range txnIns {
 			qIn := address.NewAddressDetails(nil)
 			qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
@@ -220,7 +90,12 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 			if ok {
 				skyAmountOut += skyUint64
 				sent = true
-				txnAddresses.AddAddress(qIn)
+				_, ok := inAddresses[qIn.Address()]
+				if !ok {
+					txnAddresses.AddAddress(qIn)
+					inAddresses[qIn.Address()] = struct{}{}
+				}
+
 			}
 		}
 		txnDetails.SetInputs(inputs)
@@ -248,7 +123,13 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 				if ok {
 					traspassedHoursIn += out.GetCoins("SKYCH")
 					skyAmountIn += sky
-					txnAddresses.AddAddress(qOu)
+
+					_, ok := inAddresses[qOu.Address()]
+					if !ok {
+						txnAddresses.AddAddress(qOu)
+						inAddresses[qOu.Address()] = struct{}{}
+					}
+
 				}
 
 			}
@@ -296,7 +177,8 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 					if !ok {
 						hours, _ := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
 						traspassedHoursMoved += hours
-						sky, _ := strconv.ParseUint(addr.AddressSky(), 10, 64)
+						skyf, _ := strconv.ParseFloat(addr.AddressSky(), 64)
+						sky := uint64(skyf * 1e6)
 						skyAmountMoved += sky
 					}
 
@@ -318,6 +200,7 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 		}
 		txnDetails.SetAddresses(txnAddresses)
 		txnDetails.SetTransactionID(txn.GetId())
+
 		txnsDetails = append(txnsDetails, txnDetails)
 
 	}

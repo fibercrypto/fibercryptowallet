@@ -24,6 +24,7 @@ ItemDelegate {
     property QAddressList modelAddresses: addresses
     property QAddressList modelInputs: inputs
     property QAddressList modelOutputs: outputs
+    readonly property real delegateHeight: 30
     
     signal qrCodeRequested(var data)
 
@@ -51,33 +52,52 @@ ItemDelegate {
         ColumnLayout {
             id: columnLayoutMainContent
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignTop
-
+            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+            
+                
+                
+                
+            
             RowLayout {
+               
+                Layout.alignment: Qt.AlignLeft
                 spacing: 20
                 Layout.fillWidth: true
-
+                
                 Label {
+                    Layout.alignment: Qt.AlignLeft
                     font.bold: true
                     text: (modelType == TransactionDetails.Type.Receive ? qsTr("Received") : (modelType == TransactionDetails.Type.Send ? qsTr("Sent") : qsTr("Internal"))) + " SKY"
                 }
 
                 Label {
+                    Layout.alignment: Qt.AlignLeft
                     Material.foreground: Material.Grey
                     text: modelDate.toLocaleString("2000-01-01 00:00") // model's role
                     font.pointSize: Qt.application.font.pointSize * 0.9
                 }
             }
-
             ColumnLayout {
+                Layout.fillWidth:true
+                Layout.fillHeight:true
                 
+                Layout.alignment: Qt.AlignLeft
+                height: delegateHeight*(modelInputs.rowCount())
                 ListView{
+                    Layout.alignment: Qt.AlignLeft
+                    implicitHeight: delegateHeight*(modelAddresses.rowCount())
+                    height: parent.height
                     id: listViewAddresses
                     model: modelAddresses
-                    delegate: TransactionAddressDelegate{}
+                    delegate:TransactionAddressDelegate{}
+                    Component.onCompleted:{
+                        console.log("addressCant :" +modelAddresses.rowCount() )
+                    }                    
                 }
+                
                    
             } // ColumnLayout (addresses)
+        
         } // ColumnLayout (main content)
 
         Label {

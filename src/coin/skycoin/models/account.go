@@ -219,6 +219,9 @@ func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
 	for addressesIter.Next() {
 		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
 		for txnsIter.Next() {
+			if txnsIter.Value().GetId() == "fab875eb079e2046c0907c37d22fb8b8aced3f58569a7f6054a862a75445c3ad" {
+				fmt.Println("I found you")
+			}
 			txns = append(txns, txnsIter.Value())
 		}
 	}

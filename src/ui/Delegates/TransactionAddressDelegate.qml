@@ -5,30 +5,28 @@ import QtQuick.Layouts 1.12
 
 
 import "../"
-ItemDelegate {
+Item {
     id: root
-    implicitHeight: 80
-
     
-                RowLayout {
-                    id: rowLayoutSent
-                    visible: modelType === TransactionDetails.Type.Send
-
-                    ToolButtonQR {
-                        id: toolButtonQRSent
-
-                        iconSize: "24x24"
-
-                        onClicked: {
-                            qrCodeRequested(address)
-                        }
-                    }
-                    Label {
-                        text: address // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
-                }
+    implicitHeight: 30
+    
+        RowLayout {
+            id: rowLayoutSent
+        
+        ToolButtonQR {
+            id: toolButtonQRSent
+            iconSize: "24x24"
+            onClicked: {
+                qrCodeRequested(address)
+            }
+        }
+        Label {
+              text: address // model's role
+              font.family: "Code New Roman"
+              Layout.fillWidth: true
+            }
+        }
 }
+
 
 
