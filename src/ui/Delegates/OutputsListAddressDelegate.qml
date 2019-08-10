@@ -64,7 +64,7 @@ Item {
 
         clip: true
         interactive: false
-        model: modelOutputs
+        //model: modelOutputs
 
         delegate: OutputsListAddressOutputDelegate {
             width: listViewAddressOutputs.width
@@ -74,9 +74,9 @@ Item {
     // Roles: outputID, addressSky, addressCoinHours
     // Use listModel.append( { "outputID": value, "addressSky": value, "addressCoinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
-    QOutputs{
-        id: modelOutputs
-    }
+    // QOutputs{
+    //     id: modelOutputs
+    // }
 
     // ListModel {
     //     id: modelOutputs

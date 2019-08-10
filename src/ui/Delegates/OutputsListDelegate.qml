@@ -48,7 +48,7 @@ Item {
         
         clip: true
         interactive: false
-        model: modelAddresses
+        //model: modelAddresses
 
         delegate: OutputsListAddressDelegate {
             width: listViewAddresses.width
@@ -58,9 +58,9 @@ Item {
     // Roles: address
     // Use listModel.append( { "address": value } )
     // Or implement the model in the backend (a more recommendable approach)
-    QAddresses{
-        id: modelAddresses
-    }
+    // QAddresses{
+    //     id: modelAddresses
+    // }
 
     // ListModel {
     //     id: modelAddresses

@@ -8,6 +8,7 @@ import (
 
 const (
 	Name = int(qtcore.Qt__UserRole) + 1
+	QAddresses = int(qtcore.Qt__UserRole) + 2
 	//Set the correct NodeAddress
 	ADDR = "http://127.0.0.1:46445"
 )
@@ -28,6 +29,7 @@ type ModelWallets struct {
 func (m *ModelWallets) init() {
 	m.SetRoles(map[int]*qtcore.QByteArray{
 		Name: 			 qtcore.NewQByteArray2("name", -1),
+		QAddresses:		 qtcore.NewQByteArray2("addresses", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
@@ -66,6 +68,10 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 	case Name:
 		{
 			return qtcore.NewQVariant1(w.Name())
+		}
+	case QAddresses:
+		{
+			return qtcore.NewQVariant1(m.Addresses())
 		}
 	default:
 		{

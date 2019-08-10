@@ -6,6 +6,7 @@ import (
 
 const (
 	Address = int(core.Qt__UserRole) + 1
+	QOutputs = int(core.Qt__UserRole) + 2
 )
 
 type ModelAddresses struct {
@@ -23,6 +24,7 @@ type ModelAddresses struct {
 func (m *ModelAddresses) init() {
 	m.SetRoles(map[int]*core.QByteArray{
 		Address: 			 core.NewQByteArray2("address", -1),
+		QOutputs: 			 core.NewQByteArray2("outputs", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
@@ -57,6 +59,10 @@ func (m *ModelAddresses) data(index *core.QModelIndex, role int) *core.QVariant 
 	case Address:
 		{
 			return core.NewQVariant1(wa.Address())
+		}
+	case QOutputs:
+		{
+			return core.NewQVariant1(m.Outputs())
 		}
 	default:
 		{
