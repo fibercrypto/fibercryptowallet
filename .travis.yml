@@ -11,7 +11,7 @@ go_import_path: github.com/fibercrypto/FiberCryptoWallet
 matrix:
   include:
   - stage: "RPI"
-    if: branch = release*$
+    if: branch = release*$ OR master
     install:
     - docker pull therecipe/qt:rpi1
     - docker pull therecipe/qt:rpi2
@@ -23,7 +23,19 @@ matrix:
     - $GOPATH/bin/qtdeploy -docker build rpi1
     - $GOPATH/bin/qtdeploy -docker build rpi2
     - $GOPATH/bin/qtdeploy -docker build rpi3
-  
+
+  - stage: "Android"
+    if: branch = release*$ OR master
+
+    install:
+    - docker pull therecipe/qt:android
+    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+
+    script:
+    - go get -t -d -v ./...
+    - $GOPATH/bin/qtdeploy -docker build android
+    - $GOPATH/bin/qtdeploy -docker build android-emulator
+
   - stage: "Linux"
     install:
     - docker pull therecipe/qt:linux
@@ -36,7 +48,8 @@ matrix:
   - stage: "Windows"
     os: windows
     install:
-    - go get -u -v github.com/therecipe/qt/cmd/... && (for /f %v in ('go env GOPATH') do %v\bin\qtsetup -test=false | true )
+    - go get -u -v github.com/therecipe/qt/cmd/...
+    - (for /f %v in ('go env GOPATH') do %v\bin\qtsetup -test=false | true )
     
     script:
     - go get -t -d -v ./...
