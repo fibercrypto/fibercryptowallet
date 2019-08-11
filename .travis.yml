@@ -49,7 +49,7 @@ matrix:
     os: windows
     install:
     - go get -u -v github.com/therecipe/qt/cmd/...
-    - (for /f %v in ('go env GOPATH') do %v\bin\qtsetup -test=false | true )
+    - ($(go env GOPATH)\bin\qtsetup -test=false | true)
     
     script:
     - go get -t -d -v ./...
