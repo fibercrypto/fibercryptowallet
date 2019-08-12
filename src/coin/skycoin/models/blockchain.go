@@ -83,7 +83,7 @@ type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
 func NewSkycoinBlockchainStatus(invalidCacheTime uint64) *SkycoinBlockchainStatus {
 	return &SkycoinBlockchainStatus{CacheTime: invalidCacheTime}
 }
-func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (uint64, error) {
+func (ss SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (uint64, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
 		if ss.cachedStatus == nil {
@@ -110,7 +110,7 @@ func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, tic
 	}
 }
 
-func (ss *SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
+func (ss SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
 		if ss.cachedStatus == nil {
@@ -123,11 +123,11 @@ func (ss *SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 	return ss.cachedStatus.LastBlockInfo, nil
 }
 
-func (ss *SkycoinBlockchainStatus) SetCacheTime(time uint64) {
+func (ss SkycoinBlockchainStatus) SetCacheTime(time uint64) {
 	ss.CacheTime = time
 }
 
-func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
+func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 	c := util.NewClient()
 
 	coinSupply, err := c.CoinSupply()
@@ -158,7 +158,7 @@ func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
 	return nil
 }
 
-func (ss *SkycoinBlockchainStatus) requestStatusInfo() error {
+func (ss SkycoinBlockchainStatus) requestStatusInfo() error {
 	c := util.NewClient()
 
 	blocks, err := c.LastBlocks(1)

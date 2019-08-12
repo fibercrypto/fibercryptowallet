@@ -15,7 +15,7 @@ type BlockchainStatusModel struct {
 	qtcore.QObject
 	_ func() `constructor:"init"`
 
-	infoRequester *core.BlockchainStatus
+	infoRequester core.BlockchainStatus
 
 	_ string            `property:"numberOfBlocks"`
 	_ *qtcore.QDateTime `property:"timestampLastBlock"`
@@ -39,7 +39,7 @@ func (bs *BlockchainStatusModel) init() {
 	bs.SetCurrentCoinHoursSupplyDefault("0")
 	bs.SetTotalCoinHoursSupplyDefault("0")
 
-	bs.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
+	bs.infoRequester = *skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
 }
 
 func (bs *BlockchainStatusModel) update() {
@@ -59,7 +59,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 		return err
 	}
 
-	numberOfBlocks, err := strconv.FormatUint(0, 10) // TODO: Add to the interface
+	numberOfBlocks := uint64(0) // TODO: Add to the interface
 	if err != nil {
 		return err
 	}
