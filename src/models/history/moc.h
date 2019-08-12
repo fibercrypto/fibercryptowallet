@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-class HistoryManager554044;
-void HistoryManager554044_HistoryManager554044_QRegisterMetaTypes();
 class TransactionList554044;
 void TransactionList554044_TransactionList554044_QRegisterMetaTypes();
+class HistoryManager554044;
+void HistoryManager554044_HistoryManager554044_QRegisterMetaTypes();
 extern "C" {
 #endif
 

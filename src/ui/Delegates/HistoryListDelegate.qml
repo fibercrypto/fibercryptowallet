@@ -59,27 +59,32 @@ ItemDelegate {
                 
             
             RowLayout {
-               
+                
+                
                 Layout.alignment: Qt.AlignLeft
                 spacing: 20
-                Layout.fillWidth: true
                 
+                Row{
+                    Layout.fillWidth:true
+                    spacing: 20
                 Label {
-                    Layout.alignment: Qt.AlignLeft
+                    
                     font.bold: true
                     text: (modelType == TransactionDetails.Type.Receive ? qsTr("Received") : (modelType == TransactionDetails.Type.Send ? qsTr("Sent") : qsTr("Internal"))) + " SKY"
                 }
 
                 Label {
-                    Layout.alignment: Qt.AlignLeft
+                    
                     Material.foreground: Material.Grey
                     text: modelDate.toLocaleString("2000-01-01 00:00") // model's role
                     font.pointSize: Qt.application.font.pointSize * 0.9
+                }
                 }
             }
             ColumnLayout {
                 Layout.fillWidth:true
                 Layout.fillHeight:true
+                Layout.leftMargin:10
                 
                 Layout.alignment: Qt.AlignLeft
                 height: delegateHeight*(modelInputs.rowCount())

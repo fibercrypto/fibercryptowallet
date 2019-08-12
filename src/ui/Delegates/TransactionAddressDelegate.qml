@@ -14,14 +14,18 @@ Item {
             id: rowLayoutSent
         
         ToolButtonQR {
+            
             id: toolButtonQRSent
+            Layout.alignment: Qt.AlignLeft
             iconSize: "24x24"
             onClicked: {
                 qrCodeRequested(address)
             }
         }
         Label {
+            
               text: address // model's role
+              Layout.alignment: Qt.AlignLeft
               font.family: "Code New Roman"
               Layout.fillWidth: true
             }

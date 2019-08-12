@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
 
 Item {
     id: root
@@ -13,7 +14,7 @@ Item {
 
     clip: true
     width: 300
-    height: checkDelegate.height + columnLayout.spacing + listViewFilterAddress.height
+    height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
 
     ColumnLayout {
         id: columnLayout
@@ -56,7 +57,7 @@ Item {
 
             property int checkedDelegates: 0
             property bool allChecked: false
-
+            model: listAddresses
             onCheckedDelegatesChanged: {
                 if (checkedDelegates === 0) {
                     checkDelegate.checkState = Qt.Unchecked
@@ -66,18 +67,21 @@ Item {
                     checkDelegate.checkState = Qt.PartiallyChecked
                 }
             }
-
+            onCountChanged:{
+                implicitHeight = listAddresses.rowCount() * delegateHeight
+               
+            }
+            
             Layout.fillWidth: true
-            height: count * delegateHeight
+            
 
             interactive: false
-            model: listAddresses
+            
             delegate: HistoryFilterListAddressDelegate {
                 leftPadding: 20
                 scale: 0.85
                 checked: ListView.view.allChecked
-
-                onCheckedChanged: {
+                 onCheckedChanged: {
                     ListView.view.checkedDelegates += checked ? 1 : -1
                 }
             }
@@ -87,11 +91,31 @@ Item {
     // This model can be the same as the wallet address list,
     // as this model need to expose all addresses for each wallet.
     // For that, it should be implemented in the backend, instead of here.
-    ListModel { // EXAMPLE
-        id: listAddresses
+    //ListModel { // EXAMPLE
+    //    id: listAddresses
+//
+    //    ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
+    //     ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
+    //      ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
+    //    ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
+    //    ListElement { address: "gfdhgs343kweru38200384uwqd" }
+    //}
 
-        ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-        ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
-        ListElement { address: "gfdhgs343kweru38200384uwqd" }
+    AddressModel {
+
+        id: listAddresses
+        property Timer timer: Timer {
+                                id: addressModelTimer2
+                                interval: 0
+                                repeat: false
+                                running: true
+                                onTriggered: {
+                                    listAddresses.loadModel(walletManager.getAddresses(fileName))
+                                    listAddresses.removeAddress(0)
+                                    addressModelTimer2.running = false 
+                                    
+                                       
+                                    }
+                            }
     }
 }
