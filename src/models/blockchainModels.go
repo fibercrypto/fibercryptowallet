@@ -38,6 +38,8 @@ func (bs *BlockchainStatusModel) init() {
 	bs.SetTotalSkySupplyDefault("0")
 	bs.SetCurrentCoinHoursSupplyDefault("0")
 	bs.SetTotalCoinHoursSupplyDefault("0")
+
+	bs.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
 }
 
 func (bs *BlockchainStatusModel) update() {
@@ -51,38 +53,53 @@ func (bs *BlockchainStatusModel) update() {
 
 // updateInfo request the needed information
 func (bs *BlockchainStatusModel) updateInfo() error {
-	c := util.NewClient()
 
-	blocks, err := c.LastBlocks(1)
+	block, err := bs.infoRequester.GetLastBlock()
 	if err != nil {
 		return err
 	}
 
-	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
-	numberOfBlocks := strconv.FormatUint(lastBlock.Head.BkSeq, 10)
-	lastBlockHash := lastBlock.Head.Hash
-	year, month, day, h, m, s := util.ParseDate(int64(lastBlock.Head.Time)) // Fixme: the conversion its save, right??
-
-	coinSup, err := c.CoinSupply()
+	numberOfBlocks, err := strconv.FormatUint(0, 10) // TODO: Add to the interface
 	if err != nil {
 		return err
 	}
+	lastBlockHash, err := block.GetHash()
+	if err != nil {
+		return err
+	}
+	tstamp, err := block.GetTime()
+	if err != nil {
+		return err
+	}
+	year, month, day, h, m, s := util.ParseDate(int64(tstamp))
 
-	currentSkySupply := (*coinSup).CurrentSupply
-	totalSkySupply := (*coinSup).TotalSupply
-	currentCoinHoursSupply := (*coinSup).CurrentCoinHourSupply
-	totalCoinHoursSupply := (*coinSup).TotalCoinHourSupply
+	currentSkySupply, err := bs.infoRequester.GetCoinValue(core.CoinCurrentSupply, skycoin.Sky)
+	if err != nil {
+		return err
+	}
+	totalSkySupply, err := bs.infoRequester.GetCoinValue(core.CoinTotalSupply, skycoin.Sky)
+	if err != nil {
+		return err
+	}
+	currentCoinHoursSupply, err := bs.infoRequester.GetCoinValue(core.CoinCurrentSupply, skycoin.CoinHour)
+	if err != nil {
+		return err
+	}
+	totalCoinHoursSupply, err := bs.infoRequester.GetCoinValue(core.CoinTotalSupply, skycoin.CoinHour)
+	if err != nil {
+		return err
+	}
 
 	// block details
-	bs.SetNumberOfBlocks(numberOfBlocks)
-	bs.SetTimestampLastBlock(core.NewQDateTime3(core.NewQDate3(year, month, day), core.NewQTime3(h, m, s, 0), core.Qt__LocalTime))
-	bs.SetHashLastBlock(lastBlockHash)
+	bs.SetNumberOfBlocks(strconv.FormatUint(numberOfBlocks, 10))
+	bs.SetTimestampLastBlock(qtcore.NewQDateTime3(qtcore.NewQDate3(year, month, day), qtcore.NewQTime3(h, m, s, 0), qtcore.Qt__LocalTime))
+	bs.SetHashLastBlock(string(lastBlockHash))
 
 	// sky details
-	bs.SetCurrentSkySupply(currentSkySupply)
-	bs.SetTotalSkySupply(totalSkySupply)
-	bs.SetCurrentCoinHoursSupply(currentCoinHoursSupply)
-	bs.SetTotalCoinHoursSupply(totalCoinHoursSupply)
+	bs.SetCurrentSkySupply(strconv.FormatUint(currentSkySupply, 10))
+	bs.SetTotalSkySupply(strconv.FormatUint(totalSkySupply, 10))
+	bs.SetCurrentCoinHoursSupply(strconv.FormatUint(currentCoinHoursSupply, 10))
+	bs.SetTotalCoinHoursSupply(strconv.FormatUint(totalCoinHoursSupply, 10))
 
 	return nil
 }
