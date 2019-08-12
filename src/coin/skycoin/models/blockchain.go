@@ -85,9 +85,15 @@ type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
 	cachedStatus            *SkycoinBlockchianInfo
 }
 
+func NewSkycoinBlockchainStatus(invalidCacheTime uint64) *SkycoinBlockchainStatus {
+	return &SkycoinBlockchainStatus{CacheTime: invalidCacheTime}
+}
 func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (uint64, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
-	if elapsed > ss.cacheTime {
+	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
+		if ss.cachedStatus == nil {
+			ss.cachedStatus = new(SkycoinBlockchianInfo)
+		}
 		if err := ss.requestSupplyInfo(); err != nil {
 			return 0, err
 		}
@@ -111,7 +117,10 @@ func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, tic
 
 func (ss *SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
-	if elapsed > ss.cacheTime {
+	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
+		if ss.cachedStatus == nil {
+			ss.cachedStatus = new(SkycoinBlockchianInfo)
+		}
 		if err := ss.requestStatusInfo(); err != nil {
 			return nil, err
 		}
@@ -164,10 +173,6 @@ func (ss *SkycoinBlockchainStatus) requestStatusInfo() error {
 	}
 	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
 	ss.cachedStatus.LastBlockInfo = &SkycoinBlock{Block: &lastBlock}
-
-	// ss.cachedStatus.LastBlockInfo.HashLastBlock = lastBlock.Head.Hash
-	// ss.cachedStatus.LastBlockInfo.NumberOfBlocks = lastBlock.Head.BkSeq
-	// ss.cachedStatus.LastBlockInfo.TimeStamp = core.Timestamp(lastBlock.Head.Time)
 
 	return nil
 }
