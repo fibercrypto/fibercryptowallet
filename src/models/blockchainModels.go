@@ -3,23 +3,27 @@ package models
 import (
 	"strconv"
 
+	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
-	"github.com/therecipe/qt/core"
+	qtcore "github.com/therecipe/qt/core"
 )
 
 // BlockchainStatusModel Contains info about the blockchain to be show.
 type BlockchainStatusModel struct {
-	core.QObject
+	qtcore.QObject
 	_ func() `constructor:"init"`
 
-	_ string          `property:"numberOfBlocks"`
-	_ *core.QDateTime `property:"timestampLastBlock"`
-	_ string          `property:"hashLastBlock"`
-	_ string          `property:"currentSkySupply"`
-	_ string          `property:"totalSkySupply"`
-	_ string          `property:"currentCoinHoursSupply"`
-	_ string          `property:"totalCoinHoursSupply"`
+	infoRequester *core.BlockchainStatus
+
+	_ string            `property:"numberOfBlocks"`
+	_ *qtcore.QDateTime `property:"timestampLastBlock"`
+	_ string            `property:"hashLastBlock"`
+	_ string            `property:"currentSkySupply"`
+	_ string            `property:"totalSkySupply"`
+	_ string            `property:"currentCoinHoursSupply"`
+	_ string            `property:"totalCoinHoursSupply"`
 
 	_ func() `signal:"update,auto"`
 }
@@ -27,7 +31,7 @@ type BlockchainStatusModel struct {
 func (bs *BlockchainStatusModel) init() {
 	// block details
 	bs.SetNumberOfBlocksDefault("0")
-	bs.SetTimestampLastBlockDefault(core.NewQDateTime3(core.NewQDate3(2000, 1, 1), core.NewQTime3(0, 0, 0, 0), core.Qt__LocalTime))
+	bs.SetTimestampLastBlockDefault(qtcore.NewQDateTime3(qtcore.NewQDate3(2000, 1, 1), qtcore.NewQTime3(0, 0, 0, 0), qtcore.Qt__LocalTime))
 	bs.SetHashLastBlockDefault("")
 	// sky details
 	bs.SetCurrentSkySupplyDefault("0")
