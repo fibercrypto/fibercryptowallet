@@ -10,11 +10,6 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
-const (
-	Sky      = "Sky"
-	CoinHour = "CoinHour"
-)
-
 type SkycoinBlock struct { //implements core.Block interface
 	Block *readable.Block
 }
