@@ -59,11 +59,11 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 		return err
 	}
 
-	numberOfBlocks := uint64(0) // TODO: Add to the interface
+	lastBlockHash, err := block.GetHash()
 	if err != nil {
 		return err
 	}
-	lastBlockHash, err := block.GetHash()
+	numberOfBlocks,err := bs.infoRequester.GetNumberOfBlocks()
 	if err != nil {
 		return err
 	}

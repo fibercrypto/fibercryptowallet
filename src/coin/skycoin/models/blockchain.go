@@ -71,6 +71,7 @@ type SkycoinBlockchianInfo struct {
 	TotalSkySupply        uint64
 	CurrentCoinHourSupply uint64
 	TotalCoinHourSupply   uint64
+	NumberOfBlocks		  *readable.BlockchainProgress
 }
 
 type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
@@ -123,6 +124,19 @@ func (ss SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 	return ss.cachedStatus.LastBlockInfo, nil
 }
 
+func (ss SkycoinBlockchainStatus) GetNumberOfBlocks() (uint64, error) {
+	if ss.cachedStatus == nil {
+		if ss.cachedStatus == nil {
+			ss.cachedStatus = new(SkycoinBlockchianInfo)
+		}
+		if err := ss.requestStatusInfo(); err != nil {
+			return 0, errors.New("Number of Blocks unset ")
+		}
+	}
+
+	return ss.cachedStatus.NumberOfBlocks.Current, nil
+}
+
 func (ss SkycoinBlockchainStatus) SetCacheTime(time uint64) {
 	ss.CacheTime = time
 }
@@ -155,6 +169,11 @@ func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 		return err
 	}
 
+	ss.cachedStatus.NumberOfBlocks, err = c.BlockchainProgress()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -168,6 +187,16 @@ func (ss SkycoinBlockchainStatus) requestStatusInfo() error {
 	}
 	lastBlock := blocks.Blocks[len(blocks.Blocks)-1]
 	ss.cachedStatus.LastBlockInfo = &SkycoinBlock{Block: &lastBlock}
+
+	progress, err := c.BlockchainProgress()
+	if err != nil {
+		return err
+	}
+	ss.cachedStatus.NumberOfBlocks = &readable.BlockchainProgress{
+		Current: progress.Current,
+		Highest: progress.Highest,
+		Peers:   progress.Peers,
+	}
 
 	return nil
 }
