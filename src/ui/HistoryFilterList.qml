@@ -58,6 +58,18 @@ Item {
     //    ListElement { name: "My sixth wallet" }
     //}
 
+    ModelManager{
+        id: modelManager
+        property Timer timer: Timer{
+            id: modelManagerTimer
+            repeat: false
+            running: true
+            interval: 0
+            onTriggered:{
+                modelManager.setWalletManager(walletManager)
+            }
+        }
+    }
     WalletModel{
         id: modelFilters
         property Timer timer: Timer {

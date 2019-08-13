@@ -188,6 +188,285 @@ void AddressListfb4c44_AddressListfb4c44_QRegisterMetaTypes() {
 	qRegisterMetaType<QList<QObject*>>("QList<AddressDetailsfb4c44*>");
 }
 
+struct Moc_PackedString AddressDetailsfb4c44_Address(void* ptr)
+{
+	return ({ QByteArray t686357 = static_cast<AddressDetailsfb4c44*>(ptr)->address().toUtf8(); Moc_PackedString { const_cast<char*>(t686357.prepend("WHITESPACE").constData()+10), t686357.size()-10 }; });
+}
+
+struct Moc_PackedString AddressDetailsfb4c44_AddressDefault(void* ptr)
+{
+	return ({ QByteArray tbaed36 = static_cast<AddressDetailsfb4c44*>(ptr)->addressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tbaed36.prepend("WHITESPACE").constData()+10), tbaed36.size()-10 }; });
+}
+
+void AddressDetailsfb4c44_SetAddress(void* ptr, struct Moc_PackedString address)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->setAddress(QString::fromUtf8(address.data, address.len));
+}
+
+void AddressDetailsfb4c44_SetAddressDefault(void* ptr, struct Moc_PackedString address)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressDefault(QString::fromUtf8(address.data, address.len));
+}
+
+void AddressDetailsfb4c44_ConnectAddressChanged(void* ptr)
+{
+	QObject::connect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressChanged));
+}
+
+void AddressDetailsfb4c44_DisconnectAddressChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressChanged));
+}
+
+void AddressDetailsfb4c44_AddressChanged(void* ptr, struct Moc_PackedString address)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->addressChanged(QString::fromUtf8(address.data, address.len));
+}
+
+struct Moc_PackedString AddressDetailsfb4c44_AddressSky(void* ptr)
+{
+	return ({ QByteArray tb04c84 = static_cast<AddressDetailsfb4c44*>(ptr)->addressSky().toUtf8(); Moc_PackedString { const_cast<char*>(tb04c84.prepend("WHITESPACE").constData()+10), tb04c84.size()-10 }; });
+}
+
+struct Moc_PackedString AddressDetailsfb4c44_AddressSkyDefault(void* ptr)
+{
+	return ({ QByteArray tcdca54 = static_cast<AddressDetailsfb4c44*>(ptr)->addressSkyDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tcdca54.prepend("WHITESPACE").constData()+10), tcdca54.size()-10 }; });
+}
+
+void AddressDetailsfb4c44_SetAddressSky(void* ptr, struct Moc_PackedString addressSky)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressSky(QString::fromUtf8(addressSky.data, addressSky.len));
+}
+
+void AddressDetailsfb4c44_SetAddressSkyDefault(void* ptr, struct Moc_PackedString addressSky)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressSkyDefault(QString::fromUtf8(addressSky.data, addressSky.len));
+}
+
+void AddressDetailsfb4c44_ConnectAddressSkyChanged(void* ptr)
+{
+	QObject::connect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressSkyChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressSkyChanged));
+}
+
+void AddressDetailsfb4c44_DisconnectAddressSkyChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressSkyChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressSkyChanged));
+}
+
+void AddressDetailsfb4c44_AddressSkyChanged(void* ptr, struct Moc_PackedString addressSky)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->addressSkyChanged(QString::fromUtf8(addressSky.data, addressSky.len));
+}
+
+struct Moc_PackedString AddressDetailsfb4c44_AddressCoinHours(void* ptr)
+{
+	return ({ QByteArray t505be8 = static_cast<AddressDetailsfb4c44*>(ptr)->addressCoinHours().toUtf8(); Moc_PackedString { const_cast<char*>(t505be8.prepend("WHITESPACE").constData()+10), t505be8.size()-10 }; });
+}
+
+struct Moc_PackedString AddressDetailsfb4c44_AddressCoinHoursDefault(void* ptr)
+{
+	return ({ QByteArray t272ab0 = static_cast<AddressDetailsfb4c44*>(ptr)->addressCoinHoursDefault().toUtf8(); Moc_PackedString { const_cast<char*>(t272ab0.prepend("WHITESPACE").constData()+10), t272ab0.size()-10 }; });
+}
+
+void AddressDetailsfb4c44_SetAddressCoinHours(void* ptr, struct Moc_PackedString addressCoinHours)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressCoinHours(QString::fromUtf8(addressCoinHours.data, addressCoinHours.len));
+}
+
+void AddressDetailsfb4c44_SetAddressCoinHoursDefault(void* ptr, struct Moc_PackedString addressCoinHours)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressCoinHoursDefault(QString::fromUtf8(addressCoinHours.data, addressCoinHours.len));
+}
+
+void AddressDetailsfb4c44_ConnectAddressCoinHoursChanged(void* ptr)
+{
+	QObject::connect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressCoinHoursChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressCoinHoursChanged));
+}
+
+void AddressDetailsfb4c44_DisconnectAddressCoinHoursChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressCoinHoursChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressCoinHoursChanged));
+}
+
+void AddressDetailsfb4c44_AddressCoinHoursChanged(void* ptr, struct Moc_PackedString addressCoinHours)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->addressCoinHoursChanged(QString::fromUtf8(addressCoinHours.data, addressCoinHours.len));
+}
+
+int AddressDetailsfb4c44_AddressDetailsfb4c44_QRegisterMetaType()
+{
+	return qRegisterMetaType<AddressDetailsfb4c44*>();
+}
+
+int AddressDetailsfb4c44_AddressDetailsfb4c44_QRegisterMetaType2(char* typeName)
+{
+	return qRegisterMetaType<AddressDetailsfb4c44*>(const_cast<const char*>(typeName));
+}
+
+int AddressDetailsfb4c44_AddressDetailsfb4c44_QmlRegisterType()
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<AddressDetailsfb4c44>();
+#else
+	return 0;
+#endif
+}
+
+int AddressDetailsfb4c44_AddressDetailsfb4c44_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<AddressDetailsfb4c44>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
+#else
+	return 0;
+#endif
+}
+
+void* AddressDetailsfb4c44___children_atList(void* ptr, int i)
+{
+	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void AddressDetailsfb4c44___children_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* AddressDetailsfb4c44___children_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject *>();
+}
+
+void* AddressDetailsfb4c44___dynamicPropertyNames_atList(void* ptr, int i)
+{
+	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
+}
+
+void AddressDetailsfb4c44___dynamicPropertyNames_setList(void* ptr, void* i)
+{
+	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
+}
+
+void* AddressDetailsfb4c44___dynamicPropertyNames_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QByteArray>();
+}
+
+void* AddressDetailsfb4c44___findChildren_atList(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void AddressDetailsfb4c44___findChildren_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* AddressDetailsfb4c44___findChildren_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* AddressDetailsfb4c44___findChildren_atList3(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void AddressDetailsfb4c44___findChildren_setList3(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* AddressDetailsfb4c44___findChildren_newList3(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* AddressDetailsfb4c44___qFindChildren_atList2(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void AddressDetailsfb4c44___qFindChildren_setList2(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* AddressDetailsfb4c44___qFindChildren_newList2(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* AddressDetailsfb4c44_NewAddressDetails(void* parent)
+{
+	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
+		return new AddressDetailsfb4c44(static_cast<QOffscreenSurface*>(parent));
+	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
+		return new AddressDetailsfb4c44(static_cast<QPaintDeviceWindow*>(parent));
+	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
+		return new AddressDetailsfb4c44(static_cast<QPdfWriter*>(parent));
+	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
+		return new AddressDetailsfb4c44(static_cast<QWindow*>(parent));
+	} else {
+		return new AddressDetailsfb4c44(static_cast<QObject*>(parent));
+	}
+}
+
+void AddressDetailsfb4c44_DestroyAddressDetails(void* ptr)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->~AddressDetailsfb4c44();
+}
+
+void AddressDetailsfb4c44_DestroyAddressDetailsDefault(void* ptr)
+{
+	Q_UNUSED(ptr);
+
+}
+
+void AddressDetailsfb4c44_ChildEventDefault(void* ptr, void* event)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
+}
+
+void AddressDetailsfb4c44_ConnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+void AddressDetailsfb4c44_CustomEventDefault(void* ptr, void* event)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
+}
+
+void AddressDetailsfb4c44_DeleteLaterDefault(void* ptr)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::deleteLater();
+}
+
+void AddressDetailsfb4c44_DisconnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+char AddressDetailsfb4c44_EventDefault(void* ptr, void* e)
+{
+	return static_cast<AddressDetailsfb4c44*>(ptr)->QObject::event(static_cast<QEvent*>(e));
+}
+
+char AddressDetailsfb4c44_EventFilterDefault(void* ptr, void* watched, void* event)
+{
+	return static_cast<AddressDetailsfb4c44*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
+}
+
+void AddressDetailsfb4c44_TimerEventDefault(void* ptr, void* event)
+{
+	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
+}
+
 void AddressListfb4c44_ConnectAddAddress(void* ptr)
 {
 	QObject::connect(static_cast<AddressListfb4c44*>(ptr), static_cast<void (AddressListfb4c44::*)(AddressDetailsfb4c44*)>(&AddressListfb4c44::addAddress), static_cast<AddressListfb4c44*>(ptr), static_cast<void (AddressListfb4c44::*)(AddressDetailsfb4c44*)>(&AddressListfb4c44::Signal_AddAddress));
@@ -1070,285 +1349,6 @@ char AddressListfb4c44_EventFilterDefault(void* ptr, void* watched, void* event)
 void AddressListfb4c44_TimerEventDefault(void* ptr, void* event)
 {
 	static_cast<AddressListfb4c44*>(ptr)->QAbstractListModel::timerEvent(static_cast<QTimerEvent*>(event));
-}
-
-struct Moc_PackedString AddressDetailsfb4c44_Address(void* ptr)
-{
-	return ({ QByteArray t686357 = static_cast<AddressDetailsfb4c44*>(ptr)->address().toUtf8(); Moc_PackedString { const_cast<char*>(t686357.prepend("WHITESPACE").constData()+10), t686357.size()-10 }; });
-}
-
-struct Moc_PackedString AddressDetailsfb4c44_AddressDefault(void* ptr)
-{
-	return ({ QByteArray tbaed36 = static_cast<AddressDetailsfb4c44*>(ptr)->addressDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tbaed36.prepend("WHITESPACE").constData()+10), tbaed36.size()-10 }; });
-}
-
-void AddressDetailsfb4c44_SetAddress(void* ptr, struct Moc_PackedString address)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->setAddress(QString::fromUtf8(address.data, address.len));
-}
-
-void AddressDetailsfb4c44_SetAddressDefault(void* ptr, struct Moc_PackedString address)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressDefault(QString::fromUtf8(address.data, address.len));
-}
-
-void AddressDetailsfb4c44_ConnectAddressChanged(void* ptr)
-{
-	QObject::connect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressChanged));
-}
-
-void AddressDetailsfb4c44_DisconnectAddressChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressChanged));
-}
-
-void AddressDetailsfb4c44_AddressChanged(void* ptr, struct Moc_PackedString address)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->addressChanged(QString::fromUtf8(address.data, address.len));
-}
-
-struct Moc_PackedString AddressDetailsfb4c44_AddressSky(void* ptr)
-{
-	return ({ QByteArray tb04c84 = static_cast<AddressDetailsfb4c44*>(ptr)->addressSky().toUtf8(); Moc_PackedString { const_cast<char*>(tb04c84.prepend("WHITESPACE").constData()+10), tb04c84.size()-10 }; });
-}
-
-struct Moc_PackedString AddressDetailsfb4c44_AddressSkyDefault(void* ptr)
-{
-	return ({ QByteArray tcdca54 = static_cast<AddressDetailsfb4c44*>(ptr)->addressSkyDefault().toUtf8(); Moc_PackedString { const_cast<char*>(tcdca54.prepend("WHITESPACE").constData()+10), tcdca54.size()-10 }; });
-}
-
-void AddressDetailsfb4c44_SetAddressSky(void* ptr, struct Moc_PackedString addressSky)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressSky(QString::fromUtf8(addressSky.data, addressSky.len));
-}
-
-void AddressDetailsfb4c44_SetAddressSkyDefault(void* ptr, struct Moc_PackedString addressSky)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressSkyDefault(QString::fromUtf8(addressSky.data, addressSky.len));
-}
-
-void AddressDetailsfb4c44_ConnectAddressSkyChanged(void* ptr)
-{
-	QObject::connect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressSkyChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressSkyChanged));
-}
-
-void AddressDetailsfb4c44_DisconnectAddressSkyChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressSkyChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressSkyChanged));
-}
-
-void AddressDetailsfb4c44_AddressSkyChanged(void* ptr, struct Moc_PackedString addressSky)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->addressSkyChanged(QString::fromUtf8(addressSky.data, addressSky.len));
-}
-
-struct Moc_PackedString AddressDetailsfb4c44_AddressCoinHours(void* ptr)
-{
-	return ({ QByteArray t505be8 = static_cast<AddressDetailsfb4c44*>(ptr)->addressCoinHours().toUtf8(); Moc_PackedString { const_cast<char*>(t505be8.prepend("WHITESPACE").constData()+10), t505be8.size()-10 }; });
-}
-
-struct Moc_PackedString AddressDetailsfb4c44_AddressCoinHoursDefault(void* ptr)
-{
-	return ({ QByteArray t272ab0 = static_cast<AddressDetailsfb4c44*>(ptr)->addressCoinHoursDefault().toUtf8(); Moc_PackedString { const_cast<char*>(t272ab0.prepend("WHITESPACE").constData()+10), t272ab0.size()-10 }; });
-}
-
-void AddressDetailsfb4c44_SetAddressCoinHours(void* ptr, struct Moc_PackedString addressCoinHours)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressCoinHours(QString::fromUtf8(addressCoinHours.data, addressCoinHours.len));
-}
-
-void AddressDetailsfb4c44_SetAddressCoinHoursDefault(void* ptr, struct Moc_PackedString addressCoinHours)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->setAddressCoinHoursDefault(QString::fromUtf8(addressCoinHours.data, addressCoinHours.len));
-}
-
-void AddressDetailsfb4c44_ConnectAddressCoinHoursChanged(void* ptr)
-{
-	QObject::connect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressCoinHoursChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressCoinHoursChanged));
-}
-
-void AddressDetailsfb4c44_DisconnectAddressCoinHoursChanged(void* ptr)
-{
-	QObject::disconnect(static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::addressCoinHoursChanged), static_cast<AddressDetailsfb4c44*>(ptr), static_cast<void (AddressDetailsfb4c44::*)(QString)>(&AddressDetailsfb4c44::Signal_AddressCoinHoursChanged));
-}
-
-void AddressDetailsfb4c44_AddressCoinHoursChanged(void* ptr, struct Moc_PackedString addressCoinHours)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->addressCoinHoursChanged(QString::fromUtf8(addressCoinHours.data, addressCoinHours.len));
-}
-
-int AddressDetailsfb4c44_AddressDetailsfb4c44_QRegisterMetaType()
-{
-	return qRegisterMetaType<AddressDetailsfb4c44*>();
-}
-
-int AddressDetailsfb4c44_AddressDetailsfb4c44_QRegisterMetaType2(char* typeName)
-{
-	return qRegisterMetaType<AddressDetailsfb4c44*>(const_cast<const char*>(typeName));
-}
-
-int AddressDetailsfb4c44_AddressDetailsfb4c44_QmlRegisterType()
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<AddressDetailsfb4c44>();
-#else
-	return 0;
-#endif
-}
-
-int AddressDetailsfb4c44_AddressDetailsfb4c44_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<AddressDetailsfb4c44>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
-#else
-	return 0;
-#endif
-}
-
-void* AddressDetailsfb4c44___children_atList(void* ptr, int i)
-{
-	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void AddressDetailsfb4c44___children_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* AddressDetailsfb4c44___children_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject *>();
-}
-
-void* AddressDetailsfb4c44___dynamicPropertyNames_atList(void* ptr, int i)
-{
-	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
-}
-
-void AddressDetailsfb4c44___dynamicPropertyNames_setList(void* ptr, void* i)
-{
-	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
-}
-
-void* AddressDetailsfb4c44___dynamicPropertyNames_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QByteArray>();
-}
-
-void* AddressDetailsfb4c44___findChildren_atList(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void AddressDetailsfb4c44___findChildren_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* AddressDetailsfb4c44___findChildren_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* AddressDetailsfb4c44___findChildren_atList3(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void AddressDetailsfb4c44___findChildren_setList3(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* AddressDetailsfb4c44___findChildren_newList3(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* AddressDetailsfb4c44___qFindChildren_atList2(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void AddressDetailsfb4c44___qFindChildren_setList2(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* AddressDetailsfb4c44___qFindChildren_newList2(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* AddressDetailsfb4c44_NewAddressDetails(void* parent)
-{
-	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new AddressDetailsfb4c44(static_cast<QOffscreenSurface*>(parent));
-	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new AddressDetailsfb4c44(static_cast<QPaintDeviceWindow*>(parent));
-	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new AddressDetailsfb4c44(static_cast<QPdfWriter*>(parent));
-	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new AddressDetailsfb4c44(static_cast<QWindow*>(parent));
-	} else {
-		return new AddressDetailsfb4c44(static_cast<QObject*>(parent));
-	}
-}
-
-void AddressDetailsfb4c44_DestroyAddressDetails(void* ptr)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->~AddressDetailsfb4c44();
-}
-
-void AddressDetailsfb4c44_DestroyAddressDetailsDefault(void* ptr)
-{
-	Q_UNUSED(ptr);
-
-}
-
-void AddressDetailsfb4c44_ChildEventDefault(void* ptr, void* event)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
-}
-
-void AddressDetailsfb4c44_ConnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-void AddressDetailsfb4c44_CustomEventDefault(void* ptr, void* event)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
-}
-
-void AddressDetailsfb4c44_DeleteLaterDefault(void* ptr)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::deleteLater();
-}
-
-void AddressDetailsfb4c44_DisconnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-char AddressDetailsfb4c44_EventDefault(void* ptr, void* e)
-{
-	return static_cast<AddressDetailsfb4c44*>(ptr)->QObject::event(static_cast<QEvent*>(e));
-}
-
-char AddressDetailsfb4c44_EventFilterDefault(void* ptr, void* watched, void* event)
-{
-	return static_cast<AddressDetailsfb4c44*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
-}
-
-void AddressDetailsfb4c44_TimerEventDefault(void* ptr, void* event)
-{
-	static_cast<AddressDetailsfb4c44*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
 #include "moc_moc.h"

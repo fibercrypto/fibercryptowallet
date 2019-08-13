@@ -284,6 +284,120 @@ void AddressesModel539e18::countChanged(qint32 _t1)
     void *_a[] = { nullptr, const_cast<void*>(reinterpret_cast<const void*>(std::addressof(_t1))) };
     QMetaObject::activate(this, &staticMetaObject, 2, _a);
 }
+struct qt_meta_stringdata_ModelManager539e18_t {
+    QByteArrayData data[7];
+    char stringdata0[99];
+};
+#define QT_MOC_LITERAL(idx, ofs, len) \
+    Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
+    qptrdiff(offsetof(qt_meta_stringdata_ModelManager539e18_t, stringdata0) + ofs \
+        - idx * sizeof(QByteArrayData)) \
+    )
+static const qt_meta_stringdata_ModelManager539e18_t qt_meta_stringdata_ModelManager539e18 = {
+    {
+QT_MOC_LITERAL(0, 0, 18), // "ModelManager539e18"
+QT_MOC_LITERAL(1, 19, 16), // "setWalletManager"
+QT_MOC_LITERAL(2, 36, 0), // ""
+QT_MOC_LITERAL(3, 37, 20), // "WalletManager539e18*"
+QT_MOC_LITERAL(4, 58, 2), // "v0"
+QT_MOC_LITERAL(5, 61, 15), // "getAddressModel"
+QT_MOC_LITERAL(6, 77, 21) // "AddressesModel539e18*"
+
+    },
+    "ModelManager539e18\0setWalletManager\0"
+    "\0WalletManager539e18*\0v0\0getAddressModel\0"
+    "AddressesModel539e18*"
+};
+#undef QT_MOC_LITERAL
+
+static const uint qt_meta_data_ModelManager539e18[] = {
+
+ // content:
+       8,       // revision
+       0,       // classname
+       0,    0, // classinfo
+       2,   14, // methods
+       0,    0, // properties
+       0,    0, // enums/sets
+       0,    0, // constructors
+       0,       // flags
+       0,       // signalCount
+
+ // slots: name, argc, parameters, tag, flags
+       1,    1,   24,    2, 0x0a /* Public */,
+       5,    1,   27,    2, 0x0a /* Public */,
+
+ // slots: parameters
+    QMetaType::Void, 0x80000000 | 3,    4,
+    0x80000000 | 6, QMetaType::QString,    4,
+
+       0        // eod
+};
+
+void ModelManager539e18::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
+{
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        auto *_t = static_cast<ModelManager539e18 *>(_o);
+        Q_UNUSED(_t)
+        switch (_id) {
+        case 0: _t->setWalletManager((*reinterpret_cast< WalletManager539e18*(*)>(_a[1]))); break;
+        case 1: { AddressesModel539e18* _r = _t->getAddressModel((*reinterpret_cast< QString(*)>(_a[1])));
+            if (_a[0]) *reinterpret_cast< AddressesModel539e18**>(_a[0]) = std::move(_r); }  break;
+        default: ;
+        }
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        switch (_id) {
+        default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+        case 0:
+            switch (*reinterpret_cast<int*>(_a[1])) {
+            default: *reinterpret_cast<int*>(_a[0]) = -1; break;
+            case 0:
+                *reinterpret_cast<int*>(_a[0]) = qRegisterMetaType< WalletManager539e18* >(); break;
+            }
+            break;
+        }
+    }
+}
+
+QT_INIT_METAOBJECT const QMetaObject ModelManager539e18::staticMetaObject = { {
+    &QObject::staticMetaObject,
+    qt_meta_stringdata_ModelManager539e18.data,
+    qt_meta_data_ModelManager539e18,
+    qt_static_metacall,
+    nullptr,
+    nullptr
+} };
+
+
+const QMetaObject *ModelManager539e18::metaObject() const
+{
+    return QObject::d_ptr->metaObject ? QObject::d_ptr->dynamicMetaObject() : &staticMetaObject;
+}
+
+void *ModelManager539e18::qt_metacast(const char *_clname)
+{
+    if (!_clname) return nullptr;
+    if (!strcmp(_clname, qt_meta_stringdata_ModelManager539e18.stringdata0))
+        return static_cast<void*>(this);
+    return QObject::qt_metacast(_clname);
+}
+
+int ModelManager539e18::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
+{
+    _id = QObject::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 2)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 2;
+    } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 2)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 2;
+    }
+    return _id;
+}
 struct qt_meta_stringdata_QAddress539e18_t {
     QByteArrayData data[8];
     char stringdata0[109];

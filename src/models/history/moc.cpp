@@ -39,6 +39,38 @@ public:
 };
 
 typedef QMap<qint32, QByteArray> type378cdd;
+class HistoryManager554044: public QObject
+{
+Q_OBJECT
+public:
+	HistoryManager554044(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");HistoryManager554044_HistoryManager554044_QRegisterMetaType();HistoryManager554044_HistoryManager554044_QRegisterMetaTypes();callbackHistoryManager554044_Constructor(this);};
+	 ~HistoryManager554044() { callbackHistoryManager554044_DestroyHistoryManager(this); };
+	void childEvent(QChildEvent * event) { callbackHistoryManager554044_ChildEvent(this, event); };
+	void connectNotify(const QMetaMethod & sign) { callbackHistoryManager554044_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	void customEvent(QEvent * event) { callbackHistoryManager554044_CustomEvent(this, event); };
+	void deleteLater() { callbackHistoryManager554044_DeleteLater(this); };
+	void Signal_Destroyed(QObject * obj) { callbackHistoryManager554044_Destroyed(this, obj); };
+	void disconnectNotify(const QMetaMethod & sign) { callbackHistoryManager554044_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
+	bool event(QEvent * e) { return callbackHistoryManager554044_Event(this, e) != 0; };
+	bool eventFilter(QObject * watched, QEvent * event) { return callbackHistoryManager554044_EventFilter(this, watched, event) != 0; };
+	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackHistoryManager554044_ObjectNameChanged(this, objectNamePacked); };
+	void timerEvent(QTimerEvent * event) { callbackHistoryManager554044_TimerEvent(this, event); };
+signals:
+public slots:
+	QList<TransactionDetailsecff1c*> loadHistoryWithFilters() { return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistoryWithFilters(this)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	QList<TransactionDetailsecff1c*> loadHistory() { return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistory(this)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	void addFilter(QString v0) { QByteArray tea1dd7 = v0.toUtf8(); Moc_PackedString v0Packed = { const_cast<char*>(tea1dd7.prepend("WHITESPACE").constData()+10), tea1dd7.size()-10 };callbackHistoryManager554044_AddFilter(this, v0Packed); };
+	void removeFilter(QString v0) { QByteArray tea1dd7 = v0.toUtf8(); Moc_PackedString v0Packed = { const_cast<char*>(tea1dd7.prepend("WHITESPACE").constData()+10), tea1dd7.size()-10 };callbackHistoryManager554044_RemoveFilter(this, v0Packed); };
+private:
+};
+
+Q_DECLARE_METATYPE(HistoryManager554044*)
+
+
+void HistoryManager554044_HistoryManager554044_QRegisterMetaTypes() {
+	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetailsecff1c*>");
+}
+
 class TransactionList554044: public QAbstractListModel
 {
 Q_OBJECT
@@ -139,39 +171,7 @@ Q_DECLARE_METATYPE(TransactionList554044*)
 
 
 void TransactionList554044_TransactionList554044_QRegisterMetaTypes() {
-	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetailsecff1c*>");
 	qRegisterMetaType<type378cdd>("type378cdd");
-}
-
-class HistoryManager554044: public QObject
-{
-Q_OBJECT
-public:
-	HistoryManager554044(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");HistoryManager554044_HistoryManager554044_QRegisterMetaType();HistoryManager554044_HistoryManager554044_QRegisterMetaTypes();callbackHistoryManager554044_Constructor(this);};
-	 ~HistoryManager554044() { callbackHistoryManager554044_DestroyHistoryManager(this); };
-	void childEvent(QChildEvent * event) { callbackHistoryManager554044_ChildEvent(this, event); };
-	void connectNotify(const QMetaMethod & sign) { callbackHistoryManager554044_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	void customEvent(QEvent * event) { callbackHistoryManager554044_CustomEvent(this, event); };
-	void deleteLater() { callbackHistoryManager554044_DeleteLater(this); };
-	void Signal_Destroyed(QObject * obj) { callbackHistoryManager554044_Destroyed(this, obj); };
-	void disconnectNotify(const QMetaMethod & sign) { callbackHistoryManager554044_DisconnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
-	bool event(QEvent * e) { return callbackHistoryManager554044_Event(this, e) != 0; };
-	bool eventFilter(QObject * watched, QEvent * event) { return callbackHistoryManager554044_EventFilter(this, watched, event) != 0; };
-	void Signal_ObjectNameChanged(const QString & objectName) { QByteArray taa2c4f = objectName.toUtf8(); Moc_PackedString objectNamePacked = { const_cast<char*>(taa2c4f.prepend("WHITESPACE").constData()+10), taa2c4f.size()-10 };callbackHistoryManager554044_ObjectNameChanged(this, objectNamePacked); };
-	void timerEvent(QTimerEvent * event) { callbackHistoryManager554044_TimerEvent(this, event); };
-signals:
-public slots:
-	QList<TransactionDetailsecff1c*> loadHistoryWithFilters() { return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistoryWithFilters(this)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
-	QList<TransactionDetailsecff1c*> loadHistory() { return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistory(this)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
-	void addFilter(QString v0) { QByteArray tea1dd7 = v0.toUtf8(); Moc_PackedString v0Packed = { const_cast<char*>(tea1dd7.prepend("WHITESPACE").constData()+10), tea1dd7.size()-10 };callbackHistoryManager554044_AddFilter(this, v0Packed); };
-	void removeFilter(QString v0) { QByteArray tea1dd7 = v0.toUtf8(); Moc_PackedString v0Packed = { const_cast<char*>(tea1dd7.prepend("WHITESPACE").constData()+10), tea1dd7.size()-10 };callbackHistoryManager554044_RemoveFilter(this, v0Packed); };
-private:
-};
-
-Q_DECLARE_METATYPE(HistoryManager554044*)
-
-
-void HistoryManager554044_HistoryManager554044_QRegisterMetaTypes() {
 	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetailsecff1c*>");
 }
 

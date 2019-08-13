@@ -50,6 +50,7 @@ func (m *AddressesModel) init() {
 	m.ConnectEditAddress(m.editAddress)
 	m.ConnectRemoveAddress(m.removeAddress)
 	m.ConnectLoadModel(m.loadModel)
+	m.SetCount(0)
 
 }
 

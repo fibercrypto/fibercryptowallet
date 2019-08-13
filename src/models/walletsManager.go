@@ -133,11 +133,12 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		if err != nil {
 			continue
 		}
-
 		if encrypted {
-			qwallets = append(qwallets, fromWalletToQWallet(it.Value(), true))
+			qw := fromWalletToQWallet(it.Value(), true)
+			qwallets = append(qwallets, qw)
 		} else {
-			qwallets = append(qwallets, fromWalletToQWallet(it.Value(), false))
+			qw := fromWalletToQWallet(it.Value(), false)
+			qwallets = append(qwallets, qw)
 		}
 
 	}

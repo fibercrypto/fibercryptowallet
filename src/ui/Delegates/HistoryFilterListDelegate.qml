@@ -56,7 +56,7 @@ Item {
 
         ListView {
             id: listViewFilterAddress
-
+            property AddressModel listAddresses
             property int checkedDelegates: 0
             property bool allChecked: false
             model: listAddresses
@@ -71,8 +71,13 @@ Item {
             }
             onCountChanged:{
                 implicitHeight = listAddresses.count * delegateHeight
-                //console.log("Count: "+listAddresses.count)
+                
                
+            }
+
+            Component.onCompleted:{
+                modelManager.setWalletManager(walletManager)
+                listAddresses = modelManager.getAddressModel(fileName)
             }
             
             Layout.fillWidth: true
@@ -113,22 +118,22 @@ Item {
     //    ListElement { address: "gfdhgs343kweru38200384uwqd" }
     //}
 
-    AddressModel {
-
-        id: listAddresses
-        property Timer timer: Timer {
-                                id: addressModelTimer2
-                                interval: 0
-                                repeat: false
-                                running: true
-                                onTriggered: {
-                                    listAddresses.loadModel(walletManager.getAddresses(fileName))
-                                    listAddresses.removeAddress(0)
-                                    addressModelTimer2.running = false 
-                                    console.log("Loaded")
-                                    
-                                       
-                                    }
-                            }
-    }
+    //AddressModel {
+//
+    //    id: listAddresses
+    //    property Timer timer: Timer {
+    //                            id: addressModelTimer2
+    //                            interval: 0
+    //                            repeat: false
+    //                            running: true
+    //                            onTriggered: {
+    //                                listAddresses.loadModel(walletManager.getAddresses(fileName))
+    //                                listAddresses.removeAddress(0)
+    //                                addressModelTimer2.running = false 
+    //                                console.log("Loaded")
+    //                                
+    //                                   
+    //                                }
+    //                        }
+    //}
 }
