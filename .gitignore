@@ -53,6 +53,8 @@ rcc__*
 *.swp
 *.swo
 .DS_Store
+*.orig
+*.bak
 
 # Dependencies
 vendor

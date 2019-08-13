@@ -14,12 +14,13 @@ ApplicationWindow {
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
 
+
     menuBar: CustomMenuBar {
         id: customMenuBar
 
         onOutputsRequested: {
             generalStackView.openOutputsPage()
-            menuBarColor = Material.color(Material.Teal)
+            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Outputs")
             
             enableOutputs = false
@@ -30,18 +31,19 @@ ApplicationWindow {
 
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()
-            menuBarColor = Material.color(Material.Purple)
+            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Pending transactions")
             
             enableOutputs = true
             enablePendingTransactions = false
             enableBlockchain = true
             enableNetworking = true
+
         }
 
         onBlockchainRequested: {
             generalStackView.openBlockchainPage()
-            menuBarColor = Material.color(Material.Red)
+            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Blockchain")
 
             enableOutputs = true
@@ -99,6 +101,18 @@ ApplicationWindow {
                  + "Quis aute iure reprehenderit in voluptate velit esse cillum dolore "
                  + "eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, "
                  + "sunt in culpa qui officia deserunt mollit anim id est laborum.")
+    }
+
+    // QR
+    DialogQR {
+        id: dialogQR
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        imagePath: "qrc:/images/resources/images/icons/qr.svg"
     }
 
     // Hardware dialogs

@@ -23,6 +23,7 @@
         <file>src/ui/Delegates/NetworkingListDelegate.qml</file>
         <file>src/ui/Delegates/OutputsListDelegate.qml</file>
         <file>src/ui/Delegates/OutputsListAddressDelegate.qml</file>
+        <file>src/ui/Delegates/OutputsListAddressOutputDelegate.qml</file>
         <file>src/ui/Delegates/DestinationListDelegate.qml</file>
         <file>src/ui/Delegates/InputOutputDelegate.qml</file>
         <file>src/ui/Delegates/HistoryListDelegate.qml</file>

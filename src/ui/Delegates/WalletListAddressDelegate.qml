@@ -2,6 +2,10 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
+
+// Resource imports
+import "../" // For quick UI development, switch back to resources when making a release
 
 Item {
     id: root
@@ -11,6 +15,7 @@ Item {
 
     signal addAddressesRequested()
     signal editWalletRequested()
+    signal qrCodeRequested(var data)
 
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
@@ -28,7 +33,7 @@ Item {
 
         ToolButton {
             id: buttonAddAddress
-            text: qsTr("Add wallet")
+            text: qsTr("Add address")
             icon.source: "qrc:/images/resources/images/icons/add.svg"
             Material.foreground: Material.Teal
             Layout.fillWidth: true
@@ -92,11 +97,12 @@ Item {
             text: index
         }
 
-        Image {
-            id: qrIcon
-            visible:  !showOnlyAddresses
-            source: "qrc:/images/resources/images/icons/qr.svg"
-            sourceSize: "16x16"
+        ToolButtonQR {
+            id: toolButtonQR
+
+            onClicked: {
+                qrCodeRequested(address)
+            }
         }
 
         RowLayout {
