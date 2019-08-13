@@ -129,6 +129,7 @@ signals:
 	void transactionsChanged(QList<TransactionDetailsecff1c*> transactions);
 public slots:
 	void addMultipleTransactions(QList<TransactionDetailsecff1c*> txns) { callbackTransactionList554044_AddMultipleTransactions(this, ({ QList<TransactionDetailsecff1c*>* tmpValue = new QList<TransactionDetailsecff1c*>(txns); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
+	void clear() { callbackTransactionList554044_Clear(this); };
 private:
 	type378cdd _roles;
 	QList<TransactionDetailsecff1c*> _transactions;
@@ -138,8 +139,8 @@ Q_DECLARE_METATYPE(TransactionList554044*)
 
 
 void TransactionList554044_TransactionList554044_QRegisterMetaTypes() {
-	qRegisterMetaType<type378cdd>("type378cdd");
 	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetailsecff1c*>");
+	qRegisterMetaType<type378cdd>("type378cdd");
 }
 
 class HistoryManager554044: public QObject
@@ -160,8 +161,10 @@ public:
 	void timerEvent(QTimerEvent * event) { callbackHistoryManager554044_TimerEvent(this, event); };
 signals:
 public slots:
-	QList<TransactionDetailsecff1c*> loadHistoryWithFilters(QStringList filterAddresses) { QByteArray t0bfc4c = filterAddresses.join("¡¦!").toUtf8(); Moc_PackedString filterAddressesPacked = { const_cast<char*>(t0bfc4c.prepend("WHITESPACE").constData()+10), t0bfc4c.size()-10 };return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistoryWithFilters(this, filterAddressesPacked)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	QList<TransactionDetailsecff1c*> loadHistoryWithFilters() { return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistoryWithFilters(this)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
 	QList<TransactionDetailsecff1c*> loadHistory() { return ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(callbackHistoryManager554044_LoadHistory(this)); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; }); };
+	void addFilter(QString v0) { QByteArray tea1dd7 = v0.toUtf8(); Moc_PackedString v0Packed = { const_cast<char*>(tea1dd7.prepend("WHITESPACE").constData()+10), tea1dd7.size()-10 };callbackHistoryManager554044_AddFilter(this, v0Packed); };
+	void removeFilter(QString v0) { QByteArray tea1dd7 = v0.toUtf8(); Moc_PackedString v0Packed = { const_cast<char*>(tea1dd7.prepend("WHITESPACE").constData()+10), tea1dd7.size()-10 };callbackHistoryManager554044_RemoveFilter(this, v0Packed); };
 private:
 };
 
@@ -170,6 +173,236 @@ Q_DECLARE_METATYPE(HistoryManager554044*)
 
 void HistoryManager554044_HistoryManager554044_QRegisterMetaTypes() {
 	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetailsecff1c*>");
+}
+
+struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr)
+{
+	QList<TransactionDetailsecff1c*> returnArg;
+	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "loadHistoryWithFilters", Q_RETURN_ARG(QList<TransactionDetailsecff1c*>, returnArg));
+	return ({ QList<TransactionDetailsecff1c*>* tmpValue = new QList<TransactionDetailsecff1c*>(returnArg); Moc_PackedList { tmpValue, tmpValue->size() }; });
+}
+
+struct Moc_PackedList HistoryManager554044_LoadHistory(void* ptr)
+{
+	QList<TransactionDetailsecff1c*> returnArg;
+	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "loadHistory", Q_RETURN_ARG(QList<TransactionDetailsecff1c*>, returnArg));
+	return ({ QList<TransactionDetailsecff1c*>* tmpValue = new QList<TransactionDetailsecff1c*>(returnArg); Moc_PackedList { tmpValue, tmpValue->size() }; });
+}
+
+void HistoryManager554044_AddFilter(void* ptr, struct Moc_PackedString v0)
+{
+	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "addFilter", Q_ARG(QString, QString::fromUtf8(v0.data, v0.len)));
+}
+
+void HistoryManager554044_RemoveFilter(void* ptr, struct Moc_PackedString v0)
+{
+	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "removeFilter", Q_ARG(QString, QString::fromUtf8(v0.data, v0.len)));
+}
+
+int HistoryManager554044_HistoryManager554044_QRegisterMetaType()
+{
+	return qRegisterMetaType<HistoryManager554044*>();
+}
+
+int HistoryManager554044_HistoryManager554044_QRegisterMetaType2(char* typeName)
+{
+	return qRegisterMetaType<HistoryManager554044*>(const_cast<const char*>(typeName));
+}
+
+int HistoryManager554044_HistoryManager554044_QmlRegisterType()
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<HistoryManager554044>();
+#else
+	return 0;
+#endif
+}
+
+int HistoryManager554044_HistoryManager554044_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
+{
+#ifdef QT_QML_LIB
+	return qmlRegisterType<HistoryManager554044>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
+#else
+	return 0;
+#endif
+}
+
+void* HistoryManager554044___children_atList(void* ptr, int i)
+{
+	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void HistoryManager554044___children_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* HistoryManager554044___children_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject *>();
+}
+
+void* HistoryManager554044___dynamicPropertyNames_atList(void* ptr, int i)
+{
+	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
+}
+
+void HistoryManager554044___dynamicPropertyNames_setList(void* ptr, void* i)
+{
+	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
+}
+
+void* HistoryManager554044___dynamicPropertyNames_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QByteArray>();
+}
+
+void* HistoryManager554044___findChildren_atList(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void HistoryManager554044___findChildren_setList(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* HistoryManager554044___findChildren_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* HistoryManager554044___findChildren_atList3(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void HistoryManager554044___findChildren_setList3(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* HistoryManager554044___findChildren_newList3(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* HistoryManager554044___qFindChildren_atList2(void* ptr, int i)
+{
+	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void HistoryManager554044___qFindChildren_setList2(void* ptr, void* i)
+{
+	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
+}
+
+void* HistoryManager554044___qFindChildren_newList2(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<QObject*>();
+}
+
+void* HistoryManager554044___loadHistoryWithFilters_atList(void* ptr, int i)
+{
+	return ({TransactionDetailsecff1c* tmp = static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->at(i); if (i == static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->size()-1) { static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void HistoryManager554044___loadHistoryWithFilters_setList(void* ptr, void* i)
+{
+	static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->append(static_cast<TransactionDetailsecff1c*>(i));
+}
+
+void* HistoryManager554044___loadHistoryWithFilters_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<TransactionDetailsecff1c*>();
+}
+
+void* HistoryManager554044___loadHistory_atList(void* ptr, int i)
+{
+	return ({TransactionDetailsecff1c* tmp = static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->at(i); if (i == static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->size()-1) { static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->~QList(); free(ptr); }; tmp; });
+}
+
+void HistoryManager554044___loadHistory_setList(void* ptr, void* i)
+{
+	static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->append(static_cast<TransactionDetailsecff1c*>(i));
+}
+
+void* HistoryManager554044___loadHistory_newList(void* ptr)
+{
+	Q_UNUSED(ptr);
+	return new QList<TransactionDetailsecff1c*>();
+}
+
+void* HistoryManager554044_NewHistoryManager(void* parent)
+{
+	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
+		return new HistoryManager554044(static_cast<QOffscreenSurface*>(parent));
+	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
+		return new HistoryManager554044(static_cast<QPaintDeviceWindow*>(parent));
+	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
+		return new HistoryManager554044(static_cast<QPdfWriter*>(parent));
+	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
+		return new HistoryManager554044(static_cast<QWindow*>(parent));
+	} else {
+		return new HistoryManager554044(static_cast<QObject*>(parent));
+	}
+}
+
+void HistoryManager554044_DestroyHistoryManager(void* ptr)
+{
+	static_cast<HistoryManager554044*>(ptr)->~HistoryManager554044();
+}
+
+void HistoryManager554044_DestroyHistoryManagerDefault(void* ptr)
+{
+	Q_UNUSED(ptr);
+
+}
+
+void HistoryManager554044_ChildEventDefault(void* ptr, void* event)
+{
+	static_cast<HistoryManager554044*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
+}
+
+void HistoryManager554044_ConnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<HistoryManager554044*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+void HistoryManager554044_CustomEventDefault(void* ptr, void* event)
+{
+	static_cast<HistoryManager554044*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
+}
+
+void HistoryManager554044_DeleteLaterDefault(void* ptr)
+{
+	static_cast<HistoryManager554044*>(ptr)->QObject::deleteLater();
+}
+
+void HistoryManager554044_DisconnectNotifyDefault(void* ptr, void* sign)
+{
+	static_cast<HistoryManager554044*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
+}
+
+char HistoryManager554044_EventDefault(void* ptr, void* e)
+{
+	return static_cast<HistoryManager554044*>(ptr)->QObject::event(static_cast<QEvent*>(e));
+}
+
+char HistoryManager554044_EventFilterDefault(void* ptr, void* watched, void* event)
+{
+	return static_cast<HistoryManager554044*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
+}
+
+void HistoryManager554044_TimerEventDefault(void* ptr, void* event)
+{
+	static_cast<HistoryManager554044*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
 void TransactionList554044_ConnectAddTransaction(void* ptr)
@@ -205,6 +438,11 @@ void TransactionList554044_RemoveTransaction(void* ptr, int index)
 void TransactionList554044_AddMultipleTransactions(void* ptr, void* txns)
 {
 	QMetaObject::invokeMethod(static_cast<TransactionList554044*>(ptr), "addMultipleTransactions", Q_ARG(QList<TransactionDetailsecff1c*>, ({ QList<TransactionDetailsecff1c*>* tmpP = static_cast<QList<TransactionDetailsecff1c*>*>(txns); QList<TransactionDetailsecff1c*> tmpV = *tmpP; tmpP->~QList(); free(tmpP); tmpV; })));
+}
+
+void TransactionList554044_Clear(void* ptr)
+{
+	QMetaObject::invokeMethod(static_cast<TransactionList554044*>(ptr), "clear");
 }
 
 struct Moc_PackedList TransactionList554044_Roles(void* ptr)
@@ -1075,226 +1313,6 @@ char TransactionList554044_EventFilterDefault(void* ptr, void* watched, void* ev
 void TransactionList554044_TimerEventDefault(void* ptr, void* event)
 {
 	static_cast<TransactionList554044*>(ptr)->QAbstractListModel::timerEvent(static_cast<QTimerEvent*>(event));
-}
-
-struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr, struct Moc_PackedString filterAddresses)
-{
-	QList<TransactionDetailsecff1c*> returnArg;
-	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "loadHistoryWithFilters", Q_RETURN_ARG(QList<TransactionDetailsecff1c*>, returnArg), Q_ARG(QStringList, QString::fromUtf8(filterAddresses.data, filterAddresses.len).split("¡¦!", QString::SkipEmptyParts)));
-	return ({ QList<TransactionDetailsecff1c*>* tmpValue = new QList<TransactionDetailsecff1c*>(returnArg); Moc_PackedList { tmpValue, tmpValue->size() }; });
-}
-
-struct Moc_PackedList HistoryManager554044_LoadHistory(void* ptr)
-{
-	QList<TransactionDetailsecff1c*> returnArg;
-	QMetaObject::invokeMethod(static_cast<HistoryManager554044*>(ptr), "loadHistory", Q_RETURN_ARG(QList<TransactionDetailsecff1c*>, returnArg));
-	return ({ QList<TransactionDetailsecff1c*>* tmpValue = new QList<TransactionDetailsecff1c*>(returnArg); Moc_PackedList { tmpValue, tmpValue->size() }; });
-}
-
-int HistoryManager554044_HistoryManager554044_QRegisterMetaType()
-{
-	return qRegisterMetaType<HistoryManager554044*>();
-}
-
-int HistoryManager554044_HistoryManager554044_QRegisterMetaType2(char* typeName)
-{
-	return qRegisterMetaType<HistoryManager554044*>(const_cast<const char*>(typeName));
-}
-
-int HistoryManager554044_HistoryManager554044_QmlRegisterType()
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<HistoryManager554044>();
-#else
-	return 0;
-#endif
-}
-
-int HistoryManager554044_HistoryManager554044_QmlRegisterType2(char* uri, int versionMajor, int versionMinor, char* qmlName)
-{
-#ifdef QT_QML_LIB
-	return qmlRegisterType<HistoryManager554044>(const_cast<const char*>(uri), versionMajor, versionMinor, const_cast<const char*>(qmlName));
-#else
-	return 0;
-#endif
-}
-
-void* HistoryManager554044___children_atList(void* ptr, int i)
-{
-	return ({QObject * tmp = static_cast<QList<QObject *>*>(ptr)->at(i); if (i == static_cast<QList<QObject *>*>(ptr)->size()-1) { static_cast<QList<QObject *>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void HistoryManager554044___children_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject *>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* HistoryManager554044___children_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject *>();
-}
-
-void* HistoryManager554044___dynamicPropertyNames_atList(void* ptr, int i)
-{
-	return new QByteArray(({QByteArray tmp = static_cast<QList<QByteArray>*>(ptr)->at(i); if (i == static_cast<QList<QByteArray>*>(ptr)->size()-1) { static_cast<QList<QByteArray>*>(ptr)->~QList(); free(ptr); }; tmp; }));
-}
-
-void HistoryManager554044___dynamicPropertyNames_setList(void* ptr, void* i)
-{
-	static_cast<QList<QByteArray>*>(ptr)->append(*static_cast<QByteArray*>(i));
-}
-
-void* HistoryManager554044___dynamicPropertyNames_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QByteArray>();
-}
-
-void* HistoryManager554044___findChildren_atList(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void HistoryManager554044___findChildren_setList(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* HistoryManager554044___findChildren_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* HistoryManager554044___findChildren_atList3(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void HistoryManager554044___findChildren_setList3(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* HistoryManager554044___findChildren_newList3(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* HistoryManager554044___qFindChildren_atList2(void* ptr, int i)
-{
-	return ({QObject* tmp = static_cast<QList<QObject*>*>(ptr)->at(i); if (i == static_cast<QList<QObject*>*>(ptr)->size()-1) { static_cast<QList<QObject*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void HistoryManager554044___qFindChildren_setList2(void* ptr, void* i)
-{
-	static_cast<QList<QObject*>*>(ptr)->append(static_cast<QObject*>(i));
-}
-
-void* HistoryManager554044___qFindChildren_newList2(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<QObject*>();
-}
-
-void* HistoryManager554044___loadHistoryWithFilters_atList(void* ptr, int i)
-{
-	return ({TransactionDetailsecff1c* tmp = static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->at(i); if (i == static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->size()-1) { static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void HistoryManager554044___loadHistoryWithFilters_setList(void* ptr, void* i)
-{
-	static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->append(static_cast<TransactionDetailsecff1c*>(i));
-}
-
-void* HistoryManager554044___loadHistoryWithFilters_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<TransactionDetailsecff1c*>();
-}
-
-void* HistoryManager554044___loadHistory_atList(void* ptr, int i)
-{
-	return ({TransactionDetailsecff1c* tmp = static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->at(i); if (i == static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->size()-1) { static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->~QList(); free(ptr); }; tmp; });
-}
-
-void HistoryManager554044___loadHistory_setList(void* ptr, void* i)
-{
-	static_cast<QList<TransactionDetailsecff1c*>*>(ptr)->append(static_cast<TransactionDetailsecff1c*>(i));
-}
-
-void* HistoryManager554044___loadHistory_newList(void* ptr)
-{
-	Q_UNUSED(ptr);
-	return new QList<TransactionDetailsecff1c*>();
-}
-
-void* HistoryManager554044_NewHistoryManager(void* parent)
-{
-	if (dynamic_cast<QOffscreenSurface*>(static_cast<QObject*>(parent))) {
-		return new HistoryManager554044(static_cast<QOffscreenSurface*>(parent));
-	} else if (dynamic_cast<QPaintDeviceWindow*>(static_cast<QObject*>(parent))) {
-		return new HistoryManager554044(static_cast<QPaintDeviceWindow*>(parent));
-	} else if (dynamic_cast<QPdfWriter*>(static_cast<QObject*>(parent))) {
-		return new HistoryManager554044(static_cast<QPdfWriter*>(parent));
-	} else if (dynamic_cast<QWindow*>(static_cast<QObject*>(parent))) {
-		return new HistoryManager554044(static_cast<QWindow*>(parent));
-	} else {
-		return new HistoryManager554044(static_cast<QObject*>(parent));
-	}
-}
-
-void HistoryManager554044_DestroyHistoryManager(void* ptr)
-{
-	static_cast<HistoryManager554044*>(ptr)->~HistoryManager554044();
-}
-
-void HistoryManager554044_DestroyHistoryManagerDefault(void* ptr)
-{
-	Q_UNUSED(ptr);
-
-}
-
-void HistoryManager554044_ChildEventDefault(void* ptr, void* event)
-{
-	static_cast<HistoryManager554044*>(ptr)->QObject::childEvent(static_cast<QChildEvent*>(event));
-}
-
-void HistoryManager554044_ConnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<HistoryManager554044*>(ptr)->QObject::connectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-void HistoryManager554044_CustomEventDefault(void* ptr, void* event)
-{
-	static_cast<HistoryManager554044*>(ptr)->QObject::customEvent(static_cast<QEvent*>(event));
-}
-
-void HistoryManager554044_DeleteLaterDefault(void* ptr)
-{
-	static_cast<HistoryManager554044*>(ptr)->QObject::deleteLater();
-}
-
-void HistoryManager554044_DisconnectNotifyDefault(void* ptr, void* sign)
-{
-	static_cast<HistoryManager554044*>(ptr)->QObject::disconnectNotify(*static_cast<QMetaMethod*>(sign));
-}
-
-char HistoryManager554044_EventDefault(void* ptr, void* e)
-{
-	return static_cast<HistoryManager554044*>(ptr)->QObject::event(static_cast<QEvent*>(e));
-}
-
-char HistoryManager554044_EventFilterDefault(void* ptr, void* watched, void* event)
-{
-	return static_cast<HistoryManager554044*>(ptr)->QObject::eventFilter(static_cast<QObject*>(watched), static_cast<QEvent*>(event));
-}
-
-void HistoryManager554044_TimerEventDefault(void* ptr, void* event)
-{
-	static_cast<HistoryManager554044*>(ptr)->QObject::timerEvent(static_cast<QTimerEvent*>(event));
 }
 
 #include "moc_moc.h"

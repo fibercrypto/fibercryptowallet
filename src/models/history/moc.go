@@ -93,11 +93,11 @@ func callbackHistoryManager554044_Constructor(ptr unsafe.Pointer) {
 }
 
 //export callbackHistoryManager554044_LoadHistoryWithFilters
-func callbackHistoryManager554044_LoadHistoryWithFilters(ptr unsafe.Pointer, filterAddresses C.struct_Moc_PackedString) unsafe.Pointer {
+func callbackHistoryManager554044_LoadHistoryWithFilters(ptr unsafe.Pointer) unsafe.Pointer {
 	if signal := qt.GetSignal(ptr, "loadHistoryWithFilters"); signal != nil {
 		return func() unsafe.Pointer {
 			tmpList := NewHistoryManagerFromPointer(NewHistoryManagerFromPointer(nil).__loadHistoryWithFilters_newList())
-			for _, v := range (*(*func([]string) []*custom_transactions_ecff1cm.TransactionDetails)(signal))(unpackStringList(cGoUnpackString(filterAddresses))) {
+			for _, v := range (*(*func() []*custom_transactions_ecff1cm.TransactionDetails)(signal))() {
 				tmpList.__loadHistoryWithFilters_setList(v)
 			}
 			return tmpList.Pointer()
@@ -113,13 +113,13 @@ func callbackHistoryManager554044_LoadHistoryWithFilters(ptr unsafe.Pointer, fil
 	}()
 }
 
-func (ptr *HistoryManager) ConnectLoadHistoryWithFilters(f func(filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails) {
+func (ptr *HistoryManager) ConnectLoadHistoryWithFilters(f func() []*custom_transactions_ecff1cm.TransactionDetails) {
 	if ptr.Pointer() != nil {
 
 		if signal := qt.LendSignal(ptr.Pointer(), "loadHistoryWithFilters"); signal != nil {
-			f := func(filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails {
-				(*(*func([]string) []*custom_transactions_ecff1cm.TransactionDetails)(signal))(filterAddresses)
-				return f(filterAddresses)
+			f := func() []*custom_transactions_ecff1cm.TransactionDetails {
+				(*(*func() []*custom_transactions_ecff1cm.TransactionDetails)(signal))()
+				return f()
 			}
 			qt.ConnectSignal(ptr.Pointer(), "loadHistoryWithFilters", unsafe.Pointer(&f))
 		} else {
@@ -135,10 +135,8 @@ func (ptr *HistoryManager) DisconnectLoadHistoryWithFilters() {
 	}
 }
 
-func (ptr *HistoryManager) LoadHistoryWithFilters(filterAddresses []string) []*custom_transactions_ecff1cm.TransactionDetails {
+func (ptr *HistoryManager) LoadHistoryWithFilters() []*custom_transactions_ecff1cm.TransactionDetails {
 	if ptr.Pointer() != nil {
-		filterAddressesC := C.CString(strings.Join(filterAddresses, "¡¦!"))
-		defer C.free(unsafe.Pointer(filterAddressesC))
 		return func(l C.struct_Moc_PackedList) []*custom_transactions_ecff1cm.TransactionDetails {
 			out := make([]*custom_transactions_ecff1cm.TransactionDetails, int(l.len))
 			tmpList := NewHistoryManagerFromPointer(l.data)
@@ -146,7 +144,7 @@ func (ptr *HistoryManager) LoadHistoryWithFilters(filterAddresses []string) []*c
 				out[i] = tmpList.__loadHistoryWithFilters_atList(i)
 			}
 			return out
-		}(C.HistoryManager554044_LoadHistoryWithFilters(ptr.Pointer(), C.struct_Moc_PackedString{data: filterAddressesC, len: C.longlong(len(strings.Join(filterAddresses, "¡¦!")))}))
+		}(C.HistoryManager554044_LoadHistoryWithFilters(ptr.Pointer()))
 	}
 	return make([]*custom_transactions_ecff1cm.TransactionDetails, 0)
 }
@@ -206,6 +204,88 @@ func (ptr *HistoryManager) LoadHistory() []*custom_transactions_ecff1cm.Transact
 		}(C.HistoryManager554044_LoadHistory(ptr.Pointer()))
 	}
 	return make([]*custom_transactions_ecff1cm.TransactionDetails, 0)
+}
+
+//export callbackHistoryManager554044_AddFilter
+func callbackHistoryManager554044_AddFilter(ptr unsafe.Pointer, v0 C.struct_Moc_PackedString) {
+	if signal := qt.GetSignal(ptr, "addFilter"); signal != nil {
+		(*(*func(string))(signal))(cGoUnpackString(v0))
+	}
+
+}
+
+func (ptr *HistoryManager) ConnectAddFilter(f func(v0 string)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "addFilter"); signal != nil {
+			f := func(v0 string) {
+				(*(*func(string))(signal))(v0)
+				f(v0)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "addFilter", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "addFilter", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *HistoryManager) DisconnectAddFilter() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "addFilter")
+	}
+}
+
+func (ptr *HistoryManager) AddFilter(v0 string) {
+	if ptr.Pointer() != nil {
+		var v0C *C.char
+		if v0 != "" {
+			v0C = C.CString(v0)
+			defer C.free(unsafe.Pointer(v0C))
+		}
+		C.HistoryManager554044_AddFilter(ptr.Pointer(), C.struct_Moc_PackedString{data: v0C, len: C.longlong(len(v0))})
+	}
+}
+
+//export callbackHistoryManager554044_RemoveFilter
+func callbackHistoryManager554044_RemoveFilter(ptr unsafe.Pointer, v0 C.struct_Moc_PackedString) {
+	if signal := qt.GetSignal(ptr, "removeFilter"); signal != nil {
+		(*(*func(string))(signal))(cGoUnpackString(v0))
+	}
+
+}
+
+func (ptr *HistoryManager) ConnectRemoveFilter(f func(v0 string)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "removeFilter"); signal != nil {
+			f := func(v0 string) {
+				(*(*func(string))(signal))(v0)
+				f(v0)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "removeFilter", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "removeFilter", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *HistoryManager) DisconnectRemoveFilter() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "removeFilter")
+	}
+}
+
+func (ptr *HistoryManager) RemoveFilter(v0 string) {
+	if ptr.Pointer() != nil {
+		var v0C *C.char
+		if v0 != "" {
+			v0C = C.CString(v0)
+			defer C.free(unsafe.Pointer(v0C))
+		}
+		C.HistoryManager554044_RemoveFilter(ptr.Pointer(), C.struct_Moc_PackedString{data: v0C, len: C.longlong(len(v0))})
+	}
 }
 
 func HistoryManager_QRegisterMetaType() int {
@@ -795,6 +875,42 @@ func (ptr *TransactionList) AddMultipleTransactions(txns []*custom_transactions_
 			}
 			return tmpList.Pointer()
 		}())
+	}
+}
+
+//export callbackTransactionList554044_Clear
+func callbackTransactionList554044_Clear(ptr unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "clear"); signal != nil {
+		(*(*func())(signal))()
+	}
+
+}
+
+func (ptr *TransactionList) ConnectClear(f func()) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "clear"); signal != nil {
+			f := func() {
+				(*(*func())(signal))()
+				f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "clear", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "clear", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *TransactionList) DisconnectClear() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "clear")
+	}
+}
+
+func (ptr *TransactionList) Clear() {
+	if ptr.Pointer() != nil {
+		C.TransactionList554044_Clear(ptr.Pointer())
 	}
 }
 

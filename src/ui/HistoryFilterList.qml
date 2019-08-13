@@ -14,22 +14,35 @@ Item {
     readonly property alias count: listViewFilters.count
     property alias interactive: listViewFilters.interactive
     property alias contentHeight: listViewFilters.contentHeight
-
+    //property list<AddressModel> addressModels
+    //property AddressModel myAddressModel : AddressModel{}
+    signal walletsLoaded
+    
+    
     clip: true
 
     ListView {
 
         id: listViewFilters
-
+        property list<CheckedList> checkedList
         anchors.fill: parent
-
+        maximumFlickVelocity: 800
         spacing: 10
         
+        
+
         model: modelFilters
         delegate: HistoryFilterListDelegate {
             id: filterDelegate
+            
+           
+
+            
         }
+        
     }
+
+    
 
     // This model can be the same as the wallet list,
     // as this model need to expose all wallets and their addresses.
@@ -56,9 +69,9 @@ Item {
                                     onTriggered: {
                                         modelFilters.loadModel(walletManager.getWallets())
                                         walletModelTimer.running = false
-                                        //console.log("Hello" + walletManager)
+
                                     }
-            
+
                                 }
     }
 }

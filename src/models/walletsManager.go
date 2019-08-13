@@ -6,6 +6,7 @@ import (
 
 	//"github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 	qtcore "github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/qml"
 )
 
 type WalletManager struct {
@@ -27,6 +28,7 @@ type WalletManager struct {
 }
 
 func (walletM *WalletManager) init() {
+	qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
 	walletM.ConnectCreateEncryptedWallet(walletM.createEncryptedWallet)
 	walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
 	walletM.ConnectGetNewSeed(walletM.getNewSeed)
@@ -168,6 +170,8 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 			continue
 		}
 		qaddress.SetAddressCoinHours(coinH)
+		qml.QQmlEngine_SetObjectOwnership(qaddress, qml.QQmlEngine__CppOwnership)
+
 		qaddresses = append(qaddresses, qaddress)
 
 	}

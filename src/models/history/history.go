@@ -1,8 +1,6 @@
 package history
 
 import (
-	"fmt"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
 	"github.com/therecipe/qt/core"
 )
@@ -23,6 +21,7 @@ type TransactionList struct {
 	_ func(transaction *transactions.TransactionDetails) `signal:"addTransaction,auto"`
 	_ func(index int)                                    `signal:"removeTransaction,auto"`
 	_ func(txns []*transactions.TransactionDetails)      `slot:"addMultipleTransactions"`
+	_ func()                                             `slot:"clear"`
 
 	_ []*transactions.TransactionDetails `property:"transactions"`
 }
@@ -45,6 +44,7 @@ func (hm *TransactionList) init() {
 	hm.ConnectData(hm.data)
 	hm.ConnectRoleNames(hm.roleNames)
 	hm.ConnectAddMultipleTransactions(hm.addMultipleTransactions)
+	hm.ConnectClear(hm.clear)
 
 }
 
@@ -125,11 +125,16 @@ func (hm *TransactionList) data(index *core.QModelIndex, role int) *core.QVarian
 }
 
 func (hm *TransactionList) addMultipleTransactions(txns []*transactions.TransactionDetails) {
-	fmt.Println("Hola")
-	fmt.Println(len(txns))
+
 	for _, txn := range txns {
 		hm.addTransaction(txn)
 
 	}
-	fmt.Println("Done3")
+
+}
+
+func (hm *TransactionList) clear() {
+	hm.BeginRemoveRows(core.NewQModelIndex(), 0, len(hm.Transactions())-1)
+	hm.SetTransactions(make([]*transactions.TransactionDetails, 0))
+	hm.EndRemoveRows()
 }

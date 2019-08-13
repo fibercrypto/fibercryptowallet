@@ -13,21 +13,27 @@ import (
 
 type HistoryManager struct {
 	qtcore.QObject
+	filters []string
+	_       func() `constructor:"init"`
 
-	_ func() `constructor:"init"`
-
-	_         func(filterAddresses []string) []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
-	_         func() []*transactions.TransactionDetails                         `slot:"loadHistory"`
+	_         func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
+	_         func() []*transactions.TransactionDetails `slot:"loadHistory"`
+	_         func(string)                              `slot:"addFilter"`
+	_         func(string)                              `slot:"removeFilter"`
 	walletEnv core.WalletEnv
 }
 
 func (hm *HistoryManager) init() {
 	hm.ConnectLoadHistoryWithFilters(hm.loadHistoryWithFilters)
 	hm.ConnectLoadHistory(hm.loadHistory)
+	hm.ConnectAddFilter(hm.addFilter)
+	hm.ConnectRemoveFilter(hm.removeFilter)
 	hm.walletEnv = &skycoin.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"}
 }
 
-func (hm *HistoryManager) loadHistoryWithFilters(filterAddresses []string) []*transactions.TransactionDetails {
+func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
+	filterAddresses := hm.filters
+
 	addresses := hm.getAddressesWithWallets()
 
 	var sent, internally bool
@@ -45,11 +51,11 @@ func (hm *HistoryManager) loadHistoryWithFilters(filterAddresses []string) []*tr
 		addrIter, _ := wltIter.Value().GetLoadedAddresses()
 		for addrIter.Next() {
 			_, ok := find[addrIter.Value().String()]
-			if !ok {
+			if ok {
 				tnxnsIter := addrIter.Value().GetCryptoAccount().ListTransactions()
 				for tnxnsIter.Next() {
-					_, ok := txnFind[tnxnsIter.Value().GetId()]
-					if !ok {
+					_, ok2 := txnFind[tnxnsIter.Value().GetId()]
+					if !ok2 {
 						txns = append(txns, tnxnsIter.Value())
 						txnFind[tnxnsIter.Value().GetId()] = struct{}{}
 					}
@@ -83,7 +89,7 @@ func (hm *HistoryManager) loadHistoryWithFilters(filterAddresses []string) []*tr
 			chUint64 := in.GetCoins("SKYCH")
 			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64, 10))
 			inputs.AddAddress(qIn)
-			_, ok := find[in.GetSpentOutput().GetAddress().String()]
+			_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
 			if ok {
 				skyAmountOut += skyUint64
 				sent = true
@@ -262,7 +268,7 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 			chUint64 := in.GetCoins("SKYCH")
 			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64, 10))
 			inputs.AddAddress(qIn)
-			_, ok := find[in.GetSpentOutput().GetAddress().String()]
+			_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
 			if ok {
 				skyAmountOut += skyUint64
 				sent = true
@@ -385,6 +391,20 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 
 }
 
+func (hm *HistoryManager) addFilter(addr string) {
+	hm.filters = append(hm.filters, addr)
+}
+
+func (hm *HistoryManager) removeFilter(addr string) {
+
+	for i := 0; i < len(hm.filters); i++ {
+		if hm.filters[i] == addr {
+			hm.filters = append(hm.filters[0:i], hm.filters[i+1:]...)
+			break
+		}
+	}
+
+}
 func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 	response := make(map[string]string, 0)
 	it := hm.walletEnv.GetWalletSet().ListWallets()

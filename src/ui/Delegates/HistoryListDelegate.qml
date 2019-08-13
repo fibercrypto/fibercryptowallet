@@ -90,7 +90,7 @@ ItemDelegate {
                 height: delegateHeight*(modelInputs.rowCount())
                 ListView{
                     Layout.alignment: Qt.AlignLeft
-                    implicitHeight: delegateHeight*(modelAddresses.rowCount())
+                    implicitHeight: delegateHeight*(modelAddresses.count)
                     height: parent.height
                     id: listViewAddresses
                     model: modelAddresses

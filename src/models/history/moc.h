@@ -8,17 +8,19 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-class TransactionList554044;
-void TransactionList554044_TransactionList554044_QRegisterMetaTypes();
 class HistoryManager554044;
 void HistoryManager554044_HistoryManager554044_QRegisterMetaTypes();
+class TransactionList554044;
+void TransactionList554044_TransactionList554044_QRegisterMetaTypes();
 extern "C" {
 #endif
 
 struct Moc_PackedString { char* data; long long len; };
 struct Moc_PackedList { void* data; long long len; };
-struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr, struct Moc_PackedString filterAddresses);
+struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr);
 struct Moc_PackedList HistoryManager554044_LoadHistory(void* ptr);
+void HistoryManager554044_AddFilter(void* ptr, struct Moc_PackedString v0);
+void HistoryManager554044_RemoveFilter(void* ptr, struct Moc_PackedString v0);
 int HistoryManager554044_HistoryManager554044_QRegisterMetaType();
 int HistoryManager554044_HistoryManager554044_QRegisterMetaType2(char* typeName);
 int HistoryManager554044_HistoryManager554044_QmlRegisterType();
@@ -62,6 +64,7 @@ void TransactionList554044_ConnectRemoveTransaction(void* ptr);
 void TransactionList554044_DisconnectRemoveTransaction(void* ptr);
 void TransactionList554044_RemoveTransaction(void* ptr, int index);
 void TransactionList554044_AddMultipleTransactions(void* ptr, void* txns);
+void TransactionList554044_Clear(void* ptr);
 struct Moc_PackedList TransactionList554044_Roles(void* ptr);
 struct Moc_PackedList TransactionList554044_RolesDefault(void* ptr);
 void TransactionList554044_SetRoles(void* ptr, void* roles);

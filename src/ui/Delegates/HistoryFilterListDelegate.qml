@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
-
+import "../"
 Item {
     id: root
 
@@ -11,11 +11,13 @@ Item {
     readonly property real delegateHeight: 42
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
+    
 
     clip: true
     width: 300
     height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
-
+    
+    
     ColumnLayout {
         id: columnLayout
         anchors.fill: parent
@@ -68,7 +70,8 @@ Item {
                 }
             }
             onCountChanged:{
-                implicitHeight = listAddresses.rowCount() * delegateHeight
+                implicitHeight = listAddresses.count * delegateHeight
+                //console.log("Count: "+listAddresses.count)
                
             }
             
@@ -83,7 +86,16 @@ Item {
                 checked: ListView.view.allChecked
                  onCheckedChanged: {
                     ListView.view.checkedDelegates += checked ? 1 : -1
+                    
+                    if (checked == 1){
+                        historyManager.addFilter(address)
+                    }
+                    else {
+                        historyManager.removeFilter(address)
+                    }
                 }
+
+                
             }
         } // ListView
     } // ColumnLayout
@@ -113,6 +125,7 @@ Item {
                                     listAddresses.loadModel(walletManager.getAddresses(fileName))
                                     listAddresses.removeAddress(0)
                                     addressModelTimer2.running = false 
+                                    console.log("Loaded")
                                     
                                        
                                     }

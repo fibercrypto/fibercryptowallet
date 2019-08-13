@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/qml"
 )
 
 const (
@@ -22,6 +23,7 @@ type AddressesModel struct {
 	_ func(int)                         `slot:"removeAddress"`
 	_ func(int, string, uint64, uint64) `slot:"editAddress"`
 	_ func([]*QAddress)                 `slot:"loadModel"`
+	_ int                               `property:"count"`
 }
 
 type QAddress struct {
@@ -38,7 +40,7 @@ func (m *AddressesModel) init() {
 		ASky:       core.NewQByteArray2("addressSky", -1),
 		ACoinHours: core.NewQByteArray2("addressCoinHours", -1),
 	})
-
+	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
 	m.ConnectData(m.data)
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
@@ -76,6 +78,7 @@ func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant 
 		{
 			return core.NewQVariant1(a.AddressCoinHours())
 		}
+
 	default:
 		{
 			return core.NewQVariant()
@@ -97,14 +100,17 @@ func (m *AddressesModel) roleNames() map[int]*core.QByteArray {
 
 func (m *AddressesModel) addAddress(address *QAddress) {
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Addresses()), len(m.Addresses()))
+	qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)
 	m.SetAddresses(append(m.Addresses(), address))
 	m.EndInsertRows()
+	m.SetCount(m.Count() + 1)
 }
 
 func (m *AddressesModel) removeAddress(row int) {
 	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
 	m.SetAddresses(append(m.Addresses()[:row], m.Addresses()[row+1:]...))
 	m.EndRemoveRows()
+	m.SetCount(m.Count() - 1)
 }
 
 func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64) {
@@ -118,16 +124,22 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 }
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
+	for _, addr := range Qaddresses {
+		qml.QQmlEngine_SetObjectOwnership(addr, qml.QQmlEngine__CppOwnership)
+	}
 	addresses := make([]*QAddress, 0)
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")
 	address.SetAddressSky(0)
 	address.SetAddressCoinHours(0)
+	qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)
 	addresses = append(addresses, address)
 	addresses = append(addresses, Qaddresses...)
 
 	m.BeginResetModel()
 	m.SetAddresses(addresses)
+	m.SetCount(len(addresses))
+
 	m.EndResetModel()
 
 }

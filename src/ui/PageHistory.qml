@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import HistoryModels 1.0
+import WalletsManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
@@ -22,6 +23,16 @@ Page {
             SwitchDelegate {
                 id: switchFilters
                 text: qsTr("Filters")
+                onClicked:{
+                    if (!checked) {
+                        modelTransactions.clear()
+                        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
+                    }
+                    else {
+                        modelTransactions.clear()
+                        modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+                    }
+                }
             }
             Button {
                 id: buttonFilters
@@ -67,10 +78,25 @@ Page {
         standardButtons: Dialog.Close
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         title: qsTr("Available filters")
+        onClosed:{
+            modelTransactions.clear()
+            modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+            
 
+        }
+        onOpened:{
+            //filter.myModel.loadModel(walletManager.getWallets())
+            //filter.walletsLoaded()
+            //
+        }
         HistoryFilterList {
             id: filter
             anchors.fill: parent
+           
+            //property WalletModel myModel: WalletModel{
+            //    id: modelFilters
+            //}
+
         }
     } // ToolTip
 
