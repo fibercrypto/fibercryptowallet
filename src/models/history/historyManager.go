@@ -392,7 +392,17 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 }
 
 func (hm *HistoryManager) addFilter(addr string) {
-	hm.filters = append(hm.filters, addr)
+	alreadyIs := false
+	for _, filt := range hm.filters {
+		if filt == addr {
+			alreadyIs = true
+			break
+		}
+	}
+	if !alreadyIs {
+		hm.filters = append(hm.filters, addr)
+	}
+
 }
 
 func (hm *HistoryManager) removeFilter(addr string) {

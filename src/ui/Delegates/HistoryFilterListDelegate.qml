@@ -68,12 +68,14 @@ Item {
                 } else {
                     checkDelegate.checkState = Qt.PartiallyChecked
                 }
+                
             }
             onCountChanged:{
                 implicitHeight = listAddresses.count * delegateHeight
                 
                
             }
+            
 
             Component.onCompleted:{
                 modelManager.setWalletManager(walletManager)
@@ -81,25 +83,41 @@ Item {
             }
             
             Layout.fillWidth: true
-            
+           
 
             interactive: false
             
             delegate: HistoryFilterListAddressDelegate {
                 leftPadding: 20
                 scale: 0.85
-                checked: ListView.view.allChecked
+                checked: marked
+                 
                  onCheckedChanged: {
-                    ListView.view.checkedDelegates += checked ? 1 : -1
+                   
+                    ListView.view.checkedDelegates += checked ? 1: -1
                     
                     if (checked == 1){
                         historyManager.addFilter(address)
+                        console.log("filtroAnnadido")
                     }
                     else {
                         historyManager.removeFilter(address)
+                        console.log("filtroEliminado")
+                    }
+                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
+                }
+                
+                Connections{
+                    target: listViewFilterAddress
+                    onAllCheckedChanged:{
+                        if (listViewFilterAddress.allChecked){
+                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 1)
+                        } else{
+                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 0)
+                        }
                     }
                 }
-
+                
                 
             }
         } // ListView

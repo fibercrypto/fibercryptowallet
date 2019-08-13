@@ -34,6 +34,506 @@ func unpackStringList(s string) []string {
 	return strings.Split(s, "¡¦!")
 }
 
+type ModelManager_ITF interface {
+	std_core.QObject_ITF
+	ModelManager_PTR() *ModelManager
+}
+
+func (ptr *ModelManager) ModelManager_PTR() *ModelManager {
+	return ptr
+}
+
+func (ptr *ModelManager) Pointer() unsafe.Pointer {
+	if ptr != nil {
+		return ptr.QObject_PTR().Pointer()
+	}
+	return nil
+}
+
+func (ptr *ModelManager) SetPointer(p unsafe.Pointer) {
+	if ptr != nil {
+		ptr.QObject_PTR().SetPointer(p)
+	}
+}
+
+func PointerFromModelManager(ptr ModelManager_ITF) unsafe.Pointer {
+	if ptr != nil {
+		return ptr.ModelManager_PTR().Pointer()
+	}
+	return nil
+}
+
+func NewModelManagerFromPointer(ptr unsafe.Pointer) (n *ModelManager) {
+	if gPtr, ok := qt.Receive(ptr); !ok {
+		n = new(ModelManager)
+		n.SetPointer(ptr)
+	} else {
+		switch deduced := gPtr.(type) {
+		case *ModelManager:
+			n = deduced
+
+		case *std_core.QObject:
+			n = &ModelManager{QObject: *deduced}
+
+		default:
+			n = new(ModelManager)
+			n.SetPointer(ptr)
+		}
+	}
+	return
+}
+func (this *ModelManager) Init() { this.init() }
+
+//export callbackModelManager539e18_Constructor
+func callbackModelManager539e18_Constructor(ptr unsafe.Pointer) {
+	this := NewModelManagerFromPointer(ptr)
+	qt.Register(ptr, this)
+	this.init()
+}
+
+//export callbackModelManager539e18_SetWalletManager
+func callbackModelManager539e18_SetWalletManager(ptr unsafe.Pointer, v0 unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "setWalletManager"); signal != nil {
+		(*(*func(*WalletManager))(signal))(NewWalletManagerFromPointer(v0))
+	}
+
+}
+
+func (ptr *ModelManager) ConnectSetWalletManager(f func(v0 *WalletManager)) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "setWalletManager"); signal != nil {
+			f := func(v0 *WalletManager) {
+				(*(*func(*WalletManager))(signal))(v0)
+				f(v0)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "setWalletManager", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "setWalletManager", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *ModelManager) DisconnectSetWalletManager() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "setWalletManager")
+	}
+}
+
+func (ptr *ModelManager) SetWalletManager(v0 WalletManager_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_SetWalletManager(ptr.Pointer(), PointerFromWalletManager(v0))
+	}
+}
+
+//export callbackModelManager539e18_GetAddressModel
+func callbackModelManager539e18_GetAddressModel(ptr unsafe.Pointer, v0 C.struct_Moc_PackedString) unsafe.Pointer {
+	if signal := qt.GetSignal(ptr, "getAddressModel"); signal != nil {
+		return PointerFromAddressesModel((*(*func(string) *AddressesModel)(signal))(cGoUnpackString(v0)))
+	}
+
+	return PointerFromAddressesModel(NewAddressesModel(nil))
+}
+
+func (ptr *ModelManager) ConnectGetAddressModel(f func(v0 string) *AddressesModel) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "getAddressModel"); signal != nil {
+			f := func(v0 string) *AddressesModel {
+				(*(*func(string) *AddressesModel)(signal))(v0)
+				return f(v0)
+			}
+			qt.ConnectSignal(ptr.Pointer(), "getAddressModel", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "getAddressModel", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *ModelManager) DisconnectGetAddressModel() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "getAddressModel")
+	}
+}
+
+func (ptr *ModelManager) GetAddressModel(v0 string) *AddressesModel {
+	if ptr.Pointer() != nil {
+		var v0C *C.char
+		if v0 != "" {
+			v0C = C.CString(v0)
+			defer C.free(unsafe.Pointer(v0C))
+		}
+		tmpValue := NewAddressesModelFromPointer(C.ModelManager539e18_GetAddressModel(ptr.Pointer(), C.struct_Moc_PackedString{data: v0C, len: C.longlong(len(v0))}))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func ModelManager_QRegisterMetaType() int {
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType()))
+}
+
+func (ptr *ModelManager) QRegisterMetaType() int {
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType()))
+}
+
+func ModelManager_QRegisterMetaType2(typeName string) int {
+	var typeNameC *C.char
+	if typeName != "" {
+		typeNameC = C.CString(typeName)
+		defer C.free(unsafe.Pointer(typeNameC))
+	}
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType2(typeNameC)))
+}
+
+func (ptr *ModelManager) QRegisterMetaType2(typeName string) int {
+	var typeNameC *C.char
+	if typeName != "" {
+		typeNameC = C.CString(typeName)
+		defer C.free(unsafe.Pointer(typeNameC))
+	}
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType2(typeNameC)))
+}
+
+func ModelManager_QmlRegisterType() int {
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType()))
+}
+
+func (ptr *ModelManager) QmlRegisterType() int {
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType()))
+}
+
+func ModelManager_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
+	var uriC *C.char
+	if uri != "" {
+		uriC = C.CString(uri)
+		defer C.free(unsafe.Pointer(uriC))
+	}
+	var qmlNameC *C.char
+	if qmlName != "" {
+		qmlNameC = C.CString(qmlName)
+		defer C.free(unsafe.Pointer(qmlNameC))
+	}
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+}
+
+func (ptr *ModelManager) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
+	var uriC *C.char
+	if uri != "" {
+		uriC = C.CString(uri)
+		defer C.free(unsafe.Pointer(uriC))
+	}
+	var qmlNameC *C.char
+	if qmlName != "" {
+		qmlNameC = C.CString(qmlName)
+		defer C.free(unsafe.Pointer(qmlNameC))
+	}
+	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
+}
+
+func (ptr *ModelManager) __children_atList(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___children_atList(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *ModelManager) __children_setList(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *ModelManager) __children_newList() unsafe.Pointer {
+	return C.ModelManager539e18___children_newList(ptr.Pointer())
+}
+
+func (ptr *ModelManager) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQByteArrayFromPointer(C.ModelManager539e18___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
+		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *ModelManager) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
+	}
+}
+
+func (ptr *ModelManager) __dynamicPropertyNames_newList() unsafe.Pointer {
+	return C.ModelManager539e18___dynamicPropertyNames_newList(ptr.Pointer())
+}
+
+func (ptr *ModelManager) __findChildren_atList(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *ModelManager) __findChildren_setList(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *ModelManager) __findChildren_newList() unsafe.Pointer {
+	return C.ModelManager539e18___findChildren_newList(ptr.Pointer())
+}
+
+func (ptr *ModelManager) __findChildren_atList3(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *ModelManager) __findChildren_setList3(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *ModelManager) __findChildren_newList3() unsafe.Pointer {
+	return C.ModelManager539e18___findChildren_newList3(ptr.Pointer())
+}
+
+func (ptr *ModelManager) __qFindChildren_atList2(i int) *std_core.QObject {
+	if ptr.Pointer() != nil {
+		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
+		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+		}
+		return tmpValue
+	}
+	return nil
+}
+
+func (ptr *ModelManager) __qFindChildren_setList2(i std_core.QObject_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
+	}
+}
+
+func (ptr *ModelManager) __qFindChildren_newList2() unsafe.Pointer {
+	return C.ModelManager539e18___qFindChildren_newList2(ptr.Pointer())
+}
+
+func NewModelManager(parent std_core.QObject_ITF) *ModelManager {
+	tmpValue := NewModelManagerFromPointer(C.ModelManager539e18_NewModelManager(std_core.PointerFromQObject(parent)))
+	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
+		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
+	}
+	return tmpValue
+}
+
+//export callbackModelManager539e18_DestroyModelManager
+func callbackModelManager539e18_DestroyModelManager(ptr unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "~ModelManager"); signal != nil {
+		(*(*func())(signal))()
+	} else {
+		NewModelManagerFromPointer(ptr).DestroyModelManagerDefault()
+	}
+}
+
+func (ptr *ModelManager) ConnectDestroyModelManager(f func()) {
+	if ptr.Pointer() != nil {
+
+		if signal := qt.LendSignal(ptr.Pointer(), "~ModelManager"); signal != nil {
+			f := func() {
+				(*(*func())(signal))()
+				f()
+			}
+			qt.ConnectSignal(ptr.Pointer(), "~ModelManager", unsafe.Pointer(&f))
+		} else {
+			qt.ConnectSignal(ptr.Pointer(), "~ModelManager", unsafe.Pointer(&f))
+		}
+	}
+}
+
+func (ptr *ModelManager) DisconnectDestroyModelManager() {
+	if ptr.Pointer() != nil {
+
+		qt.DisconnectSignal(ptr.Pointer(), "~ModelManager")
+	}
+}
+
+func (ptr *ModelManager) DestroyModelManager() {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_DestroyModelManager(ptr.Pointer())
+		ptr.SetPointer(nil)
+		runtime.SetFinalizer(ptr, nil)
+	}
+}
+
+func (ptr *ModelManager) DestroyModelManagerDefault() {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_DestroyModelManagerDefault(ptr.Pointer())
+		ptr.SetPointer(nil)
+		runtime.SetFinalizer(ptr, nil)
+	}
+}
+
+//export callbackModelManager539e18_ChildEvent
+func callbackModelManager539e18_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
+		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
+	} else {
+		NewModelManagerFromPointer(ptr).ChildEventDefault(std_core.NewQChildEventFromPointer(event))
+	}
+}
+
+func (ptr *ModelManager) ChildEventDefault(event std_core.QChildEvent_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
+	}
+}
+
+//export callbackModelManager539e18_ConnectNotify
+func callbackModelManager539e18_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
+		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
+	} else {
+		NewModelManagerFromPointer(ptr).ConnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
+	}
+}
+
+func (ptr *ModelManager) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+	}
+}
+
+//export callbackModelManager539e18_CustomEvent
+func callbackModelManager539e18_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
+		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
+	} else {
+		NewModelManagerFromPointer(ptr).CustomEventDefault(std_core.NewQEventFromPointer(event))
+	}
+}
+
+func (ptr *ModelManager) CustomEventDefault(event std_core.QEvent_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
+	}
+}
+
+//export callbackModelManager539e18_DeleteLater
+func callbackModelManager539e18_DeleteLater(ptr unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
+		(*(*func())(signal))()
+	} else {
+		NewModelManagerFromPointer(ptr).DeleteLaterDefault()
+	}
+}
+
+func (ptr *ModelManager) DeleteLaterDefault() {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_DeleteLaterDefault(ptr.Pointer())
+		runtime.SetFinalizer(ptr, nil)
+	}
+}
+
+//export callbackModelManager539e18_Destroyed
+func callbackModelManager539e18_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
+		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
+	}
+	qt.Unregister(ptr)
+
+}
+
+//export callbackModelManager539e18_DisconnectNotify
+func callbackModelManager539e18_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
+		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
+	} else {
+		NewModelManagerFromPointer(ptr).DisconnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
+	}
+}
+
+func (ptr *ModelManager) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
+	}
+}
+
+//export callbackModelManager539e18_Event
+func callbackModelManager539e18_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
+	if signal := qt.GetSignal(ptr, "event"); signal != nil {
+		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
+	}
+
+	return C.char(int8(qt.GoBoolToInt(NewModelManagerFromPointer(ptr).EventDefault(std_core.NewQEventFromPointer(e)))))
+}
+
+func (ptr *ModelManager) EventDefault(e std_core.QEvent_ITF) bool {
+	if ptr.Pointer() != nil {
+		return int8(C.ModelManager539e18_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
+	}
+	return false
+}
+
+//export callbackModelManager539e18_EventFilter
+func callbackModelManager539e18_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
+	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
+		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
+	}
+
+	return C.char(int8(qt.GoBoolToInt(NewModelManagerFromPointer(ptr).EventFilterDefault(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
+}
+
+func (ptr *ModelManager) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
+	if ptr.Pointer() != nil {
+		return int8(C.ModelManager539e18_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
+	}
+	return false
+}
+
+//export callbackModelManager539e18_ObjectNameChanged
+func callbackModelManager539e18_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
+	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
+		(*(*func(string))(signal))(cGoUnpackString(objectName))
+	}
+
+}
+
+//export callbackModelManager539e18_TimerEvent
+func callbackModelManager539e18_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
+	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
+		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
+	} else {
+		NewModelManagerFromPointer(ptr).TimerEventDefault(std_core.NewQTimerEventFromPointer(event))
+	}
+}
+
+func (ptr *ModelManager) TimerEventDefault(event std_core.QTimerEvent_ITF) {
+	if ptr.Pointer() != nil {
+		C.ModelManager539e18_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
+	}
+}
+
 type QAddress_ITF interface {
 	std_core.QObject_ITF
 	QAddress_PTR() *QAddress
@@ -7964,505 +8464,5 @@ func callbackAddressesModel539e18_TimerEvent(ptr unsafe.Pointer, event unsafe.Po
 func (ptr *AddressesModel) TimerEventDefault(event std_core.QTimerEvent_ITF) {
 	if ptr.Pointer() != nil {
 		C.AddressesModel539e18_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
-	}
-}
-
-type ModelManager_ITF interface {
-	std_core.QObject_ITF
-	ModelManager_PTR() *ModelManager
-}
-
-func (ptr *ModelManager) ModelManager_PTR() *ModelManager {
-	return ptr
-}
-
-func (ptr *ModelManager) Pointer() unsafe.Pointer {
-	if ptr != nil {
-		return ptr.QObject_PTR().Pointer()
-	}
-	return nil
-}
-
-func (ptr *ModelManager) SetPointer(p unsafe.Pointer) {
-	if ptr != nil {
-		ptr.QObject_PTR().SetPointer(p)
-	}
-}
-
-func PointerFromModelManager(ptr ModelManager_ITF) unsafe.Pointer {
-	if ptr != nil {
-		return ptr.ModelManager_PTR().Pointer()
-	}
-	return nil
-}
-
-func NewModelManagerFromPointer(ptr unsafe.Pointer) (n *ModelManager) {
-	if gPtr, ok := qt.Receive(ptr); !ok {
-		n = new(ModelManager)
-		n.SetPointer(ptr)
-	} else {
-		switch deduced := gPtr.(type) {
-		case *ModelManager:
-			n = deduced
-
-		case *std_core.QObject:
-			n = &ModelManager{QObject: *deduced}
-
-		default:
-			n = new(ModelManager)
-			n.SetPointer(ptr)
-		}
-	}
-	return
-}
-func (this *ModelManager) Init() { this.init() }
-
-//export callbackModelManager539e18_Constructor
-func callbackModelManager539e18_Constructor(ptr unsafe.Pointer) {
-	this := NewModelManagerFromPointer(ptr)
-	qt.Register(ptr, this)
-	this.init()
-}
-
-//export callbackModelManager539e18_SetWalletManager
-func callbackModelManager539e18_SetWalletManager(ptr unsafe.Pointer, v0 unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "setWalletManager"); signal != nil {
-		(*(*func(*WalletManager))(signal))(NewWalletManagerFromPointer(v0))
-	}
-
-}
-
-func (ptr *ModelManager) ConnectSetWalletManager(f func(v0 *WalletManager)) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "setWalletManager"); signal != nil {
-			f := func(v0 *WalletManager) {
-				(*(*func(*WalletManager))(signal))(v0)
-				f(v0)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "setWalletManager", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "setWalletManager", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *ModelManager) DisconnectSetWalletManager() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "setWalletManager")
-	}
-}
-
-func (ptr *ModelManager) SetWalletManager(v0 WalletManager_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_SetWalletManager(ptr.Pointer(), PointerFromWalletManager(v0))
-	}
-}
-
-//export callbackModelManager539e18_GetAddressModel
-func callbackModelManager539e18_GetAddressModel(ptr unsafe.Pointer, v0 C.struct_Moc_PackedString) unsafe.Pointer {
-	if signal := qt.GetSignal(ptr, "getAddressModel"); signal != nil {
-		return PointerFromAddressesModel((*(*func(string) *AddressesModel)(signal))(cGoUnpackString(v0)))
-	}
-
-	return PointerFromAddressesModel(NewAddressesModel(nil))
-}
-
-func (ptr *ModelManager) ConnectGetAddressModel(f func(v0 string) *AddressesModel) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "getAddressModel"); signal != nil {
-			f := func(v0 string) *AddressesModel {
-				(*(*func(string) *AddressesModel)(signal))(v0)
-				return f(v0)
-			}
-			qt.ConnectSignal(ptr.Pointer(), "getAddressModel", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "getAddressModel", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *ModelManager) DisconnectGetAddressModel() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "getAddressModel")
-	}
-}
-
-func (ptr *ModelManager) GetAddressModel(v0 string) *AddressesModel {
-	if ptr.Pointer() != nil {
-		var v0C *C.char
-		if v0 != "" {
-			v0C = C.CString(v0)
-			defer C.free(unsafe.Pointer(v0C))
-		}
-		tmpValue := NewAddressesModelFromPointer(C.ModelManager539e18_GetAddressModel(ptr.Pointer(), C.struct_Moc_PackedString{data: v0C, len: C.longlong(len(v0))}))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func ModelManager_QRegisterMetaType() int {
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType()))
-}
-
-func (ptr *ModelManager) QRegisterMetaType() int {
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType()))
-}
-
-func ModelManager_QRegisterMetaType2(typeName string) int {
-	var typeNameC *C.char
-	if typeName != "" {
-		typeNameC = C.CString(typeName)
-		defer C.free(unsafe.Pointer(typeNameC))
-	}
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType2(typeNameC)))
-}
-
-func (ptr *ModelManager) QRegisterMetaType2(typeName string) int {
-	var typeNameC *C.char
-	if typeName != "" {
-		typeNameC = C.CString(typeName)
-		defer C.free(unsafe.Pointer(typeNameC))
-	}
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QRegisterMetaType2(typeNameC)))
-}
-
-func ModelManager_QmlRegisterType() int {
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType()))
-}
-
-func (ptr *ModelManager) QmlRegisterType() int {
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType()))
-}
-
-func ModelManager_QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
-	var uriC *C.char
-	if uri != "" {
-		uriC = C.CString(uri)
-		defer C.free(unsafe.Pointer(uriC))
-	}
-	var qmlNameC *C.char
-	if qmlName != "" {
-		qmlNameC = C.CString(qmlName)
-		defer C.free(unsafe.Pointer(qmlNameC))
-	}
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
-}
-
-func (ptr *ModelManager) QmlRegisterType2(uri string, versionMajor int, versionMinor int, qmlName string) int {
-	var uriC *C.char
-	if uri != "" {
-		uriC = C.CString(uri)
-		defer C.free(unsafe.Pointer(uriC))
-	}
-	var qmlNameC *C.char
-	if qmlName != "" {
-		qmlNameC = C.CString(qmlName)
-		defer C.free(unsafe.Pointer(qmlNameC))
-	}
-	return int(int32(C.ModelManager539e18_ModelManager539e18_QmlRegisterType2(uriC, C.int(int32(versionMajor)), C.int(int32(versionMinor)), qmlNameC)))
-}
-
-func (ptr *ModelManager) __children_atList(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___children_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *ModelManager) __children_setList(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18___children_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *ModelManager) __children_newList() unsafe.Pointer {
-	return C.ModelManager539e18___children_newList(ptr.Pointer())
-}
-
-func (ptr *ModelManager) __dynamicPropertyNames_atList(i int) *std_core.QByteArray {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQByteArrayFromPointer(C.ModelManager539e18___dynamicPropertyNames_atList(ptr.Pointer(), C.int(int32(i))))
-		runtime.SetFinalizer(tmpValue, (*std_core.QByteArray).DestroyQByteArray)
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *ModelManager) __dynamicPropertyNames_setList(i std_core.QByteArray_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18___dynamicPropertyNames_setList(ptr.Pointer(), std_core.PointerFromQByteArray(i))
-	}
-}
-
-func (ptr *ModelManager) __dynamicPropertyNames_newList() unsafe.Pointer {
-	return C.ModelManager539e18___dynamicPropertyNames_newList(ptr.Pointer())
-}
-
-func (ptr *ModelManager) __findChildren_atList(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___findChildren_atList(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *ModelManager) __findChildren_setList(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18___findChildren_setList(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *ModelManager) __findChildren_newList() unsafe.Pointer {
-	return C.ModelManager539e18___findChildren_newList(ptr.Pointer())
-}
-
-func (ptr *ModelManager) __findChildren_atList3(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___findChildren_atList3(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *ModelManager) __findChildren_setList3(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18___findChildren_setList3(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *ModelManager) __findChildren_newList3() unsafe.Pointer {
-	return C.ModelManager539e18___findChildren_newList3(ptr.Pointer())
-}
-
-func (ptr *ModelManager) __qFindChildren_atList2(i int) *std_core.QObject {
-	if ptr.Pointer() != nil {
-		tmpValue := std_core.NewQObjectFromPointer(C.ModelManager539e18___qFindChildren_atList2(ptr.Pointer(), C.int(int32(i))))
-		if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-			tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-		}
-		return tmpValue
-	}
-	return nil
-}
-
-func (ptr *ModelManager) __qFindChildren_setList2(i std_core.QObject_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18___qFindChildren_setList2(ptr.Pointer(), std_core.PointerFromQObject(i))
-	}
-}
-
-func (ptr *ModelManager) __qFindChildren_newList2() unsafe.Pointer {
-	return C.ModelManager539e18___qFindChildren_newList2(ptr.Pointer())
-}
-
-func NewModelManager(parent std_core.QObject_ITF) *ModelManager {
-	tmpValue := NewModelManagerFromPointer(C.ModelManager539e18_NewModelManager(std_core.PointerFromQObject(parent)))
-	if !qt.ExistsSignal(tmpValue.Pointer(), "destroyed") {
-		tmpValue.ConnectDestroyed(func(*std_core.QObject) { tmpValue.SetPointer(nil) })
-	}
-	return tmpValue
-}
-
-//export callbackModelManager539e18_DestroyModelManager
-func callbackModelManager539e18_DestroyModelManager(ptr unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "~ModelManager"); signal != nil {
-		(*(*func())(signal))()
-	} else {
-		NewModelManagerFromPointer(ptr).DestroyModelManagerDefault()
-	}
-}
-
-func (ptr *ModelManager) ConnectDestroyModelManager(f func()) {
-	if ptr.Pointer() != nil {
-
-		if signal := qt.LendSignal(ptr.Pointer(), "~ModelManager"); signal != nil {
-			f := func() {
-				(*(*func())(signal))()
-				f()
-			}
-			qt.ConnectSignal(ptr.Pointer(), "~ModelManager", unsafe.Pointer(&f))
-		} else {
-			qt.ConnectSignal(ptr.Pointer(), "~ModelManager", unsafe.Pointer(&f))
-		}
-	}
-}
-
-func (ptr *ModelManager) DisconnectDestroyModelManager() {
-	if ptr.Pointer() != nil {
-
-		qt.DisconnectSignal(ptr.Pointer(), "~ModelManager")
-	}
-}
-
-func (ptr *ModelManager) DestroyModelManager() {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_DestroyModelManager(ptr.Pointer())
-		ptr.SetPointer(nil)
-		runtime.SetFinalizer(ptr, nil)
-	}
-}
-
-func (ptr *ModelManager) DestroyModelManagerDefault() {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_DestroyModelManagerDefault(ptr.Pointer())
-		ptr.SetPointer(nil)
-		runtime.SetFinalizer(ptr, nil)
-	}
-}
-
-//export callbackModelManager539e18_ChildEvent
-func callbackModelManager539e18_ChildEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "childEvent"); signal != nil {
-		(*(*func(*std_core.QChildEvent))(signal))(std_core.NewQChildEventFromPointer(event))
-	} else {
-		NewModelManagerFromPointer(ptr).ChildEventDefault(std_core.NewQChildEventFromPointer(event))
-	}
-}
-
-func (ptr *ModelManager) ChildEventDefault(event std_core.QChildEvent_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_ChildEventDefault(ptr.Pointer(), std_core.PointerFromQChildEvent(event))
-	}
-}
-
-//export callbackModelManager539e18_ConnectNotify
-func callbackModelManager539e18_ConnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "connectNotify"); signal != nil {
-		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
-	} else {
-		NewModelManagerFromPointer(ptr).ConnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
-	}
-}
-
-func (ptr *ModelManager) ConnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_ConnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
-	}
-}
-
-//export callbackModelManager539e18_CustomEvent
-func callbackModelManager539e18_CustomEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "customEvent"); signal != nil {
-		(*(*func(*std_core.QEvent))(signal))(std_core.NewQEventFromPointer(event))
-	} else {
-		NewModelManagerFromPointer(ptr).CustomEventDefault(std_core.NewQEventFromPointer(event))
-	}
-}
-
-func (ptr *ModelManager) CustomEventDefault(event std_core.QEvent_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_CustomEventDefault(ptr.Pointer(), std_core.PointerFromQEvent(event))
-	}
-}
-
-//export callbackModelManager539e18_DeleteLater
-func callbackModelManager539e18_DeleteLater(ptr unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "deleteLater"); signal != nil {
-		(*(*func())(signal))()
-	} else {
-		NewModelManagerFromPointer(ptr).DeleteLaterDefault()
-	}
-}
-
-func (ptr *ModelManager) DeleteLaterDefault() {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_DeleteLaterDefault(ptr.Pointer())
-		runtime.SetFinalizer(ptr, nil)
-	}
-}
-
-//export callbackModelManager539e18_Destroyed
-func callbackModelManager539e18_Destroyed(ptr unsafe.Pointer, obj unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "destroyed"); signal != nil {
-		(*(*func(*std_core.QObject))(signal))(std_core.NewQObjectFromPointer(obj))
-	}
-	qt.Unregister(ptr)
-
-}
-
-//export callbackModelManager539e18_DisconnectNotify
-func callbackModelManager539e18_DisconnectNotify(ptr unsafe.Pointer, sign unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "disconnectNotify"); signal != nil {
-		(*(*func(*std_core.QMetaMethod))(signal))(std_core.NewQMetaMethodFromPointer(sign))
-	} else {
-		NewModelManagerFromPointer(ptr).DisconnectNotifyDefault(std_core.NewQMetaMethodFromPointer(sign))
-	}
-}
-
-func (ptr *ModelManager) DisconnectNotifyDefault(sign std_core.QMetaMethod_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_DisconnectNotifyDefault(ptr.Pointer(), std_core.PointerFromQMetaMethod(sign))
-	}
-}
-
-//export callbackModelManager539e18_Event
-func callbackModelManager539e18_Event(ptr unsafe.Pointer, e unsafe.Pointer) C.char {
-	if signal := qt.GetSignal(ptr, "event"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QEvent) bool)(signal))(std_core.NewQEventFromPointer(e)))))
-	}
-
-	return C.char(int8(qt.GoBoolToInt(NewModelManagerFromPointer(ptr).EventDefault(std_core.NewQEventFromPointer(e)))))
-}
-
-func (ptr *ModelManager) EventDefault(e std_core.QEvent_ITF) bool {
-	if ptr.Pointer() != nil {
-		return int8(C.ModelManager539e18_EventDefault(ptr.Pointer(), std_core.PointerFromQEvent(e))) != 0
-	}
-	return false
-}
-
-//export callbackModelManager539e18_EventFilter
-func callbackModelManager539e18_EventFilter(ptr unsafe.Pointer, watched unsafe.Pointer, event unsafe.Pointer) C.char {
-	if signal := qt.GetSignal(ptr, "eventFilter"); signal != nil {
-		return C.char(int8(qt.GoBoolToInt((*(*func(*std_core.QObject, *std_core.QEvent) bool)(signal))(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
-	}
-
-	return C.char(int8(qt.GoBoolToInt(NewModelManagerFromPointer(ptr).EventFilterDefault(std_core.NewQObjectFromPointer(watched), std_core.NewQEventFromPointer(event)))))
-}
-
-func (ptr *ModelManager) EventFilterDefault(watched std_core.QObject_ITF, event std_core.QEvent_ITF) bool {
-	if ptr.Pointer() != nil {
-		return int8(C.ModelManager539e18_EventFilterDefault(ptr.Pointer(), std_core.PointerFromQObject(watched), std_core.PointerFromQEvent(event))) != 0
-	}
-	return false
-}
-
-//export callbackModelManager539e18_ObjectNameChanged
-func callbackModelManager539e18_ObjectNameChanged(ptr unsafe.Pointer, objectName C.struct_Moc_PackedString) {
-	if signal := qt.GetSignal(ptr, "objectNameChanged"); signal != nil {
-		(*(*func(string))(signal))(cGoUnpackString(objectName))
-	}
-
-}
-
-//export callbackModelManager539e18_TimerEvent
-func callbackModelManager539e18_TimerEvent(ptr unsafe.Pointer, event unsafe.Pointer) {
-	if signal := qt.GetSignal(ptr, "timerEvent"); signal != nil {
-		(*(*func(*std_core.QTimerEvent))(signal))(std_core.NewQTimerEventFromPointer(event))
-	} else {
-		NewModelManagerFromPointer(ptr).TimerEventDefault(std_core.NewQTimerEventFromPointer(event))
-	}
-}
-
-func (ptr *ModelManager) TimerEventDefault(event std_core.QTimerEvent_ITF) {
-	if ptr.Pointer() != nil {
-		C.ModelManager539e18_TimerEventDefault(ptr.Pointer(), std_core.PointerFromQTimerEvent(event))
 	}
 }

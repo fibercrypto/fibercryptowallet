@@ -126,9 +126,18 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 	a.SetAddress(address)
 	a.SetAddressSky(sky)
 	a.SetAddressCoinHours(coinHours)
+	changeMarked := true
+	if marked == a.Marked() {
+		changeMarked = false
+	}
 	a.SetMarked(marked)
 	pIndex := m.Index(row, 0, core.NewQModelIndex())
-	m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours, AMarked})
+	if changeMarked {
+		m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours, AMarked})
+	} else {
+		m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
+	}
+
 }
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {

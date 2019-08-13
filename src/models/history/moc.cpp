@@ -171,8 +171,8 @@ Q_DECLARE_METATYPE(TransactionList554044*)
 
 
 void TransactionList554044_TransactionList554044_QRegisterMetaTypes() {
-	qRegisterMetaType<type378cdd>("type378cdd");
 	qRegisterMetaType<QList<QObject*>>("QList<TransactionDetailsecff1c*>");
+	qRegisterMetaType<type378cdd>("type378cdd");
 }
 
 struct Moc_PackedList HistoryManager554044_LoadHistoryWithFilters(void* ptr)
