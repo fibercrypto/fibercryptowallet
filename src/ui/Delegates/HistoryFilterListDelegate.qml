@@ -98,11 +98,11 @@ Item {
                     
                     if (checked == 1){
                         historyManager.addFilter(address)
-                        console.log("filtroAnnadido")
+                        
                     }
                     else {
                         historyManager.removeFilter(address)
-                        console.log("filtroEliminado")
+                        
                     }
                     listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
                 }
