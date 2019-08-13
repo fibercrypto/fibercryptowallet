@@ -13,7 +13,7 @@ Page {
     }
 
     function genQR(data) {
-        dialogQR.text = data
+        dialogQR.setVars(data)
         dialogQR.open()
 
     }

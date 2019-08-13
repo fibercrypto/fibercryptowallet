@@ -22,7 +22,7 @@ Item {
     }
 
     function genQR(data) {
-        dialogQR.text = data
+        dialogQR.setQRVars(data)
         dialogQR.open()
     }
 
