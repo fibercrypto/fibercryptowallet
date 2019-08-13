@@ -23,7 +23,6 @@ Item {
 
     function genQR(data) {
         dialogQR.setQRVars(data)
-//        dialogQR.toTitle = data
         dialogQR.open()
 
     }
