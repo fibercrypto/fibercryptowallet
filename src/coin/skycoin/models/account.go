@@ -69,6 +69,9 @@ func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //
 func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { 
 	return nil
 }
+func (wlt RemoteWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
+	return nil
+}
 
 func (wlt RemoteWallet) ListPendingTransactions() core.TransactionIterator { 
 	c := wlt.newClient()
@@ -121,6 +124,9 @@ func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //-
 }
 
 func (wlt LocalWallet) ListTransactions() core.TransactionIterator { //------TODO
+	return nil
+}
+func (wlt LocalWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
 	return nil
 }
 

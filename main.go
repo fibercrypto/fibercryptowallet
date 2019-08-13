@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/blockchain"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/pending"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
