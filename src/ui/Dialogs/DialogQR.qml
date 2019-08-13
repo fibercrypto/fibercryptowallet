@@ -6,8 +6,9 @@ Dialog {
     id: dialogQR
 
     property alias imagePath: imageQR.source
+    property var text
 
-    title: Qt.application.name + " - QR"
+    title: Qt.application.name + " - QR" + text
     standardButtons: Dialog.Close
 
     Image {

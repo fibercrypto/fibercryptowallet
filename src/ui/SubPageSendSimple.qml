@@ -8,6 +8,16 @@ Page {
 
     signal qrCodeRequested(var data)
 
+    Component.onCompleted: {
+        root.qrCodeRequested.connect(genQR)
+    }
+
+    function genQR(data) {
+        dialogQR.text = data
+        dialogQR.open()
+
+    }
+
     ColumnLayout {
         id: columnLayoutRoot
         anchors.fill: parent

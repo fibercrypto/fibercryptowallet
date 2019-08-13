@@ -17,6 +17,16 @@ Item {
     signal editWalletRequested()
     signal qrCodeRequested(var data)
 
+    Component.onCompleted: {
+        root.qrCodeRequested.connect(genQR)
+    }
+
+    function genQR(data) {
+        dialogQR.text = data
+        dialogQR.open()
+    }
+
+
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
 

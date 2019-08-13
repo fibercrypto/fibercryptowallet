@@ -10,7 +10,15 @@ Item {
     id: root
 
     signal qrCodeRequested(var data)
+    Component.onCompleted: {
+        root.qrCodeRequested.connect(genQR)
+    }
 
+    function genQR(data) {
+        dialogQR.text = data
+        dialogQR.open()
+
+    }
     clip: true
 
     RowLayout {
