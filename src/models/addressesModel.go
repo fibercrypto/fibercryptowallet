@@ -9,6 +9,7 @@ const (
 	Address    = int(core.Qt__UserRole) + 1
 	ASky       = int(core.Qt__UserRole) + 2
 	ACoinHours = int(core.Qt__UserRole) + 3
+	AMarked    = int(core.Qt__UserRole) + 4
 )
 
 type AddressesModel struct {
@@ -19,11 +20,11 @@ type AddressesModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QAddress              `property:"addresses"`
 
-	_ func(*QAddress)                   `slot:"addAddress"`
-	_ func(int)                         `slot:"removeAddress"`
-	_ func(int, string, uint64, uint64) `slot:"editAddress"`
-	_ func([]*QAddress)                 `slot:"loadModel"`
-	_ int                               `property:"count"`
+	_ func(*QAddress)                        `slot:"addAddress"`
+	_ func(int)                              `slot:"removeAddress"`
+	_ func(int, string, uint64, uint64, int) `slot:"editAddress"`
+	_ func([]*QAddress)                      `slot:"loadModel"`
+	_ int                                    `property:"count"`
 }
 
 type QAddress struct {
@@ -32,6 +33,7 @@ type QAddress struct {
 	_ string `property:"address"`
 	_ uint64 `property:"addressSky"`
 	_ uint64 `property:"addressCoinHours"`
+	_ int    `property:"marked"`
 }
 
 func (m *AddressesModel) init() {
@@ -39,6 +41,7 @@ func (m *AddressesModel) init() {
 		Address:    core.NewQByteArray2("address", -1),
 		ASky:       core.NewQByteArray2("addressSky", -1),
 		ACoinHours: core.NewQByteArray2("addressCoinHours", -1),
+		AMarked:    core.NewQByteArray2("marked", -1),
 	})
 	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
 	m.ConnectData(m.data)
@@ -79,6 +82,10 @@ func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant 
 		{
 			return core.NewQVariant1(a.AddressCoinHours())
 		}
+	case AMarked:
+		{
+			return core.NewQVariant1(a.Marked())
+		}
 
 	default:
 		{
@@ -114,14 +121,14 @@ func (m *AddressesModel) removeAddress(row int) {
 	m.SetCount(m.Count() - 1)
 }
 
-func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64) {
+func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64, marked int) {
 	a := m.Addresses()[row]
 	a.SetAddress(address)
 	a.SetAddressSky(sky)
 	a.SetAddressCoinHours(coinHours)
-
+	a.SetMarked(marked)
 	pIndex := m.Index(row, 0, core.NewQModelIndex())
-	m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
+	m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours, AMarked})
 }
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
@@ -133,6 +140,7 @@ func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
 	address.SetAddress("--------------------------")
 	address.SetAddressSky(0)
 	address.SetAddressCoinHours(0)
+	address.SetMarked(0)
 	qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)
 	addresses = append(addresses, address)
 	addresses = append(addresses, Qaddresses...)

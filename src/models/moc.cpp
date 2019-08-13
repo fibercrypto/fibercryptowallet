@@ -129,7 +129,7 @@ signals:
 public slots:
 	void addAddress(QAddress539e18* v0) { callbackAddressesModel539e18_AddAddress(this, v0); };
 	void removeAddress(qint32 v0) { callbackAddressesModel539e18_RemoveAddress(this, v0); };
-	void editAddress(qint32 v0, QString v1, quint64 v2, quint64 v3) { QByteArray t5a6df7 = v1.toUtf8(); Moc_PackedString v1Packed = { const_cast<char*>(t5a6df7.prepend("WHITESPACE").constData()+10), t5a6df7.size()-10 };callbackAddressesModel539e18_EditAddress(this, v0, v1Packed, v2, v3); };
+	void editAddress(qint32 v0, QString v1, quint64 v2, quint64 v3, qint32 v4) { QByteArray t5a6df7 = v1.toUtf8(); Moc_PackedString v1Packed = { const_cast<char*>(t5a6df7.prepend("WHITESPACE").constData()+10), t5a6df7.size()-10 };callbackAddressesModel539e18_EditAddress(this, v0, v1Packed, v2, v3, v4); };
 	void loadModel(QList<QAddress539e18*> v0) { callbackAddressesModel539e18_LoadModel(this, ({ QList<QAddress539e18*>* tmpValue = new QList<QAddress539e18*>(v0); Moc_PackedList { tmpValue, tmpValue->size() }; })); };
 private:
 	type378cdd _roles;
@@ -180,6 +180,7 @@ Q_OBJECT
 Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
 Q_PROPERTY(quint64 addressSky READ addressSky WRITE setAddressSky NOTIFY addressSkyChanged)
 Q_PROPERTY(quint64 addressCoinHours READ addressCoinHours WRITE setAddressCoinHours NOTIFY addressCoinHoursChanged)
+Q_PROPERTY(qint32 marked READ marked WRITE setMarked NOTIFY markedChanged)
 public:
 	QAddress539e18(QObject *parent = Q_NULLPTR) : QObject(parent) {qRegisterMetaType<quintptr>("quintptr");QAddress539e18_QAddress539e18_QRegisterMetaType();QAddress539e18_QAddress539e18_QRegisterMetaTypes();callbackQAddress539e18_Constructor(this);};
 	QString address() { return ({ Moc_PackedString tempVal = callbackQAddress539e18_Address(this); QString ret = QString::fromUtf8(tempVal.data, tempVal.len); free(tempVal.data); ret; }); };
@@ -191,6 +192,9 @@ public:
 	quint64 addressCoinHours() { return callbackQAddress539e18_AddressCoinHours(this); };
 	void setAddressCoinHours(quint64 addressCoinHours) { callbackQAddress539e18_SetAddressCoinHours(this, addressCoinHours); };
 	void Signal_AddressCoinHoursChanged(quint64 addressCoinHours) { callbackQAddress539e18_AddressCoinHoursChanged(this, addressCoinHours); };
+	qint32 marked() { return callbackQAddress539e18_Marked(this); };
+	void setMarked(qint32 marked) { callbackQAddress539e18_SetMarked(this, marked); };
+	void Signal_MarkedChanged(qint32 marked) { callbackQAddress539e18_MarkedChanged(this, marked); };
 	 ~QAddress539e18() { callbackQAddress539e18_DestroyQAddress(this); };
 	void childEvent(QChildEvent * event) { callbackQAddress539e18_ChildEvent(this, event); };
 	void connectNotify(const QMetaMethod & sign) { callbackQAddress539e18_ConnectNotify(this, const_cast<QMetaMethod*>(&sign)); };
@@ -208,15 +212,19 @@ public:
 	void setAddressSkyDefault(quint64 p) { if (p != _addressSky) { _addressSky = p; addressSkyChanged(_addressSky); } };
 	quint64 addressCoinHoursDefault() { return _addressCoinHours; };
 	void setAddressCoinHoursDefault(quint64 p) { if (p != _addressCoinHours) { _addressCoinHours = p; addressCoinHoursChanged(_addressCoinHours); } };
+	qint32 markedDefault() { return _marked; };
+	void setMarkedDefault(qint32 p) { if (p != _marked) { _marked = p; markedChanged(_marked); } };
 signals:
 	void addressChanged(QString address);
 	void addressSkyChanged(quint64 addressSky);
 	void addressCoinHoursChanged(quint64 addressCoinHours);
+	void markedChanged(qint32 marked);
 public slots:
 private:
 	QString _address;
 	quint64 _addressSky;
 	quint64 _addressCoinHours;
+	qint32 _marked;
 };
 
 Q_DECLARE_METATYPE(QAddress539e18*)
@@ -328,8 +336,8 @@ Q_DECLARE_METATYPE(WalletManager539e18*)
 
 
 void WalletManager539e18_WalletManager539e18_QRegisterMetaTypes() {
-	qRegisterMetaType<QList<QObject*>>("QList<QAddress539e18*>");
 	qRegisterMetaType<QList<QObject*>>("QList<QWallet539e18*>");
+	qRegisterMetaType<QList<QObject*>>("QList<QAddress539e18*>");
 }
 
 class WalletModel539e18: public QAbstractListModel
@@ -452,9 +460,9 @@ void AddressesModel539e18_RemoveAddress(void* ptr, int v0)
 	QMetaObject::invokeMethod(static_cast<AddressesModel539e18*>(ptr), "removeAddress", Q_ARG(qint32, v0));
 }
 
-void AddressesModel539e18_EditAddress(void* ptr, int v0, struct Moc_PackedString v1, unsigned long long v2, unsigned long long v3)
+void AddressesModel539e18_EditAddress(void* ptr, int v0, struct Moc_PackedString v1, unsigned long long v2, unsigned long long v3, int v4)
 {
-	QMetaObject::invokeMethod(static_cast<AddressesModel539e18*>(ptr), "editAddress", Q_ARG(qint32, v0), Q_ARG(QString, QString::fromUtf8(v1.data, v1.len)), Q_ARG(quint64, v2), Q_ARG(quint64, v3));
+	QMetaObject::invokeMethod(static_cast<AddressesModel539e18*>(ptr), "editAddress", Q_ARG(qint32, v0), Q_ARG(QString, QString::fromUtf8(v1.data, v1.len)), Q_ARG(quint64, v2), Q_ARG(quint64, v3), Q_ARG(qint32, v4));
 }
 
 void AddressesModel539e18_LoadModel(void* ptr, void* v0)
@@ -1656,6 +1664,41 @@ void QAddress539e18_DisconnectAddressCoinHoursChanged(void* ptr)
 void QAddress539e18_AddressCoinHoursChanged(void* ptr, unsigned long long addressCoinHours)
 {
 	static_cast<QAddress539e18*>(ptr)->addressCoinHoursChanged(addressCoinHours);
+}
+
+int QAddress539e18_Marked(void* ptr)
+{
+	return static_cast<QAddress539e18*>(ptr)->marked();
+}
+
+int QAddress539e18_MarkedDefault(void* ptr)
+{
+	return static_cast<QAddress539e18*>(ptr)->markedDefault();
+}
+
+void QAddress539e18_SetMarked(void* ptr, int marked)
+{
+	static_cast<QAddress539e18*>(ptr)->setMarked(marked);
+}
+
+void QAddress539e18_SetMarkedDefault(void* ptr, int marked)
+{
+	static_cast<QAddress539e18*>(ptr)->setMarkedDefault(marked);
+}
+
+void QAddress539e18_ConnectMarkedChanged(void* ptr)
+{
+	QObject::connect(static_cast<QAddress539e18*>(ptr), static_cast<void (QAddress539e18::*)(qint32)>(&QAddress539e18::markedChanged), static_cast<QAddress539e18*>(ptr), static_cast<void (QAddress539e18::*)(qint32)>(&QAddress539e18::Signal_MarkedChanged));
+}
+
+void QAddress539e18_DisconnectMarkedChanged(void* ptr)
+{
+	QObject::disconnect(static_cast<QAddress539e18*>(ptr), static_cast<void (QAddress539e18::*)(qint32)>(&QAddress539e18::markedChanged), static_cast<QAddress539e18*>(ptr), static_cast<void (QAddress539e18::*)(qint32)>(&QAddress539e18::Signal_MarkedChanged));
+}
+
+void QAddress539e18_MarkedChanged(void* ptr, int marked)
+{
+	static_cast<QAddress539e18*>(ptr)->markedChanged(marked);
 }
 
 int QAddress539e18_QAddress539e18_QRegisterMetaType()

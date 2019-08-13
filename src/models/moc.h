@@ -8,6 +8,8 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
+class AddressesModel539e18;
+void AddressesModel539e18_AddressesModel539e18_QRegisterMetaTypes();
 class ModelManager539e18;
 void ModelManager539e18_ModelManager539e18_QRegisterMetaTypes();
 class QAddress539e18;
@@ -18,8 +20,6 @@ class WalletManager539e18;
 void WalletManager539e18_WalletManager539e18_QRegisterMetaTypes();
 class WalletModel539e18;
 void WalletModel539e18_WalletModel539e18_QRegisterMetaTypes();
-class AddressesModel539e18;
-void AddressesModel539e18_AddressesModel539e18_QRegisterMetaTypes();
 extern "C" {
 #endif
 
@@ -27,7 +27,7 @@ struct Moc_PackedString { char* data; long long len; };
 struct Moc_PackedList { void* data; long long len; };
 void AddressesModel539e18_AddAddress(void* ptr, void* v0);
 void AddressesModel539e18_RemoveAddress(void* ptr, int v0);
-void AddressesModel539e18_EditAddress(void* ptr, int v0, struct Moc_PackedString v1, unsigned long long v2, unsigned long long v3);
+void AddressesModel539e18_EditAddress(void* ptr, int v0, struct Moc_PackedString v1, unsigned long long v2, unsigned long long v3, int v4);
 void AddressesModel539e18_LoadModel(void* ptr, void* v0);
 struct Moc_PackedList AddressesModel539e18_Roles(void* ptr);
 struct Moc_PackedList AddressesModel539e18_RolesDefault(void* ptr);
@@ -252,6 +252,13 @@ void QAddress539e18_SetAddressCoinHoursDefault(void* ptr, unsigned long long add
 void QAddress539e18_ConnectAddressCoinHoursChanged(void* ptr);
 void QAddress539e18_DisconnectAddressCoinHoursChanged(void* ptr);
 void QAddress539e18_AddressCoinHoursChanged(void* ptr, unsigned long long addressCoinHours);
+int QAddress539e18_Marked(void* ptr);
+int QAddress539e18_MarkedDefault(void* ptr);
+void QAddress539e18_SetMarked(void* ptr, int marked);
+void QAddress539e18_SetMarkedDefault(void* ptr, int marked);
+void QAddress539e18_ConnectMarkedChanged(void* ptr);
+void QAddress539e18_DisconnectMarkedChanged(void* ptr);
+void QAddress539e18_MarkedChanged(void* ptr, int marked);
 int QAddress539e18_QAddress539e18_QRegisterMetaType();
 int QAddress539e18_QAddress539e18_QRegisterMetaType2(char* typeName);
 int QAddress539e18_QAddress539e18_QmlRegisterType();

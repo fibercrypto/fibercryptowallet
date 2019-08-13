@@ -31,14 +31,10 @@ func (mm *ModelManager) setWalletManager(wm *WalletManager) {
 func (mm *ModelManager) getAddressModel(wltName string) *AddressesModel {
 	addrModel, ok := mm.addressesModel[wltName]
 	if !ok {
-
 		addrModel = NewAddressesModel(nil)
-
 		qml.QQmlEngine_SetObjectOwnership(addrModel, qml.QQmlEngine__CppOwnership)
-		mm.wltManager.getNewSeed(128)
 		addrModel.loadModel(mm.wltManager.getAddresses(wltName))
 		addrModel.removeAddress(0)
-
 		mm.addressesModel[wltName] = addrModel
 	}
 

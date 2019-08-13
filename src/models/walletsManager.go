@@ -159,6 +159,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 		addr := it.Value()
 		qaddress := NewQAddress(nil)
 		qaddress.SetAddress(addr.String())
+		qaddress.SetMarked(0)
 		sky, err := addr.GetCryptoAccount().GetBalance("SKY")
 		if err != nil {
 
