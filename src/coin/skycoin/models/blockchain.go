@@ -65,20 +65,20 @@ func (sb *SkycoinBlock) IsGenesisBlock() (bool, error) {
 	return true, nil //TODO ???
 }
 
-type SkycoinBlockchianInfo struct {
+type SkycoinBlockchainInfo struct {
 	LastBlockInfo         *SkycoinBlock
 	CurrentSkySupply      uint64
 	TotalSkySupply        uint64
 	CurrentCoinHourSupply uint64
 	TotalCoinHourSupply   uint64
-	NumberOfBlocks		  *readable.BlockchainProgress
+	NumberOfBlocks        *readable.BlockchainProgress
 }
 
 type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
 	lastTimeStatusRequested uint64
 	lastTimeSupplyRequested uint64
 	CacheTime               uint64
-	cachedStatus            *SkycoinBlockchianInfo
+	cachedStatus            *SkycoinBlockchainInfo
 }
 
 func NewSkycoinBlockchainStatus(invalidCacheTime uint64) *SkycoinBlockchainStatus {
@@ -88,7 +88,7 @@ func (ss SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, tick
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
 		if ss.cachedStatus == nil {
-			ss.cachedStatus = new(SkycoinBlockchianInfo)
+			ss.cachedStatus = new(SkycoinBlockchainInfo)
 		}
 		if err := ss.requestSupplyInfo(); err != nil {
 			return 0, err
@@ -115,7 +115,7 @@ func (ss SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
 		if ss.cachedStatus == nil {
-			ss.cachedStatus = new(SkycoinBlockchianInfo)
+			ss.cachedStatus = new(SkycoinBlockchainInfo)
 		}
 		if err := ss.requestStatusInfo(); err != nil {
 			return nil, err
@@ -127,7 +127,7 @@ func (ss SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 func (ss SkycoinBlockchainStatus) GetNumberOfBlocks() (uint64, error) {
 	if ss.cachedStatus == nil {
 		if ss.cachedStatus == nil {
-			ss.cachedStatus = new(SkycoinBlockchianInfo)
+			ss.cachedStatus = new(SkycoinBlockchainInfo)
 		}
 		if err := ss.requestStatusInfo(); err != nil {
 			return 0, errors.New("Number of Blocks unset ")
