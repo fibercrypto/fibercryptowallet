@@ -18,18 +18,18 @@ type AddressesModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QAddress              `property:"addresses"`
 
-	_ func(*QAddress)                   `slot:"addAddress"`
-	_ func(int)                         `slot:"removeAddress"`
-	_ func(int, string, uint64, uint64) `slot:"editAddress"`
-	_ func([]*QAddress)                 `slot:"loadModel"`
+	_ func(*QAddress)                    `slot:"addAddress"`
+	_ func(int)                          `slot:"removeAddress"`
+	_ func(int, string, float64, uint64) `slot:"editAddress"`
+	_ func([]*QAddress)                  `slot:"loadModel"`
 }
 
 type QAddress struct {
 	core.QObject
 
-	_ string `property:"address"`
-	_ uint64 `property:"addressSky"`
-	_ uint64 `property:"addressCoinHours"`
+	_ string  `property:"address"`
+	_ float64 `property:"addressSky"`
+	_ uint64  `property:"addressCoinHours"`
 }
 
 func (m *AddressesModel) init() {
@@ -107,7 +107,7 @@ func (m *AddressesModel) removeAddress(row int) {
 	m.EndRemoveRows()
 }
 
-func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64) {
+func (m *AddressesModel) editAddress(row int, address string, sky float64, coinHours uint64) {
 	a := m.Addresses()[row]
 	a.SetAddress(address)
 	a.SetAddressSky(sky)

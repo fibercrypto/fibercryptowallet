@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
@@ -34,7 +36,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 
-	walletM.WalletEnv = &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
+	walletM.WalletEnv = &models.WalletNode{NodeAddress: "http://127.0.0.1:6420"} //&models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
 
 	walletM.SeedGenerator = new(models.SeedService)
 
@@ -156,7 +158,8 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 
 			continue
 		}
-		qaddress.SetAddressSky(sky)
+		flSky := float64(sky / 1e6)
+		qaddress.SetAddressSky(flSky)
 		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
 		if err != nil {
 
@@ -186,7 +189,9 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	if err != nil {
 		bl = 0
 	}
-	qwallet.SetSky(bl)
+	floatBl := float64(bl / 1e6)
+	qwallet.SetSky(floatBl)
+	fmt.Println(qwallet.Sky())
 
 	bl, err = wlt.GetCryptoAccount().GetBalance("CoinHour")
 	if err != nil {
