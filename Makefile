@@ -1,11 +1,11 @@
 .DEFAULT_GOAL := help
-.PHONY: run-wallet build-wallet clean help
+.PHONY: run build clean help
 
-run-wallet:  ## Run FiberCrypto Wallet.
+run:  ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
 	@./deploy/linux/FiberCryptoWallet
 
-build-wallet:  ## Build FiberCrypto Wallet.
+build:  ## Build FiberCrypto Wallet.
 	@echo "Building FiberCrypto Wallet..."
 	# Add the flag `-quickcompiler` when making a release
 	@qtdeploy build desktop
@@ -23,6 +23,9 @@ clean: ## Clean project FiberCrypto Wallet.
 	find . -path "*moc.*" -delete
 	find . -path "*moc_*" -delete
 	@echo "Done."
+
+test: ## Run project test suite
+	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'

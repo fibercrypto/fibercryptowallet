@@ -1,6 +1,6 @@
 package core
 
-type TransactionTimestamp uint64
+type Timestamp uint64
 type TransactionStatus uint32
 
 const (
@@ -11,7 +11,7 @@ const (
 
 type Transaction interface {
 	SupportedAssets() []string
-	GetTimestamp() TransactionTimestamp
+	GetTimestamp() Timestamp
 	GetStatus() TransactionStatus
 	GetInputs() []TransactionInput
 	GetOutputs() []TransactionOutput
@@ -48,4 +48,14 @@ type TransactionOutputIterator interface {
 	Value() TransactionOutput
 	Next() bool
 	HasNext() bool
+}
+
+type Block interface {
+	GetHash() ([]byte, error)
+	GetPrevHash() ([]byte, error)
+	GetVersion() (uint32, error)
+	GetTime() (Timestamp, error)
+	GetHeight() (uint64, error)
+	GetFee(ticker string) (uint64, error)
+	IsGenesisBlock() (bool, error)
 }
