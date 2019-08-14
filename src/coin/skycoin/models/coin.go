@@ -22,8 +22,9 @@ func (txn *SkycoinTransaction) SupportedAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (txn *SkycoinTransaction) GetTimestamp() core.TransactionTimestamp {
-	return core.TransactionTimestamp(txn.skyTxn.Timestamp)
+func (txn *SkycoinTransaction) GetTimestamp() core.Timestamp {
+	return core.Timestamp(txn.skyTxn.Timestamp)
+
 }
 
 func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {

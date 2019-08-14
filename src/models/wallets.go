@@ -1,7 +1,5 @@
 package models
 
-import "fmt"
-
 func init() {
 	WalletModel_QmlRegisterType2("WalletsManager", 1, 0, "WalletModel")
 	QWallet_QmlRegisterType2("WalletsManager", 1, 0, "QWallet")
@@ -10,5 +8,4 @@ func init() {
 	WalletManager_QmlRegisterType2("WalletsManager", 1, 0, "WalletManager")
 	ModelManager_QmlRegisterType2("WalletsManager", 1, 0, "ModelManager")
 
-	fmt.Println("loadedLibaries")
 }
