@@ -14,9 +14,7 @@ Item {
     readonly property alias count: listViewFilters.count
     property alias interactive: listViewFilters.interactive
     property alias contentHeight: listViewFilters.contentHeight
-    //property list<AddressModel> addressModels
-    //property AddressModel myAddressModel : AddressModel{}
-    signal walletsLoaded
+    
     
     
     clip: true
@@ -24,7 +22,7 @@ Item {
     ListView {
 
         id: listViewFilters
-        property list<CheckedList> checkedList
+        
         anchors.fill: parent
         maximumFlickVelocity: 800
         spacing: 10
@@ -44,19 +42,7 @@ Item {
 
     
 
-    // This model can be the same as the wallet list,
-    // as this model need to expose all wallets and their addresses.
-    // For that, it should be implemented in the backend, instead of here.
-    //ListModel { // EXAMPLE
-    //    id: modelFilters
-//
-    //    ListElement { name: "My first wallet" }
-    //    ListElement { name: "My second wallet" }
-    //    ListElement { name: "My third wallet" }
-    //    ListElement { name: "My fourth wallet" }
-    //    ListElement { name: "My fiveth wallet" }
-    //    ListElement { name: "My sixth wallet" }
-    //}
+    
 
     ModelManager{
         id: modelManager
