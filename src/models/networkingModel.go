@@ -35,12 +35,12 @@ type NetworkingModel struct {
 type QNetworking struct {
 	core.QObject
 	// ip, port, source, block, lastSeenIn, lastSeenOut
-	_ string `property:"ip"`
-	_ int    `property:"port"`
-	_ bool   `property:"source"`
-	_ uint64 `property:"block"`
-	_ int64  `property:"lastSeenIn"`
-	_ int64  `property:"lastSeenOut"`
+	_ string   `property:"ip"`
+	_ int      `property:"port"`
+	_ string   `property:"source"`
+	_ uint64   `property:"block"`
+	_ int64    `property:"lastSeenIn"`
+	_ int64    `property:"lastSeenOut"`
 }
 
 func (netModel *NetworkingModel) init() {
@@ -88,7 +88,7 @@ func (netModel *NetworkingModel) data(index *core.QModelIndex, role int) *core.Q
 
 	case Source:
 		{
-			return core.NewQVariant1(w.IsSource())
+			return core.NewQVariant1(w.Source())
 		}
 
 	case Block:
@@ -137,20 +137,6 @@ func (netModel *NetworkingModel) addMultipleNetworks(w []*QNetworking) {
 	}
 }
 
-func INetworkToQNetworking(net coin.PexNode) *QNetworking {
-	q := NewQNetworking(nil)
-	q.SetIp(net.GetIp())
-	q.SetPort(int(net.GetPort()))
-	q.SetSource(net.IsTrusted())
-	q.SetBlock(net.GetBlockHeight())
-	now := time.Now().Unix()
-	lastSent := now - net.GetLastSeenIn()
-	lastReceive := now - net.GetLastSeenOut()
-	q.SetLastSeenIn(lastSent)
-	q.SetLastSeenOut(lastReceive)
-
-	return q
-}
 
 func (netModel *NetworkingModel) cleanNetworks() {
 	netModel.BeginRemoveRows(core.NewQModelIndex(), 0, len(netModel.Networks())-1)
@@ -169,3 +155,26 @@ func (netModel *NetworkingModel) removeNetwork(row int) {
 func (netModel *NetworkingModel) updateCount() {
 	netModel.SetCount(len(netModel.Networks()))
 }
+
+func INetworkToQNetworking(net coin.PexNode) *QNetworking {
+	q := NewQNetworking(nil)
+
+	source := net.IsTrusted()
+
+	q.SetIp(net.GetIp())
+	q.SetPort(int(net.GetPort()))
+	if source {
+		q.SetSource("Default peer")
+	} else {
+		q.SetSource("Peer exchange")
+	}
+	q.SetBlock(net.GetBlockHeight())
+	now := time.Now().Unix()
+	lastSent := now - net.GetLastSeenIn()
+	lastReceive := now - net.GetLastSeenOut()
+	q.SetLastSeenIn(lastSent)
+	q.SetLastSeenOut(lastReceive)
+
+	return q
+}
+
