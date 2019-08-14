@@ -2,23 +2,24 @@ package core
 
 type PEX interface {
 	getTxnPool() TransactionIterator
-	getConnections() 
+	getConnections()
 	broadcast(txn Transaction)
+}
 
-type NetworkIterator interface {
-	Value() INetwork
+type PexNodeIterator interface {
+	Value() PexNode
 	Next() bool
 	HasNext() bool
 }
 
 type NetworkSet interface {
-	ListNetworks() NetworkIterator
+	ListNetworks() PexNodeIterator
 }
 
-type INetwork interface {
+type PexNode interface {
 	GetIp() string
 	GetPort() uint16
-	GetBlock() uint64
+	GetBlockHeight() uint64
 	IsTrusted() bool
 	GetLastSeenIn() int64
 	GetLastSeenOut() int64

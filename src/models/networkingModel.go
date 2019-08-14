@@ -9,27 +9,27 @@ import (
 
 // ip, port, source, block, lastSeenIn, lastSeenOut
 const (
-	Ip          = int(core.Qt__UserRole) + 1
-	Port        = int(core.Qt__UserRole) + 2
-	Source      = int(core.Qt__UserRole) + 3
-	Block       = int(core.Qt__UserRole) + 4
-	LastSeenIn  = int(core.Qt__UserRole) + 5
-	LastSeenOut = int(core.Qt__UserRole) + 6
+	Ip          = iota +  int(core.Qt__UserRole)
+	Port
+	Source
+	Block
+	LastSeenIn
+	LastSeenOut
 )
 
 type NetworkingModel struct {
 	core.QAbstractListModel
 
-	_ func() `constructor:"init"`
+	_ func() 					`constructor:"init"`
 
-	_ map[int]*core.QByteArray `property:"roles"`
-	_ []*QNetworking           `property:"networks"`
+	_ map[int]*core.QByteArray  `property:"roles"`
+	_ []*QNetworking            `property:"networks"`
 
-	_ func(*QNetworking)   `slot:"addNetwork"`
-	_ func(row int)        `slot:"removeNetwork"`
-	_ func([]*QNetworking) `slot:"addMultipleNetworks"`
-	_ func()               `slot:"cleanNetworks"`
-	_ int                  `property:"count"`
+	_ func(*QNetworking)   		`slot:"addNetwork"`
+	_ func(row int)        		`slot:"removeNetwork"`
+	_ func([]*QNetworking) 		`slot:"addMultipleNetworks"`
+	_ func()               		`slot:"cleanNetworks"`
+	_ int                  		`property:"count"`
 }
 
 type QNetworking struct {
@@ -137,12 +137,12 @@ func (netModel *NetworkingModel) addMultipleNetworks(w []*QNetworking) {
 	}
 }
 
-func INetworkToQNetworking(net coin.INetwork) *QNetworking {
+func INetworkToQNetworking(net coin.PexNode) *QNetworking {
 	q := NewQNetworking(nil)
 	q.SetIp(net.GetIp())
 	q.SetPort(int(net.GetPort()))
 	q.SetSource(net.IsTrusted())
-	q.SetBlock(net.GetBlock())
+	q.SetBlock(net.GetBlockHeight())
 	now := time.Now().Unix()
 	lastSent := now - net.GetLastSeenIn()
 	lastReceive := now - net.GetLastSeenOut()
