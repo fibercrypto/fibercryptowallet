@@ -84,18 +84,12 @@ Page {
             
 
         }
-        onOpened:{
-            //filter.myModel.loadModel(walletManager.getWallets())
-            //filter.walletsLoaded()
-            //
-        }
+        
         HistoryFilterList {
             id: filter
             anchors.fill: parent
            
-            //property WalletModel myModel: WalletModel{
-            //    id: modelFilters
-            //}
+            
 
         }
     } // ToolTip

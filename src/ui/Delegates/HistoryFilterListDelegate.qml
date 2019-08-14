@@ -123,35 +123,5 @@ Item {
         } // ListView
     } // ColumnLayout
 
-    // This model can be the same as the wallet address list,
-    // as this model need to expose all addresses for each wallet.
-    // For that, it should be implemented in the backend, instead of here.
-    //ListModel { // EXAMPLE
-    //    id: listAddresses
-//
-    //    ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-    //     ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-    //      ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-    //    ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
-    //    ListElement { address: "gfdhgs343kweru38200384uwqd" }
-    //}
-
-    //AddressModel {
-//
-    //    id: listAddresses
-    //    property Timer timer: Timer {
-    //                            id: addressModelTimer2
-    //                            interval: 0
-    //                            repeat: false
-    //                            running: true
-    //                            onTriggered: {
-    //                                listAddresses.loadModel(walletManager.getAddresses(fileName))
-    //                                listAddresses.removeAddress(0)
-    //                                addressModelTimer2.running = false 
-    //                                console.log("Loaded")
-    //                                
-    //                                   
-    //                                }
-    //                        }
-    //}
+   
 }
