@@ -34,24 +34,24 @@ func (it *SkycoinPexNodeIterator) HasNext() bool {
 	return true
 }
 
-func NewSkycoinNetworkIterator(network []core.PexNode) *SkycoinPexNodeIterator {
+func NewSkycoinPexNodeIterator(network []core.PexNode) *SkycoinPexNodeIterator {
 	return &SkycoinPexNodeIterator{networks: network, current: -1}
 }
 
-type SkycoinRemoteNetwork struct {
+type SkycoinNetworkConnections struct {
 	//Implements NetworkSet interface
 	nodeAddress string
 }
 
-func NewSkycoinRemoteNetwork(nodeAddress string) *SkycoinRemoteNetwork {
-	return &SkycoinRemoteNetwork{nodeAddress}
+func NewSkycoinRemoteNetwork(nodeAddress string) *SkycoinNetworkConnections {
+	return &SkycoinNetworkConnections{nodeAddress}
 }
 
-func (remoteNetwork *SkycoinRemoteNetwork) newClient() *api.Client {
+func (remoteNetwork *SkycoinNetworkConnections) newClient() *api.Client {
 	return api.NewClient(remoteNetwork.nodeAddress)
 }
 
-func (remoteNetwork *SkycoinRemoteNetwork) ListNetworks() core.PexNodeIterator {
+func (remoteNetwork *SkycoinNetworkConnections) ListNetworks() core.PexNodeIterator {
 
 	c := remoteNetwork.newClient()
 	nets, err := c.NetworkConnections(nil)
@@ -66,7 +66,7 @@ func (remoteNetwork *SkycoinRemoteNetwork) ListNetworks() core.PexNodeIterator {
 		netIterator = append(netIterator, connectionsToNetwork(con))
 	}
 
-	return NewSkycoinNetworkIterator(netIterator)
+	return NewSkycoinPexNodeIterator(netIterator)
 }
 
 type SkycoinPexNode struct {
