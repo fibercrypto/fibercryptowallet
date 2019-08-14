@@ -47,7 +47,6 @@ func (al *AddressList) init() {
 	al.ConnectData(al.data)
 	al.ConnectRoleNames(al.roleNames)
 
-	al.addExamples()
 }
 
 func (al *AddressList) rowCount(*core.QModelIndex) int {
@@ -95,27 +94,4 @@ func (al *AddressList) data(index *core.QModelIndex, role int) *core.QVariant {
 			return core.NewQVariant()
 		}
 	}
-}
-
-func (al *AddressList) addExamples() {
-	//adr := NewAddressDetails(nil)
-	//adr.SetAddress("734irweaweygtawieta783cwyc")
-	//adr.SetAddressSky(38)
-	//adr.SetAddressCoinHours(5048)
-	//al.addAddress(adr)
-	//adr1 := NewAddressDetails(nil)
-	//adr1.SetAddress("ekq03i3qerwhjqoqh9823yurig")
-	//adr1.SetAddressSky(61)
-	//adr1.SetAddressCoinHours(9456)
-	//al.addAddress(adr1)
-	//adr2 := NewAddressDetails(nil)
-	//adr2.SetAddress("1kjher73yiner7wn32nkuwe94v")
-	//adr2.SetAddressSky(1)
-	//adr2.SetAddressCoinHours(24)
-	//al.addAddress(adr2)
-	//adr3 := NewAddressDetails(nil)
-	//adr3.SetAddress("oopfwwklfd34iuhjwe83w3h28r")
-	//adr3.SetAddressSky(111)
-	//adr3.SetAddressCoinHours(13548)
-	//al.addAddress(adr3)
 }
