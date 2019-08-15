@@ -73,7 +73,9 @@ Page {
 
                 onClicked: {
                     dialogAddLoadWallet.mode = CreateLoadWallet.Create
+                    
                     dialogAddLoadWallet.open()
+
                 }
 
             }
@@ -142,7 +144,14 @@ Page {
 
         onAccepted: {
             console.log("Add wallet")
-            listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
+            //if (encryptionEnabled){
+//
+            //}
+            //else{
+            //    
+            //}
+            //listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
+           // walletManager.
         }
     }
 
