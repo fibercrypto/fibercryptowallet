@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
+	"github.com/therecipe/qt/qml"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -36,7 +37,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 
-	walletM.WalletEnv = &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
+	walletM.WalletEnv = &models.WalletNode{NodeAddress: "http://127.0.0.1:6420"} //&models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
 
 	walletM.SeedGenerator = new(models.SeedService)
 
@@ -152,6 +153,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 	for it.Next() {
 		addr := it.Value()
 		qaddress := NewQAddress(nil)
+		qml.QQmlEngine_SetObjectOwnership(qaddress, qml.QQmlEngine__CppOwnership)
 		qaddress.SetAddress(addr.String())
 		sky, err := addr.GetCryptoAccount().GetBalance("SKY")
 		if err != nil {
@@ -176,6 +178,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
 	qwallet := NewQWallet(nil)
+	qml.QQmlEngine_SetObjectOwnership(qwallet, qml.QQmlEngine__CppOwnership)
 	qwallet.SetName(wlt.GetLabel())
 
 	qwallet.SetFileName(wlt.GetId())

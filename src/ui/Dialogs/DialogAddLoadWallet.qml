@@ -22,6 +22,23 @@ Dialog {
     onModeChanged: {
         standardButton(Dialog.Ok).text = mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
     }
+    onAccepted:{
+        var scanA = 1
+        if(encryptionEnabled){
+            if (mode === CreateLoadWallet.Load){
+                scanA = 10
+            }
+            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text , scanA))
+            
+        } else{
+            
+            if (mode === CreateLoadWallet.Load){
+                scanA = 10
+            }
+            
+            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, scanA))
+        }
+    }
 
     function updateAcceptButtonStatus() {
 
@@ -76,7 +93,6 @@ Dialog {
                 nextTabItem: columnLayoutSeedWarning.warn ? checkBoxContinueWithSeedWarning : checkBoxEncryptWallet
 
                 onDataModified: {
-                    console.log("dataModified")
                     updateAcceptButtonStatus()
                 }
             }
