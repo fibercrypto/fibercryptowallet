@@ -99,7 +99,9 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		c := wltSrv.newClient()
 		wltR, err := c.CreateWallet(wltOpt)
 		if err != nil {
+
 			return nil, err
+
 		}
 		wlt = walletResponseToWallet(*wltR)
 
@@ -381,6 +383,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 
 func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	password, _ := pwd("Insert Password")
+
 	passwordByte := []byte(password)
 	opts := wallet.Options{
 		Label:    label,
@@ -388,14 +391,26 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Encrypt:  IsEncrypted,
 		Type:     WalletTypeDeterministic,
 		Password: passwordByte,
-		ScanN:    uint64(scanAddressesN),
 	}
 	wltName := wltSrv.newUnicWalletFilename()
-	wlt, err := wallet.NewWallet(wltName, opts)
-	if err != nil {
-		return nil, err
+	var wlt wallet.Wallet
+	var err error
+	if scanAddressesN > 0 {
+		wlt, err = wallet.NewWalletScanAhead(wltName, opts, &TransactionFinder{})
+		if err != nil {
+
+			return nil, err
+		}
+	} else {
+		wlt, err = wallet.NewWallet(wltName, opts)
+		if err != nil {
+
+			return nil, err
+		}
 	}
+
 	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
 
@@ -478,6 +493,29 @@ func (wltSrv *SkycoinLocalWallet) IsEncrypted(walletName string) (bool, error) {
 		return false, err
 	}
 	return wlt.IsEncrypted(), nil
+}
+
+type TransactionFinder struct {
+}
+
+func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bool, error) {
+	addrs := make([]string, 0)
+	for _, addr := range addresses {
+		addrs = append(addrs, addr.String())
+	}
+	answ := make([]bool, len(addrs))
+	c := util.NewClient()
+
+	for i := 0; i < len(addrs); i++ {
+		txn, err := c.Transactions([]string{addrs[i]})
+		if err != nil {
+			return nil, err
+		}
+		if len(txn) != 0 {
+			answ[i] = true
+		}
+	}
+	return answ, nil
 }
 
 type LocalWallet struct {

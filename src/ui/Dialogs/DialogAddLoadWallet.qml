@@ -23,7 +23,7 @@ Dialog {
         standardButton(Dialog.Ok).text = mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
     }
     onAccepted:{
-        var scanA = 1
+        var scanA = 0
         if(encryptionEnabled){
             if (mode === CreateLoadWallet.Load){
                 scanA = 10
