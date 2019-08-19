@@ -15,7 +15,6 @@ Item {
     Behavior on implicitHeight { NumberAnimation { duration: animateDisplacement ? 250 : 0; easing.type: Easing.OutQuint; onRunningChanged: animateDisplacement = false } }
 
     clip: true
-
     ItemDelegate {
         id: itemDelegateWalletName
 
@@ -48,26 +47,12 @@ Item {
         
         clip: true
         interactive: false
-        //model: modelAddresses
-
+        model: qaddresses
+        
         delegate: OutputsListAddressDelegate {
             width: listViewAddresses.width
         }
     } // ListView
 
     // Roles: address
-    // Use listModel.append( { "address": value } )
-    // Or implement the model in the backend (a more recommendable approach)
-    // QAddresses{
-    //     id: modelAddresses
-    // }
-
-    // ListModel {
-    //     id: modelAddresses
-    //     // The first element must exist but will not be used
-    //     ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-    //     ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
-    //     ListElement { address: "gfdhgs343kweru38200384uwqd" }
-    //     ListElement { address: "00qdqsdjkssvmchskjkxxdg374" }
-    // }
 }

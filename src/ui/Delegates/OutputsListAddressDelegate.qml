@@ -18,7 +18,7 @@ Item {
     Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
     clip: true
-
+    
     ItemDelegate {
         id: itemDelegateAddress
 
@@ -64,7 +64,8 @@ Item {
 
         clip: true
         interactive: false
-        //model: modelOutputs
+        model: qoutputs
+        
 
         delegate: OutputsListAddressOutputDelegate {
             width: listViewAddressOutputs.width
@@ -72,18 +73,4 @@ Item {
     } // ListView
 
     // Roles: outputID, addressSky, addressCoinHours
-    // Use listModel.append( { "outputID": value, "addressSky": value, "addressCoinHours": value } )
-    // Or implement the model in the backend (a more recommendable approach)
-    // QOutputs{
-    //     id: modelOutputs
-    // }
-
-    // ListModel {
-    //     id: modelOutputs
-    //     // The first element must exist but will not be used
-    //     ListElement { outputID: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
-    //     ListElement { outputID: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
-    //     ListElement { outputID: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
-    //     ListElement { outputID: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
-    // }
 }

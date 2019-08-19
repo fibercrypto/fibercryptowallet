@@ -29,7 +29,7 @@ type ModelWallets struct {
 func (m *ModelWallets) init() {
 	m.SetRoles(map[int]*qtcore.QByteArray{
 		Name: 			 qtcore.NewQByteArray2("name", -1),
-		QAddresses:		 qtcore.NewQByteArray2("addresses", -1),
+		QAddresses:		 qtcore.NewQByteArray2("qaddresses", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
@@ -71,7 +71,7 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 		}
 	case QAddresses:
 		{
-			return qtcore.NewQVariant1(m.Addresses())
+			return qtcore.NewQVariant1(w)
 		}
 	default:
 		{

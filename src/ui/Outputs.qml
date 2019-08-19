@@ -74,26 +74,10 @@ Page {
                     clip: true
 
                     model: modelWallets
+                   
                     delegate: OutputsListDelegate {
                         width: listViewWallets.width
                     }
-
-                    // Timer {
-                    //     id: timer
-                    //     repeat: false
-                    //     running: true
-                    //     interval: 0
-                    //     onTriggered: {
-                    //         listViewWallets.model = modelWallets
-
-                    //         console.log('Model changed!')
-                    //     }
-                    // }
-
-                    // Component.onCompleted: {
-                    //     timer.start()
-                    //     console.log('Timer started (10s)')
-                    // }
                 } // ListView
             } // ScrollView
         } // ColumnLayout (frame)
@@ -104,12 +88,4 @@ Page {
     QWallets{
         id: modelWallets
     }
-
-
-    // ListModel { // EXAMPLE
-    //     id: modelWallets
-    //     ListElement { name: "Wallet A" }
-    //     ListElement { name: "Wallet B" }
-    //     ListElement { name: "Wallet C" }
-    // }
 }
