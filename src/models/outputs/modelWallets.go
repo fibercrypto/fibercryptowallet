@@ -10,7 +10,7 @@ const (
 	Name = int(qtcore.Qt__UserRole) + 1
 	QAddresses = int(qtcore.Qt__UserRole) + 2
 	//Set the correct NodeAddress
-	ADDR = "http://127.0.0.1:46445"
+	ADDR = "http://127.0.0.1:36735"
 )
 
 type ModelWallets struct {
@@ -44,7 +44,6 @@ func (m *ModelWallets) init() {
 }
 
 func (m *ModelWallets) rowCount(*qtcore.QModelIndex) int {
-	println("Row count:", len(m.Addresses()))
 	return len(m.Addresses())
 }
 
@@ -53,7 +52,6 @@ func (m *ModelWallets) roleNames() map[int]*qtcore.QByteArray {
 }
 
 func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
-	println("data requested")
 	if !index.IsValid() {
 		return qtcore.NewQVariant()
 	}
@@ -88,8 +86,6 @@ func (m *ModelWallets) insertRows(row int, count int) bool {
 
 func (m *ModelWallets) loadModel() {
 	aModels := make([]*ModelAddresses, 0)
-	println("loadModel")
-
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
 		return
@@ -120,12 +116,10 @@ func (m *ModelWallets) loadModel() {
 				qOutputs = append(qOutputs, qo)
 			}
 			mo.addOutputs(qOutputs)
-			//println("Address of ModelOutputs ", a.String(), " --> ", &mo)
 			oModels = append(oModels, mo)
 		}
 		ma.addOutputs(oModels)
 		aModels = append(aModels, ma)
-		//println("Address of ModelAddresses on append --> ", &ma)
 	}
 	m.addAddresses(aModels)
 }
