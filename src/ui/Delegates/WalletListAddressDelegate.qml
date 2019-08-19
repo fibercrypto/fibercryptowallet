@@ -68,6 +68,7 @@ Item {
 
             onCheckedChanged: {
                 encryptionEnabled = checked
+                dialogRequestPassword.open()
             }
         }
         ToolButton {
