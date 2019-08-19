@@ -7,7 +7,7 @@ Dialog {
 
     modal: true
     title: qsTr("Encrypt Wallet")
-    standardButtons: Dialog.Close
+    standardButtons: Dialog.Close | Dialog.Ok
     Flickable {
            id: flickable
            anchors.fill: parent
@@ -15,34 +15,52 @@ Dialog {
            clip: true
            ColumnLayout {
                id: columnLayoutRoot
-               width: parent.width
+               width: parent.width - 10
                spacing: 30
-               Label {
+               Text {
                    text: "We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet."
+                   color: "red"
+                   Layout.alignment: Qt.AlignCenter
+                   Layout.preferredWidth: parent.width - 10
+                   wrapMode: Text.Wrap
+//                   autoFit: TextAutoFit.FitToBounds
                }
                Label {
                    text: "Password"
+                   Layout.preferredWidth: parent.width - 10
+                   Layout.alignment: Qt.AlignCenter
                }
                TextField {
+                   Layout.alignment: Qt.AlignCenter
+                   Layout.preferredWidth: parent.width - 10
                    id: password
 //                   anchors.fill: parent
                    font {
                        pixelSize: 20
                    }
                    passwordCharacter: "*"
-                   echoMode: TextInput.PasswordEchoOnEdit
+                   echoMode: TextInput.Password
                }
                Label {
                    text: "Confirm Password"
+                   Layout.preferredWidth: parent.width - 10
+                   Layout.alignment: Qt.AlignCenter
                }
                TextField {
                    id: confirmPassword
+                   Layout.preferredWidth: parent.width - 10
+                   Layout.alignment: Qt.AlignCenter
 //                   anchors.fill: parent
                    font {
                        pixelSize: 20
                    }
+                   width: parent.width - 20
+                   height: parent.height - 20
                    passwordCharacter: "*"
-                   echoMode: TextInput.PasswordEchoOnEdit
+                   echoMode: TextInput.Password
+                   onEditingFinished: {
+
+                   }
                }
 
            } // ColumnLayout (root)
