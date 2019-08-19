@@ -7,7 +7,7 @@ Dialog {
 
     modal: true
     title: qsTr("Encrypt Wallet")
-    standardButtons: Dialog.Close | Dialog.Ok
+//    standardButtons: Dialog.Close | Dialog.Ok
     Flickable {
            id: flickable
            anchors.fill: parent
@@ -31,15 +31,23 @@ Dialog {
                    Layout.alignment: Qt.AlignCenter
                }
                TextField {
+                   id: password
                    Layout.alignment: Qt.AlignCenter
                    Layout.preferredWidth: parent.width - 10
-                   id: password
 //                   anchors.fill: parent
                    font {
                        pixelSize: 20
                    }
+                   placeholderText: qsTr("Enter Password")
                    passwordCharacter: "*"
                    echoMode: TextInput.Password
+                   onTextEdited: {
+                       if (confirmPassword.text == text) {
+                           buttonOk.enabled = true
+                       } else {
+                           buttonOk.enabled = false
+                       }
+                   }
                }
                Label {
                    text: "Confirm Password"
@@ -50,7 +58,6 @@ Dialog {
                    id: confirmPassword
                    Layout.preferredWidth: parent.width - 10
                    Layout.alignment: Qt.AlignCenter
-//                   anchors.fill: parent
                    font {
                        pixelSize: 20
                    }
@@ -58,8 +65,28 @@ Dialog {
                    height: parent.height - 20
                    passwordCharacter: "*"
                    echoMode: TextInput.Password
-                   onEditingFinished: {
+                   placeholderText: qsTr("Confirm Password")
+                   onTextEdited: {
+                       if (password.text == text) {
+                           buttonOk.enabled = true
+                       } else {
+                           buttonOk.enabled = false
+                       }
+                   }
+               }
+               Button {
+                   id: buttonOk
+//                 Layout.preferredWidth: parent.width - 10
+                   Layout.alignment: Qt.AlignCenter
+                   text: "Ok"
+                   onClicked: {
+                       if(enabled){
+                           // TODO whatever to do with accept
+                           password.clear()
+                           confirmPassword.clear()
+                           dialogRequestPassword.close()
 
+                       }
                    }
                }
 
