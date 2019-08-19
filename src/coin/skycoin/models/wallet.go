@@ -86,7 +86,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 }
 
 func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
-	wlt := RemoteWallet{}
+	wlt := RemoteWallet{nodeAddress: wltSrv.nodeAddress}
 	if IsEncrypted {
 		password, _ := pwd("Enter your password")
 		wltOpt := api.CreateWalletOptions{}
@@ -104,6 +104,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 
 		}
 		wlt = walletResponseToWallet(*wltR)
+		wlt.nodeAddress = wltSrv.nodeAddress
 
 	} else {
 		wltOpt := api.CreateWalletOptions{}
@@ -118,6 +119,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 			return nil, err
 		}
 		wlt = walletResponseToWallet(*wltR)
+		wlt.nodeAddress = wltSrv.nodeAddress
 	}
 
 	return &wlt, nil
