@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/outputs"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"

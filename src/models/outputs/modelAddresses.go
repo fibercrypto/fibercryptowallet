@@ -34,7 +34,6 @@ func (m *ModelAddresses) init() {
 }
 
 func (m *ModelAddresses) rowCount(*core.QModelIndex) int {
-	println("Row count for ModelAddresses:", len(m.Outputs()))
 	return len(m.Outputs())
 }
 
