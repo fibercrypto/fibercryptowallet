@@ -160,8 +160,8 @@ ApplicationWindow {
     RequestPasswordDialog {
         id: dialogRequestPassword
         anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 570 ? 570 - 40 : applicationWindow.height - 40
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 120 : applicationWindow.height - 40
 
         focus: true
         modal: true
