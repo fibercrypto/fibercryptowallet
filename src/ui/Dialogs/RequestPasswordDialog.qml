@@ -7,7 +7,6 @@ Dialog {
 
     modal: true
     title: qsTr("Encrypt Wallet")
-//    standardButtons: Dialog.Close | Dialog.Ok
     Flickable {
            id: flickable
            anchors.fill: parent
@@ -23,7 +22,6 @@ Dialog {
                    Layout.alignment: Qt.AlignCenter
                    Layout.preferredWidth: parent.width - 10
                    wrapMode: Text.Wrap
-//                   autoFit: TextAutoFit.FitToBounds
                }
                Label {
                    text: "Password"
@@ -34,7 +32,6 @@ Dialog {
                    id: password
                    Layout.alignment: Qt.AlignCenter
                    Layout.preferredWidth: parent.width - 10
-//                   anchors.fill: parent
                    font {
                        pixelSize: 20
                    }
@@ -76,7 +73,6 @@ Dialog {
                }
                Button {
                    id: buttonOk
-//                 Layout.preferredWidth: parent.width - 10
                    Layout.alignment: Qt.AlignCenter
                    text: "Ok"
                    onClicked: {
