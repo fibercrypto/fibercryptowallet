@@ -117,7 +117,7 @@ Item {
         focus: true
 
         onAccepted: {
-            console.log("Adding accepted")
+            //walletManager.
         }
         onRejected: {
             console.log("Adding rejected")
@@ -134,9 +134,8 @@ Item {
         onAccepted: {
             
             var qwallet = walletManager.editWallet(fileName, newLabel)
-            console.log(newLabel)
-            console.log(qwallet.name)
-            walletModel.editWallet(index, qwallet.name, qwallet, encryptionEnabled, qwallet.sky, qwallet.coinHours )
+            
+            walletModel.editWallet(index, qwallet.name, encryptionEnabled, qwallet.sky, qwallet.coinHours )
     
         }
         onRejected: {
