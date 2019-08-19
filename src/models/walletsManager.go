@@ -24,6 +24,7 @@ type WalletManager struct {
 	_ func(id string, password string)                                     `slot:"decryptWallet"`
 	_ func() []*QWallet                                                    `slot:"getWallets"`
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
+	_ func(id, label string) *QWallet                                      `slot:"editWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -36,9 +37,10 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
+	walletM.ConnectEditWallet(walletM.editWallet)
 
-	walletM.WalletEnv = /*&models.WalletNode{NodeAddress: "http://127.0.0.1:6420"}*/ &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
-
+	//walletM.WalletEnv = &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
+	walletM.WalletEnv = &models.WalletNode{NodeAddress: "http://127.0.0.1:6420"}
 	walletM.SeedGenerator = new(models.SeedService)
 
 }
@@ -140,6 +142,18 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 	}
 
 	return qwallets
+}
+
+func (walletM *WalletManager) editWallet(id, label string) *QWallet {
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
+	wlt.SetLabel(label)
+	wlt = walletM.WalletEnv.GetWalletSet().GetWallet(id)
+	encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(wlt.GetId())
+	if err != nil {
+		return nil
+	}
+	qwallet := fromWalletToQWallet(wlt, encrypted)
+	return qwallet
 }
 
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {

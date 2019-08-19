@@ -534,7 +534,18 @@ func (wlt LocalWallet) GetLabel() string {
 	return wlt.Label
 }
 func (wlt LocalWallet) SetLabel(wltName string) {
+	wltFile, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.GetId()))
+	if err != nil {
+		return
+	}
+	wltFile.SetLabel(wltName)
+
+	err = wallet.Save(wltFile, wlt.WalletDir)
+	if err != nil {
+		return
+	}
 	wlt.Label = wltName
+
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64) {
 

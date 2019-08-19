@@ -132,7 +132,12 @@ Item {
         modal: true
 
         onAccepted: {
-            console.log("Editting accepted")
+            
+            var qwallet = walletManager.editWallet(fileName, newLabel)
+            console.log(newLabel)
+            console.log(qwallet.name)
+            walletModel.editWallet(index, qwallet.name, qwallet, encryptionEnabled, qwallet.sky, qwallet.coinHours )
+    
         }
         onRejected: {
             console.log("Editting rejected")
