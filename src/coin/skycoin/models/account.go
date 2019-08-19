@@ -51,6 +51,9 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //------TODO
 	return nil
 }
+func (addr SkycoinAddress) ListPendingTransactions() core.TransactionIterator { //------TODO
+	return nil
+}
 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	c := wlt.newClient()
@@ -78,6 +81,9 @@ func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //
 }
 
 func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
+	return nil
+}
+func (wlt RemoteWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
 	return nil
 }
 
@@ -119,6 +125,9 @@ func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //-
 }
 
 func (wlt LocalWallet) ListTransactions() core.TransactionIterator { //------TODO
+	return nil
+}
+func (wlt LocalWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
 	return nil
 }
 

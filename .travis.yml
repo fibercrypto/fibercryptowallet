@@ -1,28 +1,62 @@
+sudo: required
 language: go
-
 go:
-- 1.12.x
+- 1.11.1
+
+services:
+- docker
+
+go_import_path: github.com/fibercrypto/FiberCryptoWallet
 
 matrix:
   include:
-  - os: linux
-    dist: xenial
-    before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install devscripts build-essential lintian dh-make
-    - sudo apt-get install qtdeclarative5-dev qt5-default libjack-jackd2-dev
-    - sudo apt install libgl-dev libglu-dev libglib2.0-dev libsm-dev libxrender-dev libfontconfig1-dev libxext-dev
-    - sudo apt-get -y install build-essential libglu1-mesa-dev libpulse-dev libglib2.0-dev
-    compiler:
-    - clang
-    - gcc
+  - stage: "RPI"
+    if: branch = release*$
+    install:
+    - docker pull therecipe/qt:rpi1
+    - docker pull therecipe/qt:rpi2
+    - docker pull therecipe/qt:rpi3
+    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    
     script:
-    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
-    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
-    - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true) 
     - go get -t -d -v ./...
-    - make build-wallet
-  - os: osx
+    - $GOPATH/bin/qtdeploy -docker build rpi1
+    - $GOPATH/bin/qtdeploy -docker build rpi2
+    - $GOPATH/bin/qtdeploy -docker build rpi3
+
+  - stage: "Android"
+    if: branch = release*$
+
+    install:
+    - docker pull therecipe/qt:android
+    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+
+    script:
+    - go get -t -d -v ./...
+    - $GOPATH/bin/qtdeploy -docker build android
+    - $GOPATH/bin/qtdeploy -docker build android-emulator
+
+  - stage: "Linux"
+    install:
+    - docker pull therecipe/qt:linux
+    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    
+    script:
+    - go get -t -d -v ./...
+    - $GOPATH/bin/qtdeploy -docker build desktop
+  
+  - stage: "Windows"
+    os: windows
+    install:
+    - go get -u -v github.com/therecipe/qt/cmd/...
+    - ($(go env GOPATH)\bin\qtsetup -test=false | true)
+    
+    script:
+    - go get -t -d -v ./...
+    - $GOPATH/bin/qtdeploy build desktop 
+
+  - stage: "MacOS"
+    os: osx
     osx_image: xcode10.2
     script:
     - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
@@ -30,25 +64,7 @@ matrix:
     - xcode-select --install | true
     - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true)
     - go get -t -d -v ./...
-    - make build-wallet 
-#  - os: windows
-#    before_install:
-#    - dir C:/Program\ Files\ \(x86\)/Windows\ Kits/10/bin/10.0.17134.0/x64
-#    - cmd.exe /C 'cd && "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
-#      x86 && cd && cd "C:/Users/travis/build/braindef/jamulus" && dir'
-#    - curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-#    - curl -vLO http://www.steinberg.net/sdk_downloads/ASIOSDK2.3.2.zip
-#    - unzip ASIOSDK2.3.2.zip
-#    - mkdir windows/ASIOSDK2
-#    - cp -rvu ASIOSDK2.3.2/* windows/ASIOSDK2
-#    - "./qt-unified-windows-x86-online.exe --verbose --script qt-installer-windows.qs"
-#    - ls -la C:/Qt/5.12.3/msvc2017/bin/qtenv2.bat
-#    script:
-#    - cmd.exe /C 'cd && "C:\Qt\5.12.3\msvc2017\bin\qtenv2.bat" && cd && "C:\Program
-#      Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvarsall.bat"
-#      x86 && cd "C:\Users\travis\build\braindef\jamulus" && cd && qmake Jamulus.pro
-#      && nmake'
-#
+    - $GOPATH/bin/qtdeploy build desktop
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
