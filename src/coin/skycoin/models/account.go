@@ -269,7 +269,8 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 }
 
 func UnspentOutputToSkycoinTransactionOutput(uo readable.UnspentOutput) *SkycoinTransactionOutput {
-	coins, _ := strconv.ParseUint(uo.Coins, 10, 64) 
+	Fcoins, _ := strconv.ParseFloat(uo.Coins, 64) 
+	coins := uint64(Fcoins) 
 	return &SkycoinTransactionOutput{
 		Id: uo.Hash,
 		Sky: coins, 
