@@ -412,7 +412,7 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 	}
 
 	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
-		fmt.Println(err.Error())
+
 		return nil, err
 	}
 

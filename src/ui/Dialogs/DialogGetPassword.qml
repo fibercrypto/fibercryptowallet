@@ -6,7 +6,7 @@ Dialog {
     id: dialogGetPassword
     property alias warnigLabel: warnigLabel.text
     property alias warnigVisibility: warnigLabel.visible
-
+    property alias password: password
     modal: true
     title: qsTr("Decrypt Wallet")
     Flickable {
@@ -65,6 +65,8 @@ Dialog {
                        if(enabled){
                            // TODO whatever to do with accept
                            dialogGetPassword.close()
+                           dialogGetPassword.accept()
+                           
 
                        }
                    }

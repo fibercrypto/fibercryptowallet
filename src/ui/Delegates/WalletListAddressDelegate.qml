@@ -39,10 +39,7 @@ Item {
             Layout.fillWidth: true
 
             onClicked: {
-                dialogGetPassword.title = "Enter Password"
-                dialogGetPassword.warnigVisibility = false
-                dialogGetPassword.height = dialogGetPassword.height - 20
-                dialogGetPassword.open()
+                
                 addAddressesRequested()
             }
         }
@@ -72,6 +69,7 @@ Item {
 
             onCheckedChanged:{
                 checked = encryptionEnabled
+                text = checked ? "Decrypt wallet" : "Encrypt wallet"
             }
             //Connections{
             //    target:
@@ -89,11 +87,17 @@ Item {
                 }
             }
             onClicked:{
-                dialogRequestPassword.password.clear()
-                dialogRequestPassword.passwordConf.clear()
-                dialogRequestPassword.open()
-                console.log(checked ? "Wallet Decrypted" : "Wallet Encrypted")
-                text = checked ? "Decrypt wallet" : "Encrypt wallet"
+                if (checked){
+                    dialogGetPassword.password.clear()
+                    dialogGetPassword.open()
+                    
+                } else{
+                    dialogRequestPassword.password.clear()
+                    dialogRequestPassword.passwordConf.clear()
+                    dialogRequestPassword.open()
+                }
+               
+                
             }
         }
         ToolButton {

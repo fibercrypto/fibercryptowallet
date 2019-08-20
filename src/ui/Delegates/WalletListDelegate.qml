@@ -119,12 +119,39 @@ Item {
         focus: true
 
         onAccepted: {
-            //walletManager.
+            if (encryptionEnabled){
+                dialogGetPasswordForAddAddresses.title = "Enter Password"
+                dialogGetPasswordForAddAddresses.warnigVisibility = false
+                dialogGetPasswordForAddAddresses.height = dialogGetPassword.height - 20
+                dialogGetPasswordForAddAddresses.nAddress = spinValue
+                dialogGetPasswordForAddAddresses.open()
+                
+
+            } else{
+                walletManager.newWalletAddress(fileName, spinValue, "")
+                listAddresses.loadModel(walletManager.getAddresses(fileName))
+            }
+            
+            
         }
         onRejected: {
             console.log("Adding rejected")
         }
     } // DialogAddAddresses
+    DialogGetPassword{
+        id: dialogGetPasswordForAddAddresses
+        anchors.centerIn: Overlay.overlay
+        property int nAddress
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        onAccepted:{
+            walletManager.newWalletAddress(fileName, nAddress, password.text)
+            listAddresses.loadModel(walletManager.getAddresses(fileName))
+        }
+    }
     DialogGetPassword {
         id: dialogGetPassword
         anchors.centerIn: Overlay.overlay
@@ -133,6 +160,10 @@ Item {
 
         focus: true
         modal: true
+        onAccepted:{
+            var isEncrypted = walletManager.decryptWallet(fileName, password.text)
+            walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
+        }
     }
     RequestPasswordDialog {
         id: dialogRequestPassword
@@ -144,10 +175,9 @@ Item {
         modal: true
        
         onAccepted:{
-           console.log("Encriptando")
-           var isEncypted = walletManager.encryptWallet(fileName, password.text)
-           console.log("result "+isEncypted)
-           walletModel.editWallet(index, name, isEncypted, sky, coinHours )
+           
+            var isEncypted = walletManager.encryptWallet(fileName, password.text)
+            walletModel.editWallet(index, name, isEncypted, sky, coinHours )
 
         }
     }   //RequestPasswordDialog
