@@ -39,6 +39,10 @@ Item {
             Layout.fillWidth: true
 
             onClicked: {
+                dialogGetPassword.title = "Enter Password"
+                dialogGetPassword.warnigVisibility = false
+                dialogGetPassword.height = dialogGetPassword.height - 20
+                dialogGetPassword.open()
                 addAddressesRequested()
             }
         }
@@ -58,7 +62,7 @@ Item {
         }
         ToolButton {
             id: buttonToggleEncryption
-            text: qsTr("Encrypt wallet")
+            text: qsTr(checked ? "Decrypt wallet" : "Encrypt wallet")
             checkable: true
             checked: encryptionEnabled
             icon.source: "qrc:/images/resources/images/icons/lock" + (checked ? "On" : "Off") + ".svg"
@@ -68,7 +72,15 @@ Item {
 
             onCheckedChanged: {
                 encryptionEnabled = checked
-                dialogRequestPassword.open()
+                if (checked) {
+                    dialogGetPassword.open()
+                    console.log("Password decrypted")
+                    text = "Decrypt wallet"
+                } else {
+                    dialogRequestPassword.open()
+                    console.log("Password encrypted")
+                    text = "Encrypt wallet"
+                }
             }
         }
         ToolButton {
