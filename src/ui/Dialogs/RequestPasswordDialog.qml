@@ -4,7 +4,8 @@ import QtQuick.Controls 2.12
 
 Dialog {
     id: dialogRequestPassword
-
+    property alias password: password
+    property alias passwordConf: confirmPassword
     modal: true
     title: qsTr("Encrypt Wallet")
     Flickable {
@@ -78,9 +79,10 @@ Dialog {
                    onClicked: {
                        if(enabled){
                            // TODO whatever to do with accept
-                           password.clear()
-                           confirmPassword.clear()
-                           dialogRequestPassword.close()
+                           //password.clear()
+                           //confirmPassword.clear()
+                           //dialogRequestPassword.close()
+                           dialogRequestPassword.accept()
 
                        }
                    }

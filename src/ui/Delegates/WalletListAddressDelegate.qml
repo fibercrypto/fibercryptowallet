@@ -70,17 +70,30 @@ Item {
             Material.foreground: Material.Grey
             Layout.fillWidth: true
 
-            onCheckedChanged: {
-                encryptionEnabled = checked
-                if (checked) {
-                    dialogGetPassword.open()
-                    console.log("Password decrypted")
-                    text = "Decrypt wallet"
-                } else {
-                    dialogRequestPassword.open()
-                    console.log("Password encrypted")
-                    text = "Encrypt wallet"
+            onCheckedChanged:{
+                checked = encryptionEnabled
+            }
+            //Connections{
+            //    target:
+            //    onDataChanged:{
+            //        checked = encryptionEnabled
+            //    }
+            //}
+            //Component.onCompleted:{
+            //    console.log(root.ListView.view.parentRoot.ListView.view.model)
+            //}
+            Connections{
+                target: root.ListView.view.parentRoot.ListView.view.model
+                onDataChanged:{
+                    buttonToggleEncryption.checked = encryptionEnabled
                 }
+            }
+            onClicked:{
+                dialogRequestPassword.password.clear()
+                dialogRequestPassword.passwordConf.clear()
+                dialogRequestPassword.open()
+                console.log(checked ? "Wallet Decrypted" : "Wallet Encrypted")
+                text = checked ? "Decrypt wallet" : "Encrypt wallet"
             }
         }
         ToolButton {

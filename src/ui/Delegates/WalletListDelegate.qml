@@ -18,6 +18,7 @@ Item {
     // The following property is used to avoid a binding conflict with the `height` property.
     // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+    
 
     width: walletList.width
     height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
@@ -85,6 +86,7 @@ Item {
             id: addressList
             model: listAddresses
             implicitHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+            property alias parentRoot: root 
             opacity: expanded ? 1.0 : 0.0
             clip: true
             interactive: false
@@ -117,7 +119,7 @@ Item {
         focus: true
 
         onAccepted: {
-            console.log("Adding accepted")
+            //walletManager.
         }
         onRejected: {
             console.log("Adding rejected")
@@ -132,6 +134,24 @@ Item {
         focus: true
         modal: true
     }
+    RequestPasswordDialog {
+        id: dialogRequestPassword
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 100 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+       
+        onAccepted:{
+           console.log("Encriptando")
+           var isEncypted = walletManager.encryptWallet(fileName, password.text)
+           console.log("result "+isEncypted)
+           walletModel.editWallet(index, name, isEncypted, sky, coinHours )
+
+        }
+    }   //RequestPasswordDialog
+
     DialogEditWallet {
         id: dialogEditWallet
         anchors.centerIn: Overlay.overlay
@@ -142,9 +162,8 @@ Item {
         onAccepted: {
             
             var qwallet = walletManager.editWallet(fileName, newLabel)
-            console.log(newLabel)
-            console.log(qwallet.name)
-            walletModel.editWallet(index, qwallet.name, qwallet, encryptionEnabled, qwallet.sky, qwallet.coinHours )
+            
+            walletModel.editWallet(index, qwallet.name, encryptionEnabled, qwallet.sky, qwallet.coinHours )
     
         }
         onRejected: {

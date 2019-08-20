@@ -128,6 +128,7 @@ func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky float
 	if encrypted {
 		w.SetEncryptionEnabled(1)
 	}
+
 	w.SetSky(sky)
 	w.SetCoinHours(coinHours)
 	w.SetFileName(w.FileName())
