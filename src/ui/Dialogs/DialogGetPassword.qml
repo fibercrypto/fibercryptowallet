@@ -3,7 +3,9 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 
 Dialog {
-    id: dialogRequestPassword
+    id: dialogGetPassword
+    property alias warnigLabel: warnigLabel.text
+    property alias warnigVisibility: warnigLabel.visible
 
     modal: true
     title: qsTr("Decrypt Wallet")
@@ -17,6 +19,7 @@ Dialog {
                width: parent.width - 10
                spacing: 30
                Text {
+                   id: warnigLabel
                    text: "Warning: for security reasons, it is not recommended to keep the wallets unencrypted. Caution is advised."
                    color: "red"
                    Layout.alignment: Qt.AlignCenter
@@ -39,7 +42,7 @@ Dialog {
                    passwordCharacter: "*"
                    echoMode: TextInput.Password
                    onTextEdited: {
-                       if (confirmPassword.text.length == 0) {
+                       if (text.length == 0) {
                            buttonOk.enabled = false
                        } else {
                            buttonOk.enabled = true
@@ -47,6 +50,7 @@ Dialog {
                    }
                }
                Text {
+                   Layout.alignment: Qt.AlignCenter
                    textFormat: Text.RichText
                    text: "<a href=\"http://skycoin.net\">I forgot my password</a>."
                    linkColor: "blue"
@@ -60,9 +64,7 @@ Dialog {
                    onClicked: {
                        if(enabled){
                            // TODO whatever to do with accept
-                           password.clear()
-                           confirmPassword.clear()
-                           dialogRequestPassword.close()
+                           dialogGetPassword.close()
 
                        }
                    }
