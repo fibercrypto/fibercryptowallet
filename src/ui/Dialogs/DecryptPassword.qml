@@ -6,7 +6,7 @@ Dialog {
     id: dialogRequestPassword
 
     modal: true
-    title: qsTr("Encrypt Wallet")
+    title: qsTr("Decrypt Wallet")
     Flickable {
            id: flickable
            anchors.fill: parent
