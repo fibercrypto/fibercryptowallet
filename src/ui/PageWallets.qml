@@ -109,26 +109,7 @@ Page {
 
 
     
-    WalletManager{
-        id: walletManager
-    }
-
-    WalletModel{
-        id: walletModel
-        property Timer timer: Timer {
-        
-                                    id: walletModelTimer
-                                    repeat: false
-                                    running: true
-                                    interval: 0
-                                    onTriggered: {
-                                        walletModel.loadModel(walletManager.getWallets())
-                                        walletModelTimer.running = false
-                                    }
-            
-                                }
-    }
-
+    
     
     
 
