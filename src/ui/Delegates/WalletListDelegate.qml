@@ -123,7 +123,15 @@ Item {
             console.log("Adding rejected")
         }
     } // DialogAddAddresses
+    DialogGetPassword {
+        id: dialogGetPassword
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
 
+        focus: true
+        modal: true
+    }
     DialogEditWallet {
         id: dialogEditWallet
         anchors.centerIn: Overlay.overlay
