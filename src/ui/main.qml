@@ -157,15 +157,7 @@ ApplicationWindow {
         modal: true
     }
 
-    RequestPasswordDialog {
-        id: dialogRequestPassword
-        anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
-        height: applicationWindow.height > 570 ? 570 - 100 : applicationWindow.height - 40
-
-        focus: true
-        modal: true
-    }
+   
 
     WalletCreatedDialog {
         id: walletCreatedDialog

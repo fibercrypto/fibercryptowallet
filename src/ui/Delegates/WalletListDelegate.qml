@@ -18,6 +18,7 @@ Item {
     // The following property is used to avoid a binding conflict with the `height` property.
     // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+    
 
     width: walletList.width
     height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
@@ -85,6 +86,7 @@ Item {
             id: addressList
             model: listAddresses
             implicitHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+            property alias parentRoot: root 
             opacity: expanded ? 1.0 : 0.0
             clip: true
             interactive: false
@@ -123,6 +125,24 @@ Item {
             console.log("Adding rejected")
         }
     } // DialogAddAddresses
+
+     RequestPasswordDialog {
+        id: dialogRequestPassword
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 100 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+       
+        onAccepted:{
+            console.log("Encriptando")
+           var isEncypted = walletManager.encryptWallet(fileName, password.text)
+           console.log("result "+isEncypted)
+           walletModel.editWallet(index, name, isEncypted, sky, coinHours )
+
+        }
+    }   //RequestPasswordDialog
 
     DialogEditWallet {
         id: dialogEditWallet

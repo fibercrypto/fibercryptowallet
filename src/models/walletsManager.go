@@ -20,8 +20,8 @@ type WalletManager struct {
 	_ func(entropy int) string                                             `slot:"getNewSeed"`
 	_ func(seed string) int                                                `slot:"verifySeed"`
 	_ func(id string, n int, password string)                              `slot:"newWalletAddress"`
-	_ func(id string, password string)                                     `slot:"encryptWallet"`
-	_ func(id string, password string)                                     `slot:"decryptWallet"`
+	_ func(id string, password string) int                                 `slot:"encryptWallet"`
+	_ func(id string, password string) int                                 `slot:"decryptWallet"`
 	_ func() []*QWallet                                                    `slot:"getWallets"`
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
 	_ func(id, label string) *QWallet                                      `slot:"editWallet"`
@@ -39,8 +39,8 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 	walletM.ConnectEditWallet(walletM.editWallet)
 
-	//walletM.WalletEnv = &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
-	walletM.WalletEnv = &models.WalletNode{NodeAddress: "http://127.0.0.1:6420"}
+	walletM.WalletEnv = &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
+	//walletM.WalletEnv = &models.WalletNode{NodeAddress: "http://127.0.0.1:6420"}
 	walletM.SeedGenerator = new(models.SeedService)
 
 }
@@ -91,18 +91,28 @@ func (walletM *WalletManager) verifySeed(seed string) int {
 
 }
 
-func (walletM *WalletManager) encryptWallet(id, password string) {
+func (walletM *WalletManager) encryptWallet(id, password string) int {
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
 	walletM.WalletEnv.GetStorage().Encrypt(id, pwd)
+	ret, _ := walletM.WalletEnv.GetStorage().IsEncrypted(id)
+	if ret {
+		return 1
+	}
+	return 0
 }
 
-func (walletM *WalletManager) decryptWallet(id, password string) {
+func (walletM *WalletManager) decryptWallet(id, password string) int {
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
 	walletM.WalletEnv.GetStorage().Decrypt(id, pwd)
+	ret, _ := walletM.WalletEnv.GetStorage().IsEncrypted(id)
+	if ret {
+		return 1
+	}
+	return 0
 }
 
 func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {

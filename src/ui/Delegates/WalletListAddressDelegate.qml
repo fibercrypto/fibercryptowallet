@@ -65,10 +65,31 @@ Item {
             Material.accent: Material.Amber
             Material.foreground: Material.Grey
             Layout.fillWidth: true
-
-            onCheckedChanged: {
-                encryptionEnabled = checked
+                        
+            onCheckedChanged:{
+                checked = encryptionEnabled
+            }
+            //Connections{
+            //    target:
+            //    onDataChanged:{
+            //        checked = encryptionEnabled
+            //    }
+            //}
+            //Component.onCompleted:{
+            //    console.log(root.ListView.view.parentRoot.ListView.view.model)
+            //}
+            Connections{
+                target: root.ListView.view.parentRoot.ListView.view.model
+                onDataChanged:{
+                    buttonToggleEncryption.checked = encryptionEnabled
+                }
+            }
+            onClicked:{
+                dialogRequestPassword.password.clear()
+                dialogRequestPassword.passwordConf.clear()
                 dialogRequestPassword.open()
+                
+                
             }
         }
         ToolButton {
