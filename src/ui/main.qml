@@ -27,6 +27,7 @@ ApplicationWindow {
             enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = true
+            enableSettings = true
         }
 
         onPendingTransactionsRequested: {
@@ -38,6 +39,7 @@ ApplicationWindow {
             enablePendingTransactions = false
             enableBlockchain = true
             enableNetworking = true
+            enableSettings = true
 
         }
 
@@ -50,6 +52,7 @@ ApplicationWindow {
             enablePendingTransactions = true
             enableBlockchain = false
             enableNetworking = true
+            enableSettings = true
         }
 
         onNetworkingRequested: {
@@ -61,6 +64,19 @@ ApplicationWindow {
             enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = false
+            enableSettings = true
+        }
+
+        onSettingsRequested: {
+            generalStackView.openSettingsPage()
+            menuBarColor = Material.color(Material.Blue)
+            customHeader.text = qsTr("Settings")
+
+            enableOutputs = true
+            enablePendingTransactions = true
+            enableBlockchain = true
+            enableNetworking = true
+            enableSettings = false
         }
 
         onAboutRequested: {
