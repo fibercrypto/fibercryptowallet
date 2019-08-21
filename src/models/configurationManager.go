@@ -37,7 +37,6 @@ type WalletSource struct {
 
 func getDefaultWalletSource() *walletSource {
 	ws := new(walletSource)
-	qml.QQmlEngine_SetObjectOwnership(ws, qml.QQmlEngine__CppOwnership)
 	ws.sourceType = localWallet
 	walletsDir := filepath.Join(os.Getenv("HOME"), pathToDefaultWalletsFromHome)
 	ws.source = walletsDir
@@ -61,6 +60,7 @@ func (cm *ConfigManager) init() {
 func GetConfigManager() *ConfigManager {
 	once.Do(func() {
 		cm := NewConfigManager(nil)
+		qml.QQmlEngine_SetObjectOwnership(cm, qml.QQmlEngine__CppOwnership)
 		cm.ConnectGetSources(cm.getSources)
 		if configFileExist() {
 			cm = loadConfigFromFile()
@@ -75,6 +75,7 @@ func (cm *ConfigManager) getSources() []*WalletSource {
 	wltsSource := make([]*WalletSource, 0)
 	for _, wltS := range cm.sourceList {
 		newWltSource := NewWalletSource(nil)
+		qml.QQmlEngine_SetObjectOwnership(newWltSource, qml.QQmlEngine__CppOwnership)
 		newWltSource.SetSourceType(wltS.sourceType)
 		newWltSource.SetSource(wltS.source)
 		wltsSource = append(wltsSource, newWltSource)
