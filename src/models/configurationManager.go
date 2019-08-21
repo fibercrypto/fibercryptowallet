@@ -5,6 +5,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sync"
+
+	"github.com/therecipe/qt/qml"
 
 	qtcore "github.com/therecipe/qt/core"
 )
@@ -14,6 +17,11 @@ const (
 	pathToDefaultWalletsFromHome = ".skycoin/wallets"
 	localWallet                  = iota
 	remoteWallet
+)
+
+var (
+	configManager *ConfigManager
+	once          sync.Once
 )
 
 type walletSource struct {
@@ -29,6 +37,7 @@ type WalletSource struct {
 
 func getDefaultWalletSource() *walletSource {
 	ws := new(walletSource)
+	qml.QQmlEngine_SetObjectOwnership(ws, qml.QQmlEngine__CppOwnership)
 	ws.sourceType = localWallet
 	walletsDir := filepath.Join(os.Getenv("HOME"), pathToDefaultWalletsFromHome)
 	ws.source = walletsDir
@@ -45,15 +54,23 @@ type ConfigManager struct {
 }
 
 func (cm *ConfigManager) init() {
-	cm.ConnectGetSources(cm.getSources)
-	if configFileExist() {
-		cm = loadConfigFromFile()
-	} else {
-		cm = getDefaultConfigManager()
-	}
+
+	cm = GetConfigManager()
 
 }
-
+func GetConfigManager() *ConfigManager {
+	once.Do(func() {
+		cm := NewConfigManager(nil)
+		cm.ConnectGetSources(cm.getSources)
+		if configFileExist() {
+			cm = loadConfigFromFile()
+		} else {
+			cm = getDefaultConfigManager()
+		}
+		configManager = cm
+	})
+	return configManager
+}
 func (cm *ConfigManager) getSources() []*WalletSource {
 	wltsSource := make([]*WalletSource, 0)
 	for _, wltS := range cm.sourceList {
