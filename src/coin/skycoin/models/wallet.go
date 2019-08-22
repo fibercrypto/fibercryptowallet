@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"encoding/hex"
@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
@@ -20,8 +19,8 @@ import (
 )
 
 const (
-	Sky                     = skycoin.SkycoinTicker
-	CoinHour                = skycoin.CoinHoursTicker
+	Sky                     = "SKY"
+	CoinHour                = "SKYCH"
 	WalletTypeDeterministic = "deterministic"
 
 	WalletTypeCollection = "collection"

@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"

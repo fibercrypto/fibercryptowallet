@@ -1,7 +1,9 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"fmt"
+
+	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
 )
@@ -34,16 +36,16 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 	altManager := core.LoadAltcoinManager()
-	skyPlug, is := altManager.LookupAltcoinManager(models.Sky)
-	if !is {
-		return
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range altManager.ListRegisteredPlugins() {
+		fmt.Println("PLUGIN")
+		fmt.Println(plug.GetName())
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
 	}
-	walletsEnvs := skyPlug.LoadWalletEnvs()
+
 	walletM.WalletEnv = walletsEnvs[0]
 
-	//walletM.WalletEnv = &models.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
-
-	walletM.SeedGenerator = new(models.SeedService)
+	walletM.SeedGenerator = new(skycoin.SeedService)
 
 }
 

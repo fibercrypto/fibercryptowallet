@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -11,8 +12,8 @@ import (
 const (
 	pathToConfigFromHome         = ".fiber/config.json"
 	pathToDefaultWalletsFromHome = ".skycoin/wallets"
-	localWallet                  = iota
-	remoteWallet
+	LocalWallet                  = iota
+	RemoteWallet
 )
 
 var (
@@ -21,13 +22,13 @@ var (
 )
 
 type ConfigManager struct {
-	sourceList []*WalletSource `json:"SourceList"`
-	node       string          `json:"Node"`
+	sourceList []*WalletSource
+	node       string
 }
 
 type WalletSource struct {
-	sourceType int    `json:"type"`
-	source     string `json:"source"`
+	sourceType int
+	source     string
 }
 
 func (ws *WalletSource) GetType() int {
@@ -37,18 +38,31 @@ func (ws *WalletSource) GetSource() string {
 	return ws.source
 }
 
+type configManagerJson struct {
+	SourceList []*walletSourceJson `json:"SourceList"`
+	Node       string              `json:"Node"`
+}
+
+type walletSourceJson struct {
+	SourceType int    `json:"Type"`
+	Source     string `json:"Source"`
+}
+
 func (cm *ConfigManager) GetSources() []*WalletSource {
 	return cm.sourceList
 }
 
 func GetConfigManager() *ConfigManager {
 	once.Do(func() {
-		cm := new(ConfigManager)
+		var cm *ConfigManager
 
 		if configFileExist() {
+			fmt.Println("CONFIG-EXIST")
 			cm = loadConfigFromFile()
 		} else {
+			fmt.Println("CONFIG-NOT-EXIST")
 			cm = getDefaultConfigManager()
+			fmt.Println("CONFIG-OBTAINED")
 		}
 		confManager = cm
 	})
@@ -81,11 +95,22 @@ func loadConfigFromFile() *ConfigManager {
 }
 
 func getDefaultConfigManager() *ConfigManager {
+
 	cm := new(ConfigManager)
+
 	cm.node = "http://stagin.node.skycoin.net"
 	cm.sourceList = []*WalletSource{getDefaultWalletSource()}
-	jsonFormat, _ := json.Marshal(cm)
+	fmt.Println(3)
+	jsonFormat, err := json.Marshal(cm)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println(string(jsonFormat))
+	os.MkdirAll(filepath.Dir(getConfigFileDir()), 0755)
+	//fmt.Println(err.Error())
+	fmt.Println(jsonFormat)
 	ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
+	//fmt.Println(err.Error())
 	return cm
 
 }
@@ -98,7 +123,7 @@ func getConfigFileDir() string {
 
 func getDefaultWalletSource() *WalletSource {
 	ws := new(WalletSource)
-	ws.sourceType = localWallet
+	ws.sourceType = LocalWallet
 	walletsDir := filepath.Join(os.Getenv("HOME"), pathToDefaultWalletsFromHome)
 	ws.source = walletsDir
 	return ws
