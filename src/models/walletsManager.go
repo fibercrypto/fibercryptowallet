@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
@@ -38,8 +36,6 @@ func (walletM *WalletManager) init() {
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
-		fmt.Println("PLUGIN")
-		fmt.Println(plug.GetName())
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
 	}
 

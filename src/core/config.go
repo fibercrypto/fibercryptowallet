@@ -2,7 +2,6 @@ package core
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -37,10 +36,43 @@ func (ws *WalletSource) GetType() int {
 func (ws *WalletSource) GetSource() string {
 	return ws.source
 }
+func (ws *WalletSource) getWalletSourceJson() *walletSourceJson {
+	return &walletSourceJson{
+		SourceType: ws.GetType(),
+		Source:     ws.GetSource(),
+	}
+}
+
+func (cm *ConfigManager) GetSources() []*WalletSource {
+	return cm.sourceList
+}
+
+func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
+	wltSources := make([]*walletSourceJson, 0)
+	for _, wltS := range cm.sourceList {
+		wltSources = append(wltSources, wltS.getWalletSourceJson())
+	}
+	return &configManagerJson{
+		SourceList: wltSources,
+		Node:       cm.node,
+	}
+}
 
 type configManagerJson struct {
 	SourceList []*walletSourceJson `json:"SourceList"`
 	Node       string              `json:"Node"`
+}
+
+func (cmJ *configManagerJson) getConfigManager() *ConfigManager {
+	wltsSource := make([]*WalletSource, 0)
+	for _, wltS := range cmJ.SourceList {
+		wltsSource = append(wltsSource, wltS.getWalletSource())
+	}
+
+	return &ConfigManager{
+		node:       cmJ.Node,
+		sourceList: wltsSource,
+	}
 }
 
 type walletSourceJson struct {
@@ -48,8 +80,11 @@ type walletSourceJson struct {
 	Source     string `json:"Source"`
 }
 
-func (cm *ConfigManager) GetSources() []*WalletSource {
-	return cm.sourceList
+func (wsJ *walletSourceJson) getWalletSource() *WalletSource {
+	return &WalletSource{
+		source:     wsJ.Source,
+		sourceType: wsJ.SourceType,
+	}
 }
 
 func GetConfigManager() *ConfigManager {
@@ -57,15 +92,16 @@ func GetConfigManager() *ConfigManager {
 		var cm *ConfigManager
 
 		if configFileExist() {
-			fmt.Println("CONFIG-EXIST")
+
 			cm = loadConfigFromFile()
 		} else {
-			fmt.Println("CONFIG-NOT-EXIST")
+
 			cm = getDefaultConfigManager()
-			fmt.Println("CONFIG-OBTAINED")
+
 		}
 		confManager = cm
 	})
+
 	return confManager
 }
 
@@ -80,17 +116,21 @@ func configFileExist() bool {
 }
 
 func loadConfigFromFile() *ConfigManager {
-	cm := new(ConfigManager)
+	cm := new(configManagerJson)
 	fileDir := getConfigFileDir()
 	dat, err := ioutil.ReadFile(fileDir)
+
 	if err != nil {
+
 		return getDefaultConfigManager()
 	}
 	err = json.Unmarshal(dat, cm)
 	if err != nil {
+
 		return getDefaultConfigManager()
 	}
-	return cm
+
+	return cm.getConfigManager()
 
 }
 
@@ -100,17 +140,13 @@ func getDefaultConfigManager() *ConfigManager {
 
 	cm.node = "http://stagin.node.skycoin.net"
 	cm.sourceList = []*WalletSource{getDefaultWalletSource()}
-	fmt.Println(3)
-	jsonFormat, err := json.Marshal(cm)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Println(string(jsonFormat))
+
+	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
+
 	os.MkdirAll(filepath.Dir(getConfigFileDir()), 0755)
-	//fmt.Println(err.Error())
-	fmt.Println(jsonFormat)
+
 	ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
-	//fmt.Println(err.Error())
+
 	return cm
 
 }

@@ -1,8 +1,6 @@
 package skycoin
 
 import (
-	"fmt"
-
 	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 
@@ -49,9 +47,10 @@ func (p *SkyFiberPlugin) GetDescription() string {
 }
 
 func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
-	fmt.Println("GET-WALLETS-ENVS")
+
 	config := core.GetConfigManager()
 	wltSources := config.GetSources()
+
 	wltEnvs := make([]core.WalletEnv, 0)
 	for _, wltS := range wltSources {
 		tp := wltS.GetType()
@@ -64,7 +63,7 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 		}
 		wltEnvs = append(wltEnvs, wltEnv)
 	}
-	fmt.Println(wltEnvs)
+
 	return wltEnvs
 }
 
