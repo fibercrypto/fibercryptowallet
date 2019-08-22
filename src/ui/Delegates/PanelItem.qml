@@ -6,6 +6,7 @@ Column {
   id: root
   property string title: "Accordion"
   default property alias item: ld.sourceComponent
+  property alias itemWidth: info.width
   Rectangle {
     width: columnSettings.width
     height: 40
@@ -37,7 +38,7 @@ Column {
   }
   Rectangle {
     id: info
-    width: 200
+    width: show ? ld.width : 0
     height: show ? ld.height : 0
     property bool show : false
 //    color: generalStackView.color // TODO Set proper color
@@ -48,7 +49,7 @@ Column {
       anchors.horizontalCenter: info.horizontalCenter
     }
     Behavior on height {
-      NumberAnimation { duration: 200; easing.type: Easing.InOutQuad }
+      NumberAnimation { duration: 50; easing.type: Easing.InOutQuad }
     }
   }
 }
