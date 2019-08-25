@@ -30,12 +30,14 @@ Page {
                     id: walletPanel
                     title: "Wallets"
                     item: WalletSettings {
+                        id: walletSettings
                     }
                 }
                 PanelItem {
                     id: panelNetwork
                     title: "Networks"
                     item: NetworkSettings {
+                        id: networkSettings
                     }
                 }
             }
