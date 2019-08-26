@@ -5,30 +5,22 @@ import QtQuick.Layouts 1.12
 
 import "../"
 
-ItemDelegate {
+Item {
     id: root
 
     property string modelNodeDirection: "http://localhost:6420"
     property var scrollSettingsWidth: 0
     property bool modelIsWalletEnvLocal: true
     property string modelWalletPath: qsTr("$HOME/.skycoin/wallets")
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-
-    width: parent.width
+    Layout.fillWidth: true
     height: walletPanel.height + panelNetwork.height
+    Layout.alignment: Qt.AlignTop
 
     ColumnLayout {
         id: columnSettings
         anchors.fill: parent
-//        anchors.leftMargin: 20
-//        anchors.rightMargin: 20
-//        anchors.topMargin: 10
-//        anchors.bottomMargin: 12
         spacing: 20
-//        anchors.fill: parent
-//        spacing: 5
+
         PanelItem {
             id: walletPanel
             Layout.fillWidth: true
