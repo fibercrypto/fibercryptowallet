@@ -36,6 +36,7 @@ func (ws *WalletSource) GetType() int {
 func (ws *WalletSource) GetSource() string {
 	return ws.source
 }
+
 func (ws *WalletSource) getWalletSourceJson() *walletSourceJson {
 	return &walletSourceJson{
 		SourceType: ws.GetType(),
@@ -45,6 +46,10 @@ func (ws *WalletSource) getWalletSourceJson() *walletSourceJson {
 
 func (cm *ConfigManager) GetSources() []*WalletSource {
 	return cm.sourceList
+}
+
+func (cm *ConfigManager) GetNode() string {
+	return cm.node
 }
 
 func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
