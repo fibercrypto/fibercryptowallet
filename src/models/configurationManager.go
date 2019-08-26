@@ -19,13 +19,37 @@ type ConfigManager struct {
 	configManager *core.ConfigManager
 	_             func()                 `constructor:"init"`
 	_             func() []*WalletSource `slot:"getSources"`
+	_             func() string          `slot:"getNodeString"`
+	_             func() string          `slot:"getSourceString"`
+	_             func() int             `slot:"getTypeSource` // 1 is Local, 0 is Remote
 }
 
 func (cm *ConfigManager) init() {
 	qml.QQmlEngine_SetObjectOwnership(cm, qml.QQmlEngine__CppOwnership)
 	cm.configManager = core.GetConfigManager()
 	cm.ConnectGetSources(cm.getSources)
+	cm.ConnectGetNodeString(cm.getNodeString)
+	cm.ConnectGetSourceString(cm.getSourceString)
+	cm.ConnectGetTypeSource(cm.getTypeSource)
 
+}
+
+func (cm *ConfigManager) getNodeString() string {
+	return cm.configManager.GetNode()
+}
+
+func (cm *ConfigManager) getSourceString() string {
+	src := cm.configManager.GetSources()[0]
+	return src.GetSource()
+}
+
+func (cm *ConfigManager) getTypeSource() int {
+	src := cm.configManager.GetSources()[0]
+	if src.GetType() == core.LocalWallet {
+		return 1
+	} else {
+		return 0
+	}
 }
 
 func (cm *ConfigManager) getSources() []*WalletSource {
