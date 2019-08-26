@@ -2,6 +2,7 @@ package core
 
 import (
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -26,6 +27,7 @@ type ConfigManager struct {
 }
 
 type WalletSource struct {
+	id         int
 	sourceType int
 	source     string
 }
@@ -35,6 +37,14 @@ func (ws *WalletSource) GetType() int {
 }
 func (ws *WalletSource) GetSource() string {
 	return ws.source
+}
+func (ws *WalletSource) GetId() int {
+	return ws.id
+}
+
+func (ws *WalletSource) edit(source string, tp int) {
+	ws.source = source
+	ws.sourceType = tp
 }
 
 func (ws *WalletSource) getWalletSourceJson() *walletSourceJson {
@@ -50,6 +60,31 @@ func (cm *ConfigManager) GetSources() []*WalletSource {
 
 func (cm *ConfigManager) GetNode() string {
 	return cm.node
+}
+
+func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
+	var src *WalletSource
+	for _, wltSrc := range cm.sourceList {
+		if wltSrc.id == id {
+			src = wltSrc
+			break
+		}
+	}
+	if src == nil {
+		return errors.New("Invalid Id")
+	}
+
+	if tp != LocalWallet && tp != RemoteWallet {
+		tp = src.sourceType
+	}
+
+	if source == "" {
+		source = src.source
+	}
+
+	src.edit(source, tp)
+	return nil
+
 }
 
 func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
@@ -134,7 +169,12 @@ func loadConfigFromFile() *ConfigManager {
 
 		return getDefaultConfigManager()
 	}
-
+	configM := cm.getConfigManager()
+	cont := 1
+	for _, ws := range configM.sourceList {
+		ws.id = cont
+		cont++
+	}
 	return cm.getConfigManager()
 
 }
@@ -165,6 +205,7 @@ func getConfigFileDir() string {
 func getDefaultWalletSource() *WalletSource {
 	ws := new(WalletSource)
 	ws.sourceType = LocalWallet
+	ws.id = 1
 	walletsDir := filepath.Join(os.Getenv("HOME"), pathToDefaultWalletsFromHome)
 	ws.source = walletsDir
 	return ws

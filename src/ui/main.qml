@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import Config 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -28,6 +29,9 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
+        }
+        ConfigManager{
+            id: configManager
         }
 
         onPendingTransactionsRequested: {

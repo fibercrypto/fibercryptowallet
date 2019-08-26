@@ -8,7 +8,7 @@ import "../"
 Item {
     id: root
 
-    property string modelNodeDirection: "http://localhost:6420"
+    property string modelNodeDirection
     property var scrollSettingsWidth: 0
     property bool modelIsWalletEnvLocal: true
     property string modelWalletPath: qsTr("$HOME/.skycoin/wallets")

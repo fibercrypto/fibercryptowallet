@@ -30,9 +30,10 @@ Page {
                     SettingsDelegate {
                         id: settingsDelegate
                         width: applicationWindow.width - 64
-                        modelNodeDirection: "node"
-                        modelIsWalletEnvLocal: true
-                        modelWalletPath: "path"
+                        modelNodeDirection: configManager.getNodeString()
+                       
+                        modelIsWalletEnvLocal: !configManager.getTypeSource()
+                        modelWalletPath: configManager.getSourceString()
                     }
                     Connections {
                         target: scrollSettings
