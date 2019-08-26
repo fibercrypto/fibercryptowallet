@@ -87,6 +87,15 @@ func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
 
 }
 
+func (cm *ConfigManager) EditNode(node string) {
+	cm.node = node
+}
+
+func (cm *ConfigManager) Save() error {
+	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
+	return ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
+}
+
 func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
 	wltSources := make([]*walletSourceJson, 0)
 	for _, wltS := range cm.sourceList {

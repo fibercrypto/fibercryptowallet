@@ -17,11 +17,12 @@ type WalletSource struct {
 type ConfigManager struct {
 	qtcore.QObject
 	configManager *core.ConfigManager
-	_             func()                 `constructor:"init"`
-	_             func() []*WalletSource `slot:"getSources"`
-	_             func() string          `slot:"getNodeString"`
-	_             func() string          `slot:"getSourceString"`
-	_             func() int             `slot:"getTypeSource` // 1 is Local, 0 is Remote
+	_             func()                          `constructor:"init"`
+	_             func() []*WalletSource          `slot:"getSources"`
+	_             func() string                   `slot:"getNodeString"`
+	_             func() string                   `slot:"getSourceString"`
+	_             func() int                      `slot:"getTypeSource` // 1 is Local, 0 is Remote
+	_             func(node, src string, tp bool) `slot:"edit"`
 }
 
 func (cm *ConfigManager) init() {
@@ -31,9 +32,15 @@ func (cm *ConfigManager) init() {
 	cm.ConnectGetNodeString(cm.getNodeString)
 	cm.ConnectGetSourceString(cm.getSourceString)
 	cm.ConnectGetTypeSource(cm.getTypeSource)
+	cm.ConnectEdit(cm.edit)
 
 }
 
+func (cm *ConfigManager) edit(node, src string, tp bool) {
+	cm.configManager.EditWalletSource(1, src, tp)
+	cm.configManager.EditNode(node)
+	cm.configManager.Save()
+}
 func (cm *ConfigManager) getNodeString() string {
 	return cm.configManager.GetNode()
 }
