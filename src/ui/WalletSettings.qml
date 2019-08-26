@@ -4,12 +4,13 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 ColumnLayout {
-    width: scrollSettings.width
+    id: walletSettings
+    width: parent.width
     property alias isSetWalletEnvLocal: walletEnvSwitch.checked
     property alias walletPath: walletPathTextEdit.text
 
     RowLayout {
-        width: scrollSettings.width
+        width: parent.width
         height: 40
         Label {
             font.pointSize: Qt.application.font.pointSize * 0.9
@@ -26,7 +27,7 @@ ColumnLayout {
     }
 
     RowLayout {
-        width: scrollSettings.width
+        width: parent.width
         height: 40
         Label {
             font.pointSize: Qt.application.font.pointSize * 0.9
