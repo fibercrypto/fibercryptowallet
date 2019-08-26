@@ -25,6 +25,7 @@ Page {
                     Button {
                         text: "Apply"
                         Layout.alignment: Qt.AlignRight
+                        id: applyButton
                         anchors.margins: 20
                     }
                     SettingsDelegate {
@@ -34,6 +35,15 @@ Page {
                        
                         modelIsWalletEnvLocal: !configManager.getTypeSource()
                         modelWalletPath: configManager.getSourceString()
+                        Connections{
+                            target:applyButton
+                            onClicked:{
+                                //console.log(settingsDelegate.nodeText)
+                                //console.log(settingsDelegate.wltSourceText)
+                                //console.log(settingsDelegate.typeWallet)
+                                configManager.edit(settingsDelegate.nodeText, settingsDelegate.wltSourceText, settingsDelegate.typeWallet)
+                            }
+                        }
                     }
                     Connections {
                         target: scrollSettings

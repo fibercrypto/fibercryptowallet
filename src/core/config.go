@@ -92,6 +92,7 @@ func (cm *ConfigManager) EditNode(node string) {
 }
 
 func (cm *ConfigManager) Save() error {
+
 	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
 	return ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
 }
@@ -184,7 +185,7 @@ func loadConfigFromFile() *ConfigManager {
 		ws.id = cont
 		cont++
 	}
-	return cm.getConfigManager()
+	return configM
 
 }
 

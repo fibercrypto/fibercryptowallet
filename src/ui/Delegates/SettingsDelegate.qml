@@ -10,6 +10,9 @@ Item {
 
     property string modelNodeDirection
     property var scrollSettingsWidth: 0
+    property string nodeText
+    property bool typeWallet
+    property string wltSourceText
     property bool modelIsWalletEnvLocal: true
     property string modelWalletPath: qsTr("$HOME/.skycoin/wallets")
     Layout.fillWidth: true
@@ -30,7 +33,14 @@ Item {
                 width: root.width
                 isSetWalletEnvLocal: modelIsWalletEnvLocal
                 walletPath: modelWalletPath
+                onWalletPathChanged:{
+                    wltSourceText = walletPath
+                }
+                onIsSetWalletEnvLocalChanged:{
+                    typeWallet = isSetWalletEnvLocal
+                }
             }
+
         } // PanelItem
         PanelItem {
             id: panelNetwork
@@ -40,6 +50,9 @@ Item {
                 width: root.width
                 id: networkSettings
                 nodeDirection: modelNodeDirection
+                onNodeDirectionChanged:{
+                    nodeText = nodeDirection
+                }
             }
         } // PanelItem
         Component.onCompleted: {
