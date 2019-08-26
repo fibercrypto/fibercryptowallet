@@ -33,7 +33,8 @@ Page {
                     id: columnSettings
                     anchors.fill: parent
                     Button {
-                        text: "Button"
+                        text: "Apply"
+                        Layout.alignment: Qt.AlignRight
                         anchors.margins: 20
                     }
                     SettingsDelegate {
