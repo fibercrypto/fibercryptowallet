@@ -18,12 +18,14 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 			Ticker:   SkycoinTicker,
 			Family:   SkycoinFamily,
 			HasBip44: false,
+			Accuracy: 6,
 		},
 		core.AltcoinMetadata{
 			Name:     CoinHoursName,
 			Ticker:   CoinHoursTicker,
 			Family:   CoinHoursFamily,
 			HasBip44: false,
+			Accuracy: 0,
 		},
 	}
 }

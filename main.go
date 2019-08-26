@@ -5,6 +5,7 @@ import (
 
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/blockchain"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
