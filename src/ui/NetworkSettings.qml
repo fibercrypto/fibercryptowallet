@@ -4,7 +4,8 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 RowLayout {
-    width: scrollSettings.width
+    property alias nodeDirection: nodeDirectionField.text
+    width: parent.width
     height: 40
     Label {
         font.pointSize: Qt.application.font.pointSize * 0.9
@@ -13,7 +14,7 @@ RowLayout {
         text: "Node Direction:"
     }
     TextField {
-        id: textEdit
+        id: nodeDirectionField
         Layout.fillWidth: true
         Layout.alignment: Qt.AlignCenter
         placeholderText: qsTr("http://127.0.0.1:6420")
