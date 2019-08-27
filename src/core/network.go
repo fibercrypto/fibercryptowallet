@@ -28,6 +28,14 @@ type MultiPool interface {
 	CreateSection(name string, factory PooledObjectFactory)
 }
 
+type NotAvailableObjectsError struct {
+	poolSection string
+}
+
+func (err NotAvailableObjectsError) Error() string {
+	return fmt.Sprintf("There is not exist %s poolSection", err.poolSection)
+}
+
 type MultiConnectionsPool struct {
 	capacity  int
 	available map[string][]PooledObject
@@ -39,7 +47,7 @@ type MultiConnectionsPool struct {
 func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
 	mutex, ok := mp.mutexs[poolSection]
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("There is not exist %s poolSection", poolSection))
+		return nil, NotAvailableObjectsError{poolSection}
 	}
 	mutex.Lock()
 	defer mutex.Unlock()

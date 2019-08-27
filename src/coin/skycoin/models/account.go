@@ -1,12 +1,13 @@
 package skycoin
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
@@ -14,12 +15,24 @@ import (
 )
 
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
-	c := util.NewClient()
-	bl, err := c.Balance([]string{addr.address})
+	pool := core.GetMultiPool()
+
+	conn, err := WaitForPooledObject(pool, "skycoin")
 	if err != nil {
 		return 0, err
 	}
 
+	c, ok := conn.(*api.Client)
+	if !ok {
+		return 0, errors.New(fmt.Sprintf("There is not propers client in skycoin pool"))
+	}
+
+	bl, err := c.Balance([]string{addr.address})
+
+	if err != nil {
+		return 0, err
+	}
+	pool.Return("skycoin", c)
 	if ticker == Sky {
 		return bl.Confirmed.Coins, nil
 	} else if ticker == CoinHour {
@@ -84,7 +97,20 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	for _, addr := range addresses {
 		addrs = append(addrs, addr.String())
 	}
-	c := util.NewClient()
+
+	pool := core.GetMultiPool()
+	if err != nil {
+		return 0, err
+	}
+	conn, err := WaitForPooledObject(pool, "skycoin")
+	if err != nil {
+		return 0, err
+	}
+	c, ok := conn.(*api.Client)
+	if !ok {
+		return 0, errors.New(fmt.Sprintf("There is not propers client in skycoin pool"))
+	}
+
 	outs, err := c.OutputsForAddresses(addrs)
 	if err != nil {
 		return 0, err

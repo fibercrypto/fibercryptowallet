@@ -2,12 +2,13 @@ package skycoin
 
 import (
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 type SkyFiberPlugin struct {
-	Params SkyFiberParams
+	Params params.SkyFiberParams
 }
 
 func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
@@ -52,14 +53,14 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 	return nil
 }
 
-func NewSkyFiberPlugin(params SkyFiberParams) core.AltcoinPlugin {
+func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 	return &SkyFiberPlugin{
 		Params: params,
 	}
 }
 
 func init() {
-	cf := core.GetConfigManager()
-	core.GetMultiPool().CreateSection("skycoin", sky.NewSkycoinConnectionFactory(cf.GetNode()))
+	//cf := core.GetConfigManager()
+	core.GetMultiPool().CreateSection("skycoin", sky.NewSkycoinConnectionFactory("http://127.0.0.1:6420"))
 	util.RegisterAltcoin(NewSkyFiberPlugin(SkycoinMainNetParams))
 }

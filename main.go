@@ -8,6 +8,7 @@ import (
 
 	"os"
 
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
 )
 
