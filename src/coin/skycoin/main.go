@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
@@ -58,5 +59,7 @@ func NewSkyFiberPlugin(params SkyFiberParams) core.AltcoinPlugin {
 }
 
 func init() {
+	cf := core.GetConfigManager()
+	core.GetMultiPool().CreateSection("skycoin", sky.NewSkycoinConnectionFactory(cf.GetNode()))
 	util.RegisterAltcoin(NewSkyFiberPlugin(SkycoinMainNetParams))
 }
