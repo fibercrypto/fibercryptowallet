@@ -16,6 +16,7 @@ import (
 
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	c := util.NewClient()
+	logrus.Info("POST /api/v1/balance?addrs=xxx")
 	bl, err := c.Balance([]string{addr.address})
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
@@ -48,6 +49,7 @@ func (addr SkycoinAddress) ListPendingTransactions() core.TransactionIterator { 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	c := wlt.newClient()
 	bl, err := c.WalletBalance(wlt.Id)
+	logrus.Info("GET /api/v1/wallet/balance")
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"Error":    err,
@@ -96,6 +98,7 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	}
 	c := util.NewClient()
 	outs, err := c.OutputsForAddresses(addrs)
+	logrus.Info("POST /api/v1/outputs?addrs=xxx")
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"Error":    err,
