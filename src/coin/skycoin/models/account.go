@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"path/filepath"
 	"strconv"
 
@@ -17,6 +18,9 @@ func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	c := util.NewClient()
 	bl, err := c.Balance([]string{addr.address})
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"Error":    err,
+		}).Warn("Couldn't POST /api/v1/balance!")
 		return 0, err
 	}
 
@@ -45,6 +49,9 @@ func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	c := wlt.newClient()
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"Error":    err,
+		}).Warn("Couldn't GET /api/v1/wallet/balance!")
 		return 0, err
 	}
 
@@ -63,13 +70,16 @@ func (wlt RemoteWallet) ListAssets() []string {
 }
 
 func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
+	logrus.Info("ScanUnspentOutputs not implemented for RemoteWallet")
 	return nil
 }
 
 func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
+	logrus.Info("ListTransactions not implemented for RemoteWallet")
 	return nil
 }
 func (wlt RemoteWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
+	logrus.Info("ListPendingTransactions not implemented for RemoteWallet")
 	return nil
 }
 
@@ -87,6 +97,9 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	c := util.NewClient()
 	outs, err := c.OutputsForAddresses(addrs)
 	if err != nil {
+		logrus.WithFields(logrus.Fields{
+			"Error":    err,
+		}).Warn("Couldn't get /api/v1/last_blocks!")
 		return 0, err
 	}
 
@@ -107,13 +120,16 @@ func (wlt LocalWallet) ListAssets() []string {
 }
 
 func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
+	logrus.Info("ScanUnspentOutputs not implemented for LocalWallet")
 	return nil
 }
 
 func (wlt LocalWallet) ListTransactions() core.TransactionIterator { //------TODO
+	logrus.Info("ListTransactions not implemented for LocalWallet")
 	return nil
 }
 func (wlt LocalWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
+	logrus.Info("ListPendingTransactions not implemented for LocalWallet")
 	return nil
 }
 
@@ -130,11 +146,13 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count confirmed balances
 	for _, o := range outs.HeadOutputs {
 		if _, ok := addrsMap[o.Address]; !ok {
+			logrus.Warn("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
+			logrus.Warn("droplet.FromString failed: %v", err)
 			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
 		}
 
@@ -148,11 +166,13 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count spendable balances
 	for _, o := range outs.SpendableOutputs() {
 		if _, ok := addrsMap[o.Address]; !ok {
+			logrus.Warn("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
+			logrus.Warn("droplet.FromString failed: %v", err)
 			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
 		}
 
@@ -166,11 +186,13 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count predicted balances
 	for _, o := range outs.ExpectedOutputs() {
 		if _, ok := addrsMap[o.Address]; !ok {
+			logrus.Warn("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
+			logrus.Warn("droplet.FromString failed: %v", err)
 			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
 		}
 
@@ -184,6 +206,7 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	toBalance := func(b wallet.Balance) (cli.Balance, error) {
 		coins, err := droplet.ToString(b.Coins)
 		if err != nil {
+			logrus.Warn(err)
 			return cli.Balance{}, err
 		}
 
@@ -206,31 +229,37 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 
 		totalConfirmed, err = totalConfirmed.Add(b.confirmed)
 		if err != nil {
+			logrus.Warn(err)
 			return nil, err
 		}
 
 		totalSpendable, err = totalSpendable.Add(b.spendable)
 		if err != nil {
+			logrus.Warn(err)
 			return nil, err
 		}
 
 		totalExpected, err = totalExpected.Add(b.expected)
 		if err != nil {
+			logrus.Warn(err)
 			return nil, err
 		}
 
 		balRlt.Addresses[i].Confirmed, err = toBalance(b.confirmed)
 		if err != nil {
+			logrus.Warn(err)
 			return nil, err
 		}
 
 		balRlt.Addresses[i].Spendable, err = toBalance(b.spendable)
 		if err != nil {
+			logrus.Warn(err)
 			return nil, err
 		}
 
 		balRlt.Addresses[i].Expected, err = toBalance(b.expected)
 		if err != nil {
+			logrus.Warn(err)
 			return nil, err
 		}
 	}
@@ -238,16 +267,19 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	var err error
 	balRlt.Confirmed, err = toBalance(totalConfirmed)
 	if err != nil {
+		logrus.Warn(err)
 		return nil, err
 	}
 
 	balRlt.Spendable, err = toBalance(totalSpendable)
 	if err != nil {
+		logrus.Warn(err)
 		return nil, err
 	}
 
 	balRlt.Expected, err = toBalance(totalExpected)
 	if err != nil {
+		logrus.Warn(err)
 		return nil, err
 	}
 
