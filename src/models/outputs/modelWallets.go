@@ -10,7 +10,7 @@ const (
 	Name = int(qtcore.Qt__UserRole) + 1
 	QAddresses = int(qtcore.Qt__UserRole) + 2
 	//Set the correct NodeAddress
-	ADDR = "http://127.0.0.1:36735"
+	ADDR = "http://127.0.0.1:42823"
 )
 
 type ModelWallets struct {
@@ -115,8 +115,10 @@ func (m *ModelWallets) loadModel() {
 				qo.SetAddressCoinHours(to.GetCoins(""))
 				qOutputs = append(qOutputs, qo)
 			}
-			mo.addOutputs(qOutputs)
-			oModels = append(oModels, mo)
+			if len(qOutputs) != 0{
+				mo.addOutputs(qOutputs)
+				oModels = append(oModels, mo)
+			}
 		}
 		ma.addOutputs(oModels)
 		aModels = append(aModels, ma)
