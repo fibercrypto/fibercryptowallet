@@ -45,7 +45,7 @@ func (cm *ConfigManager) edit(node, src string, tp bool) {
 	}
 	cm.configManager.EditWalletSource(1, src, tpSrc)
 	cm.configManager.EditNode(node)
-	err := cm.configManager.Save()
+	cm.configManager.Save()
 
 }
 func (cm *ConfigManager) getNodeString() string {
