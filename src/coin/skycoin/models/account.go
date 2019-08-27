@@ -274,6 +274,6 @@ func UnspentOutputToSkycoinTransactionOutput(uo readable.UnspentOutput) *Skycoin
 	return &SkycoinTransactionOutput{
 		Id: uo.Hash,
 		Sky: coins, 
-		CoinHours: uo.Hours,
+		CoinHours: uo.CalculatedHours,
 	}
 }
