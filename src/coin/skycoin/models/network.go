@@ -5,6 +5,10 @@ import (
 	"github.com/skycoin/skycoin/src/api"
 )
 
+const (
+	PoolSection = "skycoin"
+)
+
 type SkycoinConnectionFactory struct {
 	url string
 }

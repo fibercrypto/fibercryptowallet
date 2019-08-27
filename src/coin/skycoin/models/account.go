@@ -17,14 +17,15 @@ import (
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	pool := core.GetMultiPool()
 
-	conn, err := WaitForPooledObject(pool, "skycoin")
+	conn, err := WaitForPooledObject(pool, PoolSection)
+	defer pool.Return(PoolSection, conn)
 	if err != nil {
 		return 0, err
 	}
 
 	c, ok := conn.(*api.Client)
 	if !ok {
-		return 0, errors.New(fmt.Sprintf("There is not propers client in skycoin pool"))
+		return 0, errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
 	}
 
 	bl, err := c.Balance([]string{addr.address})
@@ -32,7 +33,7 @@ func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	pool.Return("skycoin", c)
+
 	if ticker == Sky {
 		return bl.Confirmed.Coins, nil
 	} else if ticker == CoinHour {
@@ -102,16 +103,18 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	conn, err := WaitForPooledObject(pool, "skycoin")
+	conn, err := WaitForPooledObject(pool, PoolSection)
+	defer pool.Return(PoolSection, conn)
 	if err != nil {
 		return 0, err
 	}
 	c, ok := conn.(*api.Client)
 	if !ok {
-		return 0, errors.New(fmt.Sprintf("There is not propers client in skycoin pool"))
+		return 0, errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
 	}
 
 	outs, err := c.OutputsForAddresses(addrs)
+
 	if err != nil {
 		return 0, err
 	}

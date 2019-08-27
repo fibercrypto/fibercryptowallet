@@ -146,14 +146,16 @@ func (ss SkycoinBlockchainStatus) SetCacheTime(time uint64) {
 func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 
 	pool := core.GetMultiPool()
-	conn, err := WaitForPooledObject(pool, "skycoin")
+	conn, err := WaitForPooledObject(pool, PoolSection)
+	defer pool.Return(PoolSection, conn)
 	if err != nil {
 		return err
 	}
 	c, ok := conn.(*api.Client)
 	if !ok {
-		return errors.New(fmt.Sprintf("There is not propers client in skycoin pool"))
+		return errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
 	}
+
 	coinSupply, err := c.CoinSupply()
 	if err != nil {
 		return err
@@ -189,14 +191,15 @@ func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 
 func (ss SkycoinBlockchainStatus) requestStatusInfo() error {
 	pool := core.GetMultiPool()
-	conn, err := WaitForPooledObject(pool, "skycoin")
+	conn, err := WaitForPooledObject(pool, PoolSection)
+	defer pool.Return(PoolSection, conn)
 	if err != nil {
 		return err
 	}
 
 	c, ok := conn.(*api.Client)
 	if !ok {
-		return errors.New(fmt.Sprintf("There is not propers client in skycoin pool"))
+		return errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
 	}
 	blocks, err := c.LastBlocks(1)
 
