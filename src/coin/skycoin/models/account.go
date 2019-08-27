@@ -56,7 +56,8 @@ func (addr SkycoinAddress) ListPendingTransactions() core.TransactionIterator { 
 }
 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
-	c := wlt.newClient()
+	c, err := wlt.newClient()
+	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
 		return 0, err

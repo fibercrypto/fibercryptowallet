@@ -34,8 +34,8 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 
-	walletM.WalletEnv = &skycoin.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
-
+	//walletM.WalletEnv = &skycoin.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
+	walletM.WalletEnv = skycoin.NewWalletNode("http://127.0.0.1:6420")
 	walletM.SeedGenerator = new(skycoin.SeedService)
 
 }

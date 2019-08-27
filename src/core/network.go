@@ -26,6 +26,7 @@ type MultiPool interface {
 	Get(poolSection string) (PooledObject, error)
 	Return(poolSection string, obj PooledObject) error
 	CreateSection(name string, factory PooledObjectFactory)
+	ListSections() []string
 }
 
 type NotAvailableObjectsError struct {
@@ -97,6 +98,14 @@ func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectF
 	mp.inUse[name] = make([]PooledObject, 0)
 	mp.mutexs[name] = new(sync.Mutex)
 
+}
+
+func (mp *MultiConnectionsPool) ListSections() []string {
+	sections := make([]string, 0)
+	for key, _ := range mp.factories {
+		sections = append(sections, key)
+	}
+	return sections
 }
 
 func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
