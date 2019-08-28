@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/local"
 
 	"github.com/therecipe/qt/qml"
 
@@ -16,7 +16,7 @@ type WalletSource struct {
 
 type ConfigManager struct {
 	qtcore.QObject
-	configManager *core.ConfigManager
+	configManager *local.ConfigManager
 	_             func()                          `constructor:"init"`
 	_             func() []*WalletSource          `slot:"getSources"`
 	_             func() string                   `slot:"getNodeString"`
@@ -27,7 +27,7 @@ type ConfigManager struct {
 
 func (cm *ConfigManager) init() {
 	qml.QQmlEngine_SetObjectOwnership(cm, qml.QQmlEngine__CppOwnership)
-	cm.configManager = core.GetConfigManager()
+	cm.configManager = local.GetConfigManager()
 	cm.ConnectGetSources(cm.getSources)
 	cm.ConnectGetNodeString(cm.getNodeString)
 	cm.ConnectGetSourceString(cm.getSourceString)
@@ -39,9 +39,9 @@ func (cm *ConfigManager) init() {
 func (cm *ConfigManager) edit(node, src string, tp bool) {
 	var tpSrc int
 	if tp {
-		tpSrc = core.RemoteWallet
+		tpSrc = local.RemoteWallet
 	} else {
-		tpSrc = core.LocalWallet
+		tpSrc = local.LocalWallet
 	}
 	cm.configManager.EditWalletSource(1, src, tpSrc)
 	cm.configManager.EditNode(node)
@@ -59,7 +59,7 @@ func (cm *ConfigManager) getSourceString() string {
 
 func (cm *ConfigManager) getTypeSource() int {
 	src := cm.configManager.GetSources()[0]
-	if src.GetType() == core.LocalWallet {
+	if src.GetType() == local.LocalWallet {
 		return 1
 	} else {
 		return 0

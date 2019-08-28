@@ -3,6 +3,7 @@ package skycoin
 import (
 	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/local"
 
 	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
@@ -50,7 +51,7 @@ func (p *SkyFiberPlugin) GetDescription() string {
 
 func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 
-	config := core.GetConfigManager()
+	config := local.GetConfigManager()
 	wltSources := config.GetSources()
 
 	wltEnvs := make([]core.WalletEnv, 0)
@@ -58,9 +59,9 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 		tp := wltS.GetType()
 		source := wltS.GetSource()
 		var wltEnv core.WalletEnv
-		if tp == core.LocalWallet {
+		if tp == local.LocalWallet {
 			wltEnv = &skycoin.WalletDirectory{WalletDir: source}
-		} else if tp == core.RemoteWallet {
+		} else if tp == local.RemoteWallet {
 			wltEnv = &skycoin.WalletNode{NodeAddress: source}
 		}
 		wltEnvs = append(wltEnvs, wltEnv)
