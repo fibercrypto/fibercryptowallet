@@ -193,7 +193,7 @@ func getDefaultConfigManager() *ConfigManager {
 
 	cm := new(ConfigManager)
 
-	cm.node = "http://stagin.node.skycoin.net"
+	cm.node = "https://staging.node.skycoin.net"
 	cm.sourceList = []*WalletSource{getDefaultWalletSource()}
 
 	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
