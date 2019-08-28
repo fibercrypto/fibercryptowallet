@@ -3,7 +3,7 @@ package skycoin
 import (
 	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/local"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 
 	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
