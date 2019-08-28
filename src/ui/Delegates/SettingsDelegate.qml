@@ -49,9 +49,9 @@ Item {
             item: NetworkSettings {
                 width: root.width
                 id: networkSettings
-                nodeDirection: modelNodeDirection
-                onNodeDirectionChanged:{
-                    nodeText = nodeDirection
+                nodeUrl: modelNodeDirection
+                onNodeUrlChanged:{
+                    nodeText = nodeUrl
                 }
             }
         } // PanelItem
