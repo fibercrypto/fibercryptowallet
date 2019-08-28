@@ -40,7 +40,7 @@ type TransactionOutput interface {
 	GetId() string
 	IsSpent() bool
 	GetAddress() Address
-	GetCoins(ticker string) uint64
+	GetCoins(ticker string) (uint64, error)
 }
 
 type TransactionOutputIterator interface {

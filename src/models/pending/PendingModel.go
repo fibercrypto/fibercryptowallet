@@ -33,7 +33,7 @@ type PendingTransaction struct {
 	qtcore.QObject
 	
 	_ string             `property:"sky"`
-	_ uint64             `property:"coinHours"`
+	_ string             `property:"coinHours"`
 	_ *qtcore.QDateTime  `property:"timeStamp"`
 	_ string             `property:"transactionID"`
 	_ int                `property:"mine"`
@@ -113,6 +113,7 @@ func (m *PendingTransactionList) data(index *qtcore.QModelIndex, role int) *qtco
 func (m *PendingTransactionList) loadModel() {
 	txns, err := m.PEX.GetTxnPool()
 	if err != nil {
+		//display an error in qml app when All is selected
 		println(err)
 		return
 	}
@@ -128,8 +129,9 @@ func (m *PendingTransactionList) loadModel() {
 	}
 	for wallets.Next() {
 		crypto := wallets.Value().GetCryptoAccount()
-		txns = crypto.ListPendingTransactions()
-		if txns == nil {
+		txns, err2 = crypto.ListPendingTransactions()
+		if err2 != nil {
+			//display an error in qml app when Mine is selected
 			return
 		}
 		for txns.Next() {
@@ -151,18 +153,38 @@ func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction 
 	pt.SetTransactionID(stxn.GetId())
 	iter := skycoin.NewSkycoinTransactionOutputIterator(stxn.GetOutputs())
 	sky, coinHours := uint64(0), uint64(0)
+	skyErr, coinHoursErr := false, false
 	for iter.Next() {
 		output := iter.Value()
-		sky = sky + output.GetCoins(skycoin.Sky)
-		coinHours = coinHours + output.GetCoins(skycoin.CoinHour)
+		val, err := output.GetCoins(skycoin.Sky)
+		skyErr = skyErr || (err != nil)
+		if !skyErr {
+			sky = sky + val
+		}
+		val, err = output.GetCoins(skycoin.CoinHour)
+		coinHoursErr = coinHoursErr || (err != nil)
+		if !coinHoursErr {
+			coinHours = coinHours + val
+		}
 	}
-	skyAccuracy, _ := util.AltcoinQuotient(skycoin.Sky)
-	//TODO: return err
-	val := float64(sky) / float64(skyAccuracy)
-	float_sky := strconv.FormatFloat(val, 'f', -1, 64)
+	skyAccuracy, err := util.AltcoinQuotient(skycoin.Sky)
+	skyErr = skyErr || (err != nil)
+	float_sky := ""
+	if skyErr {
+		float_sky = "NA"
+	} else {
+		val := float64(sky) / float64(skyAccuracy)
+		float_sky = strconv.FormatFloat(val, 'f', -1, 64)
+	}
 	pt.SetSky(float_sky)
-	skychAccuracy, _ := util.AltcoinQuotient(skycoin.CoinHour)
-	//TODO: return err
-	pt.SetCoinHours(coinHours / skychAccuracy)
+	skychAccuracy, err2 := util.AltcoinQuotient(skycoin.CoinHour)
+	coinHoursErr = coinHoursErr || (err2 != nil)
+	uint_ch := ""
+	if coinHoursErr {
+		uint_ch = "NA"
+	} else {
+		uint_ch = strconv.FormatUint(coinHours / skychAccuracy, 10)
+	}
+	pt.SetCoinHours(uint_ch)
 	return pt
 }

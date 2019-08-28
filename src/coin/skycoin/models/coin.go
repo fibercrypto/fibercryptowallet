@@ -145,11 +145,16 @@ func (sto *SkycoinTransactionOutput) GetAddress() core.Address {
 	return SkycoinAddress{address: sto.Output.Address}
 } 
 
-func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 { 
-	//TODO: return err here
-	accuracy, _ := util.AltcoinQuotient(ticker)
+func (sto *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) { 
+	accuracy, err := util.AltcoinQuotient(ticker)
+	if err != nil {
+		return uint64(0), err
+	}
 	if ticker == Sky { 
-		coin, _ := strconv.ParseFloat(sto.Output.Coins, 64)
+		coin, err2 := strconv.ParseFloat(sto.Output.Coins, 64)
+		if err2 != nil {
+			return uint64(0), err2
+		}
 		return uint64(coin * float64(accuracy))
 	} 
 	return sto.Output.Hours * accuracy

@@ -9,7 +9,7 @@ ItemDelegate {
     property bool modelMine
     property string modelTransactionID
     property string modelSky
-    property int modelCoinHours
+    property string modelCoinHours
     property date modelTimestamp
 
     RowLayout {
