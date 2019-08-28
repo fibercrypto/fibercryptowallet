@@ -32,6 +32,7 @@ Project files are organized as follows:
 - `./src/ui/Dialogs` : QML definitions for reusable dialogs.
 - `./src/ui/Delegates` : QML specs for partial views.
 - `./src/core` : Core go-lang interfaces.
+- `./src/main` : Project specific source code.
 - `./src/util` : Reusable code.
 - `./src/models` : QT models linking coin-specific models to application GUI.
 - `./src/coin` : Source code for altcoin integrations.
