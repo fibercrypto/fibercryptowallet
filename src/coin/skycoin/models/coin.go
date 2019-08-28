@@ -86,7 +86,7 @@ type SkycoinTransactionInput struct { //Implements TransactionInput interface
 } 
  
 func (in *SkycoinTransactionInput) GetId() string { 
-  	return "f1a61f49cef012e4822b314ca6657d66fdbe3c4d46110a079052a064b9a51e66" 
+  	return "" 
 } 
  
 func (in *SkycoinTransactionInput) IsSpent() bool { 
@@ -94,35 +94,25 @@ func (in *SkycoinTransactionInput) IsSpent() bool {
 } 
  
 func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput { 
-  	return &SkycoinTransactionOutput{} 
+  	return nil 
 } 
  
 /** 
  * SkycoinTransactionInputIterator 
  */ 
 type SkycoinTransactionInputIterator struct { 
-	index int 
-	value *SkycoinTransactionInput 
 } 
  
 func (iter *SkycoinTransactionInputIterator) Value() core.TransactionInput { 
-	if iter.index == 0 && iter.value == nil { 
-		iter.value = &SkycoinTransactionInput{} 
-	} 
-	return iter.value 
+	return nil 
 } 
  
 func (iter *SkycoinTransactionInputIterator) Next() bool { 
-	if iter.index < 3 { 
-		iter.value = &SkycoinTransactionInput{} 
-		iter.index++ 
-		return true 
-	} 
 	return false 
 } 
  
 func (iter *SkycoinTransactionInputIterator) HasNext() bool { 
-  	return iter.index < 3 
+  	return false
 } 
  
 /** 
