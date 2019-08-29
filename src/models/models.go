@@ -7,4 +7,6 @@ func init() {
 	AddressesModel_QmlRegisterType2("WalletsManager", 1, 0, "AddressModel")
 	QAddress_QmlRegisterType2("WalletsManager", 1, 0, "QAddress")
 	WalletManager_QmlRegisterType2("WalletsManager", 1, 0, "WalletManager")
+	ConfigManager_QmlRegisterType2("Config", 1, 0, "ConfigManager")
+	WalletSource_QmlRegisterType2("Config", 1, 0, "WalletSource")
 }

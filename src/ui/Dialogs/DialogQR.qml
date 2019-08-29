@@ -5,16 +5,37 @@ import QtQuick.Controls 2.12
 Dialog {
     id: dialogQR
 
-    property alias imagePath: imageQR.source
-
     title: Qt.application.name + " - QR"
     standardButtons: Dialog.Close
 
-    Image {
-        id: imageQR
-        anchors.fill: parent
+    signal setQRVars(var data)
 
-        fillMode: Image.PreserveAspectFit
-        verticalAlignment: Qt.AlignTop
+    Component.onCompleted: {
+        dialogQR.setQRVars.connect(setVars)
+    }
+
+    function setVars(data) {
+        qrDisplay.value = data;
+        textDisplay.text = data;
+    }
+
+    QRCode {
+        id: qrDisplay
+        anchors.top : parent.top
+        anchors.topMargin : 30
+        anchors.horizontalCenter : parent.horizontalCenter
+        width : 320
+        height : 320
+        level : "H"
+    }
+    TextInput {
+        id : textDisplay
+        anchors.bottom : parent.bottom
+        anchors.bottomMargin : 30
+        anchors.horizontalCenter : parent.horizontalCenter
+        onAccepted: {
+            console.log(dialogQR.text)
+            textDisplay.text = dialogQR.text
+        }
     }
 }
