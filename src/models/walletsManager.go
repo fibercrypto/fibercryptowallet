@@ -38,9 +38,13 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
-	//walletM.ConnectGetAddressesWithWallets(walletM.getAddressesWithWallets)
+	altManager := core.LoadAltcoinManager()
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range altManager.ListRegisteredPlugins() {
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
 
-	walletM.WalletEnv = &skycoin.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
+	walletM.WalletEnv = walletsEnvs[0]
 
 	walletM.SeedGenerator = new(skycoin.SeedService)
 

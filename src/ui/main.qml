@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import WalletsManager 1.0
+import Config 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -28,6 +29,10 @@ ApplicationWindow {
             enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = true
+            enableSettings = true
+        }
+        ConfigManager{
+            id: configManager
         }
 
         onPendingTransactionsRequested: {
@@ -39,6 +44,7 @@ ApplicationWindow {
             enablePendingTransactions = false
             enableBlockchain = true
             enableNetworking = true
+            enableSettings = true
 
         }
 
@@ -51,6 +57,7 @@ ApplicationWindow {
             enablePendingTransactions = true
             enableBlockchain = false
             enableNetworking = true
+            enableSettings = true
         }
 
         onNetworkingRequested: {
@@ -62,6 +69,19 @@ ApplicationWindow {
             enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = false
+            enableSettings = true
+        }
+
+        onSettingsRequested: {
+            generalStackView.openSettingsPage()
+            menuBarColor = Material.color(Material.Blue)
+            customHeader.text = qsTr("Settings")
+
+            enableOutputs = true
+            enablePendingTransactions = true
+            enableBlockchain = true
+            enableNetworking = true
+            enableSettings = false
         }
 
         onAboutRequested: {
@@ -119,7 +139,6 @@ ApplicationWindow {
 
         focus: true
         modal: true
-        imagePath: "qrc:/images/resources/images/icons/qr.svg"
     }
 
     // Hardware dialogs
