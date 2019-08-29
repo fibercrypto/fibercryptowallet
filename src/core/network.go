@@ -47,6 +47,7 @@ type MultiConnectionsPool struct {
 
 func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
 	mutex, ok := mp.mutexs[poolSection]
+
 	if !ok {
 		return nil, NotAvailableObjectsError{poolSection}
 	}
