@@ -26,7 +26,7 @@ type QOutput struct {
 	core.QObject
 
 	_ string 	`property:"outputID"`
-	_ uint64 	`property:"addressSky"`
+	_ float64 	`property:"addressSky"`
 	_ uint64 	`property:"addressCoinHours"`
 }
 
