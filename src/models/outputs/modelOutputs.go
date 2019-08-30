@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	OutputID = int(core.Qt__UserRole) + 1
-	AddressSky = int(core.Qt__UserRole) + 2
-	AddressCoinHours = int(core.Qt__UserRole) + 3
+	OutputID = int(core.Qt__UserRole) + iota + 1
+	AddressSky
+	AddressCoinHours
 )
 
 type ModelOutputs struct {

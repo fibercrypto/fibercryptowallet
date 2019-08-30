@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	Name = int(qtcore.Qt__UserRole) + 1
-	QAddresses = int(qtcore.Qt__UserRole) + 2
+	Name = int(qtcore.Qt__UserRole) + iota + 1
+	QAddresses
 	//Set the correct NodeAddress
-	ADDR = "http://127.0.0.1:42823"
+	ADDR = "http://127.0.0.1:40239"
 )
 
 type ModelWallets struct {

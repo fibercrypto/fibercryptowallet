@@ -5,8 +5,8 @@ import (
 )
 
 const (
-	Address = int(core.Qt__UserRole) + 1
-	QOutputs = int(core.Qt__UserRole) + 2
+	Address = int(core.Qt__UserRole) + iota + 1
+	QOutputs
 )
 
 type ModelAddresses struct {

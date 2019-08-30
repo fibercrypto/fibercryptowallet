@@ -33,12 +33,9 @@ func (addr SkycoinAddress) ListAssets() []string {
 }
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	c := addr.newClient()
-	// addrs := make([]string, 0)
-	// addrs = append(addrs, addr.address)
 	outputs, err := c.OutputsForAddresses([]string{addr.address})
 	if err != nil {
-		println(err)
-		return nil//, err
+		return nil
 	}
 	skyOutputs := make([]core.TransactionOutput, 0)
 	for _, unspentOutput := range outputs.HeadOutputs {
@@ -46,7 +43,7 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 		so.Address = addr
 		skyOutputs = append(skyOutputs, so)
 	}
-	return NewSkycoinTransactionOutputIterator(skyOutputs)//, nil
+	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
 func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //------TODO
 	return nil
