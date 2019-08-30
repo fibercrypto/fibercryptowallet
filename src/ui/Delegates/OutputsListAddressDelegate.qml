@@ -18,7 +18,16 @@ Item {
     Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
     clip: true
-    
+    Component.onCompleted: {
+        outputsListAddressDelegate.qrCodeRequested.connect(genQR)
+    }
+
+    function genQR(data) {
+        dialogQR.setQRVars(data)
+        dialogQR.open()
+
+    }
+
     ItemDelegate {
         id: itemDelegateAddress
 
