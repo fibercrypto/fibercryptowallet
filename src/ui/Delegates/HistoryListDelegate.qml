@@ -21,6 +21,16 @@ ItemDelegate {
 
     signal qrCodeRequested(var data)
 
+    Component.onCompleted: {
+        root.qrCodeRequested.connect(genQR)
+    }
+
+    function genQR(data) {
+        dialogQR.setVars(data)
+        dialogQR.open()
+
+    }
+
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
 

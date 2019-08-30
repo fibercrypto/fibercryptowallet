@@ -132,7 +132,6 @@ ApplicationWindow {
 
         focus: true
         modal: true
-        imagePath: "qrc:/images/resources/images/icons/qr.svg"
     }
 
     // Hardware dialogs
