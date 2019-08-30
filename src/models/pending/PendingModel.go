@@ -129,7 +129,7 @@ func (m *PendingTransactionList) loadModel() {
 	}
 	for wallets.Next() {
 		crypto := wallets.Value().GetCryptoAccount()
-		txns, err2 = crypto.ListPendingTransactions()
+		txns, err2 := crypto.ListPendingTransactions()
 		if err2 != nil {
 			//display an error in qml app when Mine is selected
 			return

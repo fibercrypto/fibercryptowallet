@@ -145,9 +145,9 @@ func (sto *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 		if err2 != nil {
 			return uint64(0), err2
 		}
-		return uint64(coin * float64(accuracy))
+		return uint64(coin * float64(accuracy)), nil
 	} 
-	return sto.Output.Hours * accuracy
+	return sto.Output.Hours * accuracy, nil
 } 
 
 type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface 
