@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strconv"
+
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 )
@@ -117,7 +119,7 @@ func (m *ModelWallets) loadModel() {
 				accuracy := float64(1000000)
 				coins := float64(to.GetCoins("SKY")) / accuracy
 				qo.SetAddressSky(coins)
-				qo.SetAddressCoinHours(to.GetCoins(""))
+				qo.SetAddressCoinHours(Format(to.GetCoins("")))
 				qOutputs = append(qOutputs, qo)
 			}
 			if len(qOutputs) != 0{
@@ -134,4 +136,23 @@ func (m *ModelWallets) loadModel() {
 func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
 	m.SetAddresses(ma)
 	m.insertRows(len(m.Addresses()), len(ma))
+}
+
+func Format(n uint64) string {
+    in := strconv.FormatUint(n, 10)
+    out := make([]byte, len(in)+(len(in)-2+int(in[0]/'0'))/3)
+    if in[0] == '-' {
+        in, out[0] = in[1:], '-'
+    }
+
+    for i, j, k := len(in)-1, len(out)-1, 0; ; i, j = i-1, j-1 {
+        out[j] = in[i]
+        if i == 0 {
+            return string(out)
+        }
+        if k++; k == 3 {
+            j, k = j-1, 0
+            out[j] = ','
+        }
+    }
 }

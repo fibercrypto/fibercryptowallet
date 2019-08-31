@@ -27,7 +27,7 @@ type QOutput struct {
 
 	_ string 	`property:"outputID"`
 	_ float64 	`property:"addressSky"`
-	_ uint64 	`property:"addressCoinHours"`
+	_ string 	`property:"addressCoinHours"`
 }
 
 func (m *ModelOutputs) init() {
