@@ -1,12 +1,13 @@
 package skycoin
 
 import (
+	"errors"
 	"fmt"
 	"path/filepath"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
@@ -14,8 +15,21 @@ import (
 )
 
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
-	c := util.NewClient()
+	pool := core.GetMultiPool()
+
+	conn, err := WaitForPooledObject(pool, PoolSection)
+	defer pool.Return(PoolSection, conn)
+	if err != nil {
+		return 0, err
+	}
+
+	c, ok := conn.(*api.Client)
+	if !ok {
+		return 0, errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
+	}
+
 	bl, err := c.Balance([]string{addr.address})
+
 	if err != nil {
 		return 0, err
 	}
@@ -32,7 +46,18 @@ func (addr SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
-	c := util.NewClient()
+	pool := core.GetMultiPool()
+
+	conn, err := WaitForPooledObject(pool, PoolSection)
+	defer pool.Return(PoolSection, conn)
+	if err != nil {
+		return nil
+	}
+
+	c, ok := conn.(*api.Client)
+	if !ok {
+		return nil
+	}
 
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
@@ -57,7 +82,17 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
 func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
-	c := util.NewClient()
+	pool := core.GetMultiPool()
+	conn, err := WaitForPooledObject(pool, "skycoin")
+	if err != nil {
+		return nil
+	}
+	c, ok := conn.(*api.Client)
+	if !ok {
+		return nil
+	}
+	defer pool.Return("skycoin", c)
+
 	transactions := make([]core.Transaction, 0)
 	txn, _ := c.TransactionsVerbose([]string{addr.String()})
 
@@ -82,7 +117,8 @@ func (addr SkycoinAddress) ListPendingTransactions() core.TransactionIterator { 
 }
 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
-	c := wlt.newClient()
+	c, err := wlt.newClient()
+	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
 		return 0, err
@@ -147,8 +183,23 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	for _, addr := range addresses {
 		addrs = append(addrs, addr.String())
 	}
-	c := util.NewClient()
+
+	pool := core.GetMultiPool()
+	if err != nil {
+		return 0, err
+	}
+	conn, err := WaitForPooledObject(pool, PoolSection)
+	defer pool.Return(PoolSection, conn)
+	if err != nil {
+		return 0, err
+	}
+	c, ok := conn.(*api.Client)
+	if !ok {
+		return 0, errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
+	}
+
 	outs, err := c.OutputsForAddresses(addrs)
+
 	if err != nil {
 		return 0, err
 	}

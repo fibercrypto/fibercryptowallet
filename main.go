@@ -9,7 +9,6 @@ import (
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
 
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
 	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 )
 
