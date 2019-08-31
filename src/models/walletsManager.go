@@ -201,3 +201,19 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
 	return qwallet
 }
+
+type GenericAdddress struct {
+	addr string
+}
+
+func (ga *GenericAdddress) IsBip32() bool {
+	return true
+}
+
+func (ga *GenericAdddress) String() string {
+	return ga.addr
+}
+
+func (ga *GenericAdddress) GetCryptoAccount() core.CryptoAccount {
+	return nil
+}
