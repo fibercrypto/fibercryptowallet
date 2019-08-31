@@ -1,6 +1,9 @@
 package skycoin
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/api"
 )
@@ -35,7 +38,7 @@ func NewSkycoinAddressIterator(addresses []SkycoinAddress) *SkycoinAddressIterat
 
 type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
 	address string
-	nodeAddress string
+	poolSection string
 }
 
 func (addr SkycoinAddress) IsBip32() bool {
@@ -50,7 +53,16 @@ func (addr SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
 }
 
-func (addr SkycoinAddress) newClient() *api.Client {
-	c := api.NewClient(addr.nodeAddress)
-	return c
+func (addr SkycoinAddress) newClient() (*api.Client, error) {
+	pool := core.GetMultiPool()
+	conn, err := WaitForPooledObject(pool, "skycoin")
+	if err != nil {
+		return nil, err
+	}
+
+	c, ok := conn.(*api.Client)
+	if !ok {
+		return nil, errors.New(fmt.Sprintf("There is not propers client in %s pool", addr.poolSection))
+	}
+	return c, nil
 }

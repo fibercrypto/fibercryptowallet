@@ -320,7 +320,7 @@ func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	}
 	addresses := make([]SkycoinAddress, 0)
 	for _, entry := range wltR.Entries[startIndex:int(util.Min(len(wltR.Entries), int(startIndex+count)))] {
-		addresses = append(addresses, walletEntryToAddress(entry, wlt.nodeAddress))
+		addresses = append(addresses, walletEntryToAddress(entry, wlt.poolSection))
 	}
 	//Checking if all the neccesary addresses exists
 	if uint32(len(wltR.Entries)) < (startIndex + count) {
@@ -351,7 +351,7 @@ func (wlt RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	}
 	addresses := make([]SkycoinAddress, 0)
 	for _, entry := range wltR.Entries {
-		addresses = append(addresses, walletEntryToAddress(entry, wlt.nodeAddress))
+		addresses = append(addresses, walletEntryToAddress(entry, wlt.poolSection))
 	}
 
 	return NewSkycoinAddressIterator(addresses), nil
@@ -366,8 +366,8 @@ func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
 	return wlt
 }
 
-func walletEntryToAddress(wltE readable.WalletEntry, nAddr string) SkycoinAddress {
-	return SkycoinAddress{address:wltE.Address, nodeAddress:nAddr}
+func walletEntryToAddress(wltE readable.WalletEntry, poolSection string) SkycoinAddress {
+	return SkycoinAddress{address:wltE.Address, poolSection: poolSection}
 }
 
 type WalletDirectory struct { //Implements WallentEnv interface
