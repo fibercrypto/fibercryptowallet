@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strconv"
+
 	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
@@ -21,6 +23,7 @@ type WalletManager struct {
 	_ func(id string, password string)                                     `slot:"decryptWallet"`
 	_ func() []*QWallet                                                    `slot:"getWallets"`
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
+	_ func(wltId, destinationAddress, amount string)                       `slot:"sendTo"`
 }
 
 func (walletM *WalletManager) init() {
@@ -33,6 +36,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectDecryptWallet(walletM.decryptWallet)
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
+	walletM.ConnectSendTo(walletM.sendTo)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -43,6 +47,14 @@ func (walletM *WalletManager) init() {
 
 	walletM.SeedGenerator = new(skycoin.SeedService)
 
+}
+
+func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) {
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	addr := &GenericAdddress{destinationAddress}
+	skyF, _ := strconv.ParseFloat(amount, 64)
+	sky := uint64(skyF * 1e6)
+	wlt.Transfer(addr, sky)
 }
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
