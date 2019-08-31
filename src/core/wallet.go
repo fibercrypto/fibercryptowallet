@@ -29,7 +29,7 @@ type Wallet interface {
 	GetId() string
 	GetLabel() string
 	SetLabel(wltName string)
-	Transfer(to Address, amount uint64) error
+	Transfer(to Address, amount uint64, password string) error
 	SendFromAddress(from, to, change Address, amount uint64) error
 	Spend(unspent, new []TransactionOutput) error
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
