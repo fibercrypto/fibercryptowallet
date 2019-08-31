@@ -1,13 +1,11 @@
 package skycoin
 
 import (
-	"errors"
 	"fmt"
 	"path/filepath"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
@@ -15,19 +13,12 @@ import (
 )
 
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
-	pool := core.GetMultiPool()
 
-	conn, err := WaitForPooledObject(pool, PoolSection)
-	defer pool.Return(PoolSection, conn)
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return 0, err
 	}
-
-	c, ok := conn.(*api.Client)
-	if !ok {
-		return 0, errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
-	}
-
+	defer core.GetMultiPool().Return(PoolSection, c)
 	bl, err := c.Balance([]string{addr.address})
 
 	if err != nil {
@@ -56,7 +47,10 @@ func (addr SkycoinAddress) ListPendingTransactions() core.TransactionIterator { 
 }
 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
-	c, err := wlt.newClient()
+	c, err := NewSkycoinApiClient(wlt.poolSection)
+	if err != nil {
+		return 0, err
+	}
 	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
@@ -100,20 +94,11 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 		addrs = append(addrs, addr.String())
 	}
 
-	pool := core.GetMultiPool()
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return 0, err
 	}
-	conn, err := WaitForPooledObject(pool, PoolSection)
-	defer pool.Return(PoolSection, conn)
-	if err != nil {
-		return 0, err
-	}
-	c, ok := conn.(*api.Client)
-	if !ok {
-		return 0, errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
-	}
-
+	defer core.GetMultiPool().Return(PoolSection, c)
 	outs, err := c.OutputsForAddresses(addrs)
 
 	if err != nil {
