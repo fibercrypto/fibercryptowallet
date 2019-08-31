@@ -9,9 +9,14 @@ import (
 	"strings"
 	"time"
 
+	"github.com/skycoin/skycoin/src/coin"
+
+	"github.com/skycoin/skycoin/src/transaction"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/shopspring/decimal"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -298,16 +303,16 @@ func (wlt RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt RemoteWallet) Transfer(to core.Address, amount uint64) { //------TODO
-	return
+func (wlt RemoteWallet) Transfer(to core.Address, amount uint64) error { //------TODO
+	return nil
 }
 
-func (wlt RemoteWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
-	return
+func (wlt RemoteWallet) SendFromAddress(from, to, change core.Address, amount uint64) error { //------TODO
+	return nil
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
-	return
+func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput) error { //------TODO
+	return nil
 }
 
 func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
@@ -561,13 +566,42 @@ func (wlt LocalWallet) GetLabel() string {
 func (wlt LocalWallet) SetLabel(wltName string) {
 	wlt.Label = wltName
 }
-func (wlt LocalWallet) Transfer(to core.Address, amount uint64) {
+func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
+	addr := SkycoinAddress{address: to.String()}
+
+	bl, err := wlt.GetBalance(Sky)
+	if err != nil {
+		return err
+	}
+
+	if bl < amount {
+		return errors.New("Don't have enough sky to make the transaction")
+	}
+	shareFactor, _ := decimal.NewFromString("0.5")
+	destination, err := addr.ToSkycoinCipherAddress()
+
+	if err != nil {
+		return errors.New("Destination address invalid")
+	}
+	txn := coin.TransactionOutput{
+		Address: *destination,
+		Coins:   amount,
+	}
+
+	ponintToShareFactor := &shareFactor
+	p := transaction.Params{
+		HoursSelection: transaction.HoursSelection{
+			Type:        transaction.HoursSelectionTypeAuto,
+			Mode:        transaction.HoursSelectionModeShare,
+			ShareFactor: ponintToShareFactor,
+		},
+		To: []coin.TransactionOutput{txn},
+	}
+}
+func (wlt LocalWallet) SendFromAddress(from, to, change core.Address, amount uint64) error { //------TODO
 
 }
-func (wlt LocalWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
-
-}
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput) error { //------TODO
 
 }
 func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
