@@ -37,19 +37,11 @@ func (addr SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
-	pool := core.GetMultiPool()
-
-	conn, err := WaitForPooledObject(pool, PoolSection)
-	defer pool.Return(PoolSection, conn)
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil
 	}
-
-	c, ok := conn.(*api.Client)
-	if !ok {
-		return nil
-	}
-
+	defer core.GetMultiPool().Return(PoolSection, c)
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
 		return nil
@@ -73,17 +65,12 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
 func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
-	pool := core.GetMultiPool()
-	conn, err := WaitForPooledObject(pool, "skycoin")
+
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil
 	}
-	c, ok := conn.(*api.Client)
-	if !ok {
-		return nil
-	}
-	defer pool.Return("skycoin", c)
-
+	defer core.GetMultiPool().Return(PoolSection, c)
 	transactions := make([]core.Transaction, 0)
 	txn, _ := c.TransactionsVerbose([]string{addr.String()})
 

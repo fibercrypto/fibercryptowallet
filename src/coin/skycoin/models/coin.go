@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/readable"
 )
 
@@ -33,7 +32,11 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 		return txn.status
 	}
 
-	c := util.NewClient()
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return 0
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	txnU, _ := c.Transaction(txn.skyTxn.Hash)
 	if txnU.Status.Confirmed {
 		txn.status = core.TXN_STATUS_CONFIRMED
@@ -45,7 +48,12 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 
 func (txn *SkycoinTransaction) GetInputs() []core.TransactionInput {
 	if txn.inputs == nil {
-		c := util.NewClient()
+
+		c, err := NewSkycoinApiClient(PoolSection)
+		if err != nil {
+			return nil
+		}
+		defer core.GetMultiPool().Return(PoolSection, c)
 		transaction, err := c.TransactionVerbose(txn.skyTxn.Hash)
 		if err != nil {
 			return nil
@@ -129,8 +137,12 @@ func (in SkycoinTransactionInput) GetId() string {
 
 func (in SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 	if in.spentOutput == nil {
-		c := util.NewClient()
 
+		c, err := NewSkycoinApiClient(PoolSection)
+		if err != nil {
+			return nil
+		}
+		defer core.GetMultiPool().Return(PoolSection, c)
 		out, err := c.UxOut(in.skyIn.Hash)
 		if err != nil {
 			return nil
@@ -227,7 +239,11 @@ func (out SkycoinTransactionOutput) IsSpent() bool {
 		return true
 	}
 
-	c := util.NewClient()
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return true
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	ou, err := c.UxOut(out.skyOut.Hash)
 	if err != nil {
 		return false
