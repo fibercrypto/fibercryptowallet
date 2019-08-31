@@ -1,16 +1,13 @@
-package outputs
+package models
 
 import (
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 )
 
 const (
-	Name = int(qtcore.Qt__UserRole) + iota + 1
+	QName = int(qtcore.Qt__UserRole) + iota + 1
 	QAddresses
-	//Set the correct NodeAddress
-	ADDR = "http://127.0.0.1:40239"
 )
 
 type ModelWallets struct {
@@ -37,8 +34,13 @@ func (m *ModelWallets) init() {
 	m.ConnectData(m.data)
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
+	altManager := core.LoadAltcoinManager()
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range altManager.ListRegisteredPlugins() {
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
 
-	m.WalletEnv = &skycoin.WalletNode{NodeAddress: ADDR}
+	m.WalletEnv = walletsEnvs[0]
 
 	m.loadModel()
 }
@@ -63,7 +65,7 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 	w := m.Addresses()[index.Row()]
 
 	switch role{
-	case Name:
+	case QName:
 		{
 			return qtcore.NewQVariant1(w.Name())
 		}
@@ -113,7 +115,7 @@ func (m *ModelWallets) loadModel() {
 				qo.SetOutputID(to.GetId())
 				// TODO: Use correct accuracy here
 				accuracy := float64(1000000)
-				coins := float64(to.GetCoins("Sky")) / accuracy
+				coins := float64(to.GetCoins("SKY")) / accuracy
 				qo.SetAddressSky(coins)
 				qo.SetAddressCoinHours(to.GetCoins(""))
 				qOutputs = append(qOutputs, qo)

@@ -1,4 +1,4 @@
-package outputs
+package models
 
 func init() {
 	ModelWallets_QmlRegisterType2("OutputsModels", 1, 0, "QWallets")

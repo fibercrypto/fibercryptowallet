@@ -1,11 +1,11 @@
-package outputs
+package models
 
 import (
 	"github.com/therecipe/qt/core"
 )
 
 const (
-	Address = int(core.Qt__UserRole) + iota + 1
+	OAddress = int(core.Qt__UserRole) + iota + 1
 	QOutputs
 )
 
@@ -53,7 +53,7 @@ func (m *ModelAddresses) data(index *core.QModelIndex, role int) *core.QVariant 
 	wa := m.Outputs()[index.Row()]
 
 	switch role{
-	case Address:
+	case OAddress:
 		{
 			return core.NewQVariant1(wa.Address())
 		}

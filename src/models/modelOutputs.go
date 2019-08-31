@@ -1,4 +1,4 @@
-package outputs
+package models
 
 import (
 	"github.com/therecipe/qt/core"

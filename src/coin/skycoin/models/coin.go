@@ -20,7 +20,7 @@ func (sto *SkycoinTransactionOutput) GetAddress() core.Address {
 }
 
 func (sto *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
-	if ticker == "Sky" {
+	if ticker == "SKY" {
 		return sto.Sky
 	}
 	return sto.CoinHours
