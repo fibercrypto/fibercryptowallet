@@ -361,11 +361,11 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 	return nil
 }
 
-func (wlt RemoteWallet) SendFromAddress(from, to, change core.Address, amount uint64) error { //------TODO
+func (wlt RemoteWallet) SendFromAddress(from, to, change core.Address, amount uint64, password string) error { //------TODO
 	return nil
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput) error { //------TODO
+func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, password string) error { //------TODO
 	return nil
 }
 
@@ -652,11 +652,12 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 		To: []coin.TransactionOutput{txn},
 	}
 }
-func (wlt LocalWallet) SendFromAddress(from, to, change core.Address, amount uint64) error { //------TODO
-
+func (wlt LocalWallet) SendFromAddress(from, to, change core.Address, amount uint64, password string) error { //------TODO
+	return nil
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput) error { //------TODO
 
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, password string) error { //------TODO
+	return nil
 }
 func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
