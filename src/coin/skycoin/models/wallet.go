@@ -306,19 +306,19 @@ func (wlt RemoteWallet) GetId() string {
 }
 
 func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string) error {
-	c, err := wlt.newClient()
-	defer core.GetMultiPool().Return(wlt.poolSection, c)
-	wltR, err := c.Wallet(wlt.Id)
+	client, err := wlt.newClient()
+	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	wltR, err := client.Wallet(wlt.Id)
 	if err != nil {
 		return err
 	}
 
-	bl, err := wlt.GetBalance(Sky)
+	balance, err := wlt.GetBalance(Sky)
 	if err != nil {
 		return err
 	}
 
-	if bl < amount {
+	if balance < amount {
 		return errors.New("Don't have enough sky to make the transaction")
 	}
 
@@ -351,9 +351,9 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 
 	err = json.Unmarshal([]byte("{\"type\": \"auto\", \"mode\": \"share\", \"shareFactor\": \"0.5\"}"), &req.HoursSelection)
 
-	transactionResponse, err := c.WalletCreateTransaction(req)
+	transactionResponse, err := client.WalletCreateTransaction(req)
 
-	txid, err := c.InjectEncodedTransaction(transactionResponse.EncodedTransaction)
+	txid, err := client.InjectEncodedTransaction(transactionResponse.EncodedTransaction)
 	if err != nil {
 		return err
 	}
