@@ -5,23 +5,20 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"io/ioutil"
-	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
-	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/transaction"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/shopspring/decimal"
+	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/wallet"
+	"io/ioutil"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 )
 
 const (
@@ -621,36 +618,34 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 	wlt.Label = wltName
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string) error {
-	addr := SkycoinAddress{address: to.String()}
-
-	bl, err := wlt.GetBalance(Sky)
-	if err != nil {
-		return err
-	}
-
-	if bl < amount {
-		return errors.New("Don't have enough sky to make the transaction")
-	}
-	shareFactor, _ := decimal.NewFromString("0.5")
-	destination, err := addr.ToSkycoinCipherAddress()
-
-	if err != nil {
-		return errors.New("Destination address invalid")
-	}
-	txn := coin.TransactionOutput{
-		Address: *destination,
-		Coins:   amount,
-	}
-
-	ponintToShareFactor := &shareFactor
-	p := transaction.Params{
-		HoursSelection: transaction.HoursSelection{
-			Type:        transaction.HoursSelectionTypeAuto,
-			Mode:        transaction.HoursSelectionModeShare,
-			ShareFactor: ponintToShareFactor,
-		},
-		To: []coin.TransactionOutput{txn},
-	}
+	//addr := SkycoinAddress{address: to.String()}
+	//
+	//bl, err := wlt.GetBalance(Sky)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//if bl < amount {
+	//	return errors.New("Don't have enough sky to make the transaction")
+	//}
+	//shareFactor, _ := decimal.NewFromString("0.5")
+	//destination, err := addr.ToSkycoinCipherAddress()
+	//
+	//if err != nil {
+	//	return errors.New("Destination address invalid")
+	//}
+	//txn := coin.TransactionOutput{
+	//	Address: *destination,
+	//	Coins:   amount,
+	//}
+	//var hoursSelection transaction.HoursSelection
+	//err = json.Unmarshal([]byte("{\"type\": \"auto\", \"mode\": \"share\", \"shareFactor\": \"0.5\"}"), &hoursSelection)
+	//
+	//p := transaction.Params{
+	//	HoursSelection: hoursSelection,
+	//	To: []coin.TransactionOutput{txn},
+	//}
+	return nil
 }
 func (wlt LocalWallet) SendFromAddress(from, to, change core.Address, amount uint64, password string) error { //------TODO
 	return nil
