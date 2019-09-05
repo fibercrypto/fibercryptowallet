@@ -9,4 +9,8 @@ func init() {
 	WalletManager_QmlRegisterType2("WalletsManager", 1, 0, "WalletManager")
 	ConfigManager_QmlRegisterType2("Config", 1, 0, "ConfigManager")
 	WalletSource_QmlRegisterType2("Config", 1, 0, "WalletSource")
+<<<<<<< HEAD
+=======
+	ModelManager_QmlRegisterType2("WalletsManager", 1, 0, "ModelManager")
+>>>>>>> fb559b70b3a550743b0c5aeec048aaef61420878
 }

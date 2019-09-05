@@ -107,9 +107,9 @@ Page {
 
 
     
-    WalletManager{
-        id: walletManager
-    }
+    //WalletManager{
+    //    id: walletManager
+    //    }
 
     WalletModel{
         id: walletModel
@@ -122,6 +122,7 @@ Page {
                                     onTriggered: {
                                         walletModel.loadModel(walletManager.getWallets())
                                         walletModelTimer.running = false
+                                        // console.log(walletManager)
                                     }
             
                                 }
