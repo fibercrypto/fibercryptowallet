@@ -7,6 +7,9 @@ import QtQuick.Layouts 1.12
 // import "qrc:/ui/src/ui/"
 import "../" // For quick UI development, switch back to resources when making a release
 
+// Backend imports
+import HistoryModels 1.0
+
 ItemDelegate {
     id: root
 
@@ -14,12 +17,26 @@ ItemDelegate {
     property int modelType: type
     property int modelStatus: status
     property var modelStatusString: [ qsTr("Confirmed"), qsTr("Pending"), qsTr("Preview") ]
-    property real modelAmount: amount
-    property int modelHoursReceived: hoursReceived
-    property int modelHoursBurned: hoursBurned
-    property string modelTransactionID
-
+    property string modelAmount: amount
+    property string modelHoursReceived: hoursTraspassed
+    property string modelHoursBurned: hoursBurned
+    property string modelTransactionID: transactionID
+    property QAddressList modelAddresses: addresses
+    property QAddressList modelInputs: inputs
+    property QAddressList modelOutputs: outputs
+    readonly property real delegateHeight: 30
+    
     signal qrCodeRequested(var data)
+
+    Component.onCompleted: {
+        root.qrCodeRequested.connect(genQR)
+    }
+
+    function genQR(data) {
+        dialogQR.setVars(data)
+        dialogQR.open()
+
+    }
 
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
@@ -45,65 +62,55 @@ ItemDelegate {
         ColumnLayout {
             id: columnLayoutMainContent
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignTop
-
+            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
+            
+                
+                
+                
+            
             RowLayout {
+                
+                
+                Layout.alignment: Qt.AlignLeft
                 spacing: 20
-                Layout.fillWidth: true
-
+                
+                Row{
+                    Layout.fillWidth:true
+                    spacing: 20
                 Label {
+                    
                     font.bold: true
-                    text: (modelType === TransactionDetails.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
+                    text: (modelType == TransactionDetails.Type.Receive ? qsTr("Received") : (modelType == TransactionDetails.Type.Send ? qsTr("Sent") : qsTr("Internal"))) + " SKY"
                 }
 
                 Label {
+                    
                     Material.foreground: Material.Grey
-                    text: modelDate // model's role
+                    text: modelDate.toLocaleString("2000-01-01 00:00") // model's role
                     font.pointSize: Qt.application.font.pointSize * 0.9
                 }
+                }
             }
-
             ColumnLayout {
-                RowLayout {
-                    id: rowLayoutSent
-                    visible: modelType === TransactionDetails.Type.Send
-
-                    ToolButtonQR {
-                        id: toolButtonQRSent
-
-                        iconSize: "24x24"
-
-                        onClicked: {
-                            qrCodeRequested(sentAddress)
-                        }
-                    }
-
-                    Label {
-                        text: sentAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
+                Layout.fillWidth:true
+                Layout.fillHeight:true
+                Layout.leftMargin:10
+                
+                Layout.alignment: Qt.AlignLeft
+                height: delegateHeight*(modelInputs.rowCount())
+                ListView{
+                    Layout.alignment: Qt.AlignLeft
+                    implicitHeight: delegateHeight*(modelAddresses.count)
+                    height: parent.height
+                    id: listViewAddresses
+                    model: modelAddresses
+                    delegate:TransactionAddressDelegate{}
+                                     
                 }
-                RowLayout {
-                    id: rowLayoutReceive
-
-                    ToolButtonQR {
-                        id: toolButtonQRReceived
-
-                        iconSize: "24x24"
-
-                        onClicked: {
-                            qrCodeRequested(receivedAddress)
-                        }
-                    }
-                    
-                    Label {
-                        text: receivedAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
-                }
+                
+                   
             } // ColumnLayout (addresses)
+        
         } // ColumnLayout (main content)
 
         Label {

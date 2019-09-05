@@ -47,6 +47,14 @@ Item {
         }
     }
 
+    function openSettingsPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentSettings)
+        } else {
+            stackView.push(componentSettings)
+        }
+    }
+
     function pop() {
         stackView.pop()
     }
@@ -117,6 +125,14 @@ Item {
 
         Networking {
             id: networking
+        }
+    }
+
+    Component {
+        id: componentSettings
+
+        Settings {
+            id: settings
         }
     }
 

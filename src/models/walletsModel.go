@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/qml"
 )
 
 const (
@@ -45,7 +46,7 @@ func (m *WalletModel) init() {
 		CoinHours:         core.NewQByteArray2("coinHours", -1),
 		FileName:          core.NewQByteArray2("fileName", -1),
 	})
-
+	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
 	m.ConnectData(m.data)
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
@@ -115,6 +116,7 @@ func (m *WalletModel) roleNames() map[int]*core.QByteArray {
 
 func (m *WalletModel) addWallet(w *QWallet) {
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Wallets()), len(m.Wallets()))
+	qml.QQmlEngine_SetObjectOwnership(w, qml.QQmlEngine__CppOwnership)
 	m.SetWallets(append(m.Wallets(), w))
 	m.EndInsertRows()
 	m.updateCount()
@@ -146,9 +148,12 @@ func (m *WalletModel) removeWallet(row int) {
 }
 
 func (m *WalletModel) loadModel(wallets []*QWallet) {
-
+	for _, wlt := range wallets {
+		qml.QQmlEngine_SetObjectOwnership(wlt, qml.QQmlEngine__CppOwnership)
+	}
 	m.BeginResetModel()
 	m.SetWallets(wallets)
+
 	m.EndResetModel()
 	m.updateCount()
 
