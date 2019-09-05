@@ -2,10 +2,8 @@ package skycoin
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
-	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/readable"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -145,17 +143,11 @@ func (ss SkycoinBlockchainStatus) SetCacheTime(time uint64) {
 
 func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 
-	pool := core.GetMultiPool()
-	conn, err := WaitForPooledObject(pool, PoolSection)
-	defer pool.Return(PoolSection, conn)
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return err
 	}
-	c, ok := conn.(*api.Client)
-	if !ok {
-		return errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
-	}
-
+	defer core.GetMultiPool().Return(PoolSection, c)
 	coinSupply, err := c.CoinSupply()
 	if err != nil {
 		return err
@@ -190,17 +182,12 @@ func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 }
 
 func (ss SkycoinBlockchainStatus) requestStatusInfo() error {
-	pool := core.GetMultiPool()
-	conn, err := WaitForPooledObject(pool, PoolSection)
-	defer pool.Return(PoolSection, conn)
+
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return err
 	}
-
-	c, ok := conn.(*api.Client)
-	if !ok {
-		return errors.New(fmt.Sprintf("There is not propers client in %s pool", PoolSection))
-	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	blocks, err := c.LastBlocks(1)
 
 	if err != nil {
