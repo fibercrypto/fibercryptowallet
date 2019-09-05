@@ -142,8 +142,12 @@ func (ss SkycoinBlockchainStatus) SetCacheTime(time uint64) {
 }
 
 func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
-	c := util.NewClient()
 
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	coinSupply, err := c.CoinSupply()
 	if err != nil {
 		return err
@@ -178,8 +182,12 @@ func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 }
 
 func (ss SkycoinBlockchainStatus) requestStatusInfo() error {
-	c := util.NewClient()
 
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	blocks, err := c.LastBlocks(1)
 
 	if err != nil {

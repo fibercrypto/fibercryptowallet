@@ -109,7 +109,25 @@ Page {
 
 
     
-    
+   
+
+    WalletModel{
+        id: walletModel
+        property Timer timer: Timer {
+        
+                                    id: walletModelTimer
+                                    repeat: false
+                                    running: true
+                                    interval: 0
+                                    onTriggered: {
+                                        walletModel.loadModel(walletManager.getWallets())
+                                        walletModelTimer.running = false
+                                        // console.log(walletManager)
+                                    }
+            
+                                }
+    }
+
     
     
 
@@ -125,14 +143,7 @@ Page {
 
         onAccepted: {
             console.log("Add wallet")
-            //if (encryptionEnabled){
-//
-            //}
-            //else{
-            //    
-            //}
-            //listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
-           // walletManager.
+          
         }
     }
 
