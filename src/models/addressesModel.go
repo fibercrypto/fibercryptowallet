@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strconv"
+
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 )
@@ -31,7 +33,7 @@ type QAddress struct {
 	core.QObject
 
 	_ string `property:"address"`
-	_ uint64 `property:"addressSky"`
+	_ string `property:"addressSky"`
 	_ uint64 `property:"addressCoinHours"`
 	_ int    `property:"marked"`
 }
@@ -124,7 +126,8 @@ func (m *AddressesModel) removeAddress(row int) {
 func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64, marked int) {
 	a := m.Addresses()[row]
 	a.SetAddress(address)
-	a.SetAddressSky(sky)
+	flSky := float64(sky / 1e6)
+	a.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
 	a.SetAddressCoinHours(coinHours)
 	changeMarked := true
 	if marked == a.Marked() {
@@ -147,7 +150,7 @@ func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
 	addresses := make([]*QAddress, 0)
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")
-	address.SetAddressSky(0)
+	address.SetAddressSky("0")
 	address.SetAddressCoinHours(0)
 	address.SetMarked(0)
 	qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)

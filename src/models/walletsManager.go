@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strconv"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/therecipe/qt/qml"
 
@@ -9,7 +11,6 @@ import (
 
 	//"github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 	qtcore "github.com/therecipe/qt/core"
-	"github.com/therecipe/qt/qml"
 )
 
 type WalletManager struct {
@@ -196,7 +197,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 			continue
 		}
 		flSky := float64(sky / 1e6)
-		qaddress.SetAddressSky(flSky)
+		qaddress.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
 		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
 		if err != nil {
 

@@ -568,7 +568,11 @@ func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bo
 		addrs = append(addrs, addr.String())
 	}
 	answ := make([]bool, len(addrs))
-	c := util.NewClient()
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 
 	for i := 0; i < len(addrs); i++ {
 		txn, err := c.Transactions([]string{addrs[i]})
