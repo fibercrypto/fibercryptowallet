@@ -157,5 +157,4 @@ func (m *WalletModel) loadModel(wallets []*QWallet) {
 
 	m.EndResetModel()
 	m.SetCount(len(m.Wallets()))
-
 }

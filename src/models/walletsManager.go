@@ -228,7 +228,6 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
 	bl, err := wlt.GetCryptoAccount().GetBalance(skycoin.SkycoinTicker)
 	if err != nil {
-
 		bl = 0
 	}
 

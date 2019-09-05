@@ -106,12 +106,9 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 
 		wltR, err := c.CreateWallet(wltOpt)
 		if err != nil {
-
 			return nil, err
-
 		}
 		wlt = walletResponseToWallet(*wltR)
-
 	} else {
 		wltOpt := api.CreateWalletOptions{}
 		wltOpt.Type = WalletTypeDeterministic
@@ -125,7 +122,6 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 			return nil, err
 		}
 		wlt = walletResponseToWallet(*wltR)
-
 	}
 	wlt.poolSection = wltSrv.poolSection
 	return &wlt, nil
@@ -474,7 +470,6 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 	}
 
 	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
-
 		return nil, err
 	}
 

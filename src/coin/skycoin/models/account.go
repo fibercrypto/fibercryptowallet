@@ -103,7 +103,6 @@ func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	bl, err := c.WalletBalance(wlt.Id)
 
 	if err != nil {
-
 		return 0, err
 	}
 
