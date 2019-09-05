@@ -565,7 +565,11 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 	wlt.Label = wltName
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
-	addr := SkycoinAddress{address: to.String()}
+	var password string
+	if password == "1" {
+		return nil
+	}
+
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
 	if err != nil {
@@ -610,17 +614,46 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
 	if err != nil {
 		return nil
 	}
-	txn, err := coin.DeserializeTransactionHex(txnResponse.EncodedTransaction)
+	txn, err := txnResponse.Transaction.ToTransaction()
 	if err != nil {
 		return err
 	}
 
 	skyWlt, err := wallet.Load(wlt.Id)
+	if skyWlt.IsEncrypted() {
+		skyWlt, err = wallet.Unlock(skyWlt, []byte(password))
+	}
 	if err != nil {
 		return err
 	}
-
-	sigTxn, err := wallet.SignTransaction(skyWlt, &txn, make([]int, 0), nil)
+	uxouts := make([]coin.UxOut, 0)
+	for _, in := range txn.In {
+		ux, err := c.UxOut(in.String())
+		if err != nil {
+			return err
+		}
+		addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
+		if err != nil {
+			return nil
+		}
+		srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
+		if err != nil {
+			return nil
+		}
+		uxouts = append(uxouts, coin.UxOut{
+			Head: coin.UxHead{
+				BkSeq: ux.SrcBkSeq,
+				Time:  ux.Time,
+			},
+			Body: coin.UxBody{
+				Address:        addr,
+				Coins:          ux.Coins,
+				Hours:          ux.Hours,
+				SrcTransaction: srctxn,
+			},
+		})
+	}
+	sigTxn, err := wallet.SignTransaction(skyWlt, txn, make([]int, 0), uxouts)
 	if err != nil {
 		return nil
 	}
