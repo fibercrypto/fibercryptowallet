@@ -198,23 +198,6 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 	return qaddresses
 }
 
-//func (walletM *WalletManager) getAddressesWithWallets() *history.Tes {
-//	response := make(map[string]string, 0)
-//	it := walletM.WalletEnv.GetWalletSet().ListWallets()
-//	for it.Next() {
-//		wlt := it.Value()
-//		addrs, _ := wlt.GetLoadedAddresses()
-//
-//		for addrs.Next() {
-//			response[addrs.Value().String()] = wlt.GetId()
-//		}
-//
-//	}
-//	respon := history.NewTes(nil)
-//	respon.Data = response
-//	return respon
-//}
-
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
 	qwallet := NewQWallet(nil)
