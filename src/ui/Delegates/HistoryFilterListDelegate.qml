@@ -2,7 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
-
+import WalletsManager 1.0
+import "../"
 Item {
     id: root
 
@@ -10,11 +11,13 @@ Item {
     readonly property real delegateHeight: 42
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
+    
 
     clip: true
     width: 300
-    height: checkDelegate.height + columnLayout.spacing + listViewFilterAddress.height
-
+    height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
+    
+    
     ColumnLayout {
         id: columnLayout
         anchors.fill: parent
@@ -53,10 +56,10 @@ Item {
 
         ListView {
             id: listViewFilterAddress
-
+            property AddressModel listAddresses
             property int checkedDelegates: 0
             property bool allChecked: false
-
+            model: listAddresses
             onCheckedDelegatesChanged: {
                 if (checkedDelegates === 0) {
                     checkDelegate.checkState = Qt.Unchecked
@@ -65,33 +68,60 @@ Item {
                 } else {
                     checkDelegate.checkState = Qt.PartiallyChecked
                 }
+                
             }
+            onCountChanged:{
+                implicitHeight = listAddresses.count * delegateHeight
+                
+               
+            }
+            
 
+            Component.onCompleted:{
+                modelManager.setWalletManager(walletManager)
+                listAddresses = modelManager.getAddressModel(fileName)
+            }
+            
             Layout.fillWidth: true
-            height: count * delegateHeight
+           
 
             interactive: false
-            model: listAddresses
+            
             delegate: HistoryFilterListAddressDelegate {
                 leftPadding: 20
                 scale: 0.85
-                checked: ListView.view.allChecked
-
-                onCheckedChanged: {
-                    ListView.view.checkedDelegates += checked ? 1 : -1
+                checked: marked
+                 
+                 onCheckedChanged: {
+                   
+                    ListView.view.checkedDelegates += checked ? 1: -1
+                    
+                    if (checked == 1){
+                        historyManager.addFilter(address)
+                        
+                    }
+                    else {
+                        historyManager.removeFilter(address)
+                        
+                    }
+                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
                 }
+                
+                Connections{
+                    target: listViewFilterAddress
+                    onAllCheckedChanged:{
+                        if (listViewFilterAddress.allChecked){
+                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 1)
+                        } else{
+                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 0)
+                        }
+                    }
+                }
+                
+                
             }
         } // ListView
     } // ColumnLayout
 
-    // This model can be the same as the wallet address list,
-    // as this model need to expose all addresses for each wallet.
-    // For that, it should be implemented in the backend, instead of here.
-    ListModel { // EXAMPLE
-        id: listAddresses
-
-        ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-        ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
-        ListElement { address: "gfdhgs343kweru38200384uwqd" }
-    }
+   
 }
