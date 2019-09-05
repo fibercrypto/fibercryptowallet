@@ -73,7 +73,9 @@ Page {
 
                 onClicked: {
                     dialogAddLoadWallet.mode = CreateLoadWallet.Create
+                    
                     dialogAddLoadWallet.open()
+
                 }
 
             }
@@ -107,9 +109,7 @@ Page {
 
 
     
-    //WalletManager{
-    //    id: walletManager
-    //    }
+   
 
     WalletModel{
         id: walletModel
@@ -143,7 +143,7 @@ Page {
 
         onAccepted: {
             console.log("Add wallet")
-            listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
+          
         }
     }
 

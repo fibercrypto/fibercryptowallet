@@ -6,6 +6,7 @@ Dialog {
     id: dialogEditWallet
 
     property string initialText
+    property string newLabel
 
     title: Qt.application.name
     standardButtons: Dialog.Ok | Dialog.Cancel
@@ -18,6 +19,8 @@ Dialog {
     onAboutToShow: {
         textFieldName.forceActiveFocus()
     }
+
+    
 
     ColumnLayout {
         id: columnLayoutRoot
@@ -37,6 +40,7 @@ Dialog {
 
             onTextChanged: {
                 standardButton(Dialog.Ok).enabled = text
+                newLabel = text
             }
         }
     } // ColumnLayout (root)
