@@ -36,11 +36,59 @@ func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 func (addr SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
-func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	return nil
+func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
+	if err != nil {
+		return nil
+	}
+
+	outs := outputSummary.SpendableOutputs()
+	skyOutputs := make([]core.TransactionOutput, 0)
+	for _, out := range outs {
+		skyOutputs = append(skyOutputs, &SkycoinTransactionOutput{
+
+			skyOut: readable.TransactionOutput{
+				Address: out.Address,
+				Coins:   out.Coins,
+				Hours:   out.Hours,
+				Hash:    out.Hash,
+			},
+			spent: true,
+		})
+	}
+
+	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
-func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
+
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	transactions := make([]core.Transaction, 0)
+	txn, _ := c.TransactionsVerbose([]string{addr.String()})
+
+	for _, tx := range txn {
+		st := core.TXN_STATUS_PENDING
+		if tx.Status.Confirmed {
+			st = core.TXN_STATUS_CONFIRMED
+		}
+
+		transactions = append(transactions, &SkycoinTransaction{
+			skyTxn: tx.Transaction,
+			status: st,
+		})
+
+	}
+
+	return NewSkycoinTransactionIterator(transactions)
+
 }
 func (addr SkycoinAddress) ListPendingTransactions() core.TransactionIterator { //------TODO
 	return nil
@@ -71,12 +119,35 @@ func (wlt RemoteWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	return nil
+func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	unOuts := make([]core.TransactionOutput, 0)
+	for addressesIter.Next() {
+		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		for outsIter.Next() {
+			unOuts = append(unOuts, outsIter.Value())
+		}
+	}
+	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (wlt RemoteWallet) ListTransactions() core.TransactionIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for addressesIter.Next() {
+		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
+		for txnsIter.Next() {
+			txns = append(txns, txnsIter.Value())
+		}
+	}
+
+	return NewSkycoinTransactionIterator(txns)
 }
 func (wlt RemoteWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
 	return nil
@@ -121,12 +192,35 @@ func (wlt LocalWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	return nil
+func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	unOuts := make([]core.TransactionOutput, 0)
+	for addressesIter.Next() {
+		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		for outsIter.Next() {
+			unOuts = append(unOuts, outsIter.Value())
+		}
+	}
+	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt LocalWallet) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for addressesIter.Next() {
+		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
+		for txnsIter.Next() {
+			txns = append(txns, txnsIter.Value())
+		}
+	}
+
+	return NewSkycoinTransactionIterator(txns)
 }
 func (wlt LocalWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
 	return nil
