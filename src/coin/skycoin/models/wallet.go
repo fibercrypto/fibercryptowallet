@@ -566,6 +566,7 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
 	var password string
+	password = "mauri"
 	if password == "1" {
 		return nil
 	}

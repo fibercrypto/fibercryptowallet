@@ -25,7 +25,8 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                dialogSendTransaction.open()
+                walletManager.sendTo(simple.walletSelected, simple.destinationAddress, simple.amount)
+                //dialogSendTransaction.open()
             }
         }
     }
@@ -71,6 +72,7 @@ Page {
                     clip: true
                     SubPageSendSimple {
                         id: simple
+                        
                         implicitWidth: stackView.width
                     }
                 }
