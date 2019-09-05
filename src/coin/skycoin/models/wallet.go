@@ -6,17 +6,15 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/skycoin/skycoin/src/coin"
 
-	"github.com/skycoin/skycoin/src/transaction"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/shopspring/decimal"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -568,7 +566,7 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
 	addr := SkycoinAddress{address: to.String()}
-
+	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
 	if err != nil {
 		return err
@@ -577,32 +575,72 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
 	if bl < amount {
 		return errors.New("Don't have enough sky to make the transaction")
 	}
-	shareFactor, _ := decimal.NewFromString("0.5")
-	destination, err := addr.ToSkycoinCipherAddress()
 
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
-		return errors.New("Destination address invalid")
-	}
-	txn := coin.TransactionOutput{
-		Address: *destination,
-		Coins:   amount,
+		return err
 	}
 
-	ponintToShareFactor := &shareFactor
-	p := transaction.Params{
-		HoursSelection: transaction.HoursSelection{
-			Type:        transaction.HoursSelectionTypeAuto,
-			Mode:        transaction.HoursSelectionModeShare,
-			ShareFactor: ponintToShareFactor,
-		},
-		To: []coin.TransactionOutput{txn},
+	defer core.GetMultiPool().Return(PoolSection, c)
+	addresses := make([]string, 0)
+	iterAddr, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return err
 	}
+	for iterAddr.Next() {
+		addresses = append(addresses, iterAddr.Value().String())
+	}
+	dst := api.Receiver{
+		Address: to.String(),
+		Coins:   strAmount,
+	}
+	hS := api.HoursSelection{
+		Mode:        "share",
+		Type:        "auto",
+		ShareFactor: "0.5",
+	}
+	rTxn := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		Addresses:         addresses,
+		To:                []api.Receiver{dst},
+		HoursSelection:    hS,
+	}
+
+	txnResponse, err := c.CreateTransaction(rTxn)
+	if err != nil {
+		return nil
+	}
+	txn, err := coin.DeserializeTransactionHex(txnResponse.EncodedTransaction)
+	if err != nil {
+		return err
+	}
+
+	skyWlt, err := wallet.Load(wlt.Id)
+	if err != nil {
+		return err
+	}
+
+	sigTxn, err := wallet.SignTransaction(skyWlt, &txn, make([]int, 0), nil)
+	if err != nil {
+		return nil
+	}
+	encodedSigTxn, err := sigTxn.SerializeHex()
+	if err != nil {
+		return err
+	}
+
+	_, err = c.InjectEncodedTransaction(encodedSigTxn)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 func (wlt LocalWallet) SendFromAddress(from, to, change core.Address, amount uint64) error { //------TODO
-
+	return nil
 }
 func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput) error { //------TODO
-
+	return nil
 }
 func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
