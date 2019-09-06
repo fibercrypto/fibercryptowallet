@@ -42,7 +42,6 @@ type TransactionOutput interface {
 	IsSpent() bool
 	GetAddress() Address
 	GetCoins(ticker string) uint64
-	GetHours() uint64
 }
 
 type TransactionOutputIterator interface {

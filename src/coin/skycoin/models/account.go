@@ -59,6 +59,7 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 				Hash:    out.Hash,
 			},
 			spent: true,
+			calculatedHours: out.CalculatedHours,
 		})
 	}
 
