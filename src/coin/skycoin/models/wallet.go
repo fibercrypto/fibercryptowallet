@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
@@ -19,8 +20,8 @@ import (
 )
 
 const (
-	Sky                     = "SKY"
-	CoinHour                = "SKYCH"
+	Sky                     = params.SkycoinTicker
+	CoinHour                = params.CoinHoursTicker
 	WalletTypeDeterministic = "deterministic"
 
 	WalletTypeCollection = "collection"
@@ -61,15 +62,17 @@ func NewSkycoinWalletIterator(wallets []core.Wallet) *SkycoinWalletIterator {
 }
 
 type SkycoinRemoteWallet struct { //Implements WalletStorage and WalletSet interfaces
-	nodeAddress string
-}
-
-func (wltSrv *SkycoinRemoteWallet) newClient() *api.Client {
-	return api.NewClient(wltSrv.nodeAddress)
+	poolSection string
 }
 
 func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
-	c := wltSrv.newClient()
+
+	c, err := NewSkycoinApiClient(wltSrv.poolSection)
+	if err != nil {
+		return nil
+	}
+	defer core.GetMultiPool().Return(wltSrv.poolSection, c)
+
 	wlts, err := c.Wallets()
 	if err != nil {
 		return nil
@@ -77,7 +80,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	wallets := make([]core.Wallet, 0)
 	for _, wlt := range wlts {
 		nwlt := walletResponseToWallet(wlt)
-		nwlt.nodeAddress = wltSrv.nodeAddress
+		nwlt.poolSection = wltSrv.poolSection
 		wallets = append(wallets, nwlt)
 	}
 
@@ -86,6 +89,11 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 
 func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	wlt := RemoteWallet{}
+	c, err := NewSkycoinApiClient(wltSrv.poolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(wltSrv.poolSection, c)
 	if IsEncrypted {
 		password, _ := pwd("Enter your password")
 		wltOpt := api.CreateWalletOptions{}
@@ -95,13 +103,12 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		wltOpt.Encrypt = true
 		wltOpt.Label = label
 		wltOpt.ScanN = scanAddressesN
-		c := wltSrv.newClient()
+
 		wltR, err := c.CreateWallet(wltOpt)
 		if err != nil {
 			return nil, err
 		}
 		wlt = walletResponseToWallet(*wltR)
-
 	} else {
 		wltOpt := api.CreateWalletOptions{}
 		wltOpt.Type = WalletTypeDeterministic
@@ -109,37 +116,49 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		wltOpt.Encrypt = false
 		wltOpt.Label = label
 		wltOpt.ScanN = scanAddressesN
-		c := wltSrv.newClient()
+
 		wltR, err := c.CreateWallet(wltOpt)
 		if err != nil {
 			return nil, err
 		}
 		wlt = walletResponseToWallet(*wltR)
 	}
-
+	wlt.poolSection = wltSrv.poolSection
 	return &wlt, nil
 }
 
 func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordReader) {
-	c := wltSrv.newClient()
+	c, err := NewSkycoinApiClient(wltSrv.poolSection)
+	if err != nil {
+		return
+	}
+	defer core.GetMultiPool().Return(wltSrv.poolSection, c)
 	password, _ := pwd("Insert password")
-	_, err := c.EncryptWallet(walletName, password)
+	_, err = c.EncryptWallet(walletName, password)
 	if err != nil {
 		return
 	}
 }
 
 func (wltSrv *SkycoinRemoteWallet) Decrypt(walletName string, pwd core.PasswordReader) {
-	c := wltSrv.newClient()
+	c, err := NewSkycoinApiClient(wltSrv.poolSection)
+	if err != nil {
+		return
+	}
+	defer core.GetMultiPool().Return(wltSrv.poolSection, c)
 	password, _ := pwd("Insert password")
-	_, err := c.DecryptWallet(walletName, password)
+	_, err = c.DecryptWallet(walletName, password)
 	if err != nil {
 		return
 	}
 }
 
 func (wltSrv *SkycoinRemoteWallet) IsEncrypted(walletName string) (bool, error) {
-	c := wltSrv.newClient()
+	c, err := NewSkycoinApiClient(wltSrv.poolSection)
+	if err != nil {
+		return false, err
+	}
+	defer core.GetMultiPool().Return(wltSrv.poolSection, c)
 	wlt, err := c.Wallet(walletName)
 	if err != nil {
 		return false, err
@@ -147,25 +166,59 @@ func (wltSrv *SkycoinRemoteWallet) IsEncrypted(walletName string) (bool, error) 
 	return wlt.Meta.Encrypted, nil
 }
 func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
-	c := wltSrv.newClient()
+	c, err := NewSkycoinApiClient(wltSrv.poolSection)
+	if err != nil {
+		return nil
+	}
+	defer core.GetMultiPool().Return(wltSrv.poolSection, c)
 	wltR, err := c.Wallet(id)
 	if err != nil {
 		return nil
 	}
 	nwlt := walletResponseToWallet(*wltR)
-	nwlt.nodeAddress = wltSrv.nodeAddress
+	nwlt.poolSection = wltSrv.poolSection
 	return nwlt
+}
+
+func NewWalletNode(nodeAddress string) *WalletNode {
+
+	pool := core.GetMultiPool()
+	sections := pool.ListSections()
+	cont := 1
+	var sect string
+	for true {
+		find := false
+		sect = fmt.Sprintf("skycoin-%d", cont)
+		for _, sec := range sections {
+			if sec == sect {
+				find = true
+				break
+			}
+		}
+		cont++
+		if !find {
+			break
+		}
+	}
+
+	pool.CreateSection(sect, NewSkycoinConnectionFactory(nodeAddress))
+	return &WalletNode{
+		NodeAddress: nodeAddress,
+		poolSection: sect,
+	}
+
 }
 
 type WalletNode struct { //Implements WallentEnv interface
 	wltService  *SkycoinRemoteWallet
 	NodeAddress string
+	poolSection string
 }
 
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(SkycoinRemoteWallet)
-		wltEnv.wltService.nodeAddress = wltEnv.NodeAddress
+		wltEnv.wltService.poolSection = wltEnv.poolSection
 	}
 	return wltEnv.wltService
 }
@@ -173,7 +226,7 @@ func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 func (wltEnv *WalletNode) GetWalletSet() core.WalletSet {
 	if wltEnv.wltService == nil {
 		wltEnv.wltService = new(SkycoinRemoteWallet)
-		wltEnv.wltService.nodeAddress = wltEnv.NodeAddress
+		wltEnv.wltService.poolSection = wltEnv.poolSection
 	}
 	return wltEnv.wltService
 }
@@ -217,18 +270,20 @@ type RemoteWallet struct { //Implements Wallet and CryptoAccount interfaces
 	Label       string
 	CoinType    string
 	Encrypted   bool
-	nodeAddress string
+	poolSection string
 }
 
-func (wlt RemoteWallet) newClient() *api.Client {
-	return api.NewClient(wlt.nodeAddress)
-}
 func (wlt RemoteWallet) GetLabel() string {
 	return wlt.Label
 }
 
 func (wlt RemoteWallet) SetLabel(name string) {
-	c := wlt.newClient()
+	c, err := NewSkycoinApiClient(wlt.poolSection)
+	if err != nil {
+		return
+	}
+
+	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	_ = c.UpdateWallet(wlt.Id, name)
 }
 
@@ -249,7 +304,11 @@ func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput) { //------T
 }
 
 func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
-	c := wlt.newClient()
+	c, err := NewSkycoinApiClient(wlt.poolSection)
+	if err != nil {
+		return nil
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	password, _ := pwd("Insert password")
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
@@ -280,7 +339,11 @@ func (wlt RemoteWallet) GetCryptoAccount() core.CryptoAccount {
 }
 
 func (wlt RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
-	c := wlt.newClient()
+	c, err := NewSkycoinApiClient(wlt.poolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
 		return nil, err
@@ -380,6 +443,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 
 func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	password, _ := pwd("Insert Password")
+
 	passwordByte := []byte(password)
 	opts := wallet.Options{
 		Label:    label,
@@ -387,13 +451,24 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Encrypt:  IsEncrypted,
 		Type:     WalletTypeDeterministic,
 		Password: passwordByte,
-		ScanN:    uint64(scanAddressesN),
 	}
 	wltName := wltSrv.newUnicWalletFilename()
-	wlt, err := wallet.NewWallet(wltName, opts)
-	if err != nil {
-		return nil, err
+	var wlt wallet.Wallet
+	var err error
+	if scanAddressesN > 0 {
+		wlt, err = wallet.NewWalletScanAhead(wltName, opts, &TransactionFinder{})
+		if err != nil {
+
+			return nil, err
+		}
+	} else {
+		wlt, err = wallet.NewWallet(wltName, opts)
+		if err != nil {
+
+			return nil, err
+		}
 	}
+
 	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
 		return nil, err
 	}
@@ -479,6 +554,33 @@ func (wltSrv *SkycoinLocalWallet) IsEncrypted(walletName string) (bool, error) {
 	return wlt.IsEncrypted(), nil
 }
 
+type TransactionFinder struct {
+}
+
+func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bool, error) {
+	addrs := make([]string, 0)
+	for _, addr := range addresses {
+		addrs = append(addrs, addr.String())
+	}
+	answ := make([]bool, len(addrs))
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+
+	for i := 0; i < len(addrs); i++ {
+		txn, err := c.Transactions([]string{addrs[i]})
+		if err != nil {
+			return nil, err
+		}
+		if len(txn) != 0 {
+			answ[i] = true
+		}
+	}
+	return answ, nil
+}
+
 type LocalWallet struct {
 	Id        string
 	Label     string
@@ -495,7 +597,18 @@ func (wlt LocalWallet) GetLabel() string {
 	return wlt.Label
 }
 func (wlt LocalWallet) SetLabel(wltName string) {
+	wltFile, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.GetId()))
+	if err != nil {
+		return
+	}
+	wltFile.SetLabel(wltName)
+
+	err = wallet.Save(wltFile, wlt.WalletDir)
+	if err != nil {
+		return
+	}
 	wlt.Label = wltName
+
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64) {
 

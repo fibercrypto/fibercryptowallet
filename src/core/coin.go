@@ -28,6 +28,7 @@ type TransactionIterator interface {
 type TransactionInput interface {
 	GetId() string
 	GetSpentOutput() TransactionOutput
+	GetCoins(ticker string) uint64
 }
 
 type TransactionInputIterator interface {
