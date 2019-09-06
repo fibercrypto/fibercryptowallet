@@ -5,12 +5,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 
 	"github.com/skycoin/skycoin/src/coin"
 
@@ -672,16 +673,10 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string) error {
-	password = "mauri"
-	if password == "1" {
-		return nil
-	}
 
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
 	if err != nil {
-		fmt.Println(1)
-		fmt.Println(err.Error())
 		return err
 	}
 
@@ -691,8 +686,6 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
-		fmt.Println(2)
-		fmt.Println(err.Error())
 		return err
 	}
 
@@ -700,8 +693,6 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 	addresses := make([]string, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()
 	if err != nil {
-		fmt.Println(3)
-		fmt.Println(err.Error())
 		return err
 	}
 	for iterAddr.Next() {
@@ -722,36 +713,27 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 		To:                []api.Receiver{dst},
 		HoursSelection:    hS,
 	}
-	fmt.Println(rTxn.Addresses)
+
 	txnResponse, err := c.CreateTransaction(rTxn)
 	if err != nil {
-		fmt.Println(err.Error())
 		return err
 	}
-	fmt.Println(txnResponse.EncodedTransaction)
+
 	txn, err := txnResponse.Transaction.ToTransaction()
 	if err != nil {
-		fmt.Println(4)
-		fmt.Println(err.Error())
 		return err
 	}
-	fmt.Println("--------1")
 
 	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
 	if err != nil {
-		fmt.Println(5)
-		fmt.Println(err.Error())
 		return err
 	}
 	if skyWlt.IsEncrypted() {
 		skyWlt, err = wallet.Unlock(skyWlt, []byte(password))
 		if err != nil {
-			fmt.Println(6)
-			fmt.Println(err.Error())
 			return err
 		}
 	}
-	fmt.Println("--------2")
 
 	uxouts := make([]coin.UxOut, 0)
 	for _, in := range txn.In {
@@ -761,14 +743,10 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 		}
 		addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
 		if err != nil {
-			fmt.Println(6)
-			fmt.Println(err.Error())
 			return err
 		}
 		srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
 		if err != nil {
-			fmt.Println(7)
-			fmt.Println(err.Error())
 			return err
 		}
 		uxouts = append(uxouts, coin.UxOut{
@@ -784,34 +762,21 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 			},
 		})
 	}
-	fmt.Println("--------3")
+
 	sigTxn, err := wallet.SignTransaction(skyWlt, txn, []int{}, uxouts)
-	fmt.Println(sigTxn.In)
-	fmt.Println(sigTxn.Out[0].Address)
-	fmt.Println(sigTxn.Sigs)
-	fmt.Println(sigTxn.IsFullySigned())
-	if err != nil {
-		fmt.Println(8)
-		fmt.Println(err.Error())
-		return err
-	}
-	fmt.Println("--------4")
-	//encodedSigTxn, err := sigTxn.SerializeHex()
 
 	if err != nil {
-		fmt.Println(9)
-		fmt.Println(err.Error())
 		return err
 	}
-	fmt.Println("--------5")
-	//_, err = c.InjectEncodedTransaction(encodedSigTxn)
-	re, err := c.InjectTransaction(sigTxn)
+
 	if err != nil {
-		fmt.Println(10)
-		fmt.Println(err.Error())
 		return err
 	}
-	fmt.Println(re)
+
+	_, err = c.InjectTransaction(sigTxn)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
