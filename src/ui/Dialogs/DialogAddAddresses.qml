@@ -8,6 +8,7 @@ Dialog {
     title: Qt.application.name
     standardButtons: Dialog.Ok | Dialog.Cancel
     closePolicy: Dialog.NoAutoClose
+    property alias spinValue: spinBoxAmount.value
 
     onAboutToShow: {
         spinBoxAmount.forceActiveFocus()

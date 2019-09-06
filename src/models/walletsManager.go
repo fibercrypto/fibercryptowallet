@@ -1,12 +1,16 @@
 package models
 
 import (
-	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"strconv"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
+	"github.com/therecipe/qt/qml"
+
+	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 
 	//"github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 	qtcore "github.com/therecipe/qt/core"
-	"github.com/therecipe/qt/qml"
 )
 
 type WalletManager struct {
@@ -20,11 +24,11 @@ type WalletManager struct {
 	_ func(entropy int) string                                             `slot:"getNewSeed"`
 	_ func(seed string) int                                                `slot:"verifySeed"`
 	_ func(id string, n int, password string)                              `slot:"newWalletAddress"`
-	_ func(id string, password string)                                     `slot:"encryptWallet"`
-	_ func(id string, password string)                                     `slot:"decryptWallet"`
+	_ func(id string, password string) int                                 `slot:"encryptWallet"`
+	_ func(id string, password string) int                                 `slot:"decryptWallet"`
 	_ func() []*QWallet                                                    `slot:"getWallets"`
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
-	//_ func() *history.Tes                                                  `slot:"getAddressesWithWallets"`
+	_ func(id, label string) *QWallet                                      `slot:"editWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -46,7 +50,7 @@ func (walletM *WalletManager) init() {
 
 	walletM.WalletEnv = walletsEnvs[0]
 
-	walletM.SeedGenerator = new(skycoin.SeedService)
+	walletM.SeedGenerator = new(sky.SeedService)
 
 }
 
@@ -96,18 +100,28 @@ func (walletM *WalletManager) verifySeed(seed string) int {
 
 }
 
-func (walletM *WalletManager) encryptWallet(id, password string) {
+func (walletM *WalletManager) encryptWallet(id, password string) int {
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
 	walletM.WalletEnv.GetStorage().Encrypt(id, pwd)
+	ret, _ := walletM.WalletEnv.GetStorage().IsEncrypted(id)
+	if ret {
+		return 1
+	}
+	return 0
 }
 
-func (walletM *WalletManager) decryptWallet(id, password string) {
+func (walletM *WalletManager) decryptWallet(id, password string) int {
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
 	walletM.WalletEnv.GetStorage().Decrypt(id, pwd)
+	ret, _ := walletM.WalletEnv.GetStorage().IsEncrypted(id)
+	if ret {
+		return 1
+	}
+	return 0
 }
 
 func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {
@@ -151,6 +165,18 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 
 }
 
+func (walletM *WalletManager) editWallet(id, label string) *QWallet {
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
+	wlt.SetLabel(label)
+	wlt = walletM.WalletEnv.GetWalletSet().GetWallet(id)
+	encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(wlt.GetId())
+	if err != nil {
+		return nil
+	}
+	qwallet := fromWalletToQWallet(wlt, encrypted)
+	return qwallet
+}
+
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
@@ -162,6 +188,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 	for it.Next() {
 		addr := it.Value()
 		qaddress := NewQAddress(nil)
+		qml.QQmlEngine_SetObjectOwnership(qaddress, qml.QQmlEngine__CppOwnership)
 		qaddress.SetAddress(addr.String())
 		qaddress.SetMarked(0)
 		sky, err := addr.GetCryptoAccount().GetBalance("SKY")
@@ -169,7 +196,8 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 
 			continue
 		}
-		qaddress.SetAddressSky(sky)
+		flSky := float64(sky / 1e6)
+		qaddress.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
 		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
 		if err != nil {
 
@@ -185,26 +213,10 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 	return qaddresses
 }
 
-//func (walletM *WalletManager) getAddressesWithWallets() *history.Tes {
-//	response := make(map[string]string, 0)
-//	it := walletM.WalletEnv.GetWalletSet().ListWallets()
-//	for it.Next() {
-//		wlt := it.Value()
-//		addrs, _ := wlt.GetLoadedAddresses()
-//
-//		for addrs.Next() {
-//			response[addrs.Value().String()] = wlt.GetId()
-//		}
-//
-//	}
-//	respon := history.NewTes(nil)
-//	respon.Data = response
-//	return respon
-//}
-
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
 	qwallet := NewQWallet(nil)
+	qml.QQmlEngine_SetObjectOwnership(qwallet, qml.QQmlEngine__CppOwnership)
 	qwallet.SetName(wlt.GetLabel())
 
 	qwallet.SetFileName(wlt.GetId())
@@ -214,13 +226,15 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		qwallet.SetEncryptionEnabled(1)
 	}
 
-	bl, err := wlt.GetCryptoAccount().GetBalance("Sky")
+	bl, err := wlt.GetCryptoAccount().GetBalance(skycoin.SkycoinTicker)
 	if err != nil {
 		bl = 0
 	}
-	qwallet.SetSky(bl)
 
-	bl, err = wlt.GetCryptoAccount().GetBalance("CoinHour")
+	floatBl := float64(bl / 1e6)
+	qwallet.SetSky(floatBl)
+
+	bl, err = wlt.GetCryptoAccount().GetBalance(skycoin.CoinHoursTicker)
 	if err != nil {
 		bl = 0
 	}
