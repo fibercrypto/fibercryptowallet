@@ -12,6 +12,7 @@ Dialog {
 
     property alias mode: createLoadWallet.mode
     property alias name: createLoadWallet.name
+    property alias seed: createLoadWallet.seed
     property alias encryptionEnabled: checkBoxEncryptWallet.checked
 
     Component.onCompleted: {
@@ -21,8 +22,26 @@ Dialog {
     onModeChanged: {
         standardButton(Dialog.Ok).text = mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
     }
+    onAccepted:{
+        var scanA = 0
+        if(encryptionEnabled){
+            if (mode === CreateLoadWallet.Load){
+                scanA = 10
+            }
+            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text , scanA))
+            
+        } else{
+            
+            if (mode === CreateLoadWallet.Load){
+                scanA = 10
+            }
+            
+            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, scanA))
+        }
+    }
 
     function updateAcceptButtonStatus() {
+
         var walletName = createLoadWallet.name
         var walletSeed = createLoadWallet.seed
         var walletSeedConfirm = createLoadWallet.seedConfirm
@@ -35,7 +54,9 @@ Dialog {
         var continueWithUnconventionalSeed = checkBoxContinueWithSeedWarning.checked
         
         var seedMatchConfirmation = walletSeed === walletSeedConfirm
-
+        if (createLoadWallet.mode === CreateLoadWallet.Load){
+            seedMatchConfirmation = true
+        }
         var passwordNeeded = checkBoxEncryptWallet.checked
         var passwordSet = textFieldPassword.text
         var passwordMatchConfirmation = textFieldPassword.text === textFieldConfirmPassword.text
@@ -43,7 +64,10 @@ Dialog {
         columnLayoutSeedWarning.warn = walletName && walletSeed && seedMatchConfirmation && !(!unconventionalSeed)
 
         var okButton = standardButton(Dialog.Ok)
-        okButton.enabled = walletName && walletSeed && seedMatchConfirmation && ((passwordSet && passwordMatchConfirmation) || !passwordNeeded) && (!unconventionalSeed || continueWithUnconventionalSeed)
+
+        var isSeedValid = walletManager.verifySeed(createLoadWallet.seed)
+        
+        okButton.enabled = walletName && walletSeed && seedMatchConfirmation && ((passwordSet && passwordMatchConfirmation) || !passwordNeeded) && (!unconventionalSeed || continueWithUnconventionalSeed) && isSeedValid
     } // function updateAcceptButtonStatus()
 
     title: Qt.application.name
