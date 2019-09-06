@@ -23,6 +23,10 @@ Item {
         walletSeedConfirm.clear()
     }
 
+    
+    Component.onCompleted:{
+        dataModified()
+    }
     implicitHeight: walletName.height + walletSeed.height + (mode === CreateLoadWallet.Create ? walletSeedConfirm.height : 0) + 2*column.spacing
     Behavior on implicitHeight { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
     clip: true
@@ -52,6 +56,7 @@ Item {
 
             placeholderText: qsTr("Wallet's seed")
             buttonLeftText: qsTr("12 words")
+            onDataModified: createLoadWallet.dataModified()
             buttonRightText: qsTr("24 words")
             buttonsVisible: mode === CreateLoadWallet.Create
             nextTabItem: walletSeedConfirm

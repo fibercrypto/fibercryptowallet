@@ -25,7 +25,8 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                walletManager.sendTo(simple.walletSelected, simple.destinationAddress, simple.amount)
+                
+                walletManager.sendTo(stackView.walletSelected, stackView.destinationAddress, stackView.amount)
                 //dialogSendTransaction.open()
             }
         }
@@ -63,16 +64,25 @@ Page {
             anchors.fill: parent
             initialItem: componentSimple
             clip: true
+            property string walletSelected
+            property string destinationAddress
+            property string amount
+            
 
             Component {
                 id: componentSimple
+                
                 ScrollView {
+                    id: scrollViewSimple
+                    
                     contentWidth: simple.implicitWidth
                     contentHeight: simple.implicitHeight
                     clip: true
                     SubPageSendSimple {
                         id: simple
-                        
+                        onWalletSelectedChanged: stackView.walletSelected = walletSelected
+                        onDestinationAddressChanged: stackView.destinationAddress = destinationAddress
+                        onAmountChanged: stackView.amount = amount
                         implicitWidth: stackView.width
                     }
                 }

@@ -101,6 +101,7 @@ func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	}
 	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	bl, err := c.WalletBalance(wlt.Id)
+
 	if err != nil {
 		return 0, err
 	}
@@ -179,7 +180,12 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	bl, err := getBalanceOfAddresses(outs, addrs)
 
 	if ticker == Sky {
-		return strconv.ParseUint(bl.Confirmed.Coins, 10, 64)
+		flSky, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)
+		if err != nil {
+			return 0, nil
+		}
+		return uint64(flSky * 1e6), nil
+
 	} else if ticker == CoinHour {
 		return strconv.ParseUint(bl.Confirmed.Hours, 10, 64)
 	} else {

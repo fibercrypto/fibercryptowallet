@@ -114,7 +114,6 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 			return nil, err
 		}
 		wlt = walletResponseToWallet(*wltR)
-
 	} else {
 		wltOpt := api.CreateWalletOptions{}
 		wltOpt.Type = WalletTypeDeterministic
@@ -129,7 +128,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		}
 		wlt = walletResponseToWallet(*wltR)
 	}
-
+	wlt.poolSection = wltSrv.poolSection
 	return &wlt, nil
 }
 
@@ -505,6 +504,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 
 func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	password, _ := pwd("Insert Password")
+
 	passwordByte := []byte(password)
 	opts := wallet.Options{
 		Label:    label,
@@ -512,13 +512,24 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Encrypt:  IsEncrypted,
 		Type:     WalletTypeDeterministic,
 		Password: passwordByte,
-		ScanN:    uint64(scanAddressesN),
 	}
 	wltName := wltSrv.newUnicWalletFilename()
-	wlt, err := wallet.NewWallet(wltName, opts)
-	if err != nil {
-		return nil, err
+	var wlt wallet.Wallet
+	var err error
+	if scanAddressesN > 0 {
+		wlt, err = wallet.NewWalletScanAhead(wltName, opts, &TransactionFinder{})
+		if err != nil {
+
+			return nil, err
+		}
+	} else {
+		wlt, err = wallet.NewWallet(wltName, opts)
+		if err != nil {
+
+			return nil, err
+		}
 	}
+
 	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
 		return nil, err
 	}
@@ -604,6 +615,33 @@ func (wltSrv *SkycoinLocalWallet) IsEncrypted(walletName string) (bool, error) {
 	return wlt.IsEncrypted(), nil
 }
 
+type TransactionFinder struct {
+}
+
+func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bool, error) {
+	addrs := make([]string, 0)
+	for _, addr := range addresses {
+		addrs = append(addrs, addr.String())
+	}
+	answ := make([]bool, len(addrs))
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+
+	for i := 0; i < len(addrs); i++ {
+		txn, err := c.Transactions([]string{addrs[i]})
+		if err != nil {
+			return nil, err
+		}
+		if len(txn) != 0 {
+			answ[i] = true
+		}
+	}
+	return answ, nil
+}
+
 type LocalWallet struct {
 	Id        string
 	Label     string
@@ -620,7 +658,18 @@ func (wlt LocalWallet) GetLabel() string {
 	return wlt.Label
 }
 func (wlt LocalWallet) SetLabel(wltName string) {
+	wltFile, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.GetId()))
+	if err != nil {
+		return
+	}
+	wltFile.SetLabel(wltName)
+
+	err = wallet.Save(wltFile, wlt.WalletDir)
+	if err != nil {
+		return
+	}
 	wlt.Label = wltName
+
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string) error {
 	password = "mauri"
@@ -631,6 +680,8 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
 	if err != nil {
+		fmt.Println(1)
+		fmt.Println(err.Error())
 		return err
 	}
 
@@ -640,6 +691,8 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		fmt.Println(2)
+		fmt.Println(err.Error())
 		return err
 	}
 
@@ -647,6 +700,8 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 	addresses := make([]string, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		fmt.Println(3)
+		fmt.Println(err.Error())
 		return err
 	}
 	for iterAddr.Next() {
@@ -667,23 +722,37 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 		To:                []api.Receiver{dst},
 		HoursSelection:    hS,
 	}
-
+	fmt.Println(rTxn.Addresses)
 	txnResponse, err := c.CreateTransaction(rTxn)
 	if err != nil {
-		return nil
+		fmt.Println(err.Error())
+		return err
 	}
+	fmt.Println(txnResponse.EncodedTransaction)
 	txn, err := txnResponse.Transaction.ToTransaction()
 	if err != nil {
+		fmt.Println(4)
+		fmt.Println(err.Error())
 		return err
 	}
+	fmt.Println("--------1")
 
-	skyWlt, err := wallet.Load(wlt.Id)
+	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
+	if err != nil {
+		fmt.Println(5)
+		fmt.Println(err.Error())
+		return err
+	}
 	if skyWlt.IsEncrypted() {
 		skyWlt, err = wallet.Unlock(skyWlt, []byte(password))
+		if err != nil {
+			fmt.Println(6)
+			fmt.Println(err.Error())
+			return err
+		}
 	}
-	if err != nil {
-		return err
-	}
+	fmt.Println("--------2")
+
 	uxouts := make([]coin.UxOut, 0)
 	for _, in := range txn.In {
 		ux, err := c.UxOut(in.String())
@@ -692,11 +761,15 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 		}
 		addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
 		if err != nil {
-			return nil
+			fmt.Println(6)
+			fmt.Println(err.Error())
+			return err
 		}
 		srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
 		if err != nil {
-			return nil
+			fmt.Println(7)
+			fmt.Println(err.Error())
+			return err
 		}
 		uxouts = append(uxouts, coin.UxOut{
 			Head: coin.UxHead{
@@ -711,19 +784,34 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 			},
 		})
 	}
-	sigTxn, err := wallet.SignTransaction(skyWlt, txn, make([]int, 0), uxouts)
+	fmt.Println("--------3")
+	sigTxn, err := wallet.SignTransaction(skyWlt, txn, []int{}, uxouts)
+	fmt.Println(sigTxn.In)
+	fmt.Println(sigTxn.Out[0].Address)
+	fmt.Println(sigTxn.Sigs)
+	fmt.Println(sigTxn.IsFullySigned())
 	if err != nil {
-		return nil
-	}
-	encodedSigTxn, err := sigTxn.SerializeHex()
-	if err != nil {
+		fmt.Println(8)
+		fmt.Println(err.Error())
 		return err
 	}
+	fmt.Println("--------4")
+	//encodedSigTxn, err := sigTxn.SerializeHex()
 
-	_, err = c.InjectEncodedTransaction(encodedSigTxn)
 	if err != nil {
+		fmt.Println(9)
+		fmt.Println(err.Error())
 		return err
 	}
+	fmt.Println("--------5")
+	//_, err = c.InjectEncodedTransaction(encodedSigTxn)
+	re, err := c.InjectTransaction(sigTxn)
+	if err != nil {
+		fmt.Println(10)
+		fmt.Println(err.Error())
+		return err
+	}
+	fmt.Println(re)
 
 	return nil
 }

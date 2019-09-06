@@ -18,6 +18,7 @@ Item {
     // The following property is used to avoid a binding conflict with the `height` property.
     // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+    
 
     width: walletList.width
     height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
@@ -85,6 +86,7 @@ Item {
             id: addressList
             model: listAddresses
             implicitHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+            property alias parentRoot: root 
             opacity: expanded ? 1.0 : 0.0
             clip: true
             interactive: false
@@ -117,12 +119,68 @@ Item {
         focus: true
 
         onAccepted: {
-            console.log("Adding accepted")
+            if (encryptionEnabled){
+                dialogGetPasswordForAddAddresses.title = "Enter Password"
+                dialogGetPasswordForAddAddresses.warnigVisibility = false
+                dialogGetPasswordForAddAddresses.height = dialogGetPassword.height - 20
+                dialogGetPasswordForAddAddresses.nAddress = spinValue
+                dialogGetPasswordForAddAddresses.open()
+                
+
+            } else{
+                walletManager.newWalletAddress(fileName, spinValue, "")
+                listAddresses.loadModel(walletManager.getAddresses(fileName))
+            }
+            
+            
         }
         onRejected: {
             console.log("Adding rejected")
         }
     } // DialogAddAddresses
+    DialogGetPassword{
+        id: dialogGetPasswordForAddAddresses
+        anchors.centerIn: Overlay.overlay
+        property int nAddress
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        onAccepted:{
+            walletManager.newWalletAddress(fileName, nAddress, password.text)
+            listAddresses.loadModel(walletManager.getAddresses(fileName))
+        }
+    }
+    DialogGetPassword {
+        id: dialogGetPassword
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        onAccepted:{
+            var isEncrypted = walletManager.decryptWallet(fileName, password.text)
+            walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
+        }
+    }
+    RequestPasswordDialog {
+        id: dialogRequestPassword
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 100 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+       
+        onAccepted:{
+           
+            var isEncypted = walletManager.encryptWallet(fileName, password.text)
+            walletModel.editWallet(index, name, isEncypted, sky, coinHours )
+
+        }
+    }   //RequestPasswordDialog
 
     DialogEditWallet {
         id: dialogEditWallet
@@ -132,7 +190,11 @@ Item {
         modal: true
 
         onAccepted: {
-            console.log("Editting accepted")
+            
+            var qwallet = walletManager.editWallet(fileName, newLabel)
+            
+            walletModel.editWallet(index, qwallet.name, encryptionEnabled, qwallet.sky, qwallet.coinHours )
+    
         }
         onRejected: {
             console.log("Editting rejected")
