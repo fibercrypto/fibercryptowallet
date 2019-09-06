@@ -1,14 +1,19 @@
 package history
 
 import (
+	"sort"
 	"strconv"
 	"time"
 
-	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
 	qtcore "github.com/therecipe/qt/core"
+)
+
+const (
+	dateTimeFormatForGo  = "2006-01-02T15:04:05"
+	dateTimeFormatForQML = "yyyy-MM-ddThh:mm:ss"
 )
 
 type HistoryManager struct {
@@ -205,7 +210,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		txnsDetails = append(txnsDetails, txnDetails)
 
 	}
-
+	sort.Sort(ByDate(txnsDetails))
 	return txnsDetails
 }
 func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
@@ -264,4 +269,19 @@ func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 	}
 
 	return response
+}
+
+type ByDate []*transactions.TransactionDetails
+
+func (a ByDate) Len() int {
+	return len(a)
+}
+func (a ByDate) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a ByDate) Less(i, j int) bool {
+	d1, _ := time.Parse(dateTimeFormatForGo, a[i].Date().ToString(dateTimeFormatForQML))
+	d2, _ := time.Parse(dateTimeFormatForGo, a[j].Date().ToString(dateTimeFormatForQML))
+	return d1.After(d2)
 }
