@@ -367,15 +367,3 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 
 	return balRlt, nil
 }
-
-func UnspentOutputToSkycoinTransactionOutput(uo readable.UnspentOutput) *SkycoinTransactionOutput {
-	Fcoins, _ := strconv.ParseFloat(uo.Coins, 64) 
-	// TODO: Use AltcoinQuotient to get the correct accuracy.
-	accuracy := 1000000
-	coins := uint64(Fcoins * float64(accuracy)) 
-	return &SkycoinTransactionOutput{
-		Id: uo.Hash,
-		Sky: coins, 
-		CoinHours: uo.CalculatedHours,
-	}
-}
