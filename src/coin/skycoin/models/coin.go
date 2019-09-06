@@ -277,11 +277,10 @@ func (iter *SkycoinTransactionOutputIterator) Next() bool {
 }
 
 func (iter *SkycoinTransactionOutputIterator) HasNext() bool {
-	if iter.HasNext() {
-		iter.current++
-		return true
+	if (iter.current + 1) >= len(iter.data) {
+		return false
 	}
-	return false
+	return true
 }
 
 func NewSkycoinTransactionOutputIterator(outs []core.TransactionOutput) *SkycoinTransactionOutputIterator {
