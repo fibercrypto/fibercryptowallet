@@ -234,7 +234,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		qwallet.SetEncryptionEnabled(1)
 	}
 
-	bl, err := wlt.GetCryptoAccount().GetBalance(sky.SkycoinTicker)
+	bl, err := wlt.GetCryptoAccount().GetBalance(sky.Sky)
 	if err != nil {
 		bl = 0
 	}
@@ -242,7 +242,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	floatBl := float64(bl / 1e6)
 	qwallet.SetSky(floatBl)
 
-	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHoursTicker)
+	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHour)
 	if err != nil {
 		bl = 0
 	}
