@@ -2,8 +2,10 @@ package skycoin
 
 import (
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"path/filepath"
 	"strconv"
@@ -294,15 +296,71 @@ func (wlt RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt RemoteWallet) Transfer(to core.Address, amount uint64) error { //------TODO
+func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string) error {
+	client, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logrus.Warn(err)
+		return err
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	wltR, err := client.Wallet(wlt.Id)
+	if err != nil {
+		return err
+	}
+
+	balance, err := wlt.GetBalance(Sky)
+	if err != nil {
+		return err
+	}
+
+	if balance < amount {
+		return errors.New("Don't have enough sky to make the transaction")
+	}
+
+	addr := SkycoinAddress{address: to.String()}
+	destination, err := addr.ToSkycoinCipherAddress()
+
+	if err != nil {
+		return errors.New("Destination address invalid")
+	}
+
+	txn := api.Receiver{
+		Address: destination.String(),
+		Coins:   strconv.FormatUint(amount, 10),
+	}
+	var req api.WalletCreateTransactionRequest
+	if wltR.Meta.Encrypted {
+		req = api.WalletCreateTransactionRequest{
+			Unsigned: false,
+			WalletID: wltR.Meta.Filename,
+			Password: password,
+		}
+	} else {
+
+		req = api.WalletCreateTransactionRequest{
+			Unsigned: false,
+			WalletID: wltR.Meta.Filename,
+		}
+	}
+	req.To = []api.Receiver{txn}
+
+	err = json.Unmarshal([]byte("{\"type\": \"auto\", \"mode\": \"share\", \"shareFactor\": \"0.5\"}"), &req.HoursSelection)
+
+	transactionResponse, err := client.WalletCreateTransaction(req)
+
+	txid, err := client.InjectEncodedTransaction(transactionResponse.EncodedTransaction)
+	if err != nil {
+		return err
+	}
+	logrus.Info("Transaction " + txid + " Injected")
 	return nil
 }
 
-func (wlt RemoteWallet) SendFromAddress(from, to, change core.Address, amount uint64) error { //------TODO
+func (wlt RemoteWallet) SendFromAddress(from, to, change core.Address, amount uint64, password string) error { //------TODO
 	return nil
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput) error { //------TODO
+func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, password string) error { //------TODO
 	return nil
 }
 
@@ -613,8 +671,7 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 	wlt.Label = wltName
 
 }
-func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
-	var password string
+func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string) error {
 	password = "mauri"
 	if password == "1" {
 		return nil
@@ -758,10 +815,10 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
 
 	return nil
 }
-func (wlt LocalWallet) SendFromAddress(from, to, change core.Address, amount uint64) error { //------TODO
+func (wlt LocalWallet) SendFromAddress(from, to, change core.Address, amount uint64, password string) error { //------TODO
 	return nil
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput) error { //------TODO
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, password string) error { //------TODO
 	return nil
 }
 func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
