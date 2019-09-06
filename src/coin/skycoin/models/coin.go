@@ -234,6 +234,10 @@ func (out SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 	return 0
 }
 
+func (out SkycoinTransactionOutput) GetHours() uint64 {
+	return out.skyOut.Hours
+}
+
 func (out SkycoinTransactionOutput) IsSpent() bool {
 	if out.spent {
 		return true
