@@ -29,7 +29,7 @@ func (txn *SkycoinPendingTransaction) GetStatus() core.TransactionStatus {
 func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput { 
 	inputs := make([]core.TransactionInput, 0)
 	for _ , input := range txn.Transaction.Transaction.In {
-		inputs = append(inputs, &SkycoinTransactionInput{Input: input})
+		inputs = append(inputs, &SkycoinPendingTransactionInput{Input: input})
 	}
 	return inputs
 } 
@@ -37,7 +37,7 @@ func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput {
 func (txn *SkycoinPendingTransaction) GetOutputs() []core.TransactionOutput { 
 	outputs := make([]core.TransactionOutput, 0)
 	for _ , output := range txn.Transaction.Transaction.Out {
-		outputs = append(outputs, &SkycoinTransactionOutput{Output: output})
+		outputs = append(outputs, &SkycoinPendingTransactionOutput{Output: output})
 	}
 	return outputs
 } 
@@ -98,6 +98,10 @@ func (in *SkycoinPendingTransactionInput) IsSpent() bool {
  
 func (in *SkycoinPendingTransactionInput) GetSpentOutput() core.TransactionOutput { 
   	return nil 
+} 
+
+func (in *SkycoinPendingTransactionInput) GetCoins(ticker string) uint64 { 
+	return uint64(0) 
 } 
  
 /** 
@@ -215,7 +219,7 @@ func (txn *SkycoinTransaction) GetInputs() []core.TransactionInput {
 		}
 		txn.inputs = make([]core.TransactionInput, 0)
 		for _, in := range transaction.Transaction.In {
-			txn.inputs = append(txn.inputs, SkycoinTransactionInput{
+			txn.inputs = append(txn.inputs, &SkycoinTransactionInput{
 				skyIn:       in,
 				spentOutput: nil,
 			})
@@ -230,7 +234,7 @@ func (txn *SkycoinTransaction) GetOutputs() []core.TransactionOutput {
 	if txn.outputs == nil {
 		txn.outputs = make([]core.TransactionOutput, 0)
 		for _, out := range txn.skyTxn.Out {
-			txn.outputs = append(txn.outputs, SkycoinTransactionOutput{
+			txn.outputs = append(txn.outputs, &SkycoinTransactionOutput{
 				skyOut: out,
 				spent:  false,
 			})
@@ -303,7 +307,7 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) uint64 {
  */
 type SkycoinTransactionInputIterator struct {
 	current int
-	data    []*SkycoinTransactionInput
+	data    []core.TransactionInput
 }
 
 func (iter *SkycoinTransactionInputIterator) Value() core.TransactionInput {
@@ -322,7 +326,7 @@ func (iter *SkycoinTransactionInputIterator) HasNext() bool {
 	return (iter.current + 1) < len(iter.data)
 }
 
-func NewSkycoinTransactioninputIterator(ins []core.TransactionOutput) *SkycoinTransactionInputIterator {
+func NewSkycoinTransactioninputIterator(ins []core.TransactionInput) *SkycoinTransactionInputIterator {
 	return &SkycoinTransactionInputIterator{data: ins, current: -1}
 }
 
@@ -344,15 +348,16 @@ func (out *SkycoinTransactionOutput) GetAddress() core.Address {
 
 }
 
-func (out *SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
+func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
+	//TODO: Change to SkycoinPendingTransactionStyle
 	if ticker == Sky {
 		skyF, _ := strconv.ParseFloat(out.skyOut.Coins, 64)
-		return uint64(skyF * 1e6)
+		return uint64(skyF * 1e6), nil
 	}
 	if ticker == CoinHour {
-		return out.skyOut.Hours
+		return out.skyOut.Hours, nil
 	}
-	return 0
+	return 0, nil
 }
 
 func (out *SkycoinTransactionOutput) IsSpent() bool {

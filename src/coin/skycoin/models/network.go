@@ -53,11 +53,6 @@ type SkycoinPEX struct { //Implements PEX interface
 	NodeAddress string
 } 
 
-func (spex *SkycoinPEX) newClient() *api.Client {
-	c := api.NewClient(spex.NodeAddress)
-	return c
-}
-
 func (spex *SkycoinPEX) GetConnections()  {
 	//TODO
 }
@@ -67,10 +62,14 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction)  {
 }
 
 func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
-	c := spex.newClient()
-	txns, err := c.PendingTransactionsVerbose()
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	txns, err2 := c.PendingTransactionsVerbose()
+	if err2 != nil {
+		return nil, err2
 	}
 	skycoinTxns := make([]core.Transaction, 0)
 	for _, txn := range txns {

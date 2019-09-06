@@ -48,7 +48,7 @@ func (walletM *WalletManager) init() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
 	}
 
-	walletM.WalletEnv = &skycoin.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
+	walletM.WalletEnv = &sky.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"} //just example
 
 	walletM.SeedGenerator = new(sky.SeedService)
 

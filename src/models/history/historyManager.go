@@ -113,13 +113,15 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		txnDetails.SetInputs(inputs)
 
 		for _, out := range txn.GetOutputs() {
-
-			sky := out.GetCoins("SKY")
+			//TODO: return an error
+			sky, _ := out.GetCoins("SKY")
 			qOu := address.NewAddressDetails(nil)
 			qOu.SetAddress(out.GetAddress().String())
 			skyFloat := float64(sky) / 1e6
 			qOu.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			qOu.SetAddressCoinHours(strconv.FormatUint(out.GetCoins("SKYCH"), 10))
+			//TODO: return an error
+			val, _ := out.GetCoins("SKYCH")
+			qOu.SetAddressCoinHours(strconv.FormatUint(val, 10))
 			outputs.AddAddress(qOu)
 			if sent {
 
@@ -128,12 +130,15 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 
 				} else {
 					internally = false
-					traspassedHoursOut += out.GetCoins("SKYCH")
+					//TODO: return an error
+					val, _ = out.GetCoins("SKYCH")
+					traspassedHoursOut += val
 				}
 			} else {
 				_, ok := find[out.GetAddress().String()]
 				if ok {
-					traspassedHoursIn += out.GetCoins("SKYCH")
+					val, _ = out.GetCoins("SKYCH")
+					traspassedHoursIn += val
 					skyAmountIn += sky
 
 					_, ok := inAddresses[qOu.Address()]

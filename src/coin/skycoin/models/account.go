@@ -152,10 +152,14 @@ func (wlt RemoteWallet) ListTransactions() core.TransactionIterator {
 }
 
 func (wlt RemoteWallet) ListPendingTransactions() (core.TransactionIterator, error) { 
-	c := wlt.newClient()
-	response, err := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
+	if err2 != nil {
+		return nil, err2
 	}
 	txns := make([]core.Transaction, 0)
 	for _, ut := range response.Transactions {
