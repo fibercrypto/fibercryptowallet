@@ -28,7 +28,7 @@ func (hm *HistoryManager) init() {
 	hm.ConnectLoadHistory(hm.loadHistory)
 	hm.ConnectAddFilter(hm.addFilter)
 	hm.ConnectRemoveFilter(hm.removeFilter)
-	hm.walletEnv = &skycoin.WalletDirectory{WalletDir: "/home/kid/.skycoin/wallets"}
+	hm.walletEnv = &skycoin.WalletDirectory{WalletDir: "/home/teno/.skycoin/wallets"}
 }
 
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
