@@ -7,7 +7,7 @@ Item {
 
     implicitWidth: 100
     implicitHeight: 60
-
+    signal dataModified()
     property Item nextTabItem
     property alias textArea: textArea
     property alias text: textArea.text
@@ -21,8 +21,19 @@ Item {
     readonly property alias inputControlWidth: textArea.width
     readonly property alias inputControlHeight: textArea.height
 
+    function generateSeed( words){
+        if (words == 12 ){
+            textArea.text = walletManager.getNewSeed(128)
+        } else if (words == 24){
+            textArea.text = walletManager.getNewSeed(256)
+        }
+    }
     function clear() {
         textArea.clear()
+        if (mode === CreateLoadWallet.Create){
+            generateSeed(12)
+        }
+        
     }
 
     Row {
@@ -34,7 +45,8 @@ Item {
 
         ItemDelegate {
             id: buttonLeft
-
+            onClicked: generateSeed(12)
+            
             height: buttonRight.height
 
             text: "ButtonLeft"
@@ -51,7 +63,9 @@ Item {
 
         ItemDelegate {
             id: buttonRight
-
+            onClicked:  generateSeed(24)
+                
+                   
             height: 30
             opacity: buttonsVisible ? 1.0 : 0.0
             visible: opacity > 0.0
@@ -98,5 +112,8 @@ Item {
         selectByMouse: true
         KeyNavigation.priority: KeyNavigation.BeforeItem
         KeyNavigation.tab: nextTabItem
+        onTextChanged: dataModified()
+
+        
     }
 }

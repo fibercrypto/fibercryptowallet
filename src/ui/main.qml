@@ -183,6 +183,8 @@ ApplicationWindow {
         modal: true
     }
 
+   
+
     WalletCreatedDialog {
         id: walletCreatedDialog
         anchors.centerIn: Overlay.overlay

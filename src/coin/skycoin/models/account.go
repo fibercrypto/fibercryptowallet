@@ -101,6 +101,7 @@ func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	}
 	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	bl, err := c.WalletBalance(wlt.Id)
+
 	if err != nil {
 		return 0, err
 	}

@@ -112,7 +112,6 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 			return nil, err
 		}
 		wlt = walletResponseToWallet(*wltR)
-
 	} else {
 		wltOpt := api.CreateWalletOptions{}
 		wltOpt.Type = WalletTypeDeterministic
@@ -127,7 +126,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		}
 		wlt = walletResponseToWallet(*wltR)
 	}
-
+	wlt.poolSection = wltSrv.poolSection
 	return &wlt, nil
 }
 
@@ -447,6 +446,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 
 func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	password, _ := pwd("Insert Password")
+
 	passwordByte := []byte(password)
 	opts := wallet.Options{
 		Label:    label,
@@ -454,13 +454,24 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Encrypt:  IsEncrypted,
 		Type:     WalletTypeDeterministic,
 		Password: passwordByte,
-		ScanN:    uint64(scanAddressesN),
 	}
 	wltName := wltSrv.newUnicWalletFilename()
-	wlt, err := wallet.NewWallet(wltName, opts)
-	if err != nil {
-		return nil, err
+	var wlt wallet.Wallet
+	var err error
+	if scanAddressesN > 0 {
+		wlt, err = wallet.NewWalletScanAhead(wltName, opts, &TransactionFinder{})
+		if err != nil {
+
+			return nil, err
+		}
+	} else {
+		wlt, err = wallet.NewWallet(wltName, opts)
+		if err != nil {
+
+			return nil, err
+		}
 	}
+
 	if err := wallet.Save(wlt, wltSrv.walletDir); err != nil {
 		return nil, err
 	}
@@ -546,6 +557,33 @@ func (wltSrv *SkycoinLocalWallet) IsEncrypted(walletName string) (bool, error) {
 	return wlt.IsEncrypted(), nil
 }
 
+type TransactionFinder struct {
+}
+
+func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bool, error) {
+	addrs := make([]string, 0)
+	for _, addr := range addresses {
+		addrs = append(addrs, addr.String())
+	}
+	answ := make([]bool, len(addrs))
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+
+	for i := 0; i < len(addrs); i++ {
+		txn, err := c.Transactions([]string{addrs[i]})
+		if err != nil {
+			return nil, err
+		}
+		if len(txn) != 0 {
+			answ[i] = true
+		}
+	}
+	return answ, nil
+}
+
 type LocalWallet struct {
 	Id        string
 	Label     string
@@ -562,7 +600,18 @@ func (wlt LocalWallet) GetLabel() string {
 	return wlt.Label
 }
 func (wlt LocalWallet) SetLabel(wltName string) {
+	wltFile, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.GetId()))
+	if err != nil {
+		return
+	}
+	wltFile.SetLabel(wltName)
+
+	err = wallet.Save(wltFile, wlt.WalletDir)
+	if err != nil {
+		return
+	}
 	wlt.Label = wltName
+
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64) error {
 	var password string
