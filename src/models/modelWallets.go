@@ -115,11 +115,9 @@ func (m *ModelWallets) loadModel() {
 				to := outputs.Value()
 				qo := NewQOutput(nil)
 				qo.SetOutputID(to.GetId())
-				// TODO: Use correct accuracy here
-				accuracy := float64(1000000)
-				coins := float64(to.GetCoins("SKY")) / accuracy
+				coins := float64(to.GetCoins(coin.Sky) / 1e6)
 				qo.SetAddressSky(coins)
-				qo.SetAddressCoinHours(Format(to.GetCoins("")))
+				qo.SetAddressCoinHours(util.Format(to.GetCoins(coin.CoinHour)))
 				qOutputs = append(qOutputs, qo)
 			}
 			if len(qOutputs) != 0{
