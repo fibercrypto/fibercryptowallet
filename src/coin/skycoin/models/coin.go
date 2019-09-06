@@ -219,7 +219,7 @@ func (out SkycoinTransactionOutput) GetId() string {
 }
 
 func (out SkycoinTransactionOutput) GetAddress() core.Address {
-	return SkycoinAddress{out.skyOut.Address}
+	return SkycoinAddress{address:out.skyOut.Address}
 
 }
 
