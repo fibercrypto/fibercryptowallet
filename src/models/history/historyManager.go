@@ -33,7 +33,13 @@ func (hm *HistoryManager) init() {
 	hm.ConnectLoadHistory(hm.loadHistory)
 	hm.ConnectAddFilter(hm.addFilter)
 	hm.ConnectRemoveFilter(hm.removeFilter)
-	hm.walletEnv = &skycoin.WalletDirectory{WalletDir: "/home/teno/.skycoin/wallets"}
+	altManager := core.LoadAltcoinManager()
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range altManager.ListRegisteredPlugins() {
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
+
+	hm.walletEnv = walletsEnvs[0]
 }
 
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
