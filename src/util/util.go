@@ -14,7 +14,7 @@ func GetCoinValue(value string) (uint64, error) {
 	return uint64(coin * 1000000), err
 }
 
-func Format(n uint64) string {
+func FormatUint64(n uint64) string {
     in := strconv.FormatUint(n, 10)
     out := make([]byte, len(in)+(len(in)-2+int(in[0]/'0'))/3)
     if in[0] == '-' {
@@ -31,4 +31,34 @@ func Format(n uint64) string {
             out[j] = ','
         }
     }
+}
+
+func FormatCoins(n uint64, quotient uint64) string {
+    number := strconv.FormatUint(n, 10)
+    lenQ := len(strconv.FormatUint(quotient, 10)) - 1
+    nFormatted := FormatUint64(n / quotient)
+    reminder := number[len(number) - lenQ:]
+    reminder = RemoveZeros(reminder)
+    if len(reminder) == 0 {
+        return nFormatted
+    }
+    return nFormatted + "." + reminder
+}
+
+func RemoveZeros(s string) string {
+    index := 0
+    temp := 0
+    for true {
+        temp = index
+        for _, c := range s[index:] {
+            if string(c) != "0" {
+                index++
+                break
+            }
+        }
+        if temp == index {
+            break
+        }
+    }
+    return s[:index]
 }
