@@ -10,16 +10,15 @@ Item {
     id: root
 
     signal qrCodeRequested(var data)
-    Component.onCompleted: {
-        root.qrCodeRequested.connect(genQR)
-    }
 
-    function genQR(data) {
+    onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
-
     }
+
     clip: true
+    leftPadding: 20
+    scale: 0.85
 
     RowLayout {
         id: rootLayout
@@ -45,6 +44,7 @@ Item {
                     qrCodeRequested(address)
                 }
             }
+
             TextField {
                 id: textFieldDestinationAddress
                 font.family: "Code New Roman"
@@ -52,7 +52,8 @@ Item {
                 text: address
                 Layout.fillWidth: true
             }
-        }
+        } // RowLayout
+
         RowLayout {
             TextField {
                 id: textFieldDestinationAmount
@@ -62,12 +63,12 @@ Item {
                     notation: DoubleValidator.StandardNotation
                 }
             }
-            Label {
-                text: qsTr("SKY")
-            }
+            Label { text: qsTr("SKY") }
         }
+
         RowLayout {
             visible: !checkBoxAutomaticCoinHoursAllocation.checked
+
             TextField {
                 id: textFieldCoinHoursAmount
                 text: coinHours
@@ -79,7 +80,8 @@ Item {
             Label {
                 text: qsTr("Coin hours")
             }
-        }
+        } // RowLayout
+
         ToolButton {
             id: toolButtonAddRemoveDestination
             // The 'accent' attribute is used for button highlighting
@@ -96,6 +98,6 @@ Item {
                     listModelDestinations.remove(index)
                 }
             }
-        }
+        } // ToolButton
     } // RowLayout (rootLayout)
 }
