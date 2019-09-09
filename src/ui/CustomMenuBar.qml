@@ -128,7 +128,7 @@ RowLayout {
             CustomMenuItem {
                 id: menuItemSettings
                 text: qsTr("&Settings")
-                iconSource: "qrc:/images/resources/images/icons/warning.svg"
+                iconSource: "qrc:/images/resources/images/icons/settings.svg"
 
                 onClicked: settingsRequested()
             }
