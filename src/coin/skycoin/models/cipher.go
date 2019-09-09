@@ -34,6 +34,7 @@ func NewSkycoinAddressIterator(addresses []SkycoinAddress) *SkycoinAddressIterat
 
 type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
 	address string
+	poolSection string
 }
 
 func (addr SkycoinAddress) IsBip32() bool {
