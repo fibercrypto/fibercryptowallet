@@ -31,9 +31,6 @@ ApplicationWindow {
             enableNetworking = true
             enableSettings = true
         }
-        ConfigManager{
-            id: configManager
-        }
 
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()
@@ -106,6 +103,12 @@ ApplicationWindow {
         WalletManager{
             id: walletManager
         }
+    }
+
+    //! Settings
+    // TODO: This should have properties    
+    ConfigManager {
+        id: configManager
     }
 
     //! Dialogs
