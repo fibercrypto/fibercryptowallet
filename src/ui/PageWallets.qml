@@ -68,14 +68,9 @@ Page {
                 icon.source: "qrc:/images/resources/images/icons/add.svg"
                 Layout.fillWidth: true
 
-
-                
-
                 onClicked: {
                     dialogAddLoadWallet.mode = CreateLoadWallet.Create
-                    
                     dialogAddLoadWallet.open()
-
                 }
 
             }
@@ -95,41 +90,26 @@ Page {
 
     ScrollView {
         id: scrollItem
+
         anchors.fill: parent
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
         ListView {
             id: walletList
             anchors.fill: parent
             clip: true // limit the painting to it's bounding rectangle
             model: walletModel
             delegate: WalletListDelegate {}
-            
         }
     }
-
-
     
-   
-
-    WalletModel{
+    WalletModel {
         id: walletModel
-        property Timer timer: Timer {
-        
-                                    id: walletModelTimer
-                                    repeat: false
-                                    running: true
-                                    interval: 0
-                                    onTriggered: {
-                                        walletModel.loadModel(walletManager.getWallets())
-                                        walletModelTimer.running = false
-                                        // console.log(walletManager)
-                                    }
-            
-                                }
-    }
 
-    
-    
+        Component.onCompleted: {
+            walletModel.loadModel(walletManager.getWallets())
+        }
+    }
 
     DialogAddLoadWallet {
         id: dialogAddLoadWallet
@@ -143,7 +123,6 @@ Page {
 
         onAccepted: {
             console.log("Add wallet")
-          
         }
     }
 
