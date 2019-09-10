@@ -17,8 +17,6 @@ Item {
     }
 
     clip: true
-    leftPadding: 20
-    scale: 0.85
 
     RowLayout {
         id: rootLayout
