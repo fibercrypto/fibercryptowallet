@@ -244,8 +244,22 @@ func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
 
 	return NewSkycoinTransactionIterator(txns)
 }
+
 func (wlt LocalWallet) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
-	return nil,nil
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
+	if err2 != nil {
+		return nil, err2
+	}
+	txns := make([]core.Transaction, 0)
+	for _, ut := range response.Transactions {
+		txns = append(txns, &SkycoinPendingTransaction{Transaction: ut})
+	}
+	return NewSkycoinTransactionIterator(txns), nil
 }
 
 func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string) (*cli.BalanceResult, error) {

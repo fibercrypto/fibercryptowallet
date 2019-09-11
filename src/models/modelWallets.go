@@ -115,9 +115,13 @@ func (m *ModelWallets) loadModel() {
 				to := outputs.Value()
 				qo := NewQOutput(nil)
 				qo.SetOutputID(to.GetId())
-				coins := util.FormatCoins(to.GetCoins(coin.Sky), uint64(1e6))
+				//TODO: report posible error
+				val, _ := to.GetCoins(coin.Sky)
+				coins := util.FormatCoins(val, uint64(1e6))
 				qo.SetAddressSky(coins)
-				qo.SetAddressCoinHours(util.FormatUint64(to.GetCoins(coin.CoinHour)))
+				//TODO: report posible error
+				val, _ = to.GetCoins(coin.CoinHour)
+				qo.SetAddressCoinHours(util.FormatUint64(val))
 				qOutputs = append(qOutputs, qo)
 			}
 			if len(qOutputs) != 0{

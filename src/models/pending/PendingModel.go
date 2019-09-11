@@ -35,15 +35,21 @@ func (m *PendingTransactionList) init() {
 	m.ConnectGetAll(m.getAll)
 	m.ConnectGetMine(m.getMine)
 
+	altManager := core.LoadAltcoinManager()
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range altManager.ListRegisteredPlugins() {
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
 	//Set the correct NodeAddress
-	addr := "http://127.0.0.1:39247" 
+	addr := "http://127.0.0.1:6420" 
 	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
-	m.WalletEnv = &skycoin.WalletNode{NodeAddress: addr}
+	m.WalletEnv = walletsEnvs[0]
 
 	m.getAll()
 }
 
 func (m *PendingTransactionList) getAll() {
+	println("getall----------------")
 	txns, err := m.PEX.GetTxnPool()
 	if err != nil {
 		//display an error in qml app when All is selected
@@ -60,6 +66,7 @@ func (m *PendingTransactionList) getAll() {
 }
 
 func (m *PendingTransactionList) getMine() {
+	println("getmine~~~~~~~~~~~~~~~~~~~~~")
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
 		return

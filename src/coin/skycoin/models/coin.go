@@ -344,7 +344,7 @@ func (out *SkycoinTransactionOutput) GetId() string {
 
 }
 
-func (out SkycoinTransactionOutput) GetAddress() core.Address {
+func (out *SkycoinTransactionOutput) GetAddress() core.Address {
 	return SkycoinAddress{address:out.skyOut.Address}
 }
 
@@ -355,7 +355,7 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 		return uint64(skyF * 1e6), nil
 	}
 	if ticker == CoinHour {
-		return out.skyOut.Hours, nil
+		return out.calculatedHours, nil
 	}
 	return 0, nil
 }
@@ -379,36 +379,5 @@ func (out *SkycoinTransactionOutput) IsSpent() bool {
 		return true
 	}
 	return false
-}
-
-/**
- * SkycoinTransactionOutputIterator
- */
-type SkycoinTransactionOutputIterator struct {
-	current int
-	data    []core.TransactionOutput
-}
-
-func (iter *SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
-	return iter.data[iter.current]
-}
-
-func (iter *SkycoinTransactionOutputIterator) Next() bool {
-	if iter.HasNext() {
-		iter.current++
-		return true
-	}
-	return false
-}
-
-func (iter *SkycoinTransactionOutputIterator) HasNext() bool {
-	if (iter.current + 1) >= len(iter.data) {
-		return false
-	}
-	return true
-}
-
-func NewSkycoinTransactionOutputIterator(outs []core.TransactionOutput) *SkycoinTransactionOutputIterator {
-	return &SkycoinTransactionOutputIterator{data: outs, current: -1}
 }
 
