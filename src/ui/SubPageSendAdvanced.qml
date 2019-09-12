@@ -85,7 +85,82 @@ Page {
                     Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
                 }
             } // ComboBox (addresses, send from)
+
+            RowLayout {
+
+                Label { text: qsTr("Unspent outputs") }
+
+                ToolButton {
+                    id: toolButtonUnspentOutputsPopupHelp
+                    icon.source: "qrc:/images/resources/images/icons/help.svg"
+                    icon.color: Material.color(Material.Grey)
+                }
+
+                CheckBox {
+                    id: checkBoxUnspentOutputsUseAllOutputs
+                    text: qsTr("All outputs of the selected address")
+                    checked: true
+                }
+            }
+
+            ComboBox {
+                id: comboBoxWalletsUnspentOutputsSendFrom
+
+                // This function returns all checked index in the ComboBox's popup
+                function getCheckedDelegates() {
+                    var checkedItems = []
+                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
+                        if (popup.contentItem.contentItem.children[i].checked) {
+                            checkedItems.push(i)
+                        }
+                    }
+                    return checkedItems
+                }
+                
+                Layout.fillWidth: true
+                Layout.topMargin: -12
+
+                enabled: !checkBoxUnspentOutputsUseAllOutputs.checked
+                model: !enabled ? null :
+                        ["sgdkaugakugxfnakusdhgf",
+                        "uhrencgkhmjhsmfugwnjwh",
+                        "iwyerniywetrdntwyierue",
+                        "pney73snyiquemqskddqgq",
+                        "inweytr82n3sr28myrxm28"]
+
+                delegate: Item {
+                    width: parent.width
+                    height: checkDelegate.height
+
+                    property alias checked: checkDelegate.checked
+
+                    CheckDelegate {
+                        id: checkDelegate
+
+                        width: parent.width
+                        text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
+                        font.family: "Code New Roman"
+
+                        LayoutMirroring.enabled: true
+                        contentItem: Label {
+                            leftPadding: comboBoxWalletsUnspentOutputsSendFrom.indicator.width + comboBoxWalletsUnspentOutputsSendFrom.spacing
+                            text: checkDelegate.text
+                            verticalAlignment: Qt.AlignVCenter
+                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
+                        }
+                    } // CheckDelegate
+                } // Item (delegate)
+            } // ComboBox (outputs, send from)
+
         } // ColumnLayout (send from)
+
+        Label {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 30
+            text: qsTr("With your current selection you can send up to <b>%1 SKY</b> and <b>%2 Coin Hours</b> (at least <b>%3 Coin Hours</b> must be used for the transaction fee)").arg(0).arg(0).arg(0)
+            wrapMode: Text.WordWrap
+            horizontalAlignment: Text.AlignHCenter
+        }
 
         ColumnLayout {
             id: columnLayoutDestinations
