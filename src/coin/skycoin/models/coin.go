@@ -211,6 +211,7 @@ func NewSkycoinTransactioninputIterator(ins []*SkycoinTransactionInput) *Skycoin
 type SkycoinTransactionOutput struct {
 	skyOut readable.TransactionOutput
 	spent  bool
+	calculatedHours uint64
 }
 
 func (out SkycoinTransactionOutput) GetId() string {
@@ -219,7 +220,7 @@ func (out SkycoinTransactionOutput) GetId() string {
 }
 
 func (out SkycoinTransactionOutput) GetAddress() core.Address {
-	return SkycoinAddress{out.skyOut.Address}
+	return SkycoinAddress{address:out.skyOut.Address}
 
 }
 
@@ -229,7 +230,7 @@ func (out SkycoinTransactionOutput) GetCoins(ticker string) uint64 {
 		return uint64(skyF * 1e6)
 	}
 	if ticker == CoinHour {
-		return out.skyOut.Hours
+		return out.calculatedHours
 	}
 	return 0
 }
@@ -276,11 +277,10 @@ func (iter *SkycoinTransactionOutputIterator) Next() bool {
 }
 
 func (iter *SkycoinTransactionOutputIterator) HasNext() bool {
-	if iter.HasNext() {
-		iter.current++
-		return true
+	if (iter.current + 1) >= len(iter.data) {
+		return false
 	}
-	return false
+	return true
 }
 
 func NewSkycoinTransactionOutputIterator(outs []core.TransactionOutput) *SkycoinTransactionOutputIterator {
