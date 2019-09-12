@@ -2,6 +2,8 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import OutputsModels 1.0
+
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
@@ -72,6 +74,7 @@ Page {
                     clip: true
 
                     model: modelWallets
+                   
                     delegate: OutputsListDelegate {
                         width: listViewWallets.width
                     }
@@ -82,10 +85,7 @@ Page {
 
     // Roles: name
     // Implement the model in the backend (a more recommendable approach)
-    ListModel { // EXAMPLE
+    QWallets{
         id: modelWallets
-        ListElement { name: "Wallet A" }
-        ListElement { name: "Wallet B" }
-        ListElement { name: "Wallet C" }
     }
 }
