@@ -16,6 +16,9 @@ ApplicationWindow {
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
    
+    function flash() {
+        flasher.flash()
+    }
 
     menuBar: CustomMenuBar {
         id: customMenuBar
@@ -218,5 +221,33 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: (minimumParentSideSize / 3) * 2
         height: (parent.height / 3) * 2
+    }
+
+    //! This must be the last object (i.e. the one with the greater `z` value)
+    Rectangle {
+        id: flasher
+
+        property int duration: 500
+
+        function flash() {
+            flashAnimation.start()
+        }
+
+        y: -customMenuBar.height
+        width: applicationWindow.width
+        height: applicationWindow.height
+        color: "white"
+        opacity: 0.0
+        z: customMenuBar.z + 1
+
+        NumberAnimation {
+            id: flashAnimation
+
+            target: flasher
+            property: "opacity"
+            from: 1.0; to: 0.0
+            duration: flasher.duration
+            easing.type: Easing.InQuad
+        }
     }
 }
