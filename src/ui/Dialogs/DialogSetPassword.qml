@@ -1,93 +1,69 @@
 import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 
 Dialog {
-    id: dialogRequestPassword
-    property alias password: password
-    property alias passwordConf: confirmPassword
-    modal: true
-    title: qsTr("Encrypt Wallet")
-    Flickable {
-           id: flickable
-           anchors.fill: parent
-           contentHeight: columnLayoutRoot.height
-           clip: true
-           ColumnLayout {
-               id: columnLayoutRoot
-               width: parent.width - 10
-               spacing: 30
-               Text {
-                   text: "We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet."
-                   color: "red"
-                   Layout.alignment: Qt.AlignCenter
-                   Layout.preferredWidth: parent.width - 10
-                   wrapMode: Text.Wrap
-               }
-               Label {
-                   text: "Password"
-                   Layout.preferredWidth: parent.width - 10
-                   Layout.alignment: Qt.AlignCenter
-               }
-               TextField {
-                   id: password
-                   Layout.alignment: Qt.AlignCenter
-                   Layout.preferredWidth: parent.width - 10
-                   font {
-                       pixelSize: 20
-                   }
-                   placeholderText: qsTr("Enter Password")
-                   passwordCharacter: "*"
-                   echoMode: TextInput.Password
-                   onTextEdited: {
-                       if (confirmPassword.text == text) {
-                           buttonOk.enabled = true
-                       } else {
-                           buttonOk.enabled = false
-                       }
-                   }
-               }
-               Label {
-                   text: "Confirm Password"
-                   Layout.preferredWidth: parent.width - 10
-                   Layout.alignment: Qt.AlignCenter
-               }
-               TextField {
-                   id: confirmPassword
-                   Layout.preferredWidth: parent.width - 10
-                   Layout.alignment: Qt.AlignCenter
-                   font {
-                       pixelSize: 20
-                   }
-                   width: parent.width - 20
-                   height: parent.height - 20
-                   passwordCharacter: "*"
-                   echoMode: TextInput.Password
-                   placeholderText: qsTr("Confirm Password")
-                   onTextEdited: {
-                       if (password.text == text) {
-                           buttonOk.enabled = true
-                       } else {
-                           buttonOk.enabled = false
-                       }
-                   }
-               }
-               Button {
-                   id: buttonOk
-                   Layout.alignment: Qt.AlignCenter
-                   text: "Ok"
-                   onClicked: {
-                       if(enabled){
-                           // TODO whatever to do with accept
-                           //password.clear()
-                           //confirmPassword.clear()
-                           //dialogRequestPassword.close()
-                           dialogRequestPassword.accept()
+    id: dialogSetPassword
 
-                       }
-                   }
-               }
-
-           } // ColumnLayout (root)
+    property alias headerMessage: labelHeaderMessage.text
+    property alias headerMessageColor: labelHeaderMessage.color
+    property alias password: textFieldPassword.text
+    readonly property bool acceptablePassword: password && textFieldPassword.text === textFieldPasswordConfirmation.text
+    onAcceptablePasswordChanged: {
+        standardButton(Dialog.Ok).enabled = acceptablePassword
     }
+
+    function clear() {
+        textFieldPassword.clear()
+        textFieldPasswordConfirmation.clear()
+        standardButton(Dialog.Ok).enabled = acceptablePassword
+    }
+
+    onAboutToShow: {
+        clear()
+        textFieldPassword.forceActiveFocus()
+    }
+
+    title: qsTr("Set a password")
+    standardButtons: Dialog.Ok | Dialog.Cancel
+
+    Flickable {
+        id: flickable
+        anchors.fill: parent
+        contentHeight: columnLayoutRoot.height
+        clip: true
+
+        ColumnLayout {
+            id: columnLayoutRoot
+            width: parent.width
+            spacing: 10
+
+            Label {
+                id: labelHeaderMessage
+
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                visible: text
+            }
+
+            TextField {
+                id: textFieldPassword
+
+                Layout.fillWidth: true
+                placeholderText: qsTr("Password")
+                echoMode: TextField.Password
+                focus: true
+            }
+
+            TextField {
+                id: textFieldPasswordConfirmation
+
+                Layout.fillWidth: true
+                placeholderText: qsTr("Confirm password")
+                echoMode: TextField.Password
+                Material.accent: text === textFieldPassword.text ? parent.Material.accent : Material.Red
+            }
+        } // ColumnLayout (root)
+    } // Flickable
 }
