@@ -48,8 +48,8 @@ Dialog {
 
                 Layout.fillWidth: true
 
-                onTextChanged: {
-                    standardButton(Dialog.Ok).enabled = text
+                onPasswordForgotten: {
+                    Qt.openUrlExternally("http://skycoin.com/")
                 }
             }
         } // ColumnLayout (root)
