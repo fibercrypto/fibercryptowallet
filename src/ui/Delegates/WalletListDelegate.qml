@@ -138,7 +138,7 @@ Item {
             console.log("Adding rejected")
         }
     } // DialogAddAddresses
-    DialogGetPassword{
+    DialogGetPassword {
         id: dialogGetPasswordForAddAddresses
         anchors.centerIn: Overlay.overlay
         property int nAddress
@@ -147,40 +147,48 @@ Item {
 
         focus: true
         modal: true
-        onAccepted:{
+        
+        onAccepted: {
             walletManager.newWalletAddress(fileName, nAddress, password.text)
             listAddresses.loadModel(walletManager.getAddresses(fileName))
         }
     }
+
     DialogGetPassword {
         id: dialogGetPassword
-        anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
-        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
 
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+
+        headerMessage: qsTr("<b>Warning:</b> for security reasons, it is not recommended to keep the wallets unencrypted. Caution is advised.")
+        headerMessageColor: Material.color(Material.Red)
         focus: true
         modal: true
-        onAccepted:{
+
+        onAccepted: {
             var isEncrypted = walletManager.decryptWallet(fileName, password.text)
             walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
         }
     }
-    RequestPasswordDialog {
-        id: dialogRequestPassword
-        anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
-        height: applicationWindow.height > 570 ? 570 - 100 : applicationWindow.height - 40
 
+    DialogSetPassword {
+        id: dialogSetPassword
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+
+        headerMessage: qsTr("We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet.")
+        headerMessageColor: Material.color(Material.Red)
         focus: true
         modal: true
        
-        onAccepted:{
-           
-            var isEncypted = walletManager.encryptWallet(fileName, password.text)
-            walletModel.editWallet(index, name, isEncypted, sky, coinHours )
-
+        onAccepted: {
+            var isEncypted = walletManager.encryptWallet(fileName, password)
+            walletModel.editWallet(index, name, isEncypted, sky, coinHours)
         }
-    }   //RequestPasswordDialog
+    } // DialogSetPassword
 
     DialogEditWallet {
         id: dialogEditWallet
