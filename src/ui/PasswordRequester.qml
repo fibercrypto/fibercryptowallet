@@ -8,8 +8,9 @@ Item {
 
     property alias text: textFieldPassword.text
     property alias placeholderText: textFieldPassword.placeholderText
+    property alias allowPasswordRecovery: buttonForgot.visible
 
-    implicitHeight: textFieldPassword.implicitHeight + buttonForgot.implicitHeight
+    signal passwordForgotten()
 
     function forceTextFocus() {
         textFieldPassword.forceActiveFocus()
@@ -18,6 +19,8 @@ Item {
     function clear() {
         textFieldPassword.clear()
     }
+
+    implicitHeight: textFieldPassword.implicitHeight + buttonForgot.implicitHeight
 
     ColumnLayout {
         anchors.fill: parent
@@ -39,6 +42,10 @@ Item {
             highlighted: hovered
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             Layout.fillWidth: true
+            
+            onClicked: {
+                passwordForgotten()
+            }
         }
     }
 }
