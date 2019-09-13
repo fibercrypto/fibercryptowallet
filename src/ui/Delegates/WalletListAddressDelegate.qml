@@ -97,17 +97,11 @@ Item {
                 }
             }
             onClicked:{
-                if (checked){
-                    dialogGetPassword.password.clear()
+                if (checked) {
                     dialogGetPassword.open()
-                    
                 } else{
-                    dialogRequestPassword.password.clear()
-                    dialogRequestPassword.passwordConf.clear()
-                    dialogRequestPassword.open()
+                    dialogSetPassword.open()
                 }
-               
-                
             }
         }
         ToolButton {
