@@ -36,6 +36,7 @@ Item {
             id: buttonForgot
             text: qsTr("I forgot my password")
             flat: true
+            highlighted: hovered
             Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
             Layout.fillWidth: true
         }
