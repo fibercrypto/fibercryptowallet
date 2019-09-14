@@ -64,8 +64,7 @@ Item {
                 ColorOverlay {
                     anchors.fill: lockIcon
                     source: lockIcon
-                    color: Material.foreground
-                    visible: Material.theme === Material.dark
+                    color: Material.theme === Material.Dark ? Material.foreground : "undefined"
                 }
 
                 Label {
