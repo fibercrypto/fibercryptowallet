@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import QtGraphicalEffects 1.12
 import WalletsManager 1.0
 
 // Resource imports
@@ -58,6 +59,13 @@ Item {
                     id: lockIcon
                     source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
                     sourceSize: "24x24"
+                }
+
+                ColorOverlay {
+                    anchors.fill: lockIcon
+                    source: lockIcon
+                    color: Material.foreground
+                    visible: Material.theme === Material.dark
                 }
 
                 Label {
