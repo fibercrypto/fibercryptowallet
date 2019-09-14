@@ -45,7 +45,8 @@ Item {
             id: buttonAddAddress
             text: qsTr("Add address")
             icon.source: "qrc:/images/resources/images/icons/add.svg"
-            Material.foreground: Material.Teal
+            Material.accent: Material.Teal
+            Material.foreground: Material.accent
             Layout.fillWidth: true
 
             onClicked: {
@@ -114,7 +115,8 @@ Item {
             id: buttonEdit
             text: qsTr("Edit wallet")
             icon.source: "qrc:/images/resources/images/icons/edit.svg"
-            Material.foreground: Material.Blue
+            Material.accent: Material.Blue
+            Material.foreground: Material.accent
             Layout.fillWidth: true
 
             onClicked: {
