@@ -230,7 +230,11 @@ ApplicationWindow {
         property int duration: 500
 
         function flash() {
-            flashAnimation.start()
+            if (flashAnimation.running) {
+                flashAnimation.restart()
+            } else {
+                flashAnimation.start()
+            }
         }
 
         y: -customMenuBar.height
