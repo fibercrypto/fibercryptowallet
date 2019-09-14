@@ -56,8 +56,9 @@ Page {
 
     footer: ToolBar {
         id: tabBarCreateUpload
-        Material.primary: Material.Blue
-        Material.accent: Material.Yellow
+        Material.theme: applicationWindow.Material.theme
+        Material.primary: applicationWindow.Material.accent
+        Material.foreground: applicationWindow.Material.background
         Material.elevation: 0
 
         RowLayout {
