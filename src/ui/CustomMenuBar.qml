@@ -82,6 +82,7 @@ RowLayout {
 
         Layout.fillWidth: true
         leftInset:  -(toolButtonBack.width + toolButtonBack.padding)
+        rightInset: -(toolButtonTheme.width + toolButtonTheme.padding)
         Material.foreground: menuTextColor
         Behavior on menuTextColor { ColorAnimation { } }
 
@@ -150,4 +151,19 @@ RowLayout {
             }
         } // menuHelp
     } // menuBarReal
+
+    ToolButton {
+        id: toolButtonTheme
+
+        // positioning
+        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+
+        // icon
+        icon.source: "qrc:/images/resources/images/icons/" + (Material.theme === Material.Light ? "moon" : "sun") + ".svg"
+        icon.color: "transparent"
+
+        onClicked: {
+            applicationWindow.Material.theme = (Material.theme === Material.Light ? Material.Dark : Material.Light)
+        }
+    }
 } // RowLayout (menuBar)
