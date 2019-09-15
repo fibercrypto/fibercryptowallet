@@ -57,7 +57,7 @@ Page {
     footer: ToolBar {
         id: tabBarCreateUpload
         Material.theme: applicationWindow.Material.theme
-        Material.primary: applicationWindow.Material.accent
+        Material.primary: applicationWindow.accentColor
         Material.foreground: applicationWindow.Material.background
         Material.elevation: 0
 

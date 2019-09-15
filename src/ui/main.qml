@@ -11,10 +11,15 @@ import "Dialogs/" // For quick UI development, switch back to resources when mak
 
 ApplicationWindow {
     id: applicationWindow
+    
+    property color accentColor: Material.accent
+    Behavior on accentColor { ColorAnimation {} }
+
     visible: true
     width: 680
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
+    Material.accent: accentColor
    
     function flash() {
         flasher.flash()

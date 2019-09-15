@@ -7,8 +7,8 @@ Menu {
     id: menuThemeAccent
 
     readonly property int currentTheme: applicationWindow.Material.theme
-    readonly property color currentAccent: applicationWindow.Material.accent
-    property int currentSelectedIndex: 5 // Material.Blue
+    readonly property color currentAccent: applicationWindow.accentColor
+    property int currentSelectedIndex: 5 // Material.Blue, update this with the corresponding value in `qtquickcontrols2.conf` file
 
     title: qsTr("Style configuration")
 
@@ -46,7 +46,7 @@ Menu {
         onCheckedChanged: {
             applicationWindow.flash()
             applicationWindow.Material.theme = (currentTheme === Material.Light ? Material.Dark : Material.Light)
-            applicationWindow.Material.accent = materialPredefinedColors[currentSelectedIndex]
+            applicationWindow.accentColor = gridAccents.children[currentSelectedIndex].Material.accent //materialPredefinedColors[currentSelectedIndex]
         }
     }
 
@@ -80,7 +80,7 @@ Menu {
                 Rectangle {
                     id: rectangleCheckIndicator
 
-                    property bool checked: applicationWindow.Material.accent === Material.accent
+                    property bool checked: applicationWindow.accentColor === Material.accent
 
                     anchors.centerIn: parent
                     width: rectangleDelegate.width - 16
@@ -101,7 +101,7 @@ Menu {
 
                     onClicked: {
                         currentSelectedIndex = index
-                        applicationWindow.Material.accent = Material.accent
+                        applicationWindow.accentColor = Material.accent
                     }
                 } // ToolButton
             } // Rectangle
