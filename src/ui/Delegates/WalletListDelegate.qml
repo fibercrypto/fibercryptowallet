@@ -55,16 +55,23 @@ Item {
                     Layout.fillWidth: true
                 }
 
-                Image {
-                    id: lockIcon
-                    source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
-                    sourceSize: "24x24"
-                }
+                Item {
+                    id: itemImageLockIcon
 
-                ColorOverlay {
-                    anchors.fill: lockIcon
-                    source: lockIcon
-                    color: Material.theme === Material.Dark ? Material.foreground : "undefined"
+                    width: lockIcon.width
+                    height: lockIcon.height
+
+                    Image {
+                        id: lockIcon
+                        source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
+                        sourceSize: "24x24"
+                    }
+
+                    ColorOverlay {
+                        anchors.fill: lockIcon
+                        source: lockIcon
+                        color: Material.theme === Material.Dark ? Material.foreground : "undefined"
+                    }
                 }
 
                 Label {
