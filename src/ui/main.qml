@@ -12,9 +12,17 @@ import "Dialogs/" // For quick UI development, switch back to resources when mak
 ApplicationWindow {
     id: applicationWindow
     
-    property color accentColor: Material.accent
     property bool skipAccentColorAnimation: false
-    Behavior on accentColor { ColorAnimation { duration: skipAccentColorAnimation ? 0 : 200 } }
+    property bool accentColorAnimationActive: false
+    onAccentColorAnimationActiveChanged: console.log(accentColorAnimationActive)
+    property color accentColor: Material.accent
+    Behavior on accentColor {
+        SequentialAnimation {
+            PropertyAction { target: applicationWindow; property: "accentColorAnimationActive"; value: true }
+            ColorAnimation { duration: skipAccentColorAnimation ? 0 : 200 }
+            PropertyAction { target: applicationWindow; property: "accentColorAnimationActive"; value: false }
+        }
+    }
 
     visible: true
     width: 680
