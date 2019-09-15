@@ -14,7 +14,6 @@ ApplicationWindow {
     
     property bool skipAccentColorAnimation: false
     property bool accentColorAnimationActive: false
-    onAccentColorAnimationActiveChanged: console.log(accentColorAnimationActive)
     property color accentColor: Material.accent
     Behavior on accentColor {
         SequentialAnimation {
