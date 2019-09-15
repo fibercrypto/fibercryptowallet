@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
 import "../"
+
 Item {
     id: root
 
@@ -12,11 +13,9 @@ Item {
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
     
-
     clip: true
     width: 300
     height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
-    
     
     ColumnLayout {
         id: columnLayout
@@ -48,18 +47,23 @@ Item {
 
             contentItem: Label {
                 leftPadding: checkDelegate.indicator.width + checkDelegate.spacing
-                text: checkDelegate.text
                 verticalAlignment: Qt.AlignVCenter
+                text: checkDelegate.text
                 color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
             }
-        }
+        } // CheckDelegate
 
         ListView {
             id: listViewFilterAddress
             property AddressModel listAddresses
             property int checkedDelegates: 0
             property bool allChecked: false
-            model: listAddresses
+            model: 5//listAddresses
+            
+            Layout.fillWidth: true
+            height: contentHeight
+            interactive: false
+
             onCheckedDelegatesChanged: {
                 if (checkedDelegates === 0) {
                     checkDelegate.checkState = Qt.Unchecked
@@ -67,61 +71,39 @@ Item {
                     checkDelegate.checkState = Qt.Checked
                 } else {
                     checkDelegate.checkState = Qt.PartiallyChecked
-                }
-                
-            }
-            onCountChanged:{
-                implicitHeight = listAddresses.count * delegateHeight
-                
-               
+                }                
             }
             
-
+            delegate: HistoryFilterListAddressDelegate {
+                // BUG: Checking the wallet does not change the check state of addresses
+                // Is `checked: marked` ok? Or it should be the opposite?
+                checked: marked
+                width: parent.width
+                 
+                onCheckedChanged: {                   
+                    ListView.view.checkedDelegates += checked ? 1: -1
+                    
+                    if (checked) {
+                        historyManager.addFilter(address)
+                    } else {
+                        historyManager.removeFilter(address)
+                    }
+                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
+                }
+            } // HistoryFilterListAddressDelegate
+                
+            onAllCheckedChanged: {
+                if (allChecked) {
+                    listAddresses.editAddress(index, address, sky, coinHours, true)
+                } else {
+                    listAddresses.editAddress(index, address, sky, coinHours, false)
+                }
+            }
+            
             Component.onCompleted:{
                 modelManager.setWalletManager(walletManager)
                 listAddresses = modelManager.getAddressModel(fileName)
             }
-            
-            Layout.fillWidth: true
-           
-
-            interactive: false
-            
-            delegate: HistoryFilterListAddressDelegate {
-                leftPadding: 20
-                scale: 0.85
-                checked: marked
-                 
-                 onCheckedChanged: {
-                   
-                    ListView.view.checkedDelegates += checked ? 1: -1
-                    
-                    if (checked == 1){
-                        historyManager.addFilter(address)
-                        
-                    }
-                    else {
-                        historyManager.removeFilter(address)
-                        
-                    }
-                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
-                }
-                
-                Connections{
-                    target: listViewFilterAddress
-                    onAllCheckedChanged:{
-                        if (listViewFilterAddress.allChecked){
-                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 1)
-                        } else{
-                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 0)
-                        }
-                    }
-                }
-                
-                
-            }
         } // ListView
     } // ColumnLayout
-
-   
 }
