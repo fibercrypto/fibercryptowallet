@@ -53,7 +53,9 @@ Menu {
         onCheckedChanged: {
             applicationWindow.flash()
             applicationWindow.Material.theme = (currentTheme === Material.Light ? Material.Dark : Material.Light)
-            applicationWindow.accentColor = gridAccents.children[currentSelectedIndex].Material.accent //materialPredefinedColors[currentSelectedIndex]
+            applicationWindow.skipAccentColorAnimation = true
+            applicationWindow.accentColor = gridAccents.children[currentSelectedIndex].Material.accent // needed for accent color transitions
+            skipAccentColorAnimation = false
         }
     }
 

@@ -13,7 +13,8 @@ ApplicationWindow {
     id: applicationWindow
     
     property color accentColor: Material.accent
-    Behavior on accentColor { ColorAnimation {} }
+    property bool skipAccentColorAnimation: false
+    Behavior on accentColor { ColorAnimation { duration: skipAccentColorAnimation ? 0 : 200 } }
 
     visible: true
     width: 680
