@@ -153,22 +153,22 @@ func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 		return err
 	}
 
-	ss.cachedStatus.CurrentCoinHourSupply, err = util.GetCoinValue(coinSupply.CurrentCoinHourSupply)
+	ss.cachedStatus.CurrentCoinHourSupply, err = util.GetCoinValue(coinSupply.CurrentCoinHourSupply, CoinHour)
 	if err != nil {
 		return err
 	}
 
-	ss.cachedStatus.TotalCoinHourSupply, err = util.GetCoinValue(coinSupply.TotalCoinHourSupply)
+	ss.cachedStatus.TotalCoinHourSupply, err = util.GetCoinValue(coinSupply.TotalCoinHourSupply, CoinHour)
 	if err != nil {
 		return err
 	}
 
-	ss.cachedStatus.CurrentSkySupply, err = util.GetCoinValue(coinSupply.CurrentSupply)
+	ss.cachedStatus.CurrentSkySupply, err = util.GetCoinValue(coinSupply.CurrentSupply, Sky)
 	if err != nil {
 		return err
 	}
 
-	ss.cachedStatus.TotalSkySupply, err = util.GetCoinValue(coinSupply.TotalSupply)
+	ss.cachedStatus.TotalSkySupply, err = util.GetCoinValue(coinSupply.TotalSupply, Sky)
 	if err != nil {
 		return err
 	}
