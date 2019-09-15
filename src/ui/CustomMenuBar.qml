@@ -53,7 +53,7 @@ RowLayout {
 
         // icon
         icon.source: "qrc:/images/resources/images/icons/back.svg"
-        icon.color: "white"
+        icon.color: Material.background
 
         // PointingHandCursor
         MouseArea {
@@ -78,7 +78,7 @@ RowLayout {
 
         readonly property color iconColor: "transparent"
         property color color: backButtonHide ? Material.dialogColor : applicationWindow.accentColor
-        property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : "white"
+        property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : Material.background
 
         Layout.fillWidth: true
         leftInset:  -(toolButtonBack.width + toolButtonBack.padding)
