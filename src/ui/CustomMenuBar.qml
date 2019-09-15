@@ -163,8 +163,11 @@ RowLayout {
         icon.color: "transparent"
 
         onClicked: {
-            applicationWindow.flash()
-            applicationWindow.Material.theme = (Material.theme === Material.Light ? Material.Dark : Material.Light)
+            menuThemeAccent.popup()
+        }
+
+        MenuThemeAccent {
+            id: menuThemeAccent
         }
     }
 } // RowLayout (menuBar)
