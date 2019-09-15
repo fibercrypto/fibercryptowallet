@@ -31,7 +31,6 @@ ApplicationWindow {
 
         onOutputsRequested: {
             generalStackView.openOutputsPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Outputs")
             
             enableOutputs = false
@@ -46,7 +45,6 @@ ApplicationWindow {
 
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Pending transactions")
             
             enableOutputs = true
@@ -59,7 +57,6 @@ ApplicationWindow {
 
         onBlockchainRequested: {
             generalStackView.openBlockchainPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Blockchain")
 
             enableOutputs = true
@@ -71,7 +68,6 @@ ApplicationWindow {
 
         onNetworkingRequested: {
             generalStackView.openNetworkingPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Networking")
 
             enableOutputs = true
@@ -83,7 +79,6 @@ ApplicationWindow {
 
         onSettingsRequested: {
             generalStackView.openSettingsPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Settings")
 
             enableOutputs = true

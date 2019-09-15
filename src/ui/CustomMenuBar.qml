@@ -77,7 +77,7 @@ RowLayout {
         id: menuBarReal
 
         readonly property color iconColor: "transparent"
-        property color color: Material.dialogColor
+        property color color: backButtonHide ? Material.dialogColor : applicationWindow.accentColor
         property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : "white"
 
         Layout.fillWidth: true
@@ -160,7 +160,7 @@ RowLayout {
 
         // icon
         icon.source: "qrc:/images/resources/images/icons/" + (Material.theme === Material.Light ? "moon" : "sun") + ".svg"
-        icon.color: "transparent"
+        icon.color: menuBarReal.Material.foreground
 
         onClicked: {
             menuThemeAccent.popup()
