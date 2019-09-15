@@ -48,6 +48,8 @@ Menu {
 
         width: parent.width
         text: qsTr("Night theme")
+        icon.source: "qrc:/images/resources/images/icons/moon.svg"
+        icon.color: "transparent"
         checked: currentTheme === Material.Dark
 
         onCheckedChanged: {
