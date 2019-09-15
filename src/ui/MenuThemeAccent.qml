@@ -8,10 +8,7 @@ Menu {
 
     readonly property int currentTheme: applicationWindow.Material.theme
     readonly property color currentAccent: applicationWindow.accentColor
-    property int currentSelectedIndex: 5 // Material.Blue, update this with the corresponding value in `qtquickcontrols2.conf` file
-
-    title: qsTr("Style configuration")
-
+    property int currentSelectedIndex // initialized when the component is completed (see bellow)
     readonly property var materialPredefinedColors: [
         Material.Red,
         Material.Pink,
@@ -34,6 +31,16 @@ Menu {
         Material.BlueGrey
     ]
 
+    // Initialize `currentSelectedIndex`:
+    Component.onCompleted: {
+        for (var i = 0; i < gridAccents.children.length; i++) {
+            if (gridAccents.children[i].checked) {
+                currentSelectedIndex = i
+            }
+        }
+    }
+
+    title: qsTr("Style configuration")
     width: gridAccents.width
         
     SwitchDelegate {
@@ -70,6 +77,8 @@ Menu {
             delegate: Rectangle {
                 id: rectangleDelegate
 
+                property bool checked: applicationWindow.accentColor === Material.accent
+
                 width: 48
                 height: width
                 radius: width/2
@@ -80,14 +89,12 @@ Menu {
                 Rectangle {
                     id: rectangleCheckIndicator
 
-                    property bool checked: applicationWindow.accentColor === Material.accent
-
                     anchors.centerIn: parent
                     width: rectangleDelegate.width - 16
                     height: width
                     radius: width/2
                     color: rectangleDelegate.border.color
-                    opacity: checked ? 1.0 : 0.0
+                    opacity: parent.checked ? 1.0 : 0.0
                     Behavior on opacity { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
                     scale: 0.5 + 0.5*opacity
                 }
