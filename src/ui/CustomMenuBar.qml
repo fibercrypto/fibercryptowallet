@@ -77,7 +77,7 @@ RowLayout {
         id: menuBarReal
 
         readonly property color iconColor: "transparent"
-        property color color: backButtonHide ? Material.dialogColor : applicationWindow.accentColor
+        property color color: backButtonHide ? Material.dialogColor : Material.accent
         property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : Material.background
 
         Layout.fillWidth: true
@@ -89,9 +89,9 @@ RowLayout {
         background: Rectangle {
             id: backgroundRectangle
             implicitHeight: 40
-            color: toolButtonBack.hide ? Material.dialogColor : menuBarReal.color
+            color: menuBarReal.color
 
-            Behavior on color { ColorAnimation { } }
+            Behavior on color { ColorAnimation { duration: accentColorAnimationActive ? 0 : 250 } }
         }
 
         Menu {
