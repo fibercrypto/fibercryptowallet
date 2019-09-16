@@ -2,7 +2,6 @@ package skycoin
 
 import (
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -297,6 +296,7 @@ func (wlt RemoteWallet) GetId() string {
 }
 
 func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string) error {
+	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logrus.Warn(err)
@@ -304,29 +304,26 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 	}
 	defer core.GetMultiPool().Return(wlt.poolSection, client)
 	wltR, err := client.Wallet(wlt.Id)
+
 	if err != nil {
+		logrus.Warn("Error getting remote wallet")
 		return err
 	}
 
 	balance, err := wlt.GetBalance(Sky)
 	if err != nil {
+		logrus.Warn("Error getting balance")
 		return err
 	}
 
 	if balance < amount {
+		logrus.Warn("Don't have enough sky to make the transaction")
 		return errors.New("Don't have enough sky to make the transaction")
 	}
-
-	addr := SkycoinAddress{address: to.String()}
-	destination, err := addr.ToSkycoinCipherAddress()
-
-	if err != nil {
-		return errors.New("Destination address invalid")
-	}
-
+	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	txn := api.Receiver{
-		Address: destination.String(),
-		Coins:   strconv.FormatUint(amount, 10),
+		Address: to.String(),
+		Coins:   strAmount,
 	}
 	var req api.WalletCreateTransactionRequest
 	if wltR.Meta.Encrypted {
@@ -336,20 +333,26 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 			Password: password,
 		}
 	} else {
-
 		req = api.WalletCreateTransactionRequest{
 			Unsigned: false,
 			WalletID: wltR.Meta.Filename,
 		}
 	}
 	req.To = []api.Receiver{txn}
-
-	err = json.Unmarshal([]byte("{\"type\": \"auto\", \"mode\": \"share\", \"shareFactor\": \"0.5\"}"), &req.HoursSelection)
+	req.HoursSelection = api.HoursSelection{
+		Mode:        "share",
+		Type:        "auto",
+		ShareFactor: "0.5",
+	}
 
 	transactionResponse, err := client.WalletCreateTransaction(req)
-
+	if err != nil {
+		logrus.Warn("Error creating transaction")
+		return err
+	}
 	txid, err := client.InjectEncodedTransaction(transactionResponse.EncodedTransaction)
 	if err != nil {
+		logrus.Warn("Error injecting encoded transaction")
 		return err
 	}
 	logrus.Info("Transaction " + txid + " Injected")
@@ -676,7 +679,7 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password string)
 	if password == "1" {
 		return nil
 	}
-
+	println("Esta entrando al local")
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
 	if err != nil {
