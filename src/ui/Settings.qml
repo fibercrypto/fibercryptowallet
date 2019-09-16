@@ -75,6 +75,12 @@ Page {
                     TextField {
                         id: textFieldWalletPath
 
+                        selectByMouse: true
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.IBeamCursor
+                            acceptedButtons: Qt.NoButton
+                        }
                         Layout.fillWidth: true
                         placeholderText: qsTr("Default to ") + savedWalletPath
                     }
@@ -90,7 +96,7 @@ Page {
 
                         Layout.fillWidth: true
                         
-                        text: qsTr("Remote wallet environment")
+                        text: qsTr("Remote/Local wallet environment")
                         checked: savedIsRemoteWalletEnv
                         font.bold: true
                         Material.foreground: textColor
@@ -113,6 +119,12 @@ Page {
                     TextField {
                         id: textFieldNodeUrl
 
+                        selectByMouse: true
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.IBeamCursor
+                            acceptedButtons: Qt.NoButton
+                        }
                         Layout.fillWidth: true
                         placeholderText: qsTr("Default to ") + savedNodeUrl.toString()
                     }
