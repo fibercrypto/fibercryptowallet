@@ -65,6 +65,18 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsAddressesSendFrom
+
+                // This function returns all checked index in the ComboBox's popup
+                function getCheckedDelegates() {
+                    var checkedItems = []
+                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
+                        if (popup.contentItem.contentItem.children[i].checked) {
+                            checkedItems.push(i)
+                        }
+                    }
+                    return checkedItems
+                }
+                
                 Layout.fillWidth: true
                 Layout.topMargin: -12
 
@@ -75,15 +87,28 @@ Page {
                         "inweytr82n3sr28myrxm28"]
 
                 // Taken from Qt 5.13.0 source code:
-                delegate: MenuItem {
+                delegate: Item {
                     width: parent.width
-                    text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
-                    Material.foreground: comboBoxWalletsAddressesSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
-                    highlighted: comboBoxWalletsAddressesSendFrom.highlightedIndex === index
-                    hoverEnabled: comboBoxWalletsAddressesSendFrom.hoverEnabled
-                    leftPadding: highlighted ? 2*padding : padding // added
-                    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
-                }
+                    height: checkDelegateAddresses.height
+
+                    property alias checked: checkDelegateAddresses.checked
+
+                    CheckDelegate {
+                        id: checkDelegateAddresses
+
+                        width: parent.width
+                        text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
+                        font.family: "Code New Roman"
+
+                        LayoutMirroring.enabled: true
+                        contentItem: Label {
+                            leftPadding: comboBoxWalletsAddressesSendFrom.indicator.width + comboBoxWalletsAddressesSendFrom.spacing
+                            text: checkDelegateAddresses.text
+                            verticalAlignment: Qt.AlignVCenter
+                            color: checkDelegateAddresses.enabled ? checkDelegateAddresses.Material.foreground : checkDelegateAddresses.Material.hintTextColor
+                        }
+                    } // CheckDelegate (addresses)
+                } // Item (delegate)
             } // ComboBox (addresses, send from)
 
             RowLayout {
@@ -130,12 +155,12 @@ Page {
 
                 delegate: Item {
                     width: parent.width
-                    height: checkDelegate.height
+                    height: checkDelegateUnspentOutputs.height
 
-                    property alias checked: checkDelegate.checked
+                    property alias checked: checkDelegateUnspentOutputs.checked
 
                     CheckDelegate {
-                        id: checkDelegate
+                        id: checkDelegateUnspentOutputs
 
                         width: parent.width
                         text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
@@ -144,11 +169,11 @@ Page {
                         LayoutMirroring.enabled: true
                         contentItem: Label {
                             leftPadding: comboBoxWalletsUnspentOutputsSendFrom.indicator.width + comboBoxWalletsUnspentOutputsSendFrom.spacing
-                            text: checkDelegate.text
+                            text: checkDelegateUnspentOutputs.text
                             verticalAlignment: Qt.AlignVCenter
-                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
+                            color: checkDelegateUnspentOutputs.enabled ? checkDelegateUnspentOutputs.Material.foreground : checkDelegateUnspentOutputs.Material.hintTextColor
                         }
-                    } // CheckDelegate
+                    } // CheckDelegate (unspent outputs)
                 } // Item (delegate)
             } // ComboBox (outputs, send from)
 
