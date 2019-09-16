@@ -1,7 +1,6 @@
 package pending
 
 import (
-	"strconv"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -40,16 +39,13 @@ func (m *PendingTransactionList) init() {
 	for _, plug := range altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
 	}
-	//Set the correct NodeAddress
-	addr := "http://127.0.0.1:6420" 
-	m.PEX = &skycoin.SkycoinPEX{NodeAddress: addr}
+	m.PEX = &skycoin.SkycoinPEX{}
 	m.WalletEnv = walletsEnvs[0]
 
 	m.getAll()
 }
 
 func (m *PendingTransactionList) getAll() {
-	println("getall----------------")
 	txns, err := m.PEX.GetTxnPool()
 	if err != nil {
 		//display an error in qml app when All is selected
@@ -66,7 +62,6 @@ func (m *PendingTransactionList) getAll() {
 }
 
 func (m *PendingTransactionList) getMine() {
-	println("getmine~~~~~~~~~~~~~~~~~~~~~")
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
 		return
@@ -119,8 +114,7 @@ func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction 
 	if skyErr {
 		float_sky = "NA"
 	} else {
-		val := float64(sky) / float64(skyAccuracy)
-		float_sky = strconv.FormatFloat(val, 'f', -1, 64)
+		float_sky = util.FormatCoins(sky, skyAccuracy)
 	}
 	pt.SetSky(float_sky)
 	skychAccuracy, err2 := util.AltcoinQuotient(skycoin.CoinHour)
@@ -129,7 +123,7 @@ func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction 
 	if coinHoursErr {
 		uint_ch = "NA"
 	} else {
-		uint_ch = strconv.FormatUint(coinHours / skychAccuracy, 10)
+		uint_ch = util.FormatCoins(coinHours, skychAccuracy)
 	}
 	pt.SetCoinHours(uint_ch)
 	return pt

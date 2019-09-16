@@ -50,7 +50,6 @@ func NewSkycoinApiClient(section string) (*api.Client, error) {
 }
 
 type SkycoinPEX struct { //Implements PEX interface
-	NodeAddress string
 } 
 
 func (spex *SkycoinPEX) GetConnections()  {

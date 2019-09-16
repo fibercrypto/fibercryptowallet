@@ -10,6 +10,7 @@ import (
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
 	"github.com/skycoin/skycoin/src/wallet"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
@@ -201,9 +202,21 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 		if err != nil {
 			return 0, err
 		}
-		return uint64(skyf * 1e6), nil
+		accuracy, err2 := util.AltcoinQuotient(Sky)
+		if err2 != nil {
+			return 0, err2
+		}
+		return uint64(skyf * float64(accuracy)), nil
 	} else if ticker == CoinHour {
-		return strconv.ParseUint(bl.Confirmed.Hours, 10, 64)
+		coinHours, err := strconv.ParseFloat(bl.Confirmed.Hours, 64)
+		if err != nil {
+			return 0, err
+		}
+		accuracy, err2 := util.AltcoinQuotient(CoinHour)
+		if err2 != nil {
+			return 0, err2
+		}
+		return uint64(coinHours * float64(accuracy)), nil
 	} else {
 		return 0, errorTickerInvalid{ticker}
 	}

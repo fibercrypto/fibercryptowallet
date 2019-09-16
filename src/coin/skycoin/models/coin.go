@@ -100,8 +100,8 @@ func (in *SkycoinPendingTransactionInput) GetSpentOutput() core.TransactionOutpu
   	return nil 
 } 
 
-func (in *SkycoinPendingTransactionInput) GetCoins(ticker string) uint64 { 
-	return uint64(0) 
+func (in *SkycoinPendingTransactionInput) GetCoins(ticker string) (uint64, error) { 
+	return uint64(0), nil 
 } 
  
 /** 
@@ -135,11 +135,14 @@ func (sto *SkycoinPendingTransactionOutput) GetCoins(ticker string) (uint64, err
 		}
 		return uint64(coin * float64(accuracy)), nil
 	} 
-	return sto.Output.Hours * accuracy, nil
+	if ticker == CoinHour {
+		return sto.Output.Hours * accuracy, nil
+	}
+	return 0, nil
 } 
 
 /** 
- * SkycoinPendingTransactionOutputIterator
+ * SkycoinTransactionOutputIterator
  */ 
 type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface 
 	Current int 
@@ -275,11 +278,12 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 		if err != nil {
 			return nil
 		}
+		skyAccuracy, _ := util.AltcoinQuotient("SKY")
 
 		skyOut := &SkycoinTransactionOutput{
 			skyOut: readable.TransactionOutput{
 				Address: out.OwnerAddress,
-				Coins:   strconv.FormatFloat(float64(out.Coins/1e6), 'f', -1, 64),
+				Coins:   strconv.FormatFloat(float64(out.Coins)/float64(skyAccuracy), 'f', -1, 64),
 				Hours:   out.Hours,
 				Hash:    out.Uxid,
 			},
@@ -291,15 +295,23 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 
 }
 
-func (in *SkycoinTransactionInput) GetCoins(ticker string) uint64 {
+func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
+	accuracy, err2 := util.AltcoinQuotient(ticker)
+	if err2 != nil {
+		return uint64(0), err2
+	}
 	if ticker == Sky {
-		skyF, _ := strconv.ParseFloat(in.skyIn.Coins, 64)
-		return uint64(skyF * 1e6)
+		skyf, err := strconv.ParseFloat(in.skyIn.Coins, 64)
+		if err != nil {
+			return 0, err
+		}
+		return uint64(skyf * float64(accuracy)), nil
 	}
 	if ticker == CoinHour {
-		return in.skyIn.CalculatedHours
+		coinHours := float64(in.skyIn.CalculatedHours)
+		return uint64(coinHours * float64(accuracy)), nil
 	}
-	return 0
+	return 0, nil
 }
 
 /**
@@ -349,13 +361,19 @@ func (out *SkycoinTransactionOutput) GetAddress() core.Address {
 }
 
 func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
-	//TODO: Change to SkycoinPendingTransactionStyle
-	if ticker == Sky {
-		skyF, _ := strconv.ParseFloat(out.skyOut.Coins, 64)
-		return uint64(skyF * 1e6), nil
+	accuracy, err2 := util.AltcoinQuotient(ticker)
+	if err2 != nil {
+		return uint64(0), err2
 	}
-	if ticker == CoinHour {
-		return out.calculatedHours, nil
+	if ticker == Sky {
+		skyf, err := strconv.ParseFloat(out.skyOut.Coins, 64)
+		if err != nil {
+			return 0, err
+		}
+		return uint64(skyf * float64(accuracy)), nil
+	} else if ticker == CoinHour {
+		coinHours := float64(out.calculatedHours)
+		return uint64(coinHours * float64(accuracy)), nil
 	}
 	return 0, nil
 }

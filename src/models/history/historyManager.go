@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
 	qtcore "github.com/therecipe/qt/core"
@@ -92,11 +93,14 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		for _, in := range txnIns {
 			qIn := address.NewAddressDetails(nil)
 			qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
-			skyUint64 := in.GetCoins("SKY")
-			skyFloat := float64(skyUint64) / 1e6
+			//TODO: report possible errors
+			skyUint64, _ := in.GetCoins("SKY")
+			accuracy, _ := util.AltcoinQuotient("SKY")
+			skyFloat := float64(skyUint64) / float64(accuracy)
 			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			chUint64 := in.GetCoins("SKYCH")
-			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64, 10))
+			chUint64, _ := in.GetCoins("SKYCH")
+			accuracy, _ = util.AltcoinQuotient("SKYCH")
+			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64 / accuracy, 10))
 			inputs.AddAddress(qIn)
 			_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
 			if ok {
@@ -117,7 +121,9 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			sky, _ := out.GetCoins("SKY")
 			qOu := address.NewAddressDetails(nil)
 			qOu.SetAddress(out.GetAddress().String())
-			skyFloat := float64(sky) / 1e6
+			//TODO: report possible error
+			accuracy, _ := util.AltcoinQuotient("SKY")
+			skyFloat := float64(sky) / float64(accuracy)
 			qOu.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
 			//TODO: return an error
 			val, _ := out.GetCoins("SKYCH")
@@ -174,7 +180,9 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			{
 				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursIn, 10))
 				val := float64(skyAmountIn)
-				val = val / 1000000
+				//TODO: report possible error.
+				accuracy, _ := util.AltcoinQuotient("SKY")
+				val = val / float64(accuracy)
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
 
 			}
@@ -195,14 +203,18 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 						hours, _ := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
 						traspassedHoursMoved += hours
 						skyf, _ := strconv.ParseFloat(addr.AddressSky(), 64)
-						sky := uint64(skyf * 1e6)
+						//TODO: report possible error
+						accuracy, _ := util.AltcoinQuotient("SKY")
+						sky := uint64(skyf * float64(accuracy))
 						skyAmountMoved += sky
 					}
 
 				}
 				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursMoved, 10))
 				val := float64(skyAmountMoved)
-				val = val / 1000000
+				//TODO: report possible error.
+				accuracy, _ := util.AltcoinQuotient("SKY")
+				val = val / float64(accuracy)
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
 
 			}
@@ -210,7 +222,9 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			{
 				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursOut, 10))
 				val := float64(skyAmountOut)
-				val = val / 1000000
+				//TODO: report possible error.
+				accuracy, _ := util.AltcoinQuotient("SKY")
+				val = val / float64(accuracy)
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
 
 			}
