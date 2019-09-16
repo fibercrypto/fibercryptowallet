@@ -12,7 +12,7 @@ Label {
     height: menuBar.height
     font.pointSize: Qt.application.font.pointSize * 1.6
     font.bold: true
-    color: "white"
+    color: applicationWindow.Material.background
     opacity: customMenuBar.toolButtonBack.opacity
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
