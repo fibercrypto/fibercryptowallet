@@ -12,14 +12,9 @@ Page {
 
     signal qrCodeRequested(var data)
 
-    Component.onCompleted: {
-        root.qrCodeRequested.connect(genQR)
-    }
-
-    function genQR(data) {
+    onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
-
     }
 
     ColumnLayout {
@@ -33,21 +28,20 @@ Page {
             id: columnLayoutSendFrom
 
             Layout.alignment: Qt.AlignTop
-            Label {
-                text: qsTr("Send from")
-            }
-            WalletModel{
-                id: walletModel
-                Component.onCompleted: {
-                    walletModel.loadModel(walletManager.getWallets())
-                   
-                }
-            }
+
+            Label { text: qsTr("Send from") }
+
             ComboBox {
                 id: comboBoxWalletsSendFrom
+
                 Layout.fillWidth: true
-                model: walletModel
-                textRole: "name"    
+                textRole: "name"
+
+                model: WalletModel {
+                    Component.onCompleted: {
+                        loadModel(walletManager.getWallets())
+                    }
+                } 
                 
                 // Taken from Qt 5.13.0 source code:
                 delegate: MenuItem {
@@ -60,9 +54,8 @@ Page {
                     Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
                 }
 
-                onActivated:{
+                onActivated: {
                     root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
-                    
                 }
             } // ComboBox
         } // ColumnLayout (send from)
@@ -71,9 +64,9 @@ Page {
             id: columnLayoutSendTo
 
             Layout.alignment: Qt.AlignTop
-            Label {
-                text: qsTr("Send to")
-            }
+
+            Label { text: qsTr("Send to") }
+            
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8

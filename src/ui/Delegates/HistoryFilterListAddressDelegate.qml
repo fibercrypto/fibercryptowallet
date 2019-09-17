@@ -7,6 +7,8 @@ CheckDelegate {
    
     text: address // a role of the model
     font.family: "Code New Roman"
+    leftPadding: 20
+    scale: 0.85
 
     LayoutMirroring.enabled: true
     contentItem: Label {

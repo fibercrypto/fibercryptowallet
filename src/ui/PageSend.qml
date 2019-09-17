@@ -26,9 +26,15 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                
                 walletManager.sendTo(stackView.walletSelected, stackView.destinationAddress, stackView.amount)
-                //dialogSendTransaction.open()
+                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
+                dialogSendTransaction.previewDate = "2019-02-26 15:27"               
+                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
+                dialogSendTransaction.previewAmount = 10
+                dialogSendTransaction.previewHoursReceived = 16957
+                dialogSendTransaction.previewHoursBurned = 33901
+                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
+                dialogSendTransaction.open()
             }
         }
     }
@@ -62,13 +68,14 @@ Page {
 
         StackView {
             id: stackView
+
+            property string walletSelected: simple.walletSelected
+            property string destinationAddress: simple.destinationAddress
+            property string amount: simple.amount
+            
             anchors.fill: parent
             initialItem: componentSimple
-            clip: true
-            property string walletSelected
-            property string destinationAddress
-            property string amount
-            
+            clip: true            
 
             Component {
                 id: componentSimple
@@ -76,28 +83,31 @@ Page {
                 ScrollView {
                     id: scrollViewSimple
                     
-                    contentWidth: simple.implicitWidth
-                    contentHeight: simple.implicitHeight
+                    contentWidth: simple.width
+                    contentHeight: simple.height
                     clip: true
+
                     SubPageSendSimple {
                         id: simple
-                        onWalletSelectedChanged: stackView.walletSelected = walletSelected
-                        onDestinationAddressChanged: stackView.destinationAddress = destinationAddress
-                        onAmountChanged: stackView.amount = amount
-                        implicitWidth: stackView.width
+
+                        width: stackView.width
                     }
                 }
             }
 
             Component {
                 id: componentAdvanced
+
                 ScrollView {
-                    contentWidth: advanced.implicitWidth
-                    contentHeight: advanced.implicitHeight
+                    id: scrollViewAdvanced
+
+                    contentWidth: advanced.width
+                    contentHeight: advanced.height
                     clip: true
+
                     SubPageSendAdvanced {
                         id: advanced
-                        implicitWidth: stackView.width
+                        width: stackView.width
                     }
                 }
             }
@@ -108,7 +118,7 @@ Page {
         id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
 
-        readonly property real maxHeight: expanded ? 690 : 490
+        readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
         Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
