@@ -59,7 +59,10 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount, password
 	addr := &GenericAdddress{destinationAddress}
 	skyF, _ := strconv.ParseFloat(amount, 64)
 	sky := uint64(skyF * 1e6)
-	wlt.Transfer(addr, sky, password)
+
+	wlt.Transfer(addr, sky, func(text string) (string, error) {
+		return password, nil
+	}, nil)
 }
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
