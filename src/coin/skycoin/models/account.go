@@ -39,11 +39,13 @@ func (addr SkycoinAddress) ListAssets() []string {
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		println(err.Error())
 		return nil
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
+		println(err.Error())
 		return nil
 	}
 
@@ -59,6 +61,7 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 				Hash:    out.Hash,
 			},
 			spent: true,
+			calculatedHours: out.CalculatedHours,
 		})
 	}
 

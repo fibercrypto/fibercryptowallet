@@ -53,7 +53,7 @@ RowLayout {
 
         // icon
         icon.source: "qrc:/images/resources/images/icons/back.svg"
-        icon.color: "white"
+        icon.color: Material.background
 
         // PointingHandCursor
         MouseArea {
@@ -77,20 +77,21 @@ RowLayout {
         id: menuBarReal
 
         readonly property color iconColor: "transparent"
-        property color color: Material.dialogColor
-        property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : "white"
+        property color color: backButtonHide ? Material.dialogColor : Material.accent
+        property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : Material.background
 
         Layout.fillWidth: true
         leftInset:  -(toolButtonBack.width + toolButtonBack.padding)
+        rightInset: -(toolButtonTheme.width + toolButtonTheme.padding)
         Material.foreground: menuTextColor
         Behavior on menuTextColor { ColorAnimation { } }
 
         background: Rectangle {
             id: backgroundRectangle
             implicitHeight: 40
-            color: toolButtonBack.hide ? Material.dialogColor : menuBarReal.color
+            color: menuBarReal.color
 
-            Behavior on color { ColorAnimation { } }
+            Behavior on color { ColorAnimation { duration: accentColorAnimationActive ? 0 : 250 } }
         }
 
         Menu {
@@ -150,4 +151,23 @@ RowLayout {
             }
         } // menuHelp
     } // menuBarReal
+
+    ToolButton {
+        id: toolButtonTheme
+
+        // positioning
+        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+
+        // icon
+        icon.source: "qrc:/images/resources/images/icons/" + (Material.theme === Material.Light ? "moon" : "sun") + ".svg"
+        icon.color: menuBarReal.Material.foreground
+
+        onClicked: {
+            menuThemeAccent.popup()
+        }
+
+        MenuThemeAccent {
+            id: menuThemeAccent
+        }
+    }
 } // RowLayout (menuBar)

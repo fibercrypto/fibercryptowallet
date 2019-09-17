@@ -35,6 +35,7 @@ func NewSkycoinAddressIterator(addresses []SkycoinAddress) *SkycoinAddressIterat
 
 type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
 	address string
+	poolSection string
 }
 
 func (addr SkycoinAddress) IsBip32() bool {
@@ -47,6 +48,7 @@ func (addr SkycoinAddress) String() string {
 
 func (addr SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
+<<<<<<< HEAD
 }
 
 func (addr SkycoinAddress) ToSkycoinCipherAddress() (*cipher.Address, error) {
@@ -58,3 +60,6 @@ func (addr SkycoinAddress) ToSkycoinCipherAddress() (*cipher.Address, error) {
 
 	return &sAddr, nil
 }
+=======
+}
+>>>>>>> fiberDevelop
