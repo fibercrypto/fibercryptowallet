@@ -26,7 +26,7 @@ Dialog {
     onOpened: {
         forceActiveFocus()
         passwordRequester.forceTextFocus()
-        standardButton(Dialog.Ok).enabled = passwordRequester.text !== ""
+        standardButton(Dialog.Ok).enabled = passwordRequester.text !== "" || showPasswordField
     }
 
     onClosed: {
@@ -77,7 +77,7 @@ Dialog {
                     Layout.fillWidth: true
 
                     onTextChanged: {
-                        dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== ""
+                        dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== "" || showPasswordField
                     }
                 }
             } // ColumnLayout
