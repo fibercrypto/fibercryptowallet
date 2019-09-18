@@ -5,7 +5,9 @@ import QtQuick.Layouts 1.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: subPageSendAdvanced
@@ -220,14 +222,20 @@ Page {
                     text: qsTr("Select")
                     flat: true
                     highlighted: true
+
+                    onClicked: {
+                        dialogSelectAddressByWallet.open()
+                    }
                 }
             }
 
             TextField {
                 id: textFieldCustomChangeAddress
-                placeholderText: qsTr("Address to receive change")
+                
                 Layout.fillWidth: true
                 Layout.topMargin: -16
+                placeholderText: qsTr("Address to receive change")
+                font.family: "Code New Roman"
             }
         } // ColumnLayout (custom change address)
 
@@ -263,6 +271,37 @@ Page {
             }
         } // ColumnLayout (automatic coin hours allocation)
     } // ColumnLayout (root)
+
+    DialogSelectAddressByWallet {
+        id: dialogSelectAddressByWallet
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height - 40
+
+        model: modelAddressesByWallet
+
+        focus: true
+        modal: true
+
+        onAccepted: {
+            textFieldCustomChangeAddress.text = selectedAddress
+        }
+    }
+
+    ListModel { // EXAMPLE
+        id: modelAddressesByWallet
+
+        ListElement { wallet: "Wallet A"; address: "qrxw7364w8xerusftaxkw87ues" }
+        ListElement { wallet: "Wallet A"; address: "8745yuetsrk8tcsku4ryj48ije" }
+        ListElement { wallet: "Wallet A"; address: "gfdhgs343kweru38200384uwqd" }
+        ListElement { wallet: "Wallet B"; address: "00qdqsdjkssvmchskjkxxdg374" }
+        ListElement { wallet: "Wallet B"; address: "hkdti34aoliwuiu3qsoiemdfhc" }
+        ListElement { wallet: "Wallet C"; address: "1oiwrelkrir73o8ielukaur9qq" }
+        ListElement { wallet: "Wallet C"; address: "piur948o9q8m0a8qsye8q3omxs" }
+        ListElement { wallet: "Wallet C"; address: "4ntd4im93usppturm83ysniroe" }
+        ListElement { wallet: "Wallet C"; address: "meje73o50ejdwumfle92rndlwm" }
+    }
 
     ListModel {
         id: listModelDestinations
