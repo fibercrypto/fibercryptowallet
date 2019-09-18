@@ -26,7 +26,7 @@ type WalletManager struct {
 	_ func(id string, password string) int                                 `slot:"decryptWallet"`
 	_ func() []*QWallet                                                    `slot:"getWallets"`
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
-	_ func(wltId, destinationAddress, amount string)                       `slot:"sendTo"`
+	_ func(wltId, destinationAddress, amount, password string)             `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                      `slot:"editWallet"`
 }
 
@@ -54,11 +54,12 @@ func (walletM *WalletManager) init() {
 
 }
 
-func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) {
+func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount, password string) {
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	addr := &GenericAdddress{destinationAddress}
 	skyF, _ := strconv.ParseFloat(amount, 64)
 	sky := uint64(skyF * 1e6)
+	println(password)
 	// TODO --> Add get password method
 	err := wlt.Transfer(addr, sky, "")
 	if err != nil {

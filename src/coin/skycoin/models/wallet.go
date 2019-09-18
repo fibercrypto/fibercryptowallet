@@ -269,6 +269,22 @@ func (err errorTickerInvalid) Error() string {
 	return (err.tickerUsed + " is an invalid ticker. Use " + Sky + " or " + CoinHour)
 }
 
+type GenericAdddress struct {
+	addr string
+}
+
+func (ga *GenericAdddress) IsBip32() bool {
+	return true
+}
+
+func (ga *GenericAdddress) String() string {
+	return ga.addr
+}
+
+func (ga *GenericAdddress) GetCryptoAccount() core.CryptoAccount {
+	return nil
+}
+
 type RemoteWallet struct { //Implements Wallet and CryptoAccount interfaces
 	Id          string
 	Label       string
@@ -309,16 +325,38 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 		logrus.Warn("Error getting remote wallet")
 		return err
 	}
+	emptyAddress := &GenericAdddress{}
 
+	req, err := wlt.createTransaction(emptyAddress, to, emptyAddress, client, wltR, amount, password)
+
+	if err != nil {
+		logrus.Warn("Error creating transaction request")
+		return err
+	}
+	transactionResponse, err := client.WalletCreateTransaction(req)
+	if err != nil {
+		logrus.Warn("Error creating transaction")
+		return err
+	}
+	txid, err := client.InjectEncodedTransaction(transactionResponse.EncodedTransaction)
+	if err != nil {
+		logrus.Warn("Error injecting encoded transaction")
+		return err
+	}
+	logrus.Info("Transaction " + txid + " Injected")
+	return nil
+}
+
+func (wlt RemoteWallet) createTransaction(from, to, change core.Address, client *api.Client, wltR *api.WalletResponse, amount uint64, password string) (api.WalletCreateTransactionRequest, error) {
 	balance, err := wlt.GetBalance(Sky)
 	if err != nil {
 		logrus.Warn("Error getting balance")
-		return err
+		return api.WalletCreateTransactionRequest{}, err
 	}
 
 	if balance < amount {
 		logrus.Warn("Don't have enough sky to make the transaction")
-		return errors.New("Don't have enough sky to make the transaction")
+		return api.WalletCreateTransactionRequest{}, errors.New("Don't have enough sky to make the transaction")
 	}
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	txn := api.Receiver{
@@ -338,6 +376,15 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 			WalletID: wltR.Meta.Filename,
 		}
 	}
+	if len(from.String()) > 0 {
+		req.Addresses = []string{
+			from.String(),
+		}
+	}
+	if len(change.String()) > 0 {
+		st := change.String()
+		req.ChangeAddress = &st
+	}
 	req.To = []api.Receiver{txn}
 	req.HoursSelection = api.HoursSelection{
 		Mode:        "share",
@@ -345,6 +392,31 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 		ShareFactor: "0.5",
 	}
 
+	return req, nil
+}
+
+func (wlt RemoteWallet) SendFromAddress(from, to, change core.Address, amount uint64, password string) error { //------TODO
+	logrus.Info("Transfer from remote wallet")
+	client, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logrus.Warn(err)
+		return err
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	wltR, err := client.Wallet(wlt.Id)
+
+	if err != nil {
+		logrus.Warn("Error getting remote wallet")
+		return err
+	}
+	emptyAddress := &GenericAdddress{}
+
+	req, err := wlt.createTransaction(from, to, emptyAddress, client, wltR, amount, password)
+
+	if err != nil {
+		logrus.Warn("Error creating transaction response")
+		return err
+	}
 	transactionResponse, err := client.WalletCreateTransaction(req)
 	if err != nil {
 		logrus.Warn("Error creating transaction")
@@ -356,10 +428,6 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, password string
 		return err
 	}
 	logrus.Info("Transaction " + txid + " Injected")
-	return nil
-}
-
-func (wlt RemoteWallet) SendFromAddress(from, to, change core.Address, amount uint64, password string) error { //------TODO
 	return nil
 }
 
@@ -390,7 +458,7 @@ func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 			return nil
 		}
 		for _, addr := range newAddrs {
-			addresses = append(addresses, SkycoinAddress{address:addr})
+			addresses = append(addresses, SkycoinAddress{address: addr})
 		}
 	}
 
@@ -430,7 +498,7 @@ func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
 }
 
 func walletEntryToAddress(wltE readable.WalletEntry, poolSection string) SkycoinAddress {
-	return SkycoinAddress{address:wltE.Address, poolSection: poolSection}
+	return SkycoinAddress{address: wltE.Address, poolSection: poolSection}
 }
 
 type WalletDirectory struct { //Implements WallentEnv interface
@@ -875,7 +943,7 @@ func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count
 	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
 	skyAddrs := make([]SkycoinAddress, 0)
 	for _, addr := range addrs {
-		skyAddrs = append(skyAddrs, SkycoinAddress{address:addr.String()})
+		skyAddrs = append(skyAddrs, SkycoinAddress{address: addr.String()})
 	}
 	return NewSkycoinAddressIterator(skyAddrs)
 
@@ -892,7 +960,7 @@ func (wlt LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	addrs := make([]SkycoinAddress, 0)
 	addresses := walletLoaded.GetAddresses()
 	for _, addr := range addresses {
-		addrs = append(addrs, SkycoinAddress{address:addr.String()})
+		addrs = append(addrs, SkycoinAddress{address: addr.String()})
 	}
 
 	return NewSkycoinAddressIterator(addrs), nil

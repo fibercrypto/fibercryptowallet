@@ -11,6 +11,10 @@ Page {
     id: root
 
     property alias advancedMode: switchAdvancedMode.checked
+    property string walletSelected
+    property string walletEncrypted 
+    property string destinationAddress
+    property string amount
 
     footer: ToolBar {
         id: tabBarSend
@@ -25,15 +29,19 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                walletManager.sendTo(stackView.walletSelected, stackView.destinationAddress, stackView.amount)
-                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
-                dialogSendTransaction.previewDate = "2019-02-26 15:27"               
-                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
-                dialogSendTransaction.previewAmount = 10
-                dialogSendTransaction.previewHoursReceived = 16957
-                dialogSendTransaction.previewHoursBurned = 33901
-                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
-                dialogSendTransaction.open()
+				if (walletEncrypted){
+                	walletManager.sendTo(walletSelected, destinationAddress, amount, "Encrypted")
+				} else {
+                	walletManager.sendTo(walletSelected, destinationAddress, amount, "UnEncrypted")
+				}
+//                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
+//                dialogSendTransaction.previewDate = "2019-02-26 15:27"
+//                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
+//                dialogSendTransaction.previewAmount = 10
+//                dialogSendTransaction.previewHoursReceived = 16957
+//                dialogSendTransaction.previewHoursBurned = 33901
+//                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
+//                dialogSendTransaction.open()
             }
         }
     }
@@ -90,6 +98,18 @@ Page {
                         id: simple
 
                         width: stackView.width
+                        onWalletSelectedChanged: {
+                            root.walletSelected = walletSelected
+                        }
+                        onAmountChanged: {
+                            root.amount = amount
+                        }
+                        onDestinationAddressChanged: {
+                            root.destinationAddress = destinationAddress
+                        }
+						onWalletEncryptedChanged: {
+							root.walletEncrypted = walletEncrypted
+						}
                     }
                 }
             }
