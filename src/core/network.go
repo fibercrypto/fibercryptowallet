@@ -10,9 +10,9 @@ var once sync.Once
 var multiConnectionsPool *MultiConnectionsPool
 
 type PEX interface {
-	GetTxnPool() TransactionIterator
+	GetTxnPool() (TransactionIterator, error)
 	GetConnections()
-	Broadcast(txn Transaction)
+	BroadcastTxn(txn Transaction)
 }
 
 type PexNodeIterator interface {
