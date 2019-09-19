@@ -330,7 +330,7 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 	var emptyAddress core.Address
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
-	txnOutput.skyOut.Coins = strconv.FormatUint(amount,10)
+	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6,10)
 	req, err := wlt.createTransaction(emptyAddresses, []core.TransactionOutput{txnOutput}, emptyAddress, client, wltR, pwd)
 
 	if err != nil {
