@@ -26,8 +26,6 @@ Item {
             rightText: qsTr("Load wallet")
 
             backgroundColor: Material.accent
-            leftColor: "white"
-            rightColor: "white"
 
             textColor: Material.accent
 

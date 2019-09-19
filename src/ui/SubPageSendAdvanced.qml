@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
@@ -37,8 +38,19 @@ Page {
                 id: comboBoxWalletsSendFrom
                 Layout.fillWidth: true
                 Layout.topMargin: -12
+                textRole: "name"
+                model: WalletModel {
+                    Component.onCompleted: {
+                        loadModel(walletManager.getWallets())
+                    }
+                } 
+                onCurrentTextChanged:{
+                    console.log(model.wallets[currentIndex].fileName)
+                    listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
+                    listAddresses.removeAddress(0)
 
-                model: ["Wallet A", "Wallet B", "Wallet C"]
+                    
+                }
 
                 // Taken from Qt 5.13.0 source code:
                 delegate: MenuItem {
@@ -67,12 +79,10 @@ Page {
                 id: comboBoxWalletsAddressesSendFrom
                 Layout.fillWidth: true
                 Layout.topMargin: -12
-
-                model: ["sgdkaugakugxfnakusdhgf",
-                        "uhrencgkhmjhsmfugwnjwh",
-                        "iwyerniywetrdntwyierue",
-                        "pney73snyiquemqskddqgq",
-                        "inweytr82n3sr28myrxm28"]
+                textRole: "address"
+                model: AddressModel{
+                    id: listAddresses
+                }
 
                 // Taken from Qt 5.13.0 source code:
                 delegate: MenuItem {

@@ -40,7 +40,6 @@ func (hm *HistoryManager) init() {
 	}
 
 	hm.walletEnv = walletsEnvs[0]
-
 }
 
 type ByDate []*transactions.TransactionDetails
