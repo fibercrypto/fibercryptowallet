@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
+import OutputsModels 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
@@ -77,23 +78,74 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsAddressesSendFrom
+                //Layout.fillWidth: true
+                //Layout.topMargin: -12
+                //textRole: "address"
+                //model: AddressModel{
+                //    id: listAddresses
+                //}
+//
+                //// Taken from Qt 5.13.0 source code:
+                //delegate: MenuItem {
+                //    width: parent.width
+                //    text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
+                //    Material.foreground: comboBoxWalletsAddressesSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
+                //    highlighted: comboBoxWalletsAddressesSendFrom.highlightedIndex === index
+                //    hoverEnabled: comboBoxWalletsAddressesSendFrom.hoverEnabled
+                //    leftPadding: highlighted ? 2*padding : padding // added
+                //    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+                //}
+                // This function returns all checked index in the ComboBox's popup
+                function getCheckedDelegates() {
+                    var checkedItems = []
+                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
+                        if (popup.contentItem.contentItem.children[i].checked) {
+                            checkedItems.push(i)
+                        }
+                    }
+                    return checkedItems
+                }
+                
                 Layout.fillWidth: true
                 Layout.topMargin: -12
-                textRole: "address"
+
+                
                 model: AddressModel{
                     id: listAddresses
                 }
+                textRole: "address"
 
-                // Taken from Qt 5.13.0 source code:
-                delegate: MenuItem {
+                delegate: Item {
                     width: parent.width
-                    text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
-                    Material.foreground: comboBoxWalletsAddressesSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
-                    highlighted: comboBoxWalletsAddressesSendFrom.highlightedIndex === index
-                    hoverEnabled: comboBoxWalletsAddressesSendFrom.hoverEnabled
-                    leftPadding: highlighted ? 2*padding : padding // added
-                    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
-                }
+                    height: checkDelegate.height
+
+                    property alias checked: checkDelegate.checked
+
+                    CheckDelegate {
+                        id: checkDelegate
+
+                        width: parent.width
+                        text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
+                        font.family: "Code New Roman"
+
+                        LayoutMirroring.enabled: true
+                        contentItem: Label {
+                            leftPadding: comboBoxWalletsAddressesSendFrom.indicator.width + comboBoxWalletsAddressesSendFrom.spacing
+                            text: checkDelegate.text
+                            verticalAlignment: Qt.AlignVCenter
+                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
+                        }
+
+                        onCheckedChanged:{
+                            if (checked){
+                                //console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex])
+                                listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
+                                //console.log(text)
+                            }
+                            //console.log("SDFDSFS")
+                        }
+                    } // CheckDelegate
+                } // Item (delegate)
             } // ComboBox (addresses, send from)
 
             RowLayout {
@@ -129,14 +181,11 @@ Page {
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
-
+                textRole: "outputID"
                 enabled: !checkBoxUnspentOutputsUseAllOutputs.checked
-                model: !enabled ? null :
-                        ["sgdkaugakugxfnakusdhgf",
-                        "uhrencgkhmjhsmfugwnjwh",
-                        "iwyerniywetrdntwyierue",
-                        "pney73snyiquemqskddqgq",
-                        "inweytr82n3sr28myrxm28"]
+                model: QOutputs {
+                    id: listOutputs
+                }
 
                 delegate: Item {
                     width: parent.width

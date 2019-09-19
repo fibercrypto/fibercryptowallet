@@ -1,7 +1,10 @@
 package models
 
 import (
+	"fmt"
 	"strconv"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	"github.com/therecipe/qt/qml"
 
@@ -28,6 +31,7 @@ type WalletManager struct {
 	_ func(id string) []*QAddress                                          `slot:"getAddresses"`
 	_ func(wltId, destinationAddress, amount, password string)             `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                      `slot:"editWallet"`
+	_ func(wltId, address string) []*QOutput                               `slot:"getOutputs"`
 }
 
 func (walletM *WalletManager) init() {
@@ -42,6 +46,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 	walletM.ConnectSendTo(walletM.sendTo)
+	walletM.ConnectGetOutputs(walletM.getOutputs)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -52,6 +57,50 @@ func (walletM *WalletManager) init() {
 
 	walletM.SeedGenerator = new(sky.SeedService)
 
+}
+
+func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
+	fmt.Println(wltId)
+	fmt.Println(address)
+	addrIter, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	outs := make([]*QOutput, 0)
+	var addr core.Address
+	fmt.Println(0)
+	for addrIter.Next() {
+		if addrIter.Value().String() == address {
+			addr = addrIter.Value()
+			break
+		}
+	}
+	fmt.Println(addr.String())
+	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
+	fmt.Println("1")
+	for outsIter.Next() {
+		fmt.Println("2")
+		qout := NewQOutput(nil)
+		qout.SetOutputID(outsIter.Value().GetId())
+		skyV := outsIter.Value().GetCoins(sky.Sky)
+		quotient, err := util.GetCoinValue(sky.Sky)
+		if err != nil {
+			return nil
+		}
+		sSky := util.FormatCoins(skyV, quotient)
+		qout.SetAddressSky(sSky)
+		ch := outsIter.Value().GetCoins(sky.CoinHour)
+		quotient, err = util.GetCoinValue(sky.CoinHour)
+		if err != nil {
+			return nil
+		}
+
+		sCh := util.FormatCoins(ch, quotient)
+		qout.SetAddressCoinHours(sCh)
+		outs = append(outs, qout)
+	}
+
+	return outs
 }
 
 func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount, password string) {
