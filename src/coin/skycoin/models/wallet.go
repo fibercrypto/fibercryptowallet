@@ -326,12 +326,10 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 		logrus.Warn("Error getting remote wallet")
 		return err
 	}
-	var emptyAddresses []core.Address
-	var emptyAddress core.Address
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
 	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6,10)
-	req, err := wlt.createTransaction(emptyAddresses, []core.TransactionOutput{txnOutput}, emptyAddress, client, wltR, pwd)
+	req, err := wlt.createTransaction(nil, []core.TransactionOutput{txnOutput}, nil, nil, client, wltR, pwd)
 
 	if err != nil {
 		logrus.Warn("Error creating transaction request")
@@ -351,7 +349,7 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 	return nil
 }
 
-func (wlt RemoteWallet) createTransaction(from []core.Address, to []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse, password core.PasswordReader) (api.WalletCreateTransactionRequest, error) {
+func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse, password core.PasswordReader) (api.WalletCreateTransactionRequest, error) {
 	var req api.WalletCreateTransactionRequest
 	if wltR.Meta.Encrypted {
 		pass, err := password("Insert your password")
@@ -378,6 +376,13 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to []core.Transac
 	if change != nil && len(change.String()) > 0 {
 		st := change.String()
 		req.ChangeAddress = &st
+	}
+	if uxOut != nil && len(uxOut) > 0 {
+		req.UxOuts = make([]string, 0)
+		for _, out := range uxOut {
+			req.UxOuts = append(req.UxOuts, out.GetAddress().String())
+		}
+
 	}
 	req.To = make([]api.Receiver, 0)
 	for _, toTxn := range to {
@@ -412,8 +417,8 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 		logrus.Warn("Error getting remote wallet")
 		return err
 	}
-	//pass, err := password("Password")
-	req, err := wlt.createTransaction(from, to, change, client, wltR, password)
+
+	req, err := wlt.createTransaction(from, to, nil, change, client, wltR, password)
 
 	if err != nil {
 		logrus.Warn("Error creating transaction response")
@@ -434,6 +439,36 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 }
 
 func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, password core.PasswordReader, options interface{}) error { //------TODO
+	logrus.Info("Transfer from remote wallet")
+	client, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logrus.Warn(err)
+		return err
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	wltR, err := client.Wallet(wlt.Id)
+
+	if err != nil {
+		logrus.Warn("Error getting remote wallet")
+		return err
+	}
+	req, err := wlt.createTransaction(nil, nil, unspent, change, client, wltR, password)
+
+	if err != nil {
+		logrus.Warn("Error creating transaction response")
+		return err
+	}
+	transactionResponse, err := client.WalletCreateTransaction(req)
+	if err != nil {
+		logrus.Warn("Error creating transaction")
+		return err
+	}
+	txid, err := client.InjectEncodedTransaction(transactionResponse.EncodedTransaction)
+	if err != nil {
+		logrus.Warn("Error injecting encoded transaction")
+		return err
+	}
+	logrus.Info("Transaction " + txid + " Injected")
 	return nil
 }
 
