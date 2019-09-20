@@ -48,3 +48,31 @@ func NewSkycoinApiClient(section string) (*api.Client, error) {
 	}
 	return skyApi, nil
 }
+
+type SkycoinPEX struct { //Implements PEX interface
+} 
+
+func (spex *SkycoinPEX) GetConnections()  {
+	//TODO
+}
+
+func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction)  {
+	//TODO
+}
+
+func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	txns, err2 := c.PendingTransactionsVerbose()
+	if err2 != nil {
+		return nil, err2
+	}
+	skycoinTxns := make([]core.Transaction, 0)
+	for _, txn := range txns {
+		skycoinTxns = append(skycoinTxns, &SkycoinPendingTransaction{Transaction: txn})
+	}
+	return NewSkycoinTransactionIterator(skycoinTxns), nil
+}

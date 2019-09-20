@@ -5,6 +5,7 @@ import (
 
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 const (
@@ -126,7 +127,9 @@ func (m *AddressesModel) removeAddress(row int) {
 func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64, marked int) {
 	a := m.Addresses()[row]
 	a.SetAddress(address)
-	flSky := float64(sky / 1e6)
+	//TODO: report possible error
+	accuracy, _ := util.AltcoinQuotient("SKY")
+	flSky := float64(sky / accuracy)
 	a.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
 	a.SetAddressCoinHours(coinHours)
 	changeMarked := true

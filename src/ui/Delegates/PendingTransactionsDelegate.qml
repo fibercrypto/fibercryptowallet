@@ -8,8 +8,8 @@ ItemDelegate {
 
     property bool modelMine
     property string modelTransactionID
-    property int modelSky
-    property int modelCoinHours
+    property string modelSky
+    property string modelCoinHours
     property date modelTimestamp
 
     RowLayout {
