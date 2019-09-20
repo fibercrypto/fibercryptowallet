@@ -12,6 +12,7 @@ Dialog {
 
     property alias expanded: transactionDetails.expanded
     property bool showPasswordField: false
+    property string passwordText
 
     property alias previewDate: transactionDetails.date                    
     property alias previewType: transactionDetails.type                  
@@ -78,6 +79,7 @@ Dialog {
 
                     onTextChanged: {
                         dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== "" || showPasswordField
+						passwordText = text
                     }
                 }
             } // ColumnLayout

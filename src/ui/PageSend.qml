@@ -31,7 +31,9 @@ Page {
 
             onClicked: {
 				if (walletEncrypted){
-                	walletManager.sendTo(walletSelected, destinationAddress, amount, "Encrypted")
+	                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
+					dialogSendTransaction.open()
+                	// walletManager.sendTo(walletSelected, destinationAddress, amount, "Encrypted")
 				} else {
                 	walletManager.sendTo(walletSelected, destinationAddress, amount, "UnEncrypted")
 				}
@@ -145,5 +147,8 @@ Page {
         
         modal: true
         focus: true
+		onAccepted: {
+            walletManager.sendTo(walletSelected, destinationAddress, amount, dialogSendTransaction.passwordText) 
+		}
     }
 }
