@@ -85,8 +85,10 @@ func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
 		skyV := outsIter.Value().GetCoins(sky.Sky)
 		quotient, err := util.GetCoinValue(sky.Sky)
 		if err != nil {
+			fmt.Println(err.Error())
 			return nil
 		}
+		fmt.Println("3")
 		sSky := util.FormatCoins(skyV, quotient)
 		qout.SetAddressSky(sSky)
 		ch := outsIter.Value().GetCoins(sky.CoinHour)
@@ -94,12 +96,13 @@ func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
 		if err != nil {
 			return nil
 		}
+		fmt.Println("4")
 
 		sCh := util.FormatCoins(ch, quotient)
 		qout.SetAddressCoinHours(sCh)
 		outs = append(outs, qout)
 	}
-
+	fmt.Println("5")
 	return outs
 }
 
