@@ -270,19 +270,19 @@ func (err errorTickerInvalid) Error() string {
 	return (err.tickerUsed + " is an invalid ticker. Use " + Sky + " or " + CoinHour)
 }
 
-type GenericAdddress struct {
-	addr string
+type GenericAddress struct {
+	Address string
 }
 
-func (ga *GenericAdddress) IsBip32() bool {
+func (ga *GenericAddress) IsBip32() bool {
 	return true
 }
 
-func (ga *GenericAdddress) String() string {
-	return ga.addr
+func (ga *GenericAddress) String() string {
+	return ga.Address
 }
 
-func (ga *GenericAdddress) GetCryptoAccount() core.CryptoAccount {
+func (ga *GenericAddress) GetCryptoAccount() core.CryptoAccount {
 	return nil
 }
 
@@ -329,7 +329,7 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
 	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6,10)
-	req, err := wlt.createTransaction(nil, []core.TransactionOutput{txnOutput}, nil, nil, client, wltR, pwd)
+	req, err := wlt.createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, client, wltR, pwd)
 
 	if err != nil {
 		logrus.Warn("Error creating transaction request")

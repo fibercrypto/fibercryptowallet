@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"strconv"
 
 	"github.com/therecipe/qt/qml"
@@ -57,7 +58,9 @@ func (walletM *WalletManager) init() {
 
 func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount, password string) {
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
-	addr := &GenericAdddress{destinationAddress}
+	addr := &sky.GenericAddress{
+		Address: destinationAddress,
+	}
 	skyF, _ := strconv.ParseFloat(amount, 64)
 	sky := uint64(skyF * 1e6)
 	// TODO --> Add get password method
@@ -262,20 +265,4 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	qwallet.SetCoinHours(bl)
 
 	return qwallet
-}
-
-type GenericAdddress struct {
-	addr string
-}
-
-func (ga *GenericAdddress) IsBip32() bool {
-	return true
-}
-
-func (ga *GenericAdddress) String() string {
-	return ga.addr
-}
-
-func (ga *GenericAdddress) GetCryptoAccount() core.CryptoAccount {
-	return nil
 }
