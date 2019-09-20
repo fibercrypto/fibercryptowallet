@@ -1,5 +1,5 @@
 package core
 
 type KeyValueStorage interface {
-	getValue(key string) interface{}
+	GetValue(key string) interface{}
 }
