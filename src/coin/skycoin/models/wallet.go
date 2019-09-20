@@ -386,13 +386,17 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 	}
 	req.To = make([]api.Receiver, 0)
 	for _, toTxn := range to {
-		strAmount := strconv.FormatFloat(float64(toTxn.GetCoins("SKY"))/1e6, 'f', -1, 64)
+		coins, err := toTxn.GetCoins(Sky)
+		if err != nil {
+			logrus.Warn(err)
+			return api.WalletCreateTransactionRequest{}, err
+		}
+		strAmount := strconv.FormatFloat(float64(coins)/1e6, 'f', -1, 64)
 		req.To = append(req.To, api.Receiver{
 			Address: toTxn.GetAddress().String(),
 			Coins:    strAmount,
 			})
 	}
-
 
 	req.HoursSelection = api.HoursSelection{
 		Mode:        "share",
@@ -921,12 +925,22 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range to {
-		strAmount := strconv.FormatFloat(float64(out.GetCoins(Sky)/1e6), 'f', -1, 64)
+		coins, err := out.GetCoins(Sky)
+		if err != nil {
+			logrus.Warn(err)
+			return err
+		}
+		strAmount := strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
 		recv := api.Receiver{}
 		recv.Address = out.GetAddress().String()
 		recv.Coins = strAmount
 		if coinHoursSelection.Mode == "manual" {
-			recv.Hours = strconv.FormatFloat(float64(out.GetCoins(CoinHour)/1e6), 'f', -1, 64)
+			coins, err := out.GetCoins(CoinHour)
+			if err != nil {
+				logrus.Warn(err)
+				return err
+			}
+			recv.Hours = strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
 		}
 		destination = append(destination, recv)
 	}
@@ -1039,12 +1053,23 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range new {
-		strAmount := strconv.FormatFloat(float64(out.GetCoins(Sky)/1e6), 'f', -1, 64)
+		coins, err := out.GetCoins(Sky)
+		if err != nil {
+			logrus.Warn(err)
+			return err
+		}
+
+		strAmount := strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
 		recv := api.Receiver{}
 		recv.Address = out.GetAddress().String()
 		recv.Coins = strAmount
 		if coinHoursSelection.Mode == "manual" {
-			recv.Hours = strconv.FormatFloat(float64(out.GetCoins(CoinHour)/1e6), 'f', -1, 64)
+			coins, err := out.GetCoins(CoinHour)
+			if err != nil {
+				logrus.Warn(err)
+				return err
+			}
+			recv.Hours = strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
 		}
 		destination = append(destination, recv)
 	}

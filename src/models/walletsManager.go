@@ -9,6 +9,7 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 
 	qtcore "github.com/therecipe/qt/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 type WalletManager struct {
@@ -210,14 +211,17 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 
 			continue
 		}
-		flSky := float64(sky / 1e6)
+		//TODO: report possible error
+		accuracy, _ := util.AltcoinQuotient("SKY")
+		flSky := float64(sky) / float64(accuracy)
 		qaddress.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
 		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
+		accuracy, _ = util.AltcoinQuotient("SKYCH")
 		if err != nil {
 
 			continue
 		}
-		qaddress.SetAddressCoinHours(coinH)
+		qaddress.SetAddressCoinHours(coinH / accuracy)
 		qml.QQmlEngine_SetObjectOwnership(qaddress, qml.QQmlEngine__CppOwnership)
 
 		qaddresses = append(qaddresses, qaddress)
@@ -245,10 +249,13 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		bl = 0
 	}
 
-	floatBl := float64(bl / 1e6)
+	//TODO: report possible error
+	accuracy, _ := util.AltcoinQuotient(skycoin.SkycoinTicker)
+	floatBl := float64(bl) / float64(accuracy)
 	qwallet.SetSky(floatBl)
 
 	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHour)
+	accuracy, _ = util.AltcoinQuotient(skycoin.SkycoinTicker)
 	if err != nil {
 		bl = 0
 	}
