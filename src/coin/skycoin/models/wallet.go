@@ -22,6 +22,7 @@ import (
 const (
 	Sky                     = params.SkycoinTicker
 	CoinHour                = params.CoinHoursTicker
+	CalculatedHour			= params.CalculatedHoursTicker
 	WalletTypeDeterministic = "deterministic"
 
 	WalletTypeCollection = "collection"
