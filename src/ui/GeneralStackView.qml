@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import BlockchainModels 1.0
+import WalletsManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -27,6 +28,43 @@ Item {
         }
     }
 
+
+    WalletManager{
+        id: walletManager
+    }
+
+    WalletModel{
+        id: walletModel
+        property Timer timer: Timer {
+        
+                                    id: walletModelTimer
+                                    repeat: false
+                                    running: true
+                                    interval: 0
+                                    onTriggered: {
+                                        
+                                        walletModel.loadModel(walletManager.getWallets())
+                                        
+                                        walletModelTimer.running = false
+                                    }
+            
+                                }
+        onCountChanged:{
+            if (walletModel.count){
+                if (stackView.depth > 1){
+                    stackView.replace(componentGeneralSwipeView)
+                }
+                else{
+                    stackView.push(componentGeneralSwipeView)
+                }
+            }
+            
+            
+            
+            
+        }
+    }
+
     BlockchainStatusModel {
         id: blockchainModel
     }
@@ -44,6 +82,14 @@ Item {
             stackView.replace(componentNetworking)
         } else {
             stackView.push(componentNetworking)
+        }
+    }
+
+    function openSettingsPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentSettings)
+        } else {
+            stackView.push(componentSettings)
         }
     }
 
@@ -117,6 +163,14 @@ Item {
 
         Networking {
             id: networking
+        }
+    }
+
+    Component {
+        id: componentSettings
+
+        Settings {
+            id: settings
         }
     }
 

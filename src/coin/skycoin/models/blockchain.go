@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"errors"
@@ -142,29 +142,33 @@ func (ss SkycoinBlockchainStatus) SetCacheTime(time uint64) {
 }
 
 func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
-	c := util.NewClient()
 
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	coinSupply, err := c.CoinSupply()
 	if err != nil {
 		return err
 	}
 
-	ss.cachedStatus.CurrentCoinHourSupply, err = util.GetCoinValue(coinSupply.CurrentCoinHourSupply)
+	ss.cachedStatus.CurrentCoinHourSupply, err = util.GetCoinValue(coinSupply.CurrentCoinHourSupply, CoinHour)
 	if err != nil {
 		return err
 	}
 
-	ss.cachedStatus.TotalCoinHourSupply, err = util.GetCoinValue(coinSupply.TotalCoinHourSupply)
+	ss.cachedStatus.TotalCoinHourSupply, err = util.GetCoinValue(coinSupply.TotalCoinHourSupply, CoinHour)
 	if err != nil {
 		return err
 	}
 
-	ss.cachedStatus.CurrentSkySupply, err = util.GetCoinValue(coinSupply.CurrentSupply)
+	ss.cachedStatus.CurrentSkySupply, err = util.GetCoinValue(coinSupply.CurrentSupply, Sky)
 	if err != nil {
 		return err
 	}
 
-	ss.cachedStatus.TotalSkySupply, err = util.GetCoinValue(coinSupply.TotalSupply)
+	ss.cachedStatus.TotalSkySupply, err = util.GetCoinValue(coinSupply.TotalSupply, Sky)
 	if err != nil {
 		return err
 	}
@@ -178,8 +182,12 @@ func (ss SkycoinBlockchainStatus) requestSupplyInfo() error {
 }
 
 func (ss SkycoinBlockchainStatus) requestStatusInfo() error {
-	c := util.NewClient()
 
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	blocks, err := c.LastBlocks(1)
 
 	if err != nil {

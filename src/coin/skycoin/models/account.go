@@ -1,4 +1,4 @@
-package models
+package skycoin
 
 import (
 	"fmt"
@@ -7,17 +7,22 @@ import (
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
 	"github.com/skycoin/skycoin/src/wallet"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
-	c := util.NewClient()
-	logrus.Info("POST /api/v1/balance?addrs=xxx")
+    logrus.Info("POST /api/v1/balance?addrs=xxx")
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return 0, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	bl, err := c.Balance([]string{addr.address})
+
 	if err != nil {
 		logrus.WithFields(logrus.Fields{
 			"Error":    err,
@@ -36,18 +41,73 @@ func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 func (addr SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
-func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	return nil
+func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		println(err.Error())
+		return nil
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
+	if err != nil {
+		println(err.Error())
+		return nil
+	}
+
+	outs := outputSummary.SpendableOutputs()
+	skyOutputs := make([]core.TransactionOutput, 0)
+	for _, out := range outs {
+		skyOutputs = append(skyOutputs, &SkycoinTransactionOutput{
+
+			skyOut: readable.TransactionOutput{
+				Address: out.Address,
+				Coins:   out.Coins,
+				Hours:   out.Hours,
+				Hash:    out.Hash,
+			},
+			spent: true,
+			calculatedHours: out.CalculatedHours,
+		})
+	}
+
+	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
-func (addr SkycoinAddress) ListTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
+
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	transactions := make([]core.Transaction, 0)
+	txn, _ := c.TransactionsVerbose([]string{addr.String()})
+
+	for _, tx := range txn {
+		st := core.TXN_STATUS_PENDING
+		if tx.Status.Confirmed {
+			st = core.TXN_STATUS_CONFIRMED
+		}
+
+		transactions = append(transactions, &SkycoinTransaction{
+			skyTxn: tx.Transaction,
+			status: st,
+		})
+
+	}
+
+	return NewSkycoinTransactionIterator(transactions)
+
 }
-func (addr SkycoinAddress) ListPendingTransactions() core.TransactionIterator { //------TODO
-	return nil
+func (addr SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
+	return nil,nil
 }
 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
-	c := wlt.newClient()
+	c, err := NewSkycoinApiClient(wlt.poolSection)
+	if err != nil {
+		return 0, err
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, c)
 	bl, err := c.WalletBalance(wlt.Id)
 	logrus.Info("GET /api/v1/wallet/balance")
 	if err != nil {
@@ -71,18 +131,53 @@ func (wlt RemoteWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	logrus.Info("ScanUnspentOutputs not implemented for RemoteWallet")
-	return nil
+func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+    logrus.Info("ScanUnspentOutputs not implemented for RemoteWallet")
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	unOuts := make([]core.TransactionOutput, 0)
+	for addressesIter.Next() {
+		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		for outsIter.Next() {
+			unOuts = append(unOuts, outsIter.Value())
+		}
+	}
+	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt RemoteWallet) ListTransactions() core.TransactionIterator { //------TODO
-	logrus.Info("ListTransactions not implemented for RemoteWallet")
-	return nil
+func (wlt RemoteWallet) ListTransactions() core.TransactionIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for addressesIter.Next() {
+		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
+		for txnsIter.Next() {
+			txns = append(txns, txnsIter.Value())
+		}
+	}
+
+	return NewSkycoinTransactionIterator(txns)
 }
-func (wlt RemoteWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
-	logrus.Info("ListPendingTransactions not implemented for RemoteWallet")
-	return nil
+
+func (wlt RemoteWallet) ListPendingTransactions() (core.TransactionIterator, error) { 
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
+	if err2 != nil {
+		return nil, err2
+	}
+	txns := make([]core.Transaction, 0)
+	for _, ut := range response.Transactions {
+		txns = append(txns, &SkycoinPendingTransaction{Transaction: ut})
+	}
+	return NewSkycoinTransactionIterator(txns), nil
 }
 
 func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
@@ -96,7 +191,12 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	for _, addr := range addresses {
 		addrs = append(addrs, addr.String())
 	}
-	c := util.NewClient()
+
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return 0, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
 	outs, err := c.OutputsForAddresses(addrs)
 	logrus.Info("POST /api/v1/outputs?addrs=xxx")
 	if err != nil {
@@ -109,9 +209,25 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	bl, err := getBalanceOfAddresses(outs, addrs)
 
 	if ticker == Sky {
-		return strconv.ParseUint(bl.Confirmed.Coins, 10, 64)
+		skyf, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)
+		if err != nil {
+			return 0, err
+		}
+		accuracy, err2 := util.AltcoinQuotient(Sky)
+		if err2 != nil {
+			return 0, err2
+		}
+		return uint64(skyf * float64(accuracy)), nil
 	} else if ticker == CoinHour {
-		return strconv.ParseUint(bl.Confirmed.Hours, 10, 64)
+		coinHours, err := strconv.ParseFloat(bl.Confirmed.Hours, 64)
+		if err != nil {
+			return 0, err
+		}
+		accuracy, err2 := util.AltcoinQuotient(CoinHour)
+		if err2 != nil {
+			return 0, err2
+		}
+		return uint64(coinHours * float64(accuracy)), nil
 	} else {
 		return 0, errorTickerInvalid{ticker}
 	}
@@ -122,18 +238,52 @@ func (wlt LocalWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator { //------TODO
-	logrus.Info("ScanUnspentOutputs not implemented for LocalWallet")
-	return nil
+func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	unOuts := make([]core.TransactionOutput, 0)
+	for addressesIter.Next() {
+		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		for outsIter.Next() {
+			unOuts = append(unOuts, outsIter.Value())
+		}
+	}
+	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt LocalWallet) ListTransactions() core.TransactionIterator { //------TODO
-	logrus.Info("ListTransactions not implemented for LocalWallet")
-	return nil
+func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
+	addressesIter, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	txns := make([]core.Transaction, 0)
+	for addressesIter.Next() {
+		txnsIter := addressesIter.Value().GetCryptoAccount().ListTransactions()
+		for txnsIter.Next() {
+			txns = append(txns, txnsIter.Value())
+		}
+	}
+
+	return NewSkycoinTransactionIterator(txns)
 }
-func (wlt LocalWallet) ListPendingTransactions() core.TransactionIterator { //------TODO
-	logrus.Info("ListPendingTransactions not implemented for LocalWallet")
-	return nil
+
+func (wlt LocalWallet) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
+	if err2 != nil {
+		return nil, err2
+	}
+	txns := make([]core.Transaction, 0)
+	for _, ut := range response.Transactions {
+		txns = append(txns, &SkycoinPendingTransaction{Transaction: ut})
+	}
+	return NewSkycoinTransactionIterator(txns), nil
 }
 
 func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string) (*cli.BalanceResult, error) {

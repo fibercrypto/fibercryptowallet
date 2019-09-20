@@ -56,8 +56,9 @@ Page {
 
     footer: ToolBar {
         id: tabBarCreateUpload
-        Material.primary: Material.Blue
-        Material.accent: Material.Yellow
+        Material.theme: applicationWindow.Material.theme
+        Material.primary: applicationWindow.accentColor
+        Material.foreground: applicationWindow.Material.background
         Material.elevation: 0
 
         RowLayout {
@@ -73,7 +74,9 @@ Page {
 
                 onClicked: {
                     dialogAddLoadWallet.mode = CreateLoadWallet.Create
+                    
                     dialogAddLoadWallet.open()
+
                 }
 
             }
@@ -107,9 +110,7 @@ Page {
 
 
     
-    WalletManager{
-        id: walletManager
-    }
+   
 
     WalletModel{
         id: walletModel
@@ -122,6 +123,7 @@ Page {
                                     onTriggered: {
                                         walletModel.loadModel(walletManager.getWallets())
                                         walletModelTimer.running = false
+                                        // console.log(walletManager)
                                     }
             
                                 }
@@ -142,7 +144,7 @@ Page {
 
         onAccepted: {
             console.log("Add wallet")
-            listWallets.append( { "name": name, "encryptionEnabled": encryptionEnabled, "sky": 0, "coinHours": 0 } )
+          
         }
     }
 

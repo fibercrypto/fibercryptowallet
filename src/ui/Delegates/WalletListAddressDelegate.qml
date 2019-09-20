@@ -17,6 +17,16 @@ Item {
     signal editWalletRequested()
     signal qrCodeRequested(var data)
 
+    Component.onCompleted: {
+        root.qrCodeRequested.connect(genQR)
+    }
+
+    function genQR(data) {
+        dialogQR.setQRVars(data)
+        dialogQR.open()
+    }
+
+
     visible: itemVisible || opacity > 0.0
     opacity: itemVisible ? 1.0 : 0.0
 
@@ -35,10 +45,12 @@ Item {
             id: buttonAddAddress
             text: qsTr("Add address")
             icon.source: "qrc:/images/resources/images/icons/add.svg"
-            Material.foreground: Material.Teal
+            Material.accent: Material.Teal
+            Material.foreground: Material.accent
             Layout.fillWidth: true
 
             onClicked: {
+                
                 addAddressesRequested()
             }
         }
@@ -58,7 +70,7 @@ Item {
         }
         ToolButton {
             id: buttonToggleEncryption
-            text: qsTr("Encrypt wallet")
+            text: qsTr(checked ? "Decrypt wallet" : "Encrypt wallet")
             checkable: true
             checked: encryptionEnabled
             icon.source: "qrc:/images/resources/images/icons/lock" + (checked ? "On" : "Off") + ".svg"
@@ -66,15 +78,39 @@ Item {
             Material.foreground: Material.Grey
             Layout.fillWidth: true
 
-            onCheckedChanged: {
-                encryptionEnabled = checked
+            onCheckedChanged:{
+                checked = encryptionEnabled
+                text = checked ? "Decrypt wallet" : "Encrypt wallet"
+            }
+            //Connections{
+            //    target:
+            //    onDataChanged:{
+            //        checked = encryptionEnabled
+            //    }
+            //}
+            //Component.onCompleted:{
+            //    console.log(root.ListView.view.parentRoot.ListView.view.model)
+            //}
+            Connections{
+                target: root.ListView.view.parentRoot.ListView.view.model
+                onDataChanged:{
+                    buttonToggleEncryption.checked = encryptionEnabled
+                }
+            }
+            onClicked:{
+                if (checked) {
+                    dialogGetPassword.open()
+                } else{
+                    dialogSetPassword.open()
+                }
             }
         }
         ToolButton {
             id: buttonEdit
             text: qsTr("Edit wallet")
             icon.source: "qrc:/images/resources/images/icons/edit.svg"
-            Material.foreground: Material.Blue
+            Material.accent: Material.Blue
+            Material.foreground: Material.accent
             Layout.fillWidth: true
 
             onClicked: {

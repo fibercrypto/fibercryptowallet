@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import QtGraphicalEffects 1.12
 import WalletsManager 1.0
 
 // Resource imports
@@ -18,6 +19,7 @@ Item {
     // The following property is used to avoid a binding conflict with the `height` property.
     // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+    
 
     width: walletList.width
     height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
@@ -53,10 +55,23 @@ Item {
                     Layout.fillWidth: true
                 }
 
-                Image {
-                    id: lockIcon
-                    source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
-                    sourceSize: "24x24"
+                Item {
+                    id: itemImageLockIcon
+
+                    width: lockIcon.width
+                    height: lockIcon.height
+
+                    Image {
+                        id: lockIcon
+                        source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
+                        sourceSize: "24x24"
+                    }
+
+                    ColorOverlay {
+                        anchors.fill: lockIcon
+                        source: lockIcon
+                        color: Material.theme === Material.Dark ? Material.foreground : "undefined"
+                    }
                 }
 
                 Label {
@@ -85,6 +100,7 @@ Item {
             id: addressList
             model: listAddresses
             implicitHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+            property alias parentRoot: root 
             opacity: expanded ? 1.0 : 0.0
             clip: true
             interactive: false
@@ -117,12 +133,76 @@ Item {
         focus: true
 
         onAccepted: {
-            console.log("Adding accepted")
+            if (encryptionEnabled){
+                dialogGetPasswordForAddAddresses.title = "Enter Password"
+                dialogGetPasswordForAddAddresses.warnigVisibility = false
+                dialogGetPasswordForAddAddresses.height = dialogGetPassword.height - 20
+                dialogGetPasswordForAddAddresses.nAddress = spinValue
+                dialogGetPasswordForAddAddresses.open()
+                
+
+            } else{
+                walletManager.newWalletAddress(fileName, spinValue, "")
+                listAddresses.loadModel(walletManager.getAddresses(fileName))
+            }
+            
+            
         }
         onRejected: {
             console.log("Adding rejected")
         }
     } // DialogAddAddresses
+    DialogGetPassword {
+        id: dialogGetPasswordForAddAddresses
+        anchors.centerIn: Overlay.overlay
+        property int nAddress
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        
+        onAccepted: {
+            walletManager.newWalletAddress(fileName, nAddress, password.text)
+            listAddresses.loadModel(walletManager.getAddresses(fileName))
+        }
+    }
+
+    DialogGetPassword {
+        id: dialogGetPassword
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+
+        headerMessage: qsTr("<b>Warning:</b> for security reasons, it is not recommended to keep the wallets unencrypted. Caution is advised.")
+        headerMessageColor: Material.color(Material.Red)
+        focus: true
+        modal: true
+
+        onAccepted: {
+            var isEncrypted = walletManager.decryptWallet(fileName, password.text)
+            walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
+        }
+    }
+
+    DialogSetPassword {
+        id: dialogSetPassword
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+
+        headerMessage: qsTr("We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet.")
+        headerMessageColor: Material.color(Material.Red)
+        focus: true
+        modal: true
+       
+        onAccepted: {
+            var isEncypted = walletManager.encryptWallet(fileName, password)
+            walletModel.editWallet(index, name, isEncypted, sky, coinHours)
+        }
+    } // DialogSetPassword
 
     DialogEditWallet {
         id: dialogEditWallet
@@ -132,7 +212,11 @@ Item {
         modal: true
 
         onAccepted: {
-            console.log("Editting accepted")
+            
+            var qwallet = walletManager.editWallet(fileName, newLabel)
+            
+            walletModel.editWallet(index, qwallet.name, encryptionEnabled, qwallet.sky, qwallet.coinHours )
+    
         }
         onRejected: {
             console.log("Editting rejected")
