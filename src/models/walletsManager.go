@@ -83,6 +83,9 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 		})
 	}
 	changeAddr := &GenericAdddress{change}
+	pwd := func(msg string) (string, err) {
+		return password, nil
+	}
 
 }
 

@@ -31,8 +31,12 @@ Page {
                     var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
                     var wlt = stackView.currentItem.advancedPage.getSelectedWallet()
                     if (outs.length > 0){
+                        walletManager.
+                    } else if(addrs.length > 0){
 
-                    } else if()
+                    } else{
+
+                    }
                     console.log(stackView.currentItem.advancedPage.getSelectedAddresses())
                     console.log(stackView.currentItem.advancedPage.getSelectedWallet())
                 } else{
