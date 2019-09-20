@@ -30,13 +30,8 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-				if (walletEncrypted){
-	                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
-					dialogSendTransaction.open()
-                	// walletManager.sendTo(walletSelected, destinationAddress, amount, "Encrypted")
-				} else {
-                	walletManager.sendTo(walletSelected, destinationAddress, amount, "UnEncrypted")
-				}
+	            dialogSendTransaction.showPasswordField = walletEncrypted // get if the current wallet is encrypted
+
 //                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
 //                dialogSendTransaction.previewDate = "2019-02-26 15:27"
 //                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
@@ -44,7 +39,7 @@ Page {
 //                dialogSendTransaction.previewHoursReceived = 16957
 //                dialogSendTransaction.previewHoursBurned = 33901
 //                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
-//                dialogSendTransaction.open()
+			    dialogSendTransaction.open()
             }
         }
     }
@@ -148,7 +143,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-            walletManager.sendTo(walletSelected, destinationAddress, amount, dialogSendTransaction.passwordText) 
+		    walletManager.sendTo(walletSelected, destinationAddress, amount, dialogSendTransaction.passwordText)
 		}
     }
 }
