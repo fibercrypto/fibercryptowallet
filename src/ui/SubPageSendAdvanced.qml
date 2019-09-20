@@ -13,6 +13,27 @@ import "Dialogs/" // For quick UI development, switch back to resources when mak
 
 Page {
     id: subPageSendAdvanced
+    function getSelectedAddresses(){
+        var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
+        var addresses = []
+        for (var i =0;i< indexs.length; i++){
+            addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
+        }
+        return addresses
+    }
+
+    function getSelectedOutputs(){
+        var indexs =  comboBoxWalletsUnspentOutputsSendFrom.getCheckedDelegates()
+        var outputs = []
+        for (var i =0;i< indexs.length; i++){
+            outputs.push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
+        }
+        return outputs
+    }
+
+    function getSelectedWallet(){
+        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
+    }
 
     ColumnLayout {
         id: columnLayoutRoot

@@ -817,12 +817,28 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range to {
-		strAmount := strconv.FormatFloat(float64(out.GetCoins(Sky)/1e6), 'f', -1, 64)
+		skyV, err := out.GetCoins(Sky)
+		if err != nil {
+			return err
+		}
+		quotient, err := util.AltcoinQuotient(Sky)
+		if err != nil {
+			return err
+		}
+		strAmount := strconv.FormatFloat(float64(skyV/quotient), 'f', -1, 64)
 		recv := api.Receiver{}
 		recv.Address = out.GetAddress().String()
 		recv.Coins = strAmount
 		if coinHoursSelection.Mode == "manual" {
-			recv.Hours = strconv.FormatFloat(float64(out.GetCoins(CoinHour)/1e6), 'f', -1, 64)
+			chV, err := out.GetCoins(CoinHour)
+			if err != nil {
+				return err
+			}
+			quotient, err = util.AltcoinQuotient(CoinHour)
+			if err != nil {
+				return err
+			}
+			recv.Hours = strconv.FormatFloat(float64(chV/quotient), 'f', -1, 64)
 		}
 		destination = append(destination, recv)
 	}
@@ -935,12 +951,28 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range new {
-		strAmount := strconv.FormatFloat(float64(out.GetCoins(Sky)/1e6), 'f', -1, 64)
+		skyV, err := out.GetCoins(Sky)
+		if err != nil {
+			return err
+		}
+		quotient, err := util.AltcoinQuotient(Sky)
+		if err != nil {
+			return err
+		}
+		strAmount := strconv.FormatFloat(float64(skyV/quotient), 'f', -1, 64)
 		recv := api.Receiver{}
 		recv.Address = out.GetAddress().String()
 		recv.Coins = strAmount
 		if coinHoursSelection.Mode == "manual" {
-			recv.Hours = strconv.FormatFloat(float64(out.GetCoins(CoinHour)/1e6), 'f', -1, 64)
+			chV, err := out.GetCoins(CoinHour)
+			if err != nil {
+				return nil
+			}
+			quotient, err = util.AltcoinQuotient(CoinHour)
+			if err != nil {
+				return nil
+			}
+			recv.Hours = strconv.FormatFloat(float64(chV/quotient), 'f', -1, 64)
 		}
 		destination = append(destination, recv)
 	}
