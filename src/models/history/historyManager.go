@@ -5,10 +5,11 @@ import (
 	"strconv"
 	"time"
 
+	coin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -100,7 +101,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
 			chUint64, _ := in.GetCoins("SKYCH")
 			accuracy, _ = util.AltcoinQuotient("SKYCH")
-			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64 / accuracy, 10))
+			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64/accuracy, 10))
 			inputs.AddAddress(qIn)
 			_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
 			if ok {
@@ -123,11 +124,12 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			qOu.SetAddress(out.GetAddress().String())
 			//TODO: report possible error
 			accuracy, _ := util.AltcoinQuotient("SKY")
-			skyFloat := float64(sky) / float64(accuracy)
-			qOu.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
+			qOu.SetAddressSky(util.FormatCoins(sky, accuracy))
 			//TODO: return an error
 			val, _ := out.GetCoins("SKYCH")
-			qOu.SetAddressCoinHours(strconv.FormatUint(val, 10))
+			//TODO: report possible error
+			accuracy, _ = util.AltcoinQuotient(coin.CoinHour)
+			qOu.SetAddressCoinHours(util.FormatCoins(val, accuracy))
 			outputs.AddAddress(qOu)
 			if sent {
 
