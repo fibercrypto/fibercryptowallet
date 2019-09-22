@@ -51,7 +51,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectSendTo(walletM.sendTo)
 	walletM.ConnectGetOutputs(walletM.getOutputs)
 	walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
-	walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
+	//walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -73,7 +73,7 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 	outputsTo := make([]*GenericOutput, 0)
 	for i := 0; i < len(addrTo); i++ {
 		ch = ""
-		if len(coinHoursTo != 0) {
+		if !automaticCoinHours {
 			ch = coinHoursTo[i]
 		}
 		outputsTo = append(outputsTo, &GenericOutput{
@@ -86,6 +86,12 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 	pwd := func(msg string) (string, err) {
 		return password, nil
 	}
+
+	opt := new(TransferOptions)
+	opt.AddKeyValue("BurnFactor", burnFactor)
+	opt.AddKeyValue("CoinHoursSelectionMode", automaticCoinHours)
+
+	wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, pwd, opt)
 
 }
 
@@ -386,4 +392,16 @@ func (gOut *GenericOutput) GetCoins(ticker string) (uint64, error) {
 	if ticker == sky.CoinHour {
 		return 0, gOut.ch
 	}
+}
+
+type TransferOptions struct {
+	values map[string]interface{}
+}
+
+func (tOpt *TransferOptions) GetValue(key string) interface{} {
+	return tOpt.values[key]
+}
+
+func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
+	tOpt.values[key] = value
 }
