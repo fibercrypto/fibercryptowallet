@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"log"
 	"strings"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -58,7 +57,7 @@ func (remoteNetwork *SkycoinNetworkConnections) ListNetworks() core.PexNodeItera
 
 	if err != nil {
 
-		log.Print("Error getting connections")
+		//log.Print("Error getting connections")
 		return nil
 	}
 	var netIterator []core.PexNode

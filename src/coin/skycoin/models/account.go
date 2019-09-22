@@ -2,31 +2,31 @@ package skycoin
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"path/filepath"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
+	"github.com/skycoin/skycoin/src/util/logging"
 	"github.com/skycoin/skycoin/src/wallet"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
+var log = logging.MustGetLogger("account")
+
 func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
-    logrus.Info("POST /api/v1/balance?addrs=xxx")
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		log.WithError(err).Error("Couldn't get API client")
 		return 0, err
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
+	log.Info("POST /api/v1/balance?addrs=xxx")
 	bl, err := c.Balance([]string{addr.address})
-
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"Error":    err,
-		}).Warn("Couldn't POST /api/v1/balance!")
+		log.WithError(err).WithField("addrs", "addr.address").Error("Couldn't POST /api/v1/balance?addrs=xxx")
 		return 0, err
 	}
 
@@ -44,13 +44,14 @@ func (addr SkycoinAddress) ListAssets() []string {
 func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
-		println(err.Error())
+		log.WithError(err).Error("Couldn't get API client")
 		return nil
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
+	log.Info("POST /api/v1/outputs?addrs=xxx")
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
-		println(err.Error())
+		log.WithError(err).WithField("addrs", addr.String()).Error("Couldn't POST /api/v1/outputs?addrs=xxx")
 		return nil
 	}
 
@@ -65,7 +66,7 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 				Hours:   out.Hours,
 				Hash:    out.Hash,
 			},
-			spent: true,
+			spent:           true,
 			calculatedHours: out.CalculatedHours,
 		})
 	}
@@ -73,14 +74,18 @@ func (addr SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
 	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
 func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
-
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		log.WithError(err).Error("Couldn't get API client")
 		return nil
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
 	transactions := make([]core.Transaction, 0)
-	txn, _ := c.TransactionsVerbose([]string{addr.String()})
+	log.Info("POST /api/v1/transactions?verbose=1")
+	txn, err := c.TransactionsVerbose([]string{addr.String()})
+	if err != nil {
+		log.WithError(err).WithField("addrs", addr.String()).Error("Couldn't POST /api/v1/transactions?verbose=1")
+	}
 
 	for _, tx := range txn {
 		st := core.TXN_STATUS_PENDING
@@ -99,21 +104,20 @@ func (addr SkycoinAddress) ListTransactions() core.TransactionIterator {
 
 }
 func (addr SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
-	return nil,nil
+	return nil, nil
 }
 
 func (wlt RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	c, err := NewSkycoinApiClient(wlt.poolSection)
 	if err != nil {
+		log.WithError(err).Error("Couldn't get API client")
 		return 0, err
 	}
 	defer core.GetMultiPool().Return(wlt.poolSection, c)
+	log.Info("GET /api/v1/wallet/balance")
 	bl, err := c.WalletBalance(wlt.Id)
-	logrus.Info("GET /api/v1/wallet/balance")
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"Error":    err,
-		}).Warn("Couldn't GET /api/v1/wallet/balance!")
+		log.WithError(err).WithField("id", wlt.Id).Error("Couldn't GET /api/v1/wallet/balance")
 		return 0, err
 	}
 
@@ -132,9 +136,10 @@ func (wlt RemoteWallet) ListAssets() []string {
 }
 
 func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
-    logrus.Info("ScanUnspentOutputs not implemented for RemoteWallet")
+	log.Info("Calling RemoteWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		log.WithError(err).Error("RemoteWallet.GetLoadedAddresses() failed")
 		return nil
 	}
 	unOuts := make([]core.TransactionOutput, 0)
@@ -148,8 +153,10 @@ func (wlt RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 }
 
 func (wlt RemoteWallet) ListTransactions() core.TransactionIterator {
+	log.Info("Calling RemoteWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		log.WithError(err).Error("RemoteWallet.GetLoadedAddresses() failed")
 		return nil
 	}
 	txns := make([]core.Transaction, 0)
@@ -163,14 +170,17 @@ func (wlt RemoteWallet) ListTransactions() core.TransactionIterator {
 	return NewSkycoinTransactionIterator(txns)
 }
 
-func (wlt RemoteWallet) ListPendingTransactions() (core.TransactionIterator, error) { 
+func (wlt RemoteWallet) ListPendingTransactions() (core.TransactionIterator, error) {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		log.WithError(err).Error("Couldn't get API client")
 		return nil, err
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
+	log.Info("GET /api/v1/wallet/transactions&verbose=1")
 	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
 	if err2 != nil {
+		log.WithError(err).WithField("id", wlt.GetId()).Error("Couldn't GET /api/v1/wallet/transactions&verbose=1")
 		return nil, err2
 	}
 	txns := make([]core.Transaction, 0)
@@ -182,8 +192,10 @@ func (wlt RemoteWallet) ListPendingTransactions() (core.TransactionIterator, err
 
 func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
+	log.WithField("walletName", walletName).Info("Calling wallet.Load(walletName)")
 	walletLoaded, err := wallet.Load(walletName)
 	if err != nil {
+		log.WithError(err).Error("wallet.Load(walletName) failed")
 		return 0, err
 	}
 	var addrs []string
@@ -194,37 +206,43 @@ func (wlt LocalWallet) GetBalance(ticker string) (uint64, error) {
 
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		log.WithError(err).Error("Couldn't get API client")
 		return 0, err
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
+	log.Info("POST /api/v1/outputs?addrs=xxx")
 	outs, err := c.OutputsForAddresses(addrs)
-	logrus.Info("POST /api/v1/outputs?addrs=xxx")
 	if err != nil {
-		logrus.WithFields(logrus.Fields{
-			"Error":    err,
-		}).Warn("Couldn't get /api/v1/last_blocks!")
+		log.WithError(err).WithField("Length of addrs", len(addrs)).Error("Couldn't POST /api/v1/outputs?addrs=xxx")
 		return 0, err
 	}
 
 	bl, err := getBalanceOfAddresses(outs, addrs)
+	if err != nil {
+		log.WithError(err).Warn("getBalanceOfAddresses(outs, addrs) failed")
+	}
 
 	if ticker == Sky {
 		skyf, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)
 		if err != nil {
+			log.WithError(err).WithField("bl.Confirmed.Coins", bl.Confirmed.Coins).Error("strconv.ParseFloat(bl.Confirmed.Coins, 64) failed")
 			return 0, err
 		}
 		accuracy, err2 := util.AltcoinQuotient(Sky)
 		if err2 != nil {
+			log.WithError(err2).WithField("Sky", Sky).Error("util.AltcoinQuotient(Sky) failed")
 			return 0, err2
 		}
 		return uint64(skyf * float64(accuracy)), nil
 	} else if ticker == CoinHour {
 		coinHours, err := strconv.ParseFloat(bl.Confirmed.Hours, 64)
 		if err != nil {
+			log.WithError(err).WithField("bl.Confirmed.Hours", bl.Confirmed.Hours).Error("strconv.ParseFloat(bl.Confirmed.Hours, 64) failed")
 			return 0, err
 		}
 		accuracy, err2 := util.AltcoinQuotient(CoinHour)
 		if err2 != nil {
+			log.WithError(err2).WithField("CoinHour", CoinHour).Error("util.AltcoinQuotient(CoinHour) failed")
 			return 0, err2
 		}
 		return uint64(coinHours * float64(accuracy)), nil
@@ -239,8 +257,10 @@ func (wlt LocalWallet) ListAssets() []string {
 }
 
 func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+	log.Info("Calling LocalWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		log.WithError(err).Error("LocalWallet.GetLoadedAddresses() failed")
 		return nil
 	}
 	unOuts := make([]core.TransactionOutput, 0)
@@ -254,8 +274,10 @@ func (wlt LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 }
 
 func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
+	log.Info("Calling LocalWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		log.WithError(err).Error("LocalWallet.GetLoadedAddresses() failed")
 		return nil
 	}
 	txns := make([]core.Transaction, 0)
@@ -272,11 +294,14 @@ func (wlt LocalWallet) ListTransactions() core.TransactionIterator {
 func (wlt LocalWallet) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		log.WithError(err).Error("Couldn't get API client")
 		return nil, err
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
+	log.Info("GET /api/v1/wallet/transactions&verbose=1")
 	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
 	if err2 != nil {
+		log.WithError(err2).WithField("id", wlt.GetId()).Error("Couldn't GET /api/v1/wallet/transactions&verbose=1")
 		return nil, err2
 	}
 	txns := make([]core.Transaction, 0)
@@ -299,13 +324,12 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count confirmed balances
 	for _, o := range outs.HeadOutputs {
 		if _, ok := addrsMap[o.Address]; !ok {
-			logrus.Warn("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
-			logrus.Warn("droplet.FromString failed: %v", err)
+			log.WithError(err).Error("droplet.FromString failed")
 			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
 		}
 
@@ -319,13 +343,12 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count spendable balances
 	for _, o := range outs.SpendableOutputs() {
 		if _, ok := addrsMap[o.Address]; !ok {
-			logrus.Warn("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
-			logrus.Warn("droplet.FromString failed: %v", err)
+			log.WithError(err).Error("droplet.FromString failed")
 			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
 		}
 
@@ -339,13 +362,12 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count predicted balances
 	for _, o := range outs.ExpectedOutputs() {
 		if _, ok := addrsMap[o.Address]; !ok {
-			logrus.Warn("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
-			logrus.Warn("droplet.FromString failed: %v", err)
+			log.WithError(err).Error("droplet.FromString failed")
 			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
 		}
 
@@ -359,7 +381,7 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	toBalance := func(b wallet.Balance) (cli.Balance, error) {
 		coins, err := droplet.ToString(b.Coins)
 		if err != nil {
-			logrus.Warn(err)
+			log.WithError(err).Error()
 			return cli.Balance{}, err
 		}
 
@@ -382,37 +404,37 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 
 		totalConfirmed, err = totalConfirmed.Add(b.confirmed)
 		if err != nil {
-			logrus.Warn(err)
+			log.WithError(err).Error()
 			return nil, err
 		}
 
 		totalSpendable, err = totalSpendable.Add(b.spendable)
 		if err != nil {
-			logrus.Warn(err)
+			log.WithError(err).Error()
 			return nil, err
 		}
 
 		totalExpected, err = totalExpected.Add(b.expected)
 		if err != nil {
-			logrus.Warn(err)
+			log.WithError(err).Error()
 			return nil, err
 		}
 
 		balRlt.Addresses[i].Confirmed, err = toBalance(b.confirmed)
 		if err != nil {
-			logrus.Warn(err)
+			log.WithError(err).Error()
 			return nil, err
 		}
 
 		balRlt.Addresses[i].Spendable, err = toBalance(b.spendable)
 		if err != nil {
-			logrus.Warn(err)
+			log.WithError(err).Error()
 			return nil, err
 		}
 
 		balRlt.Addresses[i].Expected, err = toBalance(b.expected)
 		if err != nil {
-			logrus.Warn(err)
+			log.WithError(err).Error()
 			return nil, err
 		}
 	}
@@ -420,19 +442,19 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	var err error
 	balRlt.Confirmed, err = toBalance(totalConfirmed)
 	if err != nil {
-		logrus.Warn(err)
+		log.WithError(err).Error()
 		return nil, err
 	}
 
 	balRlt.Spendable, err = toBalance(totalSpendable)
 	if err != nil {
-		logrus.Warn(err)
+		log.WithError(err).Error()
 		return nil, err
 	}
 
 	balRlt.Expected, err = toBalance(totalExpected)
 	if err != nil {
-		logrus.Warn(err)
+		log.WithError(err).Error()
 		return nil, err
 	}
 
