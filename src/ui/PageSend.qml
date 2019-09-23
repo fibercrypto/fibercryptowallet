@@ -34,13 +34,13 @@ Page {
                     var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
-                    //if (outs.length > 0){
-                    //    walletManager.
-                    //} else if(addrs.length > 0){
-//
-                    //} else{
-//
-                    //}
+                    if (outs.length > 0){
+                        walletManager.sendFromAddresses
+                    } else if(addrs.length > 0){
+
+                    } else{
+
+                    }
                     console.log(stackView.currentItem.advancedPage.getSelectedAddresses())
                     console.log(stackView.currentItem.advancedPage.getSelectedWallet())
                     console.log(stackView.currentItem.advancedPage.getDestinationsSummary())
