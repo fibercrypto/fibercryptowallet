@@ -38,6 +38,21 @@ type QWallet struct {
 	_ string  `property:"fileName"`
 }
 
+type QTxnRequest struct {
+	core.QObject
+	//IgnoreUnconfirmed bool           `json:"ignore_unconfirmed"`
+	//HoursSelection    HoursSelection `json:"hours_selection"`
+	//ChangeAddress     *string        `json:"change_address,omitempty"`
+	//To                []Receiver     `json:"to"`
+	//UxOuts            []string       `json:"unspents,omitempty"`
+	//Addresses         []string       `json:"addresses,omitempty"`
+	_ bool  `property:"ignore_unconfirmed"`
+	_ string     `property:"txid"`
+	_ float64 `property:"encodedTxn"`
+	_ uint64  `property:"coinHours"`
+	_ string  `property:"fileName"`
+}
+
 func (m *WalletModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),

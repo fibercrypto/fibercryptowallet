@@ -64,7 +64,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) {
 	skyF, _ := strconv.ParseFloat(amount, 64)
 	sky := uint64(skyF * 1e6)
 	// TODO --> Add get password method
-	err := wlt.Transfer(addr, sky, nil)
+	_, err := wlt.Transfer(addr, sky, nil)
 	if err != nil {
 		println("Error transfering sky's", err)
 	}

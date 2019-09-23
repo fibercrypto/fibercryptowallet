@@ -33,12 +33,12 @@ Page {
 	            dialogSendTransaction.showPasswordField = walletEncrypted // get if the current wallet is encrypted
 
 //                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
-//                dialogSendTransaction.previewDate = "2019-02-26 15:27"
-//                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
-//                dialogSendTransaction.previewAmount = 10
-//                dialogSendTransaction.previewHoursReceived = 16957
-//                dialogSendTransaction.previewHoursBurned = 33901
-//                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
+                dialogSendTransaction.previewDate = "2019-02-26 15:27"
+                dialogSendTransaction.previewType = TransactionDetails.Type.Send
+                dialogSendTransaction.previewAmount = 10
+                dialogSendTransaction.previewHoursReceived = 16957
+                dialogSendTransaction.previewHoursBurned = 33901
+                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
 			    dialogSendTransaction.open()
             }
         }
