@@ -310,7 +310,9 @@ func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader,
 		Password:           password,
 		SignIndexes:        index,
 	}
-
+	switch source {
+	// Add selector for sign with a specific kind of wallet
+	}
 	txnResponse, err := client.WalletSignTransaction(walletSignTxn)
 	if err != nil {
 		logrus.Warn("Error signing transaction")
