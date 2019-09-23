@@ -321,7 +321,7 @@ func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader,
 	return txnResponse.EncodedTransaction, nil
 }
 
-func (wlt RemoteWallet) Inject(txn string) error {
+func (wlt RemoteWallet) Inject(txn string, client api.Client) error {
 	return nil
 }
 
@@ -800,7 +800,7 @@ func (wlt LocalWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, 
 	return "", nil
 }
 
-func (wlt LocalWallet) Inject(txn string) error {
+func (wlt LocalWallet) Inject(txn string, client api.Client) error {
 	return nil
 }
 

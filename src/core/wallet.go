@@ -40,7 +40,7 @@ type Wallet interface {
 	GetCryptoAccount() CryptoAccount
 	GetLoadedAddresses() (AddressIterator, error)
 	Sign(encodedTxn, source string, pwd PasswordReader, index []int, client api.Client) (string, error)
-	Inject(txn string) error
+	Inject(txn string, client api.Client) error
 }
 
 type SeedGenerator interface {
