@@ -1,5 +1,9 @@
 package core
 
+import (
+	"github.com/skycoin/skycoin/src/api"
+)
+
 type WalletIterator interface {
 	Value() Wallet
 	Next() bool
@@ -35,6 +39,8 @@ type Wallet interface {
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
 	GetLoadedAddresses() (AddressIterator, error)
+	Sign(encodedTxn, source string, pwd PasswordReader, index []int, client api.Client) (string, error)
+	Inject(txn string) error
 }
 
 type SeedGenerator interface {
