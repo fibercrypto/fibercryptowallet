@@ -120,9 +120,8 @@ func (sto *SkycoinPendingTransactionOutput) IsSpent() bool {
 	return false
 }
 
-func (sto *SkycoinPendingTransactionOutput) GetAddress() core.Address {
-	return SkycoinAddress{address: sto.Output.Address}
-}
+func (sto *SkycoinPendingTransactionOutput) GetAddress() core.Address { 
+	return &SkycoinAddress{address: sto.Output.Address}
 
 func (sto *SkycoinPendingTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	accuracy, err := util.AltcoinQuotient(ticker)
@@ -356,7 +355,7 @@ func (out *SkycoinTransactionOutput) GetId() string {
 }
 
 func (out *SkycoinTransactionOutput) GetAddress() core.Address {
-	return SkycoinAddress{address: out.skyOut.Address}
+	return &SkycoinAddress{address:out.skyOut.Address}
 }
 
 func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
