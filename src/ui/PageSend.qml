@@ -143,7 +143,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-		    walletManager.sendTo(walletSelected, destinationAddress, amount, dialogSendTransaction.passwordText)
+		    walletManager.sendTo(walletSelected, destinationAddress, amount)
 		}
     }
 }

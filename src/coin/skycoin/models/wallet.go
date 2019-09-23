@@ -348,7 +348,7 @@ func (wlt RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.PasswordReader, options interface{}) error {
+func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options interface{}) error {
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -365,7 +365,7 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
 	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6, 10)
-	req, err := wlt.createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, client, wltR, pwd)
+	req, err := wlt.createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, client, wltR)
 
 	if err != nil {
 		logrus.Warn("Error creating transaction request")
@@ -385,17 +385,12 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 	return nil
 }
 
-func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse, password core.PasswordReader) (api.WalletCreateTransactionRequest, error) {
+func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse) (api.WalletCreateTransactionRequest, error) {
 	var req api.WalletCreateTransactionRequest
 	if wltR.Meta.Encrypted {
-		//pass, err := password("Insert your password")
-		//if err != nil {
-		//	return api.WalletCreateTransactionRequest{}, err
-		//}
 		req = api.WalletCreateTransactionRequest{
 			Unsigned: true,
 			WalletID: wltR.Meta.Filename,
-			//Password: pass,
 		}
 	} else {
 		req = api.WalletCreateTransactionRequest{
@@ -443,7 +438,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 	return req, nil
 }
 
-func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, password core.PasswordReader, options interface{}) error { //------TODO
+func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options interface{}) error { //------TODO
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -458,7 +453,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 		return err
 	}
 
-	req, err := wlt.createTransaction(from, to, nil, change, client, wltR, password)
+	req, err := wlt.createTransaction(from, to, nil, change, client, wltR)
 
 	if err != nil {
 		logrus.Warn("Error creating transaction response")
@@ -478,7 +473,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 	return nil
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, password core.PasswordReader, options interface{}) error { //------TODO
+func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options interface{}) error { //------TODO
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -492,7 +487,7 @@ func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core
 		logrus.Warn("Error getting remote wallet")
 		return err
 	}
-	req, err := wlt.createTransaction(nil, nil, unspent, change, client, wltR, password)
+	req, err := wlt.createTransaction(nil, nil, unspent, change, client, wltR)
 
 	if err != nil {
 		logrus.Warn("Error creating transaction response")
@@ -830,7 +825,7 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 
 }
 
-func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password core.PasswordReader, options interface{}) error {
+func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options interface{}) error {
 
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
@@ -886,10 +881,11 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password core.Pa
 	if err != nil {
 		return err
 	}
-	pass, err := password("Insert your password")
-	if err != nil {
-		return err
-	}
+	pass := "" // TODO Move this to other section
+	//pass, err := password("Insert your password")
+	//if err != nil {
+	//	return err
+	//}
 	if skyWlt.IsEncrypted() {
 		skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
 		if err != nil {
@@ -942,7 +938,7 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, password core.Pa
 
 	return nil
 }
-func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, password core.PasswordReader, options interface{}) error { //------TODO
+func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options interface{}) error { //------TODO
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return err
@@ -1012,10 +1008,11 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	if err != nil {
 		return nil
 	}
-	pass, err := password("Insert your password")
-	if err != nil {
-		return err
-	}
+	pass := "" // TODO Move this to other section
+	//pass, err := password("Insert your password")
+	//if err != nil {
+	//	return err
+	//}
 
 	if skyWlt.IsEncrypted() {
 		skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
@@ -1070,7 +1067,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	return nil
 
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, password core.PasswordReader, options interface{}) error { //------TODO
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options interface{}) error { //------TODO
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return err
@@ -1141,10 +1138,11 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 	if err != nil {
 		return nil
 	}
-	pass, err := password("Insert your password")
-	if err != nil {
-		return err
-	}
+	pass := "" // TODO Move this to other location
+	//pass, err := password("Insert your password")
+	//if err != nil {
+	//	return err
+	//}
 
 	if skyWlt.IsEncrypted() {
 		skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
