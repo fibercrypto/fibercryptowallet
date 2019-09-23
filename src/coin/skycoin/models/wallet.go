@@ -321,7 +321,12 @@ func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader,
 	return txnResponse.EncodedTransaction, nil
 }
 
-func (wlt RemoteWallet) Inject(txn string, client api.Client) error {
+func (wlt RemoteWallet) Inject(rawTxn string, client api.Client) error {
+	_, err := client.InjectEncodedTransaction(rawTxn)
+	if err != nil {
+		logrus.Warn("Error Injecting transaction")
+		return err
+	}
 	return nil
 }
 
