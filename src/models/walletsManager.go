@@ -63,8 +63,11 @@ func (walletM *WalletManager) init() {
 	walletM.SeedGenerator = new(sky.SeedService)
 
 }
+func (walletM *WalletManager) sendFromOutputs(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string) {
 
-func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) {
+}
+
+func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string) {
 	// TODO Solve this method merge
 	//wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	//addrsFrom := make([]*sky.GenericAddress, 0)

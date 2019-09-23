@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	core "github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
@@ -346,7 +346,7 @@ func (wlt RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options interface{}) (api.CreateTransactionResponse, error) {
+func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (api.CreateTransactionResponse, error) {
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -427,7 +427,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 
 }
 
-func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options interface{}) (api.CreateTransactionResponse, error) {
+func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (api.CreateTransactionResponse, error) {
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -451,7 +451,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 	return req, nil
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options interface{}) (api.CreateTransactionResponse, error) {
+func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (api.CreateTransactionResponse, error) {
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -792,7 +792,7 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 
 }
 
-func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options interface{}) (api.CreateTransactionResponse, error) {
+func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (api.CreateTransactionResponse, error) {
 
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
@@ -907,7 +907,7 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options interfac
 	//
 	//return nil
 }
-func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options interface{}) (api.CreateTransactionResponse, error) {
+func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (api.CreateTransactionResponse, error) {
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return api.CreateTransactionResponse{}, err
@@ -921,18 +921,19 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	if change != nil {
 		chAddr = change.String()
 	}
-	obj, ok := options.(TransferOptions)
+	// TODO Solve this issues
+	_, ok := options, true
 	if !ok {
 		return api.CreateTransactionResponse{}, errors.New("Invalid options")
 	}
 	coinHoursSelection := api.HoursSelection{
 		Mode: "manual",
 	}
-	if obj.coinHoursSelection == "auto" {
-		coinHoursSelection.Mode = "auto"
-		coinHoursSelection.Type = "share"
-		coinHoursSelection.ShareFactor = obj.burnFactor
-	}
+	//if obj.coinHoursSelection == "auto" {
+	//	coinHoursSelection.Mode = "auto"
+	//	coinHoursSelection.Type = "share"
+	//	coinHoursSelection.ShareFactor = obj.burnFactor
+	//}
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range to {
@@ -1051,7 +1052,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	//return nil
 
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options interface{}) (api.CreateTransactionResponse, error) {
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (api.CreateTransactionResponse, error) {
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return api.CreateTransactionResponse{}, err
@@ -1065,18 +1066,19 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 	if change != nil {
 		chAddr = change.String()
 	}
-	obj, ok := options.(TransferOptions)
+	// TODO Solve issues here
+	_, ok := "auto", true
 	if !ok {
 		return api.CreateTransactionResponse{}, errors.New("Invalid options")
 	}
 	coinHoursSelection := api.HoursSelection{
 		Mode: "manual",
 	}
-	if obj.coinHoursSelection == "auto" {
-		coinHoursSelection.Mode = "auto"
-		coinHoursSelection.Type = "share"
-		coinHoursSelection.ShareFactor = obj.burnFactor
-	}
+	//if obj.coinHoursSelection == "auto" {
+	//	coinHoursSelection.Mode = "auto"
+	//	coinHoursSelection.Type = "share"
+	//	coinHoursSelection.ShareFactor = obj.burnFactor
+	//}
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range new {
