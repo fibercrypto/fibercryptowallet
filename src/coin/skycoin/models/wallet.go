@@ -38,7 +38,8 @@ const (
 	WalletTimestampFormat = "2006_01_02"
 )
 
-type SkycoinWalletIterator struct { //Implements WalletIterator interface
+type SkycoinWalletIterator struct {
+	//Implements WalletIterator interface
 	current int
 	wallets []core.Wallet
 }
@@ -66,7 +67,8 @@ func NewSkycoinWalletIterator(wallets []core.Wallet) *SkycoinWalletIterator {
 	return &SkycoinWalletIterator{wallets: wallets, current: -1}
 }
 
-type SkycoinRemoteWallet struct { //Implements WalletStorage and WalletSet interfaces
+type SkycoinRemoteWallet struct {
+	//Implements WalletStorage and WalletSet interfaces
 	poolSection string
 }
 
@@ -214,7 +216,8 @@ func NewWalletNode(nodeAddress string) *WalletNode {
 
 }
 
-type WalletNode struct { //Implements WallentEnv interface
+type WalletNode struct {
+	//Implements WallentEnv interface
 	wltService  *SkycoinRemoteWallet
 	NodeAddress string
 	poolSection string
@@ -286,12 +289,38 @@ func (ga *GenericAddress) GetCryptoAccount() core.CryptoAccount {
 	return nil
 }
 
-type RemoteWallet struct { //Implements Wallet and CryptoAccount interfaces
+type RemoteWallet struct {
+	//Implements Wallet and CryptoAccount interfaces
 	Id          string
 	Label       string
 	CoinType    string
 	Encrypted   bool
 	poolSection string
+}
+
+func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int, client api.Client) (string, error) {
+	password, err := pwd("Encryted")
+	if err != nil {
+		logrus.Warn("Error getting password")
+		return "", err
+	}
+	walletSignTxn := api.WalletSignTransactionRequest{
+		EncodedTransaction: encodedTxn,
+		WalletID:           wlt.Label,
+		Password:           password,
+		SignIndexes:        index,
+	}
+
+	txnResponse, err := client.WalletSignTransaction(walletSignTxn)
+	if err != nil {
+		logrus.Warn("Error signing transaction")
+		return "", err
+	}
+	return txnResponse.EncodedTransaction, nil
+}
+
+func (wlt RemoteWallet) Inject(txn string) error {
+	return nil
 }
 
 func (wlt RemoteWallet) GetLabel() string {
@@ -328,7 +357,7 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 	}
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
-	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6,10)
+	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6, 10)
 	req, err := wlt.createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, client, wltR, pwd)
 
 	if err != nil {
@@ -352,18 +381,18 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, pwd core.Passwo
 func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse, password core.PasswordReader) (api.WalletCreateTransactionRequest, error) {
 	var req api.WalletCreateTransactionRequest
 	if wltR.Meta.Encrypted {
-		pass, err := password("Insert your password")
-		if err != nil {
-			return api.WalletCreateTransactionRequest{}, err
-		}
+		//pass, err := password("Insert your password")
+		//if err != nil {
+		//	return api.WalletCreateTransactionRequest{}, err
+		//}
 		req = api.WalletCreateTransactionRequest{
-			Unsigned: false,
+			Unsigned: true,
 			WalletID: wltR.Meta.Filename,
-			Password: pass,
+			//Password: pass,
 		}
 	} else {
 		req = api.WalletCreateTransactionRequest{
-			Unsigned: false,
+			Unsigned: true,
 			WalletID: wltR.Meta.Filename,
 		}
 	}
@@ -394,8 +423,8 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 		strAmount := strconv.FormatFloat(float64(coins)/1e6, 'f', -1, 64)
 		req.To = append(req.To, api.Receiver{
 			Address: toTxn.GetAddress().String(),
-			Coins:    strAmount,
-			})
+			Coins:   strAmount,
+		})
 	}
 
 	req.HoursSelection = api.HoursSelection{
@@ -542,7 +571,8 @@ func walletEntryToAddress(wltE readable.WalletEntry, poolSection string) Skycoin
 	return SkycoinAddress{address: wltE.Address, poolSection: poolSection}
 }
 
-type WalletDirectory struct { //Implements WallentEnv interface
+type WalletDirectory struct {
+	//Implements WallentEnv interface
 	WalletDir  string
 	wltService *SkycoinLocalWallet
 }
@@ -561,7 +591,8 @@ func (wltDir *WalletDirectory) GetWalletSet() core.WalletSet {
 	return wltDir.wltService
 }
 
-type SkycoinLocalWallet struct { //Implements WalletStorage and WalletSet interfaces
+type SkycoinLocalWallet struct {
+	//Implements WalletStorage and WalletSet interfaces
 	walletDir string
 }
 
@@ -761,6 +792,14 @@ type LocalWallet struct {
 	Encrypted bool
 	Type      string
 	WalletDir string
+}
+
+func (wlt LocalWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int, client api.Client) (string, error) {
+	return "", nil
+}
+
+func (wlt LocalWallet) Inject(txn string) error {
+	return nil
 }
 
 func (wlt LocalWallet) GetId() string {
