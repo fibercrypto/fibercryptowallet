@@ -35,6 +35,30 @@ Page {
         return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
     }
 
+    function getDestinationsSummary(){
+        var addrs = []
+        var skyAmounts = []
+        var coinHoursAmount = []
+        for (var i = 0; i < listModelDestinations.count; i++){
+            addrs.push(listModelDestinations.get(i).address)
+            skyAmounts.push(listModelDestinations.get(i).sky)
+            coinHoursAmount.push(listModelDestinations.get(i).coinHours)
+        }
+        return [addrs, skyAmounts, coinHoursAmount]
+    }
+
+    function getChangeAddress(){
+        return textFieldCustomChangeAddress.text
+    }
+
+    function getAutomaticCoinHours(){
+        return checkBoxAutomaticCoinHoursAllocation.checked
+    }
+    function getBurnFactor(){
+        return sliderCoinHoursShareFactor.value
+    }
+    
+
     ColumnLayout {
         id: columnLayoutRoot
         anchors.fill: parent
@@ -386,6 +410,6 @@ Page {
 
     ListModel {
         id: listModelDestinations
-        ListElement { address: ""; sky: 0.0; coinHours: 0.0 }
+        ListElement { address: ""; sky: "0.0"; coinHours: "0.0" }
     }
 }

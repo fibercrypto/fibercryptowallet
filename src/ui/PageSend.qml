@@ -30,15 +30,23 @@ Page {
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
                     var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
                     var wlt = stackView.currentItem.advancedPage.getSelectedWallet()
-                    if (outs.length > 0){
-                        walletManager.
-                    } else if(addrs.length > 0){
-
-                    } else{
-
-                    }
+                    var destinationSummary = stackView.currentItem.advancedPage.getDestinationsSummary()
+                    var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
+                    var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
+                    var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
+                    //if (outs.length > 0){
+                    //    walletManager.
+                    //} else if(addrs.length > 0){
+//
+                    //} else{
+//
+                    //}
                     console.log(stackView.currentItem.advancedPage.getSelectedAddresses())
                     console.log(stackView.currentItem.advancedPage.getSelectedWallet())
+                    console.log(stackView.currentItem.advancedPage.getDestinationsSummary())
+                    console.log(stackView.currentItem.advancedPage.getChangeAddress())
+                    console.log(stackView.currentItem.advancedPage.getAutomaticCoinHours())
+                    console.log(stackView.currentItem.advancedPage.getBurnFactor())
                 } else{
                     walletManager.sendTo(stackView.walletSelected, stackView.destinationAddress, stackView.amount)
                 }

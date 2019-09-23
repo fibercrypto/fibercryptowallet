@@ -47,15 +47,15 @@ Item {
                 id: textFieldDestinationAddress
                 font.family: "Code New Roman"
                 placeholderText: qsTr("Destination address")
-                text: address
                 Layout.fillWidth: true
+                onTextChanged: address = text
             }
         } // RowLayout
 
         RowLayout {
             TextField {
                 id: textFieldDestinationAmount
-                text: sky
+                onTextChanged: sky = text
                 implicitWidth: 60
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
@@ -69,7 +69,7 @@ Item {
 
             TextField {
                 id: textFieldCoinHoursAmount
-                text: coinHours
+                onTextChanged: coinHours = text
                 implicitWidth: 60
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
@@ -91,7 +91,7 @@ Item {
 
             onClicked: {
                 if (index === 0) {
-                    listModelDestinations.append( { "address": "", "sky": 0.0, "coinHours": 0.0 } )
+                    listModelDestinations.append( { "address": "", "sky": "0.0", "coinHours": "0.0" } )
                 } else {
                     listModelDestinations.remove(index)
                 }
