@@ -1,179 +1,199 @@
-package skycoin 
- 
+package skycoin
+
 import (
-	"strconv" 
-	"github.com/skycoin/skycoin/src/readable"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core" 
+	"strconv"
+
+	"github.com/skycoin/skycoin/src/coin"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-) 
- 
-/* 
-SkycoinPendingTransaction 
-*/ 
-type SkycoinPendingTransaction struct{ //Implements Transaction interface
+	"github.com/skycoin/skycoin/src/readable"
+)
+
+/*
+SkycoinPendingTransaction
+*/
+type SkycoinPendingTransaction struct { //Implements Transaction interface
 	Transaction readable.UnconfirmedTransactionVerbose
-} 
- 
-func (txn *SkycoinPendingTransaction) SupportedAssets() []string { 
-  	return []string{Sky, CoinHour} 
-} 
- 
-func (txn *SkycoinPendingTransaction) GetTimestamp() core.Timestamp { 
-  	return core.Timestamp(txn.Transaction.Received.Unix())
-} 
- 
-func (txn *SkycoinPendingTransaction) GetStatus() core.TransactionStatus { 
-  	return core.TXN_STATUS_PENDING
-} 
- 
-func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput { 
+}
+
+func (txn *SkycoinPendingTransaction) SupportedAssets() []string {
+	return []string{Sky, CoinHour}
+}
+
+func (txn *SkycoinPendingTransaction) GetTimestamp() core.Timestamp {
+	return core.Timestamp(txn.Transaction.Received.Unix())
+}
+
+func (txn *SkycoinPendingTransaction) GetStatus() core.TransactionStatus {
+	return core.TXN_STATUS_PENDING
+}
+
+func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput {
 	inputs := make([]core.TransactionInput, 0)
-	for _ , input := range txn.Transaction.Transaction.In {
+	for _, input := range txn.Transaction.Transaction.In {
 		inputs = append(inputs, &SkycoinPendingTransactionInput{Input: input})
 	}
 	return inputs
-} 
- 
-func (txn *SkycoinPendingTransaction) GetOutputs() []core.TransactionOutput { 
+}
+
+func (txn *SkycoinPendingTransaction) GetOutputs() []core.TransactionOutput {
 	outputs := make([]core.TransactionOutput, 0)
-	for _ , output := range txn.Transaction.Transaction.Out {
+	for _, output := range txn.Transaction.Transaction.Out {
 		outputs = append(outputs, &SkycoinPendingTransactionOutput{Output: output})
 	}
 	return outputs
-} 
- 
-func (txn *SkycoinPendingTransaction) GetId() string { 
-  	return txn.Transaction.Transaction.Hash
-} 
- 
-func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) uint64 { 
+}
+
+func (txn *SkycoinPendingTransaction) GetId() string {
+	return txn.Transaction.Transaction.Hash
+}
+
+func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) uint64 {
 	if ticker == Sky {
-		return uint64(0);
+		return uint64(0)
 	}
 	return txn.Transaction.Transaction.Fee
-} 
- 
-/** 
- * SkycoinTransactionIterator 
- */ 
+}
+
+/**
+ * SkycoinTransactionIterator
+ */
 type SkycoinTransactionIterator struct { //Implements TransactionIterator interface
-	Current int
+	Current      int
 	Transactions []core.Transaction
-} 
- 
-func (it *SkycoinTransactionIterator) Value() core.Transaction { 
+}
+
+func (it *SkycoinTransactionIterator) Value() core.Transaction {
 	return it.Transactions[it.Current]
-} 
- 
-func (it *SkycoinTransactionIterator) Next() bool { 
+}
+
+func (it *SkycoinTransactionIterator) Next() bool {
 	if it.HasNext() {
 		it.Current++
 		return true
 	}
 	return false
-} 
- 
-func (it *SkycoinTransactionIterator) HasNext() bool { 
+}
+
+func (it *SkycoinTransactionIterator) HasNext() bool {
 	return (it.Current + 1) < len(it.Transactions)
-} 
- 
+}
+
 func NewSkycoinTransactionIterator(transactions []core.Transaction) *SkycoinTransactionIterator {
 	return &SkycoinTransactionIterator{Transactions: transactions, Current: -1}
 }
 
-/** 
+/**
  * SkycoinPendingTransactionInput
  */
 type SkycoinPendingTransactionInput struct { //Implements TransactionInput interface
 	Input readable.TransactionInput
-} 
- 
-func (in *SkycoinPendingTransactionInput) GetId() string { 
-  	return "" 
-} 
- 
-func (in *SkycoinPendingTransactionInput) IsSpent() bool { 
-  	return true 
-} 
- 
-func (in *SkycoinPendingTransactionInput) GetSpentOutput() core.TransactionOutput { 
-  	return nil 
-} 
+}
 
-func (in *SkycoinPendingTransactionInput) GetCoins(ticker string) (uint64, error) { 
-	return uint64(0), nil 
-} 
- 
-/** 
- * SkycoinPendingTransactionOutput 
- */ 
-type SkycoinPendingTransactionOutput struct { //Implements TransactionOutput interface 
+func (in *SkycoinPendingTransactionInput) GetId() string {
+	return ""
+}
+
+func (in *SkycoinPendingTransactionInput) IsSpent() bool {
+	return true
+}
+
+func (in *SkycoinPendingTransactionInput) GetSpentOutput() core.TransactionOutput {
+	return nil
+}
+
+func (in *SkycoinPendingTransactionInput) GetCoins(ticker string) (uint64, error) {
+	return uint64(0), nil
+}
+
+/**
+ * SkycoinPendingTransactionOutput
+ */
+type SkycoinPendingTransactionOutput struct { //Implements TransactionOutput interface
 	Output readable.TransactionOutput
-} 
+}
 
-func (sto *SkycoinPendingTransactionOutput) GetId() string { 
-	return sto.Output.Hash 
-} 
+func (sto *SkycoinPendingTransactionOutput) GetId() string {
+	return sto.Output.Hash
+}
 
-func (sto *SkycoinPendingTransactionOutput) IsSpent() bool { 
-	return false 
-} 
+func (sto *SkycoinPendingTransactionOutput) IsSpent() bool {
+	return false
+}
 
-func (sto *SkycoinPendingTransactionOutput) GetAddress() core.Address { 
+func (sto *SkycoinPendingTransactionOutput) GetAddress() core.Address {
 	return SkycoinAddress{address: sto.Output.Address}
-} 
+}
 
-func (sto *SkycoinPendingTransactionOutput) GetCoins(ticker string) (uint64, error) { 
+func (sto *SkycoinPendingTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	accuracy, err := util.AltcoinQuotient(ticker)
 	if err != nil {
 		return uint64(0), err
 	}
-	if ticker == Sky { 
+	if ticker == Sky {
 		coin, err2 := strconv.ParseFloat(sto.Output.Coins, 64)
 		if err2 != nil {
 			return uint64(0), err2
 		}
 		return uint64(coin * float64(accuracy)), nil
-	} 
+	}
 	if ticker == CoinHour {
 		return sto.Output.Hours * accuracy, nil
 	}
 	return 0, nil
-} 
+}
 
-/** 
+/**
  * SkycoinTransactionOutputIterator
- */ 
-type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface 
-	Current int 
-	Outputs []core.TransactionOutput 
-} 
+ */
+type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface
+	Current int
+	Outputs []core.TransactionOutput
+}
 
-func (it *SkycoinTransactionOutputIterator) Value() core.TransactionOutput { 
-	return it.Outputs[it.Current] 
-} 
+func (it *SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
+	return it.Outputs[it.Current]
+}
 
-func (it *SkycoinTransactionOutputIterator) Next() bool { 
-	if it.HasNext() { 
-		it.Current++ 
-		return true 
-	} 
-	return false 
-} 
+func (it *SkycoinTransactionOutputIterator) Next() bool {
+	if it.HasNext() {
+		it.Current++
+		return true
+	}
+	return false
+}
 
-func (it *SkycoinTransactionOutputIterator) HasNext() bool { 
-	return (it.Current + 1) < len(it.Outputs) 
+func (it *SkycoinTransactionOutputIterator) HasNext() bool {
+	return (it.Current + 1) < len(it.Outputs)
 }
 
 func NewSkycoinTransactionOutputIterator(outputs []core.TransactionOutput) *SkycoinTransactionOutputIterator {
 	return &SkycoinTransactionOutputIterator{Outputs: outputs, Current: -1}
 }
 
+type SkycoinUninjectedTransaction struct {
+	txn *coin.Transaction
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) SupportedAssets() []string {
+	return []string{Sky, CoinHour}
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) GetTimestamp() core.Timestamp {
+	return 0
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) GetStatus() core.TransactionStatus {
+	return core.TXN_STATUS_CREATED
+}
+
 /*
 SkycoinTransaction
 */
 type SkycoinTransaction struct {
-	skyTxn  readable.TransactionVerbose
+	skyTxn readable.TransactionVerbose
+
 	status  core.TransactionStatus
 	inputs  []core.TransactionInput
 	outputs []core.TransactionOutput
@@ -346,8 +366,8 @@ func NewSkycoinTransactioninputIterator(ins []core.TransactionInput) *SkycoinTra
  * SkycoinTransactionOutput
  */
 type SkycoinTransactionOutput struct {
-	skyOut readable.TransactionOutput
-	spent  bool
+	skyOut          readable.TransactionOutput
+	spent           bool
 	calculatedHours uint64
 }
 
@@ -357,7 +377,7 @@ func (out *SkycoinTransactionOutput) GetId() string {
 }
 
 func (out *SkycoinTransactionOutput) GetAddress() core.Address {
-	return SkycoinAddress{address:out.skyOut.Address}
+	return SkycoinAddress{address: out.skyOut.Address}
 }
 
 func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
@@ -398,4 +418,3 @@ func (out *SkycoinTransactionOutput) IsSpent() bool {
 	}
 	return false
 }
-

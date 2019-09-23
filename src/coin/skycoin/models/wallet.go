@@ -297,7 +297,7 @@ func (wlt RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options interface{}) (core.Transaction, error) {
+func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logrus.Warn(err)
@@ -362,11 +362,11 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options interfa
 	return nil, nil
 }
 
-func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options interface{}) (core.Transaction, error) { //------TODO
+func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) { //------TODO
 	return nil, nil
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options interface{}) (core.Transaction, error) { //------TODO
+func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) { //------TODO
 	return nil, nil
 }
 
@@ -729,10 +729,10 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options core.Key
 		return nil, err
 	}
 
-	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
-	if err != nil {
-		return nil, err
-	}
+	//skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
+	//if err != nil {
+	//	return nil, err
+	//}
 	//pass, err := password("Insert your password")
 	//if err != nil {
 	//	return nil, err
@@ -852,10 +852,10 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 		return nil, err
 	}
 
-	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
-	if err != nil {
-		return nil, err
-	}
+	//skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
+	//if err != nil {
+	//	return nil, err
+	//}
 	//pass, err := password("Insert your password")
 	//if err != nil {
 	//	return nil, err
@@ -978,10 +978,10 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 		return nil, err
 	}
 
-	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
-	if err != nil {
-		return nil, err
-	}
+	//skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
+	//if err != nil {
+	//	return nil, err
+	//}
 	//pass, err := password("Insert your password")
 	//if err != nil {
 	//	return nil, err
