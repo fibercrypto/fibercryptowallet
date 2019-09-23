@@ -12,7 +12,7 @@ Page {
 
     property alias advancedMode: switchAdvancedMode.checked
     property string walletSelected
-    property string walletEncrypted 
+    property string walletEncrypted
     property string destinationAddress
     property string amount
 
@@ -30,6 +30,26 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
+                if (advancedMode){
+                    var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
+                    var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
+                    var wlt = stackView.currentItem.advancedPage.getSelectedWallet()
+                    if (outs.length > 0){
+//                        walletManager.
+                    } else if(addrs.length > 0){
+
+                    } else{
+
+                    }
+                    console.log(stackView.currentItem.advancedPage.getSelectedAddresses())
+                    console.log(stackView.currentItem.advancedPage.getSelectedWallet())
+                } else{
+                    walletManager.sendTo(stackView.walletSelected, stackView.destinationAddress, stackView.amount)
+                }
+
+                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
+                dialogSendTransaction.previewDate = "2019-02-26 15:27"               
+                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
 	            dialogSendTransaction.showPasswordField = walletEncrypted // get if the current wallet is encrypted
 
 //                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
@@ -117,7 +137,7 @@ Page {
 
                 ScrollView {
                     id: scrollViewAdvanced
-
+                    property alias advancedPage: advanced
                     contentWidth: advanced.width
                     contentHeight: advanced.height
                     clip: true

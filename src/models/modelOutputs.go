@@ -13,34 +13,36 @@ const (
 type ModelOutputs struct {
 	core.QAbstractListModel
 
-	_ func()                    `constructor:"init"`
+	_ func() `constructor:"init"`
 
-	_ map[int]*core.QByteArray  `property:"roles"`
-	_ []*QOutput       			`property:"outputs"`
-	_ string					`property:"address"`
+	_ map[int]*core.QByteArray `property:"roles"`
+	_ []*QOutput               `property:"outputs"`
+	_ string                   `property:"address"`
 
-	_ func([]*QOutput) 	`slot:"addOutputs"`
+	_ func([]*QOutput) `slot:"addOutputs"`
+	_ func([]*QOutput) `slot:"insertOutputs"`
 }
 
 type QOutput struct {
 	core.QObject
 
-	_ string 	`property:"outputID"`
-	_ string 	`property:"addressSky"`
-	_ string 	`property:"addressCoinHours"`
+	_ string `property:"outputID"`
+	_ string `property:"addressSky"`
+	_ string `property:"addressCoinHours"`
 }
 
 func (m *ModelOutputs) init() {
 	m.SetRoles(map[int]*core.QByteArray{
-		OutputID: 			 core.NewQByteArray2("outputID", -1),
-		AddressSky: 	     core.NewQByteArray2("addressSky", -1),
-		AddressCoinHours: 	 core.NewQByteArray2("addressCoinHours", -1),
+		OutputID:         core.NewQByteArray2("outputID", -1),
+		AddressSky:       core.NewQByteArray2("addressSky", -1),
+		AddressCoinHours: core.NewQByteArray2("addressCoinHours", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 	m.ConnectAddOutputs(m.addOutputs)
+	m.ConnectInsertOutputs(m.insertOutputs)
 }
 
 func (m *ModelOutputs) rowCount(*core.QModelIndex) int {
@@ -56,13 +58,13 @@ func (m *ModelOutputs) data(index *core.QModelIndex, role int) *core.QVariant {
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Outputs()){
+	if index.Row() >= len(m.Outputs()) {
 		return core.NewQVariant()
 	}
 
 	qo := m.Outputs()[index.Row()]
 
-	switch role{
+	switch role {
 	case OutputID:
 		{
 			return core.NewQVariant1(qo.OutputID())
@@ -83,7 +85,7 @@ func (m *ModelOutputs) data(index *core.QModelIndex, role int) *core.QVariant {
 }
 
 func (m *ModelOutputs) insertRows(row int, count int) bool {
-	m.BeginInsertRows(core.NewQModelIndex(), row, row + count)
+	m.BeginInsertRows(core.NewQModelIndex(), row, row+count)
 	m.EndInsertRows()
 	return true
 }
@@ -91,4 +93,10 @@ func (m *ModelOutputs) insertRows(row int, count int) bool {
 func (m *ModelOutputs) addOutputs(mo []*QOutput) {
 	m.SetOutputs(mo)
 	m.insertRows(len(m.Outputs()), len(mo))
+}
+
+func (m *ModelOutputs) insertOutputs(mo []*QOutput) {
+	m.BeginInsertRows(core.NewQModelIndex(), len(m.Outputs()), len(m.Outputs())+len(mo))
+	m.SetOutputs(append(m.Outputs(), mo...))
+	m.EndInsertRows()
 }

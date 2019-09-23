@@ -936,22 +936,32 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range to {
-		coins, err := out.GetCoins(Sky)
+		skyV, err := out.GetCoins(Sky)
 		if err != nil {
 			logrus.Warn(err)
 			return api.CreateTransactionResponse{}, err
 		}
-		strAmount := strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
+		quotient, err := util.AltcoinQuotient(Sky)
+		if err != nil {
+			logrus.Warn(err)
+			return api.CreateTransactionResponse{}, err
+		}
+		strAmount := strconv.FormatFloat(float64(skyV/quotient), 'f', -1, 64)
 		recv := api.Receiver{}
 		recv.Address = out.GetAddress().String()
 		recv.Coins = strAmount
 		if coinHoursSelection.Mode == "manual" {
-			coins, err := out.GetCoins(CoinHour)
+			chV, err := out.GetCoins(CoinHour)
 			if err != nil {
 				logrus.Warn(err)
 				return api.CreateTransactionResponse{}, err
 			}
-			recv.Hours = strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
+			quotient, err = util.AltcoinQuotient(CoinHour)
+			if err != nil {
+				logrus.Warn(err)
+				return api.CreateTransactionResponse{}, err
+			}
+			recv.Hours = strconv.FormatFloat(float64(chV/quotient), 'f', -1, 64)
 		}
 		destination = append(destination, recv)
 	}
@@ -966,6 +976,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 
 	txnResponse, err := clt.CreateTransaction(req)
 	if err != nil {
+		logrus.Warn(err)
 		return api.CreateTransactionResponse{}, err
 	}
 	return *txnResponse, nil
@@ -1069,23 +1080,32 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range new {
-		coins, err := out.GetCoins(Sky)
+		skyV, err := out.GetCoins(Sky)
 		if err != nil {
 			logrus.Warn(err)
 			return api.CreateTransactionResponse{}, err
 		}
-
-		strAmount := strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
+		quotient, err := util.AltcoinQuotient(Sky)
+		if err != nil {
+			logrus.Warn(err)
+			return api.CreateTransactionResponse{}, err
+		}
+		strAmount := strconv.FormatFloat(float64(skyV/quotient), 'f', -1, 64)
 		recv := api.Receiver{}
 		recv.Address = out.GetAddress().String()
 		recv.Coins = strAmount
 		if coinHoursSelection.Mode == "manual" {
-			coins, err := out.GetCoins(CoinHour)
+			chV, err := out.GetCoins(CoinHour)
 			if err != nil {
 				logrus.Warn(err)
 				return api.CreateTransactionResponse{}, err
 			}
-			recv.Hours = strconv.FormatFloat(float64(coins/1e6), 'f', -1, 64)
+			quotient, err = util.AltcoinQuotient(CoinHour)
+			if err != nil {
+				logrus.Warn(err)
+				return api.CreateTransactionResponse{}, err
+			}
+			recv.Hours = strconv.FormatFloat(float64(chV/quotient), 'f', -1, 64)
 		}
 		destination = append(destination, recv)
 	}

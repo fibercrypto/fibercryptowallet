@@ -33,9 +33,9 @@ type Wallet interface {
 	GetId() string
 	GetLabel() string
 	SetLabel(wltName string)
-	Transfer(to Address, amount uint64, options interface{}) (api.CreateTransactionResponse, error)
-	SendFromAddress(from []Address, to []TransactionOutput, change Address, options interface{}) (api.CreateTransactionResponse, error)
-	Spend(unspent, new []TransactionOutput, change Address, options interface{}) (api.CreateTransactionResponse, error)
+	Transfer(to Address, amount uint64, options KeyValueStorage) (api.CreateTransactionResponse, error)
+	SendFromAddress(from []Address, to []TransactionOutput, change Address, options KeyValueStorage) (api.CreateTransactionResponse, error)
+	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStorage) (api.CreateTransactionResponse, error)
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
 	GetLoadedAddresses() (AddressIterator, error)
