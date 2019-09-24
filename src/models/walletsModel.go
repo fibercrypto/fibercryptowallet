@@ -40,17 +40,12 @@ type QWallet struct {
 
 type QTxnRequest struct {
 	core.QObject
-	//IgnoreUnconfirmed bool           `json:"ignore_unconfirmed"`
-	//HoursSelection    HoursSelection `json:"hours_selection"`
-	//ChangeAddress     *string        `json:"change_address,omitempty"`
-	//To                []Receiver     `json:"to"`
-	//UxOuts            []string       `json:"unspents,omitempty"`
-	//Addresses         []string       `json:"addresses,omitempty"`
-	_ bool  `property:"ignore_unconfirmed"`
-	_ string     `property:"txid"`
-	_ float64 `property:"encodedTxn"`
-	_ uint64  `property:"coinHours"`
-	_ string  `property:"fileName"`
+
+	_ *core.QDateTime `property:"date"`
+	_ string          `property:"status"`
+	_ string          `property:"encodedTxn"`
+	_ uint64          `property:"coinHoursReceived"`
+	_ uint64          `property:"coinHoursBurned"`
 }
 
 func (m *WalletModel) init() {

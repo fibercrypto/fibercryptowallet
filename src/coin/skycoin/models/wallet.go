@@ -13,7 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	core "github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
@@ -417,7 +417,6 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 		Type:        "auto",
 		ShareFactor: "0.5",
 	}
-
 	response, err := client.CreateTransaction(req.CreateTransactionRequest)
 	if err != nil {
 		logrus.Warn("Error creating transaction request")
@@ -797,7 +796,7 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options core.Key
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
 	if err != nil {
-		return api.CreateTransactionResponse{},err
+		return api.CreateTransactionResponse{}, err
 	}
 
 	if bl < amount {
