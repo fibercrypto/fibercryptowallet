@@ -369,18 +369,7 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options core.Ke
 }
 
 func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse) (api.CreateTransactionResponse, error) {
-	var req api.WalletCreateTransactionRequest
-	if wltR.Meta.Encrypted {
-		req = api.WalletCreateTransactionRequest{
-			Unsigned: true,
-			WalletID: wltR.Meta.Filename,
-		}
-	} else {
-		req = api.WalletCreateTransactionRequest{
-			Unsigned: true,
-			WalletID: wltR.Meta.Filename,
-		}
-	}
+	var req api.CreateTransactionRequest
 	if from != nil && len(from) > 0 {
 		req.Addresses = make([]string, 0)
 		for _, str := range from {
@@ -411,13 +400,23 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 			Coins:   strAmount,
 		})
 	}
+	address, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		logrus.Warn("Error loading addresses")
+		return api.CreateTransactionResponse{}, err
+	}
+	req.Addresses = make([]string, 0)
+
+	for address.Next() {
+		req.Addresses= append(req.Addresses, address.Value().String())
+	}
 
 	req.HoursSelection = api.HoursSelection{
 		Mode:        "share",
 		Type:        "auto",
 		ShareFactor: "0.5",
 	}
-	response, err := client.CreateTransaction(req.CreateTransactionRequest)
+	response, err := client.CreateTransaction(req)
 	if err != nil {
 		logrus.Warn("Error creating transaction request")
 		return api.CreateTransactionResponse{}, err

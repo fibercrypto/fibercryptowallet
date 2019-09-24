@@ -44,22 +44,17 @@ Page {
                     console.log(stackView.currentItem.advancedPage.getSelectedAddresses())
                     console.log(stackView.currentItem.advancedPage.getSelectedWallet())
                 } else{
-                    walletManager.sendTo(stackView.walletSelected, stackView.destinationAddress, stackView.amount)
+                    var qtxn = walletManager.sendTo(walletSelected, destinationAddress, amount)
+
+                    dialogSendTransaction.showPasswordField = walletEncrypted // get if the current wallet is encrypted
+                    dialogSendTransaction.previewDate = qtxn.date 
+                    dialogSendTransaction.previewType = 2 
+                    dialogSendTransaction.previewAmount = amount
+                    dialogSendTransaction.previewHoursReceived = 16957
+                    dialogSendTransaction.previewHoursBurned = 33901
+                    dialogSendTransaction.previewtransactionID = qtxn.encodedTxn 
+                    dialogSendTransaction.open()
                 }
-
-                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
-                dialogSendTransaction.previewDate = "2019-02-26 15:27"               
-                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
-	            dialogSendTransaction.showPasswordField = walletEncrypted // get if the current wallet is encrypted
-
-//                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
-                dialogSendTransaction.previewDate = "2019-02-26 15:27"
-                dialogSendTransaction.previewType = TransactionDetails.Type.Send
-                dialogSendTransaction.previewAmount = 10
-                dialogSendTransaction.previewHoursReceived = 16957
-                dialogSendTransaction.previewHoursBurned = 33901
-                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
-			    dialogSendTransaction.open()
             }
         }
     }
@@ -163,7 +158,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-		    walletManager.sendTo(walletSelected, destinationAddress, amount)
+			console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
 		}
     }
 }
