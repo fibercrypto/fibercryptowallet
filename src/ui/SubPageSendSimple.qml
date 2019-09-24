@@ -9,7 +9,15 @@ Page {
     property string walletSelected
     property string amount
     property string destinationAddress
-
+    function getSelectedWallet(){
+        return walletSelected
+    }
+    function getAmount(){
+        return amount
+    }
+    function getDestinationAddress(){
+        return destinationAddress
+    }
     signal qrCodeRequested(var data)
 
     onQrCodeRequested: {
@@ -55,7 +63,9 @@ Page {
                 }
 
                 onActivated: {
+                    console.log("sdfwerw")
                     root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
+                    console.log(root.walletSelected)
                 }
             } // ComboBox
         } // ColumnLayout (send from)

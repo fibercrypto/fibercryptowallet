@@ -19,6 +19,8 @@ Dialog {
     property alias previewHoursReceived: transactionDetails.hoursReceived
     property alias previewHoursBurned: transactionDetails.hoursBurned    
     property alias previewtransactionID: transactionDetails.transactionID
+    property alias inputs : transactionDetails.modelInputs
+    property alias outputs : transactionDetails.modelOutputs
 
     title: qsTr("Confirm transaction")
     standardButtons: Dialog.Ok | Dialog.Cancel

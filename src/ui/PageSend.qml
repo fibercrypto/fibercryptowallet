@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import Transactions 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
@@ -26,6 +27,7 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
+                var txn 
                 if (advancedMode){
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
                     var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
@@ -48,17 +50,22 @@ Page {
                     console.log(stackView.currentItem.advancedPage.getAutomaticCoinHours())
                     console.log(stackView.currentItem.advancedPage.getBurnFactor())
                 } else{
-                    walletManager.sendTo(stackView.walletSelected, stackView.destinationAddress, stackView.amount)
+                    //console.log(stackView.currentItem.simplePage.getWalletSelected())
+                    txn = walletManager.sendTo(stackView.currentItem.simplePage.getSelectedWallet(), stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
+
                 }
-                
                 dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
                 dialogSendTransaction.previewDate = "2019-02-26 15:27"               
-                dialogSendTransaction.previewType = TransactionDetails.Type.Receive
-                dialogSendTransaction.previewAmount = 10
-                dialogSendTransaction.previewHoursReceived = 16957
-                dialogSendTransaction.previewHoursBurned = 33901
-                dialogSendTransaction.previewtransactionID = "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
+                dialogSendTransaction.previewType = TransactionDetails.Type.Send
+                dialogSendTransaction.previewAmount = txn.amount
+                dialogSendTransaction.previewHoursReceived = txn.hoursTraspassed
+                dialogSendTransaction.previewHoursBurned = txn.hoursBurned
+                dialogSendTransaction.previewtransactionID = txn.transactionId
+                dialogSendTransaction.inputs = txn.inputs
+                dialogSendTransaction.outputs = txn.outputs
                 dialogSendTransaction.open()
+                
+                
             }
         }
     }
@@ -106,7 +113,7 @@ Page {
                 
                 ScrollView {
                     id: scrollViewSimple
-                    
+                    property alias simplePage: simple
                     contentWidth: simple.width
                     contentHeight: simple.height
                     clip: true

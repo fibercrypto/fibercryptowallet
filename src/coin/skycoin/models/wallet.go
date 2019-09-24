@@ -678,31 +678,36 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 
 }
 func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
-
+	fmt.Println(2.1)
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
-
+	fmt.Println(2.2)
 	if bl < amount {
 		return nil, errors.New("Don't have enough sky to make the transaction")
 	}
 
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
-
+	fmt.Println(2.3)
 	defer core.GetMultiPool().Return(PoolSection, c)
 	addresses := make([]string, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
+	fmt.Println(2.4)
 	for iterAddr.Next() {
 		addresses = append(addresses, iterAddr.Value().String())
 	}
+	fmt.Println(2.5)
 	dst := api.Receiver{
 		Address: to.String(),
 		Coins:   strAmount,
@@ -718,21 +723,33 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options core.Key
 		To:                []api.Receiver{dst},
 		HoursSelection:    hS,
 	}
-
+	fmt.Println(2.6)
 	txnResponse, err := c.CreateTransaction(rTxn)
 
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
-
+	fmt.Println(2.7)
+	fee, err := util.GetCoinValue(txnResponse.Transaction.Fee, CoinHour)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil, err
+	}
+	fmt.Println(2.8)
 	skyTxn, err := txnResponse.Transaction.ToTransaction()
+
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
-	txn, err := NewUninjectedTransaction(skyTxn)
+	fmt.Println(2.9)
+	txn, err := NewUninjectedTransaction(skyTxn, fee)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, err
 	}
+	fmt.Println(2.10)
 	return txn, nil
 
 	//skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
@@ -1104,5 +1121,3 @@ func (wlt LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	return NewSkycoinAddressIterator(addrs), nil
 
 }
-
-
