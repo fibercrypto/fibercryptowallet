@@ -720,14 +720,20 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options core.Key
 	}
 
 	txnResponse, err := c.CreateTransaction(rTxn)
+
 	if err != nil {
 		return nil, err
 	}
 
-	txn, err := txnResponse.Transaction.ToTransaction()
+	skyTxn, err := txnResponse.Transaction.ToTransaction()
 	if err != nil {
 		return nil, err
 	}
+	txn, err := NewUninjectedTransaction(skyTxn)
+	if err != nil {
+		return nil, err
+	}
+	return txn, nil
 
 	//skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
 	//if err != nil {
@@ -744,34 +750,34 @@ func (wlt LocalWallet) Transfer(to core.Address, amount uint64, options core.Key
 	//	}
 	//}
 
-	uxouts := make([]coin.UxOut, 0)
-	for _, in := range txn.In {
-		ux, err := c.UxOut(in.String())
-		if err != nil {
-			return nil, err
-		}
-		addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
-		if err != nil {
-			return nil, err
-		}
-		srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
-		if err != nil {
-			return nil, err
-		}
-		uxouts = append(uxouts, coin.UxOut{
-			Head: coin.UxHead{
-				BkSeq: ux.SrcBkSeq,
-				Time:  ux.Time,
-			},
-			Body: coin.UxBody{
-				Address:        addr,
-				Coins:          ux.Coins,
-				Hours:          ux.Hours,
-				SrcTransaction: srctxn,
-			},
-		})
-	}
-	return nil, nil
+	//uxouts := make([]coin.UxOut, 0)
+	//for _, in := range txn.In {
+	//	ux, err := c.UxOut(in.String())
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//	uxouts = append(uxouts, coin.UxOut{
+	//		Head: coin.UxHead{
+	//			BkSeq: ux.SrcBkSeq,
+	//			Time:  ux.Time,
+	//		},
+	//		Body: coin.UxBody{
+	//			Address:        addr,
+	//			Coins:          ux.Coins,
+	//			Hours:          ux.Hours,
+	//			SrcTransaction: srctxn,
+	//		},
+	//	})
+	//}
+	//return nil, nil
 }
 func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
 	clt, err := NewSkycoinApiClient(PoolSection)
@@ -1099,7 +1105,4 @@ func (wlt LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 
 }
 
-type TransferOptions struct {
-	coinHoursSelection string
-	burnFactor         string
-}
+

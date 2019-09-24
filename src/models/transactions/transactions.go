@@ -1,8 +1,9 @@
 package transactions
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
-	"github.com/therecipe/qt/core"
+	qtcore "github.com/therecipe/qt/core"
 )
 
 func init() {
@@ -10,7 +11,7 @@ func init() {
 }
 
 const (
-	Date = int(core.Qt__UserRole) + 1<<iota
+	Date = int(qtcore.Qt__UserRole) + 1<<iota
 	Status
 	Type
 	Amount
@@ -35,16 +36,16 @@ const (
 )
 
 type TransactionDetails struct {
-	core.QObject
-
-	_ *core.QDateTime      `property:"date"`
-	_ int                  `property:"status"`
-	_ int                  `property:"type"`
-	_ string               `property:"amount"`
-	_ string               `property:"hoursTraspassed"`
-	_ string               `property:"hoursBurned"`
-	_ string               `property:"transactionID"`
-	_ *address.AddressList `property:"addresses"`
-	_ *address.AddressList `property:"inputs"`
-	_ *address.AddressList `property:"outputs"`
+	qtcore.QObject
+	txn *core.Transaction
+	_   *qtcore.QDateTime    `property:"date"`
+	_   int                  `property:"status"`
+	_   int                  `property:"type"`
+	_   string               `property:"amount"`
+	_   string               `property:"hoursTraspassed"`
+	_   string               `property:"hoursBurned"`
+	_   string               `property:"transactionID"`
+	_   *address.AddressList `property:"addresses"`
+	_   *address.AddressList `property:"inputs"`
+	_   *address.AddressList `property:"outputs"`
 }

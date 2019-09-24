@@ -11,7 +11,7 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-
+	qtxn "github.com/fibercrypto/FiberCryptoWallet/src/models/transaction"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -154,9 +154,14 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount, password
 	skyF, _ := strconv.ParseFloat(amount, 64)
 	sky := uint64(skyF * 1e6)
 
-	wlt.Transfer(addr, sky, func(text string) (string, error) {
-		return password, nil
-	}, nil)
+	txn, err := wlt.Transfer(addr, sky, nil)
+
+	if err != nil {
+		return
+	}
+
+	uiTxn := qtxn.TransactionDetails{}
+
 }
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
