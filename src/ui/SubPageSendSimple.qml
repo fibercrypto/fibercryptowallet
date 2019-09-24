@@ -7,6 +7,7 @@ import WalletsManager 1.0
 Page {
     id: root
     property string walletSelected
+    property bool walletEncrypted: false 
     property string amount
     property string destinationAddress
     function getSelectedWallet(){
@@ -65,7 +66,7 @@ Page {
                 onActivated: {
                     console.log("sdfwerw")
                     root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
-                    console.log(root.walletSelected)
+                    root.walletEncrypted = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
                 }
             } // ComboBox
         } // ColumnLayout (send from)

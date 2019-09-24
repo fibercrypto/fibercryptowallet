@@ -12,6 +12,10 @@ Page {
     id: root
 
     property alias advancedMode: switchAdvancedMode.checked
+    property string walletSelected
+    property string walletEncrypted
+    property string destinationAddress
+    property string amount
 
     footer: ToolBar {
         id: tabBarSend
@@ -37,7 +41,7 @@ Page {
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
                     if (outs.length > 0){
-                        walletManager.sendFromAddresses
+//                        walletManager.
                     } else if(addrs.length > 0){
 
                     } else{
@@ -122,6 +126,18 @@ Page {
                         id: simple
 
                         width: stackView.width
+                        onWalletSelectedChanged: {
+                            root.walletSelected = walletSelected
+                        }
+                        onAmountChanged: {
+                            root.amount = amount
+                        }
+                        onDestinationAddressChanged: {
+                            root.destinationAddress = destinationAddress
+                        }
+						onWalletEncryptedChanged: {
+							root.walletEncrypted = walletEncrypted
+						}
                     }
                 }
             }
@@ -156,5 +172,16 @@ Page {
         
         modal: true
         focus: true
+		onAccepted: {
+			if (advancedMode) {
+				
+			} else {
+				var p = [1,2,3]
+			    var encodedTxn = walletManager.signTxn(walletSelected, dialogSendTransaction.previewtransactionID ,"source", dialogSendTransaction.passwordText, p)
+				walletManager.injectTxn(walletSelected, encodedTxn)
+				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
+				console.log("Txn Injected") 
+			}
+		}
     }
 }

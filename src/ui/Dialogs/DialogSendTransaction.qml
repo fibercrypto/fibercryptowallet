@@ -12,6 +12,7 @@ Dialog {
 
     property alias expanded: transactionDetails.expanded
     property bool showPasswordField: false
+    property string passwordText
 
     property alias previewDate: transactionDetails.date                    
     property alias previewType: transactionDetails.type                  
@@ -28,7 +29,7 @@ Dialog {
     onOpened: {
         forceActiveFocus()
         passwordRequester.forceTextFocus()
-        standardButton(Dialog.Ok).enabled = passwordRequester.text !== ""
+        standardButton(Dialog.Ok).enabled = passwordRequester.text !== "" || !showPasswordField
     }
 
     onClosed: {
@@ -79,7 +80,8 @@ Dialog {
                     Layout.fillWidth: true
 
                     onTextChanged: {
-                        dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== ""
+                        dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== "" || !showPasswordField
+						passwordText = text
                     }
                 }
             } // ColumnLayout

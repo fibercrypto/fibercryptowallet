@@ -38,6 +38,16 @@ type QWallet struct {
 	_ string  `property:"fileName"`
 }
 
+type QTxnRequest struct {
+	core.QObject
+
+	_ *core.QDateTime `property:"date"`
+	_ string          `property:"status"`
+	_ string          `property:"encodedTxn"`
+	_ uint64          `property:"coinHoursReceived"`
+	_ uint64          `property:"coinHoursBurned"`
+}
+
 func (m *WalletModel) init() {
 	m.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),

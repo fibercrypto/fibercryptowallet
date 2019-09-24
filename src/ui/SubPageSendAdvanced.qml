@@ -347,6 +347,8 @@ Page {
         ColumnLayout {
             id: columnLayoutAutomaticCoinHoursAllocation
 
+            Layout.fillWidth: true
+
             Layout.alignment: Qt.AlignTop
 
             CheckBox {
@@ -358,7 +360,7 @@ Page {
             Slider {
                 id: sliderCoinHoursShareFactor
 
-                Layout.fillWidth: true
+                Layout.preferredWidth: parent.width < 500 ? 500 : parent.width
 
                 opacity: checkBoxAutomaticCoinHoursAllocation.checked ? 1.0 : 0.0
                 Behavior on opacity { NumberAnimation {} }
