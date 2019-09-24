@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/api"
 	"strconv"
 
@@ -29,6 +30,8 @@ type WalletManager struct {
 	_ func(id string, password string) int                                                                                           `slot:"encryptWallet"`
 	_ func(id string, password string) int                                                                                           `slot:"decryptWallet"`
 	_ func() []*QWallet                                                                                                              `slot:"getWallets"`
+	_ func(id, txnRaw, source, password string, index []int) string                                                                  `slot:"signTxn"`
+	_ func(id, txnRaw string)                                                                                                        `slot:"injectTxn"`
 	_ func(id string) []*QAddress                                                                                                    `slot:"getAddresses"`
 	_ func(wltId, destinationAddress, amount string) *QTxnRequest                                                                    `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                                                `slot:"editWallet"`
@@ -49,6 +52,8 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetWallets(walletM.getWallets)
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 	walletM.ConnectSendTo(walletM.sendTo)
+	walletM.ConnectSignTxn(walletM.signTxn)
+	walletM.ConnectInjectTxn(walletM.injectTxn)
 	walletM.ConnectGetOutputs(walletM.getOutputs)
 	walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
 	walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
@@ -161,9 +166,34 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	return fromTxnResponseToQTxnResponse(response)
 }
 
+func (walletM *WalletManager) signTxn(id, txnRaw, source, password string, index []int) string {
+	// Get wallet
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
+	encodedTxn, err := wlt.Sign(txnRaw, source, func(message string) (string, error) {
+		return password, nil
+	}, index)
+	if err != nil {
+		println("Error signing txn", err)
+	}
+	err = wlt.Inject(encodedTxn)
+	if err != nil {
+		logrus.Warn("Error injecting txn")
+	}
+	return encodedTxn
+}
+
+func (walletM *WalletManager) injectTxn(id, txnRaw string) {
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
+
+	err := wlt.Inject(txnRaw)
+	if err != nil {
+		logrus.Warn("Error injecting txn")
+	}
+}
+
 func fromTxnResponseToQTxnResponse(response api.CreateTransactionResponse) *QTxnRequest {
 	var qTxn = NewQTxnRequest(nil)
-	qTxn.SetCoinHoursBurned(123) // TODO Set coin hours
+	qTxn.SetCoinHoursBurned(123)   // TODO Set coin hours
 	qTxn.SetCoinHoursReceived(123) // TODO Set coin hours
 	x := qtcore.NewQDateTime()
 	qTxn.SetDate(x.CurrentDateTime())
