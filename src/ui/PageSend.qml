@@ -158,7 +158,15 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
+			if (advancedMode) {
+				
+			} else {
+				var p = [1,2,3]
+			    var encodedTxn = walletManager.signTxn(walletSelected, dialogSendTransaction.previewtransactionID ,"source", dialogSendTransaction.passwordText, p)
+				walletManager.injectTxn(walletSelected, encodedTxn)
+				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
+				console.log("Txn Injected") 
+			}
 		}
     }
 }

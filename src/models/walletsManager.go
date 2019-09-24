@@ -171,13 +171,10 @@ func (walletM *WalletManager) signTxn(id, txnRaw, source, password string, index
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
 	encodedTxn, err := wlt.Sign(txnRaw, source, func(message string) (string, error) {
 		return password, nil
-	}, index)
+	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {
-		println("Error signing txn", err)
-	}
-	err = wlt.Inject(encodedTxn)
-	if err != nil {
-		logrus.Warn("Error injecting txn")
+		logrus.Warn("Error signing txn", err)
+		return ""
 	}
 	return encodedTxn
 }

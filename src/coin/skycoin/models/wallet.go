@@ -311,7 +311,7 @@ func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader,
 	}
 	walletSignTxn := api.WalletSignTransactionRequest{
 		EncodedTransaction: encodedTxn,
-		WalletID:           wlt.Label,
+		WalletID:           wlt.Id,
 		Password:           password,
 		SignIndexes:        index,
 	}
