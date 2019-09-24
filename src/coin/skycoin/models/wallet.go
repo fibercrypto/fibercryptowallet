@@ -296,7 +296,14 @@ type RemoteWallet struct {
 	poolSection string
 }
 
-func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int, client api.Client) (string, error) {
+func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int) (string, error) {
+	client, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logrus.Warn(err)
+		return "", err
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, client)
+
 	password, err := pwd("Encryted")
 	if err != nil {
 		logrus.Warn("Error getting password")
@@ -319,8 +326,15 @@ func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader,
 	return txnResponse.EncodedTransaction, nil
 }
 
-func (wlt RemoteWallet) Inject(rawTxn string, client api.Client) error {
-	_, err := client.InjectEncodedTransaction(rawTxn)
+func (wlt RemoteWallet) Inject(rawTxn string) error {
+	client, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logrus.Warn(err)
+		return err
+	}
+	defer core.GetMultiPool().Return(wlt.poolSection, client)
+
+	_, err = client.InjectEncodedTransaction(rawTxn)
 	if err != nil {
 		logrus.Warn("Error Injecting transaction")
 		return err
@@ -763,11 +777,11 @@ type LocalWallet struct {
 	WalletDir string
 }
 
-func (wlt LocalWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int, client api.Client) (string, error) {
+func (wlt LocalWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int) (string, error) {
 	return "", nil
 }
 
-func (wlt LocalWallet) Inject(txn string, client api.Client) error {
+func (wlt LocalWallet) Inject(txn string) error {
 	return nil
 }
 
