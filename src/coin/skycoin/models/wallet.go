@@ -375,6 +375,18 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 		for _, str := range from {
 			req.Addresses = append(req.Addresses, str.String())
 		}
+	} else {
+		address, err := wlt.GetLoadedAddresses()
+		if err != nil {
+			logrus.Warn("Error loading addresses")
+			return api.CreateTransactionResponse{}, err
+		}
+
+		req.Addresses = make([]string, 0)
+
+		for address.Next() {
+			req.Addresses= append(req.Addresses, address.Value().String())
+		}
 	}
 	if change != nil && len(change.String()) > 0 {
 		st := change.String()
@@ -399,16 +411,6 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 			Address: toTxn.GetAddress().String(),
 			Coins:   strAmount,
 		})
-	}
-	address, err := wlt.GetLoadedAddresses()
-	if err != nil {
-		logrus.Warn("Error loading addresses")
-		return api.CreateTransactionResponse{}, err
-	}
-	req.Addresses = make([]string, 0)
-
-	for address.Next() {
-		req.Addresses= append(req.Addresses, address.Value().String())
 	}
 
 	req.HoursSelection = api.HoursSelection{
