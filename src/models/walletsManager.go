@@ -31,10 +31,10 @@ type WalletManager struct {
 	_ func() []*QWallet                                                                                                                      `slot:"getWallets"`
 	_ func(id string) []*QAddress                                                                                                            `slot:"getAddresses"`
 	_ func(id string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                                         `slot:"signTxn"`
-	_ func(id, txnRaw string)                                                                                                                `slot:"injectTxn"`
 	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                             `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                                                        `slot:"editWallet"`
 	_ func(wltId, address string) []*QOutput                                                                                                 `slot:"getOutputs"`
+	_ func(txn *QTransaction) bool                                                                                                           `slot:"broadcastTxn"`
 	_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
 	//_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromOutputs"`
 }
@@ -104,7 +104,7 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 	}
 	changeAddr := &GenericAddress{change}
 
-	opt := new(TransferOptions)
+	opt := NewTransfetOptions()
 	opt.AddKeyValue("BurnFactor", burnFactor)
 	opt.AddKeyValue("CoinHoursSelectionMode", automaticCoinHours)
 
@@ -202,15 +202,6 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 	}
 	return qTxn
 }
-
-//func (walletM *WalletManager) injectTxn(id, txnRaw string) {
-//	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-//	// TODO Inject txn using PEX
-//	err := wlt.Inject(txnRaw)
-//	if err != nil {
-//		logrus.Warn("Error injecting txn")
-//	}
-//}
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
 	pwd := func(message string) (string, error) {
@@ -451,6 +442,12 @@ func (tOpt *TransferOptions) GetValue(key string) interface{} {
 
 func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
 	tOpt.values[key] = value
+}
+
+func NewTransfetOptions() *TransferOptions {
+	return &TransferOptions{
+		values: make(map[string]interface{},0),
+	}
 }
 
 type GenericAddress struct {

@@ -45,7 +45,7 @@ Page {
                     if (outs.length > 0){
  //                          walletManager.
                     } else if(addrs.length > 0){
-                        walletManager.sendFromAddress(wlt, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                        txn = walletManager.sendFromAddresses(wlt, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } else{
 
                     }
@@ -55,6 +55,7 @@ Page {
                     console.log(stackView.currentItem.advancedPage.getChangeAddress())
                     console.log(stackView.currentItem.advancedPage.getAutomaticCoinHours())
                     console.log(stackView.currentItem.advancedPage.getBurnFactor())
+                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
                 } else{
                     //console.log(stackView.currentItem.simplePage.getWalletSelected())
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
@@ -175,17 +176,8 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			if (advancedMode) {
-				
-			} else {
-				var p = [1,2,3]
-				console.log(txn.amount)
-			    var signedTxn = walletManager.signTxn(walletSelected ,"source", dialogSendTransaction.passwordText, p, txn)
-			    var injected = walletManager.broadcastTxn(signedTxn)
-			    console.log(injected)
-//				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
-//				console.log("Txn Injected")
-			}
+			var signedTxn = walletManager.signTxn(walletSelected ,"source", dialogSendTransaction.passwordText, [], txn)
+			var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }
 }
