@@ -43,9 +43,9 @@ Page {
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
                     if (outs.length > 0){
-//                        walletManager.
+ //                          walletManager.
                     } else if(addrs.length > 0){
-
+                        walletManager.sendFromAddress(wlt, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } else{
 
                     }
