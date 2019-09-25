@@ -180,7 +180,9 @@ Page {
 			} else {
 				var p = [1,2,3]
 				console.log(txn.amount)
-			    var encodedTxn = walletManager.signTxn(walletSelected ,"source", dialogSendTransaction.passwordText, p, txn)
+			    var signedTxn = walletManager.signTxn(walletSelected ,"source", dialogSendTransaction.passwordText, p, txn)
+			    var injected = walletManager.broadcastTxn(signedTxn)
+			    console.log(injected)
 //				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
 //				console.log("Txn Injected")
 			}

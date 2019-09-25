@@ -99,7 +99,6 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	}
 	strSky := util.FormatCoins(skyTraspassed, quotient)
 	qtxn.SetAmount(strSky)
-	qtxn.txn = &txn
 
 	return qtxn, nil
 }

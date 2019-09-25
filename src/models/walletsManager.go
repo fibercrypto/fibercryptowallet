@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
@@ -36,9 +35,9 @@ type WalletManager struct {
 	_ func(wltId string, destinationAddress string, amount string) *QTransaction                     `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                `slot:"editWallet"`
 	_ func(wltId, address string) []*QOutput                                                         `slot:"getOutputs"`
+	_ func(txn *QTransaction) bool                                                                   `slot:"broadcastTxn"`
 	//_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromAddresses"`
 	//_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromOutputs"`
-	_ func(txn *QTransaction) bool `slot:"broadcastTxn"`
 }
 
 func (walletM *WalletManager) init() {
@@ -70,7 +69,7 @@ func (walletM *WalletManager) init() {
 
 }
 
-func (WalletManager *WalletManager) broadcastTxn(txn *QTransaction) bool {
+func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	altManager := core.LoadAltcoinManager()
 	plug, _ := altManager.LookupAltcoinManager("SKY")
 	pex, err := plug.LoadPEX("MainNet")
@@ -81,6 +80,7 @@ func (WalletManager *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	if err != nil {
 		return false
 	}
+	logrus.Info("Txn Injected")
 	return true
 }
 
@@ -189,9 +189,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) *QTransaction {
 	// Get wallet
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-	fmt.Println("AMOUNT")
-	fmt.Println(qTxn.Amount())
-	return nil
+
 	txn, err := wlt.Sign(qTxn.txn, source, func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
