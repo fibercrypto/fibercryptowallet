@@ -16,7 +16,7 @@ type SkycoinPendingTransaction struct { //Implements Transaction interface
 }
 
 func (txn *SkycoinPendingTransaction) SupportedAssets() []string {
-	return []string{Sky, CoinHour}
+	return []string{Sky, CoinHour, CalculatedHour}
 }
 
 func (txn *SkycoinPendingTransaction) GetTimestamp() core.Timestamp {
@@ -180,7 +180,7 @@ type SkycoinTransaction struct {
 }
 
 func (txn *SkycoinTransaction) SupportedAssets() []string {
-	return []string{Sky, CoinHour}
+	return []string{Sky, CoinHour, CalculatedHour}
 }
 
 func (txn *SkycoinTransaction) GetTimestamp() core.Timestamp {
