@@ -16,16 +16,13 @@ type QTransaction struct {
 	_   string               `property:"hoursTraspassed"`
 	_   string               `property:"hoursBurned"`
 	_   string               `property:"transactionId"`
-	_   *address.AddressList `property:"addresses"`
 	_   *address.AddressList `property:"inputs"`
 	_   *address.AddressList `property:"outputs"`
 }
 
 func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error) {
-	fmt.Println(3.1)
 	qtxn := NewQTransaction(nil)
 	qtxn.SetTransactionId(txn.GetId())
-	//addresses := address.NewAddressList(nil)
 	inputs := address.NewAddressList(nil)
 	outputs := address.NewAddressList(nil)
 	var hoursTraspassed uint64
@@ -35,14 +32,11 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(3.3)
 	fee := util.FormatCoins(txn.ComputeFee("SKYCH"), quotient)
 	qtxn.SetHoursBurned(fee)
 
 	//Creating inputs
 	ins := txn.GetInputs()
-	fmt.Println("MyInputs")
-	fmt.Println(len(ins))
 	for _, in := range ins {
 		qIn := address.NewAddressDetails(nil)
 		addr := in.GetSpentOutput().GetAddress().String()
@@ -69,19 +63,15 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 		inputs.AddAddress(qIn)
 	}
 	qtxn.SetInputs(inputs)
-	fmt.Println(3.4)
+	
 	//Creating Outputs
 	outs := txn.GetOutputs()
-	fmt.Println("OUTS")
-	fmt.Println(len(outs))
 	for _, out := range outs {
 		qOu := address.NewAddressDetails(nil)
 		addr := out.GetAddress().String()
 		qOu.SetAddress(addr)
 		quotient, err := util.AltcoinQuotient("SKY")
 		sky, err := out.GetCoins("SKY")
-		fmt.Println("sky ")
-		fmt.Println(sky)
 		if err != nil {
 			return nil, err
 		}
@@ -102,19 +92,13 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 			hoursTraspassed += ch
 		}
 	}
-	fmt.Println(3.5)
 	qtxn.SetOutputs(outputs)
 	qtxn.SetHoursTraspassed(util.FormatCoins(hoursTraspassed, quotient))
-	fmt.Println(hoursTraspassed)
-	fmt.Println(3.6)
 	quotient, err = util.AltcoinQuotient("SKY")
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(3.7)
-	fmt.Println(skyTraspassed)
 	strSky := util.FormatCoins(skyTraspassed, quotient)
-	fmt.Println(3.8)
 	qtxn.SetAmount(strSky)
 
 	return qtxn, nil

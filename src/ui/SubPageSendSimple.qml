@@ -19,6 +19,9 @@ Page {
     function getDestinationAddress(){
         return destinationAddress
     }
+    function walletIsEncrypted(){
+        return walletEncrypted
+    }
     signal qrCodeRequested(var data)
 
     onQrCodeRequested: {

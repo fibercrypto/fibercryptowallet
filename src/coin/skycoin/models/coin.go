@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -231,8 +230,6 @@ func (skyTxn *SkycoinUninjectedTransaction) GetOutputs() []core.TransactionOutpu
 		}
 		skyTxn.outputs = outputs
 	}
-	fmt.Println("My outputs")
-	fmt.Println(len(skyTxn.outputs))
 	return skyTxn.outputs
 }
 

@@ -32,6 +32,7 @@ Page {
 
             onClicked: {
                 var txn 
+                var isEncrypted
                 if (advancedMode){
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
                     var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
@@ -55,11 +56,12 @@ Page {
                     console.log(stackView.currentItem.advancedPage.getBurnFactor())
                 } else{
                     //console.log(stackView.currentItem.simplePage.getWalletSelected())
+                    isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
                     txn = walletManager.sendTo(stackView.currentItem.simplePage.getSelectedWallet(), stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
 
                 }
-                dialogSendTransaction.showPasswordField = true // get if the current wallet is encrypted
-                dialogSendTransaction.previewDate = "2019-02-26 15:27"               
+                dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
+                //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
                 dialogSendTransaction.previewAmount = txn.amount
                 dialogSendTransaction.previewHoursReceived = txn.hoursTraspassed
