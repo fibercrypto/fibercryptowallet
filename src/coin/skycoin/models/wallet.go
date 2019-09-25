@@ -281,23 +281,23 @@ type RemoteWallet struct {
 	poolSection string
 }
 
-func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.PasswordReader, index []int) (string, error) {
+func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logrus.Warn(err)
-		return "", err
+		return nil, err
 	}
 	defer core.GetMultiPool().Return(wlt.poolSection, client)
 
 	password, err := pwd("Encryted")
 	if err != nil {
 		logrus.Warn("Error getting password")
-		return "", err
+		return nil, err
 	}
 	encodedResponse, err := client.TransactionEncoded(txn.GetId())
 	if err != nil {
 		logrus.Warn("Couldn't get Transaction Encoded")
-		return "", err
+		return nil, err
 	}
 	walletSignTxn := api.WalletSignTransactionRequest{
 		EncodedTransaction: encodedResponse.EncodedTransaction,
@@ -311,9 +311,17 @@ func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Passw
 	txnResponse, err := client.WalletSignTransaction(walletSignTxn)
 	if err != nil {
 		logrus.Warn("Error signing transaction")
-		return "", err
+		return nil, err
 	}
-	return txnResponse.EncodedTransaction, nil
+	skyTxn, err := txnResponse.Transaction.ToTransaction()
+	if err != nil {
+		return nil, err
+	}
+	unTxn, err := NewUninjectedTransaction(skyTxn, 0) // TODO Set fee
+	if err != nil {
+		return nil, err
+	}
+	return unTxn, nil
 }
 
 func (wlt RemoteWallet) Inject(rawTxn string) error {
@@ -778,8 +786,8 @@ type LocalWallet struct {
 	WalletDir string
 }
 
-func (wlt LocalWallet) Sign(encodedTxn core.Transaction, source string, pwd core.PasswordReader, index []int) (string, error) {
-	return "", nil
+func (wlt LocalWallet) Sign(encodedTxn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
+	return nil, nil
 }
 
 func (wlt LocalWallet) Inject(txn string) error {

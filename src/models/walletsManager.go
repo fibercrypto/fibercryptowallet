@@ -20,21 +20,21 @@ type WalletManager struct {
 	WalletEnv     core.WalletEnv
 	SeedGenerator core.SeedGenerator
 
-	_ func()                                                                                  `constructor:"init"`
-	_ func(seed string, label string, password string, scanN int) *QWallet                    `slot:"createEncryptedWallet"`
-	_ func(seed string, label string, scanN int) *QWallet                                     `slot:"createUnencryptedWallet"`
-	_ func(entropy int) string                                                                `slot:"getNewSeed"`
-	_ func(seed string) int                                                                   `slot:"verifySeed"`
-	_ func(id string, n int, password string)                                                 `slot:"newWalletAddress"`
-	_ func(id string, password string) int                                                    `slot:"encryptWallet"`
-	_ func(id string, password string) int                                                    `slot:"decryptWallet"`
-	_ func() []*QWallet                                                                       `slot:"getWallets"`
-	_ func(id string) []*QAddress                                                             `slot:"getAddresses"`
-	_ func(id string, source string, password string, index []int, qTxn *QTransaction) string `slot:"signTxn"`
-	_ func(id, txnRaw string)                                                                 `slot:"injectTxn"`
-	_ func(wltId string, destinationAddress string, amount string) *QTransaction              `slot:"sendTo"`
-	_ func(id, label string) *QWallet                                                         `slot:"editWallet"`
-	_ func(wltId, address string) []*QOutput                                                  `slot:"getOutputs"`
+	_ func()                                                                                         `constructor:"init"`
+	_ func(seed string, label string, password string, scanN int) *QWallet                           `slot:"createEncryptedWallet"`
+	_ func(seed string, label string, scanN int) *QWallet                                            `slot:"createUnencryptedWallet"`
+	_ func(entropy int) string                                                                       `slot:"getNewSeed"`
+	_ func(seed string) int                                                                          `slot:"verifySeed"`
+	_ func(id string, n int, password string)                                                        `slot:"newWalletAddress"`
+	_ func(id string, password string) int                                                           `slot:"encryptWallet"`
+	_ func(id string, password string) int                                                           `slot:"decryptWallet"`
+	_ func() []*QWallet                                                                              `slot:"getWallets"`
+	_ func(id string) []*QAddress                                                                    `slot:"getAddresses"`
+	_ func(id string, source string, password string, index []int, qTxn *QTransaction) *QTransaction `slot:"signTxn"`
+	_ func(id, txnRaw string)                                                                        `slot:"injectTxn"`
+	_ func(wltId string, destinationAddress string, amount string) *QTransaction                     `slot:"sendTo"`
+	_ func(id, label string) *QWallet                                                                `slot:"editWallet"`
+	_ func(wltId, address string) []*QOutput                                                         `slot:"getOutputs"`
 	//_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromAddresses"`
 	//_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromOutputs"`
 }
@@ -52,7 +52,6 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetAddresses(walletM.getAddresses)
 	walletM.ConnectSendTo(walletM.sendTo)
 	walletM.ConnectSignTxn(walletM.signTxn)
-	walletM.ConnectInjectTxn(walletM.injectTxn)
 	walletM.ConnectGetOutputs(walletM.getOutputs)
 	//walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
 	//walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
@@ -170,28 +169,32 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) string {
+func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) *QTransaction {
 	// Get wallet
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
 
-	encodedTxn, err := wlt.Sign(*qTxn.txn, source, func(message string) (string, error) {
+	txn, err := wlt.Sign(*qTxn.txn, source, func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {
 		logrus.Warn("Error signing txn", err)
-		return ""
+		return nil
 	}
-	return encodedTxn
+	qTxn, err = NewQTransactionFromTransaction(txn)
+	if err != nil {
+		return nil
+	}
+	return qTxn
 }
 
-func (walletM *WalletManager) injectTxn(id, txnRaw string) {
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-	// TODO Inject txn using PEX
-	err := wlt.Inject(txnRaw)
-	if err != nil {
-		logrus.Warn("Error injecting txn")
-	}
-}
+//func (walletM *WalletManager) injectTxn(id, txnRaw string) {
+//	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
+//	// TODO Inject txn using PEX
+//	err := wlt.Inject(txnRaw)
+//	if err != nil {
+//		logrus.Warn("Error injecting txn")
+//	}
+//}
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
 	pwd := func(message string) (string, error) {

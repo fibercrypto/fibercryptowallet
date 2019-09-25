@@ -16,7 +16,7 @@ Page {
     property string walletEncrypted
     property string destinationAddress
     property string amount
-    property var txn
+    property QTransaction txn
 
     footer: ToolBar {
         id: tabBarSend
@@ -59,7 +59,6 @@ Page {
                     //console.log(stackView.currentItem.simplePage.getWalletSelected())
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
                     txn = walletManager.sendTo(stackView.currentItem.simplePage.getSelectedWallet(), stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
-
                 }
                 dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
@@ -180,10 +179,10 @@ Page {
 				
 			} else {
 				var p = [1,2,3]
-			    var encodedTxn = walletManager.signTxn(walletSelected, dialogSendTransaction.encodedTxn ,"source", dialogSendTransaction.passwordText, p)
-				walletManager.injectTxn(walletSelected, encodedTxn)
-				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
-				console.log("Txn Injected") 
+				console.log(txn.amount)
+			    var encodedTxn = walletManager.signTxn(walletSelected ,"source", dialogSendTransaction.passwordText, p, txn)
+//				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
+//				console.log("Txn Injected")
 			}
 		}
     }
