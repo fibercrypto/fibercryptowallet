@@ -35,8 +35,7 @@ type Wallet interface {
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
 	GetLoadedAddresses() (AddressIterator, error)
-	Sign(encodedTxn, source string, pwd PasswordReader, index []int) (string, error)
-	Inject(txn string) error
+	Sign(txn Transaction, source string, pwd PasswordReader, index []int) (Transaction, error)
 }
 
 type SeedGenerator interface {
