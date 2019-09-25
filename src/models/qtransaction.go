@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"

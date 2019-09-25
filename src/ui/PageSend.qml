@@ -16,6 +16,7 @@ Page {
     property string walletEncrypted
     property string destinationAddress
     property string amount
+    property var txn
 
     footer: ToolBar {
         id: tabBarSend
@@ -31,7 +32,7 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                var txn 
+//                var txn
                 var isEncrypted
                 if (advancedMode){
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
@@ -179,7 +180,7 @@ Page {
 				
 			} else {
 				var p = [1,2,3]
-			    var encodedTxn = walletManager.signTxn(walletSelected, dialogSendTransaction.previewtransactionID ,"source", dialogSendTransaction.passwordText, p)
+			    var encodedTxn = walletManager.signTxn(walletSelected, dialogSendTransaction.encodedTxn ,"source", dialogSendTransaction.passwordText, p)
 				walletManager.injectTxn(walletSelected, encodedTxn)
 				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
 				console.log("Txn Injected") 
