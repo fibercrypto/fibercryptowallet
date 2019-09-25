@@ -287,20 +287,25 @@ func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Passw
 		logrus.Warn(err)
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
+	unInjectedTransaction, ok := txn.(*SkycoinUninjectedTransaction)
+	if !ok {
+		logrus.Warn(err)
+		return nil, err
+	}
 
 	password, err := pwd("Encryted")
 	if err != nil {
 		logrus.Warn("Error getting password")
 		return nil, err
 	}
-	encodedResponse, err := client.TransactionEncoded(txn.GetId())
+	encodedResponse, err := unInjectedTransaction.txn.SerializeHex()
 	if err != nil {
 		logrus.Warn("Couldn't get Transaction Encoded")
 		return nil, err
 	}
 	walletSignTxn := api.WalletSignTransactionRequest{
-		EncodedTransaction: encodedResponse.EncodedTransaction,
+		EncodedTransaction: encodedResponse,
 		WalletID:           wlt.Id,
 		Password:           password,
 		SignIndexes:        index,
@@ -317,7 +322,12 @@ func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Passw
 	if err != nil {
 		return nil, err
 	}
-	unTxn, err := NewUninjectedTransaction(skyTxn, 0) // TODO Set fee
+	value, err := util.GetCoinValue(txnResponse.Transaction.Fee, CoinHour)
+	if err != nil {
+		logrus.Warn("Error getting fee")
+		return nil, nil
+	}
+	unTxn, err := NewUninjectedTransaction(skyTxn, value)
 	if err != nil {
 		return nil, err
 	}
