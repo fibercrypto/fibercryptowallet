@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
 	"github.com/skycoin/skycoin/src/wallet"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
@@ -61,7 +61,7 @@ func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator 
 				Hours:   out.Hours,
 				Hash:    out.Hash,
 			},
-			spent: true,
+			spent:           true,
 			calculatedHours: out.CalculatedHours,
 		})
 	}
@@ -95,7 +95,7 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 
 }
 func (addr *SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
-	return nil,nil
+	return nil, nil
 }
 
 func (wlt *RemoteWallet) GetBalance(ticker string) (uint64, error) {
@@ -198,15 +198,15 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 	bl, err := getBalanceOfAddresses(outs, addrs)
 
 	if ticker == Sky {
-		skyf, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)
+		flSky, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)
 		if err != nil {
-			return 0, err
+			return 0, nil
 		}
 		accuracy, err2 := util.AltcoinQuotient(Sky)
 		if err2 != nil {
 			return 0, err2
 		}
-		return uint64(skyf * float64(accuracy)), nil
+		return uint64(flSky * float64(accuracy)), nil
 	} else if ticker == CoinHour {
 		coinHours, err := strconv.ParseFloat(bl.Confirmed.Hours, 64)
 		if err != nil {

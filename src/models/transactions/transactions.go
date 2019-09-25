@@ -2,7 +2,7 @@ package transactions
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
-	"github.com/therecipe/qt/core"
+	qtcore "github.com/therecipe/qt/core"
 )
 
 func init() {
@@ -10,7 +10,7 @@ func init() {
 }
 
 const (
-	Date = int(core.Qt__UserRole) + 1<<iota
+	Date = int(qtcore.Qt__UserRole) + 1<<iota
 	Status
 	Type
 	Amount
@@ -35,9 +35,8 @@ const (
 )
 
 type TransactionDetails struct {
-	core.QObject
-
-	_ *core.QDateTime      `property:"date"`
+	qtcore.QObject
+	_ *qtcore.QDateTime    `property:"date"`
 	_ int                  `property:"status"`
 	_ int                  `property:"type"`
 	_ string               `property:"amount"`

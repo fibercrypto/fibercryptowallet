@@ -29,12 +29,14 @@ type Wallet interface {
 	GetId() string
 	GetLabel() string
 	SetLabel(wltName string)
-	Transfer(to Address, amount uint64)
-	SendFromAddress(from, to Address, amount uint64)
-	Spend(unspent, new []TransactionOutput)
+	Transfer(to Address, amount uint64, options KeyValueStorage) (Transaction, error)
+	SendFromAddress(from []Address, to []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
+	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
 	GetLoadedAddresses() (AddressIterator, error)
+	Sign(encodedTxn, source string, pwd PasswordReader, index []int) (string, error)
+	Inject(txn string) error
 }
 
 type SeedGenerator interface {
