@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -63,7 +61,7 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 		inputs.AddAddress(qIn)
 	}
 	qtxn.SetInputs(inputs)
-	
+
 	//Creating Outputs
 	outs := txn.GetOutputs()
 	for _, out := range outs {

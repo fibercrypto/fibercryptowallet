@@ -16,6 +16,7 @@ type AltcoinPlugin interface {
 	GetName() string
 	GetDescription() string
 	LoadWalletEnvs() []WalletEnv
+	LoadPEX(netType string) PEX
 }
 
 type AltcoinManager interface {
