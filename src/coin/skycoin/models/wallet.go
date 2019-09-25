@@ -322,7 +322,7 @@ func (wlt RemoteWallet) Inject(rawTxn string) error {
 		logrus.Warn(err)
 		return err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 
 	_, err = client.InjectEncodedTransaction(rawTxn)
 	if err != nil {
@@ -357,7 +357,7 @@ func (wlt RemoteWallet) Transfer(to core.Address, amount uint64, options core.Ke
 		logrus.Warn(err)
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
@@ -449,7 +449,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 		logrus.Warn(err)
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
@@ -473,7 +473,7 @@ func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core
 		logrus.Warn(err)
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
