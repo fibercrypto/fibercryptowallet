@@ -63,7 +63,21 @@ func (spex *SkycoinPEX) GetConnections() (core.PexNodeSet, error) {
 }
 
 func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
-	//TODO
+
+	unTxn, ok := txn.(*SkycoinUninjectedTransaction)
+	if !ok {
+		return errors.New("Invalid Transaction")
+	}
+	c, err := NewSkycoinApiClient(spex.poolSection)
+	if err != nil {
+		return err
+	}
+	defer core.GetMultiPool().Return(spex.poolSection, c)
+	_, err = c.InjectTransaction(unTxn.txn)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
