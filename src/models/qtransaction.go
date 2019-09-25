@@ -9,7 +9,7 @@ import (
 
 type QTransaction struct {
 	qtcore.QObject
-	txn *core.Transaction
+	txn core.Transaction
 	_   string               `property:"amount"`
 	_   string               `property:"hoursTraspassed"`
 	_   string               `property:"hoursBurned"`
@@ -20,6 +20,7 @@ type QTransaction struct {
 
 func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error) {
 	qtxn := NewQTransaction(nil)
+	qtxn.txn = txn
 	qtxn.SetTransactionId(txn.GetId())
 	inputs := address.NewAddressList(nil)
 	outputs := address.NewAddressList(nil)

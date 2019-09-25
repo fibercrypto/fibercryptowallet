@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
@@ -37,7 +38,7 @@ type WalletManager struct {
 	_ func(wltId, address string) []*QOutput                                                         `slot:"getOutputs"`
 	//_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromAddresses"`
 	//_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromOutputs"`
-	_ func(txn *QTransaction) `slot:"broadcastTxn"`
+	_ func(txn *QTransaction) bool `slot:"broadcastTxn"`
 }
 
 func (walletM *WalletManager) init() {
@@ -54,7 +55,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectSendTo(walletM.sendTo)
 	walletM.ConnectSignTxn(walletM.signTxn)
 	walletM.ConnectGetOutputs(walletM.getOutputs)
-	walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
+	//walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
 	//walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
 	walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
 	altManager := core.LoadAltcoinManager()
@@ -188,8 +189,10 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) *QTransaction {
 	// Get wallet
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-
-	txn, err := wlt.Sign(*qTxn.txn, source, func(message string) (string, error) {
+	fmt.Println("AMOUNT")
+	fmt.Println(qTxn.Amount())
+	return nil
+	txn, err := wlt.Sign(qTxn.txn, source, func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {
