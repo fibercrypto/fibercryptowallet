@@ -175,7 +175,8 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 				txnDetails.SetType(transactions.TransactionTypeInternal)
 			}
 		}
-		txnDetails.SetHoursBurned(strconv.FormatUint(txn.ComputeFee("SKYCH"), 10))
+		fee, _ := txn.ComputeFee("SKYCH")
+		txnDetails.SetHoursBurned(strconv.FormatUint(fee, 10))
 
 		switch txnDetails.Type() {
 		case transactions.TransactionTypeReceive:
