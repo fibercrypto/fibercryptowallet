@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -47,11 +48,13 @@ func (txn *SkycoinPendingTransaction) GetId() string {
 	return txn.Transaction.Transaction.Hash
 }
 
-func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) uint64 {
-	if ticker == Sky {
-		return uint64(0)
+func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) (uint64, error) {
+	if ticker == CoinHour {
+		return txn.Transaction.Transaction.Fee, nil
+	} else if util.StringInList(ticker, txn.SupportedAssets()) {
+		return uint64(0), nil
 	}
-	return txn.Transaction.Transaction.Fee
+	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
 }
 
 /**
@@ -250,11 +253,13 @@ func (txn *SkycoinTransaction) GetId() string {
 	return txn.skyTxn.Hash
 }
 
-func (txn *SkycoinTransaction) ComputeFee(ticker string) uint64 {
+func (txn *SkycoinTransaction) ComputeFee(ticker string) (uint64, error) {
 	if ticker == CoinHour {
-		return txn.skyTxn.Fee
+		return txn.skyTxn.Fee, nil
+	} else if util.StringInList(ticker, txn.SupportedAssets()) {
+		return uint64(0), nil
 	}
-	return 0
+	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
 }
 
 type SkycoinTransactionInput struct {
