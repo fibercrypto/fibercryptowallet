@@ -27,10 +27,8 @@ const (
 	Sky                     = params.SkycoinTicker
 	CoinHour                = params.CoinHoursTicker
 	WalletTypeDeterministic = "deterministic"
-
-	WalletTypeCollection = "collection"
-
-	WalletTypeBip44 = "bip44"
+	WalletTypeCollection    = "collection"
+	WalletTypeBip44         = "bip44"
 
 	WalletTypeXPub        = "xpub"
 	walletExt             = ".wlt"
@@ -273,12 +271,13 @@ func (err errorTickerInvalid) Error() string {
 }
 
 type RemoteWallet struct {
-	//Implements Wallet and CryptoAccount interfaces
-	Id          string
-	Label       string
-	CoinType    string
-	Encrypted   bool
-	poolSection string
+	//Implements Wallet, TxnSigner and CryptoAccount interfaces
+	Id             string
+	Label          string
+	CoinType       string
+	Encrypted      bool
+	poolSection    string
+	signStrategies map[core.TxnSignStrategy]struct{}
 }
 
 func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
@@ -294,7 +293,7 @@ func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Passw
 		return nil, err
 	}
 
-	password, err := pwd("Encryted")
+	password, err := pwd(strings.Sprintf("Enter password to decrypt wallet '%s'", wlt.ID))
 	if err != nil {
 		logrus.Warn("Error getting password")
 		return nil, err
@@ -530,7 +529,7 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 			return nil
 		}
 		for _, addr := range newAddrs {
-			addresses = append(addresses, &SkycoinAddress{address:addr})
+			addresses = append(addresses, &SkycoinAddress{address: addr})
 		}
 	}
 
@@ -560,17 +559,60 @@ func (wlt *RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	return NewSkycoinAddressIterator(addresses), nil
 }
 
-func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
-	wlt := &RemoteWallet{}
-	wlt.CoinType = string(wltR.Meta.Coin)
-	wlt.Encrypted = wltR.Meta.Encrypted
-	wlt.Label = wltR.Meta.Label
-	wlt.Id = wltR.Meta.Filename
-	return wlt
+func (wlt RemoteWallet) AttachSignService(signSrv core.TxnSignStrategy) error {
+	wlt.signStrategies[signSrv] = struct{}{}
+	return nil
+}
+
+func (wlt RemoteWallet) EnumerateSignServices() core.TxnSignStrategyIterator {
+}
+
+func (wlt RemoteWallet) RemoveSignService(signSrv core.TxnSignStrategy) error {
+	if _, isBound := wlt.signStrategies[signSrv]; isBound {
+		delete(wlt.signStrategies, signSrv)
+		return nil
+	}
+	// FIXME: Global error object
+	return errors.New("Value errors")
+}
+
+// SignTransaction according to Skycoin SkyFiber rules
+//
+// @param txn Transacion object
+// @param pwdReader password prompt to decode target wallet should it be needed
+// @param strIdxs may be `nil` for full signing; if set should contain indices of outputs that need to be signed
+func (wlt RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.PasswordReader, strIdxs []string) (txn core.Transaction, err error) {
+	var indices []int
+	if uxtos == nil {
+		indices = nil
+	} else {
+		indices = make([]int, len(uxtos))
+		for i, strIdx := range strIdxs {
+			indices[i], err = strconv.Atoi(strIdx)
+			if err != nil {
+				return errors.New("Value error: Transaction output references must be integer for signing")
+			}
+		}
+	}
+	txn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)
+	return
+}
+
+func (wlt RemoteWallet) GetStrategyDescription() string {
+}
+
+func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
+	return RemoteWallet{
+		CoinType:       string(wltR.Meta.Coin),
+		Encrypted:      wltR.Meta.Encrypted,
+		Label:          wltR.Meta.Label,
+		Id:             wltR.Meta.Filename,
+		signStrategies: make(map[core.TxnSignStrategy]struct{}),
+	}
 }
 
 func walletEntryToAddress(wltE readable.WalletEntry, poolSection string) *SkycoinAddress {
-	return &SkycoinAddress{address:wltE.Address, poolSection: poolSection}
+	return &SkycoinAddress{address: wltE.Address, poolSection: poolSection}
 }
 
 type WalletDirectory struct {
@@ -1184,7 +1226,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
 	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
-		skyAddrs = append(skyAddrs, &SkycoinAddress{address:addr.String()})
+		skyAddrs = append(skyAddrs, &SkycoinAddress{address: addr.String()})
 	}
 	return NewSkycoinAddressIterator(skyAddrs)
 
@@ -1201,7 +1243,7 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	addrs := make([]core.Address, 0)
 	addresses := walletLoaded.GetAddresses()
 	for _, addr := range addresses {
-		addrs = append(addrs, &SkycoinAddress{address:addr.String()})
+		addrs = append(addrs, &SkycoinAddress{address: addr.String()})
 	}
 
 	return NewSkycoinAddressIterator(addrs), nil

@@ -36,6 +36,9 @@ type Wallet interface {
 	GetCryptoAccount() CryptoAccount
 	GetLoadedAddresses() (AddressIterator, error)
 	Sign(txn Transaction, source string, pwd PasswordReader, index []int) (Transaction, error)
+	AttachSignService(TxnSignStrategy) error
+	RemoveSignService(TxnSignStrategy) error
+	EnumerateSignServices() TxnSignStrategyIterator
 }
 
 type SeedGenerator interface {
