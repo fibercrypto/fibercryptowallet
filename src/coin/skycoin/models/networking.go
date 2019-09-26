@@ -51,7 +51,7 @@ func (remoteNetwork *SkycoinNetworkConnections) newClient() *api.Client {
 	return api.NewClient(remoteNetwork.nodeAddress)
 }
 
-func (remoteNetwork *SkycoinNetworkConnections) ListNetworks() core.PexNodeIterator {
+func (remoteNetwork *SkycoinNetworkConnections) ListPeers() core.PexNodeIterator {
 
 	c := remoteNetwork.newClient()
 	nets, err := c.NetworkConnections(nil)

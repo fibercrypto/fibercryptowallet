@@ -35,6 +35,10 @@ Page {
         return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
     }
 
+    function walletIsEncrypted(){
+        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
+    }
+
     function getDestinationsSummary(){
         var addrs = []
         var skyAmounts = []

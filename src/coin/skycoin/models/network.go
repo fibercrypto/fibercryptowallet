@@ -49,23 +49,44 @@ func NewSkycoinApiClient(section string) (*api.Client, error) {
 	return skyApi, nil
 }
 
-type SkycoinPEX struct { //Implements PEX interface
-} 
-
-func (spex *SkycoinPEX) GetConnections()  {
-	//TODO
+func NewSkycoinPEX(poolSection string) *SkycoinPEX {
+	return &SkycoinPEX{poolSection}
 }
 
-func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction)  {
+type SkycoinPEX struct { //Implements PEX interface
+	poolSection string
+}
+
+func (spex *SkycoinPEX) GetConnections() (core.PexNodeSet, error) {
 	//TODO
+	return nil, nil
+}
+
+func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
+
+	unTxn, ok := txn.(*SkycoinUninjectedTransaction)
+	if !ok {
+		return errors.New("Invalid Transaction")
+	}
+	c, err := NewSkycoinApiClient(spex.poolSection)
+	if err != nil {
+		return err
+	}
+	defer core.GetMultiPool().Return(spex.poolSection, c)
+	_, err = c.InjectTransaction(unTxn.txn)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
-	c, err := NewSkycoinApiClient(PoolSection)
+	c, err := NewSkycoinApiClient(spex.poolSection)
 	if err != nil {
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer core.GetMultiPool().Return(spex.poolSection, c)
 	txns, err2 := c.PendingTransactionsVerbose()
 	if err2 != nil {
 		return nil, err2

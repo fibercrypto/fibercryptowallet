@@ -16,6 +16,7 @@ Page {
     property string walletEncrypted
     property string destinationAddress
     property string amount
+    property QTransaction txn
 
     footer: ToolBar {
         id: tabBarSend
@@ -31,7 +32,7 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-                var txn 
+//                var txn
                 var isEncrypted
                 if (advancedMode){
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
@@ -42,9 +43,9 @@ Page {
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
                     if (outs.length > 0){
-//                        walletManager.
+ //                          walletManager.
                     } else if(addrs.length > 0){
-
+                        txn = walletManager.sendFromAddresses(wlt, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } else{
 
                     }
@@ -54,11 +55,11 @@ Page {
                     console.log(stackView.currentItem.advancedPage.getChangeAddress())
                     console.log(stackView.currentItem.advancedPage.getAutomaticCoinHours())
                     console.log(stackView.currentItem.advancedPage.getBurnFactor())
+                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
                 } else{
                     //console.log(stackView.currentItem.simplePage.getWalletSelected())
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
                     txn = walletManager.sendTo(stackView.currentItem.simplePage.getSelectedWallet(), stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
-
                 }
                 dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
@@ -175,15 +176,8 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			if (advancedMode) {
-				
-			} else {
-				var p = [1,2,3]
-			    var encodedTxn = walletManager.signTxn(walletSelected, dialogSendTransaction.previewtransactionID ,"source", dialogSendTransaction.passwordText, p)
-				walletManager.injectTxn(walletSelected, encodedTxn)
-				console.log("Encoded txn -> " + dialogSendTransaction.encodedTxn)
-				console.log("Txn Injected") 
-			}
+			var signedTxn = walletManager.signTxn(walletSelected ,"source", dialogSendTransaction.passwordText, [], txn)
+			var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }
 }

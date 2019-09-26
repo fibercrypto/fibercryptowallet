@@ -281,21 +281,31 @@ type RemoteWallet struct {
 	poolSection string
 }
 
-func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int) (string, error) {
+func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logrus.Warn(err)
-		return "", err
+		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
+	unInjectedTransaction, ok := txn.(*SkycoinUninjectedTransaction)
+	if !ok {
+		logrus.Warn(err)
+		return nil, err
+	}
 
 	password, err := pwd("Encryted")
 	if err != nil {
 		logrus.Warn("Error getting password")
-		return "", err
+		return nil, err
+	}
+	encodedResponse, err := unInjectedTransaction.txn.SerializeHex()
+	if err != nil {
+		logrus.Warn("Couldn't get Transaction Encoded")
+		return nil, err
 	}
 	walletSignTxn := api.WalletSignTransactionRequest{
-		EncodedTransaction: encodedTxn,
+		EncodedTransaction: encodedResponse,
 		WalletID:           wlt.Id,
 		Password:           password,
 		SignIndexes:        index,
@@ -306,9 +316,22 @@ func (wlt RemoteWallet) Sign(encodedTxn, source string, pwd core.PasswordReader,
 	txnResponse, err := client.WalletSignTransaction(walletSignTxn)
 	if err != nil {
 		logrus.Warn("Error signing transaction")
-		return "", err
+		return nil, err
 	}
-	return txnResponse.EncodedTransaction, nil
+	skyTxn, err := txnResponse.Transaction.ToTransaction()
+	if err != nil {
+		return nil, err
+	}
+	value, err := util.GetCoinValue(txnResponse.Transaction.Fee, CoinHour)
+	if err != nil {
+		logrus.Warn("Error getting fee")
+		return nil, nil
+	}
+	unTxn, err := NewUninjectedTransaction(skyTxn, value)
+	if err != nil {
+		return nil, err
+	}
+	return unTxn, nil
 }
 
 func (wlt RemoteWallet) Inject(rawTxn string) error {
@@ -317,7 +340,7 @@ func (wlt RemoteWallet) Inject(rawTxn string) error {
 		logrus.Warn(err)
 		return err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 
 	_, err = client.InjectEncodedTransaction(rawTxn)
 	if err != nil {
@@ -352,7 +375,7 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 		logrus.Warn(err)
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
@@ -368,23 +391,22 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 }
 
 func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse) (core.Transaction, error) {
-	var req api.CreateTransactionRequest
+	var req api.WalletCreateTransactionRequest
+	if wltR.Meta.Encrypted {
+		req = api.WalletCreateTransactionRequest{
+			Unsigned: true,
+			WalletID: wltR.Meta.Filename,
+		}
+	} else {
+		req = api.WalletCreateTransactionRequest{
+			Unsigned: true,
+			WalletID: wltR.Meta.Filename,
+		}
+	}
 	if from != nil && len(from) > 0 {
 		req.Addresses = make([]string, 0)
 		for _, str := range from {
 			req.Addresses = append(req.Addresses, str.String())
-		}
-	} else {
-		address, err := wlt.GetLoadedAddresses()
-		if err != nil {
-			logrus.Warn("Error loading addresses")
-			return nil, err
-		}
-
-		req.Addresses = make([]string, 0)
-
-		for address.Next() {
-			req.Addresses = append(req.Addresses, address.Value().String())
 		}
 	}
 	if change != nil && len(change.String()) > 0 {
@@ -417,7 +439,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 		Type:        "auto",
 		ShareFactor: "0.5",
 	}
-	response, err := client.CreateTransaction(req)
+	response, err := client.WalletCreateTransaction(req)
 	if err != nil {
 		logrus.Warn("Error creating transaction request")
 		return nil, err
@@ -445,7 +467,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 		logrus.Warn(err)
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
@@ -469,7 +491,7 @@ func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core
 		logrus.Warn(err)
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, client)
+	defer core.GetMultiPool().Return(PoolSection, client)
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
@@ -774,8 +796,8 @@ type LocalWallet struct {
 	WalletDir string
 }
 
-func (wlt LocalWallet) Sign(encodedTxn, source string, pwd core.PasswordReader, index []int) (string, error) {
-	return "", nil
+func (wlt LocalWallet) Sign(encodedTxn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
+	return nil, nil
 }
 
 func (wlt LocalWallet) Inject(txn string) error {
