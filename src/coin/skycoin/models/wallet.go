@@ -33,6 +33,9 @@ const (
 	WalletTypeXPub        = "xpub"
 	walletExt             = ".wlt"
 	WalletTimestampFormat = "2006_01_02"
+
+	SignerIDLocalWallet  = "sky.local"
+	SignerIDRemoteWallet = "sky.remote"
 )
 
 type SkycoinWalletIterator struct {
@@ -85,7 +88,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	for _, wlt := range wlts {
 		nwlt := walletResponseToWallet(wlt)
 		nwlt.poolSection = wltSrv.poolSection
-		wallets = append(wallets, nwlt)
+		wallets = append(wallets, &nwlt)
 	}
 
 	return NewSkycoinWalletIterator(wallets)
@@ -272,15 +275,30 @@ func (err errorTickerInvalid) Error() string {
 
 type RemoteWallet struct {
 	//Implements Wallet, TxnSigner and CryptoAccount interfaces
-	Id             string
-	Label          string
-	CoinType       string
-	Encrypted      bool
-	poolSection    string
-	signStrategies map[core.TxnSignStrategy]struct{}
+	Id          string
+	Label       string
+	CoinType    string
+	Encrypted   bool
+	poolSection string
+	signers     map[core.UID]core.TxnSigner
 }
 
-func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
+func (wlt *RemoteWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
+	var signer core.TxnSigner
+	if signerID == wlt.GetSignerUID() {
+		signer = wlt
+	} else {
+		var isBound bool
+		if signer, isBound = wlt.signers[signerID]; !isBound {
+			logrus.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
+			return nil, errors.New("Unsupported signer")
+		}
+	}
+	txn, err = signer.SignTransaction(txn, pwd, index)
+	return
+}
+
+func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logrus.Warn(err)
@@ -293,7 +311,7 @@ func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Passw
 		return nil, err
 	}
 
-	password, err := pwd(strings.Sprintf("Enter password to decrypt wallet '%s'", wlt.ID))
+	password, err := pwd(fmt.Sprintf("Enter password to decrypt wallet '%s'", wlt.Id))
 	if err != nil {
 		logrus.Warn("Error getting password")
 		return nil, err
@@ -308,9 +326,6 @@ func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Passw
 		WalletID:           wlt.Id,
 		Password:           password,
 		SignIndexes:        index,
-	}
-	switch source {
-	// Add selector for sign with a specific kind of wallet
 	}
 	txnResponse, err := client.WalletSignTransaction(walletSignTxn)
 	if err != nil {
@@ -333,7 +348,7 @@ func (wlt RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Passw
 	return unTxn, nil
 }
 
-func (wlt RemoteWallet) Inject(rawTxn string) error {
+func (wlt *RemoteWallet) Inject(rawTxn string) error {
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logrus.Warn(err)
@@ -349,7 +364,7 @@ func (wlt RemoteWallet) Inject(rawTxn string) error {
 	return nil
 }
 
-func (wlt RemoteWallet) GetLabel() string {
+func (wlt *RemoteWallet) GetLabel() string {
 	return wlt.Label
 }
 
@@ -389,7 +404,7 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 	return req, nil
 }
 
-func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse) (core.Transaction, error) {
+func (wlt *RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse) (core.Transaction, error) {
 	var req api.WalletCreateTransactionRequest
 	if wltR.Meta.Encrypted {
 		req = api.WalletCreateTransactionRequest{
@@ -459,7 +474,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 
 }
 
-func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -483,7 +498,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 	return req, nil
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
 	logrus.Info("Transfer from remote wallet")
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -559,17 +574,20 @@ func (wlt *RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	return NewSkycoinAddressIterator(addresses), nil
 }
 
-func (wlt RemoteWallet) AttachSignService(signSrv core.TxnSignStrategy) error {
-	wlt.signStrategies[signSrv] = struct{}{}
+func (wlt *RemoteWallet) AttachSignService(signSrv core.TxnSigner) error {
+	wlt.signers[signSrv.GetSignerUID()] = signSrv
 	return nil
 }
 
-func (wlt RemoteWallet) EnumerateSignServices() core.TxnSignStrategyIterator {
+func (wlt *RemoteWallet) EnumerateSignServices() core.TxnSignerIterator {
+	// TODO: Implement
+	return nil
 }
 
-func (wlt RemoteWallet) RemoveSignService(signSrv core.TxnSignStrategy) error {
-	if _, isBound := wlt.signStrategies[signSrv]; isBound {
-		delete(wlt.signStrategies, signSrv)
+func (wlt *RemoteWallet) RemoveSignService(signSrv core.TxnSigner) error {
+	uid := signSrv.GetSignerUID()
+	if _, isBound := wlt.signers[uid]; isBound {
+		delete(wlt.signers, uid)
 		return nil
 	}
 	// FIXME: Global error object
@@ -581,7 +599,7 @@ func (wlt RemoteWallet) RemoveSignService(signSrv core.TxnSignStrategy) error {
 // @param txn Transacion object
 // @param pwdReader password prompt to decode target wallet should it be needed
 // @param strIdxs may be `nil` for full signing; if set should contain indices of outputs that need to be signed
-func (wlt RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.PasswordReader, strIdxs []string) (txn core.Transaction, err error) {
+func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.PasswordReader, strIdxs []string) (signedTxn core.Transaction, err error) {
 	var indices []int
 	if uxtos == nil {
 		indices = nil
@@ -590,24 +608,29 @@ func (wlt RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 		for i, strIdx := range strIdxs {
 			indices[i], err = strconv.Atoi(strIdx)
 			if err != nil {
-				return errors.New("Value error: Transaction output references must be integer for signing")
+				return nil, errors.New("Value error: Transaction output references must be integer for signing")
 			}
 		}
 	}
-	txn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)
+	signedTxn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)
 	return
 }
 
-func (wlt RemoteWallet) GetStrategyDescription() string {
+func (wlt *RemoteWallet) GetSignerUID() core.UID {
+	return SignerIDRemoteWallet
+}
+
+func (wlt *RemoteWallet) GetSignerDescription() string {
+	return "Remote Skycoin wallet " + wlt.Id
 }
 
 func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
 	return RemoteWallet{
-		CoinType:       string(wltR.Meta.Coin),
-		Encrypted:      wltR.Meta.Encrypted,
-		Label:          wltR.Meta.Label,
-		Id:             wltR.Meta.Filename,
-		signStrategies: make(map[core.TxnSignStrategy]struct{}),
+		CoinType:  string(wltR.Meta.Coin),
+		Encrypted: wltR.Meta.Encrypted,
+		Label:     wltR.Meta.Label,
+		Id:        wltR.Meta.Filename,
+		signers:   make(map[string]core.TxnSigner),
 	}
 }
 

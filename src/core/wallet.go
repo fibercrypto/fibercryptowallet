@@ -35,10 +35,10 @@ type Wallet interface {
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
 	GetCryptoAccount() CryptoAccount
 	GetLoadedAddresses() (AddressIterator, error)
-	Sign(txn Transaction, source string, pwd PasswordReader, index []int) (Transaction, error)
-	AttachSignService(TxnSignStrategy) error
-	RemoveSignService(TxnSignStrategy) error
-	EnumerateSignServices() TxnSignStrategyIterator
+	Sign(txn Transaction, source string, pwd PasswordReader, index []string) (Transaction, error)
+	AttachSignService(TxnSigner) error
+	RemoveSignService(TxnSigner) error
+	EnumerateSignServices() TxnSignerIterator
 }
 
 type SeedGenerator interface {
