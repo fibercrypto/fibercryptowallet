@@ -109,6 +109,7 @@ Page {
                 id: comboBoxWalletsUnspentOutputsSendFrom
 
                 property var checkedElements: []
+                property var checkedElementsText: []
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -130,6 +131,7 @@ Page {
                 delegate: Item {
 
                     property alias checked: checkDelegate.checked
+                    property alias text: checkDelegate.text
                     
                     width: parent.width
                     height: checkDelegate.height
@@ -143,11 +145,13 @@ Page {
                                 var pos = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index)
                                 if (pos < 0) {
                                     comboBoxWalletsUnspentOutputsSendFrom.checkedElements.push(index)
+                                    comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.push(text)
                                 }
                             } else {
                                 var pos = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index)
                                 if (pos >= 0) {
                                     comboBoxWalletsUnspentOutputsSendFrom.checkedElements.splice(pos, 1)
+                                    comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
                             }
                         }
