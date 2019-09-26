@@ -102,6 +102,10 @@ ApplicationWindow {
         onAboutQtRequested: {
             dialogAboutQt.open()
         }
+
+        onLicenseRequested: {
+            dialogAboutLicense.open()
+        }
     } // CustomMenuBar
 
     CustomHeader {
@@ -229,6 +233,17 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: (minimumParentSideSize / 3) * 2
         height: (parent.height / 3) * 2
+    }
+
+    DialogAboutLicense {
+        id: dialogAboutLicense
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width - 40
+        height: applicationWindow.height - 40
+        
+        focus: true
+        modal: true
     }
 
     //! This must be the last object (i.e. the one with the greater `z` value)
