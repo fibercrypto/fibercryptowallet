@@ -5,7 +5,6 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/sirupsen/logrus"
-
 	"github.com/therecipe/qt/qml"
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
@@ -120,15 +119,15 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 }
 
 func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
-	addrIter, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
+	addressIterator, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
 	if err != nil {
 		return nil
 	}
 	outs := make([]*QOutput, 0)
 	var addr core.Address
-	for addrIter.Next() {
-		if addrIter.Value().String() == address {
-			addr = addrIter.Value()
+	for addressIterator.Next() {
+		if addressIterator.Value().String() == address {
+			addr = addressIterator.Value()
 			break
 		}
 	}
@@ -175,11 +174,11 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	if err != nil {
 		return nil
 	}
-	qtxn, err := NewQTransactionFromTransaction(txn)
+	qTxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
 		return nil
 	}
-	return qtxn
+	return qTxn
 
 }
 
@@ -276,20 +275,20 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
-	wltEntrieslen := 0
+	wltEntriesLen := 0
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		return
 	}
 	for it.Next() {
-		wltEntrieslen++
+		wltEntriesLen++
 	}
-	wlt.GenAddresses(core.AccountAddress, uint32(wltEntrieslen), uint32(n), pwd)
+	wlt.GenAddresses(core.AccountAddress, uint32(wltEntriesLen), uint32(n), pwd)
 }
 
 func (walletM *WalletManager) getWallets() []*QWallet {
 
-	qwallets := make([]*QWallet, 0)
+	qWallets := make([]*QWallet, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 
 	for it.Next() {
@@ -300,15 +299,15 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		}
 		if encrypted {
 			qw := fromWalletToQWallet(it.Value(), true)
-			qwallets = append(qwallets, qw)
+			qWallets = append(qWallets, qw)
 		} else {
 			qw := fromWalletToQWallet(it.Value(), false)
-			qwallets = append(qwallets, qw)
+			qWallets = append(qWallets, qw)
 		}
 
 	}
 
-	return qwallets
+	return qWallets
 
 }
 
@@ -320,14 +319,14 @@ func (walletM *WalletManager) editWallet(id, label string) *QWallet {
 	if err != nil {
 		return nil
 	}
-	qwallet := fromWalletToQWallet(wlt, encrypted)
-	return qwallet
+	qWallet := fromWalletToQWallet(wlt, encrypted)
+	return qWallet
 }
 
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
-	qaddresses := make([]*QAddress, 0)
+	qAddresses := make([]*QAddress, 0)
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		return nil
@@ -338,41 +337,41 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 		qAddress.SetAddress(addr.String())
 		qAddress.SetMarked(0)
-		coins, err := addr.GetCryptoAccount().GetBalance("SKY")
+		skyFl, err := addr.GetCryptoAccount().GetBalance("SKY")
 		if err != nil {
 
 			continue
 		}
 		//TODO: report possible error
 		accuracy, _ := util.AltcoinQuotient("SKY")
-		qaddress.SetAddressSky(util.FormatCoins(sky, accuracy))
+		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
 		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
 		accuracy, _ = util.AltcoinQuotient("SKYCH")
 		if err != nil {
 
 			continue
 		}
-		qaddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
+		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
 		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 
-		qaddresses = append(qaddresses, qAddress)
+		qAddresses = append(qAddresses, qAddress)
 
 	}
 
-	return qaddresses
+	return qAddresses
 }
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
-	qwallet := NewQWallet(nil)
-	qml.QQmlEngine_SetObjectOwnership(qwallet, qml.QQmlEngine__CppOwnership)
-	qwallet.SetName(wlt.GetLabel())
+	qWallet := NewQWallet(nil)
+	qml.QQmlEngine_SetObjectOwnership(qWallet, qml.QQmlEngine__CppOwnership)
+	qWallet.SetName(wlt.GetLabel())
 
-	qwallet.SetFileName(wlt.GetId())
+	qWallet.SetFileName(wlt.GetId())
 
-	qwallet.SetEncryptionEnabled(0)
+	qWallet.SetEncryptionEnabled(0)
 	if isEncrypted {
-		qwallet.SetEncryptionEnabled(1)
+		qWallet.SetEncryptionEnabled(1)
 	}
 
 	bl, err := wlt.GetCryptoAccount().GetBalance(sky.Sky)
@@ -383,16 +382,16 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	//TODO: report possible error
 	accuracy, _ := util.AltcoinQuotient(skycoin.SkycoinTicker)
 	floatBl := float64(bl) / float64(accuracy)
-	qwallet.SetSky(floatBl)
+	qWallet.SetSky(floatBl)
 
 	bl, err = wlt.GetCryptoAccount().GetBalance(skycoin.CoinHoursTicker)
 	accuracy, _ = util.AltcoinQuotient(skycoin.SkycoinTicker)
 	if err != nil {
 		bl = 0
 	}
-	qwallet.SetCoinHours(bl)
+	qWallet.SetCoinHours(bl)
 
-	return qwallet
+	return qWallet
 }
 
 type GenericOutput struct {

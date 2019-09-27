@@ -3,13 +3,11 @@ package skycoin
 import (
 	"fmt"
 	"strconv"
-	"github.com/skycoin/skycoin/src/readable"
+	"time"
 
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/visor"
-
 	"github.com/skycoin/skycoin/src/coin"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/readable"
@@ -240,11 +238,11 @@ func (skyTxn *SkycoinUninjectedTransaction) GetOutputs() []core.TransactionOutpu
 	return skyTxn.outputs
 }
 
-func (skyTxn *SkycoinUninjectedTransaction) ComputeFee(ticker string) uint64 {
+func (skyTxn *SkycoinUninjectedTransaction) ComputeFee(ticker string) (uint64, error) {
 	if ticker == CoinHour {
-		return skyTxn.fee
+		return skyTxn.fee, nil
 	}
-	return 0
+	return 0, nil
 }
 
 func (skyTxn *SkycoinUninjectedTransaction) GetId() string {
