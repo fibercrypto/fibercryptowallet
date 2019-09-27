@@ -1037,7 +1037,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 		destination = append(destination, recv)
 	}
 	var req api.CreateTransactionRequest
-	if change != nil {
+	if change.String() != "" {
 		ch := change.String()
 		req = api.CreateTransactionRequest{
 			Addresses:         addrs,
@@ -1085,10 +1085,6 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 	for _, uxOut := range unspent {
 		uxOuts = append(uxOuts, uxOut.GetAddress().String())
 	}
-	/* := ""
-	if change != nil {
-		chAddr = change.String()
-	}*/
 
 	obj := options.GetValue("CoinHoursSelectionType")
 	coinHoursType, ok := obj.(string)
@@ -1137,7 +1133,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 		destination = append(destination, recv)
 	}
 	var req api.CreateTransactionRequest
-	if change != nil {
+	if change.String() != "" {
 		ch := change.String()
 		req = api.CreateTransactionRequest{
 			UxOuts:            uxOuts,
@@ -1172,51 +1168,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 		return nil, err
 	}
 	return skyTxn, nil
-	//skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
-	//if err != nil {
-	//	return nil, err
-	//}
-	//pass, err := password("Insert your password")
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if skyWlt.IsEncrypted() {
-	//	skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
-	//	if err != nil {
-	//		return nil, err
-	//	}
-	//}
 
-	uxouts := make([]coin.UxOut, 0)
-	for _, in := range txn.In {
-		ux, err := clt.UxOut(in.String())
-		if err != nil {
-			return nil, err
-		}
-		addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
-		if err != nil {
-			return nil, err
-		}
-		srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
-		if err != nil {
-			return nil, err
-		}
-		uxouts = append(uxouts, coin.UxOut{
-			Head: coin.UxHead{
-				BkSeq: ux.SrcBkSeq,
-				Time:  ux.Time,
-			},
-			Body: coin.UxBody{
-				Address:        addr,
-				Coins:          ux.Coins,
-				Hours:          ux.Hours,
-				SrcTransaction: srctxn,
-			},
-		})
-	}
-
-	return nil, nil
 }
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
