@@ -68,6 +68,9 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 	if !ok {
 		return errors.New("Invalid Transaction")
 	}
+	fmt.Println("VERIFY")
+	fmt.Println(len(unTxn.txn.In))
+	fmt.Println(len(unTxn.txn.Out))
 	c, err := NewSkycoinApiClient(spex.poolSection)
 	if err != nil {
 		return err

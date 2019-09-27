@@ -61,6 +61,14 @@ Page {
     function getBurnFactor(){
         return sliderCoinHoursShareFactor.value
     }
+
+    function getAllAddresses(){
+        var addrs = []
+        for (var i = 0; i < listAddresses.addresses.lenght; i++){
+            addrs.push(listAddresses.addresses[i].address)
+        }
+        return addrs
+    }
     
 
     ColumnLayout {

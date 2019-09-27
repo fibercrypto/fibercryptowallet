@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
@@ -36,7 +37,7 @@ type WalletManager struct {
 	_ func(wltId, address string) []*QOutput                                                                                                 `slot:"getOutputs"`
 	_ func(txn *QTransaction) bool                                                                                                           `slot:"broadcastTxn"`
 	_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
-	//_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change, automaticCoinHours bool, burnFactor string, password string) `slot:"sendFromOutputs"`
+	_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
 }
 
 func (walletM *WalletManager) init() {
@@ -54,7 +55,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectSignTxn(walletM.signTxn)
 	walletM.ConnectGetOutputs(walletM.getOutputs)
 	walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
-	//walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
+	walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
 	walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
@@ -83,6 +84,48 @@ func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	return true
 }
 
+func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	outputsFrom := make([]core.TransactionOutput, 0)
+	for _, out := range from {
+		outputsFrom = append(outputsFrom, &GenericOutput{
+			addr: out,
+		})
+	}
+	outputsTo := make([]core.TransactionOutput, 0)
+	for i := 0; i < len(addrTo); i++ {
+		ch := ""
+		if !automaticCoinHours {
+			ch = coinHoursTo[i]
+		}
+		outputsTo = append(outputsTo, &GenericOutput{
+			addr: addrTo[i],
+			sky:  skyTo[i],
+			ch:   ch,
+		})
+	}
+	changeAddr := &GenericAddress{change}
+	opt := NewTransfetOptions()
+	opt.AddKeyValue("BurnFactor", burnFactor)
+	if automaticCoinHours {
+		opt.AddKeyValue("CoinHoursSelectionType", "auto")
+	} else {
+		opt.AddKeyValue("CoinHoursSelectionType", "manual")
+	}
+
+	txn, err := wlt.Spend(outputsFrom, outputsTo, changeAddr, opt)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
+
+	qtxn, err := NewQTransactionFromTransaction(txn)
+	if err != nil {
+		fmt.Println(err.Error())
+		return nil
+	}
+	return qtxn
+}
 func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	addrsFrom := make([]core.Address, 0)
@@ -106,7 +149,11 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 
 	opt := NewTransfetOptions()
 	opt.AddKeyValue("BurnFactor", burnFactor)
-	opt.AddKeyValue("CoinHoursSelectionMode", automaticCoinHours)
+	if automaticCoinHours {
+		opt.AddKeyValue("CoinHoursSelectionType", "auto")
+	} else {
+		opt.AddKeyValue("CoinHoursSelectionType", "manual")
+	}
 
 	txn, err := wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
@@ -187,6 +234,8 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) *QTransaction {
 	// Get wallet
+	fmt.Println("WALLET")
+	fmt.Println(id)
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
 
 	txn, err := wlt.Sign(qTxn.txn, source, func(message string) (string, error) {
@@ -446,7 +495,7 @@ func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
 
 func NewTransfetOptions() *TransferOptions {
 	return &TransferOptions{
-		values: make(map[string]interface{},0),
+		values: make(map[string]interface{}, 0),
 	}
 }
 
