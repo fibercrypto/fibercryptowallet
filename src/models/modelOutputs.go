@@ -96,7 +96,7 @@ func (m *ModelOutputs) addOutputs(mo []*QOutput) {
 }
 
 func (m *ModelOutputs) insertOutputs(mo []*QOutput) {
-	m.BeginInsertRows(core.NewQModelIndex(), len(m.Outputs()), len(m.Outputs())+len(mo))
+	m.BeginInsertRows(core.NewQModelIndex(), len(m.Outputs()), len(m.Outputs())+len(mo)-1)
 	m.SetOutputs(append(m.Outputs(), mo...))
 	m.EndInsertRows()
 }
