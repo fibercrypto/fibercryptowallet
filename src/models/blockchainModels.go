@@ -39,7 +39,7 @@ func (bs *BlockchainStatusModel) init() {
 	bs.SetCurrentCoinHoursSupplyDefault("0")
 	bs.SetTotalCoinHoursSupplyDefault("0")
 
-	bs.infoRequester = *skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
+	bs.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
 }
 
 func (bs *BlockchainStatusModel) update() {
