@@ -228,6 +228,15 @@ Page {
             ComboBox {
                 id: comboBoxWalletsUnspentOutputsSendFrom
 
+                function getCheckedDelegates() {
+                    var checkedItems = []
+                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
+                        if (popup.contentItem.contentItem.children[i].checked) {
+                            checkedItems.push(i)
+                        }
+                    }
+                    return checkedItems
+                }
                 property var checkedElements: []
                 property var checkedElementsText: []
                 
