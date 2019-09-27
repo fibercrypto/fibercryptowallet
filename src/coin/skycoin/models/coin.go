@@ -70,9 +70,9 @@ type SkycoinTransactionIterator struct { //Implements TransactionIterator interf
 
 func (it *SkycoinTransactionIterator) Value() core.Transaction {
 	return it.Transactions[it.Current]
-}
-
-func (it *SkycoinTransactionIterator) Next() bool {
+} 
+ 
+func (it *SkycoinTransactionIterator) Next() bool { 
 	if it.HasNext() {
 		it.Current++
 		return true
@@ -127,7 +127,7 @@ func (sto *SkycoinPendingTransactionOutput) IsSpent() bool {
 }
 
 func (sto *SkycoinPendingTransactionOutput) GetAddress() core.Address {
-	return SkycoinAddress{address: sto.Output.Address}
+	return &SkycoinAddress{address: sto.Output.Address}
 }
 
 func (sto *SkycoinPendingTransactionOutput) GetCoins(ticker string) (uint64, error) {
@@ -489,7 +489,7 @@ func (out *SkycoinTransactionOutput) GetId() string {
 }
 
 func (out *SkycoinTransactionOutput) GetAddress() core.Address {
-	return SkycoinAddress{address: out.skyOut.Address}
+	return &SkycoinAddress{address: out.skyOut.Address}
 }
 
 func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
@@ -530,3 +530,4 @@ func (out *SkycoinTransactionOutput) IsSpent() bool {
 	}
 	return false
 }
+
