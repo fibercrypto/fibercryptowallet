@@ -7,10 +7,10 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
-	"github.com/skycoin/skycoin/src/util/logging"
 	"github.com/skycoin/skycoin/src/wallet"
 )
 
