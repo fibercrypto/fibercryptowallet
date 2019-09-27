@@ -386,11 +386,11 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 	txnOutput.skyOut.Address = to.String()
 	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6, 10)
 
-	req, err := wlt.createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, client, wltR)
+	req, err := wlt.createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, client, wltR, options)
 	return req, nil
 }
 
-func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse) (core.Transaction, error) {
+func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse, options core.KeyValueStorage) (core.Transaction, error) {
 	var req api.WalletCreateTransactionRequest
 	if wltR.Meta.Encrypted {
 		req = api.WalletCreateTransactionRequest{
@@ -420,25 +420,57 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 		}
 
 	}
+	obj := options.GetValue("CoinHoursMode")
+	coinHoursMode, ok := obj.(string)
+	if !ok {
+		return nil, errors.New("invalid options")
+	}
+	obj = options.GetValue("BurnFactor")
+	burnFactor, ok := obj.(string)
+	if !ok {
+		return nil, errors.New("invalid options")
+	}
+	coinHoursSelection := api.HoursSelection{
+	}
+	if coinHoursMode == "auto" {
+		coinHoursSelection.Mode = "auto"
+		coinHoursSelection.Type = "share"
+		coinHoursSelection.ShareFactor = burnFactor
+	}
+
 	req.To = make([]api.Receiver, 0)
 	for _, toTxn := range to {
+		receiver := api.Receiver{}
+
 		coins, err := toTxn.GetCoins(Sky)
 		if err != nil {
 			logrus.Warn(err)
 			return nil, err
 		}
-		strAmount := strconv.FormatFloat(float64(coins)/1e6, 'f', -1, 64)
-		req.To = append(req.To, api.Receiver{
-			Address: toTxn.GetAddress().String(),
-			Coins:   strAmount,
-		})
+		quotient, err := util.AltcoinQuotient(Sky)
+		if err != nil {
+			return nil, err
+		}
+		strAmount := strconv.FormatFloat(float64(coins/quotient), 'f', -1, 64)
+		receiver.Address = toTxn.GetAddress().String()
+		receiver.Coins = strAmount
+
+		if coinHoursSelection.Mode == "manual" {
+			chV, err := toTxn.GetCoins(CoinHour)
+			if err != nil {
+				return nil, err
+			}
+			quotient, err = util.AltcoinQuotient(CoinHour)
+			if err != nil {
+				return nil, err
+			}
+			receiver.Hours = strconv.FormatFloat(float64(chV/quotient), 'f', -1, 64)
+		}
+		req.To = append(req.To, receiver)
 	}
 
-	req.HoursSelection = api.HoursSelection{
-		Mode:        "share",
-		Type:        "auto",
-		ShareFactor: "0.5",
-	}
+	req.HoursSelection = coinHoursSelection
+
 	response, err := client.WalletCreateTransaction(req)
 	if err != nil {
 		logrus.Warn("Error creating transaction request")
@@ -475,7 +507,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 		return nil, err
 	}
 
-	req, err := wlt.createTransaction(from, to, nil, change, client, wltR)
+	req, err := wlt.createTransaction(from, to, nil, change, client, wltR, options)
 
 	if err != nil {
 		logrus.Warn("Error creating transaction response")
@@ -498,7 +530,7 @@ func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change cor
 		logrus.Warn("Error getting remote wallet")
 		return nil, err
 	}
-	req, err := wlt.createTransaction(nil, nil, unspent, change, client, wltR)
+	req, err := wlt.createTransaction(nil, nil, unspent, change, client, wltR, options)
 	if err != nil {
 		logrus.Warn("Error creating transaction request")
 		return nil, err

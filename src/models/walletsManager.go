@@ -104,7 +104,7 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 	}
 	changeAddr := &GenericAddress{change}
 
-	opt := NewTransfetOptions()
+	opt := NewTransferOptions()
 	opt.AddKeyValue("BurnFactor", burnFactor)
 	opt.AddKeyValue("CoinHoursSelectionMode", automaticCoinHours)
 
@@ -444,10 +444,12 @@ func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
 	tOpt.values[key] = value
 }
 
-func NewTransfetOptions() *TransferOptions {
-	return &TransferOptions{
+func NewTransferOptions() *TransferOptions {
+	tOptions := TransferOptions{
 		values: make(map[string]interface{},0),
 	}
+	tOptions.AddKeyValue("CoinHoursMode", "auto")
+	return &tOptions
 }
 
 type GenericAddress struct {
