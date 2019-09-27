@@ -13,7 +13,7 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
-func (addr SkycoinAddress) GetBalance(ticker string) (uint64, error) {
+func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
