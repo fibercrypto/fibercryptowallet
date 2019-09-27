@@ -2,8 +2,6 @@ package models
 
 import (
 	"errors"
-	"strconv"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/sirupsen/logrus"
@@ -347,15 +345,14 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 		}
 		//TODO: report possible error
 		accuracy, _ := util.AltcoinQuotient("SKY")
-		flSky := float64(coins) / float64(accuracy)
-		qAddress.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
+		qaddress.SetAddressSky(util.FormatCoins(sky, accuracy))
 		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
 		accuracy, _ = util.AltcoinQuotient("SKYCH")
 		if err != nil {
 
 			continue
 		}
-		qAddress.SetAddressCoinHours(coinH / accuracy)
+		qaddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
 		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 
 		qaddresses = append(qaddresses, qAddress)
