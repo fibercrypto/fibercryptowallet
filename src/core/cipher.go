@@ -36,7 +36,7 @@ type TxnSignerIterator interface {
 	Value() TxnSigner
 	// Next discards current value and moves iteration pointer up to next item
 	Next() bool
-	// HasNext may be used to query whether more items are to be expected in teh sequence
+	// HasNext may be used to query whether more items are to be expected in the sequence
 	HasNext() bool
 	// Count total number of items in sequence
 	Count() int
