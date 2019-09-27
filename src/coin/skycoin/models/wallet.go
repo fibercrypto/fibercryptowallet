@@ -26,7 +26,7 @@ import (
 const (
 	Sky                     = params.SkycoinTicker
 	CoinHour                = params.CoinHoursTicker
-	CalculatedHour			= params.CalculatedHoursTicker
+	CalculatedHour          = params.CalculatedHoursTicker
 	WalletTypeDeterministic = "deterministic"
 
 	WalletTypeCollection = "collection"
@@ -431,8 +431,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 	if !ok {
 		return nil, errors.New("invalid options")
 	}
-	coinHoursSelection := api.HoursSelection{
-	}
+	coinHoursSelection := api.HoursSelection{}
 	if coinHoursMode == "auto" {
 		coinHoursSelection.Mode = "auto"
 		coinHoursSelection.Type = "share"
@@ -990,10 +989,6 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	for _, addr := range from {
 		addrs = append(addrs, addr.String())
 	}
-	chAddr := ""
-	if change != nil {
-		chAddr = change.String()
-	}
 
 	obj := options.GetValue("CoinHoursSelectionType")
 	coinHoursType, ok := obj.(string)
@@ -1041,13 +1036,24 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 		}
 		destination = append(destination, recv)
 	}
+	var req api.CreateTransactionRequest
+	if change != nil {
+		ch := change.String()
+		req = api.CreateTransactionRequest{
+			Addresses:         addrs,
+			ChangeAddress:     &ch,
+			HoursSelection:    coinHoursSelection,
+			IgnoreUnconfirmed: false,
+			To:                destination,
+		}
+	} else {
 
-	req := api.CreateTransactionRequest{
-		Addresses:         addrs,
-		ChangeAddress:     &chAddr,
-		HoursSelection:    coinHoursSelection,
-		IgnoreUnconfirmed: false,
-		To:                destination,
+		req = api.CreateTransactionRequest{
+			Addresses:         addrs,
+			HoursSelection:    coinHoursSelection,
+			IgnoreUnconfirmed: false,
+			To:                destination,
+		}
 	}
 
 	txnResponse, err := clt.CreateTransaction(req)
@@ -1130,14 +1136,25 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 		}
 		destination = append(destination, recv)
 	}
-
-	req := api.CreateTransactionRequest{
-		UxOuts: uxOuts,
-
-		HoursSelection:    coinHoursSelection,
-		IgnoreUnconfirmed: false,
-		To:                destination,
+	var req api.CreateTransactionRequest
+	if change != nil {
+		ch := change.String()
+		req = api.CreateTransactionRequest{
+			UxOuts:            uxOuts,
+			ChangeAddress:     &ch,
+			HoursSelection:    coinHoursSelection,
+			IgnoreUnconfirmed: false,
+			To:                destination,
+		}
+	} else {
+		req = api.CreateTransactionRequest{
+			UxOuts:            uxOuts,
+			HoursSelection:    coinHoursSelection,
+			IgnoreUnconfirmed: false,
+			To:                destination,
+		}
 	}
+
 	txnResponse, err := clt.CreateTransaction(req)
 	if err != nil {
 		return nil, err

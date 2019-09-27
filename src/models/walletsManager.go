@@ -102,7 +102,7 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 		})
 	}
 	changeAddr := &GenericAddress{change}
-	opt := NewTransfetOptions()
+	opt := NewTransferOptions()
 	opt.AddKeyValue("BurnFactor", burnFactor)
 	if automaticCoinHours {
 		opt.AddKeyValue("CoinHoursSelectionType", "auto")
