@@ -70,7 +70,7 @@ func (walletM *WalletManager) init() {
 
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	altManager := core.LoadAltcoinManager()
-	plug, _ := altManager.LookupAltcoinManager("SKY")
+	plug, _ := altManager.LookupAltcoinPlugin("SKY")
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
 		return false
@@ -446,7 +446,7 @@ func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
 
 func NewTransfetOptions() *TransferOptions {
 	return &TransferOptions{
-		values: make(map[string]interface{},0),
+		values: make(map[string]interface{}, 0),
 	}
 }
 

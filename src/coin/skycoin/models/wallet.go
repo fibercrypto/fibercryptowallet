@@ -88,7 +88,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	for _, wlt := range wlts {
 		nwlt := walletResponseToWallet(wlt)
 		nwlt.poolSection = wltSrv.poolSection
-		wallets = append(wallets, &nwlt)
+		wallets = append(wallets, nwlt)
 	}
 
 	return NewSkycoinWalletIterator(wallets)
@@ -624,13 +624,13 @@ func (wlt *RemoteWallet) GetSignerDescription() string {
 	return "Remote Skycoin wallet " + wlt.Id
 }
 
-func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
-	return RemoteWallet{
+func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
+	return &RemoteWallet{
 		CoinType:  string(wltR.Meta.Coin),
 		Encrypted: wltR.Meta.Encrypted,
 		Label:     wltR.Meta.Label,
 		Id:        wltR.Meta.Filename,
-		signers:   make(map[string]core.TxnSigner),
+		signers:   make(map[core.UID]core.TxnSigner),
 	}
 }
 
