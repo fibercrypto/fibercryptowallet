@@ -22,6 +22,7 @@ import (
 const (
 	Sky                     = params.SkycoinTicker
 	CoinHour                = params.CoinHoursTicker
+	CalculatedHour			= params.CalculatedHoursTicker
 	WalletTypeDeterministic = "deterministic"
 
 	WalletTypeCollection = "collection"
@@ -88,7 +89,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 }
 
 func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
-	wlt := RemoteWallet{}
+	wlt := &RemoteWallet{}
 	c, err := NewSkycoinApiClient(wltSrv.poolSection)
 	if err != nil {
 		return nil, err
@@ -124,7 +125,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		wlt = walletResponseToWallet(*wltR)
 	}
 	wlt.poolSection = wltSrv.poolSection
-	return &wlt, nil
+	return wlt, nil
 }
 
 func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordReader) {
@@ -273,11 +274,11 @@ type RemoteWallet struct { //Implements Wallet and CryptoAccount interfaces
 	poolSection string
 }
 
-func (wlt RemoteWallet) GetLabel() string {
+func (wlt *RemoteWallet) GetLabel() string {
 	return wlt.Label
 }
 
-func (wlt RemoteWallet) SetLabel(name string) {
+func (wlt *RemoteWallet) SetLabel(name string) {
 	c, err := NewSkycoinApiClient(wlt.poolSection)
 	if err != nil {
 		return
@@ -287,23 +288,23 @@ func (wlt RemoteWallet) SetLabel(name string) {
 	_ = c.UpdateWallet(wlt.Id, name)
 }
 
-func (wlt RemoteWallet) GetId() string {
+func (wlt *RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt RemoteWallet) Transfer(to core.Address, amount uint64) { //------TODO
+func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64) { //------TODO
 	return
 }
 
-func (wlt RemoteWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
+func (wlt *RemoteWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
 	return
 }
 
-func (wlt RemoteWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
+func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
 	return
 }
 
-func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	c, err := NewSkycoinApiClient(wlt.poolSection)
 	if err != nil {
 		return nil
@@ -314,7 +315,7 @@ func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	if err != nil {
 		return nil
 	}
-	addresses := make([]SkycoinAddress, 0)
+	addresses := make([]core.Address, 0)
 	for _, entry := range wltR.Entries[startIndex:int(util.Min(len(wltR.Entries), int(startIndex+count)))] {
 		addresses = append(addresses, walletEntryToAddress(entry, wlt.poolSection))
 	}
@@ -326,7 +327,7 @@ func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 			return nil
 		}
 		for _, addr := range newAddrs {
-			addresses = append(addresses, SkycoinAddress{address:addr})
+			addresses = append(addresses, &SkycoinAddress{address:addr})
 		}
 	}
 
@@ -334,11 +335,11 @@ func (wlt RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 
 }
 
-func (wlt RemoteWallet) GetCryptoAccount() core.CryptoAccount {
+func (wlt *RemoteWallet) GetCryptoAccount() core.CryptoAccount {
 	return wlt
 }
 
-func (wlt RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
+func (wlt *RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	c, err := NewSkycoinApiClient(wlt.poolSection)
 	if err != nil {
 		return nil, err
@@ -348,7 +349,7 @@ func (wlt RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	if err != nil {
 		return nil, err
 	}
-	addresses := make([]SkycoinAddress, 0)
+	addresses := make([]core.Address, 0)
 	for _, entry := range wltR.Entries {
 		addresses = append(addresses, walletEntryToAddress(entry, wlt.poolSection))
 	}
@@ -356,8 +357,8 @@ func (wlt RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	return NewSkycoinAddressIterator(addresses), nil
 }
 
-func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
-	wlt := RemoteWallet{}
+func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
+	wlt := &RemoteWallet{}
 	wlt.CoinType = string(wltR.Meta.Coin)
 	wlt.Encrypted = wltR.Meta.Encrypted
 	wlt.Label = wltR.Meta.Label
@@ -365,8 +366,8 @@ func walletResponseToWallet(wltR api.WalletResponse) RemoteWallet {
 	return wlt
 }
 
-func walletEntryToAddress(wltE readable.WalletEntry, poolSection string) SkycoinAddress {
-	return SkycoinAddress{address:wltE.Address, poolSection: poolSection}
+func walletEntryToAddress(wltE readable.WalletEntry, poolSection string) *SkycoinAddress {
+	return &SkycoinAddress{address:wltE.Address, poolSection: poolSection}
 }
 
 type WalletDirectory struct { //Implements WallentEnv interface
@@ -411,7 +412,7 @@ func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
 			if err != nil {
 				return nil
 			}
-			wallets = append(wallets, LocalWallet{
+			wallets = append(wallets, &LocalWallet{
 				Id:        name,
 				Label:     w.Label(),
 				Encrypted: w.IsEncrypted(),
@@ -431,7 +432,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 	if err != nil {
 		return nil
 	}
-	return LocalWallet{
+	return &LocalWallet{
 		Id:        id,
 		Label:     w.Label(),
 		Encrypted: w.IsEncrypted(),
@@ -473,7 +474,7 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		return nil, err
 	}
 
-	return LocalWallet{
+	return &LocalWallet{
 		Id:        wltName,
 		Label:     wlt.Label(),
 		Encrypted: wlt.IsEncrypted(),
@@ -590,13 +591,13 @@ type LocalWallet struct {
 	WalletDir string
 }
 
-func (wlt LocalWallet) GetId() string {
+func (wlt *LocalWallet) GetId() string {
 	return wlt.Id
 }
-func (wlt LocalWallet) GetLabel() string {
+func (wlt *LocalWallet) GetLabel() string {
 	return wlt.Label
 }
-func (wlt LocalWallet) SetLabel(wltName string) {
+func (wlt *LocalWallet) SetLabel(wltName string) {
 	wltFile, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.GetId()))
 	if err != nil {
 		return
@@ -610,16 +611,16 @@ func (wlt LocalWallet) SetLabel(wltName string) {
 	wlt.Label = wltName
 
 }
-func (wlt LocalWallet) Transfer(to core.Address, amount uint64) {
+func (wlt *LocalWallet) Transfer(to core.Address, amount uint64) {
 
 }
-func (wlt LocalWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
+func (wlt *LocalWallet) SendFromAddress(from, to core.Address, amount uint64) { //------TODO
 
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
+func (wlt *LocalWallet) Spend(unspent, new []core.TransactionOutput) { //------TODO
 
 }
-func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
 	if err != nil {
@@ -668,26 +669,26 @@ func (wlt LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count
 	}
 
 	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
-	skyAddrs := make([]SkycoinAddress, 0)
+	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
-		skyAddrs = append(skyAddrs, SkycoinAddress{address:addr.String()})
+		skyAddrs = append(skyAddrs, &SkycoinAddress{address:addr.String()})
 	}
 	return NewSkycoinAddressIterator(skyAddrs)
 
 }
-func (wlt LocalWallet) GetCryptoAccount() core.CryptoAccount {
+func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
 	return wlt
 }
-func (wlt LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
+func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
 	if err != nil {
 		return nil, err
 	}
-	addrs := make([]SkycoinAddress, 0)
+	addrs := make([]core.Address, 0)
 	addresses := walletLoaded.GetAddresses()
 	for _, addr := range addresses {
-		addrs = append(addrs, SkycoinAddress{address:addr.String()})
+		addrs = append(addrs, &SkycoinAddress{address:addr.String()})
 	}
 
 	return NewSkycoinAddressIterator(addrs), nil

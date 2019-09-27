@@ -122,9 +122,9 @@ func (m *ModelWallets) loadModel() {
 				coins := util.FormatCoins(val, accuracy)
 				qo.SetAddressSky(coins)
 				//TODO: report possible error
-				val, _ = to.GetCoins(coin.CoinHour)
+				val, _ = to.GetCoins(coin.CalculatedHour)
 				//TODO: report possible error
-				accuracy, _ = util.AltcoinQuotient(coin.CoinHour)
+				accuracy, _ = util.AltcoinQuotient(coin.CalculatedHour)
 				coinsH := util.FormatCoins(val, accuracy)
 				qo.SetAddressCoinHours(coinsH)
 				qOutputs = append(qOutputs, qo)

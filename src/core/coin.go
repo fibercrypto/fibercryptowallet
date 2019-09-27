@@ -16,7 +16,7 @@ type Transaction interface {
 	GetInputs() []TransactionInput
 	GetOutputs() []TransactionOutput
 	GetId() string
-	ComputeFee(ticker string) uint64
+	ComputeFee(ticker string) (uint64, error)
 }
 
 type TransactionIterator interface {
