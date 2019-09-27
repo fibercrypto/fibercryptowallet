@@ -31,8 +31,13 @@ Menu {
         Material.BlueGrey
     ]
 
+    function saveConfiguration(theme, accent) {
+        settings.setValue("style/material/theme", theme)
+        settings.setValue("style/material/accent", accent)
+    }
+
     // Initialize `currentSelectedIndex`:
-    Component.onCompleted: {
+    onAboutToShow: {
         for (var i = 0; i < gridAccents.children.length; i++) {
             if (gridAccents.children[i].checked) {
                 currentSelectedIndex = i
@@ -52,12 +57,13 @@ Menu {
         icon.color: "transparent"
         checked: currentTheme === Material.Dark
 
-        onCheckedChanged: {
+        onClicked: {
             applicationWindow.flash()
             applicationWindow.Material.theme = (currentTheme === Material.Light ? Material.Dark : Material.Light)
             applicationWindow.skipAccentColorAnimation = true
             applicationWindow.accentColor = gridAccents.children[currentSelectedIndex].Material.accent // needed for accent color transitions
             skipAccentColorAnimation = false
+            saveConfiguration(Material.theme, Material.accentColor)
         }
     }
 
@@ -113,6 +119,7 @@ Menu {
                     onClicked: {
                         currentSelectedIndex = index
                         applicationWindow.accentColor = Material.accent
+                        saveConfiguration(Material.theme, Material.accentColor)
                     }
                 } // ToolButton
             } // Rectangle
