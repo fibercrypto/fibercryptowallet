@@ -91,6 +91,7 @@ func (walletM *WalletManager) getNewSeed(entropy int) string {
 }
 
 func (walletM *WalletManager) verifySeed(seed string) int {
+	logWalletManager.Info("Verifying seed")
 	ok, err := walletM.SeedGenerator.VerifyMnemonic(seed)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't verify seed")
@@ -104,6 +105,7 @@ func (walletM *WalletManager) verifySeed(seed string) int {
 }
 
 func (walletM *WalletManager) encryptWallet(id, password string) int {
+	logWalletManager.Info("Encrypting wallet")
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
@@ -119,6 +121,7 @@ func (walletM *WalletManager) encryptWallet(id, password string) int {
 }
 
 func (walletM *WalletManager) decryptWallet(id, password string) int {
+	logWalletManager.Info("Decrypt wallet")
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
@@ -134,6 +137,7 @@ func (walletM *WalletManager) decryptWallet(id, password string) int {
 }
 
 func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {
+	logWalletManager.Info("Creating new wallet addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
 	pwd := func(message string) (string, error) {
 		return password, nil
@@ -151,13 +155,14 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 }
 
 func (walletM *WalletManager) getWallets() []*QWallet {
+	logWalletManager.Info("Getting wallets")
 
-	qwallets := make([]*QWallet, 0)
+	qWallets := make([]*QWallet, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 
 	if it == nil {
 		logWalletManager.WithError(nil).Error("Couldn't load wallets")
-		return qwallets
+		return qWallets
 
 	}
 
@@ -166,23 +171,25 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {
 			logWalletManager.WithError(err).Error("Couldn't get wallets")
-			return qwallets
+			return qWallets
 		}
 		if encrypted {
 			qw := fromWalletToQWallet(it.Value(), true)
-			qwallets = append(qwallets, qw)
+			qWallets = append(qWallets, qw)
 		} else {
 			qw := fromWalletToQWallet(it.Value(), false)
-			qwallets = append(qwallets, qw)
+			qWallets = append(qWallets, qw)
 		}
 
 	}
 
-	return qwallets
+	return qWallets
 
 }
 
 func (walletM *WalletManager) editWallet(id, label string) *QWallet {
+	logWalletManager.Info("Editing wallet")
+
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
 	wlt.SetLabel(label)
 	wlt = walletM.WalletEnv.GetWalletSet().GetWallet(id)
@@ -196,6 +203,7 @@ func (walletM *WalletManager) editWallet(id, label string) *QWallet {
 }
 
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
+	logWalletManager.Info("Get addresses")
 
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
 	qAddresses := make([]*QAddress, 0)
@@ -239,43 +247,43 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
-	qwallet := NewQWallet(nil)
-	qml.QQmlEngine_SetObjectOwnership(qwallet, qml.QQmlEngine__CppOwnership)
-	qwallet.SetName(wlt.GetLabel())
+	qWallet := NewQWallet(nil)
+	qml.QQmlEngine_SetObjectOwnership(qWallet, qml.QQmlEngine__CppOwnership)
+	qWallet.SetName(wlt.GetLabel())
 
-	qwallet.SetFileName(wlt.GetId())
+	qWallet.SetFileName(wlt.GetId())
 
-	qwallet.SetEncryptionEnabled(0)
+	qWallet.SetEncryptionEnabled(0)
 	if isEncrypted {
-		qwallet.SetEncryptionEnabled(1)
+		qWallet.SetEncryptionEnabled(1)
 	}
 
 	bl, err := wlt.GetCryptoAccount().GetBalance(skycoin.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin balance")
-		return qwallet
+		return qWallet
 	}
 
 	//TODO: report possible error
 	accuracy, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin Altcoin quotient")
-		return qwallet
+		return qWallet
 	}
 	floatBl := float64(bl) / float64(accuracy)
-	qwallet.SetSky(floatBl)
+	qWallet.SetSky(floatBl)
 
 	bl, err = wlt.GetCryptoAccount().GetBalance(skycoin.CoinHoursTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours balance")
-		return qwallet
+		return qWallet
 	}
 	accuracy, _ = util.AltcoinQuotient(skycoin.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours Altcoin quotient")
-		return qwallet
+		return qWallet
 	}
-	qwallet.SetCoinHours(bl)
+	qWallet.SetCoinHours(bl)
 
-	return qwallet
+	return qWallet
 }
