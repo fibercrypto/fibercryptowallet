@@ -3,7 +3,6 @@ package models
 import (
 	"strconv"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/therecipe/qt/qml"
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
@@ -230,18 +229,18 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		qwallet.SetEncryptionEnabled(1)
 	}
 
-	bl, err := wlt.GetCryptoAccount().GetBalance(skycoin.SkycoinTicker)
+	bl, err := wlt.GetCryptoAccount().GetBalance(sky.SkycoinTicker)
 	if err != nil {
 		bl = 0
 	}
 
 	//TODO: report possible error
-	accuracy, _ := util.AltcoinQuotient(skycoin.SkycoinTicker)
+	accuracy, _ := util.AltcoinQuotient(sky.SkycoinTicker)
 	floatBl := float64(bl) / float64(accuracy)
 	qwallet.SetSky(floatBl)
 
-	bl, err = wlt.GetCryptoAccount().GetBalance(skycoin.CoinHoursTicker)
-	accuracy, _ = util.AltcoinQuotient(skycoin.SkycoinTicker)
+	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHoursTicker)
+	accuracy, _ = util.AltcoinQuotient(sky.SkycoinTicker)
 	if err != nil {
 		bl = 0
 	}
