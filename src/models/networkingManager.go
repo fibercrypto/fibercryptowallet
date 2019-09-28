@@ -23,6 +23,7 @@ func (net *NetworkingManager) init() {
 }
 
 func (net *NetworkingManager) getNetworks() []*QNetworking {
+	logNetworkingManager.Info("Getting networks")
 	networks := make([]*QNetworking, 0)
 
 	netIterator := net.Networks.ListNetworks()
