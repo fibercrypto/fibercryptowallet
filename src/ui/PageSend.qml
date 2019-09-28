@@ -63,8 +63,8 @@ Page {
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
                 dialogSendTransaction.previewAmount = txn.amount
-                dialogSendTransaction.previewHoursReceived = txn.hoursTraspassed
-                dialogSendTransaction.previewHoursBurned = txn.hoursBurned
+                dialogSendTransaction.previewHoursReceived = parseInt(txn.hoursTraspassed)
+                dialogSendTransaction.previewHoursBurned = parseInt(txn.hoursBurned)
                 dialogSendTransaction.previewtransactionID = txn.transactionId
                 dialogSendTransaction.inputs = txn.inputs
                 dialogSendTransaction.outputs = txn.outputs

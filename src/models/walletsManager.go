@@ -214,7 +214,11 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	if err != nil {
 		return nil
 	}
-	txn, err := wlt.Transfer(addr, coins, nil)
+	opt := NewTransferOptions()
+	opt.AddKeyValue("BurnFactor", "1")
+	opt.AddKeyValue("CoinHoursSelectionType", "auto")
+
+	txn, err := wlt.Transfer(addr, coins, opt)
 
 	if err != nil {
 		return nil
