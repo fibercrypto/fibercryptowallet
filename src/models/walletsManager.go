@@ -2,10 +2,10 @@ package models
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
-	"github.com/therecipe/qt/qml"
-
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/sirupsen/logrus"
+	"github.com/therecipe/qt/qml"
 
 	//"github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -144,11 +144,18 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 	qwallets := make([]*QWallet, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 
+	if it == nil {
+		logrus.Warn("Couldn't load wallets")
+		return qwallets
+
+	}
+
 	for it.Next() {
 
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {
-			continue
+			logrus.Warn("Couldn't load wallets, err: " + err.Error())
+			return qwallets
 		}
 		if encrypted {
 			qw := fromWalletToQWallet(it.Value(), true)
