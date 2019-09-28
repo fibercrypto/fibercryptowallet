@@ -38,9 +38,6 @@ Page {
                         Connections{
                             target:applyButton
                             onClicked:{
-                                //console.log(settingsDelegate.nodeText)
-                                //console.log(settingsDelegate.wltSourceText)
-                                //console.log(settingsDelegate.typeWallet)
                                 configManager.edit(settingsDelegate.nodeText, settingsDelegate.wltSourceText, settingsDelegate.typeWallet)
                             }
                         }
@@ -49,7 +46,6 @@ Page {
                         target: scrollSettings
                         onWidthChanged: {
                            columnSettings.width = scrollSettings.width
-                           console.log("settingsDelegate.width changed => " + settingsDelegate.width)
                         }
                     }
                 } // ColumnLayout

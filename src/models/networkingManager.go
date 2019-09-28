@@ -3,6 +3,7 @@ package models
 import (
 	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/sirupsen/logrus"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -24,6 +25,10 @@ func (net *NetworkingManager) getNetworks() []*QNetworking {
 
 	netIterator := net.Networks.ListNetworks()
 
+	if netIterator == nil {
+		logrus.Warn("Couldn't load networks")
+		return networks
+	}
 	for netIterator.Next() {
 
 		networks = append(networks, INetworkToQNetworking(netIterator.Value()))

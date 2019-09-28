@@ -1,6 +1,7 @@
 package history
 
 import (
+	"github.com/sirupsen/logrus"
 	"sort"
 	"strconv"
 	"time"
@@ -58,6 +59,10 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 	txns := make([]core.Transaction, 0)
 
 	wltIter := hm.walletEnv.GetWalletSet().ListWallets()
+	if wltIter == nil {
+		logrus.Warn("Couldn't get transactions of Addresses")
+		return make([]*transactions.TransactionDetails,0)
+	}
 	for wltIter.Next() {
 		addrIter, _ := wltIter.Value().GetLoadedAddresses()
 		for addrIter.Next() {
@@ -286,6 +291,10 @@ func (hm *HistoryManager) removeFilter(addr string) {
 func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 	response := make(map[string]string, 0)
 	it := hm.walletEnv.GetWalletSet().ListWallets()
+	if it == nil {
+		logrus.Warn("Couldn't load addresses")
+		return response
+	}
 	for it.Next() {
 		wlt := it.Value()
 		addrs, _ := wlt.GetLoadedAddresses()
