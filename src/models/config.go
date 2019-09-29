@@ -46,7 +46,7 @@ func (configManager *ConfigManager) edit(node, src string, tp bool) {
 	if tp {
 		tpSrc = local.RemoteWallet
 	} else {
-		tpSrc = local.localWallet
+		tpSrc = local.LocalWallet
 	}
 	configManager.configManager.EditWalletSource(1, src, tpSrc)
 	configManager.configManager.EditNode(node)
@@ -64,7 +64,7 @@ func (configManager *ConfigManager) getSourceString() string {
 
 func (configManager *ConfigManager) getTypeSource() int {
 	src := configManager.configManager.GetSources()[0]
-	if src.GetType() == local.localWallet {
+	if src.GetType() == local.LocalWallet {
 		return 1
 	} else {
 		return 0

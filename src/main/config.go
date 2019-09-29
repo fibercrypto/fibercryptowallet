@@ -15,7 +15,7 @@ var logConfigManager = logging.MustGetLogger("ConfigManager")
 const (
 	pathToConfigFromHome         = ".fiber/config.json"
 	pathToDefaultWalletsFromHome = ".skycoin/wallets"
-	localWallet                  = iota
+	LocalWallet                  = iota
 	RemoteWallet
 )
 
@@ -81,7 +81,7 @@ func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
 		return errors.New("invalid Id")
 	}
 
-	if tp != localWallet && tp != RemoteWallet {
+	if tp != LocalWallet && tp != RemoteWallet {
 		tp = src.sourceType
 	}
 
@@ -224,7 +224,7 @@ func getConfigFileDir() string {
 
 func getDefaultWalletSource() *WalletSource {
 	ws := new(WalletSource)
-	ws.sourceType = localWallet
+	ws.sourceType = LocalWallet
 	ws.id = 1
 	walletsDir := filepath.Join(os.Getenv("HOME"), pathToDefaultWalletsFromHome)
 	ws.source = walletsDir
