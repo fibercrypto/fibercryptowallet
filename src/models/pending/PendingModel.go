@@ -9,7 +9,7 @@ import (
 )
 
 
-var logPendingTxn = logging.MustGetLogger("modelsNetworkingManager")
+var logPendingTxn = logging.MustGetLogger("modelsPendingTransaction")
 
 type PendingTransactionList struct {
 	qtCore.QObject
