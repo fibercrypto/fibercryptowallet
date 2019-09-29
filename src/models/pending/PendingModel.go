@@ -48,6 +48,8 @@ func (model *PendingTransactionList) init() {
 }
 
 func (model *PendingTransactionList) getAll() {
+	logPendingTxn.Info("Getting txn details")
+
 	txns, err := model.PEX.GetTxnPool()
 	if err != nil {
 		//display an error in qml app when All is selected
