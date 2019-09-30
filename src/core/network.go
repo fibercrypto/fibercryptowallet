@@ -9,53 +9,83 @@ import (
 var once sync.Once
 var multiConnectionsPool *MultiConnectionsPool
 
+// PEX exposes cryptocurrency API for peer-to-peer communication
 type PEX interface {
+	// GetTxnPool return transactions pending for confirmation by network peers
 	GetTxnPool() (TransactionIterator, error)
+	// GetConnection enumerate connectionns to peer nodes
 	GetConnections() (PexNodeSet, error)
+	// BroadcastTxn injects a transaction for confirmation by network peers
 	BroadcastTxn(txn Transaction) error
 }
 
+// PexNodeIterator scans nodes in a set
 type PexNodeIterator interface {
+	// Value of PEX node data instance at iterator pointer position
 	Value() PexNode
+	// Next discards current value and moves iteration pointer up to next item
 	Next() bool
+	// HasNext may be used to query whether more items are to be expected in the sequence
 	HasNext() bool
 }
 
+// PexNodeSet represent a set of nodes
 type PexNodeSet interface {
+	// ListPeers offers an iterator over this set of nodes
 	ListPeers() PexNodeIterator
 }
 
+// PexNode represents a peer in he cryptocurrency network
 type PexNode interface {
+	// GetIp returns node IP network address
 	GetIp() string
+	// GetPort retrieves IP port used to connect to peer node
 	GetPort() uint16
+	// GetBlockHeight provides sequence number of the block a the tip of peer's chain
 	GetBlockHeight() uint64
+	// IsTrusted determines if peer node is a network seed node
 	IsTrusted() bool
+	// GetLastSeenIn
+	// TODO: Document method overview
 	GetLastSeenIn() int64
+	// GetLastSeenOut
+	// TODO: Document method overview
 	GetLastSeenOut() int64
 }
 
+// PooledObject represents any object that can be added to a connnection pool
 type PooledObject interface {
 }
 
+// PooledObjectFactory instantiates pooled objects
 type PooledObjectFactory interface {
 	Create() (PooledObject, error)
 }
 
+// MultiPool implements a pool supporting multiple object factories
 type MultiPool interface {
+	// Get an object from the pool
 	Get(poolSection string) (PooledObject, error)
+	// Return put back an object into the pool
 	Return(poolSection string, obj PooledObject) error
+	// CreateSection allocates extra space for a new factory in the pool
 	CreateSection(name string, factory PooledObjectFactory)
+	// ListSections returns a list of section names previously added to the pool
+	// Each name represents a different factory
 	ListSections() []string
 }
 
+// NotAvailableObjectsError is returned when name is not bound to any pool factory
 type NotAvailableObjectsError struct {
 	poolSection string
 }
 
+// Error describes error condition
 func (err NotAvailableObjectsError) Error() string {
 	return fmt.Sprintf("There is not exist %s poolSection", err.poolSection)
 }
 
+// MultiConnectionsPool implements a generic pool supporting multiple object factories
 type MultiConnectionsPool struct {
 	capacity  int
 	available map[string][]PooledObject
@@ -64,6 +94,7 @@ type MultiConnectionsPool struct {
 	factories map[string]PooledObjectFactory
 }
 
+// Get an object from the pool
 func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
 	mutex, ok := mp.mutexs[poolSection]
 
@@ -91,6 +122,7 @@ func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
 	}
 }
 
+// Return put back an object into the pool
 func (mp *MultiConnectionsPool) Return(poolSection string, obj PooledObject) error {
 	mutex, ok := mp.mutexs[poolSection]
 	if !ok {
@@ -107,6 +139,7 @@ func (mp *MultiConnectionsPool) Return(poolSection string, obj PooledObject) err
 	return nil
 }
 
+// CreateSection allocates extra space for a new factory in the pool
 func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) {
 
 	if _, ok := mp.factories[name]; ok {
@@ -120,6 +153,7 @@ func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectF
 
 }
 
+// ListSections returns a list of section names previously registred with the pool
 func (mp *MultiConnectionsPool) ListSections() []string {
 	sections := make([]string, 0)
 	for key, _ := range mp.factories {
@@ -137,6 +171,8 @@ func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 		mutexs:    make(map[string]*sync.Mutex),
 	}
 }
+
+// GetMultiPool instantiates singleton connection pool obj=ect
 func GetMultiPool() MultiPool {
 
 	once.Do(func() {
