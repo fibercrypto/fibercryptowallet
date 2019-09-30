@@ -2,6 +2,10 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "../Controls" // For quick UI development, switch back to resources when making a release
+
 Dialog {
     id: dialogEditWallet
 
@@ -36,6 +40,7 @@ Dialog {
             Layout.fillWidth: true
             placeholderText: qsTr("Wallet's name")
             text: initialText
+            selectByMouse: true
             focus: true
 
             onTextChanged: {

@@ -3,6 +3,10 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "Controls" // For quick UI development, switch back to resources when making a release
+
 Page {
     id: root
 
@@ -76,6 +80,7 @@ Page {
                     id: textFieldWalletsSendTo
                     font.family: "Code New Roman"
                     placeholderText: qsTr("Destination address")
+                    selectByMouse: true
                     Layout.fillWidth: true
                     Layout.topMargin: -5
                 }
@@ -92,6 +97,7 @@ Page {
             TextField {
                 id: textFieldAmount
                 placeholderText: qsTr("Amount to send")
+                selectByMouse: true
                 Layout.fillWidth: true
                 Layout.topMargin: -10
                 validator: DoubleValidator {

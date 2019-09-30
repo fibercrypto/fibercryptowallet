@@ -3,6 +3,10 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "../Controls" // For quick UI development, switch back to resources when making a release
+
 Dialog {
     id: dialogSetPassword
 
@@ -52,6 +56,7 @@ Dialog {
 
                 Layout.fillWidth: true
                 placeholderText: qsTr("Password")
+                selectByMouse: true
                 echoMode: TextField.Password
                 focus: true
             }
@@ -61,6 +66,7 @@ Dialog {
 
                 Layout.fillWidth: true
                 placeholderText: qsTr("Confirm password")
+                selectByMouse: true
                 echoMode: TextField.Password
                 Material.accent: text === textFieldPassword.text ? parent.Material.accent : Material.Red
             }
