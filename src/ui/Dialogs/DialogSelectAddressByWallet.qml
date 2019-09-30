@@ -13,7 +13,7 @@ Dialog {
     margins: 0
     padding: 0
 
-    closePolicy: Dialog.NoAutoClose
+    closePolicy: Dialog.CloseOnPressOutside
 
     ColumnLayout {
         anchors.fill: parent

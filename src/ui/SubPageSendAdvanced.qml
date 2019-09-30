@@ -64,7 +64,7 @@ Page {
 
     function getAllAddresses(){
         var addrs = []
-        for (var i = 0; i < listAddresses.addresses.lenght; i++){
+        for (var i = 0; i < listAddresses.count; i++){
             addrs.push(listAddresses.addresses[i].address)
         }
         return addrs
@@ -108,6 +108,7 @@ Page {
                     console.log(model.wallets[currentIndex].fileName)
                     listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
                     listAddresses.removeAddress(0)
+                    listOutputs.cleanModel()
 
                     
                 }
@@ -198,7 +199,7 @@ Page {
                         onCheckedChanged:{
                             if (checked){
                                 //console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex])
-                                listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
+                                listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
                                 console.log(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
                                 //console.log(text)
                             }
@@ -369,6 +370,7 @@ Page {
                     highlighted: true
 
                     onClicked: {
+                        modelAddressesByWallet.loadModel(walletManager.getAllAddresses())
                         dialogSelectAddressByWallet.open()
                     }
                 }
@@ -436,18 +438,21 @@ Page {
         }
     }
 
-    ListModel { // EXAMPLE
+    //ListModel { // EXAMPLE
+    //    id: modelAddressesByWallet
+//
+    //    ListElement { wallet: "Wallet A"; address: "qrxw7364w8xerusftaxkw87ues" }
+    //    ListElement { wallet: "Wallet A"; address: "8745yuetsrk8tcsku4ryj48ije" }
+    //    ListElement { wallet: "Wallet A"; address: "gfdhgs343kweru38200384uwqd" }
+    //    ListElement { wallet: "Wallet B"; address: "00qdqsdjkssvmchskjkxxdg374" }
+    //    ListElement { wallet: "Wallet B"; address: "hkdti34aoliwuiu3qsoiemdfhc" }
+    //    ListElement { wallet: "Wallet C"; address: "1oiwrelkrir73o8ielukaur9qq" }
+    //    ListElement { wallet: "Wallet C"; address: "piur948o9q8m0a8qsye8q3omxs" }
+    //    ListElement { wallet: "Wallet C"; address: "4ntd4im93usppturm83ysniroe" }
+    //    ListElement { wallet: "Wallet C"; address: "meje73o50ejdwumfle92rndlwm" }
+    //}
+    AddressModel{
         id: modelAddressesByWallet
-
-        ListElement { wallet: "Wallet A"; address: "qrxw7364w8xerusftaxkw87ues" }
-        ListElement { wallet: "Wallet A"; address: "8745yuetsrk8tcsku4ryj48ije" }
-        ListElement { wallet: "Wallet A"; address: "gfdhgs343kweru38200384uwqd" }
-        ListElement { wallet: "Wallet B"; address: "00qdqsdjkssvmchskjkxxdg374" }
-        ListElement { wallet: "Wallet B"; address: "hkdti34aoliwuiu3qsoiemdfhc" }
-        ListElement { wallet: "Wallet C"; address: "1oiwrelkrir73o8ielukaur9qq" }
-        ListElement { wallet: "Wallet C"; address: "piur948o9q8m0a8qsye8q3omxs" }
-        ListElement { wallet: "Wallet C"; address: "4ntd4im93usppturm83ysniroe" }
-        ListElement { wallet: "Wallet C"; address: "meje73o50ejdwumfle92rndlwm" }
     }
 
     ListModel {

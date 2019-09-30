@@ -35,6 +35,7 @@ type WalletManager struct {
 	_ func(txn *QTransaction) bool                                                                                                           `slot:"broadcastTxn"`
 	_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
 	_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
+	_ func() []*QAddress                                                                                                                     `slot:"getAllAddresses"`
 }
 
 func (walletM *WalletManager) init() {
@@ -54,6 +55,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
 	walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
 	walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
+	walletM.ConnectGetAllAddresses(walletM.getAllAddresses)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -66,6 +68,14 @@ func (walletM *WalletManager) init() {
 
 }
 
+func (walletM *WalletManager) getAllAddresses() []*QAddress {
+	qAddresses := make([]*QAddress, 0)
+	wltIter := walletM.WalletEnv.GetWalletSet().ListWallets()
+	for wltIter.Next() {
+		qAddresses = append(qAddresses, walletM.getAddresses(wltIter.Value().GetId())...)
+	}
+	return qAddresses
+}
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	altManager := core.LoadAltcoinManager()
 	plug, _ := altManager.LookupAltcoinManager("SKY")
@@ -382,6 +392,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 		qAddress.SetAddress(addr.String())
 		qAddress.SetMarked(0)
+		qAddress.SetWallet(wlt.GetLabel())
 		skyFl, err := addr.GetCryptoAccount().GetBalance("SKY")
 		if err != nil {
 

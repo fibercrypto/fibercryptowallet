@@ -335,22 +335,6 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Pass
 	return unTxn, nil
 }
 
-func (wlt RemoteWallet) Inject(rawTxn string) error {
-	client, err := NewSkycoinApiClient(PoolSection)
-	if err != nil {
-		logrus.Warn(err)
-		return err
-	}
-	defer core.GetMultiPool().Return(PoolSection, client)
-
-	_, err = client.InjectEncodedTransaction(rawTxn)
-	if err != nil {
-		logrus.Warn("Error Injecting transaction")
-		return err
-	}
-	return nil
-}
-
 func (wlt *RemoteWallet) GetLabel() string {
 	return wlt.Label
 }
@@ -894,10 +878,6 @@ func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.Passwo
 	}
 	return resultTxn, nil
 
-}
-
-func (wlt LocalWallet) Inject(txn string) error {
-	return nil
 }
 
 func (wlt *LocalWallet) GetId() string {

@@ -11,6 +11,7 @@ const (
 	ASky       = int(core.Qt__UserRole) + 2
 	ACoinHours = int(core.Qt__UserRole) + 3
 	AMarked    = int(core.Qt__UserRole) + 4
+	AWallet    = int(core.Qt__UserRole) + 5
 )
 
 type AddressesModel struct {
@@ -35,6 +36,7 @@ type QAddress struct {
 	_ string `property:"addressSky"`
 	_ string `property:"addressCoinHours"`
 	_ int    `property:"marked"`
+	_ string `property:"wallet"`
 }
 
 func (m *AddressesModel) init() {
@@ -43,6 +45,7 @@ func (m *AddressesModel) init() {
 		ASky:       core.NewQByteArray2("addressSky", -1),
 		ACoinHours: core.NewQByteArray2("addressCoinHours", -1),
 		AMarked:    core.NewQByteArray2("marked", -1),
+		AWallet:    core.NewQByteArray2("wallet", -1),
 	})
 	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
 	m.ConnectData(m.data)
@@ -86,6 +89,10 @@ func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant 
 	case AMarked:
 		{
 			return core.NewQVariant1(a.Marked())
+		}
+	case AWallet:
+		{
+			return core.NewQVariant1(a.Wallet())
 		}
 
 	default:
