@@ -405,7 +405,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 		}
 
 	}
-	obj := options.GetValue("CoinHoursMode")
+	obj := options.GetValue("CoinHoursSelectionType")
 	coinHoursMode, ok := obj.(string)
 	if !ok {
 		return nil, errors.New("invalid options")
@@ -417,8 +417,8 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 	}
 	coinHoursSelection := api.HoursSelection{}
 	if coinHoursMode == "auto" {
-		coinHoursSelection.Mode = "auto"
-		coinHoursSelection.Type = "share"
+		coinHoursSelection.Mode = "share"
+		coinHoursSelection.Type = "auto"
 		coinHoursSelection.ShareFactor = burnFactor
 	}
 
@@ -439,7 +439,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 		receiver.Address = toTxn.GetAddress().String()
 		receiver.Coins = strAmount
 
-		if coinHoursSelection.Mode == "manual" {
+		if coinHoursSelection.Type == "manual" {
 			chV, err := toTxn.GetCoins(CoinHour)
 			if err != nil {
 				return nil, err
@@ -457,7 +457,7 @@ func (wlt RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.
 
 	response, err := client.WalletCreateTransaction(req)
 	if err != nil {
-		logrus.Warn("Error creating transaction request")
+		logrus.Warn("Error creating transaction request: " + err.Error())
 		return nil, err
 	}
 	fee, err := util.GetCoinValue(response.Transaction.Fee, CoinHour)
@@ -487,14 +487,14 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
-		logrus.Warn("Error getting remote wallet")
+		logrus.Warn("Error getting remote wallet: " + err.Error())
 		return nil, err
 	}
 
 	req, err := wlt.createTransaction(from, to, nil, change, client, wltR, options)
 
 	if err != nil {
-		logrus.Warn("Error creating transaction response")
+		logrus.Warn("Error creating transaction response: " + err.Error())
 		return nil, err
 	}
 	return req, nil
@@ -511,12 +511,12 @@ func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change cor
 	wltR, err := client.Wallet(wlt.Id)
 
 	if err != nil {
-		logrus.Warn("Error getting remote wallet")
+		logrus.Warn("Error getting remote wallet: " + err.Error())
 		return nil, err
 	}
-	req, err := wlt.createTransaction(nil, nil, unspent, change, client, wltR, options)
+	req, err := wlt.createTransaction(nil, new, unspent, change, client, wltR, options)
 	if err != nil {
-		logrus.Warn("Error creating transaction request")
+		logrus.Warn("Error creating transaction request: " + err.Error())
 		return nil, err
 	}
 
