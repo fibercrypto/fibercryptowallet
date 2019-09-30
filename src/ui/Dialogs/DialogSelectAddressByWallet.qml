@@ -12,8 +12,12 @@ Dialog {
     
     margins: 0
     padding: 0
+    standardButtons: Dialog.Cancel
 
-    closePolicy: Dialog.NoAutoClose
+    closePolicy: Dialog.CloseOnPressOutside
+    onAboutToShow: {
+        textFieldFilterWallet.forceActiveFocus()
+    }
 
     ColumnLayout {
         anchors.fill: parent

@@ -21,6 +21,8 @@ type ModelOutputs struct {
 
 	_ func([]*QOutput) `slot:"addOutputs"`
 	_ func([]*QOutput) `slot:"insertOutputs"`
+	_ func([]*QOutput) `slot:"loadModel"`
+	_ func()           `slot:"cleanModel"`
 }
 
 type QOutput struct {
@@ -43,6 +45,8 @@ func (m *ModelOutputs) init() {
 	m.ConnectData(m.data)
 	m.ConnectAddOutputs(m.addOutputs)
 	m.ConnectInsertOutputs(m.insertOutputs)
+	m.ConnectLoadModel(m.loadModel)
+	m.ConnectCleanModel(m.cleanModel)
 }
 
 func (m *ModelOutputs) rowCount(*core.QModelIndex) int {
@@ -99,4 +103,16 @@ func (m *ModelOutputs) insertOutputs(mo []*QOutput) {
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Outputs()), len(m.Outputs())+len(mo)-1)
 	m.SetOutputs(append(m.Outputs(), mo...))
 	m.EndInsertRows()
+}
+
+func (m *ModelOutputs) loadModel(mo []*QOutput) {
+	m.BeginInsertRows(core.NewQModelIndex(), 0, len(mo)-1)
+	m.SetOutputs(mo)
+	m.EndInsertRows()
+}
+
+func (m *ModelOutputs) cleanModel() {
+	m.BeginResetModel()
+	m.SetOutputs(make([]*QOutput, 0))
+	m.EndResetModel()
 }

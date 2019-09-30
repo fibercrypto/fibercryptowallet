@@ -49,6 +49,7 @@ Page {
                     } else {
                         if (addrs.length == 0){
                             addrs = stackView.currentItem.advancedPage.getAllAddresses()
+                            
                         }
                         txn = walletManager.sendFromAddresses(walletSelected, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } 
