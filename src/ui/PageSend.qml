@@ -32,44 +32,43 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
-//                var txn
+
                 var isEncrypted
+                var walletSelected
                 if (advancedMode){
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
                     var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
-                    var wlt = stackView.currentItem.advancedPage.getSelectedWallet()
+                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()
                     var destinationSummary = stackView.currentItem.advancedPage.getDestinationsSummary()
                     var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
                     if (outs.length > 0){
- //                          walletManager.
-                    } else if(addrs.length > 0){
-                        txn = walletManager.sendFromAddresses(wlt, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
-                    } else{
-
-                    }
-                    console.log(stackView.currentItem.advancedPage.getSelectedAddresses())
-                    console.log(stackView.currentItem.advancedPage.getSelectedWallet())
-                    console.log(stackView.currentItem.advancedPage.getDestinationsSummary())
-                    console.log(stackView.currentItem.advancedPage.getChangeAddress())
-                    console.log(stackView.currentItem.advancedPage.getAutomaticCoinHours())
-                    console.log(stackView.currentItem.advancedPage.getBurnFactor())
+                        console.log(outs)
+                        txn = walletManager.sendFromOutputs(walletSelected, outs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                    } else {
+                        if (addrs.length == 0){
+                            addrs = stackView.currentItem.advancedPage.getAllAddresses()
+                        }
+                        txn = walletManager.sendFromAddresses(walletSelected, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                    } 
+                    
                     isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
                 } else{
-                    //console.log(stackView.currentItem.simplePage.getWalletSelected())
+                    walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
-                    txn = walletManager.sendTo(stackView.currentItem.simplePage.getSelectedWallet(), stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
+                    txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
                 dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
                 dialogSendTransaction.previewAmount = txn.amount
-                dialogSendTransaction.previewHoursReceived = txn.hoursTraspassed
-                dialogSendTransaction.previewHoursBurned = txn.hoursBurned
+                dialogSendTransaction.previewHoursReceived = parseInt(txn.hoursTraspassed)
+                dialogSendTransaction.previewHoursBurned = parseInt(txn.hoursBurned)
                 dialogSendTransaction.previewtransactionID = txn.transactionId
                 dialogSendTransaction.inputs = txn.inputs
                 dialogSendTransaction.outputs = txn.outputs
+                dialogSendTransaction.wallet = walletSelected
                 dialogSendTransaction.open()
                 
                 
@@ -167,7 +166,7 @@ Page {
     DialogSendTransaction {
         id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
-
+        property string wallet
         readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
@@ -176,7 +175,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(walletSelected ,"source", dialogSendTransaction.passwordText, [], txn)
+			var signedTxn = walletManager.signTxn(wallet,"source", dialogSendTransaction.passwordText, [], txn)
 			var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }

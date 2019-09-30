@@ -51,6 +51,10 @@ Dialog {
                 onPasswordForgotten: {
                     Qt.openUrlExternally("http://skycoin.com/")
                 }
+                onTextChanged: {
+                    dialogGetPassword.standardButton(Dialog.Ok).enabled = text !== ""
+		            password = text
+                }
             }
         } // ColumnLayout (root)
     } // Flickable

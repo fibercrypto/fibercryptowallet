@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import Qt.labs.settings 1.0
 import WalletsManager 1.0
 import Config 1.0
 
@@ -14,7 +15,7 @@ ApplicationWindow {
     
     property bool skipAccentColorAnimation: false
     property bool accentColorAnimationActive: false
-    property color accentColor: Material.accent
+    property color accentColor: settings.value("style/material/accent", Material.accent)
     Behavior on accentColor {
         SequentialAnimation {
             PropertyAction { target: applicationWindow; property: "accentColorAnimationActive"; value: true }
@@ -27,8 +28,9 @@ ApplicationWindow {
     width: 680
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
+    Material.theme: ~~settings.value("style/material/theme", Material.Light)
     Material.accent: accentColor
-   
+
     function flash() {
         flasher.flash()
     }
@@ -45,6 +47,9 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
+        }
+        ConfigManager{
+            id: configManager
         }
 
         onPendingTransactionsRequested: {
@@ -99,6 +104,10 @@ ApplicationWindow {
         onAboutQtRequested: {
             dialogAboutQt.open()
         }
+
+        onLicenseRequested: {
+            dialogAboutLicense.open()
+        }
     } // CustomMenuBar
 
     CustomHeader {
@@ -111,15 +120,14 @@ ApplicationWindow {
         //property WalletManager  walletManger: WalletManager{
         //id: walletManager
         //}
-        WalletManager{
+        WalletManager {
             id: walletManager
         }
     }
 
     //! Settings
-    // TODO: This should have properties    
-    ConfigManager {
-        id: configManager
+    Settings {
+        id: settings
     }
 
     //! Dialogs
@@ -232,6 +240,17 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: (minimumParentSideSize / 3) * 2
         height: (parent.height / 3) * 2
+    }
+
+    DialogAboutLicense {
+        id: dialogAboutLicense
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width - 40
+        height: applicationWindow.height - 40
+        
+        focus: true
+        modal: true
     }
 
     //! This must be the last object (i.e. the one with the greater `z` value)

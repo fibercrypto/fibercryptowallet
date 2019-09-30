@@ -61,6 +61,14 @@ Page {
     function getBurnFactor(){
         return sliderCoinHoursShareFactor.value
     }
+
+    function getAllAddresses(){
+        var addrs = []
+        for (var i = 0; i < listAddresses.addresses.lenght; i++){
+            addrs.push(listAddresses.addresses[i].address)
+        }
+        return addrs
+    }
     
 
     ColumnLayout {
@@ -220,7 +228,6 @@ Page {
             ComboBox {
                 id: comboBoxWalletsUnspentOutputsSendFrom
 
-                // This function returns all checked index in the ComboBox's popup
                 function getCheckedDelegates() {
                     var checkedItems = []
                     for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
@@ -230,6 +237,8 @@ Page {
                     }
                     return checkedItems
                 }
+                property var checkedElements: []
+                property var checkedElementsText: []
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -239,18 +248,45 @@ Page {
                     id: listOutputs
                 }
 
+                onModelChanged: {
+                    if (!model) {
+                        checkedElements = []
+                    }
+                }
+
                 delegate: Item {
-                    width: parent.width
-                    height: checkDelegate.height
 
                     property alias checked: checkDelegate.checked
+                    property alias text: checkDelegate.text
+                    
+                    width: parent.width
+                    height: checkDelegate.height
 
                     CheckDelegate {
                         id: checkDelegate
 
+                        // Update the states saved in `checkedElements`
+                        onClicked: {
+                            if (checked) {
+                                var pos = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index)
+                                if (pos < 0) {
+                                    comboBoxWalletsUnspentOutputsSendFrom.checkedElements.push(index)
+                                    comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.push(text)
+                                }
+                            } else {
+                                var pos = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index)
+                                if (pos >= 0) {
+                                    comboBoxWalletsUnspentOutputsSendFrom.checkedElements.splice(pos, 1)
+                                    comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.splice(pos, 1)
+                                }
+                            }
+                        }
+
                         width: parent.width
                         text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
                         font.family: "Code New Roman"
+                        // Load the saved state when the delegate is recicled:
+                        checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) > 0
 
                         LayoutMirroring.enabled: true
                         contentItem: Label {

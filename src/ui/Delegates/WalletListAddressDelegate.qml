@@ -100,6 +100,8 @@ Item {
             onClicked:{
                 if (checked) {
                     dialogGetPassword.open()
+                    // TODO Encrypt wallet
+//                    var encrypt = walletManager.decryptWallet(, dialogGetPassword.password)
                 } else{
                     dialogSetPassword.open()
                 }

@@ -31,7 +31,11 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	if err != nil {
 		return nil, err
 	}
-	fee := util.FormatCoins(txn.ComputeFee("SKYCH"), quotient)
+	ch, err := txn.ComputeFee("SKYCH")
+	if err != nil {
+		return nil, nil
+	}
+	fee := util.FormatCoins(ch, quotient)
 	qtxn.SetHoursBurned(fee)
 
 	//Creating inputs
@@ -41,7 +45,7 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 		addr := in.GetSpentOutput().GetAddress().String()
 		inputsAddresses[addr] = struct{}{}
 		qIn.SetAddress(addr)
-		quotient, err := util.AltcoinQuotient("SKY")
+			quotient, err := util.AltcoinQuotient("SKY")
 		if err != nil {
 			return nil, err
 		}
