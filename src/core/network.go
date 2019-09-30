@@ -10,9 +10,9 @@ var once sync.Once
 var multiConnectionsPool *MultiConnectionsPool
 
 type PEX interface {
-	GetTxnPool() TransactionIterator
-	GetConnections()
-	Broadcast(txn Transaction)
+	GetTxnPool() (TransactionIterator, error)
+	GetConnections() (PexNodeSet, error)
+	BroadcastTxn(txn Transaction) error
 }
 
 type PexNodeIterator interface {
@@ -21,8 +21,8 @@ type PexNodeIterator interface {
 	HasNext() bool
 }
 
-type NetworkSet interface {
-	ListNetworks() PexNodeIterator
+type PexNodeSet interface {
+	ListPeers() PexNodeIterator
 }
 
 type PexNode interface {

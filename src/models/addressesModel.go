@@ -1,8 +1,7 @@
 package models
 
 import (
-	"strconv"
-
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 )
@@ -34,7 +33,7 @@ type QAddress struct {
 
 	_ string `property:"address"`
 	_ string `property:"addressSky"`
-	_ uint64 `property:"addressCoinHours"`
+	_ string `property:"addressCoinHours"`
 	_ int    `property:"marked"`
 }
 
@@ -126,9 +125,12 @@ func (m *AddressesModel) removeAddress(row int) {
 func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64, marked int) {
 	a := m.Addresses()[row]
 	a.SetAddress(address)
-	flSky := float64(sky / 1e6)
-	a.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
-	a.SetAddressCoinHours(coinHours)
+	//TODO: report possible error
+	accuracy, _ := util.AltcoinQuotient("SKY")
+	a.SetAddressSky(util.FormatCoins(sky, accuracy))
+	//TODO: report possible error
+	accuracy, _ = util.AltcoinQuotient("SKYCH")
+	a.SetAddressCoinHours(util.FormatCoins(coinHours, accuracy))
 	changeMarked := true
 	if marked == a.Marked() {
 		changeMarked = false
@@ -151,7 +153,7 @@ func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")
 	address.SetAddressSky("0")
-	address.SetAddressCoinHours(0)
+	address.SetAddressCoinHours("0")
 	address.SetMarked(0)
 	qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)
 	addresses = append(addresses, address)

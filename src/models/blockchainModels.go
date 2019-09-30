@@ -3,7 +3,7 @@ package models
 import (
 	"strconv"
 
-	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
@@ -39,7 +39,7 @@ func (bs *BlockchainStatusModel) init() {
 	bs.SetCurrentCoinHoursSupplyDefault("0")
 	bs.SetTotalCoinHoursSupplyDefault("0")
 
-	bs.infoRequester = *skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
+	bs.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
 }
 
 func (bs *BlockchainStatusModel) update() {

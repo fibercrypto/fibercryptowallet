@@ -5,5 +5,5 @@ type CryptoAccount interface {
 	ListAssets() []string
 	ScanUnspentOutputs() TransactionOutputIterator
 	ListTransactions() TransactionIterator
-	ListPendingTransactions() TransactionIterator
+	ListPendingTransactions() (TransactionIterator, error)
 }

@@ -1,6 +1,8 @@
 package skycoin
 
 import (
+	"errors"
+
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -26,6 +28,13 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 			Name:     CoinHoursName,
 			Ticker:   CoinHoursTicker,
 			Family:   CoinHoursFamily,
+			HasBip44: false,
+			Accuracy: 0,
+		},
+		core.AltcoinMetadata{
+			Name:     CalculatedHoursName,
+			Ticker:   CalculatedHoursTicker,
+			Family:   CalculatedHoursFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
@@ -71,6 +80,16 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 	return wltEnvs
 }
 
+func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
+	var poolSection string
+	if netType == "MainNet" {
+		poolSection = sky.PoolSection
+	} else {
+		return nil, errors.New("Invalid netType")
+	}
+	return sky.NewSkycoinPEX(poolSection), nil
+
+}
 func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 	return &SkyFiberPlugin{
 		Params: params,

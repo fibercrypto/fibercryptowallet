@@ -39,9 +39,9 @@ func (cm *ConfigManager) init() {
 func (cm *ConfigManager) edit(node, src string, tp bool) {
 	var tpSrc int
 	if tp {
-		tpSrc = local.RemoteWallet
-	} else {
 		tpSrc = local.LocalWallet
+	} else {
+		tpSrc = local.RemoteWallet
 	}
 	cm.configManager.EditWalletSource(1, src, tpSrc)
 	cm.configManager.EditNode(node)

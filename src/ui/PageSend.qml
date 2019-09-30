@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import Transactions 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
@@ -11,11 +12,17 @@ Page {
     id: root
 
     property alias advancedMode: switchAdvancedMode.checked
+    property string walletSelected
+    property string walletEncrypted
+    property string destinationAddress
+    property string amount
+    property QTransaction txn
 
     footer: ToolBar {
         id: tabBarSend
-        Material.primary: Material.Blue
-        Material.accent: Material.Yellow
+        Material.theme: applicationWindow.Material.theme
+        Material.primary: applicationWindow.accentColor
+        Material.foreground: applicationWindow.Material.background
         Material.elevation: 0
 
         ToolButton {
@@ -25,7 +32,46 @@ Page {
             icon.source: "qrc:/images/resources/images/icons/send.svg"
 
             onClicked: {
+
+                var isEncrypted
+                var walletSelected
+                if (advancedMode){
+                    var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
+                    var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
+                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()
+                    var destinationSummary = stackView.currentItem.advancedPage.getDestinationsSummary()
+                    var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
+                    var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
+                    var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
+                    if (outs.length > 0){
+                        console.log(outs)
+                        txn = walletManager.sendFromOutputs(walletSelected, outs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                    } else {
+                        if (addrs.length == 0){
+                            addrs = stackView.currentItem.advancedPage.getAllAddresses()
+                        }
+                        txn = walletManager.sendFromAddresses(walletSelected, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                    } 
+                    
+                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
+                } else{
+                    walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
+                    isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
+                    txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
+                }
+                dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
+                //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
+                dialogSendTransaction.previewType = TransactionDetails.Type.Send
+                dialogSendTransaction.previewAmount = txn.amount
+                dialogSendTransaction.previewHoursReceived = parseInt(txn.hoursTraspassed)
+                dialogSendTransaction.previewHoursBurned = parseInt(txn.hoursBurned)
+                dialogSendTransaction.previewtransactionID = txn.transactionId
+                dialogSendTransaction.inputs = txn.inputs
+                dialogSendTransaction.outputs = txn.outputs
+                dialogSendTransaction.wallet = walletSelected
                 dialogSendTransaction.open()
+                
+                
             }
         }
     }
@@ -59,32 +105,58 @@ Page {
 
         StackView {
             id: stackView
+
+            property string walletSelected: simple.walletSelected
+            property string destinationAddress: simple.destinationAddress
+            property string amount: simple.amount
+            
             anchors.fill: parent
             initialItem: componentSimple
-            clip: true
+            clip: true            
 
             Component {
                 id: componentSimple
+                
                 ScrollView {
-                    contentWidth: simple.implicitWidth
-                    contentHeight: simple.implicitHeight
+                    id: scrollViewSimple
+                    property alias simplePage: simple
+                    contentWidth: simple.width
+                    contentHeight: simple.height
                     clip: true
+
                     SubPageSendSimple {
                         id: simple
-                        implicitWidth: stackView.width
+
+                        width: stackView.width
+                        onWalletSelectedChanged: {
+                            root.walletSelected = walletSelected
+                        }
+                        onAmountChanged: {
+                            root.amount = amount
+                        }
+                        onDestinationAddressChanged: {
+                            root.destinationAddress = destinationAddress
+                        }
+						onWalletEncryptedChanged: {
+							root.walletEncrypted = walletEncrypted
+						}
                     }
                 }
             }
 
             Component {
                 id: componentAdvanced
+
                 ScrollView {
-                    contentWidth: advanced.implicitWidth
-                    contentHeight: advanced.implicitHeight
+                    id: scrollViewAdvanced
+                    property alias advancedPage: advanced
+                    contentWidth: advanced.width
+                    contentHeight: advanced.height
                     clip: true
+
                     SubPageSendAdvanced {
                         id: advanced
-                        implicitWidth: stackView.width
+                        width: stackView.width
                     }
                 }
             }
@@ -94,13 +166,17 @@ Page {
     DialogSendTransaction {
         id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
-
-        readonly property real maxHeight: expanded ? 690 : 490
+        property string wallet
+        readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
         Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
         
         modal: true
         focus: true
+		onAccepted: {
+			var signedTxn = walletManager.signTxn(wallet,"source", dialogSendTransaction.passwordText, [], txn)
+			var injected = walletManager.broadcastTxn(signedTxn)
+		}
     }
 }

@@ -15,61 +15,31 @@ Item {
     property alias interactive: listViewFilters.interactive
     property alias contentHeight: listViewFilters.contentHeight
     
-    
-    
     clip: true
 
     ListView {
-
         id: listViewFilters
         
         anchors.fill: parent
-        maximumFlickVelocity: 800
         spacing: 10
         
-        
-
         model: modelFilters
-        delegate: HistoryFilterListDelegate {
-            id: filterDelegate
-            
-           
-
-            
-        }
-        
+        delegate: HistoryFilterListDelegate {}
     }
 
-    
-
-    
-
-    ModelManager{
+    ModelManager {
         id: modelManager
-        property Timer timer: Timer{
-            id: modelManagerTimer
-            repeat: false
-            running: true
-            interval: 0
-            onTriggered:{
-                modelManager.setWalletManager(walletManager)
-            }
+        
+        Component.onCompleted: {
+            setWalletManager(walletManager)
         }
     }
-    WalletModel{
+
+    WalletModel {
         id: modelFilters
-        property Timer timer: Timer {
-        
-                                    id: walletModelTimer
-                                    repeat: false
-                                    running: true
-                                    interval: 0
-                                    onTriggered: {
-                                        modelFilters.loadModel(walletManager.getWallets())
-                                        walletModelTimer.running = false
 
-                                    }
-
-                                }
+        Component.onCompleted: {
+            loadModel(walletManager.getWallets())
+        }
     }
 }

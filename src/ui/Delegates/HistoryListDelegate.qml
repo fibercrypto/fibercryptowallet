@@ -27,15 +27,10 @@ ItemDelegate {
     readonly property real delegateHeight: 30
     
     signal qrCodeRequested(var data)
-
-    Component.onCompleted: {
-        root.qrCodeRequested.connect(genQR)
-    }
-
-    function genQR(data) {
+    
+    onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
-
     }
 
     implicitWidth: parent.width

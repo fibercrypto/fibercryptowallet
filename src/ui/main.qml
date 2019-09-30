@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import Qt.labs.settings 1.0
 import WalletsManager 1.0
 import Config 1.0
 
@@ -11,18 +12,34 @@ import "Dialogs/" // For quick UI development, switch back to resources when mak
 
 ApplicationWindow {
     id: applicationWindow
+    
+    property bool skipAccentColorAnimation: false
+    property bool accentColorAnimationActive: false
+    property color accentColor: settings.value("style/material/accent", Material.accent)
+    Behavior on accentColor {
+        SequentialAnimation {
+            PropertyAction { target: applicationWindow; property: "accentColorAnimationActive"; value: true }
+            ColorAnimation { duration: skipAccentColorAnimation ? 0 : 200 }
+            PropertyAction { target: applicationWindow; property: "accentColorAnimationActive"; value: false }
+        }
+    }
+
     visible: true
     width: 680
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
-   
+    Material.theme: ~~settings.value("style/material/theme", Material.Light)
+    Material.accent: accentColor
+
+    function flash() {
+        flasher.flash()
+    }
 
     menuBar: CustomMenuBar {
         id: customMenuBar
 
         onOutputsRequested: {
             generalStackView.openOutputsPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Outputs")
             
             enableOutputs = false
@@ -37,7 +54,6 @@ ApplicationWindow {
 
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Pending transactions")
             
             enableOutputs = true
@@ -50,7 +66,6 @@ ApplicationWindow {
 
         onBlockchainRequested: {
             generalStackView.openBlockchainPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Blockchain")
 
             enableOutputs = true
@@ -62,7 +77,6 @@ ApplicationWindow {
 
         onNetworkingRequested: {
             generalStackView.openNetworkingPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Networking")
 
             enableOutputs = true
@@ -74,7 +88,6 @@ ApplicationWindow {
 
         onSettingsRequested: {
             generalStackView.openSettingsPage()
-            menuBarColor = Material.color(Material.Blue)
             customHeader.text = qsTr("Settings")
 
             enableOutputs = true
@@ -91,6 +104,10 @@ ApplicationWindow {
         onAboutQtRequested: {
             dialogAboutQt.open()
         }
+
+        onLicenseRequested: {
+            dialogAboutLicense.open()
+        }
     } // CustomMenuBar
 
     CustomHeader {
@@ -103,9 +120,14 @@ ApplicationWindow {
         //property WalletManager  walletManger: WalletManager{
         //id: walletManager
         //}
-        WalletManager{
+        WalletManager {
             id: walletManager
         }
+    }
+
+    //! Settings
+    Settings {
+        id: settings
     }
 
     //! Dialogs
@@ -218,5 +240,48 @@ ApplicationWindow {
         anchors.centerIn: parent
         width: (minimumParentSideSize / 3) * 2
         height: (parent.height / 3) * 2
+    }
+
+    DialogAboutLicense {
+        id: dialogAboutLicense
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width - 40
+        height: applicationWindow.height - 40
+        
+        focus: true
+        modal: true
+    }
+
+    //! This must be the last object (i.e. the one with the greater `z` value)
+    Rectangle {
+        id: flasher
+
+        property int duration: 500
+
+        function flash() {
+            if (flashAnimation.running) {
+                flashAnimation.restart()
+            } else {
+                flashAnimation.start()
+            }
+        }
+
+        y: -customMenuBar.height
+        width: applicationWindow.width
+        height: applicationWindow.height
+        color: "white"
+        opacity: 0.0
+        z: customMenuBar.z + 1
+
+        NumberAnimation {
+            id: flashAnimation
+
+            target: flasher
+            property: "opacity"
+            from: 1.0; to: 0.0
+            duration: flasher.duration
+            easing.type: Easing.InQuad
+        }
     }
 }

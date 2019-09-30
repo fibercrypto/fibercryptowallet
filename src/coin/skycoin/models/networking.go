@@ -51,7 +51,7 @@ func (remoteNetwork *SkycoinNetworkConnections) newClient() *api.Client {
 	return api.NewClient(remoteNetwork.nodeAddress)
 }
 
-func (remoteNetwork *SkycoinNetworkConnections) ListNetworks() core.PexNodeIterator {
+func (remoteNetwork *SkycoinNetworkConnections) ListPeers() core.PexNodeIterator {
 
 	c := remoteNetwork.newClient()
 	nets, err := c.NetworkConnections(nil)
@@ -78,32 +78,32 @@ type SkycoinPexNode struct {
 	LastSeenOut int64
 }
 
-func (network SkycoinPexNode) GetIp() string {
+func (network *SkycoinPexNode) GetIp() string {
 	return network.Ip
 }
 
-func (network SkycoinPexNode) GetPort() uint16 {
+func (network *SkycoinPexNode) GetPort() uint16 {
 	return network.Port
 }
 
-func (network SkycoinPexNode) GetBlockHeight() uint64 {
+func (network *SkycoinPexNode) GetBlockHeight() uint64 {
 	return network.Block
 }
 
-func (network SkycoinPexNode) IsTrusted() bool {
+func (network *SkycoinPexNode) IsTrusted() bool {
 	return network.Source
 }
 
-func (network SkycoinPexNode) GetLastSeenIn() int64 {
+func (network *SkycoinPexNode) GetLastSeenIn() int64 {
 	return network.LastSeenIn
 }
 
-func (network SkycoinPexNode) GetLastSeenOut() int64 {
+func (network *SkycoinPexNode) GetLastSeenOut() int64 {
 	return network.LastSeenOut
 }
 
-func connectionsToNetwork(connection readable.Connection) SkycoinPexNode {
-	return SkycoinPexNode{
+func connectionsToNetwork(connection readable.Connection) *SkycoinPexNode {
+	return &SkycoinPexNode{
 		Ip:          strings.Split(connection.Addr, ":")[0],
 		Port:        connection.ListenPort,
 		LastSeenIn:  connection.LastSent,

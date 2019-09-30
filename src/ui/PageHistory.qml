@@ -78,27 +78,24 @@ Page {
         standardButtons: Dialog.Close
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
         title: qsTr("Available filters")
-        onClosed:{
+
+        onClosed: {
             modelTransactions.clear()
             modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
-            
-
         }
         
         HistoryFilterList {
             id: filter
             anchors.fill: parent
-           
-            
-
         }
-    } // ToolTip
+    } // Dialog
 
     DialogTransactionDetails {
         id: dialogTransactionDetails
-        anchors.centerIn: Overlay.overlay
 
         readonly property real maxHeight: expanded ? 590 : 370
+
+        anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
         Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
@@ -121,21 +118,11 @@ Page {
         id: modelTransactions
     }
 
-    HistoryManager{
-        id:historyManager
+    HistoryManager {
+        id: historyManager
     }
 
-    Timer {
-        
-        id: qTraModelTimer
-        repeat: false
-        running: true
-        interval: 0
-        onTriggered: {
-            
-            modelTransactions.addMultipleTransactions(historyManager.loadHistory())
-            qTraModelTimer.running = false
-            
-        }
+    Component.onCompleted: {
+        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
     }
 }
