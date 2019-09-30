@@ -96,9 +96,15 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsSendFrom
+
+                property var checkedElements: []
+                property var checkedElementsText: []
+                property int numberOfCheckedElements: checkedElements.length
+
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "name"
+                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("wallets selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No wallet selected")
                 model: WalletModel {
                     Component.onCompleted: {
                         loadModel(walletManager.getWallets())
@@ -108,20 +114,58 @@ Page {
                     console.log(model.wallets[currentIndex].fileName)
                     listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
                     listAddresses.removeAddress(0)
-
-                    
                 }
 
                 // Taken from Qt 5.13.0 source code:
-                delegate: MenuItem {
+                delegate: Control {
+                    id: rootDelegate
+
+                    property alias checked: checkDelegate.checked
+                    property alias text: checkDelegate.text
+
                     width: parent.width
-                    text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
-                    Material.foreground: comboBoxWalletsSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
-                    highlighted: comboBoxWalletsSendFrom.highlightedIndex === index
-                    hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
-                    leftPadding: highlighted ? 2*padding : padding // added
-                    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
-                }
+                    height: checkDelegate.height
+
+                    CheckDelegate {
+                        id: checkDelegate
+
+                        // Update the states saved in `checkedElements`
+                        onClicked: {
+                            if (checked) {
+                                var pos = comboBoxWalletsSendFrom.checkedElements.indexOf(index)
+                                if (pos < 0) {
+                                    comboBoxWalletsSendFrom.checkedElements.push(index)
+                                    comboBoxWalletsSendFrom.checkedElementsText.push(text)
+                                }
+                            } else {
+                                var pos = comboBoxWalletsSendFrom.checkedElements.indexOf(index)
+                                if (pos >= 0) {
+                                    comboBoxWalletsSendFrom.checkedElements.splice(pos, 1)
+                                    comboBoxWalletsSendFrom.checkedElementsText.splice(pos, 1)
+                                }
+                            }
+                            comboBoxWalletsSendFrom.numberOfCheckedElements = comboBoxWalletsSendFrom.checkedElements.length
+                        }
+
+                        width: parent.width
+                        text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
+                        // Load the saved state when the delegate is recicled:
+                        checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) > 0
+                        hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
+                        highlighted: hovered
+                        Material.foreground: checked ? parent.Material.accent : parent.Material.foreground
+                        leftPadding: highlighted ? 2*padding : padding // added
+                        Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+
+                        LayoutMirroring.enabled: true
+                        contentItem: Label {
+                            leftPadding: comboBoxWalletsSendFrom.indicator.width + comboBoxWalletsSendFrom.spacing
+                            text: checkDelegate.text
+                            verticalAlignment: Qt.AlignVCenter
+                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
+                        }
+                    } // CheckDelegate
+                } // Item (delegate)
             } // ComboBox (wallets, send from)
 
             RowLayout {
@@ -137,13 +181,14 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsAddressesSendFrom
+
                 //Layout.fillWidth: true
                 //Layout.topMargin: -12
                 //textRole: "address"
                 //model: AddressModel{
                 //    id: listAddresses
                 //}
-//
+
                 //// Taken from Qt 5.13.0 source code:
                 //delegate: MenuItem {
                 //    width: parent.width
@@ -164,7 +209,7 @@ Page {
                     }
                     return checkedItems
                 }
-                
+
                 Layout.fillWidth: true
                 Layout.topMargin: -12
 
@@ -220,7 +265,7 @@ Page {
 
                 CheckBox {
                     id: checkBoxUnspentOutputsUseAllOutputs
-                    text: qsTr("All outputs of the selected address")
+                    text: qsTr("All outputs of the selected addresses")
                     checked: true
                 }
             }
@@ -239,10 +284,13 @@ Page {
                 }
                 property var checkedElements: []
                 property var checkedElementsText: []
+                property int numberOfCheckedElements: checkedElements.length
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "outputID"
+                displayText: checkBoxUnspentOutputsUseAllOutputs.checked ? qsTr("All outputs selected") : numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("outputs selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No output selected")
+
                 enabled: !checkBoxUnspentOutputsUseAllOutputs.checked
                 model: QOutputs {
                     id: listOutputs
@@ -280,6 +328,7 @@ Page {
                                     comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
                             }
+                            comboBoxWalletsUnspentOutputsSendFrom.numberOfCheckedElements = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length
                         }
 
                         width: parent.width
@@ -287,6 +336,11 @@ Page {
                         font.family: "Code New Roman"
                         // Load the saved state when the delegate is recicled:
                         checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) > 0
+                        hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
+                        highlighted: hovered
+                        Material.foreground: checked ? parent.Material.accent : parent.Material.foreground
+                        leftPadding: highlighted ? 2*padding : padding // added
+                        Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
 
                         LayoutMirroring.enabled: true
                         contentItem: Label {
