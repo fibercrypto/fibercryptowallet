@@ -14,7 +14,7 @@ T.TextField {
                              contentHeight + topPadding + bottomPadding,
                              placeholder.implicitHeight + topPadding + bottomPadding)
 
-    topPadding: 8
+    topPadding: 16
     bottomPadding: 16
 
     color: enabled ? Material.foreground : Material.hintTextColor
