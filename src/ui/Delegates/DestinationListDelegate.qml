@@ -4,7 +4,9 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
+// import "qrc:/ui/src/ui/Controls"
 import "../" // For quick UI development, switch back to resources when making a release
+import "../Controls"
 
 Item {
     id: root
@@ -50,6 +52,7 @@ Item {
                 font.family: "Code New Roman"
                 placeholderText: qsTr("Destination address")
                 text: address
+                selectByMouse: true
                 Layout.fillWidth: true
             }
         }
@@ -57,6 +60,7 @@ Item {
             TextField {
                 id: textFieldDestinationAmount
                 text: sky
+                selectByMouse: true
                 implicitWidth: 60
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
@@ -71,6 +75,7 @@ Item {
             TextField {
                 id: textFieldCoinHoursAmount
                 text: coinHours
+                selectByMouse: true
                 implicitWidth: 60
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation

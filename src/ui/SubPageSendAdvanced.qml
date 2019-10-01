@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.12
 // import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 import "Dialogs/" // For quick UI development, switch back to resources when making a release
+import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: subPageSendAdvanced
@@ -309,6 +310,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -16
                 placeholderText: qsTr("Address to receive change")
+                selectByMouse: true
                 font.family: "Code New Roman"
             }
         } // ColumnLayout (custom change address)

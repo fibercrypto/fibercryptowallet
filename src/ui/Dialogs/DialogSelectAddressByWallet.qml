@@ -3,6 +3,10 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12 
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "../Controls" // For quick UI development, switch back to resources when making a release
+
 Dialog {
     id: dialogSelectAddressByWallet
 
@@ -29,6 +33,7 @@ Dialog {
             Layout.rightMargin: 10
             placeholderText: qsTr("Filter by wallet name")
             focus: true
+            selectByMouse: true
         }
 
         ListView {
