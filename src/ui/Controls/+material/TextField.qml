@@ -50,7 +50,7 @@ T.TextField {
         implicitWidth: 120
         height: 1
         color: control.hovered ? control.Material.primaryTextColor : control.Material.hintTextColor
-        Behavior on color { ColorAnimation {} }
+        Behavior on color { ColorAnimation { duration: 200 } }
 
         Rectangle {
             id: accentRect
@@ -67,7 +67,8 @@ T.TextField {
 
             y: parent.y
             implicitWidth: 120
-            width: control.activeFocus ? parent.width : 0
+            // width: 
+            Component.onCompleted: width = control.activeFocus ? parent.width : 0
             height: 2
             anchors.centerIn: parent
             color: control.Material.accentColor
@@ -77,18 +78,17 @@ T.TextField {
 
                 target: accentRect
                 property: "width"
-                from: 0
                 to: accentRect.parent.width
                 duration: 350
                 easing.type: Easing.OutQuint
             }
+
 
             NumberAnimation {
                 id: animationOnUnactiveFocus
 
                 target: accentRect
                 property: "opacity"
-                from: 1.0
                 to: 0.0
                 duration: 350
                 easing.type: Easing.OutQuint
@@ -98,8 +98,8 @@ T.TextField {
                     target.opacity = 1.0
                 }
             }
-        }
-    }
+        } // Rectangle (accent)
+    } // Ractangle (decoration)
 
     Menu {
         id: contextMenu
