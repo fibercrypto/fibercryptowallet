@@ -96,6 +96,19 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsSendFrom
+                function getCheckedDelegates() {
+                    //var checkedItems = []
+                    //for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
+                    //    if (popup.contentItem.contentItem.children[i].checked) {
+                    //        checkedItems.push(i)
+                    //        console.log("PUSHED -> "+i)
+                    //        console.log(popup.contentItem.contentItem.children[i].text)
+                    //    }
+                    //}
+                    //return checkedItems
+                    console.log("ELEM -> "+checkedElements)
+                    return checkedElements
+                }
 
                 property var checkedElements: []
                 property var checkedElementsText: []
@@ -110,14 +123,14 @@ Page {
                         loadModel(walletManager.getWallets())
                     }
                 } 
-                onCurrentTextChanged:{
-                    console.log(model.wallets[currentIndex].fileName)
-                    listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
-                    listAddresses.removeAddress(0)
-                    listOutputs.cleanModel()
-
-                    
-                }
+                //onCurrentTextChanged:{
+                //    console.log(model.wallets[currentIndex].fileName)
+                //    listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
+                //    listAddresses.removeAddress(0)
+                //    listOutputs.cleanModel()
+//
+                //    
+                //}
 
                 // Taken from Qt 5.13.0 source code:
                 delegate: Control {
@@ -140,12 +153,20 @@ Page {
                                     comboBoxWalletsSendFrom.checkedElements.push(index)
                                     comboBoxWalletsSendFrom.checkedElementsText.push(text)
                                 }
+                                // Update Outputs and Addresses Model
+                                console.log("CHECK -> "+comboBoxWalletsSendFrom.model.wallets[index].fileName)
+                                listAddresses.addAddresses(walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[index].fileName))
+                                listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                             } else {
                                 var pos = comboBoxWalletsSendFrom.checkedElements.indexOf(index)
                                 if (pos >= 0) {
                                     comboBoxWalletsSendFrom.checkedElements.splice(pos, 1)
                                     comboBoxWalletsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
+                                // Update Outputs and Addresses Model
+                                console.log("UNCHECK -> "+ comboBoxWalletsSendFrom.model.wallets[index].fileName)
+                                listAddresses.removeAddressesFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
+                                listOutputs.removeOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                             }
                             comboBoxWalletsSendFrom.numberOfCheckedElements = comboBoxWalletsSendFrom.checkedElements.length
                         }
@@ -245,10 +266,26 @@ Page {
 
                         onCheckedChanged:{
                             if (checked){
-                                //console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex])
-                                listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
-                                console.log(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
-                                //console.log(text)
+                                console.log(comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length)
+                                if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length > 1){
+                                    listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
+                                } else{
+                                    listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
+                                }                               
+                                                              
+                            } else{
+                                listOutputs.removeOutputsFromAddress(text)
+                                if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length == 0){
+                                    console.log("HERE")
+                                    var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+                                    for (var i = 0; i < indexs.length; i++){
+                                        console.log("TAKE -> "+indexs[i])
+                                        console.log(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
+                                        console.log(comboBoxWalletsSendFrom.model.wallets[indexs[i]].name)
+                                        console.log(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
+                                        listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
+                                    }
+                                }
                             }
                             //console.log("SDFDSFS")
                         }

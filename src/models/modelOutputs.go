@@ -1,6 +1,8 @@
 package models
 
 import (
+	"fmt"
+
 	"github.com/therecipe/qt/core"
 )
 
@@ -8,6 +10,8 @@ const (
 	OutputID = int(core.Qt__UserRole) + iota + 1
 	AddressSky
 	AddressCoinHours
+	AddressOwner
+	WalletOwner
 )
 
 type ModelOutputs struct {
@@ -23,6 +27,8 @@ type ModelOutputs struct {
 	_ func([]*QOutput) `slot:"insertOutputs"`
 	_ func([]*QOutput) `slot:"loadModel"`
 	_ func()           `slot:"cleanModel"`
+	_ func(string)     `slot:"removeOutputsFromAddress"`
+	_ func(string)     `slot:"removeOutputsFromWallet"`
 }
 
 type QOutput struct {
@@ -31,6 +37,8 @@ type QOutput struct {
 	_ string `property:"outputID"`
 	_ string `property:"addressSky"`
 	_ string `property:"addressCoinHours"`
+	_ string `property:"addressOwner"`
+	_ string `property:"walletOwner"`
 }
 
 func (m *ModelOutputs) init() {
@@ -38,6 +46,8 @@ func (m *ModelOutputs) init() {
 		OutputID:         core.NewQByteArray2("outputID", -1),
 		AddressSky:       core.NewQByteArray2("addressSky", -1),
 		AddressCoinHours: core.NewQByteArray2("addressCoinHours", -1),
+		AddressOwner:     core.NewQByteArray2("addressOwner", -1),
+		WalletOwner:      core.NewQByteArray2("walletOwner", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
@@ -47,6 +57,31 @@ func (m *ModelOutputs) init() {
 	m.ConnectInsertOutputs(m.insertOutputs)
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectCleanModel(m.cleanModel)
+	m.ConnectRemoveOutputsFromAddress(m.removeOutputsFromAddress)
+	m.ConnectRemoveOutputsFromWallet(m.removeOutputsFromWallet)
+}
+
+func (m *ModelOutputs) removeOutputsFromAddress(addr string) {
+	old := m.Outputs()
+	new := make([]*QOutput, 0)
+	for _, out := range old {
+		if out.AddressOwner() != addr {
+			new = append(new, out)
+		}
+	}
+	m.loadModel(new)
+}
+
+func (m *ModelOutputs) removeOutputsFromWallet(wltId string) {
+	old := m.Outputs()
+	new := make([]*QOutput, 0)
+	for _, out := range old {
+		fmt.Println(out.WalletOwner())
+		if out.WalletOwner() != wltId {
+			new = append(new, out)
+		}
+	}
+	m.loadModel(new)
 }
 
 func (m *ModelOutputs) rowCount(*core.QModelIndex) int {
@@ -81,6 +116,14 @@ func (m *ModelOutputs) data(index *core.QModelIndex, role int) *core.QVariant {
 		{
 			return core.NewQVariant1(qo.AddressCoinHours())
 		}
+	case AddressOwner:
+		{
+			return core.NewQVariant1(qo.AddressOwner())
+		}
+	case WalletOwner:
+		{
+			return core.NewQVariant1(qo.WalletOwner())
+		}
 	default:
 		{
 			return core.NewQVariant()
@@ -106,9 +149,9 @@ func (m *ModelOutputs) insertOutputs(mo []*QOutput) {
 }
 
 func (m *ModelOutputs) loadModel(mo []*QOutput) {
-	m.BeginInsertRows(core.NewQModelIndex(), 0, len(mo)-1)
+	m.BeginResetModel()
 	m.SetOutputs(mo)
-	m.EndInsertRows()
+	m.EndResetModel()
 }
 
 func (m *ModelOutputs) cleanModel() {

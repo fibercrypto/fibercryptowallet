@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -36,6 +37,7 @@ type WalletManager struct {
 	_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
 	_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
 	_ func() []*QAddress                                                                                                                     `slot:"getAllAddresses"`
+	_ func(wltId string) []*QOutput                                                                                                          `slot:"getOutputsFromWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -56,6 +58,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
 	walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
 	walletM.ConnectGetAllAddresses(walletM.getAllAddresses)
+	walletM.ConnectGetOutputsFromWallet(walletM.getOutputsFromWallet)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -189,6 +192,7 @@ func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
 	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
 	for outsIter.Next() {
 		qout := NewQOutput(nil)
+		qml.QQmlEngine_SetObjectOwnership(qout, qml.QQmlEngine__CppOwnership)
 		qout.SetOutputID(outsIter.Value().GetId())
 		skyV, err := outsIter.Value().GetCoins(sky.Sky)
 		if err != nil {
@@ -210,8 +214,62 @@ func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
 		}
 		sCh := util.FormatCoins(ch, quotient)
 		qout.SetAddressCoinHours(sCh)
+		qout.SetAddressOwner(addr.String())
+		qout.SetWalletOwner(wltId)
 		outs = append(outs, qout)
 	}
+	return outs
+}
+
+func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
+	outs := make([]*QOutput, 0)
+	addrIter, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
+	if err != nil {
+		fmt.Println(1)
+		fmt.Println(err.Error())
+		return nil
+	}
+	for addrIter.Next() {
+		outsIter := addrIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		for outsIter.Next() {
+			qout := NewQOutput(nil)
+			qml.QQmlEngine_SetObjectOwnership(qout, qml.QQmlEngine__CppOwnership)
+			qout.SetOutputID(outsIter.Value().GetId())
+			skyV, err := outsIter.Value().GetCoins(sky.Sky)
+			if err != nil {
+				fmt.Println(2)
+				fmt.Println(err.Error())
+				return nil
+			}
+			quotient, err := util.AltcoinQuotient(sky.Sky)
+			if err != nil {
+				fmt.Println(2)
+				fmt.Println(err.Error())
+				return nil
+			}
+			sSky := util.FormatCoins(skyV, quotient)
+			qout.SetAddressSky(sSky)
+			ch, err := outsIter.Value().GetCoins(sky.CoinHour)
+			if err != nil {
+				fmt.Println(3)
+				fmt.Println(err.Error())
+				return nil
+			}
+			quotient, err = util.AltcoinQuotient(sky.CoinHour)
+			if err != nil {
+				fmt.Println(4)
+				fmt.Println(err.Error())
+				return nil
+			}
+			sCh := util.FormatCoins(ch, quotient)
+			qout.SetAddressCoinHours(sCh)
+			qout.SetAddressOwner(addrIter.Value().String())
+			qout.SetWalletOwner(wltId)
+			outs = append(outs, qout)
+		}
+	}
+	fmt.Println("COUNT")
+	fmt.Println(len(outs))
 	return outs
 }
 
@@ -397,6 +455,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 		qAddress.SetAddress(addr.String())
 		qAddress.SetMarked(0)
 		qAddress.SetWallet(wlt.GetLabel())
+		qAddress.SetWalletId(wlt.GetId())
 		skyFl, err := addr.GetCryptoAccount().GetBalance("SKY")
 		if err != nil {
 
