@@ -9,14 +9,14 @@ TextField {
 
         focus: false
 
-        ItemDelegate { text: qsTr("Cut"); onClicked: { textField.cut(); contextMenu.close() } enabled: textField.selectedText && textField.echoMode === TextInput.Normal }
-        ItemDelegate { text: qsTr("Copy"); onClicked: { textField.copy(); contextMenu.close() } enabled: textField.selectedText && textField.echoMode === TextInput.Normal }
-        ItemDelegate { text: qsTr("Paste"); onClicked: { textField.paste(); contextMenu.close() } enabled: textField.canPaste }
+        ItemDelegate { text: qsTr("Cut"); onClicked: { control.cut(); contextMenu.close() } enabled: control.selectedText && control.echoMode === TextInput.Normal }
+        ItemDelegate { text: qsTr("Copy"); onClicked: { control.copy(); contextMenu.close() } enabled: control.selectedText && control.echoMode === TextInput.Normal }
+        ItemDelegate { text: qsTr("Paste"); onClicked: { control.paste(); contextMenu.close() } enabled: control.canPaste }
         MenuSeparator {}
-        ItemDelegate { text: qsTr("Select all"); onClicked: { textField.selectAll(); contextMenu.close() } enabled: textField.selectedText !== textField.text }
+        ItemDelegate { text: qsTr("Select all"); onClicked: { control.selectAll(); contextMenu.close() } enabled: control.selectedText !== control.text }
         MenuSeparator {}
-        ItemDelegate { text: qsTr("Undo"); onClicked: { textField.undo(); contextMenu.close() } enabled: textField.canUndo }
-        ItemDelegate { text: qsTr("Redo"); onClicked: { textField.redo(); contextMenu.close() } enabled: textField.canRedo }
+        ItemDelegate { text: qsTr("Undo"); onClicked: { control.undo(); contextMenu.close() } enabled: control.canUndo }
+        ItemDelegate { text: qsTr("Redo"); onClicked: { control.redo(); contextMenu.close() } enabled: control.canRedo }
     }
 
     MouseArea {
