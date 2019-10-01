@@ -31,16 +31,14 @@ T.TextField {
         property bool floatPlaceholderText: !(!control.length && !control.preeditText && (!control.activeFocus || control.horizontalAlignment !== Qt.AlignHCenter))
 
         x: (floatPlaceholderText ? 0 : control.leftPadding) - width * (1-scale)/2
-        // Behavior on x { NumberAnimation { duration: 150 } }
-        y: floatPlaceholderText ? (-height*0.85 + control.topPadding*0.85) : control.topPadding
-        Behavior on y { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
+        y: floatPlaceholderText ? -height*0.85 + control.topPadding*0.85 : control.topPadding
+        Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
         scale: floatPlaceholderText ? 0.85 : 1
-        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuint } }
+        Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
         height: control.height - (control.topPadding + control.bottomPadding)
         text: control.placeholderText
-        font: control.font
         color: floatPlaceholderText && control.activeFocus ? control.Material.accentColor : control.placeholderTextColor
-        Behavior on color { ColorAnimation { duration: 150 } }
+        Behavior on color { ColorAnimation { duration: 250 } }
         verticalAlignment: control.verticalAlignment
         elide: Text.ElideRight
         renderType: control.renderType
@@ -49,9 +47,57 @@ T.TextField {
     background: Rectangle {
         y: control.height - height - control.bottomPadding + 8
         implicitWidth: 120
-        height: control.activeFocus || control.hovered ? 2 : 1
-        color: control.activeFocus ? control.Material.accentColor
-                                   : (control.hovered ? control.Material.primaryTextColor : control.Material.hintTextColor)
+        height: 1
+        color: control.hovered ? control.Material.primaryTextColor : control.Material.hintTextColor
+        Behavior on color { ColorAnimation {} }
+
+        Rectangle {
+            id: accentRect
+
+            readonly property bool controlHasActiveFocus: control.activeFocus
+
+            onControlHasActiveFocusChanged: {
+                if (controlHasActiveFocus) {
+                    animationOnActiveFocus.start()
+                } else {
+                    animationOnUnactiveFocus.start()
+                }
+            }
+
+            y: parent.y
+            implicitWidth: 120
+            width: control.activeFocus ? parent.width : 0
+            height: 2
+            anchors.centerIn: parent
+            color: control.Material.accentColor
+
+            NumberAnimation {
+                id: animationOnActiveFocus
+
+                target: accentRect
+                property: "width"
+                from: 0
+                to: accentRect.parent.width
+                duration: 350
+                easing.type: Easing.OutQuint
+            }
+
+            NumberAnimation {
+                id: animationOnUnactiveFocus
+
+                target: accentRect
+                property: "opacity"
+                from: 1.0
+                to: 0.0
+                duration: 350
+                easing.type: Easing.OutQuint
+
+                onFinished: {
+                    target.width = 0
+                    target.opacity = 1.0
+                }
+            }
+        }
     }
 
     Menu {
@@ -59,14 +105,14 @@ T.TextField {
 
         focus: false
 
-        ItemDelegate { text: qsTr("Cut"); onClicked: { control.cut(); contextMenu.close() } enabled: control.selectedText && control.echoMode === TextInput.Normal }
-        ItemDelegate { text: qsTr("Copy"); onClicked: { control.copy(); contextMenu.close() } enabled: control.selectedText && control.echoMode === TextInput.Normal }
-        ItemDelegate { text: qsTr("Paste"); onClicked: { control.paste(); contextMenu.close() } enabled: control.canPaste }
+        ItemDelegate { text: qsTr("Cut"); icon.source: "qrc:/images/resources/images/icons/cut-content.svg"; onClicked: { control.cut(); contextMenu.close() } enabled: control.selectedText && control.echoMode === TextInput.Normal }
+        ItemDelegate { text: qsTr("Copy"); icon.source: "qrc:/images/resources/images/icons/copy-content.svg"; onClicked: { control.copy(); contextMenu.close() } enabled: control.selectedText && control.echoMode === TextInput.Normal }
+        ItemDelegate { text: qsTr("Paste"); icon.source: "qrc:/images/resources/images/icons/paste-content.svg"; onClicked: { control.paste(); contextMenu.close() } enabled: control.canPaste }
         MenuSeparator {}
-        ItemDelegate { text: qsTr("Select all"); onClicked: { control.selectAll(); contextMenu.close() } enabled: control.selectedText !== control.text }
+        ItemDelegate { text: qsTr("Select all"); icon.source: "qrc:/images/resources/images/icons/selectAll-content.svg"; onClicked: { control.selectAll(); contextMenu.close() } enabled: control.selectedText !== control.text }
         MenuSeparator {}
-        ItemDelegate { text: qsTr("Undo"); onClicked: { control.undo(); contextMenu.close() } enabled: control.canUndo }
-        ItemDelegate { text: qsTr("Redo"); onClicked: { control.redo(); contextMenu.close() } enabled: control.canRedo }
+        ItemDelegate { text: qsTr("Undo"); icon.source: "qrc:/images/resources/images/icons/undo.svg"; onClicked: { control.undo(); contextMenu.close() } enabled: control.canUndo }
+        ItemDelegate { text: qsTr("Redo"); icon.source: "qrc:/images/resources/images/icons/redo.svg"; onClicked: { control.redo(); contextMenu.close() } enabled: control.canRedo }
     }
 
     MouseArea {
