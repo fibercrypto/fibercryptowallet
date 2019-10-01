@@ -15,7 +15,7 @@ T.TextField {
                              placeholder.implicitHeight + topPadding + bottomPadding)
 
     topPadding: 16
-    bottomPadding: 16
+    bottomPadding: 9
 
     color: enabled ? Material.foreground : Material.hintTextColor
     selectionColor: Material.accentColor
@@ -29,11 +29,12 @@ T.TextField {
         id: placeholder
 
         property bool floatPlaceholderText: !(!control.length && !control.preeditText && (!control.activeFocus || control.horizontalAlignment !== Qt.AlignHCenter))
+        readonly property real placeholderTextScaleFactor: 0.9
 
         x: (floatPlaceholderText ? 0 : control.leftPadding) - width * (1-scale)/2
-        y: floatPlaceholderText ? -height*0.85 + control.topPadding*0.85 : control.topPadding
+        y: floatPlaceholderText ? -control.topPadding*(1 - placeholderTextScaleFactor) : control.topPadding
         Behavior on y { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-        scale: floatPlaceholderText ? 0.85 : 1
+        scale: floatPlaceholderText ? placeholderTextScaleFactor : 1
         Behavior on scale { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
         height: control.height - (control.topPadding + control.bottomPadding)
         text: control.placeholderText
