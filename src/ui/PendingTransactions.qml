@@ -110,4 +110,12 @@ Page {
     QPendingList{
         id: modelPendingTransactions
     }
+
+    BusyIndicator {
+        id: busyIndicator
+
+        anchors.centerIn: parent
+        // Create a `busy` property in the backend and bind it to `running` here:
+        running: true
+    }
 }
