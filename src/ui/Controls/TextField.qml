@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 
 TextField {
-    id: textField
+    id: control
 
     Menu {
         id: contextMenu
@@ -25,7 +25,7 @@ TextField {
         cursorShape: Qt.IBeamCursor
 
         onClicked: {
-            textField.focus = true
+            control.focus = true
             contextMenu.popup()
         }
     }
