@@ -34,7 +34,9 @@ Dialog {
 
     Flickable {
         id: flickable
-        anchors.fill: parent
+
+        implicitHeight: contentHeight
+        width: parent.width
         contentHeight: columnLayoutRoot.height
         clip: true
 
@@ -68,7 +70,10 @@ Dialog {
                 placeholderText: qsTr("Confirm password")
                 selectByMouse: true
                 echoMode: TextField.Password
-                Material.accent: text === textFieldPassword.text ? parent.Material.accent : Material.Red
+                enabled: textFieldPassword.text
+                opacity: textFieldPassword.text ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Material.accent: text === textFieldPassword.text ? parent.Material.accent : Material.color(Material.Red)
             }
         } // ColumnLayout (root)
     } // Flickable
