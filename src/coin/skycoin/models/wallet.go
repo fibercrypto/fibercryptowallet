@@ -405,7 +405,7 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 	return req, nil
 }
 
-func (wlt *RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse) (core.Transaction, error) {
+func (wlt *RemoteWallet) createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, client *api.Client, wltR *api.WalletResponse, options core.KeyValueStorage) (core.Transaction, error) {
 	var req api.WalletCreateTransactionRequest
 	if wltR.Meta.Encrypted {
 		req = api.WalletCreateTransactionRequest{
@@ -633,10 +633,10 @@ func (wlt *RemoteWallet) RemoveSignService(signSrv core.TxnSigner) error {
 // @param strIdxs may be `nil` for full signing; if set should contain indices of outputs that need to be signed
 func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.PasswordReader, strIdxs []string) (signedTxn core.Transaction, err error) {
 	var indices []int
-	if uxtos == nil {
+	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices = make([]int, len(uxtos))
+		indices = make([]int, len(strIdxs))
 		for i, strIdx := range strIdxs {
 			indices[i], err = strconv.Atoi(strIdx)
 			if err != nil {
@@ -912,7 +912,7 @@ func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.P
 	return
 }
 
-func (wlt *LocalWallet) signSkycoinTransaction(Txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
+func (wlt *LocalWallet) signSkycoinTxn(Txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
@@ -1357,10 +1357,10 @@ func (wlt *LocalWallet) RemoveSignService(signSrv core.TxnSigner) error {
 // @param strIdxs may be `nil` for full signing; if set should contain indices of outputs that need to be signed
 func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.PasswordReader, strIdxs []string) (signedTxn core.Transaction, err error) {
 	var indices []int
-	if uxtos == nil {
+	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices = make([]int, len(uxtos))
+		indices = make([]int, len(strIdxs))
 		for i, strIdx := range strIdxs {
 			indices[i], err = strconv.Atoi(strIdx)
 			if err != nil {

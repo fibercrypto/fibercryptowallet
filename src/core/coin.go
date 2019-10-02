@@ -30,7 +30,7 @@ type Transaction interface {
 	// GetId o retrieve transaction ID
 	GetId() string
 	// ComputeFee calculates transaction fee expressed in coins of asset represented by ticker
-	ComputeFee(ticker string) uint64
+	ComputeFee(ticker string) (uint64, error)
 }
 
 // TransactionIterator iterates over a sequence of transactions

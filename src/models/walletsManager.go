@@ -235,7 +235,8 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 	// Get wallet
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
 
-	txn, err := wlt.Sign(qTxn.txn, source, func(message string) (string, error) {
+	var uid core.UID = core.UID(source)
+	txn, err := wlt.Sign(qTxn.txn, uid, func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {
