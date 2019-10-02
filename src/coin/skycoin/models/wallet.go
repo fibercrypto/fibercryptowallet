@@ -721,6 +721,7 @@ func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
 				Type:      w.Type(),
 				CoinType:  string(w.Coin()),
 				WalletDir: wltSrv.walletDir,
+				signers:   make(map[core.UID]core.TxnSigner),
 			})
 		}
 	}
@@ -741,6 +742,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 		Type:      w.Type(),
 		CoinType:  string(w.Coin()),
 		WalletDir: wltSrv.walletDir,
+		signers:   make(map[core.UID]core.TxnSigner),
 	}
 }
 
@@ -783,6 +785,7 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Type:      wlt.Type(),
 		CoinType:  string(wlt.Coin()),
 		WalletDir: wltSrv.walletDir,
+		signers:   make(map[core.UID]core.TxnSigner),
 	}, nil
 }
 
@@ -891,9 +894,25 @@ type LocalWallet struct {
 	Encrypted bool
 	Type      string
 	WalletDir string
+	signers   map[core.UID]core.TxnSigner
 }
 
-func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
+func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
+	var signer core.TxnSigner
+	if signerID == wlt.GetSignerUID() {
+		signer = wlt
+	} else {
+		var isBound bool
+		if signer, isBound = wlt.signers[signerID]; !isBound {
+			logrus.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
+			return nil, errors.New("Unsupported signer")
+		}
+	}
+	txn, err = signer.SignTransaction(txn, pwd, index)
+	return
+}
+
+func (wlt *LocalWallet) signSkycoinTransaction(Txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
@@ -910,7 +929,7 @@ func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.Passwo
 	if err != nil {
 		return nil, err
 	}
-	pass, err := pwd("Insert your password")
+	pass, err := pwd("Type your password")
 	if err != nil {
 		return nil, err
 	}
@@ -961,16 +980,14 @@ func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.Passwo
 
 }
 
-func (wlt LocalWallet) Inject(txn string) error {
-	return nil
-}
-
 func (wlt *LocalWallet) GetId() string {
 	return wlt.Id
 }
+
 func (wlt *LocalWallet) GetLabel() string {
 	return wlt.Label
 }
+
 func (wlt *LocalWallet) SetLabel(wltName string) {
 	wltFile, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.GetId()))
 	if err != nil {
@@ -985,6 +1002,7 @@ func (wlt *LocalWallet) SetLabel(wltName string) {
 	wlt.Label = wltName
 
 }
+
 func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
 	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
 	bl, err := wlt.GetBalance(Sky)
@@ -1044,7 +1062,8 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 	return txn, nil
 
 }
-func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+
+func (wlt *LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
@@ -1140,7 +1159,8 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	return skyTxn, nil
 
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+
+func (wlt *LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
@@ -1308,4 +1328,54 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 
 	return NewSkycoinAddressIterator(addrs), nil
 
+}
+
+func (wlt *LocalWallet) AttachSignService(signSrv core.TxnSigner) error {
+	wlt.signers[signSrv.GetSignerUID()] = signSrv
+	return nil
+}
+
+func (wlt *LocalWallet) EnumerateSignServices() core.TxnSignerIterator {
+	// TODO: Implement
+	return nil
+}
+
+func (wlt *LocalWallet) RemoveSignService(signSrv core.TxnSigner) error {
+	uid := signSrv.GetSignerUID()
+	if _, isBound := wlt.signers[uid]; isBound {
+		delete(wlt.signers, uid)
+		return nil
+	}
+	// FIXME: Global error object
+	return errors.New("Value errors")
+}
+
+// SignTransaction according to Skycoin SkyFiber rules
+//
+// @param txn Transacion object
+// @param pwdReader password prompt to decode target wallet should it be needed
+// @param strIdxs may be `nil` for full signing; if set should contain indices of outputs that need to be signed
+func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.PasswordReader, strIdxs []string) (signedTxn core.Transaction, err error) {
+	var indices []int
+	if uxtos == nil {
+		indices = nil
+	} else {
+		indices = make([]int, len(uxtos))
+		for i, strIdx := range strIdxs {
+			indices[i], err = strconv.Atoi(strIdx)
+			if err != nil {
+				return nil, errors.New("Value error: Transaction output references must be integer for signing")
+			}
+		}
+	}
+	signedTxn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)
+	return
+}
+
+func (wlt *LocalWallet) GetSignerUID() core.UID {
+	return SignerIDLocalWallet
+}
+
+func (wlt *LocalWallet) GetSignerDescription() string {
+	return "Remote Skycoin wallet " + wlt.Id
 }
