@@ -233,24 +233,24 @@ Page {
                     }
                     return checkedItems
                 }
-
+                
                 Layout.fillWidth: true
                 Layout.topMargin: -12
 
-                
                 model: AddressModel{
                     id: listAddresses
                 }
                 textRole: "address"
 
+                // Taken from Qt 5.13.0 source code:
                 delegate: Item {
                     width: parent.width
-                    height: checkDelegate.height
+                    height: checkDelegateAddresses.height
 
-                    property alias checked: checkDelegate.checked
+                    property alias checked: checkDelegateAddresses.checked
 
                     CheckDelegate {
-                        id: checkDelegate
+                        id: checkDelegateAddresses
 
                         width: parent.width
                         text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
@@ -259,9 +259,9 @@ Page {
                         LayoutMirroring.enabled: true
                         contentItem: Label {
                             leftPadding: comboBoxWalletsAddressesSendFrom.indicator.width + comboBoxWalletsAddressesSendFrom.spacing
-                            text: checkDelegate.text
+                            text: checkDelegateAddresses.text
                             verticalAlignment: Qt.AlignVCenter
-                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
+                            color: checkDelegateAddresses.enabled ? checkDelegateAddresses.Material.foreground : checkDelegateAddresses.Material.hintTextColor
                         }
 
                         onCheckedChanged:{
@@ -343,15 +343,13 @@ Page {
                 }
 
                 delegate: Item {
-
-                    property alias checked: checkDelegate.checked
-                    property alias text: checkDelegate.text
+                    property alias checked: checkDelegateUnspentOutputs.checked
                     
                     width: parent.width
-                    height: checkDelegate.height
+                    height: checkDelegateUnspentOutputs.height
 
                     CheckDelegate {
-                        id: checkDelegate
+                        id: checkDelegateUnspentOutputs
 
                         // Update the states saved in `checkedElements`
                         onClicked: {
@@ -385,11 +383,11 @@ Page {
                         LayoutMirroring.enabled: true
                         contentItem: Label {
                             leftPadding: comboBoxWalletsUnspentOutputsSendFrom.indicator.width + comboBoxWalletsUnspentOutputsSendFrom.spacing
-                            text: checkDelegate.text
+                            text: checkDelegateUnspentOutputs.text
                             verticalAlignment: Qt.AlignVCenter
-                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
+                            color: checkDelegateUnspentOutputs.enabled ? checkDelegateUnspentOutputs.Material.foreground : checkDelegateUnspentOutputs.Material.hintTextColor
                         }
-                    } // CheckDelegate
+                    } // CheckDelegate (unspent outputs)
                 } // Item (delegate)
             } // ComboBox (outputs, send from)
 
