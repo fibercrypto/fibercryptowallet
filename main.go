@@ -20,7 +20,7 @@ func main() {
 	app.SetOrganizationName("Simelo")
 	app.SetApplicationName("FiberCrypto Wallet")
 	app.SetApplicationVersion("0.1")
-	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon.png"))
+	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon/appIcon.png"))
 
 	// Add this monospaced font
 	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/code-new-roman/code-new-roman.otf")

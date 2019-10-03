@@ -27,7 +27,7 @@ Dialog {
                 width: parent.width / 2
                 anchors.horizontalCenter: parent.horizontalCenter
                 fillMode: Image.PreserveAspectFit
-                source: "qrc:/images/resources/images/icons/appIcon.png"
+                source: "qrc:/images/resources/images/icons/appIcon/appIcon.png"
             }
 
             Label {

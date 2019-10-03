@@ -47,7 +47,7 @@ Dialog {
 
                 Image {
                     id: icon
-                    source: "qrc:/images/resources/images/icons/appIcon.png"
+                    source: "qrc:/images/resources/images/icons/appIcon/appIcon.png"
                     sourceSize: "64x64"
                     Layout.alignment: Qt.AlighLeft | Qt.AlignTop
                 }
