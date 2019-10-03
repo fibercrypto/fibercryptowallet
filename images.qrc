@@ -44,6 +44,7 @@
         <file>resources/images/icons/license.svg</file>
         <file>resources/images/icons/qt_logo_green_rgb.svg</file>
         <file>resources/images/icons/qt_logo_green_rgb_256x256.png</file>
+        <file>resources/images/icons/appIcon/splash.png</file>
         <file>resources/images/icons/appIcon/appIcon.png</file>
     </qresource>
 </RCC>
