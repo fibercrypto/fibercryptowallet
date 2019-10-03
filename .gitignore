@@ -8,6 +8,16 @@
 *.pro.user*
 CMake*
 
+# Icons
+resources/images/icons/appIcon/build/
+resources/images/icons/appIcon/appIcon.iconset/
+
+# MS Windows RC Object file
+winResources.syso
+
+# Darwin deployment
+darwin/Contents
+
 # Unit test / coverage reports
 htmlcov/
 .tox/
