@@ -10,6 +10,7 @@ import OutputsModels 1.0
 // import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 import "Dialogs/" // For quick UI development, switch back to resources when making a release
+import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: subPageSendAdvanced
@@ -32,11 +33,22 @@ Page {
     }
 
     function getSelectedWallet(){
-        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
+        
+        var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+        var files = []
+        for (var i=0; i < indexs.length; i++){
+            files.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
+        }
+        return files
     }
 
     function walletIsEncrypted(){
-        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
+        var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+        var enc = []
+        for (var i = 0; i < indexs.length; i++){
+            enc.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
+        }
+        return enc
     }
 
     function getDestinationsSummary(){
@@ -96,10 +108,14 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsSendFrom
+                function getCheckedDelegates() {
+                    return checkedElements
+                }
 
                 property var checkedElements: []
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupWallets.filterText
 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -110,24 +126,25 @@ Page {
                         loadModel(walletManager.getWallets())
                     }
                 } 
-                onCurrentTextChanged:{
-                    console.log(model.wallets[currentIndex].fileName)
-                    listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
-                    listAddresses.removeAddress(0)
-                    listOutputs.cleanModel()
-
-                    
+                
+                popup: FilterComboBoxPopup {
+                    id: filterPopupWallets
+                    comboBox: comboBoxWalletsSendFrom
+                    filterPlaceholderText: qsTr("Filter wallets by name")
                 }
 
                 // Taken from Qt 5.13.0 source code:
-                delegate: Control {
+                delegate: Item {
                     id: rootDelegate
 
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsSendFrom.filterString.toLowerCase())
 
                     width: parent.width
-                    height: checkDelegate.height
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
 
                     CheckDelegate {
                         id: checkDelegate
@@ -140,12 +157,18 @@ Page {
                                     comboBoxWalletsSendFrom.checkedElements.push(index)
                                     comboBoxWalletsSendFrom.checkedElementsText.push(text)
                                 }
+                                // Update Outputs and Addresses Model
+                                listAddresses.addAddresses(walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[index].fileName))
+                                listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                             } else {
                                 var pos = comboBoxWalletsSendFrom.checkedElements.indexOf(index)
                                 if (pos >= 0) {
                                     comboBoxWalletsSendFrom.checkedElements.splice(pos, 1)
                                     comboBoxWalletsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
+                                // Update Outputs and Addresses Model
+                                listAddresses.removeAddressesFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
+                                listOutputs.removeOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                             }
                             comboBoxWalletsSendFrom.numberOfCheckedElements = comboBoxWalletsSendFrom.checkedElements.length
                         }
@@ -153,7 +176,7 @@ Page {
                         width: parent.width
                         text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
                         // Load the saved state when the delegate is recicled:
-                        checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) > 0
+                        checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) >= 0
                         hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
                         highlighted: hovered
                         Material.foreground: checked ? parent.Material.accent : parent.Material.foreground
@@ -245,10 +268,26 @@ Page {
 
                         onCheckedChanged:{
                             if (checked){
-                                //console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex])
-                                listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
-                                console.log(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
-                                //console.log(text)
+                                console.log(comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length)
+                                if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length > 1){
+                                    listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
+                                } else{
+                                    listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
+                                }                               
+                                                              
+                            } else{
+                                listOutputs.removeOutputsFromAddress(text)
+                                if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length == 0){
+                                    console.log("HERE")
+                                    var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+                                    for (var i = 0; i < indexs.length; i++){
+                                        console.log("TAKE -> "+indexs[i])
+                                        console.log(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
+                                        console.log(comboBoxWalletsSendFrom.model.wallets[indexs[i]].name)
+                                        console.log(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
+                                        listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
+                                    }
+                                }
                             }
                             //console.log("SDFDSFS")
                         }
@@ -277,17 +316,12 @@ Page {
                 id: comboBoxWalletsUnspentOutputsSendFrom
 
                 function getCheckedDelegates() {
-                    var checkedItems = []
-                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
-                        if (popup.contentItem.contentItem.children[i].checked) {
-                            checkedItems.push(i)
-                        }
-                    }
-                    return checkedItems
+                    return checkedElements
                 }
                 property var checkedElements: []
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupOutputs.filterText
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -302,16 +336,27 @@ Page {
                 onModelChanged: {
                     if (!model) {
                         checkedElements = []
+                        checkedElementsText = []
+                        numberOfCheckedElements = 0
                     }
+                }
+                
+                popup: FilterComboBoxPopup {
+                    id: filterPopupOutputs
+                    comboBox: comboBoxWalletsUnspentOutputsSendFrom
+                    filterPlaceholderText: qsTr("Filter outputs")
                 }
 
                 delegate: Item {
 
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsUnspentOutputsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsUnspentOutputsSendFrom.filterString.toLowerCase())
                     
                     width: parent.width
-                    height: checkDelegate.height
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
 
                     CheckDelegate {
                         id: checkDelegate
@@ -338,7 +383,7 @@ Page {
                         text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
                         font.family: "Code New Roman"
                         // Load the saved state when the delegate is recicled:
-                        checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) > 0
+                        checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) >= 0
                         hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
                         highlighted: hovered
                         Material.foreground: checked ? parent.Material.accent : parent.Material.foreground
@@ -438,6 +483,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -16
                 placeholderText: qsTr("Address to receive change")
+                selectByMouse: true
                 font.family: "Code New Roman"
             }
         } // ColumnLayout (custom change address)
@@ -494,19 +540,6 @@ Page {
         }
     }
 
-    //ListModel { // EXAMPLE
-    //    id: modelAddressesByWallet
-//
-    //    ListElement { wallet: "Wallet A"; address: "qrxw7364w8xerusftaxkw87ues" }
-    //    ListElement { wallet: "Wallet A"; address: "8745yuetsrk8tcsku4ryj48ije" }
-    //    ListElement { wallet: "Wallet A"; address: "gfdhgs343kweru38200384uwqd" }
-    //    ListElement { wallet: "Wallet B"; address: "00qdqsdjkssvmchskjkxxdg374" }
-    //    ListElement { wallet: "Wallet B"; address: "hkdti34aoliwuiu3qsoiemdfhc" }
-    //    ListElement { wallet: "Wallet C"; address: "1oiwrelkrir73o8ielukaur9qq" }
-    //    ListElement { wallet: "Wallet C"; address: "piur948o9q8m0a8qsye8q3omxs" }
-    //    ListElement { wallet: "Wallet C"; address: "4ntd4im93usppturm83ysniroe" }
-    //    ListElement { wallet: "Wallet C"; address: "meje73o50ejdwumfle92rndlwm" }
-    //}
     AddressModel{
         id: modelAddressesByWallet
     }

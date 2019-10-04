@@ -12,6 +12,7 @@ const (
 	ACoinHours = int(core.Qt__UserRole) + 3
 	AMarked    = int(core.Qt__UserRole) + 4
 	AWallet    = int(core.Qt__UserRole) + 5
+	AWalletId  = int(core.Qt__UserRole) + 6
 )
 
 type AddressesModel struct {
@@ -23,10 +24,12 @@ type AddressesModel struct {
 	_ []*QAddress              `property:"addresses"`
 
 	_ func(*QAddress)                        `slot:"addAddress"`
+	_ func([]*QAddress)                      `slot:"addAddresses"`
 	_ func(int)                              `slot:"removeAddress"`
 	_ func(int, string, uint64, uint64, int) `slot:"editAddress"`
 	_ func([]*QAddress)                      `slot:"loadModel"`
 	_ int                                    `property:"count"`
+	_ func(string)                           `slot:"removeAddressesFromWallet"`
 }
 
 type QAddress struct {
@@ -37,6 +40,7 @@ type QAddress struct {
 	_ string `property:"addressCoinHours"`
 	_ int    `property:"marked"`
 	_ string `property:"wallet"`
+	_ string `property:"walletId"`
 }
 
 func (m *AddressesModel) init() {
@@ -46,6 +50,7 @@ func (m *AddressesModel) init() {
 		ACoinHours: core.NewQByteArray2("addressCoinHours", -1),
 		AMarked:    core.NewQByteArray2("marked", -1),
 		AWallet:    core.NewQByteArray2("wallet", -1),
+		AWalletId:  core.NewQByteArray2("walletId", -1),
 	})
 	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
 	m.ConnectData(m.data)
@@ -57,10 +62,23 @@ func (m *AddressesModel) init() {
 	m.ConnectEditAddress(m.editAddress)
 	m.ConnectRemoveAddress(m.removeAddress)
 	m.ConnectLoadModel(m.loadModel)
+	m.ConnectRemoveAddressesFromWallet(m.removeAddressesFromWallet)
+	m.ConnectAddAddresses(m.addAddresses)
 	m.SetCount(0)
 
 }
 
+func (m *AddressesModel) removeAddressesFromWallet(wltId string) {
+	old := m.Addresses()
+	new := make([]*QAddress, 0)
+	for _, addr := range old {
+		if addr.WalletId() != wltId {
+			new = append(new, addr)
+		}
+	}
+	m.loadModel(new)
+	m.removeAddress(0)
+}
 func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() {
 		return core.NewQVariant()
@@ -94,6 +112,10 @@ func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant 
 		{
 			return core.NewQVariant1(a.Wallet())
 		}
+	case AWalletId:
+		{
+			return core.NewQVariant1(a.WalletId())
+		}
 
 	default:
 		{
@@ -120,6 +142,12 @@ func (m *AddressesModel) addAddress(address *QAddress) {
 	m.SetAddresses(append(m.Addresses(), address))
 	m.EndInsertRows()
 	m.SetCount(m.Count() + 1)
+}
+
+func (m *AddressesModel) addAddresses(addresses []*QAddress) {
+	for _, addr := range addresses {
+		m.addAddress(addr)
+	}
 }
 
 func (m *AddressesModel) removeAddress(row int) {

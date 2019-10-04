@@ -38,17 +38,16 @@ Dialog {
                     + qsTr("<p><b>License terms and disclaimer</b><br>"
                     + "This program is free software; you can redistribute it and/or modify "
                     + "it under the terms of the <a href=\"License\">GNU General Public License</a> as published by "
-                    + "the Free Software Foundation; either version 2 of the License, or "
+                    + "the Free Software Foundation; either version 3 of the License, or "
                     + "(at your option) any later version.<br>"
                     + "This program is distributed in the hope that it will be useful, "
                     + "but WITHOUT ANY WARRANTY; without even the implied warranty of "
                     + "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the "
                     + "<a href=\"License\">GNU General Public License</a> for more details.<br>"
                     + "You should have received a copy of the <a href=\"License\">GNU General Public License</a> along "
-                    + "with this program; if not, write to the Free Software Foundation, Inc., "
-                    + "51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.</p><br>")
+                    + "with this program; if not, see <a href=\"%1\">%1</a>.</p><br>").arg("http://www.gnu.org/licenses/")
 
-                    + qsTr("<b>Contact information:</b> <a href=\"mailto:%1\">%1</a>").arg("ceperez1996@gmail.com")
+                    + qsTr("<b>Contact information:</b> <a href=\"mailto:%1\">%1</a>").arg("simelo@gmail.com")
                 wrapMode: Label.Wrap
                 onHoveredLinkChanged: {
                     mouseAreaLinkHovered.cursorShape = hoveredLink ? Qt.PointingHandCursor : Qt.ArrowCursor

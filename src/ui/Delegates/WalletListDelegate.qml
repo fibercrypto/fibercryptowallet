@@ -118,6 +118,8 @@ Item {
                     dialogAddAddresses.open()
                 }
                 onEditWalletRequested: {
+                    dialogEditWallet.originalWalletName = name
+                    dialogEditWallet.name = name
                     dialogEditWallet.open()
                 }
             }
@@ -172,7 +174,7 @@ Item {
 
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+        height: applicationWindow.height > 320 ? 320 - 40 : applicationWindow.height - 40
 
         headerMessage: qsTr("<b>Warning:</b> for security reasons, it is not recommended to keep the wallets unencrypted. Caution is advised.")
         headerMessageColor: Material.color(Material.Red)
@@ -190,7 +192,7 @@ Item {
 
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+        height: applicationWindow.height > implicitHeight + 40 ? implicitHeight : applicationWindow.height - 40
 
         headerMessage: qsTr("We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet.")
         headerMessageColor: Material.color(Material.Red)
@@ -211,14 +213,8 @@ Item {
         modal: true
 
         onAccepted: {
-            
-            var qwallet = walletManager.editWallet(fileName, newLabel)
-            
+            var qwallet = walletManager.editWallet(fileName, name)
             walletModel.editWallet(index, qwallet.name, encryptionEnabled, qwallet.sky, qwallet.coinHours )
-    
-        }
-        onRejected: {
-            console.log("Editting rejected")
         }
     } // DialogEditWallet
 

@@ -3,6 +3,10 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "../Controls" // For quick UI development, switch back to resources when making a release
+
 Dialog {
     id: walletCreateDialog
 
@@ -53,6 +57,7 @@ Dialog {
                         placeholderText: qsTr("New hardware wallet")
                         Layout.fillWidth: true
                         focus: walletCreateDialog.focus
+                        selectByMouse: true
 
                         onTextChanged: {
                             standardButton(Dialog.Ok).enabled = text !== ""

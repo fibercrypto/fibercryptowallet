@@ -2,6 +2,10 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "Controls" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: root
 
@@ -108,12 +112,11 @@ Item {
         anchors.right: parent.right
         height: 80
         wrapMode: TextArea.Wrap
+        clip: true
 
         selectByMouse: true
         KeyNavigation.priority: KeyNavigation.BeforeItem
         KeyNavigation.tab: nextTabItem
         onTextChanged: dataModified()
-
-        
     }
 }
