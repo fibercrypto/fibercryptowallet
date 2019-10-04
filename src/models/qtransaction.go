@@ -45,7 +45,7 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 		addr := in.GetSpentOutput().GetAddress().String()
 		inputsAddresses[addr] = struct{}{}
 		qIn.SetAddress(addr)
-			quotient, err := util.AltcoinQuotient("SKY")
+		quotient, err := util.AltcoinQuotient("SKY")
 		if err != nil {
 			return nil, err
 		}
@@ -58,7 +58,7 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 		if err != nil {
 			return nil, err
 		}
-		ch, err := in.GetCoins("SKYCH")
+		ch, err := in.GetCoins("SKYCHC")
 		if err != nil {
 			return nil, err
 		}

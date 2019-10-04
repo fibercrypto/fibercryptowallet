@@ -115,6 +115,7 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 		})
 	}
 	changeAddr := &GenericAddress{change}
+	fmt.Printf("Burn Factor %s\n", burnFactor)
 	opt := NewTransferOptions()
 	opt.AddKeyValue("BurnFactor", burnFactor)
 	if automaticCoinHours {
@@ -125,11 +126,15 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 
 	txn, err := wlt.Spend(outputsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
+		fmt.Println("ERWQ")
+		fmt.Println(err.Error())
 		return nil
 	}
 
 	qtxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
+		fmt.Println("2!#")
+		fmt.Println(err.Error())
 		return nil
 	}
 	return qtxn
@@ -165,11 +170,15 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 
 	txn, err := wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
+		fmt.Println("ERE")
+		fmt.Println(err.Error())
 		return nil
 	}
 
 	qtxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
+		fmt.Println("EWER")
+		fmt.Println(err.Error())
 		return nil
 	}
 	return qtxn

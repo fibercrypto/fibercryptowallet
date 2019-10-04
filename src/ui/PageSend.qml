@@ -38,7 +38,7 @@ Page {
                 if (advancedMode){
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
                     var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
-                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()
+                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()[0]
                     var destinationSummary = stackView.currentItem.advancedPage.getDestinationsSummary()
                     var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
@@ -54,7 +54,7 @@ Page {
                         txn = walletManager.sendFromAddresses(walletSelected, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } 
                     
-                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
+                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()[0]
                 } else{
                     walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()

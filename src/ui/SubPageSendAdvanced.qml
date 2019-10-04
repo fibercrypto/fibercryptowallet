@@ -33,11 +33,22 @@ Page {
     }
 
     function getSelectedWallet(){
-        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
+        
+        var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+        var files = []
+        for (var i=0; i < indexs.length; i++){
+            files.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
+        }
+        return files
     }
 
     function walletIsEncrypted(){
-        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
+        var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+        var enc = []
+        for (var i = 0; i < indexs.length; i++){
+            enc.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
+        }
+        return enc
     }
 
     function getDestinationsSummary(){
@@ -165,7 +176,7 @@ Page {
                         width: parent.width
                         text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
                         // Load the saved state when the delegate is recicled:
-                        checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) > 0
+                        checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) >= 0
                         hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
                         highlighted: hovered
                         Material.foreground: checked ? parent.Material.accent : parent.Material.foreground
@@ -305,13 +316,7 @@ Page {
                 id: comboBoxWalletsUnspentOutputsSendFrom
 
                 function getCheckedDelegates() {
-                    var checkedItems = []
-                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
-                        if (popup.contentItem.contentItem.children[i].checked) {
-                            checkedItems.push(i)
-                        }
-                    }
-                    return checkedItems
+                    return checkedElements
                 }
                 property var checkedElements: []
                 property var checkedElementsText: []
@@ -378,7 +383,7 @@ Page {
                         text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
                         font.family: "Code New Roman"
                         // Load the saved state when the delegate is recicled:
-                        checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) > 0
+                        checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) >= 0
                         hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
                         highlighted: hovered
                         Material.foreground: checked ? parent.Material.accent : parent.Material.foreground

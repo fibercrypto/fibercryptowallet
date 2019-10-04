@@ -410,10 +410,12 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 		return nil, errors.New("Invalid options")
 	}
 	obj = options.GetValue("BurnFactor")
+
 	burnFactor, ok := obj.(string)
 	if !ok {
 		return nil, errors.New("Invalid options")
 	}
+	fmt.Printf("BURN recibido %s\n", burnFactor)
 	coinHoursSelection := api.HoursSelection{
 		Type: "manual",
 	}
@@ -422,11 +424,13 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 		coinHoursSelection.Mode = "share"
 		coinHoursSelection.ShareFactor = burnFactor
 	}
+	fmt.Printf("MANDADO %s\n", coinHoursSelection.ShareFactor)
 	req.HoursSelection = coinHoursSelection
 
 	destination := make([]api.Receiver, 0)
 	for _, out := range to {
 		skyV, err := out.GetCoins(Sky)
+		fmt.Printf("PRIMER %d", skyV)
 		if err != nil {
 			return nil, err
 		}
@@ -434,7 +438,10 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 		if err != nil {
 			return nil, err
 		}
-		strAmount := strconv.FormatFloat(float64(skyV/quotient), 'f', -1, 64)
+		strAmount := util.FormatCoins(skyV, quotient)
+		//strAmount := strconv.FormatFloat(float64(skyV/quotient), 'f', -1, 64)
+		fmt.Println("CANTIDAD")
+		fmt.Println(strAmount)
 		recv := api.Receiver{}
 		recv.Address = out.GetAddress().String()
 		recv.Coins = strAmount
