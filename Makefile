@@ -44,13 +44,13 @@ build-icon: ## Build the application icon (macOS and Windows)
 #	For macOS icons we will use the `sips` and `iconutil` tools as provided by Apple
 	$(SIPS) -z 16 16 $(APP_ICON_PATH)/appIcon-wallet.png --out $(ICONSET)/appIcon_16x16.png
 	$(SIPS) -z 32 32 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_16x16@2x.png
-#	$(SIPS) -z 32 32 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_32x32.png
-#	$(SIPS) -z 64 64 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_32x32@2x.png
+	$(SIPS) -z 32 32 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_32x32.png
+	$(SIPS) -z 64 64 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_32x32@2x.png
 	$(SIPS) -z 128 128 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_128x128.png
 	$(SIPS) -z 256 256 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_128x1286@2x.png
-#	$(SIPS) -z 256 256 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_256x256.png
+	$(SIPS) -z 256 256 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_256x256.png
 	$(SIPS) -z 512 512 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_256x256@2x.png
-#	$(SIPS) -z 512 512 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_512x512.png
+	$(SIPS) -z 512 512 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_512x512.png
 	$(SIPS) -z 1024 1024 $(APP_ICON_PATH)/appIcon.png --out $(ICONSET)/appIcon_512x512@2x.png
 	$(ICONUTIL) --convert icns $(ICONSET)
 
