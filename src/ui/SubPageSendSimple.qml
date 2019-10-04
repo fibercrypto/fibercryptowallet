@@ -4,6 +4,10 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "Controls" // For quick UI development, switch back to resources when making a release
+
 Page {
     id: root
     property string walletSelected
@@ -100,6 +104,7 @@ Page {
                     id: textFieldWalletsSendTo
                     font.family: "Code New Roman"
                     placeholderText: qsTr("Destination address")
+                    selectByMouse: true
                     Layout.fillWidth: true
                     Layout.topMargin: -5
                     onTextChanged:{
@@ -109,25 +114,18 @@ Page {
             } // RowLayout
         } // ColumnLayout (send to)
 
-        ColumnLayout {
-            id: columnLayoutAmount
-
-            Layout.alignment: Qt.AlignTop
-            Label {
-                text: qsTr("Amount")
+        TextField {
+            id: textFieldAmount
+            placeholderText: qsTr("Amount to send")
+            selectByMouse: true
+            Layout.fillWidth: true
+            Layout.topMargin: -10
+            validator: DoubleValidator {
+                notation: DoubleValidator.StandardNotation
             }
-            TextField {
-                id: textFieldAmount
-                placeholderText: qsTr("Amount to send")
-                Layout.fillWidth: true
-                Layout.topMargin: -10
-                validator: DoubleValidator {
-                    notation: DoubleValidator.StandardNotation
-                }
-                onTextChanged:{
+            onTextChanged:{
                     root.amount = text
                 }
-            }
-        } // ColumnLayout (root)
+        }
     } // ColumnLayout (root)
 }

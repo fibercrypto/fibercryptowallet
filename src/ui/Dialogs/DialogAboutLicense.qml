@@ -33,11 +33,11 @@ Dialog {
         } // Label
 
         ScrollIndicator.vertical: ScrollIndicator {
-            parent: about.contentItem
+            parent: dialogAboutLicense.contentItem
             anchors.top: flickable.top
             anchors.bottom: flickable.bottom
             anchors.right: parent.right
-            anchors.rightMargin: -about.rightPadding + 1
+            anchors.rightMargin: -dialogAboutLicense.rightPadding + 1
         }
     } // Flickable
 

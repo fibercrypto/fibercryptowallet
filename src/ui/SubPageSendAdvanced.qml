@@ -10,6 +10,7 @@ import OutputsModels 1.0
 // import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 import "Dialogs/" // For quick UI development, switch back to resources when making a release
+import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: subPageSendAdvanced
@@ -103,6 +104,7 @@ Page {
                 property var checkedElements: []
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupWallets.filterText
 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -114,15 +116,24 @@ Page {
                     }
                 } 
                 
+                popup: FilterComboBoxPopup {
+                    id: filterPopupWallets
+                    comboBox: comboBoxWalletsSendFrom
+                    filterPlaceholderText: qsTr("Filter wallets by name")
+                }
+
                 // Taken from Qt 5.13.0 source code:
-                delegate: Control {
+                delegate: Item {
                     id: rootDelegate
 
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsSendFrom.filterString.toLowerCase())
 
                     width: parent.width
-                    height: checkDelegate.height
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
 
                     CheckDelegate {
                         id: checkDelegate
@@ -305,6 +316,7 @@ Page {
                 property var checkedElements: []
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupOutputs.filterText
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -319,16 +331,27 @@ Page {
                 onModelChanged: {
                     if (!model) {
                         checkedElements = []
+                        checkedElementsText = []
+                        numberOfCheckedElements = 0
                     }
+                }
+                
+                popup: FilterComboBoxPopup {
+                    id: filterPopupOutputs
+                    comboBox: comboBoxWalletsUnspentOutputsSendFrom
+                    filterPlaceholderText: qsTr("Filter outputs")
                 }
 
                 delegate: Item {
 
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsUnspentOutputsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsUnspentOutputsSendFrom.filterString.toLowerCase())
                     
                     width: parent.width
-                    height: checkDelegate.height
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
 
                     CheckDelegate {
                         id: checkDelegate
@@ -455,6 +478,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -16
                 placeholderText: qsTr("Address to receive change")
+                selectByMouse: true
                 font.family: "Code New Roman"
             }
         } // ColumnLayout (custom change address)
@@ -511,19 +535,6 @@ Page {
         }
     }
 
-    //ListModel { // EXAMPLE
-    //    id: modelAddressesByWallet
-//
-    //    ListElement { wallet: "Wallet A"; address: "qrxw7364w8xerusftaxkw87ues" }
-    //    ListElement { wallet: "Wallet A"; address: "8745yuetsrk8tcsku4ryj48ije" }
-    //    ListElement { wallet: "Wallet A"; address: "gfdhgs343kweru38200384uwqd" }
-    //    ListElement { wallet: "Wallet B"; address: "00qdqsdjkssvmchskjkxxdg374" }
-    //    ListElement { wallet: "Wallet B"; address: "hkdti34aoliwuiu3qsoiemdfhc" }
-    //    ListElement { wallet: "Wallet C"; address: "1oiwrelkrir73o8ielukaur9qq" }
-    //    ListElement { wallet: "Wallet C"; address: "piur948o9q8m0a8qsye8q3omxs" }
-    //    ListElement { wallet: "Wallet C"; address: "4ntd4im93usppturm83ysniroe" }
-    //    ListElement { wallet: "Wallet C"; address: "meje73o50ejdwumfle92rndlwm" }
-    //}
     AddressModel{
         id: modelAddressesByWallet
     }
