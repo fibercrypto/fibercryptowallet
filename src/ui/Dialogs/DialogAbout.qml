@@ -32,8 +32,9 @@ Dialog {
 
             Label {
                 width: parent.width
-                text: "<b>" + Qt.application.name + ' v' + Qt.application.version + "</b>"
-                    + qsTr("<p>This program is for [...???...].</p><br>")
+                text: "<p><b>" + Qt.application.name + ' v' + Qt.application.version + "</b><br>"
+                    + "<i>" + qsTr("Multi-coin cryptocurrency wallet") + "</i><br>"                    
+                    + "Copyright © 2019 " + Qt.application.organization + "</p><br>"
 
                     + qsTr("<p><b>License terms and disclaimer</b><br>"
                     + "This program is free software; you can redistribute it and/or modify "
