@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -115,7 +114,6 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 		})
 	}
 	changeAddr := &GenericAddress{change}
-	fmt.Printf("Burn Factor %s\n", burnFactor)
 	opt := NewTransferOptions()
 	opt.AddKeyValue("BurnFactor", burnFactor)
 	if automaticCoinHours {
@@ -126,15 +124,11 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 
 	txn, err := wlt.Spend(outputsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
-		fmt.Println("ERWQ")
-		fmt.Println(err.Error())
 		return nil
 	}
 
 	qtxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
-		fmt.Println("2!#")
-		fmt.Println(err.Error())
 		return nil
 	}
 	return qtxn
@@ -170,15 +164,11 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 
 	txn, err := wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
-		fmt.Println("ERE")
-		fmt.Println(err.Error())
 		return nil
 	}
 
 	qtxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
-		fmt.Println("EWER")
-		fmt.Println(err.Error())
 		return nil
 	}
 	return qtxn
@@ -234,8 +224,6 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 	outs := make([]*QOutput, 0)
 	addrIter, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
 	if err != nil {
-		fmt.Println(1)
-		fmt.Println(err.Error())
 		return nil
 	}
 	for addrIter.Next() {
@@ -246,28 +234,20 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 			qout.SetOutputID(outsIter.Value().GetId())
 			skyV, err := outsIter.Value().GetCoins(sky.Sky)
 			if err != nil {
-				fmt.Println(2)
-				fmt.Println(err.Error())
 				return nil
 			}
 			quotient, err := util.AltcoinQuotient(sky.Sky)
 			if err != nil {
-				fmt.Println(2)
-				fmt.Println(err.Error())
 				return nil
 			}
 			sSky := util.FormatCoins(skyV, quotient)
 			qout.SetAddressSky(sSky)
 			ch, err := outsIter.Value().GetCoins(sky.CoinHour)
 			if err != nil {
-				fmt.Println(3)
-				fmt.Println(err.Error())
 				return nil
 			}
 			quotient, err = util.AltcoinQuotient(sky.CoinHour)
 			if err != nil {
-				fmt.Println(4)
-				fmt.Println(err.Error())
 				return nil
 			}
 			sCh := util.FormatCoins(ch, quotient)
@@ -277,8 +257,6 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 			outs = append(outs, qout)
 		}
 	}
-	fmt.Println("COUNT")
-	fmt.Println(len(outs))
 	return outs
 }
 
@@ -296,7 +274,6 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	opt.AddKeyValue("CoinHoursSelectionType", "auto")
 
 	txn, err := wlt.Transfer(addr, coins, opt)
-
 	if err != nil {
 		return nil
 	}

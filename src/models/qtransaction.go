@@ -26,6 +26,8 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	outputs := address.NewAddressList(nil)
 	var hoursTraspassed uint64
 	var skyTraspassed uint64
+	hoursTraspassed = 0
+	skyTraspassed = 0
 	inputsAddresses := make(map[string]struct{}, 0)
 	quotient, err := util.AltcoinQuotient("SKYCH")
 	if err != nil {
