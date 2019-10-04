@@ -432,10 +432,12 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 		skyV, err := out.GetCoins(Sky)
 		fmt.Printf("PRIMER %d", skyV)
 		if err != nil {
+			fmt.Printf("4 %s\n", err.Error())
 			return nil, err
 		}
 		quotient, err := util.AltcoinQuotient(Sky)
 		if err != nil {
+			fmt.Printf("5 %s\n", err.Error())
 			return nil, err
 		}
 		strAmount := util.FormatCoins(skyV, quotient)
@@ -443,15 +445,19 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 		fmt.Println("CANTIDAD")
 		fmt.Println(strAmount)
 		recv := api.Receiver{}
+		fmt.Println("A1")
 		recv.Address = out.GetAddress().String()
+		fmt.Println("A2")
 		recv.Coins = strAmount
 		if coinHoursSelection.Type == "manual" {
 			chV, err := out.GetCoins(CoinHour)
 			if err != nil {
+				fmt.Printf("6 %s\n", err.Error())
 				return nil, err
 			}
 			quotient, err = util.AltcoinQuotient(CoinHour)
 			if err != nil {
+				fmt.Printf("7 %s\n", err.Error())
 				return nil, err
 			}
 			recv.Hours = strconv.FormatFloat(float64(chV/quotient), 'f', -1, 64)
@@ -460,9 +466,11 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 	}
 	req.To = destination
 
-	ch := change.String()
-	if ch != "" {
-		req.ChangeAddress = &ch
+	if change != nil {
+		ch := change.String()
+		if ch != "" {
+			req.ChangeAddress = &ch
+		}
 	}
 
 	return createTxnFunc(&req)
@@ -912,13 +920,19 @@ func fromTxnResponseToUninjectedTxn(txnResponse *api.CreateTransactionResponse) 
 
 func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
 
-	strAmount := strconv.FormatFloat(float64(amount/1e6), 'f', -1, 64)
+	quotient, err := util.AltcoinQuotient(Sky)
+	if err != nil {
+		return nil, err
+	}
+	strAmount := util.FormatCoins(amount, quotient)
+
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
 	txnOutput.skyOut.Coins = strAmount
 	addresses := make([]core.Address, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		fmt.Printf("1 %s\n", err.Error())
 		return nil, err
 	}
 	for iterAddr.Next() {
@@ -928,11 +942,13 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
+			fmt.Printf("2 %s\n", err.Error())
 			return nil, err
 		}
 		defer core.GetMultiPool().Return(PoolSection, client)
 		txnR, err := client.CreateTransaction(*txnReq)
 		if err != nil {
+			fmt.Printf("3 %s\n", err.Error())
 			return nil, err
 		}
 		return fromTxnResponseToUninjectedTxn(txnR)
