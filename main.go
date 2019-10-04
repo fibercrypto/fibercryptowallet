@@ -30,9 +30,10 @@ func main() {
 	app.QCoreApplication.ProcessEvents(core.QEventLoop__AllEvents)
 
 	// Set the application information
-	app.SetOrganizationName("Simelo")
+	app.SetOrganizationName("Simelo.Tech")
+	app.SetOrganizationDomain("simelo.tech.org")
 	app.SetApplicationName("FiberCrypto Wallet")
-	app.SetApplicationVersion("0.1")
+	app.SetApplicationVersion("0.27.0")
 	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon/appIcon.png"))
 
 	// Add this monospaced font
