@@ -60,6 +60,7 @@ Page {
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
                     txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
+                console.log("HT "+txn.hoursTraspassed)
                 dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
