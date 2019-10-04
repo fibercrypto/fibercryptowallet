@@ -283,7 +283,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 		return nil
 	}
 	opt := NewTransferOptions()
-	opt.AddKeyValue("BurnFactor", "1")
+	opt.AddKeyValue("BurnFactor", "0.5")
 	opt.AddKeyValue("CoinHoursSelectionType", "auto")
 
 	txn, err := wlt.Transfer(addr, coins, opt)

@@ -97,16 +97,6 @@ Page {
             ComboBox {
                 id: comboBoxWalletsSendFrom
                 function getCheckedDelegates() {
-                    //var checkedItems = []
-                    //for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
-                    //    if (popup.contentItem.contentItem.children[i].checked) {
-                    //        checkedItems.push(i)
-                    //        console.log("PUSHED -> "+i)
-                    //        console.log(popup.contentItem.contentItem.children[i].text)
-                    //    }
-                    //}
-                    //return checkedItems
-                    console.log("ELEM -> "+checkedElements)
                     return checkedElements
                 }
 
@@ -123,15 +113,7 @@ Page {
                         loadModel(walletManager.getWallets())
                     }
                 } 
-                //onCurrentTextChanged:{
-                //    console.log(model.wallets[currentIndex].fileName)
-                //    listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
-                //    listAddresses.removeAddress(0)
-                //    listOutputs.cleanModel()
-//
-                //    
-                //}
-
+                
                 // Taken from Qt 5.13.0 source code:
                 delegate: Control {
                     id: rootDelegate
@@ -154,7 +136,6 @@ Page {
                                     comboBoxWalletsSendFrom.checkedElementsText.push(text)
                                 }
                                 // Update Outputs and Addresses Model
-                                console.log("CHECK -> "+comboBoxWalletsSendFrom.model.wallets[index].fileName)
                                 listAddresses.addAddresses(walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                                 listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                             } else {
@@ -164,7 +145,6 @@ Page {
                                     comboBoxWalletsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
                                 // Update Outputs and Addresses Model
-                                console.log("UNCHECK -> "+ comboBoxWalletsSendFrom.model.wallets[index].fileName)
                                 listAddresses.removeAddressesFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                                 listOutputs.removeOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                             }
@@ -233,24 +213,24 @@ Page {
                     }
                     return checkedItems
                 }
-                
+
                 Layout.fillWidth: true
                 Layout.topMargin: -12
 
+                
                 model: AddressModel{
                     id: listAddresses
                 }
                 textRole: "address"
 
-                // Taken from Qt 5.13.0 source code:
                 delegate: Item {
                     width: parent.width
-                    height: checkDelegateAddresses.height
+                    height: checkDelegate.height
 
-                    property alias checked: checkDelegateAddresses.checked
+                    property alias checked: checkDelegate.checked
 
                     CheckDelegate {
-                        id: checkDelegateAddresses
+                        id: checkDelegate
 
                         width: parent.width
                         text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
@@ -259,9 +239,9 @@ Page {
                         LayoutMirroring.enabled: true
                         contentItem: Label {
                             leftPadding: comboBoxWalletsAddressesSendFrom.indicator.width + comboBoxWalletsAddressesSendFrom.spacing
-                            text: checkDelegateAddresses.text
+                            text: checkDelegate.text
                             verticalAlignment: Qt.AlignVCenter
-                            color: checkDelegateAddresses.enabled ? checkDelegateAddresses.Material.foreground : checkDelegateAddresses.Material.hintTextColor
+                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
                         }
 
                         onCheckedChanged:{
@@ -343,13 +323,15 @@ Page {
                 }
 
                 delegate: Item {
-                    property alias checked: checkDelegateUnspentOutputs.checked
+
+                    property alias checked: checkDelegate.checked
+                    property alias text: checkDelegate.text
                     
                     width: parent.width
-                    height: checkDelegateUnspentOutputs.height
+                    height: checkDelegate.height
 
                     CheckDelegate {
-                        id: checkDelegateUnspentOutputs
+                        id: checkDelegate
 
                         // Update the states saved in `checkedElements`
                         onClicked: {
@@ -383,11 +365,11 @@ Page {
                         LayoutMirroring.enabled: true
                         contentItem: Label {
                             leftPadding: comboBoxWalletsUnspentOutputsSendFrom.indicator.width + comboBoxWalletsUnspentOutputsSendFrom.spacing
-                            text: checkDelegateUnspentOutputs.text
+                            text: checkDelegate.text
                             verticalAlignment: Qt.AlignVCenter
-                            color: checkDelegateUnspentOutputs.enabled ? checkDelegateUnspentOutputs.Material.foreground : checkDelegateUnspentOutputs.Material.hintTextColor
+                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
                         }
-                    } // CheckDelegate (unspent outputs)
+                    } // CheckDelegate
                 } // Item (delegate)
             } // ComboBox (outputs, send from)
 
