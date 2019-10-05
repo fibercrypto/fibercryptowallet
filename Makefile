@@ -93,16 +93,6 @@ build-Darwin: ## Build FiberCrypto Wallet in Darwin
 	cp "$(APP_ICON_PATH/appIcon.icns)" "$(DARWIN_RES)/Content/"
 
 build:  ## Build FiberCrypto Wallet
-#ifeq ($(OS),Windows_NT)
-#	@echo "Building $(OS) resources..."
-#	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
-#endif
-#ifeq ($(OS),Darwin)
-#	@echo "Building $(OS) resources..."
-#	mkdir -p "$(DARWIN_RES)/Content/Resources"
-#	cp "$(PLIST)" "$(DARWIN_RES)/Content/"
-#	cp "$(APP_ICON_PATH/appIcon.icns)" "$(DARWIN_RES)/Content/"
-#endif
 	@echo "Building $(APP_NAME)..."
 # 	Add the flag `-quickcompiler` when making a release
 	qtdeploy build desktop
