@@ -20,6 +20,7 @@ ICONUTIL		:= iconutil
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
+	CONVERT		= magick convert
 	WINDRES		:= windres
 	RC_FILE		:= resources/platform/windows/winResources.rc
 	RC_OBJ		:= winResources.syso
