@@ -17,6 +17,7 @@ ICONSET			:= resources/images/icons/appIcon/appIcon.iconset
 CONVERT			:= convert
 SIPS			:= sips
 ICONUTIL		:= iconutil
+UNAME_S = $(shell uname -s)
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
@@ -42,11 +43,9 @@ run:  ## Run FiberCrypto Wallet
 	@echo "Running $(APP_NAME)..."
 	@./deploy/linux/FiberCryptoWallet
 
-build-icon: ## Build the application icon (Windows_NT and Darwin systems)
-	@echo "Building $(OS) icon..."
-ifeq ($(OS),Windows_NT)
+build-icon-Windows_NT: ## Build the application icon in Windows
 	mkdir -p $(ICONS_BUILDPATH)
-#	For Windows icons we need the `convert` tool provided by "Imagemagick"
+	# For Windows icons we need the `convert` tool provided by "Imagemagick"
 	$(CONVERT) -resize 16x16 "$(APP_ICON_PATH)/appIcon-wallet.png" "$(ICONS_BUILDPATH)/appIcon_16x16.png"
 	$(CONVERT) -resize 24x24 "$(APP_ICON_PATH)/appIcon-wallet.png" "$(ICONS_BUILDPATH)/appIcon_24x24.png"
 	$(CONVERT) -resize 32x32 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_32x32.png"
@@ -57,51 +56,73 @@ ifeq ($(OS),Windows_NT)
 	$(CONVERT) -resize 256x256 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_256x256.png"
 	$(CONVERT) -resize 512x512 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_512x512.png"
 	$(CONVERT) "$(ICONS_BUILDPATH)/appIcon_*.png" "$(APP_ICON_PATH)/appIcon.ico"
-else
-	ifeq ($(OS),Darwin)
-		mkdir -p $(ICONSET)
-#		For macOS icons we will use the `sips` and `iconutil` tools as provided by Apple
-		$(SIPS) -z 16 16 "$(APP_ICON_PATH)/appIcon-wallet.png" --out "$(ICONSET)/icon_16x16.png"
-		$(SIPS) -z 32 32 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_16x16@2x.png"
-		$(SIPS) -z 32 32 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_32x32.png"
-		$(SIPS) -z 64 64 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_32x32@2x.png"
-		$(SIPS) -z 128 128 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_128x128.png"
-		$(SIPS) -z 256 256 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_128x128@2x.png"
-		$(SIPS) -z 256 256 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_256x256.png"
-		$(SIPS) -z 512 512 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_256x256@2x.png"
-		$(SIPS) -z 512 512 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_512x512.png"
-		$(SIPS) -z 1024 1024 $(APP_ICON_PATH)/appIcon.png --out "$(ICONSET)/icon_512x512@2x.png"
-		$(ICONUTIL) --convert icns --output "$(APP_ICON_PATH)/appIcon.icns" "$(ICONSET)"
-	else
-#		Icons for not supported systems must be handled here
-		@echo "$@ is not supported under $(OS) for the following reasons:"
 
-		ifeq ($(OS),Linux)
-			@echo "	Icons cannot be embedded in ELF executables."
-		else
-#			Reasons for unknown systems
-			@echo "	Unknown reason."
-		endif
-endif
+build-icon-Darwin: ## Build the application icon in Darwin
+	mkdir -p $(ICONSET)
+	# For macOS icons we will use the `sips` and `iconutil` tools as provided by Apple
+	$(SIPS) -z 16 16 "$(APP_ICON_PATH)/appIcon-wallet.png" --out "$(ICONSET)/icon_16x16.png"
+	$(SIPS) -z 32 32 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_16x16@2x.png"
+	$(SIPS) -z 32 32 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_32x32.png"
+	$(SIPS) -z 64 64 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_32x32@2x.png"
+	$(SIPS) -z 128 128 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_128x128.png"
+	$(SIPS) -z 256 256 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_128x128@2x.png"
+	$(SIPS) -z 256 256 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_256x256.png"
+	$(SIPS) -z 512 512 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_256x256@2x.png"
+	$(SIPS) -z 512 512 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_512x512.png"
+	$(SIPS) -z 1024 1024 $(APP_ICON_PATH)/appIcon.png --out "$(ICONSET)/icon_512x512@2x.png"
+	$(ICONUTIL) --convert icns --output "$(APP_ICON_PATH)/appIcon.icns" "$(ICONSET)"
+	
+build-icon-Linux: ## Build the application icon in Linux
+	@echo "Icons cannot be embedded in ELF executables."
 
+build-icon: build-icon-$(OS) ## Build the application icon (Windows_NT and Darwin systems)
+	@echo "Builded $(OS) icon..."
 
-build:  ## Build FiberCrypto Wallet
-ifeq ($(OS),Windows_NT)
-	@echo "Building $(OS) resources..."
+build-Linux: ## Build FiberCryptoWallet in Windows
+	@echo "Building on Linux"
+
+build-Windows_NT: ## Build FiberCrypto Wallet in Windows
+	@echo "Building on windows"
 	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
-endif
-ifeq ($(OS),Darwin)
-	@echo "Building $(OS) resources..."
+
+
+build-Darwin: ## Build FiberCrypto Wallet in Darwin 
+	@echo "Building on Darwin"
 	mkdir -p "$(DARWIN_RES)/Content/Resources"
 	cp "$(PLIST)" "$(DARWIN_RES)/Content/"
 	cp "$(APP_ICON_PATH/appIcon.icns)" "$(DARWIN_RES)/Content/"
-endif
+
+build:  ## Build FiberCrypto Wallet
+#ifeq ($(OS),Windows_NT)
+#	@echo "Building $(OS) resources..."
+#	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
+#endif
+#ifeq ($(OS),Darwin)
+#	@echo "Building $(OS) resources..."
+#	mkdir -p "$(DARWIN_RES)/Content/Resources"
+#	cp "$(PLIST)" "$(DARWIN_RES)/Content/"
+#	cp "$(APP_ICON_PATH/appIcon.icns)" "$(DARWIN_RES)/Content/"
+#endif
 	@echo "Building $(APP_NAME)..."
 # 	Add the flag `-quickcompiler` when making a release
 	qtdeploy build desktop
 	@echo "Done."
-	
-clean: ## Clean project FiberCrypto Wallet
+
+clean-Windows_NT: ## Clean project in Windows
+	# Windows actions
+	rm -rf "$(ICONS_BUILDPATH)"
+	rm -rf "$(RC_OBJ)"
+
+clean-Darwin: ## Clean project in Darwin
+	# Darwin actions
+	rm -rf "$(ICONSET)"
+
+clean-Linux: ## Clean project in Linux
+	# Linux actions
+	@echo "Cleaned"
+
+clean: clean-$(OS) ## Clean project FiberCrypto Wallet
+	# Regular generated files
 	@echo "Cleaning project $(APP_NAME)..."
 	rm -rf deploy/
 	rm -rf linux/
@@ -112,15 +133,6 @@ clean: ## Clean project FiberCrypto Wallet
 	rm -rf rcc__*
 	find . -path "*moc.*" -delete
 	find . -path "*moc_*" -delete
-
-#	Platform-specific actions
-ifeq ($(OS),Windows_NT)
-	rm -rf "$(ICONS_BUILDPATH)"
-	rm -rf "$(RC_OBJ)"
-endif
-ifeq ($(OS),Darwin)
-	rm -rf "$(ICONSET)"
-endif
 
 	@echo "Done."
 
