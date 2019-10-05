@@ -57,6 +57,8 @@ The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The fro
 
 #### Requirements
 
+Windows requires the command line tool `magick convert`, that comes with the open-source [ImageMagick](https://imagemagick.org) project in order to build the icons (not necessary as default icons are always provided)
+
 ##### Qt version
 
 [Linux/X11 requirements](http://doc.qt.io/qt-5/linux.html)  
