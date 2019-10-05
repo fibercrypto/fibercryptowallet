@@ -23,6 +23,7 @@ matrix:
     - $GOPATH/bin/qtdeploy -docker build rpi1
     - $GOPATH/bin/qtdeploy -docker build rpi2
     - $GOPATH/bin/qtdeploy -docker build rpi3
+    - make test
 
   - stage: "Android"
     if: branch = release*$
@@ -35,6 +36,7 @@ matrix:
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build android
     - $GOPATH/bin/qtdeploy -docker build android-emulator
+    - make test
 
   - stage: "Linux"
     install:
@@ -44,6 +46,7 @@ matrix:
     script:
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build desktop
+    - make test
   
   - stage: "Windows"
     os: windows
@@ -54,6 +57,8 @@ matrix:
     script:
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy build desktop 
+    - make test
+    - make build-icon
 
   - stage: "MacOS"
     os: osx
@@ -65,6 +70,9 @@ matrix:
     - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true)
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy build desktop
+    - make test
+    - make build-icon
+
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
