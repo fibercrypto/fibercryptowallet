@@ -18,19 +18,22 @@ func (m *SkycoinApiMock) Create() (core.PooledObject, error) {
 }
 
 func (m *SkycoinApiMock) Transaction(txid string) (*readable.TransactionWithStatus, error){
-	return m.Node.Transaction(txid)
+	args := m.Called(txid)
+	return args.Get(0).(*readable.TransactionWithStatus), args.Error(1)
 }
 func (m *SkycoinApiMock) Transactions(addrs []string) ([]readable.TransactionWithStatus, error){
 	return m.Node.Transactions(addrs)
 }
 func (m *SkycoinApiMock) TransactionVerbose(txid string) (*readable.TransactionWithStatusVerbose, error){
-	return m.Node.TransactionVerbose(txid)
+	args := m.Called(txid)
+	return args.Get(0).(*readable.TransactionWithStatusVerbose), args.Error(1)
 }
 func (m *SkycoinApiMock) TransactionsVerbose(addrs []string) ([]readable.TransactionWithStatusVerbose, error){
 	return m.Node.TransactionsVerbose(addrs)
 }
 func (m *SkycoinApiMock) UxOut(uxID string) (*readable.SpentOutput, error){
-	return m.Node.UxOut(uxID)
+	args := m.Called(uxID)
+	return args.Get(0).(*readable.SpentOutput), args.Error(1)
 }
 func (m *SkycoinApiMock) PendingTransactionsVerbose() ([]readable.UnconfirmedTransactionVerbose, error){
 	args := m.Called();

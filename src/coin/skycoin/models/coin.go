@@ -372,7 +372,7 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 		}
 		return uint64(skyf * float64(accuracy)), nil
 	} else if ticker == CoinHour {
-		coinHours := float64(out.calculatedHours)
+		coinHours := float64(out.skyOut.Hours)
 		return uint64(coinHours * float64(accuracy)), nil
 	}
 	return 0, nil
