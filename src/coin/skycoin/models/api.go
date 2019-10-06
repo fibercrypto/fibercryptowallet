@@ -76,7 +76,8 @@ func (m *SkycoinApiMock) WalletBalance(id string) (*api.BalanceResponse, error){
 	return m.Node.WalletBalance(id)
 }
 func (m *SkycoinApiMock) WalletUnconfirmedTransactionsVerbose(id string) (*api.UnconfirmedTxnsVerboseResponse, error){
-	return m.Node.WalletUnconfirmedTransactionsVerbose(id)
+	args := m.Called(id);
+	return args.Get(0).(*api.UnconfirmedTxnsVerboseResponse), args.Error(1)
 }
 func (m *SkycoinApiMock) NetworkConnections(filters *api.NetworkConnectionsFilter) (*api.Connections, error){
 	return m.Node.NetworkConnections(filters)

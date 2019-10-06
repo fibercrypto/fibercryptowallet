@@ -2,22 +2,13 @@ package skycoin
 
 import(
 	"testing"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/skycoin/skycoin/src/api"
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
-	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/skycoin/skycoin/src/readable"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/skycoin/skycoin/src/readable"
 )
 
 func TestPending(t *testing.T){
-	cf := local.GetConfigManager()
-	client, err1 := NewSkycoinConnectionFactory(cf.GetNode()).Create()
-	assert.Nil(t, err1)
-
-	mock := &SkycoinApiMock{Node: client.(*api.Client)}
-	mock.On("PendingTransactionsVerbose").Return(
+	global_mock.On("PendingTransactionsVerbose").Return(
 		[]readable.UnconfirmedTransactionVerbose {
 			readable.UnconfirmedTransactionVerbose{
 				Transaction: readable.BlockTransactionVerbose{
@@ -100,8 +91,6 @@ func TestPending(t *testing.T){
 				},
 			},
 		}, nil)
-	core.GetMultiPool().CreateSection(PoolSection, mock)
-	util.RegisterAltcoin(NewSkyFiberPlugin(SkycoinMainNetParams))
 
 	pex := &SkycoinPEX{}
 	txns, err2 := pex.GetTxnPool()
