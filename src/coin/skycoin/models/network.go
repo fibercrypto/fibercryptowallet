@@ -63,13 +63,11 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction)  {
 func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
-		println("ERROR 1", err.Error())
 		return nil, err
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
 	txns, err2 := c.PendingTransactionsVerbose()
 	if err2 != nil {
-		println("ERROR 2")
 		return nil, err2
 	}
 	skycoinTxns := make([]core.Transaction, 0)

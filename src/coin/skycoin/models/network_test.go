@@ -12,38 +12,12 @@ func TestPending(t *testing.T){
 		[]readable.UnconfirmedTransactionVerbose {
 			readable.UnconfirmedTransactionVerbose{
 				Transaction: readable.BlockTransactionVerbose{
-					Length:        	15,
-					Type:          	1,
-					Hash:        	"hash",
-					InnerHash:    	"inner_hash",
-					Fee:        	30,
-					Sigs:    		[]string{"s1", "s2"},
-					In:    			[]readable.TransactionInput{
-						readable.TransactionInput{
-							Hash:        		"uxid",
-							Address:        	"owner",
-							Coins:        		"1000000",
-							Hours:        		2000,
-							CalculatedHours:    15,
-						},
-						readable.TransactionInput{
-							Hash:        		"uxid",
-							Address:        	"owner",
-							Coins:        		"1000000",
-							Hours:        		2000,
-							CalculatedHours:    15,
-						},
-					},
 					Out:    		[]readable.TransactionOutput{
 						readable.TransactionOutput{
-							Hash:    		"uxid",
-							Address:    	"dst",
 							Coins:    		"1",
 							Hours:    		2000,
 						},
 						readable.TransactionOutput{
-							Hash:    		"uxid",
-							Address:    	"dst",
 							Coins:    		"1",
 							Hours:    		2000,
 						},
@@ -52,38 +26,12 @@ func TestPending(t *testing.T){
 			},
 			readable.UnconfirmedTransactionVerbose{
 				Transaction: readable.BlockTransactionVerbose{
-					Length:        	15,
-					Type:          	1,
-					Hash:        	"hash",
-					InnerHash:    	"inner_hash",
-					Fee:        	30,
-					Sigs:    		[]string{"s1", "s2"},
-					In:    			[]readable.TransactionInput{
-						readable.TransactionInput{
-							Hash:        		"uxid",
-							Address:        	"owner",
-							Coins:        		"1000000",
-							Hours:        		2000,
-							CalculatedHours:    15,
-						},
-						readable.TransactionInput{
-							Hash:        		"uxid",
-							Address:        	"owner",
-							Coins:        		"1000000",
-							Hours:        		2000,
-							CalculatedHours:    15,
-						},
-					},
 					Out:    		[]readable.TransactionOutput{
 						readable.TransactionOutput{
-							Hash:    		"uxid",
-							Address:    	"dst",
 							Coins:    		"1",
 							Hours:    		2000,
 						},
 						readable.TransactionOutput{
-							Hash:    		"uxid",
-							Address:    	"dst",
 							Coins:    		"1",
 							Hours:    		2000,
 						},
