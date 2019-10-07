@@ -812,7 +812,7 @@ func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.Passwo
 	if !ok {
 		return nil, errors.New("Invalid Transaction")
 	}
-	dir := filepath.Join(wlt.WalletDir, wlt.Id)
+	//dir := filepath.Join(wlt.WalletDir, wlt.Id)
 	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
 	if err != nil {
 		return nil, err
