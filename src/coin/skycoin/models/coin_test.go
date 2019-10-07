@@ -87,11 +87,9 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T){
 	assert.Equal(t, output.GetId(), "out1")
 	assert.Equal(t, output.GetAddress().String(), "dir")
 	sky, err := output.GetCoins(Sky)
-	println(sky)
 	assert.Nil(t, err);
 	assert.Equal(t, sky, uint64(1000000))
 	hours, err1 := output.GetCoins(CoinHour)
-	println(hours)
 	assert.Nil(t, err1);
 	assert.Equal(t, hours, uint64(20))
 }
