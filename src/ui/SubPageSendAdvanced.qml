@@ -42,6 +42,7 @@ Page {
                 property var checkedElements: []
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupWallets.filterText
 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -49,15 +50,24 @@ Page {
 
                 model: ["Wallet A", "Wallet B", "Wallet C"]
 
+                popup: FilterComboBoxPopup {
+                    id: filterPopupWallets
+                    comboBox: comboBoxWalletsSendFrom
+                    filterPlaceholderText: qsTr("Filter wallets by name")
+                }
+
                 // Taken from Qt 5.13.0 source code:
-                delegate: Control {
+                delegate: Item {
                     id: rootDelegate
 
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsSendFrom.filterString.toLowerCase())
 
                     width: parent.width
-                    height: checkDelegate.height
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
 
                     CheckDelegate {
                         id: checkDelegate
@@ -159,6 +169,7 @@ Page {
                 property var checkedElements: []
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupOutputs.filterText
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
@@ -175,16 +186,27 @@ Page {
                 onModelChanged: {
                     if (!model) {
                         checkedElements = []
+                        checkedElementsText = []
+                        numberOfCheckedElements = 0
                     }
+                }
+                
+                popup: FilterComboBoxPopup {
+                    id: filterPopupOutputs
+                    comboBox: comboBoxWalletsUnspentOutputsSendFrom
+                    filterPlaceholderText: qsTr("Filter outputs")
                 }
 
                 delegate: Item {
 
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsUnspentOutputsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsUnspentOutputsSendFrom.filterString.toLowerCase())
                     
                     width: parent.width
-                    height: checkDelegate.height
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
 
                     CheckDelegate {
                         id: checkDelegate
