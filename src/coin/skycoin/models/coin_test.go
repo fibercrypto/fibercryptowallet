@@ -15,14 +15,16 @@ func TestSkycoinTransactionGetStatus(t *testing.T){
 				Confirmed: true,
 			},
 		},
-	nil)
+		nil,
+	)
 	global_mock.On("Transaction", "hash2").Return(
 		&readable.TransactionWithStatus{
 			Status: readable.TransactionStatus{
 				Confirmed: false,
 			},
 		},
-	nil)
+		nil,
+	)
 
 	thx1 := &SkycoinTransaction{skyTxn: readable.TransactionVerbose{}}
 	thx1.skyTxn.Hash = "hash1"
@@ -63,10 +65,10 @@ func TestSkycoinTransactionGetInputs(t *testing.T){
 	it := NewSkycoinTransactioninputIterator(inputs)
 	for it.Next() {
 		sky, err := it.Value().GetCoins(Sky)
-		assert.Nil(t, err);
+		assert.Nil(t, err)
 		assert.Equal(t, sky, uint64(20000000))
 		hours, err1 := it.Value().GetCoins(CoinHour)
-		assert.Nil(t, err1);
+		assert.Nil(t, err1)
 		assert.Equal(t, hours, uint64(20))
 	}
 }
@@ -79,7 +81,8 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T){
 			Hours:			uint64(20),
 			Uxid:			"out1",
 		},
-	nil)
+		nil,
+	)
 
 	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}	
 	output := input.GetSpentOutput()
@@ -87,10 +90,10 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T){
 	assert.Equal(t, output.GetId(), "out1")
 	assert.Equal(t, output.GetAddress().String(), "dir")
 	sky, err := output.GetCoins(Sky)
-	assert.Nil(t, err);
+	assert.Nil(t, err)
 	assert.Equal(t, sky, uint64(1000000))
 	hours, err1 := output.GetCoins(CoinHour)
-	assert.Nil(t, err1);
+	assert.Nil(t, err1)
 	assert.Equal(t, hours, uint64(20))
 }
 
@@ -99,12 +102,14 @@ func TestSkycoinTransactionOutputIsSpent(t *testing.T){
 		&readable.SpentOutput{
 			SpentTxnID:  "0000000000000000000000000000000000000000000000000000000000000000",
 		},
-	nil)
+		nil,
+	)
 	global_mock.On("UxOut", "out2").Return(
 		&readable.SpentOutput{
 			SpentTxnID:  "0",
 		},
-	nil)
+		nil,
+	)
 
 	output1 := &SkycoinTransactionOutput{skyOut: readable.TransactionOutput{Hash: "out1"}}	
 	output2 := &SkycoinTransactionOutput{skyOut: readable.TransactionOutput{Hash: "out2"}}	
