@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/therecipe/qt/core"
 )
 
@@ -76,7 +74,6 @@ func (m *ModelOutputs) removeOutputsFromWallet(wltId string) {
 	old := m.Outputs()
 	new := make([]*QOutput, 0)
 	for _, out := range old {
-		fmt.Println(out.WalletOwner())
 		if out.WalletOwner() != wltId {
 			new = append(new, out)
 		}
