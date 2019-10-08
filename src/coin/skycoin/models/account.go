@@ -61,7 +61,7 @@ func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator 
 				Hours:   out.Hours,
 				Hash:    out.Hash,
 			},
-			spent: true,
+			spent:           true,
 			calculatedHours: out.CalculatedHours,
 		})
 	}
@@ -155,7 +155,7 @@ func (wlt *RemoteWallet) ListTransactions() core.TransactionIterator {
 	return NewSkycoinTransactionIterator(txns)
 }
 
-func (wlt *RemoteWallet) ListPendingTransactions() (core.TransactionIterator, error) { 
+func (wlt *RemoteWallet) ListPendingTransactions() (core.TransactionIterator, error) {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
@@ -198,15 +198,15 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 	bl, err := getBalanceOfAddresses(outs, addrs)
 
 	if ticker == Sky {
-		skyf, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)
+		flSky, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)
 		if err != nil {
-			return 0, err
+			return 0, nil
 		}
 		accuracy, err2 := util.AltcoinQuotient(Sky)
 		if err2 != nil {
 			return 0, err2
 		}
-		return uint64(skyf * float64(accuracy)), nil
+		return uint64(flSky * float64(accuracy)), nil
 	} else if ticker == CoinHour {
 		coinHours, err := strconv.ParseFloat(bl.Confirmed.Hours, 64)
 		if err != nil {

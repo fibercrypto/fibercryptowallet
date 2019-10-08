@@ -3,7 +3,11 @@ package skycoin
 import (
 	"fmt"
 	"strconv"
+	"time"
 
+	"github.com/skycoin/skycoin/src/cipher"
+	"github.com/skycoin/skycoin/src/visor"
+	"github.com/skycoin/skycoin/src/coin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/readable"
@@ -177,11 +181,80 @@ func NewSkycoinTransactionOutputIterator(outputs []core.TransactionOutput) *Skyc
 	return &SkycoinTransactionOutputIterator{Outputs: outputs, Current: -1}
 }
 
+func NewUninjectedTransaction(txn *coin.Transaction, fee uint64) (*SkycoinUninjectedTransaction, error) {
+	return &SkycoinUninjectedTransaction{
+		txn:     txn,
+		inputs:  nil,
+		outputs: nil,
+		fee:     fee,
+	}, nil
+}
+
+type SkycoinUninjectedTransaction struct {
+	txn     *coin.Transaction
+	inputs  []core.TransactionInput
+	outputs []core.TransactionOutput
+	fee     uint64
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) SupportedAssets() []string {
+	return []string{Sky, CoinHour}
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) GetTimestamp() core.Timestamp {
+	return 0
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) GetStatus() core.TransactionStatus {
+	return core.TXN_STATUS_CREATED
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) GetInputs() []core.TransactionInput {
+	if skyTxn.inputs == nil {
+		inputs, err := getSkycoinTransactionInputsFromInputsHashes(skyTxn.txn.In)
+		if err != nil {
+			return nil
+		}
+		skyTxn.inputs = inputs
+	}
+	return skyTxn.inputs
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) GetOutputs() []core.TransactionOutput {
+	if skyTxn.outputs == nil {
+		outputs := make([]core.TransactionOutput, 0)
+		for _, out := range skyTxn.txn.Out {
+			rOut, err := readable.NewTransactionOutput(&out, skyTxn.txn.Hash())
+			if err != nil {
+				return nil
+			}
+			outputs = append(outputs, &SkycoinTransactionOutput{
+				skyOut: *rOut,
+				spent:  false,
+			})
+		}
+		skyTxn.outputs = outputs
+	}
+	return skyTxn.outputs
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) ComputeFee(ticker string) (uint64, error) {
+	if ticker == CoinHour {
+		return skyTxn.fee, nil
+	}
+	return 0, nil
+}
+
+func (skyTxn *SkycoinUninjectedTransaction) GetId() string {
+	return skyTxn.txn.Hash().String()
+}
+
 /*
 SkycoinTransaction
 */
 type SkycoinTransaction struct {
-	skyTxn  readable.TransactionVerbose
+	skyTxn readable.TransactionVerbose
+
 	status  core.TransactionStatus
 	inputs  []core.TransactionInput
 	outputs []core.TransactionOutput
@@ -193,7 +266,6 @@ func (txn *SkycoinTransaction) SupportedAssets() []string {
 
 func (txn *SkycoinTransaction) GetTimestamp() core.Timestamp {
 	return core.Timestamp(txn.skyTxn.Timestamp)
-
 }
 
 func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
@@ -218,26 +290,12 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 
 func (txn *SkycoinTransaction) GetInputs() []core.TransactionInput {
 	if txn.inputs == nil {
-
-		c, err := NewSkycoinApiClient(PoolSection)
+		ins, err := getSkycoinTransactionInputsFromTxnHash(txn.skyTxn.Hash)
 		if err != nil {
 			return nil
 		}
-		defer core.GetMultiPool().Return(PoolSection, c)
-		transaction, err := c.TransactionVerbose(txn.skyTxn.Hash)
-		if err != nil {
-			return nil
-		}
-		txn.inputs = make([]core.TransactionInput, 0)
-		for _, in := range transaction.Transaction.In {
-			txn.inputs = append(txn.inputs, &SkycoinTransactionInput{
-				skyIn:       in,
-				spentOutput: nil,
-			})
-		}
-
+		txn.inputs = ins
 	}
-
 	return txn.inputs
 }
 
@@ -265,6 +323,77 @@ func (txn *SkycoinTransaction) ComputeFee(ticker string) (uint64, error) {
 		return uint64(0), nil
 	}
 	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+}
+func getSkycoinTransactionInputsFromTxnHash(hash string) ([]core.TransactionInput, error) {
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+	transaction, err := c.TransactionVerbose(hash)
+	if err != nil {
+		return nil, err
+	}
+	inputs := make([]core.TransactionInput, 0)
+	for _, in := range transaction.Transaction.In {
+		inputs = append(inputs, &SkycoinTransactionInput{
+			skyIn:       in,
+			spentOutput: nil,
+		})
+	}
+
+	return inputs, nil
+}
+
+func getSkycoinTransactionInputsFromInputsHashes(inputsHashes []cipher.SHA256) ([]core.TransactionInput, error) {
+	inputs := make([]core.TransactionInput, 0)
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer core.GetMultiPool().Return(PoolSection, c)
+
+	for _, in := range inputsHashes {
+		ux, err := c.UxOut(in.String())
+		if err != nil {
+			return nil, err
+		}
+		addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
+		if err != nil {
+			return nil, err
+		}
+		srcTxn, err := cipher.SHA256FromHex(ux.SrcTx)
+		if err != nil {
+			return nil, err
+		}
+		cUx := coin.UxOut{
+			Head: coin.UxHead{
+				BkSeq: ux.SrcBkSeq,
+				Time:  ux.Time,
+			},
+			Body: coin.UxBody{
+				Address:        addr,
+				Coins:          ux.Coins,
+				Hours:          ux.Hours,
+				SrcTransaction: srcTxn,
+			},
+		}
+
+		visorInput, err := visor.NewTransactionInput(cUx, uint64(time.Now().UTC().Unix()))
+		if err != nil {
+			return nil, err
+		}
+		readInput, err := readable.NewTransactionInput(visorInput)
+		if err != nil {
+			return nil, err
+		}
+		inputs = append(inputs, &SkycoinTransactionInput{
+			skyIn:       readInput,
+			spentOutput: nil,
+		})
+
+	}
+	return inputs, nil
 }
 
 type SkycoinTransactionInput struct {
