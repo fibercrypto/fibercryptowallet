@@ -1,11 +1,9 @@
 package models
 
 import (
-	"strconv"
-
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 const (
@@ -13,6 +11,8 @@ const (
 	ASky       = int(core.Qt__UserRole) + 2
 	ACoinHours = int(core.Qt__UserRole) + 3
 	AMarked    = int(core.Qt__UserRole) + 4
+	AWallet    = int(core.Qt__UserRole) + 5
+	AWalletId  = int(core.Qt__UserRole) + 6
 )
 
 type AddressesModel struct {
@@ -24,10 +24,12 @@ type AddressesModel struct {
 	_ []*QAddress              `property:"addresses"`
 
 	_ func(*QAddress)                        `slot:"addAddress"`
+	_ func([]*QAddress)                      `slot:"addAddresses"`
 	_ func(int)                              `slot:"removeAddress"`
 	_ func(int, string, uint64, uint64, int) `slot:"editAddress"`
 	_ func([]*QAddress)                      `slot:"loadModel"`
 	_ int                                    `property:"count"`
+	_ func(string)                           `slot:"removeAddressesFromWallet"`
 }
 
 type QAddress struct {
@@ -35,8 +37,10 @@ type QAddress struct {
 
 	_ string `property:"address"`
 	_ string `property:"addressSky"`
-	_ uint64 `property:"addressCoinHours"`
+	_ string `property:"addressCoinHours"`
 	_ int    `property:"marked"`
+	_ string `property:"wallet"`
+	_ string `property:"walletId"`
 }
 
 func (m *AddressesModel) init() {
@@ -45,6 +49,8 @@ func (m *AddressesModel) init() {
 		ASky:       core.NewQByteArray2("addressSky", -1),
 		ACoinHours: core.NewQByteArray2("addressCoinHours", -1),
 		AMarked:    core.NewQByteArray2("marked", -1),
+		AWallet:    core.NewQByteArray2("wallet", -1),
+		AWalletId:  core.NewQByteArray2("walletId", -1),
 	})
 	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
 	m.ConnectData(m.data)
@@ -56,10 +62,23 @@ func (m *AddressesModel) init() {
 	m.ConnectEditAddress(m.editAddress)
 	m.ConnectRemoveAddress(m.removeAddress)
 	m.ConnectLoadModel(m.loadModel)
+	m.ConnectRemoveAddressesFromWallet(m.removeAddressesFromWallet)
+	m.ConnectAddAddresses(m.addAddresses)
 	m.SetCount(0)
 
 }
 
+func (m *AddressesModel) removeAddressesFromWallet(wltId string) {
+	old := m.Addresses()
+	new := make([]*QAddress, 0)
+	for _, addr := range old {
+		if addr.WalletId() != wltId {
+			new = append(new, addr)
+		}
+	}
+	m.loadModel(new)
+	m.removeAddress(0)
+}
 func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	if !index.IsValid() {
 		return core.NewQVariant()
@@ -89,6 +108,14 @@ func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant 
 		{
 			return core.NewQVariant1(a.Marked())
 		}
+	case AWallet:
+		{
+			return core.NewQVariant1(a.Wallet())
+		}
+	case AWalletId:
+		{
+			return core.NewQVariant1(a.WalletId())
+		}
 
 	default:
 		{
@@ -117,6 +144,12 @@ func (m *AddressesModel) addAddress(address *QAddress) {
 	m.SetCount(m.Count() + 1)
 }
 
+func (m *AddressesModel) addAddresses(addresses []*QAddress) {
+	for _, addr := range addresses {
+		m.addAddress(addr)
+	}
+}
+
 func (m *AddressesModel) removeAddress(row int) {
 	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
 	m.SetAddresses(append(m.Addresses()[:row], m.Addresses()[row+1:]...))
@@ -129,9 +162,10 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 	a.SetAddress(address)
 	//TODO: report possible error
 	accuracy, _ := util.AltcoinQuotient("SKY")
-	flSky := float64(sky / accuracy)
-	a.SetAddressSky(strconv.FormatFloat(flSky, 'f', -1, 64))
-	a.SetAddressCoinHours(coinHours)
+	a.SetAddressSky(util.FormatCoins(sky, accuracy))
+	//TODO: report possible error
+	accuracy, _ = util.AltcoinQuotient("SKYCH")
+	a.SetAddressCoinHours(util.FormatCoins(coinHours, accuracy))
 	changeMarked := true
 	if marked == a.Marked() {
 		changeMarked = false
@@ -154,7 +188,7 @@ func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
 	address := NewQAddress(nil)
 	address.SetAddress("--------------------------")
 	address.SetAddressSky("0")
-	address.SetAddressCoinHours(0)
+	address.SetAddressCoinHours("0")
 	address.SetMarked(0)
 	qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)
 	addresses = append(addresses, address)

@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/therecipe/qt/qml"
-	//"github.com/fibercrypto/FiberCryptoWallet/src/models/history"
 
 	qtcore "github.com/therecipe/qt/core"
 )

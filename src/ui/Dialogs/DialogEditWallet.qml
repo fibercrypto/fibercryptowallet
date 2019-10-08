@@ -2,46 +2,45 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "../Controls" // For quick UI development, switch back to resources when making a release
+
 Dialog {
     id: dialogEditWallet
 
-    property string initialText
-    property string newLabel
+    property string originalWalletName
+    property alias name: textFieldName.text
 
-    title: Qt.application.name
+    title: qsTr("Edit wallet")
     standardButtons: Dialog.Ok | Dialog.Cancel
-    closePolicy: Dialog.NoAutoClose
+
+    function clear() {
+        textFieldName.clear()
+    }
 
     Component.onCompleted: {
-        standardButton(Dialog.Ok).enabled = initialText
     }
 
     onAboutToShow: {
         textFieldName.forceActiveFocus()
+        standardButton(Dialog.Ok).enabled = name && name != originalWalletName
     }
 
-    
+    onAboutToHide: {
+        clear()
+    }
 
-    ColumnLayout {
-        id: columnLayoutRoot
+    TextField {
+        id: textFieldName
+
         anchors.fill: parent
+        placeholderText: qsTr("Wallet's name")
+        selectByMouse: true
+        focus: true
 
-        Label {
-            text: qsTr("Name")
-            font.bold: true
-            Layout.fillWidth: true
+        onTextChanged: {
+            standardButton(Dialog.Ok).enabled = text && text != originalWalletName
         }
-        TextField {
-            id: textFieldName
-            Layout.fillWidth: true
-            placeholderText: qsTr("Wallet's name")
-            text: initialText
-            focus: true
-
-            onTextChanged: {
-                standardButton(Dialog.Ok).enabled = text
-                newLabel = text
-            }
-        }
-    } // ColumnLayout (root)
+    }
 }

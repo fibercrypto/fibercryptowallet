@@ -25,6 +25,7 @@ RowLayout {
     signal blockchainRequested()
     signal aboutRequested()
     signal aboutQtRequested()
+    signal licenseRequested()
 
     // Functions
     function back() {
@@ -129,25 +130,37 @@ RowLayout {
             CustomMenuItem {
                 id: menuItemSettings
                 text: qsTr("&Settings")
-                iconSource: "qrc:/images/resources/images/icons/warning.svg"
+                iconSource: "qrc:/images/resources/images/icons/settings.svg"
 
                 onClicked: settingsRequested()
             }
         } // menuTools
         Menu {
             id: menuHelp
+
             title: qsTr("&Help")
+
             CustomMenuItem {
                 text: qsTr("&About FiberCrypto")
                 iconSource: "qrc:/images/resources/images/icons/appIcon.png"
 
                 onClicked: aboutRequested()
             }
+            
             CustomMenuItem {
                 text: qsTr("About &Qt")
                 iconSource: "qrc:/images/resources/images/icons/qt_logo_green_rgb_256x256.png"
 
                 onClicked: aboutQtRequested()
+            }
+
+            MenuSeparator {}
+
+            CustomMenuItem {
+                text: qsTr("&License")
+                iconSource: "qrc:/images/resources/images/icons/license.svg"
+
+                onClicked: licenseRequested()
             }
         } // menuHelp
     } // menuBarReal
