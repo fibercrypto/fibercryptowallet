@@ -31,6 +31,10 @@ type Transaction interface {
 	GetId() string
 	// ComputeFee calculates transaction fee expressed in coins of asset represented by ticker
 	ComputeFee(ticker string) (uint64, error)
+	// VerifyUnsigned checks for valid unsigned transaction
+	VerifyUnsigned() error
+	// VerifySigned checks for valid unsigned transaction
+	VerifySigned() error
 }
 
 // TransactionIterator iterates over a sequence of transactions
