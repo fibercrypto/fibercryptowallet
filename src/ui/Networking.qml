@@ -10,7 +10,6 @@ import "Delegates/" // For quick UI development, switch back to resources when m
 Page {
     id: root
 
-
     Frame {
         anchors.fill: parent
         anchors.margins: 20
@@ -101,12 +100,13 @@ Page {
 
         }
     }
-    
+
     BusyIndicator {
         id: busyIndicator
 
         anchors.centerIn: parent
         // Create a `busy` property in the backend and bind it to `running` here:
-        running: true
+        running: modelNetworking.networks.length === 0
+
     }
 }
