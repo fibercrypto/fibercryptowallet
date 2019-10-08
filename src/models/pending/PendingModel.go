@@ -1,39 +1,43 @@
 package pending
 
 import (
-	qtcore "github.com/therecipe/qt/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	qtcore "github.com/therecipe/qt/core"
 )
 
 type PendingTransactionList struct {
 	qtcore.QObject
-	PEX          core.PEX
-	WalletEnv    core.WalletEnv
+	PEX       core.PEX
+	WalletEnv core.WalletEnv
 
-	_ func()                      `constructor:"init"`
+	_ func() `constructor:"init"`
 
-	_ []*PendingTransaction       `property:"transactions"`
-
-	_ func()                      `slot:"getAll"`
-	_ func()                      `slot:"getMine"`
+	_ []*PendingTransaction            `property:"transactions"`
+	_ bool                             `property:"loading"`
+	_ func(bool) []*PendingTransaction `slot:"recoverTransactions"`
+	_ func()                           `slot:"getAll"`
+	_ func()                           `slot:"cleanPendingTxns"`
+	_ func()                           `slot:"getMine"`
 }
 
 type PendingTransaction struct {
 	qtcore.QObject
-	
-	_ string             `property:"sky"`
-	_ string             `property:"coinHours"`
-	_ *qtcore.QDateTime  `property:"timeStamp"`
-	_ string             `property:"transactionID"`
-	_ int                `property:"mine"`
+
+	_ string            `property:"sky"`
+	_ string            `property:"coinHours"`
+	_ *qtcore.QDateTime `property:"timeStamp"`
+	_ string            `property:"transactionID"`
+	_ int               `property:"mine"`
 }
 
 func (m *PendingTransactionList) init() {
 	m.ConnectGetAll(m.getAll)
+	m.ConnectRecoverTransactions(m.recoverTransactions)
 	m.ConnectGetMine(m.getMine)
-
+	m.SetLoading(true)
+	m.ConnectCleanPendingTxns(m.cleanPendingTxns)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -42,7 +46,20 @@ func (m *PendingTransactionList) init() {
 	m.PEX = &skycoin.SkycoinPEX{}
 	m.WalletEnv = walletsEnvs[0]
 
-	m.getAll()
+}
+
+func (m *PendingTransactionList) cleanPendingTxns() {
+	m.SetTransactions(make([]*PendingTransaction, 0))
+}
+
+func (m *PendingTransactionList) recoverTransactions(mine bool) []*PendingTransaction {
+	m.SetLoading(true)
+	if mine {
+		m.getMine()
+	} else {
+		m.getAll()
+	}
+	return m.Transactions()
 }
 
 func (m *PendingTransactionList) getAll() {
@@ -58,6 +75,8 @@ func (m *PendingTransactionList) getAll() {
 		ptModel.SetMine(0)
 		ptModels = append(ptModels, ptModel)
 	}
+
+	m.SetLoading(false)
 	m.SetTransactions(ptModels)
 }
 
@@ -84,6 +103,7 @@ func (m *PendingTransactionList) getMine() {
 			}
 		}
 	}
+	m.SetLoading(false)
 	m.SetTransactions(ptModels)
 }
 
