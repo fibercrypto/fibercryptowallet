@@ -69,7 +69,6 @@ func TestTransactionFinderAddressesActivity(t *testing.T) {
 }
 
 func TestSkycoinRemoteWalletListWallets(t *testing.T) {
-	CleanGlobalMock()
 
 	global_mock.On("Wallets").Return(
 		[]api.WalletResponse{
@@ -102,7 +101,6 @@ func TestSkycoinRemoteWalletListWallets(t *testing.T) {
 }
 
 func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
-	CleanGlobalMock()
 
 	seed, label, pwd, scanN := "seed", "label", "pwd", 666
 
@@ -157,4 +155,94 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
 	assert.Equal(t, "FiberCrypto", wlt2.GetId())
+}
+
+func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
+
+	global_mock.On("Wallet", "encrypted").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Encrypted: true,
+			},
+		},
+		nil)
+	global_mock.On("Wallet", "nonEncrypted").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Encrypted: false,
+			},
+		},
+		nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: "skycoin"}
+
+	encrypted, err := wltSrv.IsEncrypted("encrypted")
+	assert.Nil(t, err)
+	assert.Equal(t, true, encrypted)
+
+	encrypted, err = wltSrv.IsEncrypted("nonEncrypted")
+	assert.Nil(t, err)
+	assert.Equal(t, false, encrypted)
+}
+
+func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
+	CleanGlobalMock()
+
+	global_mock.On("Wallet", "wallet").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "wallet",
+				Encrypted: true,
+			},
+			Entries: []readable.WalletEntry{
+				readable.WalletEntry{Address: "addr"},
+			},
+		},
+		nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: "skycoin"}
+	wlt := wltSrv.GetWallet("wallet")
+	assert.Equal(t, "wallet", wlt.GetLabel())
+	assert.Equal(t, "FiberCrypto", wlt.GetId())
+}
+
+//func (m *SkycoinApiMock) NewWalletAddress(id string, n int, password string) ([]string, error){
+func TestRemoteWalletGenAddresses(t *testing.T) {
+
+	pwd := "pwd"
+	global_mock.On("NewWalletAddress", "wallet", 1, pwd).Return(
+		[]string{"addr", "addr"},
+		nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: "skycoin",
+	}
+	pwdReader := func(message string) (string, error) {
+		return "pwd", nil
+	}
+	iter := wlt.GenAddresses(0, 0, 2, pwdReader)
+	for iter.Next() {
+		a := iter.Value()
+		assert.Equal(t, "addr", a.String())
+	}
+}
+
+func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: "skycoin",
+	}
+	iter, err := wlt.GetLoadedAddresses()
+	assert.Nil(t, err)
+	items := 0
+	for iter.Next() {
+		a := iter.Value()
+		items++
+		assert.Equal(t, "addr", a.String())
+	}
+	assert.Equal(t, 1, items)
 }
