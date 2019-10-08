@@ -71,7 +71,8 @@ func TestSkycoinBlockchainStatusGetLastBlock(t *testing.T){
 				},
 			},
 		},	
-	nil)
+		nil,
+	)
 	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, nil)
 
 	status := &SkycoinBlockchainStatus{CacheTime: 20}
