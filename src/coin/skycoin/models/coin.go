@@ -135,8 +135,16 @@ func (txn *SkycoinPendingTransaction) ToCreatedTransaction() (*api.CreatedTransa
 	), nil
 }
 
-func verifyCreatedTransaction(rTxn *api.CreatedTransaction, checkSigned bool) error {
-	txn, err := rTxn.ToTransaction()
+type readableTxn interface {
+	ToCreatedTransaction() (*api.Createdransaction, error)
+}
+
+func verifyCreatedTransaction(rTxn readableTxn, checkSigned bool) error {
+	var createdTxn *api.CreatedTransaction
+	if createdTxn, err := rTxn.ToCreatedTransaction(); err == nil {
+		return err
+	}
+	txn, err := createdTxn.ToTransaction()
 	if err != nil {
 		return err
 	}
@@ -152,11 +160,7 @@ func (txn *SkycoinPendingTransaction) VerifyUnsigned() error {
 		// FIXME: Unique error object
 		return errors.New("Invalid unconfirmed transaction")
 	}
-	var rTxn *api.CreatedTransaction
-	if rTxn, err := txn.ToCreatedTransaction(); err == nil {
-		return err
-	}
-	return verifyCreatedTransaction(rTxn, false)
+	return verifyCreatedTransaction(txn, false)
 }
 
 // VerifySigned checks for valid unsigned transaction
@@ -165,11 +169,7 @@ func (txn *SkycoinPendingTransaction) VerifySigned() error {
 		// FIXME: Unique error object
 		return errors.New("Invalid unconfirmed transaction")
 	}
-	var rTxn *api.CreatedTransaction
-	if rTxn, err := txn.ToCreatedTransaction(); err == nil {
-		return err
-	}
-	return verifyCreatedTransaction(rTxn, true)
+	return verifyCreatedTransaction(txn, true)
 }
 
 /**
