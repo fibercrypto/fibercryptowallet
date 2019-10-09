@@ -1,46 +1,47 @@
 package skycoin
 
-import(
+import (
 	"testing"
+
 	"github.com/stretchr/testify/assert"
 
 	"github.com/skycoin/skycoin/src/readable"
 )
 
-func TestPending(t *testing.T){
+func TestPending(t *testing.T) {
 	global_mock.On("PendingTransactionsVerbose").Return(
-		[]readable.UnconfirmedTransactionVerbose {
+		[]readable.UnconfirmedTransactionVerbose{
 			readable.UnconfirmedTransactionVerbose{
 				Transaction: readable.BlockTransactionVerbose{
-					Out:    		[]readable.TransactionOutput{
+					Out: []readable.TransactionOutput{
 						readable.TransactionOutput{
-							Coins:    		"1",
-							Hours:    		2000,
+							Coins: "1",
+							Hours: 2000,
 						},
 						readable.TransactionOutput{
-							Coins:    		"1",
-							Hours:    		2000,
+							Coins: "1",
+							Hours: 2000,
 						},
 					},
 				},
 			},
 			readable.UnconfirmedTransactionVerbose{
 				Transaction: readable.BlockTransactionVerbose{
-					Out:    		[]readable.TransactionOutput{
+					Out: []readable.TransactionOutput{
 						readable.TransactionOutput{
-							Coins:    		"1",
-							Hours:    		2000,
+							Coins: "1",
+							Hours: 2000,
 						},
 						readable.TransactionOutput{
-							Coins:    		"1",
-							Hours:    		2000,
+							Coins: "1",
+							Hours: 2000,
 						},
 					},
 				},
 			},
 		}, nil)
 
-	pex := &SkycoinPEX{}
+	pex := &SkycoinPEX{poolSection: PoolSection}
 	txns, err2 := pex.GetTxnPool()
 	assert.Nil(t, err2)
 
