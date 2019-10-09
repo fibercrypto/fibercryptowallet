@@ -91,7 +91,7 @@ func TestSkycoinRemoteWalletListWallets(t *testing.T) {
 		},
 		nil)
 
-	wltSrv := &SkycoinRemoteWallet{poolSection: "skycoin"}
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 	iter := wltSrv.ListWallets()
 	for iter.Next() {
 		wlt := iter.Value()
@@ -141,7 +141,7 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 		},
 		nil)
 
-	wltSrv := &SkycoinRemoteWallet{poolSection: "skycoin"}
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 	pwdReader := func(message string) (string, error) {
 		return "pwd", nil
 	}
@@ -174,7 +174,7 @@ func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
 		},
 		nil)
 
-	wltSrv := &SkycoinRemoteWallet{poolSection: "skycoin"}
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 
 	encrypted, err := wltSrv.IsEncrypted("encrypted")
 	assert.Nil(t, err)
@@ -202,13 +202,12 @@ func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
 		},
 		nil)
 
-	wltSrv := &SkycoinRemoteWallet{poolSection: "skycoin"}
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 	wlt := wltSrv.GetWallet("wallet")
 	assert.Equal(t, "wallet", wlt.GetLabel())
 	assert.Equal(t, "FiberCrypto", wlt.GetId())
 }
 
-//func (m *SkycoinApiMock) NewWalletAddress(id string, n int, password string) ([]string, error){
 func TestRemoteWalletGenAddresses(t *testing.T) {
 
 	pwd := "pwd"
@@ -218,7 +217,7 @@ func TestRemoteWalletGenAddresses(t *testing.T) {
 
 	wlt := &RemoteWallet{
 		Id:          "wallet",
-		poolSection: "skycoin",
+		poolSection: PoolSection,
 	}
 	pwdReader := func(message string) (string, error) {
 		return "pwd", nil
@@ -234,7 +233,7 @@ func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
 
 	wlt := &RemoteWallet{
 		Id:          "wallet",
-		poolSection: "skycoin",
+		poolSection: PoolSection,
 	}
 	iter, err := wlt.GetLoadedAddresses()
 	assert.Nil(t, err)
