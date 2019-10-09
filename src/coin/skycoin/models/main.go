@@ -1,6 +1,8 @@
 package skycoin
 
 import (
+	"errors"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
@@ -66,6 +68,17 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 	}
 
 	return wltEnvs
+}
+
+func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
+	var poolSection string
+	if netType == "MainNet" {
+		poolSection = PoolSection
+	} else {
+		return nil, errors.New("Invalid netType")
+	}
+	return NewSkycoinPEX(poolSection), nil
+
 }
 
 func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {

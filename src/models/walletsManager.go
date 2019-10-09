@@ -3,7 +3,6 @@ package models
 import (
 	"errors"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/sirupsen/logrus"
 	"github.com/therecipe/qt/qml"
