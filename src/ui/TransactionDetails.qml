@@ -19,8 +19,8 @@ Item {
     property int status: TransactionDetails.Status.Preview
     property var statusString: [ qsTr("Confirmed"), qsTr("Pending"), qsTr("Preview") ]
     property real amount: 0
-    property int hoursReceived: 0
-    property int hoursBurned: 0
+    property string hoursReceived
+    property string hoursBurned
     property string transactionID
     property QAddressList modelInputs
     property QAddressList modelOutputs

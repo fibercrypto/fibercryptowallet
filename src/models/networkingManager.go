@@ -11,7 +11,7 @@ var logNetworkingManager = logging.MustGetLogger("modelsNetworkingManager")
 
 type NetworkingManager struct {
 	qtCore.QObject
-	Networks core.NetworkSet
+	Networks core.PexNodeSet
 	_        func()                `constructor:"init"`
 	_        func() []*QNetworking `slot:"getNetworks"`
 }
@@ -26,7 +26,7 @@ func (net *NetworkingManager) getNetworks() []*QNetworking {
 	logNetworkingManager.Info("Getting networks")
 	networks := make([]*QNetworking, 0)
 
-	netIterator := net.Networks.ListNetworks()
+	netIterator := net.Networks.ListPeers()
 
 	if netIterator == nil {
 		logNetworkingManager.WithError(nil).Error("Couldn't load networks")

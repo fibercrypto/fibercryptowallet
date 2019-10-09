@@ -2,6 +2,7 @@ package skycoin
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/skycoin/skycoin/src/cipher"
 )
 
 type SkycoinAddressIterator struct { //Implements AddressIterator interfaces
@@ -30,7 +31,7 @@ func NewSkycoinAddressIterator(addresses []core.Address) *SkycoinAddressIterator
 }
 
 type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
-	address string
+	address     string
 	poolSection string
 }
 
@@ -44,4 +45,14 @@ func (addr *SkycoinAddress) String() string {
 
 func (addr *SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
+}
+
+func (addr SkycoinAddress) ToSkycoinCipherAddress() (*cipher.Address, error) {
+	pubkey, err := cipher.PubKeyFromHex(addr.String())
+	if err != nil {
+		return nil, err
+	}
+	sAddr := cipher.AddressFromPubKey(pubkey)
+
+	return &sAddr, nil
 }

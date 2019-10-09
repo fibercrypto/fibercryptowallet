@@ -23,6 +23,7 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
             placeholderText: "$HOME/.skycoin/wallets"
+            selectByMouse: true
         }
     }
 

@@ -3,6 +3,10 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "Controls" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: root
 
@@ -29,6 +33,7 @@ Item {
             id: textFieldPassword
 
             placeholderText: qsTr("Password")
+            selectByMouse: true
             echoMode: TextField.Password
             focus: true
             Layout.alignment: Qt.AlignTop

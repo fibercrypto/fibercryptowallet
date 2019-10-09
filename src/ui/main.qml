@@ -104,6 +104,10 @@ ApplicationWindow {
         onAboutQtRequested: {
             dialogAboutQt.open()
         }
+
+        onLicenseRequested: {
+            dialogAboutLicense.open()
+        }
     } // CustomMenuBar
 
     CustomHeader {
@@ -219,23 +223,35 @@ ApplicationWindow {
     DialogAbout {
         id: dialogAbout
 
-        readonly property real minimumParentSideSize: Math.min(parent.width, parent.height)
-
         parent: Overlay.overlay
         anchors.centerIn: parent
-        width: (minimumParentSideSize / 3) * 2
-        height: (parent.height / 3) * 2
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 640 ? 640 - 40 : applicationWindow.height - 40
+
+        onLicenseRequested: {
+            close()
+            dialogAboutLicense.open()
+        }
     }
 
     DialogAboutQt {
         id: dialogAboutQt
 
-        readonly property real minimumParentSideSize: Math.min(parent.width, parent.height)
-
         parent: Overlay.overlay
         anchors.centerIn: parent
-        width: (minimumParentSideSize / 3) * 2
-        height: (parent.height / 3) * 2
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 640 ? 640 - 40 : applicationWindow.height - 40
+    }
+
+    DialogAboutLicense {
+        id: dialogAboutLicense
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width - 40
+        height: applicationWindow.height - 40
+        
+        focus: true
+        modal: true
     }
 
     //! This must be the last object (i.e. the one with the greater `z` value)
@@ -268,5 +284,5 @@ ApplicationWindow {
             duration: flasher.duration
             easing.type: Easing.InQuad
         }
-    }
+    } // Rectangle (flasher)
 }

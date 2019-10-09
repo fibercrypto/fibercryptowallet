@@ -29,39 +29,22 @@ Item {
     }
 
 
-    WalletManager{
+    WalletManager {
         id: walletManager
     }
 
-    WalletModel{
+    WalletModel {
         id: walletModel
-        property Timer timer: Timer {
-        
-                                    id: walletModelTimer
-                                    repeat: false
-                                    running: true
-                                    interval: 0
-                                    onTriggered: {
-                                        
-                                        walletModel.loadModel(walletManager.getWallets())
-                                        
-                                        walletModelTimer.running = false
-                                    }
-            
-                                }
-        onCountChanged:{
-            if (walletModel.count){
-                if (stackView.depth > 1){
+
+        Component.onCompleted: {
+            walletModel.loadModel(walletManager.getWallets())
+            if (walletModel.count) {
+                if (stackView.depth > 1) {
                     stackView.replace(componentGeneralSwipeView)
-                }
-                else{
+                } else {
                     stackView.push(componentGeneralSwipeView)
                 }
             }
-            
-            
-            
-            
         }
     }
 
@@ -100,7 +83,6 @@ Item {
     
     StackView {
         id: stackView
-        initialItem: componentPageCreateLoadWallet
         anchors.fill: parent
     }
 

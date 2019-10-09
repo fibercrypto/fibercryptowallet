@@ -3,6 +3,10 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "../Controls" // For quick UI development, switch back to resources when making a release
+
 Dialog {
     id: restoreBackupWordsDialog
 
@@ -66,6 +70,7 @@ Dialog {
                 placeholderText: qsTr("Requested word")
                 Layout.fillWidth: true
                 focus: restoreBackupWordsDialog.focus
+                selectByMouse: true
 
                 onTextChanged: {
                     standardButton(Dialog.YesToAll).enabled = text !== ""

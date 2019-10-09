@@ -11,8 +11,8 @@ var multiConnectionsPool *MultiConnectionsPool
 
 type PEX interface {
 	GetTxnPool() (TransactionIterator, error)
-	GetConnections()
-	BroadcastTxn(txn Transaction)
+	GetConnections() (PexNodeSet, error)
+	BroadcastTxn(txn Transaction) error
 }
 
 type PexNodeIterator interface {
@@ -21,8 +21,8 @@ type PexNodeIterator interface {
 	HasNext() bool
 }
 
-type NetworkSet interface {
-	ListNetworks() PexNodeIterator
+type PexNodeSet interface {
+	ListPeers() PexNodeIterator
 }
 
 type PexNode interface {

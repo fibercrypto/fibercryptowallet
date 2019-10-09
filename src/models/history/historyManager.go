@@ -50,6 +50,20 @@ func (hm *HistoryManager) init() {
 	hm.walletEnv = walletsEnvs[0]
 }
 
+type ByDate []*transactions.TransactionDetails
+
+func (a ByDate) Len() int {
+	return len(a)
+}
+func (a ByDate) Swap(i, j int) {
+	a[i], a[j] = a[j], a[i]
+}
+
+func (a ByDate) Less(i, j int) bool {
+	d1, _ := time.Parse(dateTimeFormatForGo, a[i].Date().ToString(dateTimeFormatForQML))
+	d2, _ := time.Parse(dateTimeFormatForGo, a[j].Date().ToString(dateTimeFormatForQML))
+	return d1.After(d2)
+}
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
 	logHistoryManager.Info("Getting transactions of Addresses")
 	addresses := hm.getAddressesWithWallets()
@@ -117,7 +131,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			}
 			skyFloat := float64(skyUint64) / float64(accuracy)
 			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			chUint64, err := in.GetCoins("SKYCH")
+			chUint64, err := in.GetCoins("SKYCHC")
 			if err != nil {
 				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
 				continue
@@ -378,19 +392,4 @@ func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 	}
 
 	return response
-}
-
-type ByDate []*transactions.TransactionDetails
-
-func (a ByDate) Len() int {
-	return len(a)
-}
-func (a ByDate) Swap(i, j int) {
-	a[i], a[j] = a[j], a[i]
-}
-
-func (a ByDate) Less(i, j int) bool {
-	d1, _ := time.Parse(dateTimeFormatForGo, a[i].Date().ToString(dateTimeFormatForQML))
-	d2, _ := time.Parse(dateTimeFormatForGo, a[j].Date().ToString(dateTimeFormatForQML))
-	return d1.After(d2)
 }

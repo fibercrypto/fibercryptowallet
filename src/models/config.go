@@ -44,9 +44,9 @@ func (configManager *ConfigManager) edit(node, src string, tp bool) {
 	logConfigManager.Info("Editing Config Manager")
 	var tpSrc int
 	if tp {
-		tpSrc = local.RemoteWallet
-	} else {
 		tpSrc = local.LocalWallet
+	} else {
+		tpSrc = local.RemoteWallet
 	}
 	configManager.configManager.EditWalletSource(1, src, tpSrc)
 	configManager.configManager.EditNode(node)
