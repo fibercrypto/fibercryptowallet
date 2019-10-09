@@ -18,6 +18,7 @@ type BlockchainStatusModel struct {
 	infoRequester core.BlockchainStatus
 
 	_ string            `property:"numberOfBlocks"`
+	_ bool              `property:"loading"`
 	_ *qtcore.QDateTime `property:"timestampLastBlock"`
 	_ string            `property:"hashLastBlock"`
 	_ string            `property:"currentSkySupply"`
@@ -38,7 +39,7 @@ func (bs *BlockchainStatusModel) init() {
 	bs.SetTotalSkySupplyDefault("0")
 	bs.SetCurrentCoinHoursSupplyDefault("0")
 	bs.SetTotalCoinHoursSupplyDefault("0")
-
+	bs.SetLoading(true)
 	bs.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
 }
 
@@ -53,6 +54,7 @@ func (bs *BlockchainStatusModel) update() {
 
 // updateInfo request the needed information
 func (bs *BlockchainStatusModel) updateInfo() error {
+	bs.SetLoading(true)
 
 	block, err := bs.infoRequester.GetLastBlock()
 	if err != nil {
@@ -63,7 +65,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	if err != nil {
 		return err
 	}
-	numberOfBlocks,err := bs.infoRequester.GetNumberOfBlocks()
+	numberOfBlocks, err := bs.infoRequester.GetNumberOfBlocks()
 	if err != nil {
 		return err
 	}
@@ -100,6 +102,7 @@ func (bs *BlockchainStatusModel) updateInfo() error {
 	bs.SetTotalSkySupply(strconv.FormatUint(totalSkySupply, 10))
 	bs.SetCurrentCoinHoursSupply(strconv.FormatUint(currentCoinHoursSupply, 10))
 	bs.SetTotalCoinHoursSupply(strconv.FormatUint(totalCoinHoursSupply, 10))
+	bs.SetLoading(false)
 
 	return nil
 }

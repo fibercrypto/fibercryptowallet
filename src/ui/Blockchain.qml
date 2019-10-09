@@ -188,6 +188,16 @@ Page {
 
         anchors.centerIn: parent
         // Create a `busy` property in the backend and bind it to `running` here:
-        running: true
+        running: model.loading
+		property Timer timer: Timer{
+			id: blockchainTimer
+			repeat: true
+			running: true
+			interval: 3000
+			onTriggered: {
+				model.update()
+			}   
+
+		} 
     }
 }
