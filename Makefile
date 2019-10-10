@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: run build clean help lint
+.PHONY: run build clean help lint install-linters
 
 run:  ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
@@ -26,6 +26,10 @@ clean: ## Clean project FiberCrypto Wallet.
 
 test: ## Run project test suite
 	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+
+install-linters: ## Install linters
+	go get -u github.com/FiloSottile/vendorcheck
+	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.10.2
 
 lint: ## Run linters. Use make install-linters first.
 	vendorcheck ./...
