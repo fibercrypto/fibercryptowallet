@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 )
@@ -12,6 +13,8 @@ const (
 	CoinHours         = int(core.Qt__UserRole) + 4
 	FileName          = int(core.Qt__UserRole) + 5
 )
+
+var logWalletsModel = logging.MustGetLogger("Wallets Model")
 
 type WalletModel struct {
 	core.QAbstractListModel
@@ -39,6 +42,7 @@ type QWallet struct {
 }
 
 func (m *WalletModel) init() {
+	logWalletsModel.Info("Initialize Wallet model")
 	m.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),
 		EncryptionEnabled: core.NewQByteArray2("encryptionEnabled", -1),
@@ -60,6 +64,7 @@ func (m *WalletModel) init() {
 }
 
 func (m *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
+	logWalletsModel.Info("Loading data for index")
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
@@ -115,6 +120,7 @@ func (m *WalletModel) roleNames() map[int]*core.QByteArray {
 }
 
 func (m *WalletModel) addWallet(w *QWallet) {
+	logWalletsModel.Info("Add Wallet")
 	m.BeginInsertRows(core.NewQModelIndex(), len(m.Wallets()), len(m.Wallets()))
 	qml.QQmlEngine_SetObjectOwnership(w, qml.QQmlEngine__CppOwnership)
 	m.SetWallets(append(m.Wallets(), w))
@@ -124,6 +130,7 @@ func (m *WalletModel) addWallet(w *QWallet) {
 }
 
 func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky float64, coinHours uint64) {
+	logWalletsModel.Info("Edit Wallet")
 	w := m.Wallets()[row]
 	w.SetName(name)
 	w.SetEncryptionEnabled(0)
@@ -141,6 +148,7 @@ func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky float
 }
 
 func (m *WalletModel) removeWallet(row int) {
+	logWalletsModel.Info("Remove wallets for index")
 	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
 	m.SetWallets(append(m.Wallets()[:row], m.Wallets()[row+1:]...))
 	m.EndRemoveRows()
@@ -149,6 +157,7 @@ func (m *WalletModel) removeWallet(row int) {
 }
 
 func (m *WalletModel) loadModel(wallets []*QWallet) {
+	logWalletsModel.Info("Loading wallets")
 	for _, wlt := range wallets {
 		qml.QQmlEngine_SetObjectOwnership(wlt, qml.QQmlEngine__CppOwnership)
 	}
