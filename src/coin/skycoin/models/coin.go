@@ -99,25 +99,24 @@ func newCreatedTransaction(length uint32, txnType uint8, txID string, innerHash 
 	return &rTxn
 }
 
-// ToCreatedTransaction retrieve the equivalent core.Transaction object
-func (txn *SkycoinPendingTransaction) ToCreatedTransaction() (*api.CreatedTransaction, error) {
-	sigs := append([]string{}, txn.Transaction.Transaction.Sigs...)
-	ins := make([]api.CreatedTransactionInput, len(txn.Transaction.Transaction.In))
-	outs := make([]api.CreatedTransactionOutput, len(txn.Transaction.Transaction.Out))
-	for i, input := range txn.Transaction.Transaction.In {
+func blockTxnToCreatedTxn(blockTxn readable.BlockTransactionVerbose, timestamp uint64) (*api.CreatedTransaction, error) {
+	sigs := append([]string{}, blockTxn.Sigs...)
+	ins := make([]api.CreatedTransactionInput, len(blockTxn.In))
+	outs := make([]api.CreatedTransactionOutput, len(blockTxn.Out))
+	for i, input := range blockTxn.In {
 		ins[i] = newCreatedTransactionInput(
 			input.Hash,
 			input.Address,
 			input.Coins,
 			fmt.Sprint(input.Hours),
 			fmt.Sprint(input.CalculatedHours),
-			uint64(txn.Transaction.Announced.UnixNano()),
+			timestamp,
 			// Unconfirmed transactions are not included in a block yet
 			0,
-			txn.Transaction.Transaction.Hash,
+			blockTxn.Hash,
 		)
 	}
-	for i, output := range txn.Transaction.Transaction.Out {
+	for i, output := range blockTxn.Out {
 		outs[i] = newCreatedTransactionOutput(
 			output.Hash,
 			output.Address,
@@ -126,13 +125,18 @@ func (txn *SkycoinPendingTransaction) ToCreatedTransaction() (*api.CreatedTransa
 		)
 	}
 	return newCreatedTransaction(
-		txn.Transaction.Transaction.Length,
-		txn.Transaction.Transaction.Type,
-		txn.Transaction.Transaction.Hash,
-		txn.Transaction.Transaction.InnerHash,
-		fmt.Sprint(txn.Transaction.Transaction.Fee),
+		blockTxn.Length,
+		blockTxn.Type,
+		blockTxn.Hash,
+		blockTxn.InnerHash,
+		fmt.Sprint(blockTxn.Fee),
 		ins, outs, sigs,
 	), nil
+}
+
+// ToCreatedTransaction retrieve the equivalent core.Transaction object
+func (txn *SkycoinPendingTransaction) ToCreatedTransaction() (*api.CreatedTransaction, error) {
+	return blockTxnToCreatedTxn(txn.Transaction.Transaction, uint64(txn.Transaction.Announced.UnixNano()))
 }
 
 type readableTxn interface {
@@ -141,7 +145,9 @@ type readableTxn interface {
 
 func verifyCreatedTransaction(rTxn readableTxn, checkSigned bool) error {
 	var createdTxn *api.CreatedTransaction
-	if createdTxn, err := rTxn.ToCreatedTransaction(); err == nil {
+	if cTxn, err := rTxn.ToCreatedTransaction(); err != nil {
+		createdTxn = cTxn
+	} else {
 		return err
 	}
 	txn, err := createdTxn.ToTransaction()
@@ -445,6 +451,22 @@ func (txn *SkycoinTransaction) ComputeFee(ticker string) (uint64, error) {
 	}
 	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
 }
+
+// ToCreatedTransaction retrieve the equivalent core.Transaction object
+func (txn *SkycoinTransaction) ToCreatedTransaction() (*api.CreatedTransaction, error) {
+	return blockTxnToCreatedTxn(txn.skyTxn.BlockTransactionVerbose, uint64(txn.skyTxn.Timestamp))
+}
+
+// VerifyUnsigned checks for valid unsigned transaction
+func (txn *SkycoinTransaction) VerifyUnsigned() error {
+	return verifyCreatedTransaction(txn, false)
+}
+
+// VerifySigned checks for valid unsigned transaction
+func (txn *SkycoinTransaction) VerifySigned() error {
+	return verifyCreatedTransaction(txn, true)
+}
+
 func getSkycoinTransactionInputsFromTxnHash(hash string) ([]core.TransactionInput, error) {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
