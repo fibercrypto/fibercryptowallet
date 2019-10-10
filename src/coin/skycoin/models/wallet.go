@@ -16,7 +16,6 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
-	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -25,7 +24,7 @@ import (
 	"github.com/skycoin/skycoin/src/wallet"
 )
 
-var log = logging.MustGetLogger("wallet")
+var logWallet = logging.MustGetLogger("wallet")
 
 const (
 	Sky                     = params.SkycoinTicker
@@ -736,7 +735,7 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 	}
 	wltName := wltSrv.newUnicWalletFilename()
 	var wlt wallet.Wallet
-	var err error
+
 	if scanAddressesN > 0 {
 		wlt, err = wallet.NewWalletScanAhead(wltName, opts, &TransactionFinder{})
 		if err != nil {

@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/sirupsen/logrus"
@@ -492,7 +493,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
 		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 
-		qaddresses = append(qaddresses, qaddress)
+		qAddresses = append(qAddresses, qAddress)
 
 	}
 
