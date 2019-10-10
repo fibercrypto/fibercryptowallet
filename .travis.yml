@@ -20,6 +20,7 @@ matrix:
     
     script:
     - go get -t -d -v ./...
+    - make lint
     - $GOPATH/bin/qtdeploy -docker build rpi1
     - $GOPATH/bin/qtdeploy -docker build rpi2
     - $GOPATH/bin/qtdeploy -docker build rpi3
@@ -33,6 +34,7 @@ matrix:
 
     script:
     - go get -t -d -v ./...
+    - make lint
     - $GOPATH/bin/qtdeploy -docker build android
     - $GOPATH/bin/qtdeploy -docker build android-emulator
 
@@ -43,6 +45,7 @@ matrix:
     
     script:
     - go get -t -d -v ./...
+    - make lint
     - $GOPATH/bin/qtdeploy -docker build desktop
   
   - stage: "Windows"
@@ -53,6 +56,7 @@ matrix:
     
     script:
     - go get -t -d -v ./...
+    - make lint
     - $GOPATH/bin/qtdeploy build desktop 
 
   - stage: "MacOS"
@@ -64,6 +68,7 @@ matrix:
     - xcode-select --install | true
     - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true)
     - go get -t -d -v ./...
+    - make lint
     - $GOPATH/bin/qtdeploy build desktop
 notifications:
   email: false
