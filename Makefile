@@ -1,14 +1,51 @@
 .DEFAULT_GOAL := help
 .PHONY: run build clean help
 
-run:  ## Run FiberCrypto Wallet.
+UNAME_S = $(shell uname -s)
+DEFAULT_TARGET ?= desktop
+DEFAULT_ARCHi ?= linux
+
+run: build ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
 	@./deploy/linux/FiberCryptoWallet
 
-build:  ## Build FiberCrypto Wallet.
+install-deps-no-envs: ##  Install whithout 
+	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+
+install-docker-deps: ## Install docker images for project compilation using docker
+	@echo "Downloading images..."
+	docker pull therecipe/qt:$(DEFAULT_ARCH)
+	@echo "Download finished."
+
+install-deps-Linux: ## Install Linux dependencies
+	go get -u -v github.com/therecipe/qt/cmd/... 
+	$(go env GOPATH)/bin/qtsetup -test=false
+	go get -t -d -v ./...
+
+install-deps-Darwin: ## Install osx dependencies
+	xcode-select --install
+	go get -u -v github.com/therecipe/qt/cmd/... 
+	$(go env GOPATH)/bin/qtsetup -test=false
+	go get -t -d -v ./...
+
+install-deps-Windowns: ## Install Windowns dependencies
+	go get -u -v github.com/therecipe/qt/cmd/... 
+	%v\bin\qtsetup -test=false
+	go get -t -d -v ./...
+
+install-deps: install-deps-$(UNAME_S) ## 
+	@echo "Dependencies installed"
+
+build-docker: ## Build project using docker
+	@echo "Building FiberCrypto Wallet..."
+	$(GOPATH)/bin/qtdeploy -docker build $(DEFAULT_TARGET)
+	@echo "Done."
+	
+
+build: ## Build FiberCrypto Wallet.
 	@echo "Building FiberCrypto Wallet..."
 	# Add the flag `-quickcompiler` when making a release
-	@qtdeploy build desktop
+	@qtdeploy build $(DEFAULT_TARGET)
 	@echo "Done."
 
 clean: ## Clean project FiberCrypto Wallet.
