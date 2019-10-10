@@ -3,7 +3,7 @@
 
 UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
-DEFAULT_ARCHi ?= linux
+DEFAULT_ARCH ?= linux
 
 run: build ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
@@ -11,6 +11,8 @@ run: build ## Run FiberCrypto Wallet.
 
 install-deps-no-envs: ##  Install whithout 
 	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+	go get -t -d -v ./...
+	@echo "Dependencies installed"
 
 install-docker-deps: ## Install docker images for project compilation using docker
 	@echo "Downloading images..."
