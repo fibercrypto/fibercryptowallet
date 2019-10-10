@@ -136,7 +136,7 @@ func (txn *SkycoinPendingTransaction) ToCreatedTransaction() (*api.CreatedTransa
 }
 
 type readableTxn interface {
-	ToCreatedTransaction() (*api.Createdransaction, error)
+	ToCreatedTransaction() (*api.CreatedTransaction, error)
 }
 
 func verifyCreatedTransaction(rTxn readableTxn, checkSigned bool) error {
@@ -358,6 +358,16 @@ func (skyTxn *SkycoinUninjectedTransaction) ComputeFee(ticker string) (uint64, e
 
 func (skyTxn *SkycoinUninjectedTransaction) GetId() string {
 	return skyTxn.txn.Hash().String()
+}
+
+// VerifyUnsigned checks for valid unsigned transaction
+func (txn *SkycoinUninjectedTransaction) VerifyUnsigned() error {
+	return txn.txn.VerifyUnsigned()
+}
+
+// VerifySigned checks for valid unsigned transaction
+func (txn *SkycoinUninjectedTransaction) VerifySigned() error {
+	return txn.txn.Verify()
 }
 
 /*
