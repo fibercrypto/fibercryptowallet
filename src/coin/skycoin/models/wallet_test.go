@@ -143,10 +143,10 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 	require.NoError(t, uiTxn.VerifySigned())
 }
 
-/*
 func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
 	txn, _ := makeTransactionMultipleInputs(t, 2)
-	err := txn.VerifyUnsigned()
+	uiTxn := makeUninjectedTransaction(t, &txn, 0)
+	err := uiTxn.VerifyUnsigned()
 	testutil.RequireError(t, err, "Unsigned transaction must contain a null signature")
 
 	// Invalid signature, not empty
@@ -156,24 +156,27 @@ func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
 	txn, _ = makeTransactionMultipleInputs(t, 2)
 	txn.Sigs[0] = cipher.Sig{}
 	txn.Sigs[1] = cipher.MustSigFromHex(badSig)
-	testutil.RequireError(t, txn.VerifyUnsigned(), "Failed to recover pubkey from signature")
+	uiTxn = makeUninjectedTransaction(t, &txn, 0)
+	testutil.RequireError(t, uiTxn.VerifyUnsigned(), "Failed to recover pubkey from signature")
 
 	txn.Sigs = nil
-	err = txn.VerifyUnsigned()
+	uiTxn = makeUninjectedTransaction(t, &txn, 0)
+	err = uiTxn.VerifyUnsigned()
 	testutil.RequireError(t, err, "Invalid number of signatures")
 
 	// Transaction is unsigned if at least 1 signature is null
 	txn, _ = makeTransactionMultipleInputs(t, 3)
 	require.True(t, len(txn.Sigs) > 1)
 	txn.Sigs[0] = cipher.Sig{}
-	err = txn.VerifyUnsigned()
+	uiTxn = makeUninjectedTransaction(t, &txn, 0)
+	err = uiTxn.VerifyUnsigned()
 	require.NoError(t, err)
 
 	// Transaction is unsigned if all signatures are null
 	for i := range txn.Sigs {
 		txn.Sigs[i] = cipher.Sig{}
 	}
-	err = txn.VerifyUnsigned()
+	uiTxn = makeUninjectedTransaction(t, &txn, 0)
+	err = uiTxn.VerifyUnsigned()
 	require.NoError(t, err)
 }
-*/
