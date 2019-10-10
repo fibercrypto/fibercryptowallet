@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: run build clean help
+.PHONY: run build clean help lint
 
 run:  ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
@@ -26,6 +26,13 @@ clean: ## Clean project FiberCrypto Wallet.
 
 test: ## Run project test suite
 	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+
+lint: ## Run linters. Use make install-linters first.
+	vendorcheck ./...
+	# lib/cgo needs separate linting rules
+	golangci-lint run -c .golangci.yml ./lib/src/...
+	# The govet version in golangci-lint is out of date and has spurious warnings, run it separately
+	go vet -all ./...
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
