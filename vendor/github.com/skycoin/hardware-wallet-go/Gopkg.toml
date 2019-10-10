@@ -24,18 +24,19 @@
 #   go-tests = true
 #   unused-packages = true
 
-ignored = [
-  "github.com/therecipe/qt"
-]
+[prune]
+  go-tests = true
+  unused-packages = true
 
-[[constraint]]
-  branch = "master"
-  name = "github.com/skycoin/hardware-wallet-go"
 
 [[constraint]]
   name = "github.com/skycoin/skycoin"
   branch = "develop"
 
-[prune]
-  go-tests = true
-  unused-packages = true
+[[constraint]]
+  name = "github.com/skycoin/hardware-wallet-protob"
+  revision = "bd9f95c53447f97ac56f24a415c25d04680552de"
+
+[[constraint]]
+  name = "github.com/gogo/protobuf"
+  version = "1.2.1"

@@ -66,14 +66,6 @@
   version = "v1.3.2"
 
 [[projects]]
-  branch = "master"
-  digest = "1:f14d1b50e0075fb00177f12a96dd7addf93d1e2883c25befd17285b779549795"
-  name = "github.com/gopherjs/gopherjs"
-  packages = ["js"]
-  pruneopts = "UT"
-  revision = "d3ddacdb130fcd23f77a827e3b599804730be6b5"
-
-[[projects]]
   digest = "1:870d441fe217b8e689d7949fef6e43efbc787e50f200cb1e70dbca9204a1d6be"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
@@ -211,7 +203,6 @@
   revision = "cde8af2770f90f22ee9a69705027b4f4b5700c37"
 
 [[projects]]
-  branch = "master"
   digest = "1:c6d4676e48550d1af188ed2c0d844ec9d31432277080c3ea33126ad7ceeb1421"
   name = "github.com/skycoin/hardware-wallet-protob"
   packages = [
@@ -302,17 +293,16 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:5004ca828c71c0aef4fed3d269183d18ace068c6033d269b8a2587bf784a0625"
+  digest = "1:84972a708367ed8f9176d83998e20dce3a9af61530a772a5ad6efafedbd5adcb"
   name = "github.com/therecipe/qt"
   packages = [
-    ".",
     "core",
     "gui",
     "network",
     "qml",
   ]
   pruneopts = "UT"
-  revision = "9cc9109f8ecd4f5551384826d3b15dae7f1b4b7d"
+  revision = "3904ec6ceb7b0f2e042c85450c8ca123a1396fb9"
 
 [[projects]]
   branch = "master"
@@ -320,7 +310,7 @@
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "34f69633bfdcf9db92f698f8487115767eebef81"
+  revision = "af544f31c8ac5794d2134b792e9eb714d9d8f9ce"
 
 [[projects]]
   branch = "master"
@@ -332,14 +322,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:8465bc3baa8f05fb83a10b7a9029f90ecdf065957e6fb8ff4d75a0e5072f4148"
+  digest = "1:9f5be1dbb5091bb62d83fbb6db8e794adb8f0e05424679d6f15a17b670e38b4c"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "06d7bd2c5f4f4a6cc6e910b611851044253bd7d1"
+  revision = "b09406accb4736d857a32bf9444cd7edae2ffa79"
 
 [[projects]]
   digest = "1:59f10c1537d2199d9115d946927fe31165959a95190849c82ff11e05803528b0"
@@ -354,10 +344,8 @@
   analyzer-version = 1
   input-imports = [
     "github.com/davecgh/go-spew/spew",
-    "github.com/gogo/protobuf/proto",
     "github.com/sirupsen/logrus",
     "github.com/skycoin/hardware-wallet-go/src/skywallet",
-    "github.com/skycoin/hardware-wallet-protob/go",
     "github.com/skycoin/skycoin/src/api",
     "github.com/skycoin/skycoin/src/cipher",
     "github.com/skycoin/skycoin/src/cipher/bip39",
