@@ -47,8 +47,8 @@ matrix:
     
     script:
     - go get -t -d -v ./...
-    - make install-linters
-    - make lint
+      # - make install-linters
+      #- make lint
     - $GOPATH/bin/qtdeploy -docker build desktop
   
   - stage: "Windows"
