@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"sync"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -12,6 +13,9 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
 )
+
+var once sync.Once
+var walletManager *WalletManager
 
 type WalletManager struct {
 	qtcore.QObject
@@ -40,33 +44,38 @@ type WalletManager struct {
 }
 
 func (walletM *WalletManager) init() {
-	qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
-	walletM.ConnectCreateEncryptedWallet(walletM.createEncryptedWallet)
-	walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
-	walletM.ConnectGetNewSeed(walletM.getNewSeed)
-	walletM.ConnectVerifySeed(walletM.verifySeed)
-	walletM.ConnectNewWalletAddress(walletM.newWalletAddress)
-	walletM.ConnectEncryptWallet(walletM.encryptWallet)
-	walletM.ConnectDecryptWallet(walletM.decryptWallet)
-	walletM.ConnectGetWallets(walletM.getWallets)
-	walletM.ConnectGetAddresses(walletM.getAddresses)
-	walletM.ConnectSendTo(walletM.sendTo)
-	walletM.ConnectSignTxn(walletM.signTxn)
-	walletM.ConnectGetOutputs(walletM.getOutputs)
-	walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
-	walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
-	walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
-	walletM.ConnectGetAllAddresses(walletM.getAllAddresses)
-	walletM.ConnectGetOutputsFromWallet(walletM.getOutputsFromWallet)
-	altManager := core.LoadAltcoinManager()
-	walletsEnvs := make([]core.WalletEnv, 0)
-	for _, plug := range altManager.ListRegisteredPlugins() {
-		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
-	}
+	once.Do(func() {
+		qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
+		walletM.ConnectCreateEncryptedWallet(walletM.createEncryptedWallet)
+		walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
+		walletM.ConnectGetNewSeed(walletM.getNewSeed)
+		walletM.ConnectVerifySeed(walletM.verifySeed)
+		walletM.ConnectNewWalletAddress(walletM.newWalletAddress)
+		walletM.ConnectEncryptWallet(walletM.encryptWallet)
+		walletM.ConnectDecryptWallet(walletM.decryptWallet)
+		walletM.ConnectGetWallets(walletM.getWallets)
+		walletM.ConnectGetAddresses(walletM.getAddresses)
+		walletM.ConnectSendTo(walletM.sendTo)
+		walletM.ConnectSignTxn(walletM.signTxn)
+		walletM.ConnectGetOutputs(walletM.getOutputs)
+		walletM.ConnectSendFromAddresses(walletM.sendFromAddresses)
+		walletM.ConnectSendFromOutputs(walletM.sendFromOutputs)
+		walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
+		walletM.ConnectGetAllAddresses(walletM.getAllAddresses)
+		walletM.ConnectGetOutputsFromWallet(walletM.getOutputsFromWallet)
+		altManager := core.LoadAltcoinManager()
+		walletsEnvs := make([]core.WalletEnv, 0)
+		for _, plug := range altManager.ListRegisteredPlugins() {
+			walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+		}
 
-	walletM.WalletEnv = walletsEnvs[0]
+		walletM.WalletEnv = walletsEnvs[0]
 
-	walletM.SeedGenerator = new(sky.SeedService)
+		walletM.SeedGenerator = new(sky.SeedService)
+		walletManager = walletM
+	})
+
+	walletM = walletManager
 
 }
 
