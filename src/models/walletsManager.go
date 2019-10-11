@@ -21,26 +21,27 @@ type WalletManager struct {
 	qtcore.QObject
 	WalletEnv     core.WalletEnv
 	SeedGenerator core.SeedGenerator
-
-	_ func()                                                                                                                                 `constructor:"init"`
-	_ func(seed string, label string, password string, scanN int) *QWallet                                                                   `slot:"createEncryptedWallet"`
-	_ func(seed string, label string, scanN int) *QWallet                                                                                    `slot:"createUnencryptedWallet"`
-	_ func(entropy int) string                                                                                                               `slot:"getNewSeed"`
-	_ func(seed string) int                                                                                                                  `slot:"verifySeed"`
-	_ func(id string, n int, password string)                                                                                                `slot:"newWalletAddress"`
-	_ func(id string, password string) int                                                                                                   `slot:"encryptWallet"`
-	_ func(id string, password string) int                                                                                                   `slot:"decryptWallet"`
-	_ func() []*QWallet                                                                                                                      `slot:"getWallets"`
-	_ func(id string) []*QAddress                                                                                                            `slot:"getAddresses"`
-	_ func(id string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                                         `slot:"signTxn"`
-	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                             `slot:"sendTo"`
-	_ func(id, label string) *QWallet                                                                                                        `slot:"editWallet"`
-	_ func(wltId, address string) []*QOutput                                                                                                 `slot:"getOutputs"`
-	_ func(txn *QTransaction) bool                                                                                                           `slot:"broadcastTxn"`
-	_ func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
-	_ func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
-	_ func() []*QAddress                                                                                                                     `slot:"getAllAddresses"`
-	_ func(wltId string) []*QOutput                                                                                                          `slot:"getOutputsFromWallet"`
+	altManager    core.AltcoinManager
+	_             func()                                                                                                                                 `slot:"updateWalletEnvs"`
+	_             func()                                                                                                                                 `constructor:"init"`
+	_             func(seed string, label string, password string, scanN int) *QWallet                                                                   `slot:"createEncryptedWallet"`
+	_             func(seed string, label string, scanN int) *QWallet                                                                                    `slot:"createUnencryptedWallet"`
+	_             func(entropy int) string                                                                                                               `slot:"getNewSeed"`
+	_             func(seed string) int                                                                                                                  `slot:"verifySeed"`
+	_             func(id string, n int, password string)                                                                                                `slot:"newWalletAddress"`
+	_             func(id string, password string) int                                                                                                   `slot:"encryptWallet"`
+	_             func(id string, password string) int                                                                                                   `slot:"decryptWallet"`
+	_             func() []*QWallet                                                                                                                      `slot:"getWallets"`
+	_             func(id string) []*QAddress                                                                                                            `slot:"getAddresses"`
+	_             func(id string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                                         `slot:"signTxn"`
+	_             func(wltId string, destinationAddress string, amount string) *QTransaction                                                             `slot:"sendTo"`
+	_             func(id, label string) *QWallet                                                                                                        `slot:"editWallet"`
+	_             func(wltId, address string) []*QOutput                                                                                                 `slot:"getOutputs"`
+	_             func(txn *QTransaction) bool                                                                                                           `slot:"broadcastTxn"`
+	_             func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
+	_             func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
+	_             func() []*QAddress                                                                                                                     `slot:"getAllAddresses"`
+	_             func(wltId string) []*QOutput                                                                                                          `slot:"getOutputsFromWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -63,13 +64,8 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
 		walletM.ConnectGetAllAddresses(walletM.getAllAddresses)
 		walletM.ConnectGetOutputsFromWallet(walletM.getOutputsFromWallet)
-		altManager := core.LoadAltcoinManager()
-		walletsEnvs := make([]core.WalletEnv, 0)
-		for _, plug := range altManager.ListRegisteredPlugins() {
-			walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
-		}
-
-		walletM.WalletEnv = walletsEnvs[0]
+		walletM.ConnectUpdateWalletEnvs(walletM.updateWalletEnvs)
+		walletM.altManager = core.LoadAltcoinManager()
 
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
@@ -77,6 +73,18 @@ func (walletM *WalletManager) init() {
 
 	walletM = walletManager
 
+}
+
+func GetWalletManager() *WalletManager {
+	return walletManager
+}
+func (walletM *WalletManager) updateWalletEnvs() {
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
+
+	walletM.WalletEnv = walletsEnvs[0]
 }
 
 func (walletM *WalletManager) getAllAddresses() []*QAddress {
