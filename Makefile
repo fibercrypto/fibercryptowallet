@@ -52,6 +52,18 @@ build: ## Build FiberCrypto Wallet.
 	@qtdeploy build $(DEFAULT_TARGET)
 	@echo "Done."
 
+clean-Windows: ## Clean project FiberCrypto Wallet.
+	@echo "Cleaning project FiberCrypto Wallet..."
+	rm deploy/
+	rm linux/
+	rm rcc.cpp
+	rm rcc.qrc
+	rm rcc_cgo_linux_linux_amd64.go
+	rm rcc_*.cpp
+	rm rcc__*
+	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "moc"} | Remove-Item
+	@echo "Done."
+
 clean: ## Clean project FiberCrypto Wallet.
 	@echo "Cleaning project FiberCrypto Wallet..."
 	rm -rf deploy/
