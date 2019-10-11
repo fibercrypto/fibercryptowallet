@@ -50,7 +50,7 @@ matrix:
   - stage: "Windows"
     os: windows
     install:
-    - UNAME_S=Windows make install-deps 
+    - make install-deps-Windows 
     
     script:
     - make clean
