@@ -20,6 +20,7 @@ install-docker-deps: ## Install docker images for project compilation using dock
 	@echo "Download finished."
 
 install-deps-Linux: ## Install Linux dependencies
+	sudo apt-get update
 	sudo apt-get install libgl-dev -y
 	go get -u -v github.com/therecipe/qt/cmd/... 
 	(qtsetup -test=false | true)
