@@ -51,7 +51,9 @@ matrix:
     os: windows
     install:
     - choco install make -y
+    - $ErrorActionPreference = 'SilentlyContinue'
     - travis_wait make install-deps-Windows 
+    - $ErrorActionPreference = 'Continue'
     
     script:
     - make clean-Windows
