@@ -50,7 +50,6 @@ matrix:
   - stage: "Windows"
     os: windows
     install:
-    - Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
     - choco install make -y
     - make install-deps-Windows 
     
