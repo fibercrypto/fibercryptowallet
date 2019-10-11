@@ -51,7 +51,7 @@ matrix:
     os: windows
     install:
     - choco install make -y
-    - make install-deps-Windows 
+    - travis_wait make install-deps-Windows 
     
     script:
     - make clean-Windows
