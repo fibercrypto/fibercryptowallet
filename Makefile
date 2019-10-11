@@ -21,18 +21,18 @@ install-docker-deps: ## Install docker images for project compilation using dock
 
 install-deps-Linux: ## Install Linux dependencies
 	go get -u -v github.com/therecipe/qt/cmd/... 
-	$(go env GOPATH)/bin/qtsetup -test=false
+	qtsetup -test=false
 	go get -t -d -v ./...
 
 install-deps-Darwin: ## Install osx dependencies
 	xcode-select --install
 	go get -u -v github.com/therecipe/qt/cmd/... 
-	$(go env GOPATH)/bin/qtsetup -test=false
+	qtsetup -test=false
 	go get -t -d -v ./...
 
 install-deps-Windowns: ## Install Windowns dependencies
 	go get -u -v github.com/therecipe/qt/cmd/... 
-	%v\bin\qtsetup -test=false
+	qtsetup -test=false
 	go get -t -d -v ./...
 
 install-deps: install-deps-$(UNAME_S) ## 
@@ -40,7 +40,7 @@ install-deps: install-deps-$(UNAME_S) ##
 
 build-docker: ## Build project using docker
 	@echo "Building FiberCrypto Wallet..."
-	$(GOPATH)/bin/qtdeploy -docker build $(DEFAULT_TARGET)
+	qtdeploy -docker build $(DEFAULT_TARGET)
 	@echo "Done."
 	
 
