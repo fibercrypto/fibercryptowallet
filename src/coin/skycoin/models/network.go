@@ -29,12 +29,17 @@ func NewSkycoinConnectionFactory(url string) *SkycoinConnectionFactory {
 }
 
 func NewSkycoinApiClient(section string) (*api.Client, error) {
-	pool := core.GetMultiPool()
-	obj, err := pool.Get(section)
+	mpool := core.GetMultiPool()
+	pool, err := mpool.GetSection(section)
+	if err != nil {
+		return nil, err
+	}
+
+	obj, err := pool.Get()
 
 	if err != nil {
 		for _, ok := err.(core.NotAvailableObjectsError); ok; _, ok = err.(core.NotAvailableObjectsError) {
-			obj, err = pool.Get(section)
+			obj, err = pool.Get()
 			if err == nil {
 				break
 			}

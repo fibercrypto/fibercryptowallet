@@ -34,25 +34,8 @@ type PexNode interface {
 	GetLastSeenOut() int64
 }
 
-type PooledObject interface {
-	GetObject() interface{}
-	ReturnObject() error
-}
-type Object struct {
-	value   interface{}
-	section *PoolSection
-}
-
-func (obj *Object) GetObject() interface{} {
-	return obj.value
-}
-
-func (obj *Object) ReturnObject() error {
-	return obj.section.Put(obj)
-}
-
 type PooledObjectFactory interface {
-	Create() (PooledObject, error)
+	Create() (interface{}, error)
 }
 
 type MultiPool interface {
@@ -62,8 +45,8 @@ type MultiPool interface {
 }
 
 type MultiPoolSection interface {
-	Get() (PooledObject, error)
-	Put(interface{}) error
+	Get() interface{}
+	Put(interface{})
 }
 
 type NotAvailableObjectsError struct {
@@ -79,7 +62,7 @@ type MultiConnectionsPool struct {
 	sections map[string]*PoolSection
 }
 
-func (mp *MultiConnectionsPool) GetSection(poolSection string) (*PoolSection, error) {
+func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection, error) {
 	section, ok := mp.sections[poolSection]
 	if !ok {
 		return nil, errors.New("Invalid Section")
@@ -99,12 +82,12 @@ func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectF
 	return nil
 }
 
-func (mp *MultiConnectionsPool) ListSections() []string {
+func (mp *MultiConnectionsPool) ListSections() ([]string, error) {
 	sections := make([]string, 0)
-	for key, _ := range mp.factories {
+	for key, _ := range mp.sections {
 		sections = append(sections, key)
 	}
-	return sections
+	return sections, nil
 }
 
 type PoolSection struct {
@@ -115,40 +98,34 @@ type PoolSection struct {
 	factory   PooledObjectFactory
 }
 
-func (ps *PoolSection) Get() (PooledObject, error) {
+func (ps *PoolSection) Get() interface{} {
 	ps.mutex.Lock()
 	defer ps.mutex.Unlock()
 
 	if len(ps.available) == 0 {
 		if len(ps.inUse) == ps.capacity {
-			return nil, errors.New("There is not available objects")
+			return errors.New("There is not available objects")
 		}
 		obj, err := ps.factory.Create()
 		if err != nil {
-			return nil, err
+			return err
 		}
 		ps.inUse = append(ps.inUse, obj)
-		return &Object{
-			section: ps,
-			value:   obj,
-		}, nil
+		return obj
 	} else {
 		var obj PooledObject
 		obj, ps.available = ps.available[0], ps.available[1:]
 		ps.inUse = append(ps.inUse, obj)
-		return &Object{
-			section: ps,
-			value:   obj,
-		}, nil
+		return obj
 	}
 }
 
-func (ps *PoolSection) Put(obj PooledObject) error {
+func (ps *PoolSection) Put(obj interface{}) {
 	ps.mutex.Lock()
 	defer ps.mutex.Unlock()
 	index := findIndex(ps.inUse, obj)
 	if index == -1 {
-		return errors.New(fmt.Sprintf("That object is no from this pool"))
+		return
 	}
 	ps.available = append(ps.available, obj)
 	ps.inUse = append(ps.inUse[:index], ps.inUse[index+1:]...)
@@ -157,11 +134,8 @@ func (ps *PoolSection) Put(obj PooledObject) error {
 
 func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 	return &MultiConnectionsPool{
-		capacity:  capacity,
-		available: make(map[string][]PooledObject),
-		inUse:     make(map[string][]PooledObject),
-		factories: make(map[string]PooledObjectFactory),
-		mutexs:    make(map[string]*sync.Mutex),
+		capacity: capacity,
+		sections: make(map[string]*PoolSection, 0),
 	}
 }
 func GetMultiPool() MultiPool {
