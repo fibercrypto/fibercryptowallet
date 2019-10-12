@@ -34,7 +34,7 @@ install-deps-Darwin: ## Install osx dependencies
 
 install-deps-Windows: ## Install Windowns dependencies
 	go get -u -v github.com/therecipe/qt/cmd/... 
-	(qtsetup -test=false | true)
+	qtsetup -test=false -ErrorAction SilentlyContinue 
 	go get -t -d -v ./...
 
 install-deps: install-deps-$(UNAME_S) ## 
