@@ -19,7 +19,9 @@ type WalletManager struct {
 	SeedGenerator       core.SeedGenerator
 	wallets             []*QWallet
 	addresseseByWallets map[string][]*QAddress
+	outputsByAddress    map[string][]*QOutput
 
+	_ func(wltId, address string)                                                                                                            `slot:"updateOutputs"`
 	_ func(string)                                                                                                                           `slot:"updateAddresses"`
 	_ func()                                                                                                                                 `slot:"updateWallets"`
 	_ func()                                                                                                                                 `constructor:"init"`
@@ -64,6 +66,7 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectGetOutputsFromWallet(walletM.getOutputsFromWallet)
 	walletM.ConnectUpdateWallets(walletM.updateWallets)
 	walletM.ConnectUpdateAddresses(walletM.updateAddresses)
+	walletM.ConnectUpdateOutputs(walletM.updateOutputs)
 
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
@@ -78,11 +81,11 @@ func (walletM *WalletManager) init() {
 }
 
 func (walletM *WalletManager) updateAddresses(wltId string) {
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	qAddresses := make([]*QAddress, 0)
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
-		return nil
+		walletM.addresseseByWallets[wltId] = qAddresses
 	}
 	for it.Next() {
 		addr := it.Value()
@@ -114,6 +117,52 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 	}
 
 	walletM.addresseseByWallets[wltId] = qAddresses
+}
+
+func (walletM *WalletManager) updateOutputs(wltId, address string) {
+	outs := make([]*QOutput, 0)
+	addressIterator, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
+	if err != nil {
+		walletM.outputsByAddress[address] = outs
+	}
+	var addr core.Address
+	for addressIterator.Next() {
+		if addressIterator.Value().String() == address {
+			addr = addressIterator.Value()
+			break
+		}
+	}
+	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
+	for outsIter.Next() {
+		qout := NewQOutput(nil)
+		qml.QQmlEngine_SetObjectOwnership(qout, qml.QQmlEngine__CppOwnership)
+		qout.SetOutputID(outsIter.Value().GetId())
+		skyV, err := outsIter.Value().GetCoins(sky.Sky)
+		if err != nil {
+			continue
+		}
+		quotient, err := util.AltcoinQuotient(sky.Sky)
+		if err != nil {
+			continue
+		}
+		sSky := util.FormatCoins(skyV, quotient)
+		qout.SetAddressSky(sSky)
+		ch, err := outsIter.Value().GetCoins(sky.CoinHour)
+		if err != nil {
+			continue
+		}
+		quotient, err = util.AltcoinQuotient(sky.CoinHour)
+		if err != nil {
+			continue
+		}
+		sCh := util.FormatCoins(ch, quotient)
+		qout.SetAddressCoinHours(sCh)
+		qout.SetAddressOwner(addr.String())
+		qout.SetWalletOwner(wltId)
+		outs = append(outs, qout)
+	}
+
+	walletM.outputsByAddress[address] = outs
 }
 
 func (walletM *WalletManager) updateWallets() {
@@ -244,46 +293,9 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 }
 
 func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
-	addressIterator, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
-	if err != nil {
-		return nil
-	}
-	outs := make([]*QOutput, 0)
-	var addr core.Address
-	for addressIterator.Next() {
-		if addressIterator.Value().String() == address {
-			addr = addressIterator.Value()
-			break
-		}
-	}
-	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
-	for outsIter.Next() {
-		qout := NewQOutput(nil)
-		qml.QQmlEngine_SetObjectOwnership(qout, qml.QQmlEngine__CppOwnership)
-		qout.SetOutputID(outsIter.Value().GetId())
-		skyV, err := outsIter.Value().GetCoins(sky.Sky)
-		if err != nil {
-			return nil
-		}
-		quotient, err := util.AltcoinQuotient(sky.Sky)
-		if err != nil {
-			return nil
-		}
-		sSky := util.FormatCoins(skyV, quotient)
-		qout.SetAddressSky(sSky)
-		ch, err := outsIter.Value().GetCoins(sky.CoinHour)
-		if err != nil {
-			return nil
-		}
-		quotient, err = util.AltcoinQuotient(sky.CoinHour)
-		if err != nil {
-			return nil
-		}
-		sCh := util.FormatCoins(ch, quotient)
-		qout.SetAddressCoinHours(sCh)
-		qout.SetAddressOwner(addr.String())
-		qout.SetWalletOwner(wltId)
-		outs = append(outs, qout)
+	outs, ok := walletM.outputsByAddress[address]
+	if !ok {
+		walletM.updateOutputs(wltId, address)
 	}
 	return outs
 }
@@ -295,35 +307,7 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 		return nil
 	}
 	for addrIter.Next() {
-		outsIter := addrIter.Value().GetCryptoAccount().ScanUnspentOutputs()
-		for outsIter.Next() {
-			qout := NewQOutput(nil)
-			qml.QQmlEngine_SetObjectOwnership(qout, qml.QQmlEngine__CppOwnership)
-			qout.SetOutputID(outsIter.Value().GetId())
-			skyV, err := outsIter.Value().GetCoins(sky.Sky)
-			if err != nil {
-				return nil
-			}
-			quotient, err := util.AltcoinQuotient(sky.Sky)
-			if err != nil {
-				return nil
-			}
-			sSky := util.FormatCoins(skyV, quotient)
-			qout.SetAddressSky(sSky)
-			ch, err := outsIter.Value().GetCoins(sky.CoinHour)
-			if err != nil {
-				return nil
-			}
-			quotient, err = util.AltcoinQuotient(sky.CoinHour)
-			if err != nil {
-				return nil
-			}
-			sCh := util.FormatCoins(ch, quotient)
-			qout.SetAddressCoinHours(sCh)
-			qout.SetAddressOwner(addrIter.Value().String())
-			qout.SetWalletOwner(wltId)
-			outs = append(outs, qout)
-		}
+		outs = append(outs, walletM.getOutputs(wltId, addrIter.Value().String())...)
 	}
 	return outs
 }
