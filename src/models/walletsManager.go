@@ -15,10 +15,12 @@ import (
 
 type WalletManager struct {
 	qtcore.QObject
-	WalletEnv     core.WalletEnv
-	SeedGenerator core.SeedGenerator
-	wallets       []*QWallet
+	WalletEnv           core.WalletEnv
+	SeedGenerator       core.SeedGenerator
+	wallets             []*QWallet
+	addresseseByWallets map[string][]*QAddress
 
+	_ func(string)                                                                                                                           `slot:"updateAddresses"`
 	_ func()                                                                                                                                 `slot:"updateWallets"`
 	_ func()                                                                                                                                 `constructor:"init"`
 	_ func(seed string, label string, password string, scanN int) *QWallet                                                                   `slot:"createEncryptedWallet"`
@@ -60,6 +62,9 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectBroadcastTxn(walletM.broadcastTxn)
 	walletM.ConnectGetAllAddresses(walletM.getAllAddresses)
 	walletM.ConnectGetOutputsFromWallet(walletM.getOutputsFromWallet)
+	walletM.ConnectUpdateWallets(walletM.updateWallets)
+	walletM.ConnectUpdateAddresses(walletM.updateAddresses)
+
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -70,6 +75,45 @@ func (walletM *WalletManager) init() {
 
 	walletM.SeedGenerator = new(sky.SeedService)
 
+}
+
+func (walletM *WalletManager) updateAddresses(wltId string) {
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
+	qAddresses := make([]*QAddress, 0)
+	it, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return nil
+	}
+	for it.Next() {
+		addr := it.Value()
+		qAddress := NewQAddress(nil)
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
+		qAddress.SetAddress(addr.String())
+		qAddress.SetMarked(0)
+		qAddress.SetWallet(wlt.GetLabel())
+		qAddress.SetWalletId(wlt.GetId())
+		skyFl, err := addr.GetCryptoAccount().GetBalance("SKY")
+		if err != nil {
+
+			continue
+		}
+		//TODO: report possible error
+		accuracy, _ := util.AltcoinQuotient("SKY")
+		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
+		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
+		accuracy, _ = util.AltcoinQuotient("SKYCH")
+		if err != nil {
+
+			continue
+		}
+		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
+
+		qAddresses = append(qAddresses, qAddress)
+
+	}
+
+	walletM.addresseseByWallets[wltId] = qAddresses
 }
 
 func (walletM *WalletManager) updateWallets() {
@@ -433,43 +477,12 @@ func (walletM *WalletManager) editWallet(id, label string) *QWallet {
 }
 
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
-
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(Id)
-	qAddresses := make([]*QAddress, 0)
-	it, err := wlt.GetLoadedAddresses()
-	if err != nil {
-		return nil
+	addrs, ok := walletM.addresseseByWallets[Id]
+	if !ok {
+		walletM.updateAddresses(Id)
+		addrs = walletM.addresseseByWallets[Id]
 	}
-	for it.Next() {
-		addr := it.Value()
-		qAddress := NewQAddress(nil)
-		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
-		qAddress.SetAddress(addr.String())
-		qAddress.SetMarked(0)
-		qAddress.SetWallet(wlt.GetLabel())
-		qAddress.SetWalletId(wlt.GetId())
-		skyFl, err := addr.GetCryptoAccount().GetBalance("SKY")
-		if err != nil {
-
-			continue
-		}
-		//TODO: report possible error
-		accuracy, _ := util.AltcoinQuotient("SKY")
-		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
-		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
-		accuracy, _ = util.AltcoinQuotient("SKYCH")
-		if err != nil {
-
-			continue
-		}
-		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
-		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
-
-		qAddresses = append(qAddresses, qAddress)
-
-	}
-
-	return qAddresses
+	return addrs
 }
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
