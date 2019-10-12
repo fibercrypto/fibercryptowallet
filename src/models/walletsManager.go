@@ -67,6 +67,8 @@ func (walletM *WalletManager) init() {
 	walletM.ConnectUpdateWallets(walletM.updateWallets)
 	walletM.ConnectUpdateAddresses(walletM.updateAddresses)
 	walletM.ConnectUpdateOutputs(walletM.updateOutputs)
+	walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
+	walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
@@ -86,6 +88,7 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		walletM.addresseseByWallets[wltId] = qAddresses
+		return
 	}
 	for it.Next() {
 		addr := it.Value()
@@ -97,16 +100,16 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		qAddress.SetWalletId(wlt.GetId())
 		skyFl, err := addr.GetCryptoAccount().GetBalance("SKY")
 		if err != nil {
-
 			continue
 		}
-		//TODO: report possible error
-		accuracy, _ := util.AltcoinQuotient("SKY")
+		accuracy, err := util.AltcoinQuotient("SKY")
+		if err != nil {
+			continue
+		}
 		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
 		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
 		accuracy, _ = util.AltcoinQuotient("SKYCH")
 		if err != nil {
-
 			continue
 		}
 		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
@@ -124,6 +127,7 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 	addressIterator, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
 	if err != nil {
 		walletM.outputsByAddress[address] = outs
+		return
 	}
 	var addr core.Address
 	for addressIterator.Next() {
@@ -132,7 +136,15 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 			break
 		}
 	}
+	if addr == nil {
+		walletM.outputsByAddress[address] = outs
+		return
+	}
 	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
+	if outsIter == nil {
+		walletM.outputsByAddress[address] = outs
+		return
+	}
 	for outsIter.Next() {
 		qout := NewQOutput(nil)
 		qml.QQmlEngine_SetObjectOwnership(qout, qml.QQmlEngine__CppOwnership)
