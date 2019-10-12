@@ -54,14 +54,14 @@ build: ## Build FiberCrypto Wallet.
 
 clean-Windows: ## Clean project FiberCrypto Wallet.
 	@echo "Cleaning project FiberCrypto Wallet..."
-	Remove-Item -recurse deploy/ -ErrorAction SilentlyContinue
-	Remove-Item -recurse linux/ -ErrorAction SilentlyContinue
 	Remove-Item rcc.cpp -ErrorAction SilentlyContinue
 	Remove-Item rcc.qrc -ErrorAction SilentlyContinue
 	Remove-Item rcc_cgo_linux_linux_amd64.go -ErrorAction SilentlyContinue
 	Remove-Item rcc_*.cpp -ErrorAction SilentlyContinue
 	Remove-Item rcc__* -ErrorAction SilentlyContinue
 	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "moc"} | Remove-Item
+	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "deploy"} | Remove-Item -recurse
+	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "windows"} | Remove-Item -recurse
 	@echo "Done."
 
 clean: ## Clean project FiberCrypto Wallet.
