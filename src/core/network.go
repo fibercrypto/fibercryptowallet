@@ -79,48 +79,6 @@ type MultiConnectionsPool struct {
 	sections map[string]*PoolSection
 }
 
-type PoolSection struct {
-	capacity  int
-	available []PooledObject
-	inUse     []PooledObject
-	mutex     *sync.Mutex
-	factory   PooledObjectFactory
-}
-
-func (ps *PoolSection) Get() (PooledObject, error) {
-	ps.mutex.Lock()
-	defer ps.mutex.Unlock()
-
-	if len(ps.available) == 0 {
-		if len(ps.inUse) == ps.capacity {
-			return nil, errors.New("There is not available objects")
-		}
-		obj, err := ps.factory.Create()
-		if err != nil {
-			return nil, err
-		}
-		ps.inUse = append(ps.inUse, obj)
-		return obj, nil
-	} else {
-		var obj PooledObject
-		obj, ps.available = ps.available[0], ps.available[1:]
-		ps.inUse = append(ps.inUse, obj)
-		return obj, nil
-	}
-}
-
-func (ps *PoolSection) Put(obj PooledObject) error {
-	ps.mutex.Lock()
-	defer ps.mutex.Unlock()
-	index := findIndex(ps.inUse, obj)
-	if index == -1 {
-		return errors.New(fmt.Sprintf("That object is no from this pool"))
-	}
-	ps.available = append(ps.available, obj)
-	ps.inUse = append(ps.inUse[:index], ps.inUse[index+1:]...)
-	return nil
-}
-
 func (mp *MultiConnectionsPool) GetSection(poolSection string) (*PoolSection, error) {
 	section, ok := mp.sections[poolSection]
 	if !ok {
@@ -150,6 +108,54 @@ func (mp *MultiConnectionsPool) ListSections() []string {
 		sections = append(sections, key)
 	}
 	return sections
+}
+
+type PoolSection struct {
+	capacity  int
+	available []PooledObject
+	inUse     []PooledObject
+	mutex     *sync.Mutex
+	factory   PooledObjectFactory
+}
+
+func (ps *PoolSection) Get() (PooledObject, error) {
+	ps.mutex.Lock()
+	defer ps.mutex.Unlock()
+
+	if len(ps.available) == 0 {
+		if len(ps.inUse) == ps.capacity {
+			return nil, errors.New("There is not available objects")
+		}
+		obj, err := ps.factory.Create()
+		if err != nil {
+			return nil, err
+		}
+		ps.inUse = append(ps.inUse, obj)
+		return &Object{
+			section: ps,
+			value:   obj,
+		}, nil
+	} else {
+		var obj PooledObject
+		obj, ps.available = ps.available[0], ps.available[1:]
+		ps.inUse = append(ps.inUse, obj)
+		return &Object{
+			section: ps,
+			value:   obj,
+		}, nil
+	}
+}
+
+func (ps *PoolSection) Put(obj PooledObject) error {
+	ps.mutex.Lock()
+	defer ps.mutex.Unlock()
+	index := findIndex(ps.inUse, obj)
+	if index == -1 {
+		return errors.New(fmt.Sprintf("That object is no from this pool"))
+	}
+	ps.available = append(ps.available, obj)
+	ps.inUse = append(ps.inUse[:index], ps.inUse[index+1:]...)
+	return nil
 }
 
 func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
