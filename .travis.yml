@@ -54,7 +54,6 @@ matrix:
     - travis_wait make install-deps-Windows 
     
     script:
-    - make clean-Windows
     - make build
     - make test 
 
