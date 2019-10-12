@@ -89,9 +89,6 @@ func (mp *MultiConnectionsPool) GetSection(poolSection string) (*PoolSection, er
 
 func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) error {
 
-	if _, ok := mp.sections[name]; ok {
-		return errors.New("Invalid section")
-	}
 	mp.sections[name] = &PoolSection{
 		mutex:     new(sync.Mutex),
 		capacity:  mp.capacity,
