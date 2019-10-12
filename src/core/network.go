@@ -35,6 +35,8 @@ type PexNode interface {
 }
 
 type PooledObject interface {
+	GetObject() interface{}
+	ReturnObject()
 }
 
 type PooledObjectFactory interface {
