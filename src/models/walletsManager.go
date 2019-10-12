@@ -75,6 +75,15 @@ func (walletM *WalletManager) init() {
 
 }
 
+func GetWalletEnv() core.WalletEnv {
+	wm := GetWalletManager()
+	if wm == nil {
+		return nil
+	}
+
+	return wm.WalletEnv
+}
+
 func GetWalletManager() *WalletManager {
 	return walletManager
 }
