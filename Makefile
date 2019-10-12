@@ -27,9 +27,9 @@ install-deps-Linux: ## Install Linux dependencies
 	go get -t -d -v ./...
 
 install-deps-Darwin: ## Install osx dependencies
-	xcode-select --install
+	xcode-select --install || true
 	go get -u -v github.com/therecipe/qt/cmd/... 
-	(qtsetup -test=false | true)
+	qtsetup -test=false || true
 	go get -t -d -v ./...
 
 install-deps-Windows: ## Install Windowns dependencies
