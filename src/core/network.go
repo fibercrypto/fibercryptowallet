@@ -76,8 +76,8 @@ func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectF
 		mutex:     new(sync.Mutex),
 		capacity:  mp.capacity,
 		factory:   factory,
-		inUse:     make([]PooledObject, 0),
-		available: make([]PooledObject, 0),
+		inUse:     make([]interface{}, 0),
+		available: make([]interface{}, 0),
 	}
 	return nil
 }
@@ -92,8 +92,8 @@ func (mp *MultiConnectionsPool) ListSections() ([]string, error) {
 
 type PoolSection struct {
 	capacity  int
-	available []PooledObject
-	inUse     []PooledObject
+	available []interface{}
+	inUse     []interface{}
 	mutex     *sync.Mutex
 	factory   PooledObjectFactory
 }
@@ -113,7 +113,7 @@ func (ps *PoolSection) Get() interface{} {
 		ps.inUse = append(ps.inUse, obj)
 		return obj
 	} else {
-		var obj PooledObject
+		var obj interface{}
 		obj, ps.available = ps.available[0], ps.available[1:]
 		ps.inUse = append(ps.inUse, obj)
 		return obj
@@ -129,7 +129,7 @@ func (ps *PoolSection) Put(obj interface{}) {
 	}
 	ps.available = append(ps.available, obj)
 	ps.inUse = append(ps.inUse[:index], ps.inUse[index+1:]...)
-	return nil
+
 }
 
 func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
@@ -147,7 +147,7 @@ func GetMultiPool() MultiPool {
 	return multiConnectionsPool
 }
 
-func findIndex(collection []PooledObject, obj PooledObject) int {
+func findIndex(collection []interface{}, obj interface{}) int {
 	for i := 0; i < len(collection); i++ {
 		if collection[i] == obj {
 			return i
