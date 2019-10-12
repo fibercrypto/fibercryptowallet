@@ -17,7 +17,9 @@ type WalletManager struct {
 	qtcore.QObject
 	WalletEnv     core.WalletEnv
 	SeedGenerator core.SeedGenerator
+	wallets       []*QWallet
 
+	_ func()                                                                                                                                 `slot:"updateWallets"`
 	_ func()                                                                                                                                 `constructor:"init"`
 	_ func(seed string, label string, password string, scanN int) *QWallet                                                                   `slot:"createEncryptedWallet"`
 	_ func(seed string, label string, scanN int) *QWallet                                                                                    `slot:"createUnencryptedWallet"`
@@ -68,6 +70,28 @@ func (walletM *WalletManager) init() {
 
 	walletM.SeedGenerator = new(sky.SeedService)
 
+}
+
+func (walletM *WalletManager) updateWallets() {
+	qWallets := make([]*QWallet, 0)
+	it := walletM.WalletEnv.GetWalletSet().ListWallets()
+
+	for it.Next() {
+
+		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
+		if err != nil {
+			continue
+		}
+		if encrypted {
+			qw := fromWalletToQWallet(it.Value(), true)
+			qWallets = append(qWallets, qw)
+		} else {
+			qw := fromWalletToQWallet(it.Value(), false)
+			qWallets = append(qWallets, qw)
+		}
+
+	}
+	walletM.wallets = qWallets
 }
 
 func (walletM *WalletManager) getAllAddresses() []*QAddress {
@@ -390,28 +414,10 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 }
 
 func (walletM *WalletManager) getWallets() []*QWallet {
-
-	qWallets := make([]*QWallet, 0)
-	it := walletM.WalletEnv.GetWalletSet().ListWallets()
-
-	for it.Next() {
-
-		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
-		if err != nil {
-			continue
-		}
-		if encrypted {
-			qw := fromWalletToQWallet(it.Value(), true)
-			qWallets = append(qWallets, qw)
-		} else {
-			qw := fromWalletToQWallet(it.Value(), false)
-			qWallets = append(qWallets, qw)
-		}
-
+	if walletM.wallets == nil {
+		walletM.updateWallets()
 	}
-
-	return qWallets
-
+	return walletM.wallets
 }
 
 func (walletM *WalletManager) editWallet(id, label string) *QWallet {
