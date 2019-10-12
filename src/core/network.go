@@ -36,7 +36,19 @@ type PexNode interface {
 
 type PooledObject interface {
 	GetObject() interface{}
-	ReturnObject()
+	ReturnObject() error
+}
+type Object struct {
+	value   interface{}
+	section *PoolSection
+}
+
+func (obj *Object) GetObject() interface{} {
+	return obj.value
+}
+
+func (obj *Object) ReturnObject() error {
+	return obj.section.Put(obj)
 }
 
 type PooledObjectFactory interface {
