@@ -72,42 +72,36 @@ Page {
                 }
             } // ColumnLayout (header)
 
-            ScrollView {
-                id: scrollItem
+            ListView {
+                id: listPendingTransactions
+
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+                clip: true
+                model: modelPendingTransactions.transactions
+                delegate: PendingTransactionsDelegate {
+                    property bool hide: false
 
-                ListView {
-                    id: listPendingTransactions
-                    anchors.fill: parent
+                    modelMine: modelData.mine
+                    modelTransactionID: modelData.transactionID
+                    modelSky: modelData.sky
+                    modelCoinHours: modelData.coinHours
+                    modelTimestamp: modelData.timeStamp
+
+                    width: parent.width
                     clip: true
+                    height: hide ? 0 : implicitHeight
+                    Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+                    opacity: hide ? 0 : 1
+                    Behavior on opacity { NumberAnimation { duration: 100 } }
 
-                    model: modelPendingTransactions.transactions
-                    delegate: PendingTransactionsDelegate {
-                        property bool hide: false
-
-                        width: parent.width
-
-                        modelMine: modelData.mine
-                        modelTransactionID: modelData.transactionID
-                        modelSky: modelData.sky
-                        modelCoinHours: modelData.coinHours
-                        modelTimestamp: modelData.timeStamp
-
-                        height: hide ? 0 : implicitHeight
-                        Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
-                        opacity: hide ? 0 : 1
-                        Behavior on opacity { NumberAnimation { duration: 100 } }
-
-                        clip: true
-                    }
-                } // ListView
-            } // ScrollView
+                    ScrollBar.vertical: ScrollBar { }
+                }
+            } // ListView
         } // ColumnLayout (frame)
     } // Frame
 
-    QPendingList{
+    QPendingList {
         id: modelPendingTransactions
     }
 }
