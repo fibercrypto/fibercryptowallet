@@ -403,7 +403,7 @@ func (wlt *RemoteWallet) GetId() string {
 }
 
 func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
-	logrus.Info("Transfer from remote wallet")
+	logWallet.Info("Transfer from remote wallet")
 
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
