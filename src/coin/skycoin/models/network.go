@@ -3,10 +3,13 @@ package skycoin
 import (
 	"errors"
 	"fmt"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/api"
 )
+
+var logNetwork = logging.MustGetLogger("Skycoin network")
 
 const (
 	PoolSection = "skycoin"
@@ -29,6 +32,7 @@ func NewSkycoinConnectionFactory(url string) *SkycoinConnectionFactory {
 }
 
 func NewSkycoinApiClient(section string) (*api.Client, error) {
+	logNetwork.Info("Creating Skycoin api client")
 	pool := core.GetMultiPool()
 	obj, err := pool.Get(section)
 
@@ -50,10 +54,12 @@ func NewSkycoinApiClient(section string) (*api.Client, error) {
 }
 
 func NewSkycoinPEX(poolSection string) *SkycoinPEX {
+	logNetwork.Info("Creating new Skycoin PEX")
 	return &SkycoinPEX{poolSection}
 }
 
-type SkycoinPEX struct { //Implements PEX interface
+//Implements PEX interface
+type SkycoinPEX struct {
 	poolSection string
 }
 
@@ -63,7 +69,7 @@ func (spex *SkycoinPEX) GetConnections() (core.PexNodeSet, error) {
 }
 
 func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
-
+	logNetwork.Info("Broadcasting transaction")
 	unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 	if !ok {
 		return errors.New("Invalid Transaction")
@@ -82,6 +88,7 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 }
 
 func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
+	logNetwork.Info("Getting transaction pool")
 	c, err := NewSkycoinApiClient(spex.poolSection)
 	if err != nil {
 		return nil, err
