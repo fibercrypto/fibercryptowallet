@@ -5,7 +5,6 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
-	"github.com/sirupsen/logrus"
 	"github.com/therecipe/qt/qml"
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
@@ -43,6 +42,7 @@ type WalletManager struct {
 }
 
 func (walletM *WalletManager) init() {
+	logWalletManager.Info("Initializing wallet manager")
 	qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
 	walletM.ConnectCreateEncryptedWallet(walletM.createEncryptedWallet)
 	walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
@@ -74,29 +74,38 @@ func (walletM *WalletManager) init() {
 }
 
 func (walletM *WalletManager) getAllAddresses() []*QAddress {
+	logWalletManager.Info("Getting all addresses")
 	qAddresses := make([]*QAddress, 0)
 	wltIter := walletM.WalletEnv.GetWalletSet().ListWallets()
+	if wltIter == nil {
+		logWalletManager.Warn("Error getting the list of wallets")
+		return nil
+	}
 	for wltIter.Next() {
 		qAddresses = append(qAddresses, walletM.getAddresses(wltIter.Value().GetId())...)
 	}
 	return qAddresses
 }
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
+	logWalletManager.Info("Broadcasting transaction")
 	altManager := core.LoadAltcoinManager()
 	plug, _ := altManager.LookupAltcoinManager("SKY")
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Error loading PEX")
 		return false
 	}
 	err = pex.BroadcastTxn(txn.txn)
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Error broadcasting transaction")
 		return false
 	}
-	logrus.Info("Txn Injected")
+	logWalletManager.Info("Transaction Injected")
 	return true
 }
 
 func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
+	logWalletManager.Info("Creating transaction")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	outputsFrom := make([]core.TransactionOutput, 0)
 	for _, out := range from {
@@ -127,11 +136,13 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 
 	txn, err := wlt.Spend(outputsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
+		logWalletManager.WithError(err).Info("Error creating transaction")
 		return nil
 	}
 
 	qtxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
+		logWalletManager.WithError(err).Info("Error converting transaction")
 		return nil
 	}
 	return qtxn
@@ -167,20 +178,25 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 
 	txn, err := wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
+		logWalletManager.WithError(err).Info("Error creating transaction")
 		return nil
 	}
 
 	qtxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
+		logWalletManager.WithError(err).Info("Error converting transaction")
 		return nil
 	}
+	logWalletManager.Info("Transaction created")
 	return qtxn
 
 }
 
 func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
+	logWalletManager.Info("Getting outputs")
 	addressIterator, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Error getting address iterator")
 		return nil
 	}
 	outs := make([]*QOutput, 0)
@@ -198,20 +214,24 @@ func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
 		qout.SetOutputID(outsIter.Value().GetId())
 		skyV, err := outsIter.Value().GetCoins(sky.Sky)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get Skycoin's")
 			return nil
 		}
 		quotient, err := util.AltcoinQuotient(sky.Sky)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get Skycoin quotient")
 			return nil
 		}
 		sSky := util.FormatCoins(skyV, quotient)
 		qout.SetAddressSky(sSky)
 		ch, err := outsIter.Value().GetCoins(sky.CoinHour)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get CoinHour's")
 			return nil
 		}
 		quotient, err = util.AltcoinQuotient(sky.CoinHour)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get CoinHour quotient")
 			return nil
 		}
 		sCh := util.FormatCoins(ch, quotient)
@@ -224,9 +244,11 @@ func (walletM *WalletManager) getOutputs(wltId, address string) []*QOutput {
 }
 
 func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
+	logWalletManager.Info("Getting Outputs from wallet by Id")
 	outs := make([]*QOutput, 0)
 	addrIter, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't load addresses iterator")
 		return nil
 	}
 	for addrIter.Next() {
@@ -237,20 +259,24 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 			qout.SetOutputID(outsIter.Value().GetId())
 			skyV, err := outsIter.Value().GetCoins(sky.Sky)
 			if err != nil {
+				logWalletManager.WithError(err).Warn("Couldn't get Skycoin's")
 				return nil
 			}
 			quotient, err := util.AltcoinQuotient(sky.Sky)
 			if err != nil {
+				logWalletManager.WithError(err).Warn("Couldn't get Skycoin quotient")
 				return nil
 			}
 			sSky := util.FormatCoins(skyV, quotient)
 			qout.SetAddressSky(sSky)
 			ch, err := outsIter.Value().GetCoins(sky.CoinHour)
 			if err != nil {
+				logWalletManager.WithError(err).Warn("Couldn't get CoinHour's")
 				return nil
 			}
 			quotient, err = util.AltcoinQuotient(sky.CoinHour)
 			if err != nil {
+				logWalletManager.WithError(err).Warn("Couldn't get CoinHour quotient")
 				return nil
 			}
 			sCh := util.FormatCoins(ch, quotient)
@@ -260,16 +286,19 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 			outs = append(outs, qout)
 		}
 	}
+	logWalletManager.Info("Loaded all outputs")
 	return outs
 }
 
 func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *QTransaction {
+	logWalletManager.Info("Creating Transaction")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	addr := &GenericAddress{
 		Address: destinationAddress,
 	}
 	coins, err := util.GetCoinValue(amount, "SKY")
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't get Skycoin's")
 		return nil
 	}
 	opt := NewTransferOptions()
@@ -278,17 +307,21 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 	txn, err := wlt.Transfer(addr, coins, opt)
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't create transaction")
 		return nil
 	}
 	qTxn, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't convert transaction")
 		return nil
 	}
+	logWalletManager.Info("Transaction created")
 	return qTxn
 
 }
 
 func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) *QTransaction {
+	logWalletManager.Info("Signig transaction")
 	// Get wallet
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
 
@@ -296,17 +329,19 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {
-		logrus.Warn("Error signing txn", err)
+		logWalletManager.WithError(err).Warn("Error signing txn")
 		return nil
 	}
 	qTxn, err = NewQTransactionFromTransaction(txn)
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Error converting transaction")
 		return nil
 	}
 	return qTxn
 }
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
+	logWalletManager.Info("Creating encrypted wallet")
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
@@ -316,11 +351,13 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 		return nil
 	}
 
+	logWalletManager.Info("Created encrypted wallet")
 	return fromWalletToQWallet(wlt, true)
 
 }
 
 func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *QWallet {
+	logWalletManager.Info("Creating encrypted wallet")
 	pwd := func(message string) (string, error) {
 		return "", nil
 	}
@@ -330,16 +367,19 @@ func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN 
 		logWalletManager.WithError(err).Error("Couldn't create unencrypted wallet")
 		return nil
 	}
+	logWalletManager.Info("Created encrypted wallet")
 	return fromWalletToQWallet(wlt, false)
 
 }
 
 func (walletM *WalletManager) getNewSeed(entropy int) string {
+	logWalletManager.Info("Getting new seed")
 	seed, err := walletM.SeedGenerator.GenerateMnemonic(entropy)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get new seed")
 		return ""
 	}
+	logWalletManager.Info("Generated new seed")
 	return seed
 }
 
@@ -350,6 +390,7 @@ func (walletM *WalletManager) verifySeed(seed string) int {
 		logWalletManager.WithError(err).Error("Couldn't verify seed")
 		return 0
 	}
+	logWalletManager.Info("Verified seed")
 	if ok {
 		return 1
 	}
@@ -367,6 +408,7 @@ func (walletM *WalletManager) encryptWallet(id, password string) int {
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create encrypted wallets")
 	}
+	logWalletManager.Info("Wallet encrypted")
 	if ret {
 		return 1
 	}
@@ -383,6 +425,7 @@ func (walletM *WalletManager) decryptWallet(id, password string) int {
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't decrypt wallet")
 	}
+	logWalletManager.Info("Wallet decrypted")
 	if ret {
 		return 1
 	}
@@ -405,6 +448,7 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 		wltEntriesLen++
 	}
 	wlt.GenAddresses(core.AccountAddress, uint32(wltEntriesLen), uint32(n), pwd)
+	logWalletManager.Info("New addresses created")
 }
 
 func (walletM *WalletManager) getWallets() []*QWallet {
@@ -436,6 +480,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 
 	}
 
+	logWalletManager.Info("Wallets obtained")
 	return qWallets
 
 }
@@ -452,6 +497,7 @@ func (walletM *WalletManager) editWallet(id, label string) *QWallet {
 		return nil
 	}
 	qWallet := fromWalletToQWallet(wlt, encrypted)
+	logWalletManager.Info("Wallet edited")
 	return qWallet
 }
 
@@ -497,6 +543,7 @@ func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
 
 	}
 
+	logWalletManager.Info("Addresess obtained")
 	return qAddresses
 }
 
@@ -519,7 +566,6 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		return qWallet
 	}
 
-	//TODO: report possible error
 	accuracy, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin Altcoin quotient")
