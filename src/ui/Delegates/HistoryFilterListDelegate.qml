@@ -8,7 +8,6 @@ Item {
     id: root
 
     readonly property real addressListHeight: listViewFilterAddress.height
-    readonly property real delegateHeight: 42
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
     
@@ -56,10 +55,11 @@ Item {
 
         ListView {
             id: listViewFilterAddress
+
             property AddressModel listAddresses
             property int checkedDelegates: 0
             property bool allChecked: false
-            model: listAddresses
+
             onCheckedDelegatesChanged: {
                 if (checkedDelegates === 0) {
                     checkDelegate.checkState = Qt.Unchecked
@@ -68,60 +68,42 @@ Item {
                 } else {
                     checkDelegate.checkState = Qt.PartiallyChecked
                 }
-                
             }
-            onCountChanged:{
-                implicitHeight = listAddresses.count * delegateHeight
-                
-               
-            }
-            
 
-            Component.onCompleted:{
+            onAllCheckedChanged: {
+                if (listViewFilterAddress.allChecked) {
+                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 1)
+                } else {
+                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 0)
+                }
+            }
+
+            Component.onCompleted: {
                 modelManager.setWalletManager(walletManager)
                 listAddresses = modelManager.getAddressModel(fileName)
             }
-            
-            Layout.fillWidth: true
-           
 
+            Layout.fillWidth: true
             interactive: false
-            
+            model: listAddresses
+            height: contentItem.height
+
             delegate: HistoryFilterListAddressDelegate {
                 leftPadding: 20
                 scale: 0.85
                 checked: marked
-                 
-                 onCheckedChanged: {
-                   
+
+                onCheckedChanged: {
                     ListView.view.checkedDelegates += checked ? 1: -1
                     
-                    if (checked == 1){
+                    if (checked == true) {
                         historyManager.addFilter(address)
-                        
-                    }
-                    else {
-                        historyManager.removeFilter(address)
-                        
+                    } else {
+                        historyManager.removeFilter(address)  
                     }
                     listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
                 }
-                
-                Connections{
-                    target: listViewFilterAddress
-                    onAllCheckedChanged:{
-                        if (listViewFilterAddress.allChecked){
-                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 1)
-                        } else{
-                            listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 0)
-                        }
-                    }
-                }
-                
-                
-            }
+            } // HistoryFilterListAddressDelegate (delegate)
         } // ListView
     } // ColumnLayout
-
-   
 }
