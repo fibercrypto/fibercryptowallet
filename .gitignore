@@ -57,5 +57,5 @@ rcc__*
 *.bak
 
 # Dependencies
-#vendor
+vendor
 
