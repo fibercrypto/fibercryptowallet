@@ -668,6 +668,7 @@ type WalletDirectory struct {
 }
 
 func (wltDir *WalletDirectory) GetStorage() core.WalletStorage {
+	logWallet.Info("Getting storage from wallet directory")
 	if wltDir.wltService == nil {
 		wltDir.wltService = &SkycoinLocalWallet{wltDir.WalletDir}
 	}
@@ -675,18 +676,20 @@ func (wltDir *WalletDirectory) GetStorage() core.WalletStorage {
 }
 
 func (wltDir *WalletDirectory) GetWalletSet() core.WalletSet {
+	logWallet.Info("Getting wallet set from wallet directory")
 	if wltDir.wltService == nil {
 		wltDir.wltService = &SkycoinLocalWallet{wltDir.WalletDir}
 	}
 	return wltDir.wltService
 }
 
+//Implements WalletStorage and WalletSet interfaces
 type SkycoinLocalWallet struct {
-	//Implements WalletStorage and WalletSet interfaces
 	walletDir string
 }
 
 func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
+	logWallet.Info("Listing Skycoin local wallets")
 	wallets := make([]core.Wallet, 0)
 	entries, err := ioutil.ReadDir(wltSrv.walletDir)
 	if err != nil {
@@ -722,6 +725,7 @@ func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
 }
 
 func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
+	logWallet.Info("Getting Skycoin local wallet")
 	path := filepath.Join(wltSrv.walletDir, id)
 	w, err := wallet.Load(path)
 	if err != nil {
@@ -739,6 +743,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 }
 
 func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+	logWallet.Info("Creating Skycoin local wallet")
 	password, err := pwd("Insert Password")
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
@@ -799,6 +804,7 @@ func (wltSrv *SkycoinLocalWallet) newUnicWalletFilename() string {
 }
 
 func (wltSrv *SkycoinLocalWallet) Encrypt(walletName string, password core.PasswordReader) {
+	logWallet.Info("Encrypt Skycoin local wallet")
 	wltName := filepath.Join(wltSrv.walletDir, walletName)
 	wlt, err := wallet.Load(wltName)
 	if err != nil {
@@ -829,6 +835,7 @@ func (wltSrv *SkycoinLocalWallet) Encrypt(walletName string, password core.Passw
 }
 
 func (wltSrv *SkycoinLocalWallet) Decrypt(walletName string, password core.PasswordReader) {
+	logWallet.Info("Decrypt Skycoin local wallet")
 	wltName := filepath.Join(wltSrv.walletDir, walletName)
 	wlt, err := wallet.Load(wltName)
 	if err != nil {
@@ -858,6 +865,7 @@ func (wltSrv *SkycoinLocalWallet) Decrypt(walletName string, password core.Passw
 }
 
 func (wltSrv *SkycoinLocalWallet) IsEncrypted(walletName string) (bool, error) {
+	logWallet.Info("Checking if Skycoin local wallet is encrypted")
 	wltName := filepath.Join(wltSrv.walletDir, walletName)
 
 	wlt, err := wallet.Load(wltName)
@@ -872,11 +880,12 @@ type TransactionFinder struct {
 }
 
 func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bool, error) {
+	logWallet.Info("Getting Addresses activity")
 	addrs := make([]string, 0)
 	for _, addr := range addresses {
 		addrs = append(addrs, addr.String())
 	}
-	answ := make([]bool, len(addrs))
+	answer := make([]bool, len(addrs))
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logWallet.WithError(err).Error("Couldn't get API client")
@@ -892,10 +901,10 @@ func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bo
 			return nil, err
 		}
 		if len(txn) != 0 {
-			answ[i] = true
+			answer[i] = true
 		}
 	}
-	return answ, nil
+	return answer, nil
 }
 
 type LocalWallet struct {
@@ -908,29 +917,35 @@ type LocalWallet struct {
 }
 
 func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.PasswordReader, index []int) (core.Transaction, error) {
+	logWallet.Info("Signing local wallet")
 	clt, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
 	defer core.GetMultiPool().Return(PoolSection, clt)
 
 	unTxn, ok := Txn.(*SkycoinUninjectedTransaction)
 	if !ok {
+		logWallet.WithError(err).Warn("Couldn't load transaction un injected")
 		return nil, errors.New("Invalid Transaction")
 	}
-	//dir := filepath.Join(wlt.WalletDir, wlt.Id)
+
 	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't load skycoin wallet from local path")
 		return nil, err
 	}
 	pass, err := pwd("Insert your password")
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't get password")
 		return nil, err
 	}
 
 	if skyWlt.IsEncrypted() {
 		skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
 		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't unlock local wallet")
 			return nil, err
 		}
 	}
@@ -962,12 +977,15 @@ func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.Passwo
 			},
 		})
 	}
+	logWallet.Info("Signing transaction using local transaction")
 	signedTxn, err := wallet.SignTransaction(skyWlt, unTxn.txn, index, uxouts)
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't sign transaction using local wallet")
 		return nil, err
 	}
 	resultTxn, err := NewUninjectedTransaction(signedTxn, unTxn.fee)
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't create an un injected transaction")
 		return nil, err
 	}
 	return resultTxn, nil
@@ -975,12 +993,15 @@ func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.Passwo
 }
 
 func (wlt *LocalWallet) GetId() string {
+	logWallet.Info("Getting Id if local wallet")
 	return wlt.Id
 }
 func (wlt *LocalWallet) GetLabel() string {
+	logWallet.Info("Getting label from local wallet")
 	return wlt.Label
 }
 func (wlt *LocalWallet) SetLabel(wltName string) {
+	logWallet.Info("Setting label to local wallet")
 	wltFile, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.GetId()))
 	if err != nil {
 		logWallet.WithError(err).WithField("filename", filepath.Join(wlt.WalletDir, wlt.GetId())).Error("Call to wallet.Load(filename) inside SetLabel failed.")
@@ -1000,24 +1021,28 @@ func (wlt *LocalWallet) SetLabel(wltName string) {
 func fromTxnResponseToUninjectedTxn(txnResponse *api.CreateTransactionResponse) (*SkycoinUninjectedTransaction, error) {
 	fee, err := util.GetCoinValue(txnResponse.Transaction.Fee, CoinHour)
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't get transaction fee for CoinHours")
 		return nil, err
 	}
 	skyTxn, err := txnResponse.Transaction.ToTransaction()
 
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't get Skycoin transaction")
 		return nil, err
 	}
 	txn, err := NewUninjectedTransaction(skyTxn, fee)
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't create un injected transaction")
 		return nil, err
 	}
 	return txn, nil
 }
 
 func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
-
+	logWallet.Info("Sending form local wallet")
 	quotient, err := util.AltcoinQuotient(Sky)
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't get skycoin quotient")
 		return nil, err
 	}
 	strAmount := util.FormatCoins(amount, quotient)
@@ -1028,6 +1053,7 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 	addresses := make([]core.Address, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't get loaded addresses")
 		return nil, err
 	}
 	for iterAddr.Next() {
@@ -1037,11 +1063,13 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't load api client")
 			return nil, err
 		}
 		defer core.GetMultiPool().Return(PoolSection, client)
 		txnR, err := client.CreateTransaction(*txnReq)
 		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't create transaction")
 			return nil, err
 		}
 		return fromTxnResponseToUninjectedTxn(txnR)
@@ -1051,15 +1079,17 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 
 }
 func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
-
+	logWallet.Info("Sending from addresses in local wallet")
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't load api client")
 			return nil, err
 		}
 		defer core.GetMultiPool().Return(PoolSection, client)
 		txnR, err := client.CreateTransaction(*txnReq)
 		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't create transaction")
 			return nil, err
 		}
 		return fromTxnResponseToUninjectedTxn(txnR)
@@ -1070,14 +1100,17 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 
 }
 func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+	logWallet.Info("Spending from local wallet")
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't load api client")
 			return nil, err
 		}
 		defer core.GetMultiPool().Return(PoolSection, client)
 		txnR, err := client.CreateTransaction(*txnReq)
 		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't load api client")
 			return nil, err
 		}
 		return fromTxnResponseToUninjectedTxn(txnR)
@@ -1087,6 +1120,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 }
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+	logWallet.Info("Generating addresses in local wallet")
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
 	if err != nil {
@@ -1150,9 +1184,11 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 
 }
 func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
+	logWallet.Info("Getting CryptoAccount from local wallet")
 	return wlt
 }
 func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
+	logWallet.Info("Getting loaded addresses from local wallet")
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
 	if err != nil {
