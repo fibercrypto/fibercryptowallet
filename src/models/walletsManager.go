@@ -107,6 +107,10 @@ func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
 	logWalletManager.Info("Creating transaction")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	if wlt == nil {
+		logWalletManager.Warn("Couldn't load wallet to create transaction")
+		return nil
+	}
 	outputsFrom := make([]core.TransactionOutput, 0)
 	for _, out := range from {
 		outputsFrom = append(outputsFrom, &GenericOutput{
@@ -149,6 +153,10 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 }
 func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	if wlt == nil {
+		logWalletManager.Warn("Couldn't load wallet to create transaction")
+		return nil
+	}
 	addrsFrom := make([]core.Address, 0)
 	for _, addr := range from {
 
@@ -304,7 +312,10 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	opt := NewTransferOptions()
 	opt.AddKeyValue("BurnFactor", "0.5")
 	opt.AddKeyValue("CoinHoursSelectionType", "auto")
-
+	if wlt == nil {
+		logWalletManager.Warn("Couldn't load wallet to create transaction")
+		return nil
+	}
 	txn, err := wlt.Transfer(addr, coins, opt)
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't create transaction")
@@ -324,7 +335,10 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 	logWalletManager.Info("Signig transaction")
 	// Get wallet
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-
+	if wlt == nil {
+		logWalletManager.Warn("Couldn't load wallet to Sign transaction")
+		return nil
+	}
 	txn, err := wlt.Sign(qTxn.txn, source, func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
