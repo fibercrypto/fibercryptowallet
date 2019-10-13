@@ -24,7 +24,6 @@ ItemDelegate {
     property QAddressList modelAddresses: addresses
     property QAddressList modelInputs: inputs
     property QAddressList modelOutputs: outputs
-    readonly property real delegateHeight: 30
     
     signal qrCodeRequested(var data)
 
@@ -35,7 +34,6 @@ ItemDelegate {
     function genQR(data) {
         dialogQR.setVars(data)
         dialogQR.open()
-
     }
 
     implicitWidth: parent.width
@@ -43,6 +41,7 @@ ItemDelegate {
 
     RowLayout {
         id: rowLayoutRoot
+
         anchors.fill: parent
         anchors.leftMargin: 20
         anchors.rightMargin: 20
@@ -63,54 +62,35 @@ ItemDelegate {
             id: columnLayoutMainContent
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop | Qt.AlignLeft
-            
-                
-                
-                
-            
+
             RowLayout {
-                
-                
                 Layout.alignment: Qt.AlignLeft
                 spacing: 20
                 
-                Row{
+                RowLayout {
                     Layout.fillWidth:true
                     spacing: 20
-                Label {
-                    
-                    font.bold: true
-                    text: (modelType == TransactionDetails.Type.Receive ? qsTr("Received") : (modelType == TransactionDetails.Type.Send ? qsTr("Sent") : qsTr("Internal"))) + " SKY"
-                }
 
-                Label {
-                    
-                    Material.foreground: Material.Grey
-                    text: modelDate.toLocaleString("2000-01-01 00:00") // model's role
-                    font.pointSize: Qt.application.font.pointSize * 0.9
-                }
-                }
-            }
-            ColumnLayout {
-                Layout.fillWidth:true
-                Layout.fillHeight:true
-                Layout.leftMargin:10
-                
+                    Label {
+                        font.bold: true
+                        text: (modelType == TransactionDetails.Type.Receive ? qsTr("Received") : (modelType == TransactionDetails.Type.Send ? qsTr("Sent") : qsTr("Internal"))) + " SKY"
+                    }
+
+                    Label {
+                        Material.foreground: Material.Grey
+                        text: modelDate.toLocaleString("2000-01-01 00:00") // model's role
+                        font.pointSize: Qt.application.font.pointSize * 0.9
+                    }
+                } // RowLayout
+            } // RowLayout
+
+            ListView {
                 Layout.alignment: Qt.AlignLeft
-                height: delegateHeight*(modelInputs.rowCount())
-                ListView{
-                    Layout.alignment: Qt.AlignLeft
-                    implicitHeight: delegateHeight*(modelAddresses.count)
-                    height: parent.height
-                    id: listViewAddresses
-                    model: modelAddresses
-                    delegate:TransactionAddressDelegate{}
-                                     
-                }
-                
-                   
-            } // ColumnLayout (addresses)
-        
+                height: contentItem.height
+                id: listViewAddresses
+                model: modelAddresses
+                delegate: TransactionAddressDelegate {}                 
+            }
         } // ColumnLayout (main content)
 
         Label {
