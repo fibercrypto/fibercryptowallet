@@ -21,6 +21,8 @@ Item {
         dialogQR.open()
 
     }
+
+    implicitHeight: rootLayout.height
     clip: true
 
     RowLayout {
@@ -87,6 +89,8 @@ Item {
         }
         ToolButton {
             id: toolButtonAddRemoveDestination
+
+            Layout.topMargin: 12
             // The 'accent' attribute is used for button highlighting
             Material.accent: index === 0 ? Material.Teal : Material.Red
             icon.source: "qrc:/images/resources/images/icons/" + (index === 0 ? "add" : "remove") + "-circle.svg"
@@ -101,6 +105,6 @@ Item {
                     listModelDestinations.remove(index)
                 }
             }
-        }
+        } // ToolButton (Add/Remove)
     } // RowLayout (rootLayout)
 }
