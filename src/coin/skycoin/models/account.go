@@ -14,7 +14,7 @@ import (
 	"github.com/skycoin/skycoin/src/wallet"
 )
 
-var log = logging.MustGetLogger("account")
+var log = logging.MustGetLogger("Skycoin Account")
 
 func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 
@@ -106,7 +106,7 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 
 }
 func (addr *SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
-	return nil,nil
+	return nil, nil
 }
 
 func (wlt *RemoteWallet) GetBalance(ticker string) (uint64, error) {
