@@ -32,3 +32,14 @@ func TestGetSignerUIDShouldBeOk(t *testing.T) {
 	// Then
 	require.Equal(t, core.UID(expectedDevId), devId)
 }
+
+func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
+	// Giving
+	sw := SkyWallet{}
+
+	// When
+	devId := sw.GetSignerUID()
+
+	// Then
+	require.Equal(t, core.UID("undefined"), devId)
+}
