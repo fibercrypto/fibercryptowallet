@@ -73,7 +73,7 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 	return tr, nil
 }
 
-// GetSignerUID this signer uid using the hardware wallet id
+// GetSignerUID this signer uid using the hardware wallet label
 func (sw SkyWallet) GetSignerUID() core.UID {
 	device := sw.dev
 	if device == nil {
@@ -85,6 +85,7 @@ func (sw SkyWallet) GetSignerUID() core.UID {
 	// defer device.Close()
 	msg, err := device.GetFeatures()
 	if err != nil {
+		// TODO i18n
 		logrus.WithError(err).Error("error getting device features")
 		return "undefined"
 	}
@@ -93,8 +94,9 @@ func (sw SkyWallet) GetSignerUID() core.UID {
 		features := &messages.Features{}
 		err = proto.Unmarshal(msg.Data, features)
 		if err != nil {
+			// TODO i18n
 			logrus.WithError(err).Error("error decoding device response")
-			return "undefined" // i18n
+			return "undefined"
 		}
 		return core.UID(*features.DeviceId)
 	case uint16(messages.MessageType_MessageType_Failure), uint16(messages.MessageType_MessageType_Success):
@@ -102,10 +104,12 @@ func (sw SkyWallet) GetSignerUID() core.UID {
 		if err != nil {
 			logrus.WithError(err).Error(msgData)
 		}
-		return "undefined" // i18n
+		// TODO i18n
+		return "undefined"
 	default:
+		// TODO i18n
 		logrus.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
-		return "undefined" // i18n
+		return "undefined"
 	}
 }
 
