@@ -303,11 +303,11 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 	return qTxn
 }
 
-func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
+func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, password string, scanN int) *QWallet {
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
-	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, true, pwd, scanN)
+	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, true, pwd, scanN)
 	if err != nil {
 		return nil
 	}
@@ -316,12 +316,12 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 
 }
 
-func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *QWallet {
+func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType string, scanN int) *QWallet {
 	pwd := func(message string) (string, error) {
 		return "", nil
 	}
 
-	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, false, pwd, scanN)
+	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, false, pwd, scanN)
 	if err != nil {
 		return nil
 	}

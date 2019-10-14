@@ -94,17 +94,33 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	return NewSkycoinWalletIterator(wallets)
 }
 
-func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, walletType string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	wlt := &RemoteWallet{}
 	c, err := NewSkycoinApiClient(wltSrv.poolSection)
 	if err != nil {
 		return nil, err
 	}
 	defer core.GetMultiPool().Return(wltSrv.poolSection, c)
+
+	var wltType string
+	switch walletType {
+	case "deterministic":
+		{
+			wltType = WalletTypeDeterministic
+		}
+	case "bip-44":
+		{
+			wltType = WalletTypeBip44
+		}
+	default:
+		{
+			return nil, errors.New("Invalid Wallet Type")
+		}
+	}
 	if IsEncrypted {
 		password, _ := pwd("Enter your password")
 		wltOpt := api.CreateWalletOptions{}
-		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Type = wltType
 		wltOpt.Seed = seed
 		wltOpt.Password = password
 		wltOpt.Encrypt = true
@@ -118,7 +134,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		wlt = walletResponseToWallet(*wltR)
 	} else {
 		wltOpt := api.CreateWalletOptions{}
-		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Type = wltType
 		wltOpt.Seed = seed
 		wltOpt.Encrypt = false
 		wltOpt.Label = label
@@ -652,15 +668,31 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 	}
 }
 
-func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, walletType string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	password, _ := pwd("Insert Password")
 
 	passwordByte := []byte(password)
+	var wltType string
+	switch walletType {
+	case "deterministic":
+		{
+			wltType = WalletTypeDeterministic
+		}
+
+	case "bip-44":
+		{
+			wltType = WalletTypeBip44
+		}
+	default:
+		{
+			return nil, errors.New("Invalid Wallet Type")
+		}
+	}
 	opts := wallet.Options{
 		Label:    label,
 		Seed:     seed,
 		Encrypt:  IsEncrypted,
-		Type:     WalletTypeBip44,
+		Type:     wltType,
 		Password: passwordByte,
 	}
 	wltName := wltSrv.newUnicWalletFilename()
@@ -978,17 +1010,76 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 }
+
+func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator{
+	if addrType != core.AccountAddress && addrType != core.ChangeAddress{
+		return nil
+	}
+
+	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
+	walletLoaded, err := wallet.Load(walletName)
+
+	if addrType == core.ChangeAddress && walletLoaded.Type != WalletTypeBip44{
+		return nil
+	}
+
+	genAddr := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error){
+		return w.GenerateAddresses(n)
+	}
+
+	addressCount := walletLoaded.EntriesLen()
+
+	if addrType == core.ChangeAddress{
+		addressCount := walletLoaded.(*wallet.Bip44Wallet).
+	}
+
+	if addrTyp == core.ChangeAddress{
+		genAddr = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+			addresser := make([]cipher.Addresser, 0)
+			for i := uint64(0); i < n; i++ {
+				addrs, err := w.(*wallet.Bip44Wallet).GenerateChangeEntry()
+				if err != nil {
+					return nil, err
+				}
+				addresser = append(addresser, addrs.Address)
+			}
+			return addresser, nil
+		}
+	}
+}
+
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
 	if err != nil {
 		return nil
 	}
+	if addrType == core.ChangeAddress && walletLoaded.Type() != WalletTypeBip44 {
+		return nil
+	}
+
+	genAddr := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+		return w.GenerateAddresses(n)
+	}
+	if addrType == core.ChangeAddress {
+		genAddr = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+			addresser := make([]cipher.Addresser, 0)
+			for i := uint64(0); i < n; i++ {
+				addrs, err := w.(*wallet.Bip44Wallet).GenerateChangeEntry()
+				if err != nil {
+					return nil, err
+				}
+				addresser = append(addresser, addrs.Address)
+			}
+			return addresser, nil
+		}
+	}
+
 	addressCount := walletLoaded.EntriesLen()
 	if uint32(addressCount) < (startIndex + count) {
 		diff := (startIndex + count) - uint32(addressCount)
 		genAddressesInFile := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
-			return w.GenerateAddresses(n)
+			return genAddr(w, n)
 		}
 
 		if walletLoaded.IsEncrypted() {
@@ -1001,7 +1092,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 				var addrs []cipher.Addresser
 				if err := wallet.GuardUpdate(w, passwordBytes, func(wlt wallet.Wallet) error {
 					var err error
-					addrs, err = wlt.GenerateAddresses(n)
+					addrs, err = genAddr(wlt, n)
 					return err
 				}); err != nil {
 					return nil, err
