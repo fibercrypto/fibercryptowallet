@@ -11,6 +11,14 @@ import (
 )
 
 type SkyWallet struct {
+	dev skyWallet.Devicer
+}
+
+// skyWallet.NewDevice(skyWallet.DeviceTypeUSB),
+func NewSkyWallet(dev skyWallet.Devicer) *SkyWallet {
+	return &SkyWallet{
+		dev: dev,
+	}
 }
 
 // SignTransaction using hardware wallet
@@ -64,15 +72,18 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 
 // GetSignerUID this signer uid using the hardware wallet id
 func (sw SkyWallet) GetSignerUID() core.UID {
-	device := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+	device := sw.dev
 	if device == nil {
-		logrus.Error("error creating hardware wallet deice handler")
-		return "undefined" // i18n
+		// TODO i18n
+		logrus.Error("error, nil hardware wallet device handler")
+		return "undefined"
 	}
-	defer device.Close()
+	// FIXME: This should not be closed, it's a lower level detail.
+	// defer device.Close()
 	msg, err := device.GetFeatures()
 	if err != nil {
 		logrus.WithError(err).Error("error getting device features")
+		return "undefined"
 	}
 	switch msg.Kind {
 	case uint16(messages.MessageType_MessageType_Features):
