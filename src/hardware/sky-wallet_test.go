@@ -76,3 +76,19 @@ func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 	// Then
 	require.Equal(t, core.UID("undefined"), devId)
 }
+
+func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
+	// Giving
+	dev := mocks.Devicer{}
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
+	}
+	dev.On("GetFeatures").Return(msg, nil)
+	sw := NewSkyWallet(&dev)
+
+	// When
+	devId := sw.GetSignerUID()
+
+	// Then
+	require.Equal(t, core.UID("undefined"), devId)
+}
