@@ -8,6 +8,7 @@ import (
 	"github.com/skycoin/hardware-wallet-protob/go"
 	"github.com/stretchrcom/testify/require"
 	"testing"
+	"errors"
 )
 
 func TestGetSignerUIDShouldBeOk(t *testing.T) {
