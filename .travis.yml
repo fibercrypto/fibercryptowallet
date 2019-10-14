@@ -40,8 +40,27 @@ matrix:
     install:
     - docker pull therecipe/qt:linux
     - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
-    
+
+    before_script:
+    # Install hardware wallet for running tests against emulator
+    - mkdir -p tmp/hardware-wallet
+    - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
+    - git -C tmp/hardware-wallet submodule update --init --recursive
+    # Define env vars for Linux builds
+    - ls -l /usr/local/bin/protoc
+    - export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH"
+    - echo "PATH=$PATH";
+    - echo "PIP=$PIP";
+
     script:
+    - make -C tmp/hardware-wallet clean
+    - make -C tmp/hardware-wallet/tiny-firmware/protob install-protoc
+    - make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+    - make -C tmp/hardware-wallet emulator
+    # On GNU/Linux wrap emulator in xvfb graphics context
+    - xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true;
+    # Run self-tests
+    - ps aux | grep emulator
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build desktop
   
