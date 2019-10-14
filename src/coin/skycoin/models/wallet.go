@@ -1011,49 +1011,14 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 }
 
-func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator{
-	if addrType != core.AccountAddress && addrType != core.ChangeAddress{
-		return nil
-	}
-
-	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
-	walletLoaded, err := wallet.Load(walletName)
-
-	if addrType == core.ChangeAddress && walletLoaded.Type != WalletTypeBip44{
-		return nil
-	}
-
-	genAddr := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error){
-		return w.GenerateAddresses(n)
-	}
-
-	addressCount := walletLoaded.EntriesLen()
-
-	if addrType == core.ChangeAddress{
-		addressCount := walletLoaded.(*wallet.Bip44Wallet).
-	}
-
-	if addrTyp == core.ChangeAddress{
-		genAddr = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
-			addresser := make([]cipher.Addresser, 0)
-			for i := uint64(0); i < n; i++ {
-				addrs, err := w.(*wallet.Bip44Wallet).GenerateChangeEntry()
-				if err != nil {
-					return nil, err
-				}
-				addresser = append(addresser, addrs.Address)
-			}
-			return addresser, nil
-		}
-	}
-}
-
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
-	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
-	walletLoaded, err := wallet.Load(walletName)
-	if err != nil {
+	if addrType != core.AccountAddress && addrType != core.ChangeAddress {
 		return nil
 	}
+
+	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
+	walletLoaded, err := wallet.Load(walletName)
+
 	if addrType == core.ChangeAddress && walletLoaded.Type() != WalletTypeBip44 {
 		return nil
 	}
@@ -1061,7 +1026,28 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	genAddr := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
 		return w.GenerateAddresses(n)
 	}
+
+	addressCount := walletLoaded.EntriesLen()
+
+	getAddrs := func(w wallet.Wallet) []cipher.Addresser {
+		return w.GetAddresses()[startIndex : startIndex+count]
+	}
+
+	if walletLoaded.Type() == WalletTypeBip44 {
+		addressCount = len((*(walletLoaded.(*wallet.Bip44Wallet))).ExternalEntries)
+
+		getAddrs = func(w wallet.Wallet) []cipher.Addresser {
+			addresser := make([]cipher.Addresser, 0)
+			for _, entry := range (*(walletLoaded.(*wallet.Bip44Wallet))).ExternalEntries[startIndex : startIndex+count] {
+				addresser = append(addresser, entry.Address)
+			}
+			return addresser
+		}
+
+	}
 	if addrType == core.ChangeAddress {
+		addressCount = len((*(walletLoaded.(*wallet.Bip44Wallet))).ChangeEntries)
+
 		genAddr = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
 			addresser := make([]cipher.Addresser, 0)
 			for i := uint64(0); i < n; i++ {
@@ -1073,9 +1059,16 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 			}
 			return addresser, nil
 		}
+
+		getAddrs = func(w wallet.Wallet) []cipher.Addresser {
+			addresser := make([]cipher.Addresser, 0)
+			for _, entry := range (*(walletLoaded.(*wallet.Bip44Wallet))).ChangeEntries[startIndex : startIndex+count] {
+				addresser = append(addresser, entry.Address)
+			}
+			return addresser
+		}
 	}
 
-	addressCount := walletLoaded.EntriesLen()
 	if uint32(addressCount) < (startIndex + count) {
 		diff := (startIndex + count) - uint32(addressCount)
 		genAddressesInFile := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
@@ -1117,7 +1110,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		return nil
 	}
 
-	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
+	addrs := getAddrs(walletLoaded)
 	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
 		skyAddrs = append(skyAddrs, &SkycoinAddress{address: addr.String()})
@@ -1125,6 +1118,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	return NewSkycoinAddressIterator(skyAddrs)
 
 }
+
 func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
 	return wlt
 }
