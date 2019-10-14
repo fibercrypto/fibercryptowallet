@@ -2,6 +2,7 @@ package skycoin
 
 import (
 	"errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
@@ -11,11 +12,14 @@ import (
 	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
+var logFiberPlugin = logging.MustGetLogger("Skycoin Plugin")
+
 type SkyFiberPlugin struct {
 	Params params.SkyFiberParams
 }
 
 func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
+	logFiberPlugin.Info("Listing supported Altcoin's for SkyFiber plugin")
 	return []core.AltcoinMetadata{
 		core.AltcoinMetadata{
 			Name:     SkycoinName,
@@ -42,25 +46,29 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 }
 
 func (p *SkyFiberPlugin) ListSupportedFamilies() []string {
+	logFiberPlugin.Info("Listing supported families for SkyFiber plugin")
 	return []string{SkycoinFamily}
 }
 
 func (p *SkyFiberPlugin) RegisterTo(manager core.AltcoinManager) {
+	logFiberPlugin.Info("Registering SkyFiber plugin to Altcoin Manager")
 	for _, info := range p.ListSupportedAltcoins() {
 		manager.RegisterAltcoin(info, p)
 	}
 }
 
 func (p *SkyFiberPlugin) GetName() string {
+	logFiberPlugin.Info("Getting SkyFiber plugin name")
 	return "SkyFiber"
 }
 
 func (p *SkyFiberPlugin) GetDescription() string {
+	logFiberPlugin.Info("Getting SkyFiber plugin description")
 	return "FiberCrypto wallet connector for Skycoin and SkyFiber altcoins"
 }
 
 func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
-
+	logFiberPlugin.Info("Loading wallets env for SkyFiber plugin")
 	config := local.GetConfigManager()
 	wltSources := config.GetSources()
 
@@ -81,6 +89,7 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 }
 
 func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
+	logFiberPlugin.Info("Loading PEX for SkyFiber plugin")
 	var poolSection string
 	if netType == "MainNet" {
 		poolSection = sky.PoolSection
