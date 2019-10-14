@@ -3,8 +3,11 @@ package core
 import (
 	"errors"
 	"fmt"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"sync"
 )
+
+var logConnectionPool = logging.MustGetLogger("Connection Pool")
 
 var once sync.Once
 var multiConnectionsPool *MultiConnectionsPool
@@ -65,6 +68,7 @@ type MultiConnectionsPool struct {
 }
 
 func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
+	logConnectionPool.Info("Getting " + poolSection + " Pool section")
 	mutex, ok := mp.mutexs[poolSection]
 
 	if !ok {
@@ -92,6 +96,7 @@ func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
 }
 
 func (mp *MultiConnectionsPool) Return(poolSection string, obj PooledObject) error {
+	logConnectionPool.Info("Returning " + poolSection + " Pool section")
 	mutex, ok := mp.mutexs[poolSection]
 	if !ok {
 		return errors.New(fmt.Sprintf("There is not exist %s poolSection", poolSection))
@@ -108,7 +113,7 @@ func (mp *MultiConnectionsPool) Return(poolSection string, obj PooledObject) err
 }
 
 func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) {
-
+	logConnectionPool.Info("Creating new pool: " + name)
 	if _, ok := mp.factories[name]; ok {
 		return
 	}
@@ -121,6 +126,7 @@ func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectF
 }
 
 func (mp *MultiConnectionsPool) ListSections() []string {
+	logConnectionPool.Info("Listing pool sections")
 	sections := make([]string, 0)
 	for key, _ := range mp.factories {
 		sections = append(sections, key)
