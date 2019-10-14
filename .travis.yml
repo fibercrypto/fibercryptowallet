@@ -8,6 +8,10 @@ services:
 
 go_import_path: github.com/fibercrypto/FiberCryptoWallet
 
+env:
+  global:
+  - XARGS="-screen 0 1024x768x24"
+
 matrix:
   include:
   - stage: "RPI"
@@ -37,6 +41,8 @@ matrix:
     - $GOPATH/bin/qtdeploy -docker build android-emulator
 
   - stage: "Linux"
+    before_install:
+    - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
     install:
     - docker pull therecipe/qt:linux
     - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
@@ -47,7 +53,6 @@ matrix:
     - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
     - git -C tmp/hardware-wallet submodule update --init --recursive
     # Define env vars for Linux builds
-    - ls -l /usr/local/bin/protoc
     - export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH"
     - echo "PATH=$PATH";
     - echo "PIP=$PIP";
