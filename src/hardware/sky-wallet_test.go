@@ -43,3 +43,16 @@ func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
 	// Then
 	require.Equal(t, core.UID("undefined"), devId)
 }
+
+func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
+	// Giving
+	dev := mocks.Devicer{}
+	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
+	sw := NewSkyWallet(&dev)
+
+	// When
+	devId := sw.GetSignerUID()
+
+	// Then
+	require.Equal(t, core.UID("undefined"), devId)
+}
