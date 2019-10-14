@@ -59,7 +59,7 @@ matrix:
 
     script:
     - make -C tmp/hardware-wallet clean
-    - PROTOC_VERSION=2.6.1 make -C tmp/hardware-wallet/tiny-firmware/protob install-protoc
+    - make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
     - make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
     - make -C tmp/hardware-wallet emulator
     # On GNU/Linux wrap emulator in xvfb graphics context
