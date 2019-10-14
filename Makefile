@@ -24,9 +24,11 @@ clean: ## Clean project FiberCrypto Wallet.
 	find . -path "*moc_*" -delete
 	@echo "Done."
 
-test: ## Run project test suite
+test-sky: ## Run Skycoin plugin test suite
 	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+
+test: test-sky ## Run project test suite
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
