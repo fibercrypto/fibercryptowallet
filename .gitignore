@@ -58,5 +58,3 @@ rcc__*
 
 # Temporary build files
 rcc_cgo_*.go
-
-mocks/

@@ -58,10 +58,10 @@ matrix:
     - echo "PIP=$PIP";
 
     script:
-    - make -C tmp/hardware-wallet clean
-    - make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
-    - make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
-    - make -C tmp/hardware-wallet emulator
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
     # On GNU/Linux wrap emulator in xvfb graphics context
     - xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true;
     # Run self-tests
