@@ -52,7 +52,6 @@ func (model *PendingTransactionList) getAll() {
 
 	txns, err := model.PEX.GetTxnPool()
 	if err != nil {
-		//display an error in qml app when All is selected
 		logPendingTxn.WithError(err).Warn("Couldn't get txn pool")
 		return
 	}
@@ -66,6 +65,8 @@ func (model *PendingTransactionList) getAll() {
 }
 
 func (model *PendingTransactionList) getMine() {
+	logPendingTxn.Info("Getting txn details")
+
 	wallets := model.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
 		logPendingTxn.WithError(nil).Warn("Couldn't load list of wallets")
