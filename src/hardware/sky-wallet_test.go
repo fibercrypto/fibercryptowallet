@@ -116,3 +116,14 @@ func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
 	// Then
 	require.Equal(t, expectedDevDescription, devDescription)
 }
+
+func TestGetSignerDescriptionShouldFailForUninitializedDevice(t *testing.T) {
+	// Giving
+	sw := SkyWallet{}
+
+	// When
+	devId := sw.GetSignerDescription()
+
+	// Then
+	require.Equal(t, "undefined", devId)
+}
