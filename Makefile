@@ -11,6 +11,11 @@ build:  ## Build FiberCrypto Wallet.
 	@qtdeploy build desktop
 	@echo "Done."
 
+mocks: ## Create all mock files for unit tests
+	mockery -name Devicer -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
+	mockery -name DeviceDriver -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
+
+
 clean: ## Clean project FiberCrypto Wallet.
 	@echo "Cleaning project FiberCrypto Wallet..."
 	rm -rf deploy/
