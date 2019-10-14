@@ -660,7 +660,7 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Label:    label,
 		Seed:     seed,
 		Encrypt:  IsEncrypted,
-		Type:     WalletTypeDeterministic,
+		Type:     WalletTypeBip44,
 		Password: passwordByte,
 	}
 	wltName := wltSrv.newUnicWalletFilename()
