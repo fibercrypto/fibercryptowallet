@@ -4,8 +4,11 @@ import (
 	coin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 )
+
+var logWalletModel = logging.MustGetLogger("Wallet Model")
 
 const (
 	QName = int(qtcore.Qt__UserRole) + iota + 1
@@ -89,15 +92,17 @@ func (m *ModelWallets) insertRows(row int, count int) bool {
 }
 
 func (m *ModelWallets) loadModel() {
+	logWalletsModel.Info("Loading Model")
 	aModels := make([]*ModelAddresses, 0)
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
+		logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
 		return
 	}
 	for wallets.Next() {
 		addresses, err := wallets.Value().GetLoadedAddresses()
 		if err != nil {
-			println(err)
+			logWalletsModel.WithError(nil).Warn("Couldn't get loaded address")
 			return
 		}
 		ma := NewModelAddresses(nil)
@@ -115,16 +120,28 @@ func (m *ModelWallets) loadModel() {
 				to := outputs.Value()
 				qo := NewQOutput(nil)
 				qo.SetOutputID(to.GetId())
-				//TODO: report possible error
-				val, _ := to.GetCoins(coin.Sky)
-				//TODO: report possible error
-				accuracy, _ := util.AltcoinQuotient(coin.Sky)
+				val, err := to.GetCoins(coin.Sky)
+				if err != nil {
+					logWalletsModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+					continue
+				}
+				accuracy, err := util.AltcoinQuotient(coin.Sky)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+					continue
+				}
 				coins := util.FormatCoins(val, accuracy)
 				qo.SetAddressSky(coins)
-				//TODO: report possible error
-				val, _ = to.GetCoins(coin.CalculatedHour)
-				//TODO: report possible error
-				accuracy, _ = util.AltcoinQuotient(coin.CalculatedHour)
+				val, err = to.GetCoins(coin.CalculatedHour)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CalculatedHour + " coins")
+					continue
+				}
+				accuracy, err = util.AltcoinQuotient(coin.CalculatedHour)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CalculatedHour + " coins quotient")
+					continue
+				}
 				coinsH := util.FormatCoins(val, accuracy)
 				qo.SetAddressCoinHours(coinsH)
 				qOutputs = append(qOutputs, qo)
