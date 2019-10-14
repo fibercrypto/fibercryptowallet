@@ -127,3 +127,16 @@ func TestGetSignerDescriptionShouldFailForUninitializedDevice(t *testing.T) {
 	// Then
 	require.Equal(t, "undefined", devId)
 }
+
+func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
+	// Giving
+	dev := mocks.Devicer{}
+	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
+	sw := NewSkyWallet(&dev)
+
+	// When
+	devId := sw.GetSignerDescription()
+
+	// Then
+	require.Equal(t, "undefined", devId)
+}
