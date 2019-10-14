@@ -140,3 +140,23 @@ func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 	// Then
 	require.Equal(t, "undefined", devId)
 }
+
+func TestGetSignerDescriptionShouldFailForFailResponse(t *testing.T) {
+	// Giving
+	dev := mocks.Devicer{}
+	f := messages.Failure{}
+	fb, err := proto.Marshal(&f)
+	require.Nil(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: fb,
+	}
+	dev.On("GetFeatures").Return(msg, nil)
+	sw := NewSkyWallet(&dev)
+
+	// When
+	devId := sw.GetSignerDescription()
+
+	// Then
+	require.Equal(t, "undefined", devId)
+}
