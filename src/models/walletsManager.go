@@ -24,7 +24,8 @@ type WalletManager struct {
 	wallets             []*QWallet
 	addresseseByWallets map[string][]*QAddress
 	outputsByAddress    map[string][]*QOutput
-	_                   func()                                                                                                                                 `slot:"updateWalletEnv"`
+	altManager          core.AltcoinManager
+	_                   func()                                                                                                                                 `slot:"updateWalletEnvs"`
 	_                   func(wltId, address string)                                                                                                            `slot:"updateOutputs"`
 	_                   func(string)                                                                                                                           `slot:"updateAddresses"`
 	_                   func()                                                                                                                                 `slot:"updateWallets"`
@@ -79,6 +80,7 @@ func (walletM *WalletManager) init() {
 
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
+		walletM.updateWalletEnvs()
 	})
 
 	walletM = walletManager
@@ -99,10 +101,10 @@ func GetWalletManager() *WalletManager {
 }
 func (walletM *WalletManager) updateWalletEnvs() {
 	walletsEnvs := make([]core.WalletEnv, 0)
+
 	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
 	}
-
 	walletM.WalletEnv = walletsEnvs[0]
 }
 
