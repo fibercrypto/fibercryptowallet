@@ -147,7 +147,7 @@ func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
 	if err != nil {
 		return err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	coinSupply, err := c.CoinSupply()
 	if err != nil {
 		return err
@@ -187,7 +187,7 @@ func (ss *SkycoinBlockchainStatus) requestStatusInfo() error {
 	if err != nil {
 		return err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	blocks, err := c.LastBlocks(1)
 
 	if err != nil {
