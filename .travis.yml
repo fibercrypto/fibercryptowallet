@@ -51,6 +51,7 @@ matrix:
   - stage: "Windows"
     os: windows
     install:
+    - make install-linters
     - choco install make -y
     - travis_wait make install-deps-Windows 
     
