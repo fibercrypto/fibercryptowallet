@@ -71,6 +71,7 @@ is_supported_platform() {
     windows/386) found=0 ;;
     linux/amd64) found=0 ;;
     linux/386) found=0 ;;
+    msys_nt-10.0/amd64) found=0 ;;
   esac
   return $found
 }
@@ -174,7 +175,7 @@ log_crit() {
 uname_os() {
   os=$(uname -s | tr '[:upper:]' '[:lower:]')
   case "$os" in
-    msys_nt) os="windows" ;;
+    msys_nt*) os="windows" ;;
   esac
   echo "$os"
 }
@@ -355,6 +356,7 @@ PREFIX="$OWNER/$REPO"
 log_prefix() {
 	echo "$PREFIX"
 }
+
 PLATFORM="${OS}/${ARCH}"
 GITHUB_DOWNLOAD=https://github.com/${OWNER}/${REPO}/releases/download
 
