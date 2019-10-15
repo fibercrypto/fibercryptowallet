@@ -135,7 +135,7 @@ func (ps *PoolSection) Put(obj interface{}) {
 func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 	return &MultiConnectionsPool{
 		capacity: capacity,
-		sections: make(map[string]*PoolSection, 0),
+		sections: make(map[string]*PoolSection),
 	}
 }
 func GetMultiPool() MultiPool {

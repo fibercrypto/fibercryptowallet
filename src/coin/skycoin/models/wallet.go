@@ -140,7 +140,10 @@ func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordR
 		return
 	}
 	defer ReturnSkycoinClient(c)
-	password, _ := pwd("Insert password")
+	password, err := pwd("Insert password")
+	if err != nil {
+		return
+	}
 	_, err = c.EncryptWallet(walletName, password)
 	if err != nil {
 		return
@@ -153,7 +156,10 @@ func (wltSrv *SkycoinRemoteWallet) Decrypt(walletName string, pwd core.PasswordR
 		return
 	}
 	defer ReturnSkycoinClient(c)
-	password, _ := pwd("Insert password")
+	password, err := pwd("Insert password")
+	if err != nil {
+		return
+	}
 	_, err = c.DecryptWallet(walletName, password)
 	if err != nil {
 		return
@@ -190,7 +196,10 @@ func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
 func NewWalletNode(nodeAddress string) *WalletNode {
 
 	pool := core.GetMultiPool()
-	sections, _ := pool.ListSections()
+	sections, err := pool.ListSections()
+	if err != nil {
+		return nil
+	}
 	cont := 1
 	var sect string
 	for {
@@ -208,7 +217,10 @@ func NewWalletNode(nodeAddress string) *WalletNode {
 		}
 	}
 
-	pool.CreateSection(sect, NewSkycoinConnectionFactory(nodeAddress))
+	err = pool.CreateSection(sect, NewSkycoinConnectionFactory(nodeAddress))
+	if err != nil {
+		return nil
+	}
 	return &WalletNode{
 		NodeAddress: nodeAddress,
 		poolSection: sect,
@@ -345,7 +357,10 @@ func (wlt *RemoteWallet) SetLabel(name string) {
 		return
 	}
 	defer ReturnSkycoinClient(c)
-	_ = c.UpdateWallet(wlt.Id, name)
+	err = c.UpdateWallet(wlt.Id, name)
+	if err != nil {
+		return
+	}
 }
 
 func (wlt *RemoteWallet) GetId() string {
@@ -517,7 +532,10 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 		return nil
 	}
 	defer ReturnSkycoinClient(c)
-	password, _ := pwd("Insert password")
+	password, err := pwd("Insert password")
+	if err != nil {
+		return nil
+	}
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
 		return nil

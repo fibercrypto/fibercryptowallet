@@ -76,7 +76,10 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 	}
 	defer ReturnSkycoinClient(c)
 	transactions := make([]core.Transaction, 0)
-	txn, _ := c.TransactionsVerbose([]string{addr.String()})
+	txn, err := c.TransactionsVerbose([]string{addr.String()})
+	if err != nil {
+		return nil
+	}
 
 	for _, tx := range txn {
 		st := core.TXN_STATUS_PENDING

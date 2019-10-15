@@ -279,7 +279,10 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 		return 0
 	}
 	defer ReturnSkycoinClient(c)
-	txnU, _ := c.Transaction(txn.skyTxn.Hash)
+	txnU, err := c.Transaction(txn.skyTxn.Hash)
+	if err != nil {
+		return 0
+	}
 	if txnU.Status.Confirmed {
 		txn.status = core.TXN_STATUS_CONFIRMED
 		return txn.status

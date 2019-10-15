@@ -63,6 +63,7 @@ type SkycoinApiClient struct {
 	pool core.MultiPoolSection
 }
 
+// nolint megacheck TODO: This functions is not used
 func (sc *SkycoinApiClient) returnToPool() {
 	sc.pool.Put(sc.Client)
 }
@@ -78,7 +79,6 @@ func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
 
 	if err != nil {
 		for _, ok := err.(core.NotAvailableObjectsError); ok; _, ok = err.(core.NotAvailableObjectsError) {
-			obj = pool.Get()
 			if err == nil {
 				break
 			}
