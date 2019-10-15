@@ -53,10 +53,8 @@ matrix:
     install:
     - choco install make -y
     - travis_wait make install-deps-Windows 
-    - make install-linters
     
     script:
-    - make lint
     - make build
     - make test 
 
