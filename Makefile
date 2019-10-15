@@ -37,7 +37,7 @@ install-deps-Windows: ## Install Windowns dependencies
 	qtsetup -test=false -ErrorAction SilentlyContinue 
 	go get -t -d -v ./...
 
-install-deps: install-deps-$(UNAME_S) ## 
+install-deps: install-deps-$(UNAME_S) install-linters ## 
 	@echo "Dependencies installed"
 
 build-docker: ## Build project using docker
