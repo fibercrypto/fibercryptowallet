@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/cli"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/util/droplet"
 	"github.com/skycoin/skycoin/src/wallet"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
@@ -95,7 +95,7 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 
 }
 func (addr *SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
-	return nil,nil
+	return nil, nil
 }
 
 func (wlt *RemoteWallet) GetBalance(ticker string) (uint64, error) {
@@ -196,6 +196,9 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 	}
 
 	bl, err := getBalanceOfAddresses(outs, addrs)
+	if err != nil {
+		return 0, err
+	}
 
 	if ticker == Sky {
 		flSky, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)

@@ -75,7 +75,7 @@ type SkycoinBlockchainInfo struct {
 }
 
 type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
-	lastTimeStatusRequested uint64
+	lastTimeStatusRequested uint64 //nolint structcheck TODO: Not used
 	lastTimeSupplyRequested uint64
 	CacheTime               uint64
 	cachedStatus            *SkycoinBlockchainInfo

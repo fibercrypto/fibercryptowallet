@@ -94,13 +94,13 @@ func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
 func (mp *MultiConnectionsPool) Return(poolSection string, obj PooledObject) error {
 	mutex, ok := mp.mutexs[poolSection]
 	if !ok {
-		return errors.New(fmt.Sprintf("There is not exist %s poolSection", poolSection))
+		return fmt.Errorf("There is not exist %s poolSection", poolSection)
 	}
 	mutex.Lock()
 	defer mutex.Unlock()
 	index := findIndex(mp.inUse[poolSection], obj)
 	if index == -1 {
-		return errors.New(fmt.Sprintf("That object is no from this pool"))
+		return fmt.Errorf("That object is no from this pool")
 	}
 	mp.available[poolSection] = append(mp.available[poolSection], obj)
 	mp.inUse[poolSection] = append(mp.inUse[poolSection][:index], mp.inUse[poolSection][index+1:]...)

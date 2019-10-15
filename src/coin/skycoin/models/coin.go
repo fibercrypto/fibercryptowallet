@@ -5,12 +5,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/skycoin/skycoin/src/cipher"
-	"github.com/skycoin/skycoin/src/visor"
-	"github.com/skycoin/skycoin/src/coin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/skycoin/skycoin/src/cipher"
+	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
+	"github.com/skycoin/skycoin/src/visor"
 )
 
 /*
@@ -279,7 +279,10 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 		return 0
 	}
 	defer core.GetMultiPool().Return(PoolSection, c)
-	txnU, _ := c.Transaction(txn.skyTxn.Hash)
+	txnU, err := c.Transaction(txn.skyTxn.Hash)
+	if err != nil {
+		return 0
+	}
 	if txnU.Status.Confirmed {
 		txn.status = core.TXN_STATUS_CONFIRMED
 		return txn.status
@@ -417,7 +420,10 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 		if err != nil {
 			return nil
 		}
-		skyAccuracy, _ := util.AltcoinQuotient("SKY")
+		skyAccuracy, err := util.AltcoinQuotient("SKY")
+		if err != nil {
+			return nil
+		}
 
 		skyOut := &SkycoinTransactionOutput{
 			skyOut: readable.TransactionOutput{

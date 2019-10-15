@@ -81,9 +81,8 @@ install-linters: ## Install linters
 	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.10.2
 
 lint: ## Run linters. Use make install-linters first.
-	# vendorcheck ./...
 	# src needs separate linting rules
-#	golangci-lint run -c .golangci.yml ./src/...
+	golangci-lint run -c .golangci.yml ./src/...
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
