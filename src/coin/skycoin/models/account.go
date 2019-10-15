@@ -19,7 +19,7 @@ func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	bl, err := c.Balance([]string{addr.address})
 
 	if err != nil {
@@ -43,7 +43,7 @@ func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator 
 		println(err.Error())
 		return nil
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
 		println(err.Error())
@@ -74,7 +74,7 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 	if err != nil {
 		return nil
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	transactions := make([]core.Transaction, 0)
 	txn, _ := c.TransactionsVerbose([]string{addr.String()})
 
@@ -103,7 +103,7 @@ func (wlt *RemoteWallet) GetBalance(ticker string) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, c)
+	defer ReturnSkycoinClient(c)
 	bl, err := c.WalletBalance(wlt.Id)
 
 	if err != nil {
@@ -160,7 +160,7 @@ func (wlt *RemoteWallet) ListPendingTransactions() (core.TransactionIterator, er
 	if err != nil {
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
 	if err2 != nil {
 		return nil, err2
@@ -188,7 +188,7 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 	if err != nil {
 		return 0, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	outs, err := c.OutputsForAddresses(addrs)
 
 	if err != nil {
@@ -266,7 +266,7 @@ func (wlt *LocalWallet) ListPendingTransactions() (core.TransactionIterator, err
 	if err != nil {
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
 	if err2 != nil {
 		return nil, err2

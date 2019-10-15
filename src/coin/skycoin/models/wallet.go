@@ -75,10 +75,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	if err != nil {
 		return nil
 	}
-	err = core.GetMultiPool().Return(wltSrv.poolSection, c)
-	if err != nil {
-		return nil
-	}
+	defer ReturnSkycoinClient(c)
 
 	wlts, err := c.Wallets()
 	if err != nil {
@@ -100,10 +97,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 	if err != nil {
 		return nil, err
 	}
-	err = core.GetMultiPool().Return(wltSrv.poolSection, c)
-	if err != nil {
-		return nil, err
-	}
+	defer ReturnSkycoinClient(c)
 	if IsEncrypted {
 		password, err := pwd("Enter your password")
 		if err != nil {
@@ -145,14 +139,8 @@ func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordR
 	if err != nil {
 		return
 	}
-	err = core.GetMultiPool().Return(wltSrv.poolSection, c)
-	if err != nil {
-		return
-	}
-	password, err := pwd("Insert password")
-	if err != nil {
-		return
-	}
+	defer ReturnSkycoinClient(c)
+	password, _ := pwd("Insert password")
 	_, err = c.EncryptWallet(walletName, password)
 	if err != nil {
 		return
@@ -164,14 +152,8 @@ func (wltSrv *SkycoinRemoteWallet) Decrypt(walletName string, pwd core.PasswordR
 	if err != nil {
 		return
 	}
-	err = core.GetMultiPool().Return(wltSrv.poolSection, c)
-	if err != nil {
-		return
-	}
-	password, err := pwd("Insert password")
-	if err != nil {
-		return
-	}
+	defer ReturnSkycoinClient(c)
+	password, _ := pwd("Insert password")
 	_, err = c.DecryptWallet(walletName, password)
 	if err != nil {
 		return
@@ -183,10 +165,7 @@ func (wltSrv *SkycoinRemoteWallet) IsEncrypted(walletName string) (bool, error) 
 	if err != nil {
 		return false, err
 	}
-	err = core.GetMultiPool().Return(wltSrv.poolSection, c)
-	if err != nil {
-		return false, err
-	}
+	defer ReturnSkycoinClient(c)
 	wlt, err := c.Wallet(walletName)
 	if err != nil {
 		return false, err
@@ -198,10 +177,7 @@ func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
 	if err != nil {
 		return nil
 	}
-	err = core.GetMultiPool().Return(wltSrv.poolSection, c)
-	if err != nil {
-		return nil
-	}
+	defer ReturnSkycoinClient(c)
 	wltR, err := c.Wallet(id)
 	if err != nil {
 		return nil
@@ -214,7 +190,7 @@ func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
 func NewWalletNode(nodeAddress string) *WalletNode {
 
 	pool := core.GetMultiPool()
-	sections := pool.ListSections()
+	sections, _ := pool.ListSections()
 	cont := 1
 	var sect string
 	for {
@@ -312,10 +288,7 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, source string, pwd core.Pass
 		logrus.Warn(err)
 		return nil, err
 	}
-	err = core.GetMultiPool().Return(PoolSection, client)
-	if err != nil {
-		return nil, err
-	}
+	defer ReturnSkycoinClient(client)
 	unInjectedTransaction, ok := txn.(*SkycoinUninjectedTransaction)
 	if !ok {
 		logrus.Warn(err)
@@ -371,15 +344,8 @@ func (wlt *RemoteWallet) SetLabel(name string) {
 	if err != nil {
 		return
 	}
-
-	err = core.GetMultiPool().Return(wlt.poolSection, c)
-	if err != nil {
-		return
-	}
-	err = c.UpdateWallet(wlt.Id, name)
-	if err != nil {
-		return
-	}
+	defer ReturnSkycoinClient(c)
+	_ = c.UpdateWallet(wlt.Id, name)
 }
 
 func (wlt *RemoteWallet) GetId() string {
@@ -402,10 +368,7 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 		if err != nil {
 			return nil, err
 		}
-		err = core.GetMultiPool().Return(wlt.poolSection, client)
-		if err != nil {
-			return nil, err
-		}
+		defer ReturnSkycoinClient(client)
 
 		txnResponse, err := client.WalletCreateTransaction(req)
 		if err != nil {
@@ -512,10 +475,7 @@ func (wlt RemoteWallet) SendFromAddress(from []core.Address, to []core.Transacti
 		if err != nil {
 			return nil, err
 		}
-		err = core.GetMultiPool().Return(wlt.poolSection, client)
-		if err != nil {
-			return nil, err
-		}
+		defer ReturnSkycoinClient(client)
 
 		txnResponse, err := client.WalletCreateTransaction(req)
 		if err != nil {
@@ -538,10 +498,7 @@ func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change cor
 		if err != nil {
 			return nil, err
 		}
-		err = core.GetMultiPool().Return(wlt.poolSection, client)
-		if err != nil {
-			return nil, err
-		}
+		defer ReturnSkycoinClient(client)
 
 		txnResponse, err := client.WalletCreateTransaction(req)
 		if err != nil {
@@ -559,14 +516,8 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 	if err != nil {
 		return nil
 	}
-	err = core.GetMultiPool().Return(wlt.poolSection, c)
-	if err != nil {
-		return nil
-	}
-	password, err := pwd("Insert password")
-	if err != nil {
-		return nil
-	}
+	defer ReturnSkycoinClient(c)
+	password, _ := pwd("Insert password")
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
 		return nil
@@ -600,10 +551,7 @@ func (wlt *RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	if err != nil {
 		return nil, err
 	}
-	err = core.GetMultiPool().Return(wlt.poolSection, c)
-	if err != nil {
-		return nil, err
-	}
+	defer ReturnSkycoinClient(c)
 	wltR, err := c.Wallet(wlt.Id)
 	if err != nil {
 		return nil, err
@@ -836,10 +784,7 @@ func (tf *TransactionFinder) AddressesActivity(addresses []cipher.Address) ([]bo
 	if err != nil {
 		return nil, err
 	}
-	err = core.GetMultiPool().Return(PoolSection, c)
-	if err != nil {
-		return nil, err
-	}
+	defer ReturnSkycoinClient(c)
 
 	for i := 0; i < len(addrs); i++ {
 		txn, err := c.Transactions([]string{addrs[i]})
@@ -867,10 +812,7 @@ func (wlt LocalWallet) Sign(Txn core.Transaction, source string, pwd core.Passwo
 	if err != nil {
 		return nil, err
 	}
-	err = core.GetMultiPool().Return(PoolSection, clt)
-	if err != nil {
-		return nil, err
-	}
+	defer ReturnSkycoinClient(clt)
 
 	unTxn, ok := Txn.(*SkycoinUninjectedTransaction)
 	if !ok {
@@ -995,10 +937,7 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 		if err != nil {
 			return nil, err
 		}
-		err = core.GetMultiPool().Return(PoolSection, client)
-		if err != nil {
-			return nil, err
-		}
+		defer ReturnSkycoinClient(client)
 		txnR, err := client.CreateTransaction(*txnReq)
 		if err != nil {
 			return nil, err
@@ -1016,10 +955,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 		if err != nil {
 			return nil, err
 		}
-		err = core.GetMultiPool().Return(PoolSection, client)
-		if err != nil {
-			return nil, err
-		}
+		defer ReturnSkycoinClient(client)
 		txnR, err := client.CreateTransaction(*txnReq)
 		if err != nil {
 			return nil, err
@@ -1037,10 +973,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 		if err != nil {
 			return nil, err
 		}
-		err = core.GetMultiPool().Return(PoolSection, client)
-		if err != nil {
-			return nil, err
-		}
+		defer ReturnSkycoinClient(client)
 		txnR, err := client.CreateTransaction(*txnReq)
 		if err != nil {
 			return nil, err
