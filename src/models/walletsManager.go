@@ -6,7 +6,6 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/therecipe/qt/qml"
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
@@ -494,8 +493,10 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 
 func (walletM *WalletManager) getWallets() []*QWallet {
 	logWalletManager.Info("Getting wallets")
-
 	qWallets := make([]*QWallet, 0)
+	if walletM.WalletEnv == nil {
+		walletM.UpdateWalletEnvs()
+	}
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 
 	if it == nil {
@@ -607,14 +608,18 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		return qWallet
 	}
 
-	accuracy, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
+	accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin Altcoin quotient")
 		return qWallet
 	}
 
 	//TODO: report possible error
-	accuracy, _ = util.AltcoinQuotient(params.SkycoinTicker)
+	accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
+	if err != nil {
+		logWalletManager.WithError(err).Error("Couldn't get Skycoin Altcoin quotient")
+		return qWallet
+	}
 	floatBl := float64(bl) / float64(accuracy)
 	qWallet.SetSky(floatBl)
 
@@ -623,7 +628,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours balance")
 		return qWallet
 	}
-	accuracy, _ = util.AltcoinQuotient(params.SkycoinTicker)
+	accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours Altcoin quotient")
 		return qWallet
