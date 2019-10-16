@@ -140,7 +140,6 @@ linters-settings:
 
 linters:
   enable:
-    - goimports
     - varcheck
     - unparam
     - structcheck
