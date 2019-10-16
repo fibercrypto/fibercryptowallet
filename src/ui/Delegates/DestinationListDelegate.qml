@@ -4,21 +4,20 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
+// import "qrc:/ui/src/ui/Controls"
 import "../" // For quick UI development, switch back to resources when making a release
+import "../Controls"
 
 Item {
     id: root
 
     signal qrCodeRequested(var data)
-    Component.onCompleted: {
-        root.qrCodeRequested.connect(genQR)
-    }
 
-    function genQR(data) {
+    onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
-
     }
+
     clip: true
 
     RowLayout {
@@ -45,32 +44,40 @@ Item {
                     qrCodeRequested(address)
                 }
             }
+
             TextField {
                 id: textFieldDestinationAddress
                 font.family: "Code New Roman"
                 placeholderText: qsTr("Destination address")
                 text: address
+                selectByMouse: true
                 Layout.fillWidth: true
+                onTextChanged: address = text
             }
-        }
+        } // RowLayout
+
         RowLayout {
             TextField {
                 id: textFieldDestinationAmount
+                onTextChanged: sky = text
                 text: sky
+                selectByMouse: true
                 implicitWidth: 60
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
                 }
             }
-            Label {
-                text: qsTr("SKY")
-            }
+            Label { text: qsTr("SKY") }
         }
+
         RowLayout {
             visible: !checkBoxAutomaticCoinHoursAllocation.checked
+
             TextField {
                 id: textFieldCoinHoursAmount
+                onTextChanged: coinHours = text
                 text: coinHours
+                selectByMouse: true
                 implicitWidth: 60
                 validator: DoubleValidator {
                     notation: DoubleValidator.StandardNotation
@@ -79,7 +86,8 @@ Item {
             Label {
                 text: qsTr("Coin hours")
             }
-        }
+        } // RowLayout
+
         ToolButton {
             id: toolButtonAddRemoveDestination
             // The 'accent' attribute is used for button highlighting
@@ -91,11 +99,11 @@ Item {
 
             onClicked: {
                 if (index === 0) {
-                    listModelDestinations.append( { "address": "", "sky": 0.0, "coinHours": 0.0 } )
+                    listModelDestinations.append( { "address": "", "sky": "0.0", "coinHours": "0.0" } )
                 } else {
                     listModelDestinations.remove(index)
                 }
             }
-        }
+        } // ToolButton
     } // RowLayout (rootLayout)
 }

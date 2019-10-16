@@ -8,7 +8,7 @@ import (
 
 type NetworkingManager struct {
 	qtcore.QObject
-	Networks core.NetworkSet
+	Networks core.PexNodeSet
 	_        func()                `constructor:"init"`
 	_        func() []*QNetworking `slot:"getNetworks"`
 }
@@ -22,7 +22,7 @@ func (net *NetworkingManager) init() {
 func (net *NetworkingManager) getNetworks() []*QNetworking {
 	networks := make([]*QNetworking, 0)
 
-	netIterator := net.Networks.ListNetworks()
+	netIterator := net.Networks.ListPeers()
 
 	for netIterator.Next() {
 

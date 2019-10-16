@@ -1,6 +1,8 @@
-package skycoin
+package skycoin //nolint goimports
 
 import (
+	"errors"
+
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -16,23 +18,23 @@ type SkyFiberPlugin struct {
 func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 	return []core.AltcoinMetadata{
 		core.AltcoinMetadata{
-			Name:     SkycoinName,
-			Ticker:   SkycoinTicker,
-			Family:   SkycoinFamily,
+			Name:     params.SkycoinName,
+			Ticker:   params.SkycoinTicker,
+			Family:   params.SkycoinFamily,
 			HasBip44: false,
 			Accuracy: 6,
 		},
 		core.AltcoinMetadata{
-			Name:     CoinHoursName,
-			Ticker:   CoinHoursTicker,
-			Family:   CoinHoursFamily,
+			Name:     params.CoinHoursName,
+			Ticker:   params.CoinHoursTicker,
+			Family:   params.CoinHoursFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
 		core.AltcoinMetadata{
-			Name:     CalculatedHoursName,
-			Ticker:   CalculatedHoursTicker,
-			Family:   CalculatedHoursFamily,
+			Name:     params.CalculatedHoursName,
+			Ticker:   params.CalculatedHoursTicker,
+			Family:   params.CalculatedHoursFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
@@ -40,7 +42,7 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 }
 
 func (p *SkyFiberPlugin) ListSupportedFamilies() []string {
-	return []string{SkycoinFamily}
+	return []string{params.SkycoinFamily}
 }
 
 func (p *SkyFiberPlugin) RegisterTo(manager core.AltcoinManager) {
@@ -78,6 +80,16 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 	return wltEnvs
 }
 
+func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
+	var poolSection string
+	if netType == "MainNet" {
+		poolSection = sky.PoolSection
+	} else {
+		return nil, errors.New("Invalid netType")
+	}
+	return sky.NewSkycoinPEX(poolSection), nil
+
+}
 func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 	return &SkyFiberPlugin{
 		Params: params,
@@ -86,6 +98,9 @@ func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 
 func init() {
 	cf := local.GetConfigManager()
-	core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(cf.GetNode()))
-	util.RegisterAltcoin(NewSkyFiberPlugin(SkycoinMainNetParams))
+	err := core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(cf.GetNode()))
+	if err != nil {
+		return
+	}
+	util.RegisterAltcoin(NewSkyFiberPlugin(params.SkycoinMainNetParams))
 }
