@@ -1,4 +1,4 @@
-package skycoin
+package skycoin //nolint goimports
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 		log.WithError(err).Error("Couldn't get API client")
 		return 0, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	log.Info("POST /api/v1/balance?addrs=xxx")
 	bl, err := c.Balance([]string{addr.address})
 	if err != nil {
@@ -48,7 +48,7 @@ func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator 
 		log.WithError(err).Error("Couldn't get API client")
 		return nil
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	log.Info("POST /api/v1/outputs?addrs=xxx")
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
@@ -81,12 +81,12 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 		log.WithError(err).Error("Couldn't get API client")
 		return nil
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	transactions := make([]core.Transaction, 0)
-	log.Info("POST /api/v1/transactions?verbose=1")
 	txn, err := c.TransactionsVerbose([]string{addr.String()})
 	if err != nil {
 		log.WithError(err).WithField("addrs", addr.String()).Error("Couldn't POST /api/v1/transactions?verbose=1")
+		return nil
 	}
 
 	for _, tx := range txn {
@@ -115,7 +115,7 @@ func (wlt *RemoteWallet) GetBalance(ticker string) (uint64, error) {
 		log.WithError(err).Error("Couldn't get API client")
 		return 0, err
 	}
-	defer core.GetMultiPool().Return(wlt.poolSection, c)
+	defer ReturnSkycoinClient(c)
 	log.Info("GET /api/v1/wallet/balance")
 	bl, err := c.WalletBalance(wlt.Id)
 	if err != nil {
@@ -178,7 +178,7 @@ func (wlt *RemoteWallet) ListPendingTransactions() (core.TransactionIterator, er
 		log.WithError(err).Error("Couldn't get API client")
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	log.Info("GET /api/v1/wallet/transactions&verbose=1")
 	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
 	if err2 != nil {
@@ -211,7 +211,7 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 		log.WithError(err).Error("Couldn't get API client")
 		return 0, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	log.Info("POST /api/v1/outputs?addrs=xxx")
 	outs, err := c.OutputsForAddresses(addrs)
 	if err != nil {
@@ -222,6 +222,7 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 	bl, err := getBalanceOfAddresses(outs, addrs)
 	if err != nil {
 		log.WithError(err).Warn("getBalanceOfAddresses(outs, addrs) failed")
+		return 0, err
 	}
 
 	if ticker == Sky {
@@ -298,7 +299,7 @@ func (wlt *LocalWallet) ListPendingTransactions() (core.TransactionIterator, err
 		log.WithError(err).Error("Couldn't get API client")
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	log.Info("GET /api/v1/wallet/transactions&verbose=1")
 	response, err2 := c.WalletUnconfirmedTransactionsVerbose(wlt.GetId())
 	if err2 != nil {

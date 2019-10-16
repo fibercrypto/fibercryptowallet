@@ -27,10 +27,7 @@ func (it *SkycoinPexNodeIterator) Next() bool {
 }
 
 func (it *SkycoinPexNodeIterator) HasNext() bool {
-	if (it.current + 1) >= len(it.networks) {
-		return false
-	}
-	return true
+	return !((it.current + 1) >= len(it.networks))
 }
 
 func NewSkycoinPexNodeIterator(network []core.PexNode) *SkycoinPexNodeIterator {

@@ -1,4 +1,4 @@
-package skycoin
+package skycoin //nolint goimports
 
 import (
 	"errors"
@@ -22,23 +22,23 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 	logFiberPlugin.Info("Listing supported Altcoin's for SkyFiber plugin")
 	return []core.AltcoinMetadata{
 		core.AltcoinMetadata{
-			Name:     SkycoinName,
-			Ticker:   SkycoinTicker,
-			Family:   SkycoinFamily,
+			Name:     params.SkycoinName,
+			Ticker:   params.SkycoinTicker,
+			Family:   params.SkycoinFamily,
 			HasBip44: false,
 			Accuracy: 6,
 		},
 		core.AltcoinMetadata{
-			Name:     CoinHoursName,
-			Ticker:   CoinHoursTicker,
-			Family:   CoinHoursFamily,
+			Name:     params.CoinHoursName,
+			Ticker:   params.CoinHoursTicker,
+			Family:   params.CoinHoursFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
 		core.AltcoinMetadata{
-			Name:     CalculatedHoursName,
-			Ticker:   CalculatedHoursTicker,
-			Family:   CalculatedHoursFamily,
+			Name:     params.CalculatedHoursName,
+			Ticker:   params.CalculatedHoursTicker,
+			Family:   params.CalculatedHoursFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
@@ -47,7 +47,7 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 
 func (p *SkyFiberPlugin) ListSupportedFamilies() []string {
 	logFiberPlugin.Info("Listing supported families for SkyFiber plugin")
-	return []string{SkycoinFamily}
+	return []string{params.SkycoinFamily}
 }
 
 func (p *SkyFiberPlugin) RegisterTo(manager core.AltcoinManager) {
@@ -107,6 +107,9 @@ func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 
 func init() {
 	cf := local.GetConfigManager()
-	core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(cf.GetNode()))
-	util.RegisterAltcoin(NewSkyFiberPlugin(SkycoinMainNetParams))
+	err := core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(cf.GetNode()))
+	if err != nil {
+		return
+	}
+	util.RegisterAltcoin(NewSkyFiberPlugin(params.SkycoinMainNetParams))
 }

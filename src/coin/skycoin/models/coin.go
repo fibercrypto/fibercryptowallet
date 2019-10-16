@@ -302,8 +302,11 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 	if err != nil {
 		return 0
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
-	txnU, _ := c.Transaction(txn.skyTxn.Hash)
+	defer ReturnSkycoinClient(c)
+	txnU, err := c.Transaction(txn.skyTxn.Hash)
+	if err != nil {
+		return 0
+	}
 	if txnU.Status.Confirmed {
 		txn.status = core.TXN_STATUS_CONFIRMED
 		return txn.status
@@ -359,7 +362,7 @@ func getSkycoinTransactionInputsFromTxnHash(hash string) ([]core.TransactionInpu
 	if err != nil {
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	transaction, err := c.TransactionVerbose(hash)
 	if err != nil {
 		return nil, err
@@ -381,7 +384,7 @@ func getSkycoinTransactionInputsFromInputsHashes(inputsHashes []cipher.SHA256) (
 	if err != nil {
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 
 	for _, in := range inputsHashes {
 		ux, err := c.UxOut(in.String())
@@ -445,12 +448,15 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 		if err != nil {
 			return nil
 		}
-		defer core.GetMultiPool().Return(PoolSection, c)
+		defer ReturnSkycoinClient(c)
 		out, err := c.UxOut(in.skyIn.Hash)
 		if err != nil {
 			return nil
 		}
-		skyAccuracy, _ := util.AltcoinQuotient("SKY")
+		skyAccuracy, err := util.AltcoinQuotient("SKY")
+		if err != nil {
+			return nil
+		}
 
 		skyOut := &SkycoinTransactionOutput{
 			skyOut: readable.TransactionOutput{
@@ -566,7 +572,7 @@ func (out *SkycoinTransactionOutput) IsSpent() bool {
 	if err != nil {
 		return true
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 	ou, err := c.UxOut(out.skyOut.Hash)
 	if err != nil {
 		return false

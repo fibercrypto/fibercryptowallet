@@ -85,7 +85,7 @@ type SkycoinBlockchainInfo struct {
 }
 
 type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
-	lastTimeStatusRequested uint64
+	lastTimeStatusRequested uint64 //nolint structcheck TODO: Not used
 	lastTimeSupplyRequested uint64
 	CacheTime               uint64
 	cachedStatus            *SkycoinBlockchainInfo
@@ -163,7 +163,7 @@ func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
 		logBlockchain.WithError(err).Warn("Couldn't load client")
 		return err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 
 	logBlockchain.Info("GET /api/v1/coinSupply")
 	coinSupply, err := c.CoinSupply()
@@ -213,7 +213,7 @@ func (ss *SkycoinBlockchainStatus) requestStatusInfo() error {
 		logBlockchain.WithError(err).Warn("Couldn't load client")
 		return err
 	}
-	defer core.GetMultiPool().Return(PoolSection, c)
+	defer ReturnSkycoinClient(c)
 
 	logBlockchain.Info("GET /api/v1/last_blocks")
 	blocks, err := c.LastBlocks(1)

@@ -268,7 +268,6 @@ Page {
 
                         onCheckedChanged:{
                             if (checked){
-                                console.log(comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length)
                                 if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length > 1){
                                     listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
                                 } else{
@@ -278,18 +277,13 @@ Page {
                             } else{
                                 listOutputs.removeOutputsFromAddress(text)
                                 if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length == 0){
-                                    console.log("HERE")
                                     var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
                                     for (var i = 0; i < indexs.length; i++){
-                                        console.log("TAKE -> "+indexs[i])
-                                        console.log(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
-                                        console.log(comboBoxWalletsSendFrom.model.wallets[indexs[i]].name)
-                                        console.log(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
                                         listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
                                     }
                                 }
                             }
-                            //console.log("SDFDSFS")
+                            
                         }
                     } // CheckDelegate
                 } // Item (delegate)
