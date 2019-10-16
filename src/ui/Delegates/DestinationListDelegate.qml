@@ -12,15 +12,12 @@ Item {
     id: root
 
     signal qrCodeRequested(var data)
-    Component.onCompleted: {
-        root.qrCodeRequested.connect(genQR)
-    }
 
-    function genQR(data) {
+    onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
-
     }
+
 
     implicitHeight: rootLayout.height
     clip: true
@@ -49,6 +46,7 @@ Item {
                     qrCodeRequested(address)
                 }
             }
+
             TextField {
                 id: textFieldDestinationAddress
                 font.family: "Code New Roman"
@@ -56,11 +54,14 @@ Item {
                 text: address
                 selectByMouse: true
                 Layout.fillWidth: true
+                onTextChanged: address = text
             }
-        }
+        } // RowLayout
+
         RowLayout {
             TextField {
                 id: textFieldDestinationAmount
+                onTextChanged: sky = text
                 text: sky
                 selectByMouse: true
                 implicitWidth: 60
@@ -68,14 +69,15 @@ Item {
                     notation: DoubleValidator.StandardNotation
                 }
             }
-            Label {
-                text: qsTr("SKY")
-            }
+            Label { text: qsTr("SKY") }
         }
+
         RowLayout {
             visible: !checkBoxAutomaticCoinHoursAllocation.checked
+
             TextField {
                 id: textFieldCoinHoursAmount
+                onTextChanged: coinHours = text
                 text: coinHours
                 selectByMouse: true
                 implicitWidth: 60
@@ -86,7 +88,8 @@ Item {
             Label {
                 text: qsTr("Coin hours")
             }
-        }
+        } // RowLayout
+
         ToolButton {
             id: toolButtonAddRemoveDestination
 
@@ -100,11 +103,12 @@ Item {
 
             onClicked: {
                 if (index === 0) {
-                    listModelDestinations.append( { "address": "", "sky": 0.0, "coinHours": 0.0 } )
+                    listModelDestinations.append( { "address": "", "sky": "0.0", "coinHours": "0.0" } )
                 } else {
                     listModelDestinations.remove(index)
                 }
             }
+
         } // ToolButton (Add/Remove)
     } // RowLayout (rootLayout)
 }

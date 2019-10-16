@@ -93,7 +93,10 @@ func (cm *ConfigManager) EditNode(node string) {
 
 func (cm *ConfigManager) Save() error {
 
-	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
+	jsonFormat, err := json.Marshal(cm.getConfigManagerJson())
+	if err != nil {
+		return err
+	}
 	return ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
 }
 
@@ -168,7 +171,7 @@ func configFileExist() bool {
 func loadConfigFromFile() *ConfigManager {
 	cm := new(configManagerJson)
 	fileDir := getConfigFileDir()
-	dat, err := ioutil.ReadFile(fileDir)
+	dat, err := ioutil.ReadFile(fileDir) //nolint gosec
 
 	if err != nil {
 
@@ -196,11 +199,20 @@ func getDefaultConfigManager() *ConfigManager {
 	cm.node = "https://staging.node.skycoin.net"
 	cm.sourceList = []*WalletSource{getDefaultWalletSource()}
 
-	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
+	jsonFormat, err := json.Marshal(cm.getConfigManagerJson())
+	if err != nil {
+		return nil
+	}
 
-	os.MkdirAll(filepath.Dir(getConfigFileDir()), 0755)
+	err = os.MkdirAll(filepath.Dir(getConfigFileDir()), 0750)
+	if err != nil {
+		return nil
+	}
 
-	ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
+	err = ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
+	if err != nil {
+		return nil
+	}
 
 	return cm
 

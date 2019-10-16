@@ -26,12 +26,8 @@ ItemDelegate {
     property QAddressList modelOutputs: outputs
     
     signal qrCodeRequested(var data)
-
-    Component.onCompleted: {
-        root.qrCodeRequested.connect(genQR)
-    }
-
-    function genQR(data) {
+    
+    onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
     }

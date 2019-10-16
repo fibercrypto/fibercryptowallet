@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
 import "../"
+
 Item {
     id: root
 
@@ -11,11 +12,9 @@ Item {
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
     
-
     clip: true
     width: 300
     height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
-    
     
     ColumnLayout {
         id: columnLayout
@@ -47,11 +46,11 @@ Item {
 
             contentItem: Label {
                 leftPadding: checkDelegate.indicator.width + checkDelegate.spacing
-                text: checkDelegate.text
                 verticalAlignment: Qt.AlignVCenter
+                text: checkDelegate.text
                 color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
             }
-        }
+        } // CheckDelegate
 
         ListView {
             id: listViewFilterAddress
@@ -60,6 +59,13 @@ Item {
             property int checkedDelegates: 0
             property bool allChecked: false
 
+            model: 5//listAddresses
+            
+            Layout.fillWidth: true
+            height: contentHeight
+            interactive: false
+
+
             onCheckedDelegatesChanged: {
                 if (checkedDelegates === 0) {
                     checkDelegate.checkState = Qt.Unchecked
@@ -67,6 +73,7 @@ Item {
                     checkDelegate.checkState = Qt.Checked
                 } else {
                     checkDelegate.checkState = Qt.PartiallyChecked
+
                 }
             }
 
@@ -89,8 +96,8 @@ Item {
             height: contentItem.height
 
             delegate: HistoryFilterListAddressDelegate {
-                leftPadding: 20
-                scale: 0.85
+                // BUG: Checking the wallet does not change the check state of addresses
+                // Is `checked: marked` ok? Or it should be the opposite?
                 checked: marked
 
                 onCheckedChanged: {

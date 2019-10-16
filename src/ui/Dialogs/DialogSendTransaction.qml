@@ -11,14 +11,25 @@ Dialog {
     id: dialogSendTransaction
 
     property alias expanded: transactionDetails.expanded
+    property bool showPasswordField: false
+    property string passwordText
 
-    title: qsTr("Password requested")
+    property alias previewDate: transactionDetails.date                    
+    property alias previewType: transactionDetails.type                  
+    property alias previewAmount: transactionDetails.amount              
+    property alias previewHoursReceived: transactionDetails.hoursReceived
+    property alias previewHoursBurned: transactionDetails.hoursBurned    
+    property alias previewtransactionID: transactionDetails.transactionID
+    property alias inputs : transactionDetails.modelInputs
+    property alias outputs : transactionDetails.modelOutputs
+
+    title: qsTr("Confirm transaction")
     standardButtons: Dialog.Ok | Dialog.Cancel
 
     onOpened: {
         forceActiveFocus()
         passwordRequester.forceTextFocus()
-        standardButton(Dialog.Ok).enabled = passwordRequester.text !== ""
+        standardButton(Dialog.Ok).enabled = passwordRequester.text !== "" || !showPasswordField
     }
 
     onClosed: {
@@ -39,15 +50,6 @@ Dialog {
             TransactionDetails {
                 id: transactionDetails
 
-                // EXAMPLE
-                date: "2019-02-26 15:27"
-                status: TransactionDetails.Status.Preview
-                type: TransactionDetails.Type.Receive
-                amount: 10
-                hoursReceived: 16957
-                hoursBurned: 33901
-                transactionID: "kq7wdkkUT736dnuyQasdhsaDJ9874jk"
-
                 Layout.fillWidth: true
             }
 
@@ -60,7 +62,11 @@ Dialog {
 
             ColumnLayout {
                 id: columnLayoutPasswordField
+
                 Layout.fillWidth: true
+                opacity: showPasswordField ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation {} }
+                visible: opacity > 0
 
                 Label {
                     text: qsTr("Enter the password to confirm the transaction")
@@ -74,7 +80,8 @@ Dialog {
                     Layout.fillWidth: true
 
                     onTextChanged: {
-                        dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== ""
+                        dialogSendTransaction.standardButton(Dialog.Ok).enabled = text !== "" || !showPasswordField
+						passwordText = text
                     }
                 }
             } // ColumnLayout

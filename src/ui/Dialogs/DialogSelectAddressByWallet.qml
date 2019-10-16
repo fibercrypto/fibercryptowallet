@@ -17,6 +17,7 @@ Dialog {
     padding: 0
     standardButtons: Dialog.Cancel
 
+    closePolicy: Dialog.CloseOnPressOutside
     onAboutToShow: {
         textFieldFilterWallet.forceActiveFocus()
     }
