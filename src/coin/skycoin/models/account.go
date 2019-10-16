@@ -1,4 +1,4 @@
-package skycoin
+package skycoin //nolint goimports
 
 import (
 	"fmt"
@@ -76,7 +76,10 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 	}
 	defer ReturnSkycoinClient(c)
 	transactions := make([]core.Transaction, 0)
-	txn, _ := c.TransactionsVerbose([]string{addr.String()})
+	txn, err := c.TransactionsVerbose([]string{addr.String()})
+	if err != nil {
+		return nil
+	}
 
 	for _, tx := range txn {
 		st := core.TXN_STATUS_PENDING
@@ -196,6 +199,9 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 	}
 
 	bl, err := getBalanceOfAddresses(outs, addrs)
+	if err != nil {
+		return 0, err
+	}
 
 	if ticker == Sky {
 		flSky, err := strconv.ParseFloat(bl.Confirmed.Coins, 64)

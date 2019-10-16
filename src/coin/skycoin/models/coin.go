@@ -279,7 +279,10 @@ func (txn *SkycoinTransaction) GetStatus() core.TransactionStatus {
 		return 0
 	}
 	defer ReturnSkycoinClient(c)
-	txnU, _ := c.Transaction(txn.skyTxn.Hash)
+	txnU, err := c.Transaction(txn.skyTxn.Hash)
+	if err != nil {
+		return 0
+	}
 	if txnU.Status.Confirmed {
 		txn.status = core.TXN_STATUS_CONFIRMED
 		return txn.status
@@ -417,7 +420,10 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 		if err != nil {
 			return nil
 		}
-		skyAccuracy, _ := util.AltcoinQuotient("SKY")
+		skyAccuracy, err := util.AltcoinQuotient("SKY")
+		if err != nil {
+			return nil
+		}
 
 		skyOut := &SkycoinTransactionOutput{
 			skyOut: readable.TransactionOutput{
