@@ -670,6 +670,12 @@ func walletEntryToAddress(wltE readable.WalletEntry, poolSection string) *Skycoi
 	return &SkycoinAddress{address: wltE.Address, poolSection: poolSection}
 }
 
+func NewWalletDirectory(dirPath string) *WalletDirectory {
+	return &WalletDirectory{
+		WalletDir: dirPath,
+	}
+}
+
 type WalletDirectory struct {
 	//Implements WallentEnv interface
 	WalletDir  string
