@@ -39,6 +39,7 @@ matrix:
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build android
     - $GOPATH/bin/qtdeploy -docker build android-emulator
+    - make test
 
   - stage: "Linux"
     before_install:
@@ -46,6 +47,7 @@ matrix:
     install:
     - docker pull therecipe/qt:linux
     - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    - make test
 
     before_script:
     # Install hardware wallet for running tests against emulator
@@ -68,6 +70,7 @@ matrix:
     - ps aux | grep emulator
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy -docker build desktop
+    - make test
   
   - stage: "Windows"
     os: windows
@@ -78,6 +81,7 @@ matrix:
     script:
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy build desktop 
+    - make test
 
   - stage: "MacOS"
     os: osx
@@ -89,6 +93,7 @@ matrix:
     - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true)
     - go get -t -d -v ./...
     - $GOPATH/bin/qtdeploy build desktop
+    - make test
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify

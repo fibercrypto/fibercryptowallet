@@ -178,6 +178,23 @@ func (txn *SkycoinPendingTransaction) VerifySigned() error {
 	return verifyCreatedTransaction(txn, true)
 }
 
+func checkFullySigned(rTxn readableTxn) (bool, error) {
+	cTxn, err := rTxn.ToCreatedTransaction()
+	if err != nil {
+		return false, err
+	}
+	txn, err2 := cTxn.ToTransaction()
+	if err2 != nil {
+		return false, err2
+	}
+	return txn.IsFullySigned(), nil
+}
+
+// IsFullySigned deermine whether all transaction elements have been signed
+func (txn *SkycoinPendingTransaction) IsFullySigned() (bool, error) {
+	return checkFullySigned(txn)
+}
+
 /**
  * SkycoinTransactionIterator
  */
@@ -376,6 +393,11 @@ func (txn *SkycoinUninjectedTransaction) VerifySigned() error {
 	return txn.txn.Verify()
 }
 
+// IsFullySigned deermine whether all transaction elements have been signed
+func (txn *SkycoinUninjectedTransaction) IsFullySigned() (bool, error) {
+	return txn.txn.IsFullySigned(), nil
+}
+
 /*
 SkycoinTransaction
 */
@@ -465,6 +487,11 @@ func (txn *SkycoinTransaction) VerifyUnsigned() error {
 // VerifySigned checks for valid unsigned transaction
 func (txn *SkycoinTransaction) VerifySigned() error {
 	return verifyCreatedTransaction(txn, true)
+}
+
+// IsFullySigned deermine whether all transaction elements have been signed
+func (txn *SkycoinTransaction) IsFullySigned() (bool, error) {
+	return checkFullySigned(txn)
 }
 
 func getSkycoinTransactionInputsFromTxnHash(hash string) ([]core.TransactionInput, error) {

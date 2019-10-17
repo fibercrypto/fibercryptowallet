@@ -112,7 +112,9 @@ func NewDriver(deviceType DeviceType) (*Driver, error) {
 
 // Close closes the bus
 func (drv *Driver) Close() {
+	log.Println("1|||||||||||||||")
 	drv.bus.Close()
+	log.Println("2|||||||||||||||")
 }
 
 // DeviceType return driver device type

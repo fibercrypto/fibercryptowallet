@@ -63,7 +63,7 @@ const (
 
 // Devicer provides api for the hw wallet functions
 type Devicer interface {
-	AddressGen(addressN, startIndex uint32, confirmAddress bool) (wire.Message, error)
+	AddressGen(addressN, startIndex uint32, confirmAddress bool, walletType string) (wire.Message, error)
 	ApplySettings(usePassphrase *bool, label string, language string) (wire.Message, error)
 	Backup() (wire.Message, error)
 	Cancel() (wire.Message, error)
@@ -76,8 +76,8 @@ type Devicer interface {
 	GenerateMnemonic(wordCount uint32, usePassphrase bool) (wire.Message, error)
 	Recovery(wordCount uint32, usePassphrase *bool, dryRun bool) (wire.Message, error)
 	SetMnemonic(mnemonic string) (wire.Message, error)
-	TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput) (wire.Message, error)
-	SignMessage(addressIndex int, message string) (wire.Message, error)
+	TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput, walletType string) (wire.Message, error)
+	SignMessage(addressN, addressIndex int, message, walletType string) (wire.Message, error)
 	Wipe() (wire.Message, error)
 	PinMatrixAck(p string) (wire.Message, error)
 	WordAck(word string) (wire.Message, error)
@@ -150,7 +150,9 @@ func NewDevice(deviceType DeviceType) *Device {
 // Close closes the usb bus
 // Device should be closed before shutdown to avoid running out of open file descriptors
 func (d *Device) Close() {
+	log.Println("1//////////////////////")
 	d.Driver.Close()
+	log.Println("2//////////////////////")
 }
 
 // Connect makes a connection to the connected device
