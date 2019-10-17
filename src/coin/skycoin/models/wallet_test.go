@@ -225,7 +225,7 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Walle
 		var err error
 		if w, isFound = walletsCache[kd.Mnemonic]; !isFound {
 			if w = walletSet.GetWallet(walletID); w == nil {
-				w, err = walletSet.CreateWallet(walletID, kd.Mnemonic, false, nil, 1)
+				w, err = walletSet.CreateWallet(walletID, kd.Mnemonic, false, func(string) (string, error) { return "", nil }, 1)
 				require.NoError(t, err)
 			}
 			walletsCache[kd.Mnemonic] = w

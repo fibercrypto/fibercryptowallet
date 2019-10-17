@@ -69,7 +69,7 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	var err error
 	if seedEntropy == nil {
 		// Load suite test data
-		fn := filepath.Join(testsuite.TestDataDir, testsuite.ManyAddressesFilename)
+		fn := filepath.Join(testsuite.GetSkycoinCipherTestDataDir(), testsuite.ManyAddressesFilename)
 
 		var dataJSON skytestsuite.SeedTestDataJSON
 		err := file.LoadJSON(fn, &dataJSON)
