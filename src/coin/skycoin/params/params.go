@@ -14,6 +14,7 @@ var (
 	}
 )
 
+// Constparams
 const (
 	SkycoinTicker              = "SKY"
 	SkycoinName                = "Skycoin"
@@ -24,7 +25,7 @@ const (
 	CoinHoursFamily            = "SkyFiber"
 	CoinHoursDescription       = "Coin Hours is the parallel asset used for transaction fee, for creating scarcity, and to increase transaction privacy"
 	CalculatedHoursTicker      = "SKYCHC"
-	CalculatedHoursName	       = "Calculated Hours"
+	CalculatedHoursName        = "Calculated Hours"
 	CalculatedHoursFamily      = "SkyFiber"
 	CalculatedHoursDescription = "Calculated Hours are Coin Hours calculated considering the time since an output was created"
 )

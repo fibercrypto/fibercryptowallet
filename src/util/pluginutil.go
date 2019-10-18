@@ -1,8 +1,9 @@
 package util
 
 import (
-	"math"
 	"errors"
+	"math"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 )
 
