@@ -1,4 +1,4 @@
-package skycoin
+package skycoin //nolint goimports
 
 import (
 	"testing"
