@@ -7,7 +7,9 @@ import (
 
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
+	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
+	"github.com/skycoin/skycoin/src/testutil"
 )
 
 func TestTransactionFinderAddressesActivity(t *testing.T) {
@@ -206,6 +208,51 @@ func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
 	wlt := wltSrv.GetWallet("wallet")
 	assert.Equal(t, "wallet", wlt.GetLabel())
 	assert.Equal(t, "FiberCrypto", wlt.GetId())
+}
+
+func TestRemoteWalletSign(t *testing.T) {
+	hash := testutil.RandSHA256(t)
+	txn := coin.Transaction{
+		Length:    100,
+		Type:      0,
+		InnerHash: hash,
+	}
+	unTxn := SkycoinUninjectedTransaction{
+		txn:     &txn,
+		inputs:  nil,
+		outputs: nil,
+		fee:     100,
+	}
+	encodedResponse, err := unTxn.txn.SerializeHex()
+	assert.Nil(t, err)
+
+	walletSignTxn := api.WalletSignTransactionRequest{
+		EncodedTransaction: encodedResponse,
+		WalletID:           "wallet",
+		Password:           "password",
+		SignIndexes:        nil,
+	}
+
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn.Transaction.Fee = "100"
+	assert.Nil(t, err)
+
+	global_mock.On("WalletSignTransaction", walletSignTxn).Return(
+		crtTxn,
+		nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+	pwdReader := func(message string) (string, error) {
+		return "password", nil
+	}
+	ret, err := wlt.Sign(&unTxn, "source", pwdReader, nil)
+	assert.Nil(t, err)
+	value, err := ret.ComputeFee(CoinHour)
+	assert.Nil(t, err)
+	assert.Equal(t, uint64(100), value)
 }
 
 func TestRemoteWalletGenAddresses(t *testing.T) {
