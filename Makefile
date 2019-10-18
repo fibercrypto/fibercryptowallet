@@ -36,9 +36,10 @@ test-sky: ## Run Skycoin plugin test suite
 	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 
-test: test-sky test-hw ## Run project test suite
+test-integration: ## Run integration tests
+	go test github.com/fibercrypto/FiberCryptoWallet/test/integration/hardware
 
-test: test-sky ## Run project test suite
+test: test-sky test-hw test-integration ## Run project test suite
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
