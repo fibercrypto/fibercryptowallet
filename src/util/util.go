@@ -64,7 +64,7 @@ func FormatCoins(n uint64, quotient uint64) string {
 func RemoveZeros(s string) string {
 	index := 0
 	temp := 0
-	for true {
+	for {
 		temp = index
 		for _, c := range s[index:] {
 			if string(c) != "0" {
