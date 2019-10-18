@@ -1,18 +1,20 @@
 package hardware
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
+	"github.com/skycoin/hardware-wallet-go/src/skywallet"
 	"io/ioutil"
 	"math"
 	"strings"
 	"testing"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
+	M "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/testutil"
 	"github.com/stretchr/testify/require"
-	M "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 )
 
 func makeUninjectedTransaction(t *testing.T, txn *coin.Transaction, fee uint64) *M.SkycoinUninjectedTransaction {
@@ -248,8 +250,11 @@ func TestTransactionSignInput(t *testing.T) {
 
 	// Input is already signed
 	wallets, err1 := makeLocalWalletsFromKeyData(t, keysData)
+	dev := skywallet.NewDevice(skywallet.DeviceTypeEmulator)
+	hs := hardware.NewSkyWallet(dev)
+	wallets[0].AttachSignService(hs)
 	require.NoError(t, err1)
-	signedCoreTxn, err = wallets[0].Sign(uiTxn, M.SignerIDLocalWallet, nil, []string{"0"})
+	signedCoreTxn, err = wallets[0].Sign(uiTxn, hs.GetSignerUID(), nil, []string{"0"})
 	testutil.RequireError(t, err, "Input already signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
@@ -260,7 +265,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, M.SignerIDLocalWallet, nil, []string{"1"})
+	signedCoreTxn, err = wallets[1].Sign(uiTxn, hs.GetSignerUID(), nil, []string{"1"})
 	require.NoError(t, err)
 	signedTxn, isUninjected := signedCoreTxn.(*M.SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
@@ -271,7 +276,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, M.SignerIDLocalWallet, nil, []string{"1"})
+	signedCoreTxn, err = wallets[1].Sign(uiTxn, hs.GetSignerUID(), nil, []string{"1"})
 	testutil.RequireError(t, err, "Input already signed")
 
 	// Transaction has no sigs; sigs array is initialized
@@ -279,7 +284,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[2].Sign(uiTxn, M.SignerIDLocalWallet, nil, []string{"2"})
+	signedCoreTxn, err = wallets[2].Sign(uiTxn, hs.GetSignerUID(), nil, []string{"2"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*M.SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
