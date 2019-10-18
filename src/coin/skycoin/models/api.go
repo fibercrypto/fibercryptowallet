@@ -2,7 +2,7 @@ package skycoin
 
 import (
 	// "testing"
-	core "github.com/fibercrypto/FiberCryptoWallet/src/core"
+
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
@@ -13,7 +13,7 @@ type SkycoinApiMock struct {
 	mock.Mock
 }
 
-func (m *SkycoinApiMock) Create() (core.PooledObject, error) {
+func (m *SkycoinApiMock) Create() (interface{}, error) {
 	return m, nil
 }
 

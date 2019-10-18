@@ -86,7 +86,7 @@ func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
 		return nil, err
 	}
 
-	skyApi, ok := obj.(core.SkycoinAPI)
+	skyApi, ok := obj.(*api.Client)
 	if !ok {
 		return nil, fmt.Errorf("There is not propers client in %s pool", section)
 	}
