@@ -769,13 +769,11 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 	if scanAddressesN > 0 {
 		wlt, err = wallet.NewWalletScanAhead(wltName, opts, &TransactionFinder{})
 		if err != nil {
-
 			return nil, err
 		}
 	} else {
 		wlt, err = wallet.NewWallet(wltName, opts)
 		if err != nil {
-
 			return nil, err
 		}
 	}

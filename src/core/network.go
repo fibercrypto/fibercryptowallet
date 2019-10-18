@@ -99,14 +99,14 @@ func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
 	mutex, ok := mp.mutexs[poolSection]
 
 	if !ok {
-		return nil, NotAvailableObjectsError{poolSection}
+		return nil, errors.New("invalid section")
 	}
 	mutex.Lock()
 	defer mutex.Unlock()
 
 	if len(mp.available[poolSection]) == 0 {
 		if len(mp.inUse[poolSection]) == mp.capacity {
-			return nil, errors.New("There is not available objects")
+			return nil, NotAvailableObjectsError{poolSection}
 		}
 		obj, err := mp.factories[poolSection].Create()
 		if err != nil {
