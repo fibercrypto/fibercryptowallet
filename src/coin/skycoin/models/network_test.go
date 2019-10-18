@@ -8,7 +8,7 @@ import (
 	"github.com/skycoin/skycoin/src/readable"
 )
 
-func TestPending(t *testing.T) {
+func TestSkycoinPEXGetTxnPool(t *testing.T) {
 	global_mock.On("PendingTransactionsVerbose").Return(
 		[]readable.UnconfirmedTransactionVerbose{
 			readable.UnconfirmedTransactionVerbose{
