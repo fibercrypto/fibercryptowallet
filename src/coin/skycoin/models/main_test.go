@@ -12,7 +12,7 @@ import (
 var global_mock *SkycoinApiMock
 
 //util when is needed to change the values of an
-//API method used in other test with diferent values.
+//API method used in other test with different values.
 func CleanGlobalMock() {
 	global_mock.ExpectedCalls = []*mock.Call{}
 }
