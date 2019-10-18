@@ -29,6 +29,14 @@
         <file>resources/images/icons/up.svg</file>
         <file>resources/images/icons/down.svg</file>
         <file>resources/images/icons/back.svg</file>
+        <file>resources/images/icons/cut-content.svg</file>
+        <file>resources/images/icons/copy-content.svg</file>
+        <file>resources/images/icons/paste-content.svg</file>
+        <file>resources/images/icons/selectAll-content.svg</file>
+        <file>resources/images/icons/undo.svg</file>
+        <file>resources/images/icons/redo.svg</file>
+        <file>resources/images/icons/sun.svg</file>
+        <file>resources/images/icons/moon.svg</file>
         <file>resources/images/icons/outputs.svg</file>
         <file>resources/images/icons/pending-transactions.svg</file>
         <file>resources/images/icons/blockchain.svg</file>

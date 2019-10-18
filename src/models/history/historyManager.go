@@ -113,7 +113,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			accuracy, _ := util.AltcoinQuotient("SKY")
 			skyFloat := float64(skyUint64) / float64(accuracy)
 			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			chUint64, _ := in.GetCoins("SKYCH")
+			chUint64, _ := in.GetCoins("SKYCHC")
 			accuracy, _ = util.AltcoinQuotient("SKYCH")
 			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64/accuracy, 10))
 			inputs.AddAddress(qIn)

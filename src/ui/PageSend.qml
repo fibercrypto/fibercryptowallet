@@ -38,7 +38,7 @@ Page {
                 if (advancedMode){
                     var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
                     var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
-                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()
+                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()[0]
                     var destinationSummary = stackView.currentItem.advancedPage.getDestinationsSummary()
                     var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
@@ -49,22 +49,24 @@ Page {
                     } else {
                         if (addrs.length == 0){
                             addrs = stackView.currentItem.advancedPage.getAllAddresses()
+                            
                         }
                         txn = walletManager.sendFromAddresses(walletSelected, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } 
                     
-                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
+                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()[0]
                 } else{
                     walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
                     txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
+                console.log("HT "+txn.hoursTraspassed)
                 dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
                 dialogSendTransaction.previewAmount = txn.amount
-                dialogSendTransaction.previewHoursReceived = parseInt(txn.hoursTraspassed)
-                dialogSendTransaction.previewHoursBurned = parseInt(txn.hoursBurned)
+                dialogSendTransaction.previewHoursReceived = txn.hoursTraspassed
+                dialogSendTransaction.previewHoursBurned = txn.hoursBurned
                 dialogSendTransaction.previewtransactionID = txn.transactionId
                 dialogSendTransaction.inputs = txn.inputs
                 dialogSendTransaction.outputs = txn.outputs

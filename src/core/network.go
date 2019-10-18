@@ -54,25 +54,21 @@ type PexNode interface {
 }
 
 // PooledObject represents any object that can be added to a connnection pool
-type PooledObject interface {
-}
-
 // PooledObjectFactory instantiates pooled objects
 type PooledObjectFactory interface {
-	Create() (PooledObject, error)
+	Create() (interface{}, error)
 }
 
 // MultiPool implements a pool supporting multiple object factories
 type MultiPool interface {
-	// Get an object from the pool
-	Get(poolSection string) (PooledObject, error)
-	// Return put back an object into the pool
-	Return(poolSection string, obj PooledObject) error
-	// CreateSection allocates extra space for a new factory in the pool
-	CreateSection(name string, factory PooledObjectFactory)
-	// ListSections returns a list of section names previously added to the pool
-	// Each name represents a different factory
-	ListSections() []string
+	GetSection(string) (MultiPoolSection, error)
+	ListSections() ([]string, error)
+	CreateSection(string, PooledObjectFactory) error
+}
+
+type MultiPoolSection interface {
+	Get() interface{}
+	Put(interface{})
 }
 
 // NotAvailableObjectsError is returned when name is not bound to any pool factory
@@ -87,88 +83,84 @@ func (err NotAvailableObjectsError) Error() string {
 
 // MultiConnectionsPool implements a generic pool supporting multiple object factories
 type MultiConnectionsPool struct {
-	capacity  int
-	available map[string][]PooledObject
-	inUse     map[string][]PooledObject
-	mutexs    map[string]*sync.Mutex
-	factories map[string]PooledObjectFactory
+	capacity int
+	sections map[string]*PoolSection
 }
 
-// Get an object from the pool
-func (mp *MultiConnectionsPool) Get(poolSection string) (PooledObject, error) {
-	mutex, ok := mp.mutexs[poolSection]
-
+func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection, error) {
+	section, ok := mp.sections[poolSection]
 	if !ok {
-		return nil, NotAvailableObjectsError{poolSection}
+		return nil, errors.New("Invalid Section")
 	}
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	if len(mp.available[poolSection]) == 0 {
-		if len(mp.inUse[poolSection]) == mp.capacity {
-			return nil, errors.New("There is not available objects")
-		}
-		obj, err := mp.factories[poolSection].Create()
-		if err != nil {
-			return nil, err
-		}
-		mp.inUse[poolSection] = append(mp.inUse[poolSection], obj)
-		return obj, nil
-	} else {
-		var obj PooledObject
-		obj, mp.available[poolSection] = mp.available[poolSection][0], mp.available[poolSection][1:]
-		mp.inUse[poolSection] = append(mp.inUse[poolSection], obj)
-		return obj, nil
-	}
+	return section, nil
 }
 
-// Return put back an object into the pool
-func (mp *MultiConnectionsPool) Return(poolSection string, obj PooledObject) error {
-	mutex, ok := mp.mutexs[poolSection]
-	if !ok {
-		return errors.New(fmt.Sprintf("There is not exist %s poolSection", poolSection))
+func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) error {
+
+	mp.sections[name] = &PoolSection{
+		mutex:     new(sync.Mutex),
+		capacity:  mp.capacity,
+		factory:   factory,
+		inUse:     make([]interface{}, 0),
+		available: make([]interface{}, 0),
 	}
-	mutex.Lock()
-	defer mutex.Unlock()
-	index := findIndex(mp.inUse[poolSection], obj)
-	if index == -1 {
-		return errors.New(fmt.Sprintf("That object is no from this pool"))
-	}
-	mp.available[poolSection] = append(mp.available[poolSection], obj)
-	mp.inUse[poolSection] = append(mp.inUse[poolSection][:index], mp.inUse[poolSection][index+1:]...)
 	return nil
 }
 
-// CreateSection allocates extra space for a new factory in the pool
-func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) {
-
-	if _, ok := mp.factories[name]; ok {
-		return
-	}
-
-	mp.factories[name] = factory
-	mp.available[name] = make([]PooledObject, 0)
-	mp.inUse[name] = make([]PooledObject, 0)
-	mp.mutexs[name] = new(sync.Mutex)
-
-}
-
-// ListSections returns a list of section names previously registred with the pool
-func (mp *MultiConnectionsPool) ListSections() []string {
+func (mp *MultiConnectionsPool) ListSections() ([]string, error) {
 	sections := make([]string, 0)
-	for key, _ := range mp.factories {
+	for key, _ := range mp.sections {
 		sections = append(sections, key)
 	}
-	return sections
+	return sections, nil
+}
+
+type PoolSection struct {
+	capacity  int
+	available []interface{}
+	inUse     []interface{}
+	mutex     *sync.Mutex
+	factory   PooledObjectFactory
+}
+
+func (ps *PoolSection) Get() interface{} {
+	ps.mutex.Lock()
+	defer ps.mutex.Unlock()
+
+	if len(ps.available) == 0 {
+		if len(ps.inUse) == ps.capacity {
+			return errors.New("There is not available objects")
+		}
+		obj, err := ps.factory.Create()
+		if err != nil {
+			return err
+		}
+		ps.inUse = append(ps.inUse, obj)
+		return obj
+	} else {
+		var obj interface{}
+		obj, ps.available = ps.available[0], ps.available[1:]
+		ps.inUse = append(ps.inUse, obj)
+		return obj
+	}
+}
+
+func (ps *PoolSection) Put(obj interface{}) {
+	ps.mutex.Lock()
+	defer ps.mutex.Unlock()
+	index := findIndex(ps.inUse, obj)
+	if index == -1 {
+		return
+	}
+	ps.available = append(ps.available, obj)
+	ps.inUse = append(ps.inUse[:index], ps.inUse[index+1:]...)
+
 }
 
 func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 	return &MultiConnectionsPool{
-		capacity:  capacity,
-		available: make(map[string][]PooledObject),
-		inUse:     make(map[string][]PooledObject),
-		factories: make(map[string]PooledObjectFactory),
-		mutexs:    make(map[string]*sync.Mutex),
+		capacity: capacity,
+		sections: make(map[string]*PoolSection),
 	}
 }
 
@@ -182,7 +174,7 @@ func GetMultiPool() MultiPool {
 	return multiConnectionsPool
 }
 
-func findIndex(collection []PooledObject, obj PooledObject) int {
+func findIndex(collection []interface{}, obj interface{}) int {
 	for i := 0; i < len(collection); i++ {
 		if collection[i] == obj {
 			return i

@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"fmt"
 	"io/ioutil"
 	"math"
 	"strings"

@@ -10,6 +10,7 @@ import OutputsModels 1.0
 // import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 import "Dialogs/" // For quick UI development, switch back to resources when making a release
+import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: subPageSendAdvanced
@@ -32,11 +33,22 @@ Page {
     }
 
     function getSelectedWallet(){
-        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
+        
+        var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+        var files = []
+        for (var i=0; i < indexs.length; i++){
+            files.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
+        }
+        return files
     }
 
     function walletIsEncrypted(){
-        return comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
+        var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+        var enc = []
+        for (var i = 0; i < indexs.length; i++){
+            enc.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
+        }
+        return enc
     }
 
     function getDestinationsSummary(){
@@ -64,7 +76,7 @@ Page {
 
     function getAllAddresses(){
         var addrs = []
-        for (var i = 0; i < listAddresses.addresses.lenght; i++){
+        for (var i = 0; i < listAddresses.count; i++){
             addrs.push(listAddresses.addresses[i].address)
         }
         return addrs
@@ -96,32 +108,90 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsSendFrom
+                function getCheckedDelegates() {
+                    return checkedElements
+                }
+
+                property var checkedElements: []
+                property var checkedElementsText: []
+                property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupWallets.filterText
+
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "name"
+                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("wallets selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No wallet selected")
                 model: WalletModel {
                     Component.onCompleted: {
                         loadModel(walletManager.getWallets())
                     }
                 } 
-                onCurrentTextChanged:{
-                    console.log(model.wallets[currentIndex].fileName)
-                    listAddresses.loadModel(walletManager.getAddresses(model.wallets[currentIndex].fileName))
-                    listAddresses.removeAddress(0)
-
-                    
+                
+                popup: FilterComboBoxPopup {
+                    id: filterPopupWallets
+                    comboBox: comboBoxWalletsSendFrom
+                    filterPlaceholderText: qsTr("Filter wallets by name")
                 }
 
                 // Taken from Qt 5.13.0 source code:
-                delegate: MenuItem {
+                delegate: Item {
+                    id: rootDelegate
+
+                    property alias checked: checkDelegate.checked
+                    property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsSendFrom.filterString.toLowerCase())
+
                     width: parent.width
-                    text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
-                    Material.foreground: comboBoxWalletsSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
-                    highlighted: comboBoxWalletsSendFrom.highlightedIndex === index
-                    hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
-                    leftPadding: highlighted ? 2*padding : padding // added
-                    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
-                }
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
+
+                    CheckDelegate {
+                        id: checkDelegate
+
+                        // Update the states saved in `checkedElements`
+                        onClicked: {
+                            if (checked) {
+                                var pos = comboBoxWalletsSendFrom.checkedElements.indexOf(index)
+                                if (pos < 0) {
+                                    comboBoxWalletsSendFrom.checkedElements.push(index)
+                                    comboBoxWalletsSendFrom.checkedElementsText.push(text)
+                                }
+                                // Update Outputs and Addresses Model
+                                listAddresses.addAddresses(walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[index].fileName))
+                                listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName))
+                            } else {
+                                var pos = comboBoxWalletsSendFrom.checkedElements.indexOf(index)
+                                if (pos >= 0) {
+                                    comboBoxWalletsSendFrom.checkedElements.splice(pos, 1)
+                                    comboBoxWalletsSendFrom.checkedElementsText.splice(pos, 1)
+                                }
+                                // Update Outputs and Addresses Model
+                                listAddresses.removeAddressesFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
+                                listOutputs.removeOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
+                            }
+                            comboBoxWalletsSendFrom.numberOfCheckedElements = comboBoxWalletsSendFrom.checkedElements.length
+                        }
+
+                        width: parent.width
+                        text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
+                        // Load the saved state when the delegate is recicled:
+                        checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) >= 0
+                        hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
+                        highlighted: hovered
+                        Material.foreground: checked ? parent.Material.accent : parent.Material.foreground
+                        leftPadding: highlighted ? 2*padding : padding // added
+                        Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+
+                        LayoutMirroring.enabled: true
+                        contentItem: Label {
+                            leftPadding: comboBoxWalletsSendFrom.indicator.width + comboBoxWalletsSendFrom.spacing
+                            text: checkDelegate.text
+                            verticalAlignment: Qt.AlignVCenter
+                            color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
+                        }
+                    } // CheckDelegate
+                } // Item (delegate)
             } // ComboBox (wallets, send from)
 
             RowLayout {
@@ -137,13 +207,14 @@ Page {
 
             ComboBox {
                 id: comboBoxWalletsAddressesSendFrom
+
                 //Layout.fillWidth: true
                 //Layout.topMargin: -12
                 //textRole: "address"
                 //model: AddressModel{
                 //    id: listAddresses
                 //}
-//
+
                 //// Taken from Qt 5.13.0 source code:
                 //delegate: MenuItem {
                 //    width: parent.width
@@ -164,7 +235,7 @@ Page {
                     }
                     return checkedItems
                 }
-                
+
                 Layout.fillWidth: true
                 Layout.topMargin: -12
 
@@ -197,12 +268,22 @@ Page {
 
                         onCheckedChanged:{
                             if (checked){
-                                //console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex])
-                                listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
-                                console.log(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName, text))
-                                //console.log(text)
+                                if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length > 1){
+                                    listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
+                                } else{
+                                    listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
+                                }                               
+                                                              
+                            } else{
+                                listOutputs.removeOutputsFromAddress(text)
+                                if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length == 0){
+                                    var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
+                                    for (var i = 0; i < indexs.length; i++){
+                                        listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
+                                    }
+                                }
                             }
-                            //console.log("SDFDSFS")
+                            
                         }
                     } // CheckDelegate
                 } // Item (delegate)
@@ -220,7 +301,7 @@ Page {
 
                 CheckBox {
                     id: checkBoxUnspentOutputsUseAllOutputs
-                    text: qsTr("All outputs of the selected address")
+                    text: qsTr("All outputs of the selected addresses")
                     checked: true
                 }
             }
@@ -229,20 +310,18 @@ Page {
                 id: comboBoxWalletsUnspentOutputsSendFrom
 
                 function getCheckedDelegates() {
-                    var checkedItems = []
-                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
-                        if (popup.contentItem.contentItem.children[i].checked) {
-                            checkedItems.push(i)
-                        }
-                    }
-                    return checkedItems
+                    return checkedElements
                 }
                 property var checkedElements: []
                 property var checkedElementsText: []
+                property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupOutputs.filterText
                 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "outputID"
+                displayText: checkBoxUnspentOutputsUseAllOutputs.checked ? qsTr("All outputs selected") : numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("outputs selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No output selected")
+
                 enabled: !checkBoxUnspentOutputsUseAllOutputs.checked
                 model: QOutputs {
                     id: listOutputs
@@ -251,16 +330,27 @@ Page {
                 onModelChanged: {
                     if (!model) {
                         checkedElements = []
+                        checkedElementsText = []
+                        numberOfCheckedElements = 0
                     }
+                }
+                
+                popup: FilterComboBoxPopup {
+                    id: filterPopupOutputs
+                    comboBox: comboBoxWalletsUnspentOutputsSendFrom
+                    filterPlaceholderText: qsTr("Filter outputs")
                 }
 
                 delegate: Item {
 
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsUnspentOutputsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsUnspentOutputsSendFrom.filterString.toLowerCase())
                     
                     width: parent.width
-                    height: checkDelegate.height
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
 
                     CheckDelegate {
                         id: checkDelegate
@@ -280,13 +370,19 @@ Page {
                                     comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
                             }
+                            comboBoxWalletsUnspentOutputsSendFrom.numberOfCheckedElements = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length
                         }
 
                         width: parent.width
                         text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
                         font.family: "Code New Roman"
                         // Load the saved state when the delegate is recicled:
-                        checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) > 0
+                        checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) >= 0
+                        hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
+                        highlighted: hovered
+                        Material.foreground: checked ? parent.Material.accent : parent.Material.foreground
+                        leftPadding: highlighted ? 2*padding : padding // added
+                        Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
 
                         LayoutMirroring.enabled: true
                         contentItem: Label {
@@ -369,6 +465,7 @@ Page {
                     highlighted: true
 
                     onClicked: {
+                        modelAddressesByWallet.loadModel(walletManager.getAllAddresses())
                         dialogSelectAddressByWallet.open()
                     }
                 }
@@ -380,6 +477,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -16
                 placeholderText: qsTr("Address to receive change")
+                selectByMouse: true
                 font.family: "Code New Roman"
             }
         } // ColumnLayout (custom change address)
@@ -436,18 +534,8 @@ Page {
         }
     }
 
-    ListModel { // EXAMPLE
+    AddressModel{
         id: modelAddressesByWallet
-
-        ListElement { wallet: "Wallet A"; address: "qrxw7364w8xerusftaxkw87ues" }
-        ListElement { wallet: "Wallet A"; address: "8745yuetsrk8tcsku4ryj48ije" }
-        ListElement { wallet: "Wallet A"; address: "gfdhgs343kweru38200384uwqd" }
-        ListElement { wallet: "Wallet B"; address: "00qdqsdjkssvmchskjkxxdg374" }
-        ListElement { wallet: "Wallet B"; address: "hkdti34aoliwuiu3qsoiemdfhc" }
-        ListElement { wallet: "Wallet C"; address: "1oiwrelkrir73o8ielukaur9qq" }
-        ListElement { wallet: "Wallet C"; address: "piur948o9q8m0a8qsye8q3omxs" }
-        ListElement { wallet: "Wallet C"; address: "4ntd4im93usppturm83ysniroe" }
-        ListElement { wallet: "Wallet C"; address: "meje73o50ejdwumfle92rndlwm" }
     }
 
     ListModel {
