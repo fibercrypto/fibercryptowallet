@@ -3,7 +3,6 @@ package local
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -26,16 +25,61 @@ var (
 
 func init() {
 	qs := qtcore.NewQSettings("Simelo", "FiberCrypto Wallet", nil)
-	v := qs.Value("user", qtcore.NewQVariant1("AAS"))
-	fmt.Println("TESTING")
-	fmt.Println(qs.FileName())
-	fmt.Println(v.ToString())
-	qs.Value("marcos", qtcore.NewQVariant1("Tufao")).ToString()
-
+	confManager = &ConfigManager{
+		setting: qs,
+	}
 }
 
 type ConfigManager struct {
 	setting *qtcore.QSettings
+}
+
+func (cm *ConfigManager) RegisterSection(section *ConfigSection) error {
+	sections := cm.setting.ChildGroups()
+	for _, sect := range sections {
+		if section.name == sect {
+			return errors.New("Invalid section name")
+		}
+	}
+
+	cm.setting.BeginGroup(section.name)
+	for key, value := range section.options {
+		if !key.optional {
+			cm.setting.SetValue(key.name, qtcore.NewQVariant1(key._default))
+		}
+	}
+	cm.setting.EndGroup()
+
+	return nil
+}
+
+type ConfigSection struct {
+	name    string
+	options map[Option]string
+}
+
+func NewConfigSection(name string, options map[Option]string) *ConfigSection {
+	return &ConfigSection{
+		name:    name,
+		options: options,
+	}
+}
+
+type Option struct {
+	name     string
+	optional bool
+	_default string
+}
+
+func NewOption(name string, optional bool, _default string) *Option {
+	if !optional && _default == "" {
+		return nil
+	}
+	return &Option{
+		name:     name,
+		optional: optional,
+		_default: _default,
+	}
 }
 
 type WalletSource struct {
@@ -63,60 +107,6 @@ func (ws *WalletSource) getWalletSourceJson() *walletSourceJson {
 	return &walletSourceJson{
 		SourceType: ws.GetType(),
 		Source:     ws.GetSource(),
-	}
-}
-
-func (cm *ConfigManager) GetSources() []*WalletSource {
-	return cm.sourceList
-}
-
-func (cm *ConfigManager) GetNode() string {
-	return cm.node
-}
-
-func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
-	var src *WalletSource
-	for _, wltSrc := range cm.sourceList {
-		if wltSrc.id == id {
-			src = wltSrc
-			break
-		}
-	}
-	if src == nil {
-		return errors.New("Invalid Id")
-	}
-
-	if tp != LocalWallet && tp != RemoteWallet {
-		tp = src.sourceType
-	}
-
-	if source == "" {
-		source = src.source
-	}
-
-	src.edit(source, tp)
-	return nil
-
-}
-
-func (cm *ConfigManager) EditNode(node string) {
-	cm.node = node
-}
-
-func (cm *ConfigManager) Save() error {
-
-	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
-	return ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
-}
-
-func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
-	wltSources := make([]*walletSourceJson, 0)
-	for _, wltS := range cm.sourceList {
-		wltSources = append(wltSources, wltS.getWalletSourceJson())
-	}
-	return &configManagerJson{
-		SourceList: wltSources,
-		Node:       cm.node,
 	}
 }
 
