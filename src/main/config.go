@@ -3,10 +3,13 @@ package local
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
+
+	qtcore "github.com/therecipe/qt/core"
 )
 
 const (
@@ -21,9 +24,18 @@ var (
 	once        sync.Once
 )
 
+func init() {
+	qs := qtcore.NewQSettings("Simelo", "FiberCrypto Wallet", nil)
+	v := qs.Value("user", qtcore.NewQVariant1("AAS"))
+	fmt.Println("TESTING")
+	fmt.Println(qs.FileName())
+	fmt.Println(v.ToString())
+	qs.Value("marcos", qtcore.NewQVariant1("Tufao")).ToString()
+
+}
+
 type ConfigManager struct {
-	sourceList []*WalletSource
-	node       string
+	setting *qtcore.QSettings
 }
 
 type WalletSource struct {

@@ -69,6 +69,7 @@ func (walletM *WalletManager) init() {
 
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
+		walletM.updateWalletEnvs()
 	})
 
 	walletM = walletManager
