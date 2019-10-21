@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"github.com/fibercrypto/F/src/coin/skycoin"
 	"sync"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -54,6 +55,7 @@ type WalletManager struct {
 }
 
 func (walletM *WalletManager) init() {
+	logWalletManager.Info("Initializing WalletManager")
 	once.Do(func() {
 		qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
 		walletM.ConnectCreateEncryptedWallet(walletM.createEncryptedWallet)
@@ -91,6 +93,7 @@ func (walletM *WalletManager) init() {
 }
 
 func GetWalletEnv() core.WalletEnv {
+	logWalletManager.Info("Getting WalletEnv")
 	wm := GetWalletManager()
 	if wm == nil {
 		return nil
@@ -103,6 +106,7 @@ func GetWalletManager() *WalletManager {
 	return walletManager
 }
 func (walletM *WalletManager) updateWalletEnvs() {
+	logWalletManager.Info("Updating WalletEnvs")
 	walletsEnvs := make([]core.WalletEnv, 0)
 
 	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
@@ -112,10 +116,12 @@ func (walletM *WalletManager) updateWalletEnvs() {
 }
 
 func (walletM *WalletManager) updateAddresses(wltId string) {
+	logWalletManager.Info("Updating Addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	qAddresses := make([]*QAddress, 0)
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't loaded addresses")
 		walletM.addresseseByWallets[wltId] = qAddresses
 		return
 	}
@@ -127,18 +133,25 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		qAddress.SetMarked(0)
 		qAddress.SetWallet(wlt.GetLabel())
 		qAddress.SetWalletId(wlt.GetId())
-		skyFl, err := addr.GetCryptoAccount().GetBalance("SKY")
+		skyFl, err := addr.GetCryptoAccount().GetBalance(skycoin.SkycoinTicker)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.SkycoinTicker + " Balance")
 			continue
 		}
-		accuracy, err := util.AltcoinQuotient("SKY")
+		accuracy, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.SkycoinTicker + " quotient")
 			continue
 		}
 		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
-		coinH, err := addr.GetCryptoAccount().GetBalance("SKYCH")
-		accuracy, _ = util.AltcoinQuotient("SKYCH")
+		coinH, err := addr.GetCryptoAccount().GetBalance(skycoin.CoinHoursTicker)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.CoinHoursTicker + " Balance")
+			continue
+		}
+		accuracy, err = util.AltcoinQuotient(skycoin.CoinHoursTicker)
+		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.CoinHoursTicker + " quotient")
 			continue
 		}
 		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
@@ -155,6 +168,7 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 	outs := make([]*QOutput, 0)
 	addressIterator, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
 	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't get an addresses iterator")
 		walletM.outputsByAddress[address] = outs
 		return
 	}
@@ -166,11 +180,13 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		}
 	}
 	if addr == nil {
+		logWalletManager.WithError(err).Warn("Couldn't get address")
 		walletM.outputsByAddress[address] = outs
 		return
 	}
 	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
 	if outsIter == nil {
+		logWalletManager.WithError(err).Warn("Couldn't scan unspent outputs")
 		walletM.outputsByAddress[address] = outs
 		return
 	}
@@ -180,20 +196,24 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		qout.SetOutputID(outsIter.Value().GetId())
 		skyV, err := outsIter.Value().GetCoins(sky.Sky)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get " + sky.Sky + " coins")
 			continue
 		}
 		quotient, err := util.AltcoinQuotient(sky.Sky)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get " + sky.Sky + " quotient")
 			continue
 		}
 		sSky := util.FormatCoins(skyV, quotient)
 		qout.SetAddressSky(sSky)
 		ch, err := outsIter.Value().GetCoins(sky.CoinHour)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get " + sky.CoinHour + " coins")
 			continue
 		}
 		quotient, err = util.AltcoinQuotient(sky.CoinHour)
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get " + sky.Sky + " quotient")
 			continue
 		}
 		sCh := util.FormatCoins(ch, quotient)
@@ -209,11 +229,15 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 func (walletM *WalletManager) updateWallets() {
 	qWallets := make([]*QWallet, 0)
 	it := walletM.WalletEnv.GetWalletSet().ListWallets()
-
+	if it == nil {
+		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
+		return
+	}
 	for it.Next() {
 
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
 			continue
 		}
 		if encrypted {
@@ -299,12 +323,12 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 		return nil
 	}
 
-	qtxn, err := NewQTransactionFromTransaction(txn)
+	qTransaction, err := NewQTransactionFromTransaction(txn)
 	if err != nil {
 		logWalletManager.WithError(err).Info("Error converting transaction")
 		return nil
 	}
-	return qtxn
+	return qTransaction
 }
 func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
@@ -633,7 +657,6 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		return qWallet
 	}
 
-	//TODO: report possible error
 	accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin Altcoin quotient")
