@@ -144,7 +144,7 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 
 func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
 	logNetwork.Info("Getting transaction pool")
-	c, err := NewSkycoinApiClient(spex.poolSection)
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
 	}
