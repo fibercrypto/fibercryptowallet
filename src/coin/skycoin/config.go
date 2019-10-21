@@ -43,7 +43,23 @@ func getOption(path string) (string, error) {
 }
 
 func getValues(prefix string) ([]string, error) {
+	return sectionManager.GetValues(prefix)
+}
 
+func getWalletSources() ([]*walletSource, error) {
+	wltsString, err := getValues(SettingPathToWalletSource)
+	if err != nil {
+		return nil, err
+	}
+	wltSrcs := make([]*walletSource, len(wltsString))
+	for i, wlt := range wltsString {
+		err = json.Unmarshal([]byte(wlt), wltSrcs[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return wltSrcs, nil
 }
 
 type walletSource struct {
