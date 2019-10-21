@@ -59,13 +59,13 @@ func NewSkycoinConnectionFactory(url string) *SkycoinConnectionFactory {
 }
 
 type SkycoinApiClient struct {
-	*api.Client
+	SkycoinAPI
 	pool core.MultiPoolSection
 }
 
 // nolint megacheck TODO: This functions is not used
 func (sc *SkycoinApiClient) returnToPool() {
-	sc.pool.Put(sc.Client)
+	sc.pool.Put(sc.SkycoinAPI)
 }
 
 func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
@@ -86,13 +86,13 @@ func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
 		return nil, err
 	}
 
-	skyApi, ok := obj.(*api.Client)
+	skyApi, ok := obj.(SkycoinAPI)
 	if !ok {
 		return nil, fmt.Errorf("There is not propers client in %s pool", section)
 	}
 	return &SkycoinApiClient{
-		Client: skyApi,
-		pool:   pool,
+		SkycoinAPI: skyApi,
+		pool:       pool,
 	}, nil
 }
 
@@ -101,7 +101,7 @@ func ReturnSkycoinClient(obj SkycoinAPI) {
 	if !ok {
 		return
 	}
-	poolObj.pool.Put(poolObj.Client)
+	poolObj.pool.Put(poolObj.SkycoinAPI)
 }
 
 func NewSkycoinPEX(poolSection string) *SkycoinPEX {
