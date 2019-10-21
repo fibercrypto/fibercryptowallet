@@ -2,6 +2,7 @@ package local
 
 import (
 	"errors"
+	"fmt"
 	"sync"
 
 	qtcore "github.com/therecipe/qt/core"
@@ -15,6 +16,7 @@ var (
 
 func init() {
 	qs := qtcore.NewQSettings("Simelo", "FiberCrypto Wallet", nil)
+	fmt.Println(qs.ApplicationName())
 	confManager = &ConfigManager{
 		setting: qs,
 	}
@@ -26,13 +28,16 @@ type ConfigManager struct {
 
 func (cm *ConfigManager) RegisterSection(name string, options []*Option) *SectionManager {
 	cm.setting.BeginGroup(name)
+	defer cm.setting.EndGroup()
+	defer cm.setting.Sync()
+	fmt.Println(name)
 
 	for _, opt := range options {
 		if !opt.optional && !cm.setting.Contains(opt.name) {
+			fmt.Println("REGISTERING VALUE")
 			cm.setting.SetValue(opt.name, qtcore.NewQVariant1(opt._default))
 		}
 	}
-	cm.setting.EndGroup()
 
 	return &SectionManager{
 		name:     name,
@@ -89,9 +94,10 @@ func (sm *SectionManager) GetValues(prefix string) ([]string, error) {
 }
 
 type Option struct {
-	name     string
-	optional bool
-	_default string
+	name        string
+	sectionPath []string
+	optional    bool
+	_default    string
 }
 
 func NewOption(name string, optional bool, _default string) *Option {
