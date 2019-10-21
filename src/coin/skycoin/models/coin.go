@@ -134,12 +134,37 @@ func blockTxnToCreatedTxn(blockTxn readable.BlockTransactionVerbose, timestamp u
 	), nil
 }
 
-// ToCreatedTransaction retrieve the equivalent core.Transaction object
+// ToCreatedTransaction return an instance of api.CreatedTransaction equivalent to he current transaction object
 func (txn *SkycoinPendingTransaction) ToCreatedTransaction() (*api.CreatedTransaction, error) {
 	return blockTxnToCreatedTxn(txn.Transaction.Transaction, uint64(txn.Transaction.Announced.UnixNano()))
 }
 
+func serializeCreatedTransaction(txn readableTxn) ([]byte, error) {
+	rTxn, err := txn.ToCreatedTransaction()
+	if err != nil {
+		return nil, err
+	}
+	skyTxn, err := rTxn.ToTransaction()
+	if err != nil {
+		return nil, err
+	}
+	return skyTxn.Serialize()
+}
+
+// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+func (txn *SkycoinPendingTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return serializeCreatedTransaction(txn)
+}
+
+// skycoinTxn represents the common internal operations that should be applied upon Skycoin transaction wrapper types
+type skycoinTxn interface {
+	// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+	EncodeSkycoinTransaction() ([]byte, error)
+}
+
+// readableTxn expreses the contract to use Skycoin readable transactions for signing
 type readableTxn interface {
+	// ToCreatedTransaction return an instance of api.CreatedTransaction equivalent to he current transaction object
 	ToCreatedTransaction() (*api.CreatedTransaction, error)
 }
 
@@ -475,6 +500,11 @@ func (txn *SkycoinTransaction) ComputeFee(ticker string) (uint64, error) {
 		return uint64(0), nil
 	}
 	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+}
+
+// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+func (txn *SkycoinTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return serializeCreatedTransaction(txn)
 }
 
 // ToCreatedTransaction retrieve the equivalent core.Transaction object
@@ -930,6 +960,11 @@ func (txn *SkycoinCreatedTransaction) ComputeFee(ticker string) (uint64, error) 
 		return uint64(0), nil
 	}
 	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+}
+
+// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+func (txn *SkycoinCreatedTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return serializeCreatedTransaction(txn)
 }
 
 // ToCreatedTransaction retrieve the equivalent core.Transaction object

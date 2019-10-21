@@ -318,24 +318,24 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		return nil, err
 	}
 	defer ReturnSkycoinClient(client)
-	unInjectedTransaction, ok := txn.(*SkycoinUninjectedTransaction)
-	if !ok {
-		logrus.Debug(err)
-		return nil, err
+	skyTxn, isSkyTxn := txn.(skycoinTxn)
+	if !isSkyTxn {
+		logrus.Debug("Skycoin transaction required")
+		// FIXME: Singleton error constant
+		return nil, errors.New("Invalid transaction")
 	}
-
 	password, err := pwd(fmt.Sprintf("Enter password to decrypt wallet '%s'", wlt.Id))
 	if err != nil {
-		logrus.Debug("Error getting password")
+		logrus.Debug("Error getting password signing transaction with remote wallet")
 		return nil, err
 	}
-	encodedResponse, err := unInjectedTransaction.txn.SerializeHex()
+	txnBytes, err := skyTxn.EncodeSkycoinTransaction()
 	if err != nil {
 		logrus.Debug("Couldn't get Transaction Encoded")
 		return nil, err
 	}
 	walletSignTxn := api.WalletSignTransactionRequest{
-		EncodedTransaction: encodedResponse,
+		EncodedTransaction: hex.EncodeToString(txnBytes),
 		WalletID:           wlt.Id,
 		Password:           password,
 		SignIndexes:        index,
@@ -345,20 +345,11 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		logrus.Debug("Error signing transaction")
 		return nil, err
 	}
-	skyTxn, err := txnResponse.Transaction.ToTransaction()
+	cTxn := NewSkycoinCreatedTransaction(txnResponse.Transaction)
 	if err != nil {
 		return nil, err
 	}
-	value, err := util.GetCoinValue(txnResponse.Transaction.Fee, CoinHour)
-	if err != nil {
-		logrus.Debug("Error getting fee")
-		return nil, nil
-	}
-	unTxn, err := NewUninjectedTransaction(skyTxn, value)
-	if err != nil {
-		return nil, err
-	}
-	return unTxn, nil
+	return cTxn, nil
 }
 
 func (wlt *RemoteWallet) GetLabel() string {
