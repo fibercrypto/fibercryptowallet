@@ -548,6 +548,7 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 func (walletM *WalletManager) getWallets() []*QWallet {
 	if walletM.wallets == nil {
 		walletM.updateWallets()
+	}
 	logWalletManager.Info("Getting wallets")
 	qWallets := make([]*QWallet, 0)
 	if walletM.WalletEnv == nil {
