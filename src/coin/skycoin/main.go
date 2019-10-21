@@ -98,6 +98,7 @@ func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 
 func init() {
 	cf := local.GetConfigManager()
+	local.NewOption(node, false)
 	core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(cf.GetNode()))
 	util.RegisterAltcoin(NewSkyFiberPlugin(SkycoinMainNetParams))
 }
