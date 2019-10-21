@@ -314,24 +314,24 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.
 func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
-		logrus.Warn(err)
+		logrus.Debug(err)
 		return nil, err
 	}
 	defer ReturnSkycoinClient(client)
 	unInjectedTransaction, ok := txn.(*SkycoinUninjectedTransaction)
 	if !ok {
-		logrus.Warn(err)
+		logrus.Debug(err)
 		return nil, err
 	}
 
 	password, err := pwd(fmt.Sprintf("Enter password to decrypt wallet '%s'", wlt.Id))
 	if err != nil {
-		logrus.Warn("Error getting password")
+		logrus.Debug("Error getting password")
 		return nil, err
 	}
 	encodedResponse, err := unInjectedTransaction.txn.SerializeHex()
 	if err != nil {
-		logrus.Warn("Couldn't get Transaction Encoded")
+		logrus.Debug("Couldn't get Transaction Encoded")
 		return nil, err
 	}
 	walletSignTxn := api.WalletSignTransactionRequest{
@@ -342,7 +342,7 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 	}
 	txnResponse, err := client.WalletSignTransaction(walletSignTxn)
 	if err != nil {
-		logrus.Warn("Error signing transaction")
+		logrus.Debug("Error signing transaction")
 		return nil, err
 	}
 	skyTxn, err := txnResponse.Transaction.ToTransaction()
@@ -351,7 +351,7 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 	}
 	value, err := util.GetCoinValue(txnResponse.Transaction.Fee, CoinHour)
 	if err != nil {
-		logrus.Warn("Error getting fee")
+		logrus.Debug("Error getting fee")
 		return nil, nil
 	}
 	unTxn, err := NewUninjectedTransaction(skyTxn, value)
@@ -404,7 +404,7 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 			return nil, err
 		}
 
-		return fromTxnResponseToUninjectedTxn(txnResponse)
+		return fromTxnResponse(txnResponse)
 	}
 
 	return createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, options, createTxnFunc)
@@ -511,7 +511,7 @@ func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.Transact
 			return nil, err
 		}
 
-		return fromTxnResponseToUninjectedTxn(txnResponse)
+		return fromTxnResponse(txnResponse)
 	}
 
 	return createTransaction(from, to, nil, change, options, createTxnFunc)
@@ -534,7 +534,7 @@ func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change cor
 			return nil, err
 		}
 
-		return fromTxnResponseToUninjectedTxn(txnResponse)
+		return fromTxnResponse(txnResponse)
 	}
 
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
@@ -1003,22 +1003,8 @@ func (wlt *LocalWallet) SetLabel(wltName string) {
 
 }
 
-
-func fromTxnResponseToUninjectedTxn(txnResponse *api.CreateTransactionResponse) (*SkycoinUninjectedTransaction, error) {
-	fee, err := util.GetCoinValue(txnResponse.Transaction.Fee, CoinHour)
-	if err != nil {
-		return nil, err
-	}
-	skyTxn, err := txnResponse.Transaction.ToTransaction()
-
-	if err != nil {
-		return nil, err
-	}
-	txn, err := NewUninjectedTransaction(skyTxn, fee)
-	if err != nil {
-		return nil, err
-	}
-	return txn, nil
+func fromTxnResponse(txnResponse *api.CreateTransactionResponse) (*SkycoinCreatedTransaction, error) {
+	return NewSkycoinCreatedTransaction(txnResponse.Transaction), nil
 }
 
 func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
@@ -1051,7 +1037,7 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 		if err != nil {
 			return nil, err
 		}
-		return fromTxnResponseToUninjectedTxn(txnR)
+		return fromTxnResponse(txnR)
 
 	}
 	return createTransaction(addresses, []core.TransactionOutput{&txnOutput}, nil, nil, options, createTxnFunc)
@@ -1069,7 +1055,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 		if err != nil {
 			return nil, err
 		}
-		return fromTxnResponseToUninjectedTxn(txnR)
+		return fromTxnResponse(txnR)
 
 	}
 
@@ -1087,7 +1073,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 		if err != nil {
 			return nil, err
 		}
-		return fromTxnResponseToUninjectedTxn(txnR)
+		return fromTxnResponse(txnR)
 
 	}
 
