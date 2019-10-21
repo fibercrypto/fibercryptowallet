@@ -2,7 +2,6 @@ package models
 
 import (
 	"errors"
-	"github.com/fibercrypto/F/src/coin/skycoin"
 	"sync"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -133,25 +132,25 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		qAddress.SetMarked(0)
 		qAddress.SetWallet(wlt.GetLabel())
 		qAddress.SetWalletId(wlt.GetId())
-		skyFl, err := addr.GetCryptoAccount().GetBalance(skycoin.SkycoinTicker)
+		skyFl, err := addr.GetCryptoAccount().GetBalance(params.SkycoinTicker)
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.SkycoinTicker + " Balance")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " Balance")
 			continue
 		}
-		accuracy, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
+		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.SkycoinTicker + " quotient")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " quotient")
 			continue
 		}
 		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
-		coinH, err := addr.GetCryptoAccount().GetBalance(skycoin.CoinHoursTicker)
+		coinH, err := addr.GetCryptoAccount().GetBalance(params.CoinHoursTicker)
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.CoinHoursTicker + " Balance")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " Balance")
 			continue
 		}
-		accuracy, err = util.AltcoinQuotient(skycoin.CoinHoursTicker)
+		accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Couldn't load " + skycoin.CoinHoursTicker + " quotient")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " quotient")
 			continue
 		}
 		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
@@ -268,7 +267,7 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	logWalletManager.Info("Broadcasting transaction")
 	altManager := core.LoadAltcoinManager()
-	plug, _ := altManager.LookupAltcoinManager(skycoin.SkycoinTicker)
+	plug, _ := altManager.LookupAltcoinManager(params.SkycoinTicker)
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error loading PEX")
@@ -408,7 +407,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	addr := &GenericAddress{
 		Address: destinationAddress,
 	}
-	coins, err := util.GetCoinValue(amount, skycoin.SkycoinTicker)
+	coins, err := util.GetCoinValue(amount, params.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't get Skycoin's")
 		return nil
