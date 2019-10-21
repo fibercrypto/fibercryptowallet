@@ -2,6 +2,7 @@ package skycoin
 
 import (
 	"encoding/json"
+	"fmt"
 
 	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 )
@@ -9,6 +10,9 @@ import (
 const (
 	LocalWallet = iota
 	RemoteWallet
+	SectionName               = "skycoin"
+	SettingPathToNode         = "node"
+	SettingPathToWalletSource = "walletSource"
 )
 
 var (
@@ -17,23 +21,33 @@ var (
 
 func registerConfig() error {
 	cm := local.GetConfigManager()
-	node := local.NewOption("node", false, "https://staging.node.skycoin.net")
+	node := local.NewOption(SettingPathToNode, false, "https://staging.node.skycoin.net")
 	wltSrc := &walletSource{
-		tp:     LocalWallet,
-		source: "/home/kid/.skycoin/wallets",
+		id:     1,
+		Tp:     LocalWallet,
+		Source: "/home/kid/.skycoin/wallets",
 	}
 	wltSrcBytes, err := json.Marshal(wltSrc)
 	if err != nil {
 		return err
 	}
 
-	wltOpt := local.NewOption("walletSource", false, string(wltSrcBytes))
+	wltOpt := local.NewOption(fmt.Sprintf("%s/%d", SettingPathToWalletSource, wltSrc.id), false, string(wltSrcBytes))
 
-	sectionManager = cm.RegisterSection()
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{node, wltOpt})
+	return nil
+}
+
+func getOption(path string) (string, error) {
+	return sectionManager.GetValue(path)
+}
+
+func getValues(prefix string) ([]string, error) {
 
 }
 
 type walletSource struct {
-	tp     int    `json:"SourceType"`
-	source string `json:"Source"`
+	id     int
+	Tp     int    `json:"SourceType"`
+	Source string `json:"Source"`
 }

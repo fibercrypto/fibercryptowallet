@@ -47,23 +47,45 @@ type SectionManager struct {
 
 func (sm *SectionManager) GetValue(path string) (string, error) {
 	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
 	val := sm.settings.Value(path, nil)
 	if val.IsNull() {
 		return "", OptionNotFoundError
 	}
 
-	sm.settings.EndGroup()
 	return val.ToString(), nil
 }
 
 func (sm *SectionManager) Save(path string, value string) error {
 	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
+
 	if !sm.settings.Contains(path) {
 		return OptionNotFoundError
 	}
 	sm.settings.SetValue(path, qtcore.NewQVariant1(value))
-	sm.settings.EndGroup()
+
 	return nil
+}
+
+func (sm *SectionManager) GetValues(prefix string) ([]string, error) {
+	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
+	groups := sm.settings.ChildGroups()
+	finded := false
+	for _, grp := range groups {
+		if grp == prefix {
+			finded = true
+			break
+		}
+	}
+	if !finded {
+		return nil, OptionNotFoundError
+	}
+
+	sm.settings.BeginGroup(prefix)
+	defer sm.settings.EndGroup()
+	return sm.settings.ChildKeys(), nil
 }
 
 type Option struct {
