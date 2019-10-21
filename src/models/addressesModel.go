@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/fibercrypto/F/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
@@ -161,10 +162,10 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 	a := m.Addresses()[row]
 	a.SetAddress(address)
 	//TODO: report possible error
-	accuracy, _ := util.AltcoinQuotient("SKY")
+	accuracy, _ := util.AltcoinQuotient(skycoin.SkycoinTicker)
 	a.SetAddressSky(util.FormatCoins(sky, accuracy))
 	//TODO: report possible error
-	accuracy, _ = util.AltcoinQuotient("SKYCH")
+	accuracy, _ = util.AltcoinQuotient(skycoin.CoinHoursTicker)
 	a.SetAddressCoinHours(util.FormatCoins(coinHours, accuracy))
 	changeMarked := true
 	if marked == a.Marked() {

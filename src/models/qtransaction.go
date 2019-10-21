@@ -1,6 +1,8 @@
 package models
 
 import (
+	"github.com/fibercrypto/F/src/coin/skycoin"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -29,11 +31,11 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	hoursTraspassed = 0
 	skyTraspassed = 0
 	inputsAddresses := make(map[string]struct{}, 0)
-	quotient, err := util.AltcoinQuotient("SKYCH")
+	quotient, err := util.AltcoinQuotient(skycoin.CoinHoursTicker)
 	if err != nil {
 		return nil, err
 	}
-	ch, err := txn.ComputeFee("SKYCH")
+	ch, err := txn.ComputeFee(skycoin.CoinHoursTicker)
 	if err != nil {
 		return nil, nil
 	}
@@ -47,20 +49,20 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 		addr := in.GetSpentOutput().GetAddress().String()
 		inputsAddresses[addr] = struct{}{}
 		qIn.SetAddress(addr)
-		quotient, err := util.AltcoinQuotient("SKY")
+		quotient, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
 		if err != nil {
 			return nil, err
 		}
-		sky, err := in.GetCoins("SKY")
+		sky, err := in.GetCoins(skycoin.SkycoinTicker)
 		if err != nil {
 			return nil, err
 		}
 		qIn.SetAddressSky(util.FormatCoins(sky, quotient))
-		quotient, err = util.AltcoinQuotient("SKYCH")
+		quotient, err = util.AltcoinQuotient(skycoin.CoinHoursTicker)
 		if err != nil {
 			return nil, err
 		}
-		ch, err := in.GetCoins("SKYCHC")
+		ch, err := in.GetCoins(params.CalculatedHoursTicker)
 		if err != nil {
 			return nil, err
 		}
@@ -75,17 +77,17 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 		qOu := address.NewAddressDetails(nil)
 		addr := out.GetAddress().String()
 		qOu.SetAddress(addr)
-		quotient, err := util.AltcoinQuotient("SKY")
-		sky, err := out.GetCoins("SKY")
+		quotient, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
+		sky, err := out.GetCoins(skycoin.SkycoinTicker)
 		if err != nil {
 			return nil, err
 		}
 		qOu.SetAddressSky(util.FormatCoins(sky, quotient))
-		quotient, err = util.AltcoinQuotient("SKYCH")
+		quotient, err = util.AltcoinQuotient(skycoin.CoinHoursTicker)
 		if err != nil {
 			return nil, err
 		}
-		ch, err := out.GetCoins("SKYCH")
+		ch, err := out.GetCoins(skycoin.CoinHoursTicker)
 		if err != nil {
 			return nil, err
 		}
@@ -99,7 +101,7 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	}
 	qtxn.SetOutputs(outputs)
 	qtxn.SetHoursTraspassed(util.FormatCoins(hoursTraspassed, quotient))
-	quotient, err = util.AltcoinQuotient("SKY")
+	quotient, err = util.AltcoinQuotient(skycoin.SkycoinTicker)
 	if err != nil {
 		return nil, err
 	}

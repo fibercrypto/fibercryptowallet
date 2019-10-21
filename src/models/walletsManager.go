@@ -268,7 +268,7 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	logWalletManager.Info("Broadcasting transaction")
 	altManager := core.LoadAltcoinManager()
-	plug, _ := altManager.LookupAltcoinManager("SKY")
+	plug, _ := altManager.LookupAltcoinManager(skycoin.SkycoinTicker)
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error loading PEX")
@@ -408,7 +408,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	addr := &GenericAddress{
 		Address: destinationAddress,
 	}
-	coins, err := util.GetCoinValue(amount, "SKY")
+	coins, err := util.GetCoinValue(amount, skycoin.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't get Skycoin's")
 		return nil

@@ -453,7 +453,7 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 		if err != nil {
 			return nil
 		}
-		skyAccuracy, err := util.AltcoinQuotient("SKY")
+		skyAccuracy, err := util.AltcoinQuotient(Sky)
 		if err != nil {
 			return nil
 		}
