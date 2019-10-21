@@ -132,7 +132,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			}
 			skyFloat := float64(skyUint64) / float64(accuracy)
 			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			chUint64, err := in.GetCoins(params.CalculatedHoursTicker)
+			chUint64, err := in.GetCoins(params.CoinHoursTicker)
 			if err != nil {
 				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
 				continue

@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"sync"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -9,7 +10,6 @@ import (
 	"github.com/therecipe/qt/qml"
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
@@ -664,7 +664,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	floatBl := float64(bl) / float64(accuracy)
 	qWallet.SetSky(floatBl)
 
-	bl, err = wlt.GetCryptoAccount().GetBalance(params.CoinHoursTicker)
+	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHoursTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours balance")
 		return qWallet

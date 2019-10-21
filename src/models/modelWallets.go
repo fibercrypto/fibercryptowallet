@@ -132,14 +132,14 @@ func (m *ModelWallets) loadModel() {
 				}
 				coins := util.FormatCoins(val, accuracy)
 				qo.SetAddressSky(coins)
-				val, err = to.GetCoins(coin.CalculatedHour)
+				val, err = to.GetCoins(coin.CoinHoursTicker)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CalculatedHour + " coins")
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
 					continue
 				}
-				accuracy, err = util.AltcoinQuotient(coin.CalculatedHour)
+				accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CalculatedHour + " coins quotient")
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
 					continue
 				}
 				coinsH := util.FormatCoins(val, accuracy)
