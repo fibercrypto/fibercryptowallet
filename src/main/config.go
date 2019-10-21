@@ -30,12 +30,15 @@ func (cm *ConfigManager) RegisterSection(name string, options []*Option) *Sectio
 	cm.setting.BeginGroup(name)
 	defer cm.setting.EndGroup()
 	defer cm.setting.Sync()
-	fmt.Println(name)
 
 	for _, opt := range options {
+		for _, sect := range opt.sectionPath {
+			cm.setting.BeginGroup(sect)
+			defer cm.setting.EndGroup()
+		}
 		if !opt.optional && !cm.setting.Contains(opt.name) {
-			fmt.Println("REGISTERING VALUE")
 			cm.setting.SetValue(opt.name, qtcore.NewQVariant1(opt._default))
+
 		}
 	}
 
@@ -53,7 +56,6 @@ type SectionManager struct {
 func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, error) {
 	sm.settings.BeginGroup(sm.name)
 	defer sm.settings.EndGroup()
-
 	for _, sect := range sectionPath {
 		groups := sm.settings.ChildGroups()
 		finded := false
@@ -69,8 +71,7 @@ func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, e
 		sm.settings.BeginGroup(sect)
 		defer sm.settings.EndGroup()
 	}
-
-	val := sm.settings.Value(name, nil)
+	val := sm.settings.Value(name, qtcore.NewQVariant())
 	if val.IsNull() {
 		return "", OptionNotFoundError
 	}
@@ -81,8 +82,22 @@ func (sm *SectionManager) Save(name string, sectionPath []string, value string) 
 	sm.settings.BeginGroup(sm.name)
 	defer sm.settings.EndGroup()
 	for _, sect := range sectionPath {
+		groups := sm.settings.ChildGroups()
+		finded := false
+		for _, grp := range groups {
+			if grp == sect {
+				finded = true
+				break
+			}
+		}
+		if !finded {
+			return OptionNotFoundError
+		}
 		sm.settings.BeginGroup(sect)
 		defer sm.settings.EndGroup()
+	}
+	if !sm.settings.Contains(name) {
+		return OptionNotFoundError
 	}
 	sm.settings.SetValue(name, qtcore.NewQVariant1(value))
 	return nil
@@ -97,6 +112,7 @@ func (sm *SectionManager) GetValues(sectionPath []string) ([]string, error) {
 		finded := false
 		for _, grp := range groups {
 			if grp == sect {
+				fmt.Println("FINDED ", grp)
 				finded = true
 				break
 			}
@@ -107,8 +123,12 @@ func (sm *SectionManager) GetValues(sectionPath []string) ([]string, error) {
 		sm.settings.BeginGroup(sect)
 		defer sm.settings.EndGroup()
 	}
-
-	return sm.settings.ChildKeys(), nil
+	keys := sm.settings.ChildKeys()
+	values := make([]string, 0)
+	for _, key := range keys {
+		values = append(values, sm.settings.Value(key, qtcore.NewQVariant()).ToString())
+	}
+	return values, nil
 }
 
 type Option struct {

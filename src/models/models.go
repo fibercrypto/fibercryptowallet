@@ -1,5 +1,7 @@
 package models
 
+import "fmt"
+
 func init() {
 
 	BlockchainStatusModel_QmlRegisterType2("BlockchainModels", 1, 0, "BlockchainStatusModel")
@@ -7,6 +9,7 @@ func init() {
 	QWallet_QmlRegisterType2("WalletsManager", 1, 0, "QWallet")
 	AddressesModel_QmlRegisterType2("WalletsManager", 1, 0, "AddressModel")
 	QAddress_QmlRegisterType2("WalletsManager", 1, 0, "QAddress")
+	fmt.Println("REGISTERED")
 	WalletManager_QmlRegisterType2("WalletsManager", 1, 0, "WalletManager")
 	ConfigManager_QmlRegisterType2("Config", 1, 0, "ConfigManager")
 	WalletSource_QmlRegisterType2("Config", 1, 0, "WalletSource")

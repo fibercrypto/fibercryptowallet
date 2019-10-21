@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import Qt.labs.settings 1.0
 import WalletsManager 1.0
-import Config 1.0
+//import Config 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -48,9 +48,9 @@ ApplicationWindow {
             enableNetworking = true
             enableSettings = true
         }
-        ConfigManager{
-            id: configManager
-        }
+        //ConfigManager{
+        //    id: configManager
+        //}
 
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()

@@ -2,7 +2,7 @@ package skycoin
 
 import (
 	"encoding/json"
-	"fmt"
+	"strings"
 
 	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 )
@@ -21,7 +21,7 @@ var (
 
 func registerConfig() error {
 	cm := local.GetConfigManager()
-	node := local.NewOption(SettingPathToNode, false, "https://staging.node.skycoin.net")
+	node := local.NewOption(SettingPathToNode, []string{}, false, "https://staging.node.skycoin.net")
 	wltSrc := &walletSource{
 		id:     1,
 		Tp:     LocalWallet,
@@ -32,18 +32,19 @@ func registerConfig() error {
 		return err
 	}
 
-	wltOpt := local.NewOption(fmt.Sprintf("%s/%d", SettingPathToWalletSource, wltSrc.id), false, string(wltSrcBytes))
+	wltOpt := local.NewOption(string(wltSrc.id), []string{SettingPathToWalletSource}, false, string(wltSrcBytes))
 
 	sectionManager = cm.RegisterSection(SectionName, []*local.Option{node, wltOpt})
 	return nil
 }
 
 func getOption(path string) (string, error) {
-	return sectionManager.GetValue(path)
+	stringList := strings.Split(path, "/")
+	return sectionManager.GetValue(stringList[len(stringList)-1], stringList[:len(stringList)-1])
 }
 
 func getValues(prefix string) ([]string, error) {
-	return sectionManager.GetValues(prefix)
+	return sectionManager.GetValues(strings.Split(prefix, "/"))
 }
 
 func getWalletSources() ([]*walletSource, error) {
@@ -53,12 +54,12 @@ func getWalletSources() ([]*walletSource, error) {
 	}
 	wltSrcs := make([]*walletSource, len(wltsString))
 	for i, wlt := range wltsString {
+		wltSrcs[i] = new(walletSource)
 		err = json.Unmarshal([]byte(wlt), wltSrcs[i])
 		if err != nil {
 			return nil, err
 		}
 	}
-
 	return wltSrcs, nil
 }
 
