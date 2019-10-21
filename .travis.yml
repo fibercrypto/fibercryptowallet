@@ -43,6 +43,7 @@ matrix:
     - make install-deps 
     
     script:
+    - make lint
     - make clean
     - make build
     - make test 
@@ -52,8 +53,10 @@ matrix:
     install:
     - choco install make -y
     - travis_wait make install-deps-Windows 
+    - make install-linters
     
     script:
+    - make lint
     - make build
     - make test 
 
@@ -64,6 +67,7 @@ matrix:
     - make install-deps 
     
     script:
+    - make lint
     - make clean
     - make build
     - make test 

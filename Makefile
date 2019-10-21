@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: run build clean help
+.PHONY: run build clean help lint install-linters
 
 UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
@@ -37,7 +37,7 @@ install-deps-Windows: ## Install Windowns dependencies
 	qtsetup -test=false -ErrorAction SilentlyContinue 
 	go get -t -d -v ./...
 
-install-deps: install-deps-$(UNAME_S) ## 
+install-deps: install-deps-$(UNAME_S) install-linters ## 
 	@echo "Dependencies installed"
 
 build-docker: ## Build project using docker
@@ -75,6 +75,17 @@ clean: ## Clean project FiberCrypto Wallet.
 
 test: ## Run project test suite
 	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+
+install-linters: ## Install linters
+	go get -u github.com/FiloSottile/vendorcheck
+	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.10.2
+
+lint: ## Run linters. Use make install-linters first.
+	# src needs separate linting rules
+	golangci-lint run -c .golangci.yml ./src/coin/...
+	golangci-lint run -c .golangci.yml ./src/core/...
+	golangci-lint run -c .golangci.yml ./src/main/...
+	golangci-lint run -c .golangci.yml ./src/util/...
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
