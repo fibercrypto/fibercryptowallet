@@ -50,46 +50,64 @@ type SectionManager struct {
 	settings *qtcore.QSettings
 }
 
-func (sm *SectionManager) GetValue(path string) (string, error) {
+func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, error) {
 	sm.settings.BeginGroup(sm.name)
 	defer sm.settings.EndGroup()
-	val := sm.settings.Value(path, nil)
+
+	for _, sect := range sectionPath {
+		groups := sm.settings.ChildGroups()
+		finded := false
+		for _, grp := range groups {
+			if grp == sect {
+				finded = true
+				break
+			}
+		}
+		if !finded {
+			return "", OptionNotFoundError
+		}
+		sm.settings.BeginGroup(sect)
+		defer sm.settings.EndGroup()
+	}
+
+	val := sm.settings.Value(name, nil)
 	if val.IsNull() {
 		return "", OptionNotFoundError
 	}
-
 	return val.ToString(), nil
 }
 
-func (sm *SectionManager) Save(path string, value string) error {
+func (sm *SectionManager) Save(name string, sectionPath []string, value string) error {
 	sm.settings.BeginGroup(sm.name)
 	defer sm.settings.EndGroup()
-
-	if !sm.settings.Contains(path) {
-		return OptionNotFoundError
+	for _, sect := range sectionPath {
+		sm.settings.BeginGroup(sect)
+		defer sm.settings.EndGroup()
 	}
-	sm.settings.SetValue(path, qtcore.NewQVariant1(value))
-
+	sm.settings.SetValue(name, qtcore.NewQVariant1(value))
 	return nil
 }
 
-func (sm *SectionManager) GetValues(prefix string) ([]string, error) {
+func (sm *SectionManager) GetValues(sectionPath []string) ([]string, error) {
 	sm.settings.BeginGroup(sm.name)
 	defer sm.settings.EndGroup()
-	groups := sm.settings.ChildGroups()
-	finded := false
-	for _, grp := range groups {
-		if grp == prefix {
-			finded = true
-			break
+
+	for _, sect := range sectionPath {
+		groups := sm.settings.ChildGroups()
+		finded := false
+		for _, grp := range groups {
+			if grp == sect {
+				finded = true
+				break
+			}
 		}
-	}
-	if !finded {
-		return nil, OptionNotFoundError
+		if !finded {
+			return nil, OptionNotFoundError
+		}
+		sm.settings.BeginGroup(sect)
+		defer sm.settings.EndGroup()
 	}
 
-	sm.settings.BeginGroup(prefix)
-	defer sm.settings.EndGroup()
 	return sm.settings.ChildKeys(), nil
 }
 
@@ -100,14 +118,15 @@ type Option struct {
 	_default    string
 }
 
-func NewOption(name string, optional bool, _default string) *Option {
+func NewOption(name string, sectionPath []string, optional bool, _default string) *Option {
 	if !optional && _default == "" {
 		return nil
 	}
 	return &Option{
-		name:     name,
-		optional: optional,
-		_default: _default,
+		name:        name,
+		sectionPath: sectionPath,
+		optional:    optional,
+		_default:    _default,
 	}
 }
 
