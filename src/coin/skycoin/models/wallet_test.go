@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -253,6 +254,89 @@ func TestRemoteWalletSign(t *testing.T) {
 	value, err := ret.ComputeFee(CoinHour)
 	assert.Nil(t, err)
 	assert.Equal(t, uint64(100), value)
+}
+
+type TransferOptions struct {
+	values map[string]interface{}
+}
+
+func (tOpt *TransferOptions) GetValue(key string) interface{} {
+	return tOpt.values[key]
+}
+
+func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
+	tOpt.values[key] = value
+}
+
+func NewTransferOptions() *TransferOptions {
+	tOptions := TransferOptions{
+		values: make(map[string]interface{}, 0),
+	}
+	return &tOptions
+}
+
+func TestRemoteWalletTransfer(t *testing.T) {
+	destinationAddress := testutil.MakeAddress()
+	sky := 500
+	hash := testutil.RandSHA256(t)
+
+	addr := &SkycoinAddress{
+		address: destinationAddress.String(),
+	}
+
+	opt := NewTransferOptions()
+	opt.AddKeyValue("BurnFactor", "0.5")
+	opt.AddKeyValue("CoinHoursSelectionType", "auto")
+
+	req := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type:        "auto",
+			Mode:        "share",
+			ShareFactor: "0.5",
+		},
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+			},
+		},
+	}
+
+	wreq := api.WalletCreateTransactionRequest{
+		Unsigned:                 true,
+		WalletID:                 "wallet",
+		CreateTransactionRequest: req,
+	}
+
+	crtTxn := &api.CreateTransactionResponse{
+		Transaction: api.CreatedTransaction{
+			Fee:       "500",
+			InnerHash: hash.Hex(),
+		},
+	}
+	tx := &coin.Transaction{
+		InnerHash: hash,
+	}
+	b, _ := tx.Serialize()
+	crtTxn.Transaction.TxID = cipher.SumSHA256(b).Hex()
+
+	global_mock.On("WalletCreateTransaction", wreq).Return(
+		crtTxn,
+		nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+
+	txn, err := wlt.Transfer(addr, uint64(sky*1e6), opt)
+	assert.Nil(t, err)
+	val, err := txn.ComputeFee(CoinHour)
+	assert.Nil(t, err)
+	assert.Equal(t, uint64(sky), val)
+	assert.Equal(t, crtTxn.Transaction.TxID, txn.GetId())
+
 }
 
 func TestRemoteWalletGenAddresses(t *testing.T) {
