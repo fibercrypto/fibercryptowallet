@@ -93,6 +93,7 @@ func (m *ModelWallets) insertRows(row int, count int) bool {
 }
 
 func (m *ModelWallets) cleanModel() {
+	m.SetLoading(false)
 	m.SetAddresses(make([]*ModelAddresses, 0))
 }
 
