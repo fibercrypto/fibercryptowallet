@@ -41,11 +41,8 @@ else
 endif
 
 # Targets
-run:  ## Run FiberCrypto Wallet
-	@echo "Running $(APP_NAME)..."
-
 run: build ## Run FiberCrypto Wallet.
-	@echo "Running FiberCrypto Wallet..."
+	@echo "Running $(APP_NAME)..."
 	@./deploy/linux/FiberCryptoWallet
 
 install-deps-no-envs: ##  Install whithout
