@@ -1,6 +1,8 @@
 package util
 
-import "strconv"
+import (
+	"strconv"
+)
 
 func Min(a, b int) int {
 	if a <= b {
@@ -44,9 +46,13 @@ func FormatCoins(n uint64, quotient uint64) string {
 	if n == uint64(0) {
 		return "0"
 	}
+
 	number := strconv.FormatUint(n, 10)
 	lenQ := len(strconv.FormatUint(quotient, 10)) - 1
 	nFormatted := FormatUint64(n / quotient)
+	if lenQ > len(number) {
+		return nFormatted
+	}
 	reminder := number[len(number)-lenQ:]
 	reminder = RemoveZeros(reminder)
 	if len(reminder) == 0 {
@@ -58,7 +64,7 @@ func FormatCoins(n uint64, quotient uint64) string {
 func RemoveZeros(s string) string {
 	index := 0
 	temp := 0
-	for true {
+	for {
 		temp = index
 		for _, c := range s[index:] {
 			if string(c) != "0" {

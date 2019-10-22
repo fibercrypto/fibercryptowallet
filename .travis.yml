@@ -13,63 +13,64 @@ matrix:
   - stage: "RPI"
     if: branch = release*$
     install:
-    - docker pull therecipe/qt:rpi1
-    - docker pull therecipe/qt:rpi2
-    - docker pull therecipe/qt:rpi3
-    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    - DEFAULT_ARCH=rpi1 make install-docker-deps
+    - DEFAULT_ARCH=rpi2 make install-docker-deps
+    - DEFAULT_ARCH=rpi3 make install-docker-deps
+    - make install-deps-no-envs
     
     script:
-    - go get -t -d -v ./...
-    - $GOPATH/bin/qtdeploy -docker build rpi1
-    - $GOPATH/bin/qtdeploy -docker build rpi2
-    - $GOPATH/bin/qtdeploy -docker build rpi3
+    - make clean
+    - DEFAULT_TARGET=rpi1 make build-docker
+    - DEFAULT_TARGET=rpi2 make build-docker
+    - DEFAULT_TARGET=rpi3 make build-docker
     - make test
 
   - stage: "Android"
     if: branch = release*$
 
     install:
-    - docker pull therecipe/qt:android
-    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    - DEFAULT_ARCH=android make install-docker-deps
+    - make install-deps-no-envs
 
     script:
-    - go get -t -d -v ./...
-    - $GOPATH/bin/qtdeploy -docker build android
-    - $GOPATH/bin/qtdeploy -docker build android-emulator
+    - make clean
+    - DEFAULT_TARGET=android make build-docker
+    - DEFAULT_TARGET=android-emulator make build-docker
     - make test
 
   - stage: "Linux"
     install:
-    - docker pull therecipe/qt:linux
-    - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+    - make install-deps
     
     script:
-    - go get -t -d -v ./...
-    - $GOPATH/bin/qtdeploy -docker build desktop
+    - make lint
+    - make clean
+    - make build
     - make test
   
   - stage: "Windows"
     os: windows
     install:
-    - go get -u -v github.com/therecipe/qt/cmd/...
-    - ($(go env GOPATH)\bin\qtsetup -test=false | true)
+    - choco install make -y
+    - travis_wait make install-deps-Windows
+    - make install-linters
     
     script:
-    - go get -t -d -v ./...
-    - $GOPATH/bin/qtdeploy build desktop 
+    - make lint
+    - make build
     - make test
     - make build-icon
 
   - stage: "MacOS"
     os: osx
     osx_image: xcode10.2
+    install:
+    - make install-deps
+
     script:
-    - if [[ ! -d $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet ]]; then mkdir -p $GOPATH/src/github.com/fibercrypto; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet; fi
-    - cd $GOPATH/src/github.com/fibercrypto/FiberCryptoWallet
-    - xcode-select --install | true
-    - go get -u -v github.com/therecipe/qt/cmd/... && ($(go env GOPATH)/bin/qtsetup -test=false | true)
-    - go get -t -d -v ./...
-    - $GOPATH/bin/qtdeploy build desktop
+    - make lint
+    - make clean
+    - make build
     - make test
     - make build-icon
 

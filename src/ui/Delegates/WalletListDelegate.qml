@@ -137,7 +137,6 @@ Item {
         onAccepted: {
             if (encryptionEnabled){
                 dialogGetPasswordForAddAddresses.title = "Enter Password"
-                dialogGetPasswordForAddAddresses.warnigVisibility = false
                 dialogGetPasswordForAddAddresses.height = dialogGetPassword.height - 20
                 dialogGetPasswordForAddAddresses.nAddress = spinValue
                 dialogGetPasswordForAddAddresses.open()
@@ -165,7 +164,7 @@ Item {
         modal: true
         
         onAccepted: {
-            walletManager.newWalletAddress(fileName, nAddress, password.text)
+            walletManager.newWalletAddress(fileName, nAddress, dialogGetPasswordForAddAddresses.password)
             listAddresses.loadModel(walletManager.getAddresses(fileName))
         }
     }

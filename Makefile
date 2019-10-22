@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: run build-icon build clean help
+.PHONY: run build-icon build clean help lint install-linters
 
 # Application info (for dumping)
 ORG_DOMAIN		:= simelo.tech.org
@@ -17,7 +17,9 @@ ICONSET			:= resources/images/icons/appIcon/appIcon.iconset
 CONVERT			:= convert
 SIPS			:= sips
 ICONUTIL		:= iconutil
-UNAME_S = $(shell uname -s)
+UNAME_S         = $(shell uname -s)
+DEFAULT_TARGET  ?= desktop
+DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
@@ -41,7 +43,47 @@ endif
 # Targets
 run:  ## Run FiberCrypto Wallet
 	@echo "Running $(APP_NAME)..."
+
+run: build ## Run FiberCrypto Wallet.
+	@echo "Running FiberCrypto Wallet..."
 	@./deploy/linux/FiberCryptoWallet
+
+install-deps-no-envs: ##  Install whithout
+	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+	go get -t -d -v ./...
+	@echo "Dependencies installed"
+
+install-docker-deps: ## Install docker images for project compilation using docker
+	@echo "Downloading images..."
+	docker pull therecipe/qt:$(DEFAULT_ARCH)
+	@echo "Download finished."
+
+install-deps-Linux: ## Install Linux dependencies
+	sudo apt-get update
+	sudo apt-get install libgl-dev -y
+	go get -u -v github.com/therecipe/qt/cmd/...
+	(qtsetup -test=false | true)
+	go get -t -d -v ./...
+
+install-deps-Darwin: ## Install osx dependencies
+	xcode-select --install || true
+	go get -u -v github.com/therecipe/qt/cmd/...
+	qtsetup -test=false || true
+	go get -t -d -v ./...
+
+install-deps-Windows: ## Install Windowns dependencies
+	go get -u -v github.com/therecipe/qt/cmd/...
+	qtsetup -test=false -ErrorAction SilentlyContinue
+	go get -t -d -v ./...
+
+install-deps: install-deps-$(UNAME_S) install-linters ##
+	@echo "Dependencies installed"
+
+build-docker: ## Build project using docker
+	@echo "Building FiberCrypto Wallet..."
+	qtdeploy -docker build $(DEFAULT_TARGET)
+	@echo "Done."
+
 
 build-icon-Windows_NT: ## Build the application icon in Windows
 	mkdir -p $(ICONS_BUILDPATH)
@@ -71,7 +113,7 @@ build-icon-Darwin: ## Build the application icon in Darwin
 	$(SIPS) -z 512 512 "$(APP_ICON_PATH)/appIcon.png" --out "$(ICONSET)/icon_512x512.png"
 	$(SIPS) -z 1024 1024 $(APP_ICON_PATH)/appIcon.png --out "$(ICONSET)/icon_512x512@2x.png"
 	$(ICONUTIL) --convert icns --output "$(APP_ICON_PATH)/appIcon.icns" "$(ICONSET)"
-	
+
 build-icon-Linux: ## Build the application icon in Linux
 	@echo "Icons cannot be embedded in ELF executables."
 
@@ -86,7 +128,7 @@ build-Windows_NT: ## Build FiberCrypto Wallet in Windows
 	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
 
 
-build-Darwin: ## Build FiberCrypto Wallet in Darwin 
+build-Darwin: ## Build FiberCrypto Wallet in Darwin
 	@echo "Building on Darwin"
 	mkdir -p "$(DARWIN_RES)/Content/Resources"
 	cp "$(PLIST)" "$(DARWIN_RES)/Content/"
@@ -95,7 +137,15 @@ build-Darwin: ## Build FiberCrypto Wallet in Darwin
 build: build-$(OS)  ## Build FiberCrypto Wallet
 	@echo "Building $(APP_NAME)..."
 # 	Add the flag `-quickcompiler` when making a release
-	qtdeploy build desktop
+	qtdeploy build $(DEFAULT_TARGET)
+	@echo "Done."
+
+clean-Windows: ## Clean project FiberCrypto Wallet.
+	@echo "Cleaning project FiberCrypto Wallet..."
+	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "moc"} | Remove-Item
+	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "deploy"} | Remove-Item -recurse
+	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "windows"} | Remove-Item -recurse
+	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "rcc"} | Remove-Item -recurse
 	@echo "Done."
 
 clean-Windows_NT: ## Clean project in Windows
@@ -127,7 +177,19 @@ clean: clean-$(OS) ## Clean project FiberCrypto Wallet
 	@echo "Done."
 
 test: ## Run project test suite
-	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+
+install-linters: ## Install linters
+	go get -u github.com/FiloSottile/vendorcheck
+	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.10.2
+
+lint: ## Run linters. Use make install-linters first.
+	# src needs separate linting rules
+	golangci-lint run -c .golangci.yml ./src/coin/...
+	golangci-lint run -c .golangci.yml ./src/core/...
+	golangci-lint run -c .golangci.yml ./src/main/...
+	golangci-lint run -c .golangci.yml ./src/util/...
 
 help:
 	@echo "$(APP_NAME) v$(APP_VERSION)"
