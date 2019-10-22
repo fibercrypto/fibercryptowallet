@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/skycoin/skycoin/src/api"
@@ -234,9 +236,17 @@ func TestRemoteWalletSign(t *testing.T) {
 		SignIndexes:        nil,
 	}
 
-	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
-	crtTxn.Transaction.Fee = "100"
-	assert.Nil(t, err)
+	crtTxn := &api.CreateTransactionResponse{
+		Transaction: api.CreatedTransaction{
+			Fee:       "100",
+			InnerHash: hash.Hex(),
+		},
+	}
+	tx := &coin.Transaction{
+		InnerHash: hash,
+	}
+	b, _ := tx.Serialize()
+	crtTxn.Transaction.TxID = cipher.SumSHA256(b).Hex()
 
 	global_mock.On("WalletSignTransaction", walletSignTxn).Return(
 		crtTxn,
@@ -249,11 +259,13 @@ func TestRemoteWalletSign(t *testing.T) {
 	pwdReader := func(message string) (string, error) {
 		return "password", nil
 	}
+
 	ret, err := wlt.Sign(&unTxn, "source", pwdReader, nil)
 	assert.Nil(t, err)
 	value, err := ret.ComputeFee(CoinHour)
 	assert.Nil(t, err)
 	assert.Equal(t, uint64(100), value)
+	assert.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
 
 type TransferOptions struct {
@@ -276,6 +288,7 @@ func NewTransferOptions() *TransferOptions {
 }
 
 func TestRemoteWalletTransfer(t *testing.T) {
+	CleanGlobalMock()
 	destinationAddress := testutil.MakeAddress()
 	sky := 500
 	hash := testutil.RandSHA256(t)
@@ -339,9 +352,152 @@ func TestRemoteWalletTransfer(t *testing.T) {
 
 }
 
-func TestRemoteWalletGenAddresses(t *testing.T) {
+func TestRemoteWalletSendFromAddress(t *testing.T) {
+	CleanGlobalMock()
+	startAddress := testutil.MakeAddress()
+	destinationAddress := testutil.MakeAddress()
+	changeAddress := (testutil.MakeAddress()).String()
+	sky := 500
+	hash := testutil.RandSHA256(t)
 
+	toAddr := &SkycoinTransactionOutput{
+		skyOut: readable.TransactionOutput{
+			Address: destinationAddress.String(),
+			Coins:   strconv.Itoa(sky),
+			Hours:   uint64(250),
+		},
+	}
+	fromAddr := &SkycoinAddress{
+		address: startAddress.String(),
+	}
+	chgAddr := &SkycoinAddress{
+		address: changeAddress,
+	}
+
+	opt1 := NewTransferOptions()
+	opt1.AddKeyValue("BurnFactor", "0.5")
+	opt1.AddKeyValue("CoinHoursSelectionType", "auto")
+
+	req1 := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type:        "auto",
+			Mode:        "share",
+			ShareFactor: "0.5",
+		},
+		ChangeAddress: &changeAddress,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+			},
+		},
+		Addresses: []string{startAddress.String()},
+	}
+
+	wreq1 := api.WalletCreateTransactionRequest{
+		Unsigned:                 true,
+		WalletID:                 "wallet1",
+		CreateTransactionRequest: req1,
+	}
+
+	crtTxn1 := &api.CreateTransactionResponse{
+		Transaction: api.CreatedTransaction{
+			Fee:       strconv.Itoa(sky),
+			InnerHash: hash.Hex(),
+		},
+	}
+
+	opt2 := NewTransferOptions()
+	opt2.AddKeyValue("BurnFactor", "0.5")
+	opt2.AddKeyValue("CoinHoursSelectionType", "manual")
+
+	req2 := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type: "manual",
+		},
+		ChangeAddress: &changeAddress,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+				Hours:   "250",
+			},
+		},
+		Addresses: []string{startAddress.String()},
+	}
+
+	wreq2 := api.WalletCreateTransactionRequest{
+		Unsigned:                 true,
+		WalletID:                 "wallet2",
+		CreateTransactionRequest: req2,
+	}
+
+	crtTxn2 := &api.CreateTransactionResponse{
+		Transaction: api.CreatedTransaction{
+			Fee:       strconv.Itoa(sky),
+			InnerHash: hash.Hex(),
+		},
+	}
+
+	tx := &coin.Transaction{
+		InnerHash: hash,
+	}
+	b, _ := tx.Serialize()
+	crtTxn1.Transaction.TxID = cipher.SumSHA256(b).Hex()
+	crtTxn2.Transaction.TxID = crtTxn1.Transaction.TxID
+
+	global_mock.On("WalletCreateTransaction", wreq1).Return(
+		crtTxn1,
+		nil)
+	global_mock.On("WalletCreateTransaction", wreq2).Return(
+		crtTxn2,
+		nil)
+
+	wlt1 := &RemoteWallet{
+		Id:          "wallet1",
+		poolSection: PoolSection,
+	}
+
+	txn, err := wlt1.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
+	assert.Nil(t, err)
+	val, err := txn.ComputeFee(CoinHour)
+	assert.Nil(t, err)
+	assert.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	assert.Equal(t, crtTxn1.Transaction.TxID, txn.GetId())
+
+	wlt2 := &RemoteWallet{
+		Id:          "wallet2",
+		poolSection: PoolSection,
+	}
+
+	txn, err = wlt2.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
+	assert.Nil(t, err)
+	val, err = txn.ComputeFee(CoinHour)
+	assert.Nil(t, err)
+	assert.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	assert.Equal(t, crtTxn2.Transaction.TxID, txn.GetId())
+}
+
+func TestRemoteWalletGenAddresses(t *testing.T) {
+	CleanGlobalMock()
 	pwd := "pwd"
+
+	global_mock.On("Wallet", "wallet").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "wallet",
+				Encrypted: true,
+			},
+			Entries: []readable.WalletEntry{
+				readable.WalletEntry{Address: "addr"},
+			},
+		},
+		nil)
+
 	global_mock.On("NewWalletAddress", "wallet", 1, pwd).Return(
 		[]string{"addr", "addr"},
 		nil)
