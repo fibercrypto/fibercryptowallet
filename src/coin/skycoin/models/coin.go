@@ -423,6 +423,10 @@ func (txn *SkycoinUninjectedTransaction) IsFullySigned() (bool, error) {
 	return txn.txn.IsFullySigned(), nil
 }
 
+func (txn *SkycoinUninjectedTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return txn.txn.Serialize()
+}
+
 /*
 SkycoinTransaction
 */
@@ -986,3 +990,36 @@ func (txn *SkycoinCreatedTransaction) VerifySigned() error {
 func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
 	return checkFullySigned(txn)
 }
+
+// Type assertions to block compilation if contracts not satisfied
+var (
+	pendingTxn         SkycoinPendingTransaction
+	skyTxnInIter       SkycoinTransactionInputIterator
+	skyTxnIter         SkycoinTransactionIterator
+	pendingTxnIn       SkycoinPendingTransactionInput
+	pendingTxnOut      SkycoinPendingTransactionOutput
+	skyTxnOutIter      SkycoinTransactionOutputIterator
+	uninjectedTxn      SkycoinUninjectedTransaction
+	skyTxn             SkycoinTransaction
+	skyTxnIn           SkycoinTransactionInput
+	skyTxnOut          SkycoinTransactionOutput
+	cTxn               SkycoinCreatedTransaction
+	pendingTxnSky      skycoinTxn                     = &pendingTxn
+	pendingTxnReadable readableTxn                    = &pendingTxn
+	pendingTxnCore     core.Transaction               = &pendingTxn
+	skyTxnIterator     core.TransactionIterator       = &skyTxnIter
+	pendingTxnInCore   core.TransactionInput          = &pendingTxnIn
+	pendingTxnOutCore  core.TransactionOutput         = &pendingTxnOut
+	skyTxnInIterator   core.TransactionInputIterator  = &skyTxnInIter
+	skyTxnOutIterator  core.TransactionOutputIterator = &skyTxnOutIter
+	uninjectedTxnCore  core.Transaction               = &uninjectedTxn
+	uninjectedTxnSky   skycoinTxn                     = &uninjectedTxn
+	skyTxnSky          skycoinTxn                     = &skyTxn
+	skyTxnReadable     readableTxn                    = &skyTxn
+	skyTxnCore         core.Transaction               = &skyTxn
+	skyTxnInCore       core.TransactionInput          = &skyTxnIn
+	skyTxnOutCore      core.TransactionOutput         = &skyTxnOut
+	cTxnSky            skycoinTxn                     = &cTxn
+	cTxnReadable       readableTxn                    = &cTxn
+	cTxnCore           core.Transaction               = &cTxn
+)
