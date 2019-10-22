@@ -20,8 +20,10 @@ type ModelWallets struct {
 
 	_ map[int]*qtcore.QByteArray  `property:"roles"`
 	_ []*ModelAddresses        	  `property:"addresses"`
+	_ bool 				       	  `property:"loading"`
 
 	_ func()				      `slot:"loadModel"`
+	_ func()				      `slot:"cleanModel"`
 	_ func([]*ModelAddresses) 	  `slot:"addAddresses"`
 }
 
@@ -32,10 +34,12 @@ func (m *ModelWallets) init() {
 	})
 
 	m.ConnectRowCount(m.rowCount)
+	m.ConnectCleanModel(m.cleanModel)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
+	m.SetLoading(true)
 	altManager := core.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -88,7 +92,12 @@ func (m *ModelWallets) insertRows(row int, count int) bool {
 	return true
 }
 
+func (m *ModelWallets) cleanModel() {
+	m.SetAddresses(make([]*ModelAddresses, 0))
+}
+
 func (m *ModelWallets) loadModel() {
+	m.SetLoading(true)
 	aModels := make([]*ModelAddresses, 0)
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
@@ -137,6 +146,7 @@ func (m *ModelWallets) loadModel() {
 		ma.addOutputs(oModels)
 		aModels = append(aModels, ma)
 	}
+	m.SetLoading(false)
 	m.addAddresses(aModels)
 }
 
