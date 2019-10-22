@@ -901,66 +901,134 @@ func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.P
 	return
 }
 
-func (wlt *LocalWallet) signSkycoinTxn(Txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
-	clt, err := NewSkycoinApiClient(PoolSection)
-	if err != nil {
-		return nil, err
-	}
-	defer ReturnSkycoinClient(clt)
+func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
+	var skyTxn *coin.Transaction
+	var err error
+	var uxouts []coin.UxOut
+	var txnFee uint64
 
-	unTxn, ok := Txn.(*SkycoinUninjectedTransaction)
-	if !ok {
-		return nil, errors.New("Invalid Transaction")
-	}
-	//dir := filepath.Join(wlt.WalletDir, wlt.Id)
-	skyWlt, err := wallet.Load(filepath.Join(wlt.WalletDir, wlt.Id))
+	walletDir := filepath.Join(wlt.WalletDir, wlt.Id)
+	skyWlt, err := wallet.Load(walletDir)
 	if err != nil {
 		return nil, err
 	}
-	pass, err := pwd("Type your password")
-	if err != nil {
-		return nil, err
-	}
+	if rTxn, isReadableTxn := txn.(readableTxn); isReadableTxn {
+		// Readable tranasctions should not need extra API calls
+		cTxn, err := rTxn.ToCreatedTransaction()
+		if err != nil {
+			return nil, err
+		}
+		skyTxn, err = cTxn.ToTransaction()
+		if err != nil {
+			return nil, err
+		}
+		uxouts = make([]coin.UxOut, len(cTxn.In))
+		txnHash, err := cipher.SHA256FromHex(cTxn.TxID)
+		if err != nil {
+			logrus.Errorf("Error parsing transaction hash %s", cTxn.TxID)
+			return nil, err
+		}
+		tmpInt64, err := strconv.ParseInt(cTxn.Fee, 10, 64)
+		if err != nil {
+			logrus.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
+			return nil, err
+		}
+		txnFee = uint64(tmpInt64)
+		for i, cIn := range cTxn.In {
+			tmpInt64, err = strconv.ParseInt(cIn.Coins, 10, 64)
+			if err != nil {
+				logrus.Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
+				return nil, err
+			}
+			cInCoins := uint64(tmpInt64)
+			tmpInt64, err = strconv.ParseInt(cIn.Hours, 10, 64)
+			if err != nil {
+				logrus.Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
+				return nil, err
+			}
+			cInHours := uint64(tmpInt64)
+			cInAddr, err := cipher.DecodeBase58Address(cIn.Address)
+			if err != nil {
+				logrus.Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
+				return nil, err
+			}
 
-	if skyWlt.IsEncrypted() {
-		skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
+			uxouts[i] = coin.UxOut{
+				Head: coin.UxHead{
+					Time:  cIn.Time,
+					BkSeq: cIn.Block,
+				},
+				Body: coin.UxBody{
+					SrcTransaction: txnHash,
+					Address:        cInAddr,
+					Coins:          cInCoins,
+					Hours:          cInHours,
+				},
+			}
+		}
+	} else {
+		// Raw transaction
+		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
+		if !ok {
+			// Raw transactions other than uninjected transactions not allowed
+			return nil, errors.New("Invalid Transaction")
+		}
+		// Uninjected transactions
+		txnFee = unTxn.fee
+		skyTxn = unTxn.txn
+		clt, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
 			return nil, err
 		}
-	}
+		defer ReturnSkycoinClient(clt)
 
-	uxouts := make([]coin.UxOut, 0)
-	for _, in := range unTxn.txn.In {
-		ux, err := clt.UxOut(in.String())
+		pass, err := pwd("Type your password")
 		if err != nil {
 			return nil, err
 		}
-		addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
-		if err != nil {
-			return nil, err
+
+		if skyWlt.IsEncrypted() {
+			skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
+			if err != nil {
+				return nil, err
+			}
 		}
-		srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
-		if err != nil {
-			return nil, err
+
+		uxouts = make([]coin.UxOut, 0)
+		for _, in := range unTxn.txn.In {
+			ux, err := clt.UxOut(in.String())
+			if err != nil {
+				return nil, err
+			}
+			addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
+			if err != nil {
+				return nil, err
+			}
+			srctxn, err := cipher.SHA256FromHex(ux.SrcTx)
+			if err != nil {
+				return nil, err
+			}
+			uxouts = append(uxouts, coin.UxOut{
+				Head: coin.UxHead{
+					BkSeq: ux.SrcBkSeq,
+					Time:  ux.Time,
+				},
+				Body: coin.UxBody{
+					Address:        addr,
+					Coins:          ux.Coins,
+					Hours:          ux.Hours,
+					SrcTransaction: srctxn,
+				},
+			})
 		}
-		uxouts = append(uxouts, coin.UxOut{
-			Head: coin.UxHead{
-				BkSeq: ux.SrcBkSeq,
-				Time:  ux.Time,
-			},
-			Body: coin.UxBody{
-				Address:        addr,
-				Coins:          ux.Coins,
-				Hours:          ux.Hours,
-				SrcTransaction: srctxn,
-			},
-		})
 	}
-	signedTxn, err := wallet.SignTransaction(skyWlt, unTxn.txn, index, uxouts)
+	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
 	if err != nil {
+		logrus.Errorf("Transaction signing failed for txn %s", txn.GetId())
 		return nil, err
 	}
-	resultTxn, err := NewUninjectedTransaction(signedTxn, unTxn.fee)
+	// FIXME: Return readable SkycoinCreatedTransaction since UX data is available
+	resultTxn, err := NewUninjectedTransaction(signedTxn, txnFee)
 	if err != nil {
 		return nil, err
 	}
