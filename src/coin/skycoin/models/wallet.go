@@ -346,9 +346,6 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		return nil, err
 	}
 	cTxn := NewSkycoinCreatedTransaction(txnResponse.Transaction)
-	if err != nil {
-		return nil, err
-	}
 	return cTxn, nil
 }
 

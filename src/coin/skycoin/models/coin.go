@@ -168,7 +168,7 @@ type readableTxn interface {
 	ToCreatedTransaction() (*api.CreatedTransaction, error)
 }
 
-func verifyCreatedTransaction(rTxn readableTxn, checkSigned bool) error {
+func verifyReadableTransaction(rTxn readableTxn, checkSigned bool) error {
 	var createdTxn *api.CreatedTransaction
 	if cTxn, err := rTxn.ToCreatedTransaction(); err != nil {
 		createdTxn = cTxn
@@ -191,7 +191,7 @@ func (txn *SkycoinPendingTransaction) VerifyUnsigned() error {
 		// FIXME: Unique error object
 		return errors.New("Invalid unconfirmed transaction")
 	}
-	return verifyCreatedTransaction(txn, false)
+	return verifyReadableTransaction(txn, false)
 }
 
 // VerifySigned checks for valid unsigned transaction
@@ -200,7 +200,7 @@ func (txn *SkycoinPendingTransaction) VerifySigned() error {
 		// FIXME: Unique error object
 		return errors.New("Invalid unconfirmed transaction")
 	}
-	return verifyCreatedTransaction(txn, true)
+	return verifyReadableTransaction(txn, true)
 }
 
 func checkFullySigned(rTxn readableTxn) (bool, error) {
@@ -518,12 +518,12 @@ func (txn *SkycoinTransaction) ToCreatedTransaction() (*api.CreatedTransaction, 
 
 // VerifyUnsigned checks for valid unsigned transaction
 func (txn *SkycoinTransaction) VerifyUnsigned() error {
-	return verifyCreatedTransaction(txn, false)
+	return verifyReadableTransaction(txn, false)
 }
 
 // VerifySigned checks for valid unsigned transaction
 func (txn *SkycoinTransaction) VerifySigned() error {
-	return verifyCreatedTransaction(txn, true)
+	return verifyReadableTransaction(txn, true)
 }
 
 // IsFullySigned deermine whether all transaction elements have been signed
@@ -978,12 +978,12 @@ func (txn *SkycoinCreatedTransaction) ToCreatedTransaction() (*api.CreatedTransa
 
 // VerifyUnsigned checks for valid unsigned transaction
 func (txn *SkycoinCreatedTransaction) VerifyUnsigned() error {
-	return verifyCreatedTransaction(txn, false)
+	return verifyReadableTransaction(txn, false)
 }
 
 // VerifySigned checks for valid unsigned transaction
 func (txn *SkycoinCreatedTransaction) VerifySigned() error {
-	return verifyCreatedTransaction(txn, true)
+	return verifyReadableTransaction(txn, true)
 }
 
 // IsFullySigned deermine whether all transaction elements have been signed
@@ -991,7 +991,7 @@ func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
 	return checkFullySigned(txn)
 }
 
-// Type assertions to block compilation if contracts not satisfied
+// Type assertions to abort compilation if contracts not satisfied
 var (
 	pendingTxn         SkycoinPendingTransaction
 	skyTxnInIter       SkycoinTransactionInputIterator
