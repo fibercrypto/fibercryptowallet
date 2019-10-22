@@ -661,6 +661,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin Altcoin quotient")
 		return qWallet
 	}
+
 	floatBl := float64(bl) / float64(accuracy)
 	qWallet.SetSky(floatBl)
 
@@ -669,7 +670,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours balance")
 		return qWallet
 	}
-	accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
+	accuracy, err = util.AltcoinQuotient(sky.SkycoinTicker)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours Altcoin quotient")
 		return qWallet
