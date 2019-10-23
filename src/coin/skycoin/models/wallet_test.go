@@ -8,7 +8,7 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/stretchr/testify/assert"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
@@ -63,16 +63,16 @@ func TestTransactionFinderAddressesActivity(t *testing.T) {
 	thxF := &TransactionFinder{}
 
 	mask, err := thxF.AddressesActivity([]cipher.Address{})
-	assert.Nil(t, err)
-	assert.Equal(t, 0, len(mask))
-	assert.Equal(t, []bool{}, mask)
+	require.Nil(t, err)
+	require.Equal(t, 0, len(mask))
+	require.Equal(t, []bool{}, mask)
 
 	mask, err = thxF.AddressesActivity(addresses)
-	assert.Nil(t, err)
-	assert.Equal(t, 3, len(mask))
-	assert.Equal(t, false, mask[0])
+	require.Nil(t, err)
+	require.Equal(t, 3, len(mask))
+	require.Equal(t, false, mask[0])
 	for i := 1; i < 3; i++ {
-		assert.Equal(t, true, mask[i])
+		require.Equal(t, true, mask[i])
 	}
 }
 
@@ -103,8 +103,8 @@ func TestSkycoinRemoteWalletListWallets(t *testing.T) {
 	iter := wltSrv.ListWallets()
 	for iter.Next() {
 		wlt := iter.Value()
-		assert.Equal(t, "wallet", wlt.GetLabel())
-		assert.Equal(t, "FiberCrypto", wlt.GetId())
+		require.Equal(t, "wallet", wlt.GetLabel())
+		require.Equal(t, "FiberCrypto", wlt.GetId())
 	}
 }
 
@@ -155,14 +155,14 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 	}
 
 	wlt1, err := wltSrv.CreateWallet(label, seed, true, pwdReader, scanN)
-	assert.Nil(t, err)
-	assert.Equal(t, "walletEncrypted", wlt1.GetLabel())
-	assert.Equal(t, "FiberCrypto", wlt1.GetId())
+	require.Nil(t, err)
+	require.Equal(t, "walletEncrypted", wlt1.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt1.GetId())
 
 	wlt2, err := wltSrv.CreateWallet(label, seed, false, pwdReader, scanN)
-	assert.Nil(t, err)
-	assert.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
-	assert.Equal(t, "FiberCrypto", wlt2.GetId())
+	require.Nil(t, err)
+	require.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt2.GetId())
 }
 
 func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
@@ -185,12 +185,12 @@ func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 
 	encrypted, err := wltSrv.IsEncrypted("encrypted")
-	assert.Nil(t, err)
-	assert.Equal(t, true, encrypted)
+	require.Nil(t, err)
+	require.Equal(t, true, encrypted)
 
 	encrypted, err = wltSrv.IsEncrypted("nonEncrypted")
-	assert.Nil(t, err)
-	assert.Equal(t, false, encrypted)
+	require.Nil(t, err)
+	require.Equal(t, false, encrypted)
 }
 
 func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
@@ -212,8 +212,8 @@ func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
 
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 	wlt := wltSrv.GetWallet("wallet")
-	assert.Equal(t, "wallet", wlt.GetLabel())
-	assert.Equal(t, "FiberCrypto", wlt.GetId())
+	require.Equal(t, "wallet", wlt.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt.GetId())
 }
 
 func TestRemoteWalletSign(t *testing.T) {
@@ -230,7 +230,7 @@ func TestRemoteWalletSign(t *testing.T) {
 		fee:     100,
 	}
 	encodedResponse, err := unTxn.txn.SerializeHex()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	walletSignTxn := api.WalletSignTransactionRequest{
 		EncodedTransaction: encodedResponse,
@@ -241,7 +241,7 @@ func TestRemoteWalletSign(t *testing.T) {
 
 	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
 	crtTxn.Transaction.Fee = "100"
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	global_mock.On("WalletSignTransaction", walletSignTxn).Return(
 		crtTxn,
@@ -255,10 +255,10 @@ func TestRemoteWalletSign(t *testing.T) {
 		return "password", nil
 	}
 	ret, err := wlt.Sign(&unTxn, "source", pwdReader, nil)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	value, err := ret.ComputeFee(CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, uint64(100), value)
+	require.Nil(t, err)
+	require.Equal(t, uint64(100), value)
 }
 
 func TestRemoteWalletGenAddresses(t *testing.T) {
@@ -278,7 +278,7 @@ func TestRemoteWalletGenAddresses(t *testing.T) {
 	iter := wlt.GenAddresses(0, 0, 2, pwdReader)
 	for iter.Next() {
 		a := iter.Value()
-		assert.Equal(t, "addr", a.String())
+		require.Equal(t, "addr", a.String())
 	}
 }
 
@@ -289,14 +289,14 @@ func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
 		poolSection: PoolSection,
 	}
 	iter, err := wlt.GetLoadedAddresses()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	items := 0
 	for iter.Next() {
 		a := iter.Value()
 		items++
-		assert.Equal(t, "addr", a.String())
+		require.Equal(t, "addr", a.String())
 	}
-	assert.Equal(t, 1, items)
+	require.Equal(t, 1, items)
 }
 
 func makeUninjectedTransaction(t *testing.T, txn *coin.Transaction, fee uint64) *SkycoinUninjectedTransaction {
@@ -533,7 +533,7 @@ func TestTransactionSignInput(t *testing.T) {
 	// Input is already signed
 	wallets, err1 := makeLocalWalletsFromKeyData(t, keysData)
 	require.NoError(t, err1)
-	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, nil, []string{"0"})
+	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
 	testutil.RequireError(t, err, "Input already signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
@@ -632,4 +632,3 @@ func TestTransactionSignInputs(t *testing.T) {
 	require.Error(t, cipher.VerifyAddressSignedHash(a2, txn.Sigs[0], h))
 }
 */
-
