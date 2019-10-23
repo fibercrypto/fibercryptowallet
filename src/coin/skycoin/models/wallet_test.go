@@ -440,7 +440,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 }
 
 func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
-	txn, _, err := makeTransactionMultipleInputs(t, 2)
+	txn, _, _, err := makeTransactionMultipleInputs(t, 2)
 	require.NoError(t, err)
 	uiTxn := makeUninjectedTransaction(t, &txn, 0)
 	err = uiTxn.VerifyUnsigned()
@@ -450,7 +450,7 @@ func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
 	// A stable invalid signature must be used because random signatures could appear valid
 	// Note: Transaction.Verify() only checks that the signature is a minimally valid signature
 	badSig := "9a0f86874a4d9541f58a1de4db1c1b58765a868dc6f027445d0a2a8a7bddd1c45ea559fcd7bef45e1b76ccdaf8e50bbebd952acbbea87d1cb3f7a964bc89bf1ed5"
-	txn, _, err = makeTransactionMultipleInputs(t, 2)
+	txn, _, _, err = makeTransactionMultipleInputs(t, 2)
 	require.NoError(t, err)
 	txn.Sigs[0] = cipher.Sig{}
 	txn.Sigs[1] = cipher.MustSigFromHex(badSig)
@@ -463,7 +463,7 @@ func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
 	testutil.RequireError(t, err, "Invalid number of signatures")
 
 	// Transaction is unsigned if at least 1 signature is null
-	txn, _, err = makeTransactionMultipleInputs(t, 3)
+	txn, _, _, err = makeTransactionMultipleInputs(t, 3)
 	require.NoError(t, err)
 	require.True(t, len(txn.Sigs) > 1)
 	txn.Sigs[0] = cipher.Sig{}
@@ -521,8 +521,12 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Walle
 }
 
 func TestTransactionSignInput(t *testing.T) {
-	txn, keysData, err := makeTransactionMultipleInputs(t, 3)
+	txn, keysData, uxspent, err := makeTransactionMultipleInputs(t, 3)
 	require.NoError(t, err)
+	// Mock UxOut API calls
+	for _, ux := range uxspent {
+		global_mock.On("UxOut", ux.Hash().Hex()).Return(makeSpentOutput(ux, 0, cipher.SHA256{}))
+	}
 	uiTxn := makeUninjectedTransaction(t, &txn, 0)
 	var signedCoreTxn core.Transaction
 	var isFullySigned bool

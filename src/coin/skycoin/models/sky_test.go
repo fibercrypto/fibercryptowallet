@@ -9,6 +9,7 @@ import (
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	skytestsuite "github.com/skycoin/skycoin/src/cipher/testsuite"
 	"github.com/skycoin/skycoin/src/coin"
+	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/testutil"
 	"github.com/skycoin/skycoin/src/util/file"
 	"github.com/stretchr/testify/require"
@@ -134,20 +135,20 @@ func makeTransaction(t *testing.T) (coin.Transaction, error) {
 	return makeTransactionFromUxOut(t, ux, kd.SecKey), nil
 }
 
-func makeTransactionMultipleInputs(t *testing.T, n int) (coin.Transaction, []KeyData, error) {
+func makeTransactionMultipleInputs(t *testing.T, n int) (coin.Transaction, []KeyData, []coin.UxOut, error) {
 	uxs := make([]coin.UxOut, n)
 	keysdata := make([]KeyData, n)
 	secs := make([]cipher.SecKey, n)
 	for i := 0; i < n; i++ {
 		ux, kd, err := makeUxOutWithSecret(t)
 		if err != nil {
-			return coin.Transaction{}, nil, err
+			return coin.Transaction{}, nil, nil, err
 		}
 		uxs[i] = ux
 		secs[i] = kd.SecKey
 		keysdata[i] = *kd
 	}
-	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, nil
+	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, uxs, nil
 }
 
 func makeTransactions(t *testing.T, n int) (coin.Transactions, error) { //nolint:unparam
@@ -174,4 +175,17 @@ func copyTransaction(txn coin.Transaction) coin.Transaction {
 	txo.Out = make([]coin.TransactionOutput, len(txn.Out))
 	copy(txo.Out, txn.Out)
 	return txo
+}
+
+func makeSpentOutput(uxout coin.UxOut, spentBkSeq uint64, spentTxId cipher.SHA256) (rOut readable.SpentOutput) {
+	rOut.Uxid = uxout.Hash().Hex()
+	rOut.Time = uxout.Head.Time
+	rOut.SrcBkSeq = uxout.Head.BkSeq
+	rOut.SrcTx = uxout.Body.SrcTransaction.Hex()
+	rOut.OwnerAddress = uxout.Body.Address.String()
+	rOut.Coins = uxout.Body.Coins
+	rOut.Hours = uxout.Body.Hours
+	rOut.SpentBlockSeq = spentBkSeq
+	rOut.SpentTxnID = spentTxId.Hex()
+	return
 }
