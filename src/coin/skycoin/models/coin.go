@@ -37,7 +37,7 @@ func (txn *SkycoinPendingTransaction) GetStatus() core.TransactionStatus {
 func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput {
 	inputs := make([]core.TransactionInput, 0)
 	for _, input := range txn.Transaction.Transaction.In {
-		inputs = append(inputs, &SkycoinPendingTransactionInput{Input: input})
+		inputs = append(inputs, &SkycoinTransactionInput{skyIn: input})
 	}
 	return inputs
 }
@@ -45,7 +45,7 @@ func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput {
 func (txn *SkycoinPendingTransaction) GetOutputs() []core.TransactionOutput {
 	outputs := make([]core.TransactionOutput, 0)
 	for _, output := range txn.Transaction.Transaction.Out {
-		outputs = append(outputs, &SkycoinPendingTransactionOutput{Output: output})
+		outputs = append(outputs, &SkycoinTransactionOutput{skyOut: output, spent: false})
 	}
 	return outputs
 }
@@ -246,70 +246,6 @@ func (it *SkycoinTransactionIterator) HasNext() bool {
 
 func NewSkycoinTransactionIterator(transactions []core.Transaction) *SkycoinTransactionIterator {
 	return &SkycoinTransactionIterator{Transactions: transactions, Current: -1}
-}
-
-/**
- * SkycoinPendingTransactionInput
- */
-type SkycoinPendingTransactionInput struct { //Implements TransactionInput interface
-	Input readable.TransactionInput
-}
-
-func (in *SkycoinPendingTransactionInput) GetId() string {
-	return ""
-}
-
-func (in *SkycoinPendingTransactionInput) IsSpent() bool {
-	return true
-}
-
-func (in *SkycoinPendingTransactionInput) GetSpentOutput() core.TransactionOutput {
-	return nil
-}
-
-func (in *SkycoinPendingTransactionInput) GetCoins(ticker string) (uint64, error) {
-	if util.StringInList(ticker, []string{Sky, CoinHour, CalculatedHour}) {
-		return uint64(0), nil
-	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
-}
-
-/**
- * SkycoinPendingTransactionOutput
- */
-type SkycoinPendingTransactionOutput struct { //Implements TransactionOutput interface
-	Output readable.TransactionOutput
-}
-
-func (sto *SkycoinPendingTransactionOutput) GetId() string {
-	return sto.Output.Hash
-}
-
-func (sto *SkycoinPendingTransactionOutput) IsSpent() bool {
-	return false
-}
-
-func (sto *SkycoinPendingTransactionOutput) GetAddress() core.Address {
-	return &SkycoinAddress{address: sto.Output.Address}
-}
-
-func (sto *SkycoinPendingTransactionOutput) GetCoins(ticker string) (uint64, error) {
-	accuracy, err := util.AltcoinQuotient(ticker)
-	if err != nil {
-		return uint64(0), err
-	}
-	if ticker == Sky {
-		coin, err2 := strconv.ParseFloat(sto.Output.Coins, 64)
-		if err2 != nil {
-			return uint64(0), err2
-		}
-		return uint64(coin * float64(accuracy)), nil
-	} else if ticker == CoinHour {
-		return sto.Output.Hours * accuracy, nil
-	} else if ticker == CalculatedHour {
-		return uint64(0), nil
-	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
 }
 
 /**
@@ -996,8 +932,6 @@ var (
 	pendingTxn         SkycoinPendingTransaction
 	skyTxnInIter       SkycoinTransactionInputIterator
 	skyTxnIter         SkycoinTransactionIterator
-	pendingTxnIn       SkycoinPendingTransactionInput
-	pendingTxnOut      SkycoinPendingTransactionOutput
 	skyTxnOutIter      SkycoinTransactionOutputIterator
 	uninjectedTxn      SkycoinUninjectedTransaction
 	skyTxn             SkycoinTransaction
@@ -1008,8 +942,6 @@ var (
 	pendingTxnReadable readableTxn                    = &pendingTxn
 	pendingTxnCore     core.Transaction               = &pendingTxn
 	skyTxnIterator     core.TransactionIterator       = &skyTxnIter
-	pendingTxnInCore   core.TransactionInput          = &pendingTxnIn
-	pendingTxnOutCore  core.TransactionOutput         = &pendingTxnOut
 	skyTxnInIterator   core.TransactionInputIterator  = &skyTxnInIter
 	skyTxnOutIterator  core.TransactionOutputIterator = &skyTxnOutIter
 	uninjectedTxnCore  core.Transaction               = &uninjectedTxn
