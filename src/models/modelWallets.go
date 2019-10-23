@@ -1,11 +1,14 @@
 package models
 
 import (
-	qtcore "github.com/therecipe/qt/core"
 	coin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	qtcore "github.com/therecipe/qt/core"
 )
+
+var logWalletModel = logging.MustGetLogger("Wallet Model")
 
 const (
 	QName = int(qtcore.Qt__UserRole) + iota + 1
@@ -16,21 +19,21 @@ type ModelWallets struct {
 	qtcore.QAbstractListModel
 
 	WalletEnv core.WalletEnv
-	_ func()                      `constructor:"init"`
+	_         func() `constructor:"init"`
 
-	_ map[int]*qtcore.QByteArray  `property:"roles"`
-	_ []*ModelAddresses        	  `property:"addresses"`
+	_ map[int]*qtcore.QByteArray `property:"roles"`
+	_ []*ModelAddresses          `property:"addresses"`
 	_ bool 				       	  `property:"loading"`
 
-	_ func()				      `slot:"loadModel"`
+	_ func()                  `slot:"loadModel"`
 	_ func()				      `slot:"cleanModel"`
-	_ func([]*ModelAddresses) 	  `slot:"addAddresses"`
+	_ func([]*ModelAddresses) `slot:"addAddresses"`
 }
 
 func (m *ModelWallets) init() {
 	m.SetRoles(map[int]*qtcore.QByteArray{
-		Name: 			 qtcore.NewQByteArray2("name", -1),
-		QAddresses:		 qtcore.NewQByteArray2("qaddresses", -1),
+		Name:       qtcore.NewQByteArray2("name", -1),
+		QAddresses: qtcore.NewQByteArray2("qaddresses", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
@@ -64,13 +67,13 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 		return qtcore.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Addresses()){
+	if index.Row() >= len(m.Addresses()) {
 		return qtcore.NewQVariant()
 	}
 
 	w := m.Addresses()[index.Row()]
 
-	switch role{
+	switch role {
 	case QName:
 		{
 			return qtcore.NewQVariant1(w.Name())
@@ -87,7 +90,7 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 }
 
 func (m *ModelWallets) insertRows(row int, count int) bool {
-	m.BeginInsertRows(qtcore.NewQModelIndex(), row, row + count)
+	m.BeginInsertRows(qtcore.NewQModelIndex(), row, row+count)
 	m.EndInsertRows()
 	return true
 }
@@ -98,16 +101,18 @@ func (m *ModelWallets) cleanModel() {
 }
 
 func (m *ModelWallets) loadModel() {
+	logWalletsModel.Info("Loading Model")
 	m.SetLoading(true)
 	aModels := make([]*ModelAddresses, 0)
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
+		logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
 		return
 	}
 	for wallets.Next() {
 		addresses, err := wallets.Value().GetLoadedAddresses()
 		if err != nil {
-			println(err)
+			logWalletsModel.WithError(nil).Warn("Couldn't get loaded address")
 			return
 		}
 		ma := NewModelAddresses(nil)
@@ -125,21 +130,33 @@ func (m *ModelWallets) loadModel() {
 				to := outputs.Value()
 				qo := NewQOutput(nil)
 				qo.SetOutputID(to.GetId())
-				//TODO: report possible error
-				val, _ := to.GetCoins(coin.Sky)
-				//TODO: report possible error
-				accuracy, _ := util.AltcoinQuotient(coin.Sky)
+				val, err := to.GetCoins(coin.Sky)
+				if err != nil {
+					logWalletsModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+					continue
+				}
+				accuracy, err := util.AltcoinQuotient(coin.Sky)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+					continue
+				}
 				coins := util.FormatCoins(val, accuracy)
 				qo.SetAddressSky(coins)
-				//TODO: report possible error
-				val, _ = to.GetCoins(coin.CalculatedHour)
-				//TODO: report possible error
-				accuracy, _ = util.AltcoinQuotient(coin.CalculatedHour)
+				val, err = to.GetCoins(coin.CoinHoursTicker)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
+					continue
+				}
+				accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+					continue
+				}
 				coinsH := util.FormatCoins(val, accuracy)
 				qo.SetAddressCoinHours(coinsH)
 				qOutputs = append(qOutputs, qo)
 			}
-			if len(qOutputs) != 0{
+			if len(qOutputs) != 0 {
 				mo.addOutputs(qOutputs)
 				oModels = append(oModels, mo)
 			}
