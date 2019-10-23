@@ -42,7 +42,7 @@ func (blockchainStatus *BlockchainStatusModel) init() {
 	blockchainStatus.SetTotalSkySupplyDefault("0")
 	blockchainStatus.SetCurrentCoinHoursSupplyDefault("0")
 	blockchainStatus.SetTotalCoinHoursSupplyDefault("0")
-	bs.SetLoading(true)
+	blockchainStatus.SetLoading(true)
 	blockchainStatus.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
 }
 
@@ -114,7 +114,7 @@ func (blockchainStatus *BlockchainStatusModel) updateInfo() error {
 	blockchainStatus.SetTotalSkySupply(strconv.FormatUint(totalSkySupply, 10))
 	blockchainStatus.SetCurrentCoinHoursSupply(strconv.FormatUint(currentCoinHoursSupply, 10))
 	blockchainStatus.SetTotalCoinHoursSupply(strconv.FormatUint(totalCoinHoursSupply, 10))
-	bs.SetLoading(false)
+	blockchainStatus.SetLoading(false)
 
 	return nil
 }
