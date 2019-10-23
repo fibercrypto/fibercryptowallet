@@ -74,8 +74,8 @@ clean: ## Clean project FiberCrypto Wallet.
 	@echo "Done."
 
 test-sky: ## Run Skycoin plugin test suite
-	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
-	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 
 test: test-sky ## Run project test suite
 
