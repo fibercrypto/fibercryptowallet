@@ -6,7 +6,6 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
 	"github.com/skycoin/skycoin/src/cipher"
-	"github.com/skycoin/skycoin/src/cipher/bip39"
 	skytestsuite "github.com/skycoin/skycoin/src/cipher/testsuite"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
@@ -14,8 +13,6 @@ import (
 	"github.com/skycoin/skycoin/src/util/file"
 	"github.com/stretchr/testify/require"
 )
-
-var genPublic, genSecret = cipher.GenerateKeyPair()
 
 func makeAddress() cipher.Address {
 	p, _ := cipher.GenerateKeyPair()
@@ -49,11 +46,12 @@ func makeTransactionFromUxOut(t *testing.T, ux coin.UxOut, s cipher.SecKey) coin
 }
 
 var (
-	seedPairIndex    = 0
-	seedContinuation []byte
-	seedMnemonic     string
-	seedEntropy      []byte
-	seedData         *skytestsuite.SeedTestData
+	seedPairIndex        = 0
+	seedContinuation     []byte
+	seedMnemonic         string
+	seedEntropy          []byte
+	seedData             *skytestsuite.SeedTestData
+	genPublic, genSecret = cipher.GenerateKeyPair()
 )
 
 type KeyData struct {
@@ -80,8 +78,7 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 		require.NoError(t, err)
 
 		// Initialize internal test state
-		seedEntropy, err = bip39.EntropyFromMnemonic(string(data.Seed))
-		require.NoError(t, err)
+		seedEntropy = []byte(data.Seed)
 		seedContinuation = seedEntropy
 		seedMnemonic = string(data.Seed)
 		seedData = data
