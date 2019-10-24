@@ -526,7 +526,8 @@ func TestTransactionSignInput(t *testing.T) {
 	require.NoError(t, err)
 	// Mock UxOut API calls
 	for _, ux := range uxspent {
-		global_mock.On("UxOut", ux.Hash().Hex()).Return(makeSpentOutput(ux, 0, cipher.SHA256{}))
+		rUxOut := makeSpentOutput(ux, 0, cipher.SHA256{})
+		global_mock.On("UxOut", ux.Hash().Hex()).Return(&rUxOut, nil)
 	}
 	uiTxn := makeUninjectedTransaction(t, &txn, 0)
 	var signedCoreTxn core.Transaction
