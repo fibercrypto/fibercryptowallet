@@ -216,7 +216,7 @@ func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
 	require.Equal(t, "FiberCrypto", wlt.GetId())
 }
 
-func TestRemoteWalletSign(t *testing.T) {
+func TestRemoteWalletSignSkycoinTxn(t *testing.T) {
 	hash := testutil.RandSHA256(t)
 	txn := coin.Transaction{
 		Length:    100,
@@ -254,7 +254,7 @@ func TestRemoteWalletSign(t *testing.T) {
 	pwdReader := func(message string) (string, error) {
 		return "password", nil
 	}
-	ret, err := wlt.Sign(&unTxn, "source", pwdReader, nil)
+	ret, err := wlt.signSkycoinTxn(&unTxn, pwdReader, nil)
 	require.Nil(t, err)
 	value, err := ret.ComputeFee(CoinHour)
 	require.Nil(t, err)
