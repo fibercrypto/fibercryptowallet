@@ -254,10 +254,11 @@ func TestRemoteWalletSignSkycoinTxn(t *testing.T) {
 	pwdReader := func(message string) (string, error) {
 		return "password", nil
 	}
-	ret, err := wlt.signSkycoinTxn(&unTxn, pwdReader, nil)
-	require.Nil(t, err)
+	ret, err := wlt.Sign(&unTxn, SignerIDRemoteWallet, pwdReader, nil)
+	require.NoError(t, err)
+	require.NotNil(t, ret)
 	value, err := ret.ComputeFee(CoinHour)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, uint64(100), value)
 }
 
