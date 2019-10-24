@@ -82,8 +82,8 @@ test-hw: mocks ## Run Hardware wallet tests
 	go test github.com/fibercrypto/FiberCryptoWallet/src/hardware
 
 test-sky: ## Run Skycoin plugin test suite
-	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
-	go test github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 
 test-integration: ## Run integration tests
 	go test github.com/fibercrypto/FiberCryptoWallet/test/integration/hardware

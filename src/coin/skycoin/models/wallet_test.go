@@ -8,11 +8,296 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+
+	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/coin"
+	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/testutil"
 	"github.com/stretchr/testify/require"
 )
+
+func TestTransactionFinderAddressesActivity(t *testing.T) {
+	CleanGlobalMock()
+
+	addresses := make([]cipher.Address, 0)
+	addressesN := make([]string, 0)
+
+	for i := 0; i < 3; i++ {
+		p, _ := cipher.GenerateKeyPair()
+		a := cipher.AddressFromPubKey(p)
+		s := a.String()
+		addresses = append(addresses, a)
+		addressesN = append(addressesN, s)
+	}
+
+	global_mock.On("Transactions", []string{}).Return(nil, nil)
+	global_mock.On("Transactions", []string{addressesN[0]}).Return(
+		[]readable.TransactionWithStatus{},
+		nil)
+	global_mock.On("Transactions", []string{addressesN[1]}).Return(
+		[]readable.TransactionWithStatus{
+			readable.TransactionWithStatus{
+				Status: readable.TransactionStatus{
+					Confirmed: true,
+				},
+			},
+		},
+		nil)
+	global_mock.On("Transactions", []string{addressesN[2]}).Return(
+		[]readable.TransactionWithStatus{
+			readable.TransactionWithStatus{
+				Status: readable.TransactionStatus{
+					Confirmed: true,
+				},
+			},
+			readable.TransactionWithStatus{
+				Status: readable.TransactionStatus{
+					Confirmed: false,
+				},
+			},
+		},
+		nil)
+
+	thxF := &TransactionFinder{}
+
+	mask, err := thxF.AddressesActivity([]cipher.Address{})
+	require.Nil(t, err)
+	require.Equal(t, 0, len(mask))
+	require.Equal(t, []bool{}, mask)
+
+	mask, err = thxF.AddressesActivity(addresses)
+	require.Nil(t, err)
+	require.Equal(t, 3, len(mask))
+	require.Equal(t, false, mask[0])
+	for i := 1; i < 3; i++ {
+		require.Equal(t, true, mask[i])
+	}
+}
+
+func TestSkycoinRemoteWalletListWallets(t *testing.T) {
+
+	global_mock.On("Wallets").Return(
+		[]api.WalletResponse{
+			api.WalletResponse{
+				Meta: readable.WalletMeta{
+					Coin:      "Sky",
+					Filename:  "FiberCrypto",
+					Label:     "wallet",
+					Encrypted: true,
+				},
+			},
+			api.WalletResponse{
+				Meta: readable.WalletMeta{
+					Coin:      "Sky",
+					Filename:  "FiberCrypto",
+					Label:     "wallet",
+					Encrypted: true,
+				},
+			},
+		},
+		nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
+	iter := wltSrv.ListWallets()
+	for iter.Next() {
+		wlt := iter.Value()
+		require.Equal(t, "wallet", wlt.GetLabel())
+		require.Equal(t, "FiberCrypto", wlt.GetId())
+	}
+}
+
+func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
+
+	seed, label, pwd, scanN := "seed", "label", "pwd", 666
+
+	wltOpt1 := api.CreateWalletOptions{
+		Type:     WalletTypeDeterministic,
+		Seed:     seed,
+		Label:    label,
+		Password: pwd,
+		ScanN:    scanN,
+		Encrypt:  true,
+	}
+	wltOpt2 := api.CreateWalletOptions{
+		Type:    WalletTypeDeterministic,
+		Seed:    seed,
+		Label:   label,
+		ScanN:   scanN,
+		Encrypt: false,
+	}
+
+	global_mock.On("CreateWallet", wltOpt1).Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "walletEncrypted",
+				Encrypted: true,
+			},
+		},
+		nil)
+	global_mock.On("CreateWallet", wltOpt2).Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "walletNonEncrypted",
+				Encrypted: false,
+			},
+		},
+		nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
+	pwdReader := func(message string) (string, error) {
+		return "pwd", nil
+	}
+
+	wlt1, err := wltSrv.CreateWallet(label, seed, true, pwdReader, scanN)
+	require.Nil(t, err)
+	require.Equal(t, "walletEncrypted", wlt1.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt1.GetId())
+
+	wlt2, err := wltSrv.CreateWallet(label, seed, false, pwdReader, scanN)
+	require.Nil(t, err)
+	require.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt2.GetId())
+}
+
+func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
+
+	global_mock.On("Wallet", "encrypted").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Encrypted: true,
+			},
+		},
+		nil)
+	global_mock.On("Wallet", "nonEncrypted").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Encrypted: false,
+			},
+		},
+		nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
+
+	encrypted, err := wltSrv.IsEncrypted("encrypted")
+	require.Nil(t, err)
+	require.Equal(t, true, encrypted)
+
+	encrypted, err = wltSrv.IsEncrypted("nonEncrypted")
+	require.Nil(t, err)
+	require.Equal(t, false, encrypted)
+}
+
+func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
+	CleanGlobalMock()
+
+	global_mock.On("Wallet", "wallet").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "wallet",
+				Encrypted: true,
+			},
+			Entries: []readable.WalletEntry{
+				readable.WalletEntry{Address: "addr"},
+			},
+		},
+		nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
+	wlt := wltSrv.GetWallet("wallet")
+	require.Equal(t, "wallet", wlt.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt.GetId())
+}
+
+func TestRemoteWalletSignSkycoinTxn(t *testing.T) {
+	hash := testutil.RandSHA256(t)
+	txn := coin.Transaction{
+		Length:    100,
+		Type:      0,
+		InnerHash: hash,
+	}
+	unTxn := SkycoinUninjectedTransaction{
+		txn:     &txn,
+		inputs:  nil,
+		outputs: nil,
+		fee:     100,
+	}
+	encodedResponse, err := unTxn.txn.SerializeHex()
+	require.Nil(t, err)
+
+	walletSignTxn := api.WalletSignTransactionRequest{
+		EncodedTransaction: encodedResponse,
+		WalletID:           "wallet",
+		Password:           "password",
+		SignIndexes:        nil,
+	}
+
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn.Transaction.Fee = "100"
+	require.Nil(t, err)
+
+	global_mock.On("WalletSignTransaction", walletSignTxn).Return(
+		crtTxn,
+		nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+	pwdReader := func(message string) (string, error) {
+		return "password", nil
+	}
+	ret, err := wlt.signSkycoinTxn(&unTxn, pwdReader, nil)
+	require.Nil(t, err)
+	value, err := ret.ComputeFee(CoinHour)
+	require.Nil(t, err)
+	require.Equal(t, uint64(100), value)
+}
+
+func TestRemoteWalletGenAddresses(t *testing.T) {
+
+	pwd := "pwd"
+	global_mock.On("NewWalletAddress", "wallet", 1, pwd).Return(
+		[]string{"addr", "addr"},
+		nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+	pwdReader := func(message string) (string, error) {
+		return "pwd", nil
+	}
+	iter := wlt.GenAddresses(0, 0, 2, pwdReader)
+	for iter.Next() {
+		a := iter.Value()
+		require.Equal(t, "addr", a.String())
+	}
+}
+
+func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+	iter, err := wlt.GetLoadedAddresses()
+	require.Nil(t, err)
+	items := 0
+	for iter.Next() {
+		a := iter.Value()
+		items++
+		require.Equal(t, "addr", a.String())
+	}
+	require.Equal(t, 1, items)
+}
 
 func makeUninjectedTransaction(t *testing.T, txn *coin.Transaction, fee uint64) *SkycoinUninjectedTransaction {
 	if txn == nil {
@@ -155,7 +440,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 }
 
 func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
-	txn, _, err := makeTransactionMultipleInputs(t, 2)
+	txn, _, _, err := makeTransactionMultipleInputs(t, 2)
 	require.NoError(t, err)
 	uiTxn := makeUninjectedTransaction(t, &txn, 0)
 	err = uiTxn.VerifyUnsigned()
@@ -165,7 +450,7 @@ func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
 	// A stable invalid signature must be used because random signatures could appear valid
 	// Note: Transaction.Verify() only checks that the signature is a minimally valid signature
 	badSig := "9a0f86874a4d9541f58a1de4db1c1b58765a868dc6f027445d0a2a8a7bddd1c45ea559fcd7bef45e1b76ccdaf8e50bbebd952acbbea87d1cb3f7a964bc89bf1ed5"
-	txn, _, err = makeTransactionMultipleInputs(t, 2)
+	txn, _, _, err = makeTransactionMultipleInputs(t, 2)
 	require.NoError(t, err)
 	txn.Sigs[0] = cipher.Sig{}
 	txn.Sigs[1] = cipher.MustSigFromHex(badSig)
@@ -178,7 +463,7 @@ func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
 	testutil.RequireError(t, err, "Invalid number of signatures")
 
 	// Transaction is unsigned if at least 1 signature is null
-	txn, _, err = makeTransactionMultipleInputs(t, 3)
+	txn, _, _, err = makeTransactionMultipleInputs(t, 3)
 	require.NoError(t, err)
 	require.True(t, len(txn.Sigs) > 1)
 	txn.Sigs[0] = cipher.Sig{}
@@ -236,8 +521,12 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Walle
 }
 
 func TestTransactionSignInput(t *testing.T) {
-	txn, keysData, err := makeTransactionMultipleInputs(t, 3)
+	txn, keysData, uxspent, err := makeTransactionMultipleInputs(t, 3)
 	require.NoError(t, err)
+	// Mock UxOut API calls
+	for _, ux := range uxspent {
+		global_mock.On("UxOut", ux.Hash().Hex()).Return(makeSpentOutput(ux, 0, cipher.SHA256{}))
+	}
 	uiTxn := makeUninjectedTransaction(t, &txn, 0)
 	var signedCoreTxn core.Transaction
 	var isFullySigned bool
@@ -248,7 +537,7 @@ func TestTransactionSignInput(t *testing.T) {
 	// Input is already signed
 	wallets, err1 := makeLocalWalletsFromKeyData(t, keysData)
 	require.NoError(t, err1)
-	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, nil, []string{"0"})
+	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
 	testutil.RequireError(t, err, "Input already signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
