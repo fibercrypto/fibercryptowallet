@@ -50,12 +50,12 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:4882ca4e50712f367a52a467a277dcd8ef877b82acaa5973baea92fe7443f2eb"
+  digest = "1:4caab6f14c6b9654ccb7d398791d1f71a2d4e693ea508d29659a173e1b2e644a"
   name = "github.com/gogo/protobuf"
   packages = ["proto"]
   pruneopts = "UT"
-  revision = "0ca988a254f991240804bf9821f3450d87ccbb1b"
-  version = "v1.3.0"
+  revision = "5628607bb4c51c3157aacc3a50f0ab707582b805"
+  version = "v1.3.1"
 
 [[projects]]
   digest = "1:573ca21d3669500ff845bdebee890eb7fc7f0f50c59f2132f2a0c6b03d85086a"
@@ -112,6 +112,14 @@
   packages = ["."]
   pruneopts = "UT"
   revision = "9520e82c474b0a04dd04f8a40959027271bab992"
+
+[[projects]]
+  branch = "master"
+  digest = "1:ffc060c551980d37ee9e428ef528ee2813137249ccebb0bfc412ef83071cac91"
+  name = "github.com/micro/protobuf"
+  packages = ["proto"]
+  pruneopts = "UT"
+  revision = "ebd3be6d4fdb1ef0b460e26dd5de441fb5006d38"
 
 [[projects]]
   digest = "1:0028cb19b2e4c3112225cd871870f2d9cf49b9b4276531f03438a88e94be86fe"
@@ -189,7 +197,7 @@
   version = "v1.4.2"
 
 [[projects]]
-  branch = "master"
+  branch = "develop"
   digest = "1:3e8dde169837f2bd97f64305de43f61fe9be28ab50783a413fa3bd731c537493"
   name = "github.com/skycoin/hardware-wallet-go"
   packages = [
@@ -200,7 +208,7 @@
     "src/usb/lowlevel/libusb",
   ]
   pruneopts = "UT"
-  revision = "cde8af2770f90f22ee9a69705027b4f4b5700c37"
+  revision = "e0502cef440eee10f9187b1b678b056862d0bf94"
 
 [[projects]]
   digest = "1:c6d4676e48550d1af188ed2c0d844ec9d31432277080c3ea33126ad7ceeb1421"
@@ -214,7 +222,7 @@
 
 [[projects]]
   branch = "develop"
-  digest = "1:6ad497b5891eff6e1be23b823d7dbd11b7010a4eecac38927856273e51074884"
+  digest = "1:5ede931cf0314ea9ac6628f65e0926cbf92754c105a0883475a6aaa3fc68c757"
   name = "github.com/skycoin/skycoin"
   packages = [
     "src/api",
@@ -234,6 +242,7 @@
     "src/cipher/scrypt",
     "src/cipher/secp256k1-go",
     "src/cipher/secp256k1-go/secp256k1-go2",
+    "src/cipher/testsuite",
     "src/cli",
     "src/coin",
     "src/daemon",
@@ -243,6 +252,7 @@
     "src/kvstorage",
     "src/params",
     "src/readable",
+    "src/testutil",
     "src/transaction",
     "src/util/apputil",
     "src/util/droplet",
@@ -281,19 +291,35 @@
   version = "v1.0.5"
 
 [[projects]]
-  digest = "1:99d32780e5238c2621fff621123997c3e3cca96db8be13179013aea77dfab551"
+  digest = "1:23472f69a3ee7225de2f104aa48c6456959d1c155e45035c9845806d83109190"
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  pruneopts = "UT"
+  revision = "ea4fe68685ee0d3cee7032121851b57e7494e8ea"
+  version = "v0.2.0"
+
+[[projects]]
+  digest = "1:afa503f22c5464c93393d25b1c3b8743fe1a96ff0db2b99cbb2091214995bf4b"
   name = "github.com/stretchr/testify"
   packages = [
     "assert",
+    "mock",
     "require",
   ]
+  pruneopts = "UT"
+  revision = "2aa2c176b9dab406a6970f6a55f513e8a8c8b18f"
+
+[[projects]]
+  digest = "1:8ea33b4643816c86b5977519e89835bd65956ce28db3df6a1623377aaa28e93e"
+  name = "github.com/stretchrcom/testify"
+  packages = ["require"]
   pruneopts = "UT"
   revision = "221dbe5ed46703ee255b1da0dec05086f5035f62"
   version = "v1.4.0"
 
 [[projects]]
   branch = "master"
-  digest = "1:84972a708367ed8f9176d83998e20dce3a9af61530a772a5ad6efafedbd5adcb"
+  digest = "1:1f2ac409d4e44c88b9fdd8b9ce57b02cf42825293e76ad2dd98dab6288e1fd4a"
   name = "github.com/therecipe/qt"
   packages = [
     "core",
@@ -302,7 +328,7 @@
     "qml",
   ]
   pruneopts = "UT"
-  revision = "3904ec6ceb7b0f2e042c85450c8ca123a1396fb9"
+  revision = "590f404884c99350e2ae27bc5f4a1aa44fcf4249"
 
 [[projects]]
   branch = "master"
@@ -310,7 +336,7 @@
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "af544f31c8ac5794d2134b792e9eb714d9d8f9ce"
+  revision = "87dc89f01550277dc22b74ffcf4cd89fa2f40f4c"
 
 [[projects]]
   branch = "master"
@@ -318,45 +344,47 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "d66e71096ffb9f08f36d9aefcae80ce319de6d68"
+  revision = "ec77196f6094c3492a8b61f2c11cf937f78992ae"
 
 [[projects]]
   branch = "master"
-  digest = "1:9f5be1dbb5091bb62d83fbb6db8e794adb8f0e05424679d6f15a17b670e38b4c"
+  digest = "1:0451cf21ce34bcd708e508b7a80c92f3718b4df72fadef0dd3a60bee403e9f37"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "b09406accb4736d857a32bf9444cd7edae2ffa79"
-
-[[projects]]
-  digest = "1:59f10c1537d2199d9115d946927fe31165959a95190849c82ff11e05803528b0"
-  name = "gopkg.in/yaml.v2"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "f221b8435cfb71e54062f6c6e99e9ade30b124d5"
-  version = "v2.2.4"
+  revision = "b4ff53e7a1cb8ab8ce2e12d50d5d63530183e1a9"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/davecgh/go-spew/spew",
+    "github.com/gogo/protobuf/proto",
+    "github.com/micro/protobuf/proto",
     "github.com/sirupsen/logrus",
     "github.com/skycoin/hardware-wallet-go/src/skywallet",
+    "github.com/skycoin/hardware-wallet-go/src/skywallet/usb",
+    "github.com/skycoin/hardware-wallet-go/src/skywallet/wire",
+    "github.com/skycoin/hardware-wallet-protob/go",
     "github.com/skycoin/skycoin/src/api",
     "github.com/skycoin/skycoin/src/cipher",
     "github.com/skycoin/skycoin/src/cipher/bip39",
+    "github.com/skycoin/skycoin/src/cipher/testsuite",
     "github.com/skycoin/skycoin/src/cli",
     "github.com/skycoin/skycoin/src/coin",
     "github.com/skycoin/skycoin/src/params",
     "github.com/skycoin/skycoin/src/readable",
+    "github.com/skycoin/skycoin/src/testutil",
     "github.com/skycoin/skycoin/src/util/droplet",
+    "github.com/skycoin/skycoin/src/util/file",
     "github.com/skycoin/skycoin/src/visor",
     "github.com/skycoin/skycoin/src/wallet",
+    "github.com/stretchr/testify/assert",
+    "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
+    "github.com/stretchrcom/testify/require",
     "github.com/therecipe/qt/core",
     "github.com/therecipe/qt/gui",
     "github.com/therecipe/qt/qml",

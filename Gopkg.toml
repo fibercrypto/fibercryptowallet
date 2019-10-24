@@ -29,8 +29,8 @@ ignored = [
 ]
 
 [[constraint]]
-  branch = "master"
-  name = "github.com/skycoin/hardware-wallet-go"
+  name = "github.com/sirupsen/logrus"
+  version = "1.4.2"
 
 [[constraint]]
   name = "github.com/skycoin/skycoin"

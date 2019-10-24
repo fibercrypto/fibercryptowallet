@@ -307,7 +307,7 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.
 			return nil, errors.New("Unsupported signer")
 		}
 	}
-	txn, err = signer.SignTransaction(txn, pwd, index)
+	signedTxn, err = signer.SignTransaction(txn, pwd, index)
 	return
 }
 
@@ -897,7 +897,7 @@ func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.P
 			return nil, errors.New("Unsupported signer")
 		}
 	}
-	txn, err = signer.SignTransaction(txn, pwd, index)
+	signedTxn, err = signer.SignTransaction(txn, pwd, index)
 	return
 }
 
