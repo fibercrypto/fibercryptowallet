@@ -585,20 +585,23 @@ func TestTransactionSignInput(t *testing.T) {
 	require.True(t, signedTxn.txn.Sigs[1].Null())
 	require.False(t, signedTxn.txn.Sigs[2].Null())
 
+	// Signing the rest of the inputs individually works
+	signedCoreTxn, err = wallets[1].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"1"})
+	require.NoError(t, err)
+	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
+	require.True(t, isUninjected)
+	isFullySigned, err = signedTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.False(t, isFullySigned)
+	signedCoreTxn, err = wallets[0].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"0"})
+	require.NoError(t, err)
+	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
+	require.True(t, isUninjected)
+	isFullySigned, err = signedTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.True(t, isFullySigned)
+
 	/*
-		// SignInputs on a partially signed transaction fails
-		require.Panics(t, func() {
-			txn.SignInputs(seckeys)
-		})
-
-		// Signing the rest of the inputs individually works
-		err = txn.SignInput(seckeys[1], 1)
-		require.NoError(t, err)
-		require.False(t, txn.IsFullySigned())
-		err = txn.SignInput(seckeys[0], 0)
-		require.NoError(t, err)
-		require.True(t, txn.IsFullySigned())
-
 		// Can use SignInputs on allocated array of empty sigs
 		txn.Sigs = make([]cipher.Sig, 3)
 		txn.SignInputs(seckeys)

@@ -1047,11 +1047,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	// Transaction sigs array may not be empty
 	if len(skyTxn.Sigs) == 0 {
 		skyTxn.Sigs = make([]cipher.Sig, len(skyTxn.In))
-		var i = 0
-		for i < len(skyTxn.Sigs) {
-			skyTxn.Sigs[i] = cipher.Sig{}
-			i++
-		}
 	}
 	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
 	if err != nil {
