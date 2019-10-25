@@ -160,20 +160,6 @@ func makeTransactions(t *testing.T, n int) (coin.Transactions, error) { //nolint
 	return txns, nil
 }
 
-func copyTransaction(txn coin.Transaction) coin.Transaction {
-	txo := coin.Transaction{}
-	txo.Length = txn.Length
-	txo.Type = txn.Type
-	txo.InnerHash = txn.InnerHash
-	txo.Sigs = make([]cipher.Sig, len(txn.Sigs))
-	copy(txo.Sigs, txn.Sigs)
-	txo.In = make([]cipher.SHA256, len(txn.In))
-	copy(txo.In, txn.In)
-	txo.Out = make([]coin.TransactionOutput, len(txn.Out))
-	copy(txo.Out, txn.Out)
-	return txo
-}
-
 func makeSpentOutput(uxout coin.UxOut, spentBkSeq uint64, spentTxId cipher.SHA256) (rOut readable.SpentOutput) {
 	rOut.Uxid = uxout.Hash().Hex()
 	rOut.Time = uxout.Head.Time
