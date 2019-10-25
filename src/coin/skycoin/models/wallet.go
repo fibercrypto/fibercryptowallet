@@ -1022,6 +1022,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 			})
 		}
 	}
+	logrus.Infof("%v", index)
 	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
 	if err != nil {
 		logrus.Errorf("Transaction signing failed for txn %s", txn.GetId())

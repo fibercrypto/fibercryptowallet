@@ -517,6 +517,8 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Walle
 			walletsCache[kd.Mnemonic] = w
 		}
 		wallets[i] = w
+		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex), nil)
+		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex), nil)
 	}
 	return wallets, nil
 }
@@ -541,7 +543,7 @@ func TestTransactionSignInput(t *testing.T) {
 	wallets, err1 := makeLocalWalletsFromKeyData(t, keysData)
 	require.NoError(t, err1)
 	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
-	testutil.RequireError(t, err, "Input already signed")
+	testutil.RequireError(t, err, "Transaction is fully signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
