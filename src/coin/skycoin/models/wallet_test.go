@@ -523,13 +523,17 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Walle
 	return wallets, nil
 }
 
+func mockSkyApiUxOut(mock *SkycoinApiMock, ux coin.UxOut) {
+	rUxOut := makeSpentOutput(ux, 0, cipher.SHA256{})
+	mock.On("UxOut", ux.Hash().Hex()).Return(&rUxOut, nil)
+}
+
 func TestTransactionSignInput(t *testing.T) {
 	txn, keysData, uxspent, err := makeTransactionMultipleInputs(t, 3)
 	require.NoError(t, err)
 	// Mock UxOut API calls
 	for _, ux := range uxspent {
-		rUxOut := makeSpentOutput(ux, 0, cipher.SHA256{})
-		global_mock.On("UxOut", ux.Hash().Hex()).Return(&rUxOut, nil)
+		mockSkyApiUxOut(global_mock, ux)
 	}
 
 	uiTxn := makeUninjectedTransaction(t, &txn, 0)
@@ -619,6 +623,7 @@ func TestTransactionSignInputs(t *testing.T) {
 	require.Equal(t, kd.SecKey, seckeys[kd.AddressIndex])
 	p2, _, err3 := cipher.GenerateDeterministicKeyPair(seed)
 	require.NoError(t, err3)
+	wallet.GenAddresses(core.AccountAddress, uint32(kd.AddressIndex), 2, nil)
 	ux2 := coin.UxOut{
 		Head: coin.UxHead{
 			Time:  100,
@@ -636,10 +641,15 @@ func TestTransactionSignInputs(t *testing.T) {
 	err = txn.PushOutput(makeAddress(), 40, 80)
 	require.NoError(t, err)
 	require.Equal(t, len(txn.Sigs), 0)
+	txn.UpdateHeader()
 	uiTxn := makeUninjectedTransaction(t, txn, 0)
 	isFullySigned, err := uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
+
+	// Mock Skycoin API calls
+	mockSkyApiUxOut(global_mock, ux)
+	mockSkyApiUxOut(global_mock, ux2)
 
 	// Valid signing
 	h := txn.HashInner()
