@@ -5,6 +5,10 @@ UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
 
+deps: ## Add dependencies
+	dep ensure
+	rm -rf rm -rf vendor/github.com/therecipe
+
 run: build ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
 	@./deploy/linux/FiberCryptoWallet
