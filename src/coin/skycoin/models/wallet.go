@@ -982,12 +982,12 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 		defer ReturnSkycoinClient(clt)
 
-		pass, err := pwd("Type your password")
-		if err != nil {
-			return nil, err
-		}
-
 		if skyWlt.IsEncrypted() {
+			pass, err := pwd("Type your password")
+			if err != nil {
+				return nil, err
+			}
+
 			skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
 			if err != nil {
 				return nil, err
