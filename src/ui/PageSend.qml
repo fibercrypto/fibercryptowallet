@@ -108,9 +108,9 @@ Page {
         StackView {
             id: stackView
 
-            property string walletSelected: simple.walletSelected
-            property string destinationAddress: simple.destinationAddress
-            property string amount: simple.amount
+            property string walletSelected
+            property string destinationAddress
+            property string amount
             
             anchors.fill: parent
             initialItem: componentSimple

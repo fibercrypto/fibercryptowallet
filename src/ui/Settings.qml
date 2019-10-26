@@ -19,7 +19,7 @@ Page {
     readonly property string defaultNodeUrl: configManager.getNodeString()
     readonly property bool defaultIsRemoteWalletEnv: configManager.getTypeSource()
 
-    // These are the saved settings, must be applied when the settings are opened or when 
+    // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
     // TODO: This should be binded to backend properties
     property string savedWalletPath: configManager.getSourceString()
@@ -58,7 +58,7 @@ Page {
 
     ColumnLayout {
         anchors { top: parent.top; left: parent.left; right: parent.right; margins: 20 }
-        
+
         spacing: 20
 
         GroupBox {
@@ -95,7 +95,7 @@ Page {
                         Behavior on textColor { ColorAnimation {} }
 
                         Layout.fillWidth: true
-                        
+
                         text: qsTr("Remote/Local wallet environment")
                         checked: savedIsRemoteWalletEnv
                         font.bold: true
@@ -152,14 +152,14 @@ Page {
 
             Label {
                 id: labelQuestion
-                
+
                 Layout.fillWidth: true
                 text: (dialogConfirmation.onlyDiscard ? qsTr("Discard all changes?") : qsTr("Restore defaults?"))
                 font.bold: true
             }
             Label {
                 id: labelDescription
-                
+
                 Layout.fillWidth: true
                 text: qsTr("This action will set the settings to the") + " " + (dialogConfirmation.onlyDiscard ? qsTr("last saved values.") : qsTr("very default values."))
                 font.italic: true

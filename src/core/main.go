@@ -1,5 +1,9 @@
 package core
 
+import "github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+
+var logPlugin = logging.MustGetLogger("Altcoin Plugin")
+
 // UID is a type that holds unique ID values, including UUIDs.
 // Because we don't ONLY use UUIDs, this is an alias to string.
 // Being a type captures intent and helps make sure that UIDs and names do not get conflated.
@@ -74,11 +78,13 @@ var (
 )
 
 func (m *fibercryptoAltcoinManager) RegisterPlugin(p AltcoinPlugin) {
+	logPlugin.Info("Register plugin to Altcoin manager")
 	p.RegisterTo(m)
 	m.registeredPlugins = append(m.registeredPlugins, p)
 }
 
 func (m *fibercryptoAltcoinManager) RegisterAltcoin(info AltcoinMetadata, plugin AltcoinPlugin) {
+	logPlugin.Info("Register altcoin to Altcoin manager")
 	m.altcoinMap[info.Ticker] = altcoinRecord{
 		Manager:  plugin,
 		Metadata: info,
@@ -86,10 +92,12 @@ func (m *fibercryptoAltcoinManager) RegisterAltcoin(info AltcoinMetadata, plugin
 }
 
 func (m *fibercryptoAltcoinManager) ListRegisteredPlugins() []AltcoinPlugin {
+	logPlugin.Info("Listing registered plugins in Altcoin manager")
 	return m.registeredPlugins
 }
 
 func (m *fibercryptoAltcoinManager) LookupAltcoinPlugin(ticker string) (AltcoinPlugin, bool) {
+	logPlugin.Info("Looking up for registered altcoin's")
 	if r, isRegistered := m.altcoinMap[ticker]; isRegistered {
 		return r.Manager, true
 	}
@@ -97,6 +105,7 @@ func (m *fibercryptoAltcoinManager) LookupAltcoinPlugin(ticker string) (AltcoinP
 }
 
 func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (AltcoinMetadata, bool) {
+	logPlugin.Info("Describing Altcoin manager")
 	if r, isRegistered := m.altcoinMap[ticker]; isRegistered {
 		return r.Metadata, true
 	}
@@ -104,6 +113,7 @@ func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (AltcoinMetad
 }
 
 func LoadAltcoinManager() AltcoinManager {
+	logPlugin.Info("Loading Altcoin manager")
 	if manager.altcoinMap == nil {
 		manager.altcoinMap = make(map[string]altcoinRecord, 5)
 	}
