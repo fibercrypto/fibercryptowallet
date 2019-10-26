@@ -74,10 +74,22 @@ We always recommend using the latest Qt version. See [Qt Archive](https://downlo
 Common actions are automated with the help of `make`. The following targets have been implemnented:
 
 ```
+deps                           Add dependencies
 run                            Run FiberCrypto Wallet.
+install-deps-no-envs           Install therecipe/qt with -tags=no_env set
+install-docker-deps            Install docker images for project compilation using docker
+install-deps-Linux             Install Linux dependencies
+install-deps-Darwin            Install osx dependencies
+install-deps-Windows           Install Windowns dependencies
+install-deps                   Install dependencies
+build-docker                   Build project using docker
 build                          Build FiberCrypto Wallet.
+clean-Windows                  Clean project FiberCrypto Wallet.
 clean                          Clean project FiberCrypto Wallet.
+test-sky                       Run Skycoin plugin test suite
 test                           Run project test suite
+install-linters                Install linters
+lint                           Run linters. Use make install-linters first.
 ```
 
 Type `make help` in your console for details.

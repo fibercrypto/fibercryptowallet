@@ -13,7 +13,7 @@ run: build ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
 	@./deploy/linux/FiberCryptoWallet
 
-install-deps-no-envs: ##  Install whithout 
+install-deps-no-envs: ## Install therecipe/qt with -tags=no_env set
 	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
 	go get -t -d -v ./...
 	@echo "Dependencies installed"
@@ -41,7 +41,7 @@ install-deps-Windows: ## Install Windowns dependencies
 	qtsetup -test=false -ErrorAction SilentlyContinue 
 	go get -t -d -v ./...
 
-install-deps: install-deps-$(UNAME_S) install-linters ## 
+install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
 
 build-docker: ## Build project using docker
