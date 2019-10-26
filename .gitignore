@@ -59,3 +59,6 @@ rcc__*
 # Dependencies
 vendor
 
+# Auto-generates go files.
+
+*.pb.go
