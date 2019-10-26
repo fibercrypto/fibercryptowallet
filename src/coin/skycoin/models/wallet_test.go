@@ -517,8 +517,15 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Walle
 			walletsCache[kd.Mnemonic] = w
 		}
 		wallets[i] = w
+		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex+1), nil)
+		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex+1), nil)
 	}
 	return wallets, nil
+}
+
+func mockSkyApiUxOut(mock *SkycoinApiMock, ux coin.UxOut) {
+	rUxOut := makeSpentOutput(ux, 0, cipher.SHA256{})
+	mock.On("UxOut", ux.Hash().Hex()).Return(&rUxOut, nil)
 }
 
 func TestTransactionSignInput(t *testing.T) {
@@ -526,9 +533,9 @@ func TestTransactionSignInput(t *testing.T) {
 	require.NoError(t, err)
 	// Mock UxOut API calls
 	for _, ux := range uxspent {
-		rUxOut := makeSpentOutput(ux, 0, cipher.SHA256{})
-		global_mock.On("UxOut", ux.Hash().Hex()).Return(&rUxOut, nil)
+		mockSkyApiUxOut(global_mock, ux)
 	}
+
 	uiTxn := makeUninjectedTransaction(t, &txn, 0)
 	var signedCoreTxn core.Transaction
 	var isFullySigned bool
@@ -536,11 +543,13 @@ func TestTransactionSignInput(t *testing.T) {
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
 
-	// Input is already signed
+	// Load local wallets
 	wallets, err1 := makeLocalWalletsFromKeyData(t, keysData)
 	require.NoError(t, err1)
+
+	// Input is already signed
 	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
-	testutil.RequireError(t, err, "Input already signed")
+	testutil.RequireError(t, err, "Transaction is fully signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
@@ -561,8 +570,8 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, SignerIDLocalWallet, nil, []string{"1"})
-	testutil.RequireError(t, err, "Input already signed")
+	signedCoreTxn, err = wallets[1].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"1"})
+	testutil.RequireError(t, err, "Transaction is fully signed")
 
 	// Transaction has no sigs; sigs array is initialized
 	txn.Sigs = nil
@@ -582,59 +591,83 @@ func TestTransactionSignInput(t *testing.T) {
 	require.True(t, signedTxn.txn.Sigs[1].Null())
 	require.False(t, signedTxn.txn.Sigs[2].Null())
 
-	/*
-		// SignInputs on a partially signed transaction fails
-		require.Panics(t, func() {
-			txn.SignInputs(seckeys)
-		})
-
-		// Signing the rest of the inputs individually works
-		err = txn.SignInput(seckeys[1], 1)
-		require.NoError(t, err)
-		require.False(t, txn.IsFullySigned())
-		err = txn.SignInput(seckeys[0], 0)
-		require.NoError(t, err)
-		require.True(t, txn.IsFullySigned())
-
-		// Can use SignInputs on allocated array of empty sigs
-		txn.Sigs = make([]cipher.Sig, 3)
-		txn.SignInputs(seckeys)
-		require.True(t, txn.IsFullySigned())
-	*/
+	// Signing the rest of the inputs individually works
+	signedCoreTxn, err = wallets[1].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"1"})
+	require.NoError(t, err)
+	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
+	require.True(t, isUninjected)
+	isFullySigned, err = signedTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.False(t, isFullySigned)
+	signedCoreTxn, err = wallets[0].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"0"})
+	require.NoError(t, err)
+	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
+	require.True(t, isUninjected)
+	isFullySigned, err = signedTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.True(t, isFullySigned)
 }
 
-/*
 func TestTransactionSignInputs(t *testing.T) {
-	txn := &Transaction{}
-	// Panics if txns already signed
-	txn.Sigs = append(txn.Sigs, cipher.Sig{})
-	require.Panics(t, func() { txn.SignInputs([]cipher.SecKey{}) })
-	// Panics if not enough keys
-	txn = &Transaction{}
-	ux, s := makeUxOutWithSecret(t)
-	err := txn.PushInput(ux.Hash())
+	// Build transaction step by step
+	txn := &coin.Transaction{}
+	ux, kd, err := makeUxOutWithSecret(t)
 	require.NoError(t, err)
-	ux2, s2 := makeUxOutWithSecret(t)
+	err = txn.PushInput(ux.Hash())
+	require.NoError(t, err)
+	wallets, err1 := makeLocalWalletsFromKeyData(t, []KeyData{*kd})
+	require.NoError(t, err1)
+	wallet := wallets[0]
+	seed, seckeys, err2 := cipher.GenerateDeterministicKeyPairsSeed([]byte(kd.Mnemonic), kd.AddressIndex+1)
+	require.NoError(t, err2)
+	require.Equal(t, kd.SecKey, seckeys[kd.AddressIndex])
+	p2, _, err3 := cipher.GenerateDeterministicKeyPair(seed)
+	require.NoError(t, err3)
+	wallet.GenAddresses(core.AccountAddress, uint32(kd.AddressIndex), 2, nil)
+	ux2 := coin.UxOut{
+		Head: coin.UxHead{
+			Time:  100,
+			BkSeq: 2,
+		},
+		Body: coin.UxBody{
+			SrcTransaction: testutil.RandSHA256(t),
+			Address:        cipher.AddressFromPubKey(p2),
+			Coins:          1e6,
+			Hours:          100,
+		},
+	}
 	err = txn.PushInput(ux2.Hash())
 	require.NoError(t, err)
 	err = txn.PushOutput(makeAddress(), 40, 80)
 	require.NoError(t, err)
 	require.Equal(t, len(txn.Sigs), 0)
-	require.Panics(t, func() { txn.SignInputs([]cipher.SecKey{s}) })
-	require.Equal(t, len(txn.Sigs), 0)
+	txn.UpdateHeader()
+	uiTxn := makeUninjectedTransaction(t, txn, 0)
+	isFullySigned, err := uiTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.False(t, isFullySigned)
+
+	// Mock Skycoin API calls
+	mockSkyApiUxOut(global_mock, ux)
+	mockSkyApiUxOut(global_mock, ux2)
+
 	// Valid signing
 	h := txn.HashInner()
-	require.NotPanics(t, func() { txn.SignInputs([]cipher.SecKey{s, s2}) })
-	require.Equal(t, len(txn.Sigs), 2)
-	h2 := txn.HashInner()
+	signedCoreTxn, err := wallet.Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0", "1"})
+	require.NoError(t, err)
+	signedTxn, isUninjected := signedCoreTxn.(*SkycoinUninjectedTransaction)
+	require.True(t, isUninjected)
+	isFullySigned, err = signedTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.True(t, isFullySigned)
+	require.Equal(t, len(signedTxn.txn.Sigs), 2)
+	h2 := signedTxn.txn.HashInner()
 	require.Equal(t, h2, h)
-	p := cipher.MustPubKeyFromSecKey(s)
+	p := kd.PubKey
 	a := cipher.AddressFromPubKey(p)
-	p = cipher.MustPubKeyFromSecKey(s2)
-	a2 := cipher.AddressFromPubKey(p)
-	require.NoError(t, cipher.VerifyAddressSignedHash(a, txn.Sigs[0], cipher.AddSHA256(h, txn.In[0])))
-	require.NoError(t, cipher.VerifyAddressSignedHash(a2, txn.Sigs[1], cipher.AddSHA256(h, txn.In[1])))
-	require.Error(t, cipher.VerifyAddressSignedHash(a, txn.Sigs[1], h))
-	require.Error(t, cipher.VerifyAddressSignedHash(a2, txn.Sigs[0], h))
+	a2 := cipher.AddressFromPubKey(p2)
+	require.NoError(t, cipher.VerifyAddressSignedHash(a, signedTxn.txn.Sigs[0], cipher.AddSHA256(h, signedTxn.txn.In[0])))
+	require.NoError(t, cipher.VerifyAddressSignedHash(a2, signedTxn.txn.Sigs[1], cipher.AddSHA256(h, signedTxn.txn.In[1])))
+	require.Error(t, cipher.VerifyAddressSignedHash(a, signedTxn.txn.Sigs[1], cipher.AddSHA256(h, signedTxn.txn.In[0])))
+	require.Error(t, cipher.VerifyAddressSignedHash(a2, signedTxn.txn.Sigs[0], cipher.AddSHA256(h, signedTxn.txn.In[1])))
 }
-*/

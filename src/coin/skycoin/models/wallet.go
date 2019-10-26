@@ -901,6 +901,28 @@ func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.P
 	return
 }
 
+func copyTransaction(txn *coin.Transaction) *coin.Transaction {
+	txnHash := txn.Hash()
+	txnInnerHash := txn.HashInner()
+
+	txn2 := *txn
+	txn2.Sigs = make([]cipher.Sig, len(txn.Sigs))
+	copy(txn2.Sigs, txn.Sigs)
+	txn2.In = make([]cipher.SHA256, len(txn.In))
+	copy(txn2.In, txn.In)
+	txn2.Out = make([]coin.TransactionOutput, len(txn.Out))
+	copy(txn2.Out, txn.Out)
+
+	if txnInnerHash != txn2.HashInner() {
+		logrus.Panic("copyTransaction copy broke InnerHash")
+	}
+	if txnHash != txn2.Hash() {
+		logrus.Panic("copyTransaction copy broke Hash")
+	}
+
+	return &txn2
+}
+
 func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	var skyTxn *coin.Transaction
 	var err error
@@ -975,19 +997,19 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 		// Uninjected transactions
 		txnFee = unTxn.fee
-		skyTxn = unTxn.txn
+		skyTxn = copyTransaction(unTxn.txn)
 		clt, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
 			return nil, err
 		}
 		defer ReturnSkycoinClient(clt)
 
-		pass, err := pwd("Type your password")
-		if err != nil {
-			return nil, err
-		}
-
 		if skyWlt.IsEncrypted() {
+			pass, err := pwd("Type your password")
+			if err != nil {
+				return nil, err
+			}
+
 			skyWlt, err = wallet.Unlock(skyWlt, []byte(pass))
 			if err != nil {
 				return nil, err
@@ -1021,6 +1043,10 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 				},
 			})
 		}
+	}
+	// Transaction sigs array may not be empty
+	if len(skyTxn.Sigs) == 0 {
+		skyTxn.Sigs = make([]cipher.Sig, len(skyTxn.In))
 	}
 	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
 	if err != nil {
