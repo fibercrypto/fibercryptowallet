@@ -60,8 +60,8 @@ matrix:
 
       script:
         - make lint
-        - make build
-        - make test
+        # - make build
+        # - make test
 
     - stage: "MacOS"
       os: osx
