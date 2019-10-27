@@ -373,6 +373,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 
 	// Duplicate outputs
 	txn, err = makeTransaction(t)
+	require.NoError(t, err)
 	to := txn.Out[0]
 	err = txn.PushOutput(to.Address, to.Coins, to.Hours)
 	require.NoError(t, err)
@@ -383,6 +384,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 
 	// Invalid signature, empty
 	txn, err = makeTransaction(t)
+	require.NoError(t, err)
 	txn.Sigs[0] = cipher.Sig{}
 	uiTxn = makeUninjectedTransaction(t, &txn, 0)
 	testutil.RequireError(t, uiTxn.VerifySigned(), "Unsigned input in transaction")
@@ -392,6 +394,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 	// Note: Transaction.Verify() only checks that the signature is a minimally valid signature
 	badSig := "9a0f86874a4d9541f58a1de4db1c1b58765a868dc6f027445d0a2a8a7bddd1c45ea559fcd7bef45e1b76ccdaf8e50bbebd952acbbea87d1cb3f7a964bc89bf1ed5"
 	txn, err = makeTransaction(t)
+	require.NoError(t, err)
 	txn.Sigs[0] = cipher.MustSigFromHex(badSig)
 	uiTxn = makeUninjectedTransaction(t, &txn, 0)
 	testutil.RequireError(t, uiTxn.VerifySigned(), "Failed to recover pubkey from signature")
@@ -405,6 +408,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 
 	// Output coins are 0
 	txn, err = makeTransaction(t)
+	require.NoError(t, err)
 	txn.Out[0].Coins = 0
 	err = txn.UpdateHeader()
 	require.NoError(t, err)
@@ -413,6 +417,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 
 	// Output coin overflow
 	txn, err = makeTransaction(t)
+	require.NoError(t, err)
 	txn.Out[0].Coins = math.MaxUint64 - 3e6
 	err = txn.UpdateHeader()
 	require.NoError(t, err)
@@ -421,6 +426,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 
 	// Output coins are not multiples of 1e6 (valid, decimal restriction is not enforced here)
 	txn, err = makeTransaction(t)
+	require.NoError(t, err)
 	txn.Out[0].Coins += 10
 	err = txn.UpdateHeader()
 	require.NoError(t, err)
@@ -432,6 +438,7 @@ func TestUninjectedTransactionVerifySigned(t *testing.T) {
 
 	// Valid
 	txn, err = makeTransaction(t)
+	require.NoError(t, err)
 	txn.Out[0].Coins = 10e6
 	txn.Out[1].Coins = 1e6
 	err = txn.UpdateHeader()
@@ -548,7 +555,7 @@ func TestTransactionSignInput(t *testing.T) {
 	require.NoError(t, err1)
 
 	// Input is already signed
-	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
+	_, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
 	testutil.RequireError(t, err, "Transaction is fully signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
@@ -570,7 +577,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
-	signedCoreTxn, err = wallets[1].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"1"})
+	_, err = wallets[1].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"1"})
 	testutil.RequireError(t, err, "Transaction is fully signed")
 
 	// Transaction has no sigs; sigs array is initialized
