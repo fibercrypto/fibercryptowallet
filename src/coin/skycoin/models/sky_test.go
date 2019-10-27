@@ -46,12 +46,12 @@ func makeTransactionFromUxOut(t *testing.T, ux coin.UxOut, s cipher.SecKey) coin
 }
 
 var (
-	seedPairIndex        = 0
-	seedContinuation     []byte
-	seedMnemonic         string
-	seedEntropy          []byte
-	seedData             *skytestsuite.SeedTestData
-	genPublic, genSecret = cipher.GenerateKeyPair()
+	seedPairIndex    = 0
+	seedContinuation []byte
+	seedMnemonic     string
+	seedEntropy      []byte
+	seedData         *skytestsuite.SeedTestData
+	_, genSecret     = cipher.GenerateKeyPair()
 )
 
 type KeyData struct {
