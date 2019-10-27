@@ -153,7 +153,7 @@ func makeTransactionMultipleInputs(t *testing.T, n int) (coin.Transaction, []Key
 	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, uxs, nil
 }
 
-func makeTransactions(t *testing.T, n int) (coin.Transactions, error) { //nolint:unparam
+func makeTransactions(t *testing.T, n int) (coin.Transactions, error) { //nolint:unparam,megacheck
 	txns := make(coin.Transactions, n)
 	for i := range txns {
 		var err error

@@ -507,7 +507,7 @@ func loadTestWalletEnv(t *testing.T) core.WalletEnv {
 
 var whitespaceReplacer = strings.NewReplacer(" ", "-")
 
-func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Wallet, error) {
+func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) []core.Wallet {
 	walletsCache := make(map[string]core.Wallet)
 	wallets := make([]core.Wallet, len(keysData))
 	walletSet := loadTestWalletEnv(t).GetWalletSet()
@@ -527,7 +527,7 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) ([]core.Walle
 		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex+1), nil)
 		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex+1), nil)
 	}
-	return wallets, nil
+	return wallets
 }
 
 func mockSkyApiUxOut(mock *SkycoinApiMock, ux coin.UxOut) {
@@ -543,7 +543,7 @@ func TestTransactionSignInput(t *testing.T) {
 		mockSkyApiUxOut(global_mock, ux)
 	}
 
-	uiTxn := makeUninjectedTransaction(t, &txn, 0)
+	uiTxn := makeUninjectedTransaction(t, &txn, 1)
 	var signedCoreTxn core.Transaction
 	var isFullySigned bool
 	isFullySigned, err = uiTxn.IsFullySigned()
@@ -551,8 +551,7 @@ func TestTransactionSignInput(t *testing.T) {
 	require.True(t, isFullySigned)
 
 	// Load local wallets
-	wallets, err1 := makeLocalWalletsFromKeyData(t, keysData)
-	require.NoError(t, err1)
+	wallets := makeLocalWalletsFromKeyData(t, keysData)
 
 	// Input is already signed
 	_, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
@@ -622,8 +621,7 @@ func TestTransactionSignInputs(t *testing.T) {
 	require.NoError(t, err)
 	err = txn.PushInput(ux.Hash())
 	require.NoError(t, err)
-	wallets, err1 := makeLocalWalletsFromKeyData(t, []KeyData{*kd})
-	require.NoError(t, err1)
+	wallets := makeLocalWalletsFromKeyData(t, []KeyData{*kd})
 	wallet := wallets[0]
 	seed, seckeys, err2 := cipher.GenerateDeterministicKeyPairsSeed([]byte(kd.Mnemonic), kd.AddressIndex+1)
 	require.NoError(t, err2)
