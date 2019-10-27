@@ -169,7 +169,7 @@ func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 	}
 }
 
-// GetMultiPool instantiates singleton connection pool obj=ect
+// GetMultiPool instantiates singleton connection pool object
 func GetMultiPool() MultiPool {
 
 	once.Do(func() {
