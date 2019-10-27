@@ -1,13 +1,16 @@
 package models
 
 import (
-	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	qtcore "github.com/therecipe/qt/core"
+	"github.com/skycoin/skycoin/src/util/logging"
+	qtCore "github.com/therecipe/qt/core"
 )
 
+var logNetworkingManager = logging.MustGetLogger("modelsNetworkingManager")
+
 type NetworkingManager struct {
-	qtcore.QObject
+	qtCore.QObject
 	Networks core.PexNodeSet
 	_        func()                `constructor:"init"`
 	_        func() []*QNetworking `slot:"getNetworks"`
@@ -20,10 +23,15 @@ func (net *NetworkingManager) init() {
 }
 
 func (net *NetworkingManager) getNetworks() []*QNetworking {
+	logNetworkingManager.Info("Getting networks")
 	networks := make([]*QNetworking, 0)
 
 	netIterator := net.Networks.ListPeers()
 
+	if netIterator == nil {
+		logNetworkingManager.WithError(nil).Error("Couldn't load networks")
+		return networks
+	}
 	for netIterator.Next() {
 
 		networks = append(networks, INetworkToQNetworking(netIterator.Value()))

@@ -103,15 +103,15 @@ Page {
         modal: true
         focus: true
 
-        date: listTransactions.currentItem.modelDate
-        status: listTransactions.currentItem.modelStatus
-        type: listTransactions.currentItem.modelType
-        amount: listTransactions.currentItem.modelAmount
-        hoursReceived: listTransactions.currentItem.modelHoursReceived
-        hoursBurned: listTransactions.currentItem.modelHoursBurned
-        transactionID: listTransactions.currentItem.modelTransactionID
-        modelInputs: listTransactions.currentItem.modelInputs
-        modelOutputs: listTransactions.currentItem.modelOutputs
+        date: listTransactions.currentItem !== null ? listTransactions.currentItem.modelDate : ""
+        status: listTransactions.currentItem !== null ? listTransactions.currentItem.modelStatus : 0
+        type: listTransactions.currentItem !== null ? listTransactions.currentItem.modelType : 0
+        amount: listTransactions.currentItem !== null ? listTransactions.currentItem.modelAmount : ""
+        hoursReceived: listTransactions.currentItem !== null ? listTransactions.currentItem.modelHoursReceived : 1 
+        hoursBurned: listTransactions.currentItem !== null ?  listTransactions.currentItem.modelHoursBurned : 1 
+        transactionID: listTransactions.currentItem !== null ? listTransactions.currentItem.modelTransactionID : "" 
+        modelInputs: listTransactions.currentItem !== null ? listTransactions.currentItem.modelInputs : null
+        modelOutputs: listTransactions.currentItem !== null ? listTransactions.currentItem.modelOutputs : null
     }
 
     QTransactionList {

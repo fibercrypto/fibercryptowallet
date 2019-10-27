@@ -3,11 +3,14 @@ package local
 import (
 	"encoding/json"
 	"errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
 )
+
+var logConfigManager = logging.MustGetLogger("ConfigManager")
 
 const (
 	pathToConfigFromHome         = ".fiber/config.json"
@@ -33,16 +36,20 @@ type WalletSource struct {
 }
 
 func (ws *WalletSource) GetType() int {
+	logConfigManager.Info("Getting wallet type")
 	return ws.sourceType
 }
 func (ws *WalletSource) GetSource() string {
+	logConfigManager.Info("Getting wallet source")
 	return ws.source
 }
 func (ws *WalletSource) GetId() int {
+	logConfigManager.Info("Getting wallet id")
 	return ws.id
 }
 
 func (ws *WalletSource) edit(source string, tp int) {
+	logConfigManager.Info("Editing wallet source")
 	ws.source = source
 	ws.sourceType = tp
 }
@@ -71,7 +78,7 @@ func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
 		}
 	}
 	if src == nil {
-		return errors.New("Invalid Id")
+		return errors.New("invalid Id")
 	}
 
 	if tp != LocalWallet && tp != RemoteWallet {
@@ -92,12 +99,18 @@ func (cm *ConfigManager) EditNode(node string) {
 }
 
 func (cm *ConfigManager) Save() error {
+	logConfigManager.Info("Saving configuration")
 
-	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
+	jsonFormat, err := json.Marshal(cm.getConfigManagerJson())
+	if err != nil {
+		return err
+	}
 	return ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
 }
 
 func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
+	logConfigManager.Info("Getting configuration from JSON")
+
 	wltSources := make([]*walletSourceJson, 0)
 	for _, wltS := range cm.sourceList {
 		wltSources = append(wltSources, wltS.getWalletSourceJson())
@@ -168,7 +181,7 @@ func configFileExist() bool {
 func loadConfigFromFile() *ConfigManager {
 	cm := new(configManagerJson)
 	fileDir := getConfigFileDir()
-	dat, err := ioutil.ReadFile(fileDir)
+	dat, err := ioutil.ReadFile(fileDir) //nolint gosec
 
 	if err != nil {
 
@@ -196,11 +209,20 @@ func getDefaultConfigManager() *ConfigManager {
 	cm.node = "https://staging.node.skycoin.net"
 	cm.sourceList = []*WalletSource{getDefaultWalletSource()}
 
-	jsonFormat, _ := json.Marshal(cm.getConfigManagerJson())
+	jsonFormat, err := json.Marshal(cm.getConfigManagerJson())
+	if err != nil {
+		return nil
+	}
 
-	os.MkdirAll(filepath.Dir(getConfigFileDir()), 0755)
+	err = os.MkdirAll(filepath.Dir(getConfigFileDir()), 0750)
+	if err != nil {
+		return nil
+	}
 
-	ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
+	err = ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
+	if err != nil {
+		return nil
+	}
 
 	return cm
 

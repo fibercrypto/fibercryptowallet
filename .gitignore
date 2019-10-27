@@ -57,7 +57,7 @@ rcc__*
 *.bak
 
 # Dependencies
-vendor
+# vendor
 
 # Auto-generates go files.
 
