@@ -82,6 +82,7 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 		seedContinuation = seedEntropy
 		seedMnemonic = string(data.Seed)
 		seedData = data
+		seedPairIndex = 0
 	}
 
 	var keytestData KeyData
@@ -89,11 +90,15 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: Verify wallet crypto pair
 	keytestData.Mnemonic = seedMnemonic
 	keytestData.Entropy = seedEntropy
 	keytestData.AddressIndex = seedPairIndex
 	seedPairIndex++
+	if keytestData.AddressIndex < len(seedData.Keys) {
+		// Confirm that deterministic address sequence is correct
+		require.Equal(t, seedData.Keys[keytestData.AddressIndex].Public, keytestData.PubKey)
+		require.Equal(t, seedData.Keys[keytestData.AddressIndex].Secret, keytestData.SecKey)
+	}
 	return &keytestData, nil
 }
 
