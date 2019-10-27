@@ -887,7 +887,6 @@ SkycoinCreatedTransaction wraps a readable created transaction to implement core
 type SkycoinCreatedTransaction struct {
 	skyTxn api.CreatedTransaction
 
-	status  core.TransactionStatus
 	inputs  []core.TransactionInput
 	outputs []core.TransactionOutput
 }
@@ -966,29 +965,29 @@ func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
 
 // Type assertions to abort compilation if contracts not satisfied
 var (
-	pendingTxn         SkycoinPendingTransaction
-	skyTxnInIter       SkycoinTransactionInputIterator
-	skyTxnIter         SkycoinTransactionIterator
-	skyTxnOutIter      SkycoinTransactionOutputIterator
-	uninjectedTxn      SkycoinUninjectedTransaction
-	skyTxn             SkycoinTransaction
-	skyTxnIn           SkycoinTransactionInput
-	skyTxnOut          SkycoinTransactionOutput
-	cTxn               SkycoinCreatedTransaction
-	pendingTxnSky      skycoinTxn                     = &pendingTxn
-	pendingTxnReadable readableTxn                    = &pendingTxn
-	pendingTxnCore     core.Transaction               = &pendingTxn
-	skyTxnIterator     core.TransactionIterator       = &skyTxnIter
-	skyTxnInIterator   core.TransactionInputIterator  = &skyTxnInIter
-	skyTxnOutIterator  core.TransactionOutputIterator = &skyTxnOutIter
-	uninjectedTxnCore  core.Transaction               = &uninjectedTxn
-	uninjectedTxnSky   skycoinTxn                     = &uninjectedTxn
-	skyTxnSky          skycoinTxn                     = &skyTxn
-	skyTxnReadable     readableTxn                    = &skyTxn
-	skyTxnCore         core.Transaction               = &skyTxn
-	skyTxnInCore       core.TransactionInput          = &skyTxnIn
-	skyTxnOutCore      core.TransactionOutput         = &skyTxnOut
-	cTxnSky            skycoinTxn                     = &cTxn
-	cTxnReadable       readableTxn                    = &cTxn
-	cTxnCore           core.Transaction               = &cTxn
+	pendingTxn         SkycoinPendingTransaction                         // nolint: varcheck
+	skyTxnInIter       SkycoinTransactionInputIterator                   // nolint: varcheck
+	skyTxnIter         SkycoinTransactionIterator                        // nolint: varcheck
+	skyTxnOutIter      SkycoinTransactionOutputIterator                  // nolint: varcheck
+	uninjectedTxn      SkycoinUninjectedTransaction                      // nolint: varcheck
+	skyTxn             SkycoinTransaction                                // nolint: varcheck
+	skyTxnIn           SkycoinTransactionInput                           // nolint: varcheck
+	skyTxnOut          SkycoinTransactionOutput                          // nolint: varcheck
+	cTxn               SkycoinCreatedTransaction                         // nolint: varcheck
+	pendingTxnSky      skycoinTxn                       = &pendingTxn    // nolint: varcheck
+	pendingTxnReadable readableTxn                      = &pendingTxn    // nolint: varcheck
+	pendingTxnCore     core.Transaction                 = &pendingTxn    // nolint: varcheck
+	skyTxnIterator     core.TransactionIterator         = &skyTxnIter    // nolint: varcheck
+	skyTxnInIterator   core.TransactionInputIterator    = &skyTxnInIter  // nolint: varcheck
+	skyTxnOutIterator  core.TransactionOutputIterator   = &skyTxnOutIter // nolint: varcheck
+	uninjectedTxnCore  core.Transaction                 = &uninjectedTxn // nolint: varcheck
+	uninjectedTxnSky   skycoinTxn                       = &uninjectedTxn // nolint: varcheck
+	skyTxnSky          skycoinTxn                       = &skyTxn        // nolint: varcheck
+	skyTxnReadable     readableTxn                      = &skyTxn        // nolint: varcheck
+	skyTxnCore         core.Transaction                 = &skyTxn        // nolint: varcheck
+	skyTxnInCore       core.TransactionInput            = &skyTxnIn      // nolint: varcheck
+	skyTxnOutCore      core.TransactionOutput           = &skyTxnOut     // nolint: varcheck
+	cTxnSky            skycoinTxn                       = &cTxn          // nolint: varcheck
+	cTxnReadable       readableTxn                      = &cTxn          // nolint: varcheck
+	cTxnCore           core.Transaction                 = &cTxn          // nolint: varcheck
 )

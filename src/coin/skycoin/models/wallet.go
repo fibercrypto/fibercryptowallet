@@ -440,7 +440,7 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 			return nil, err
 		}
 
-		return fromTxnResponse(txnResponse)
+		return fromTxnResponse(txnResponse), nil
 	}
 
 	return createTransaction(nil, []core.TransactionOutput{&txnOutput}, nil, nil, options, createTxnFunc)
@@ -558,7 +558,7 @@ func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.Transact
 			return nil, err
 		}
 
-		return fromTxnResponse(txnResponse)
+		return fromTxnResponse(txnResponse), nil
 	}
 
 	return createTransaction(from, to, nil, change, options, createTxnFunc)
@@ -584,7 +584,7 @@ func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change cor
 			return nil, err
 		}
 
-		return fromTxnResponse(txnResponse)
+		return fromTxnResponse(txnResponse), nil
 	}
 
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
@@ -1201,8 +1201,8 @@ func (wlt *LocalWallet) SetLabel(wltName string) {
 
 }
 
-func fromTxnResponse(txnResponse *api.CreateTransactionResponse) (*SkycoinCreatedTransaction, error) {
-	return NewSkycoinCreatedTransaction(txnResponse.Transaction), nil
+func fromTxnResponse(txnResponse *api.CreateTransactionResponse) *SkycoinCreatedTransaction {
+	return NewSkycoinCreatedTransaction(txnResponse.Transaction)
 }
 
 func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
@@ -1239,8 +1239,7 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 			logWallet.WithError(err).Warn("Couldn't create transaction")
 			return nil, err
 		}
-		return fromTxnResponse(txnR)
-
+		return fromTxnResponse(txnR), nil
 	}
 	return createTransaction(addresses, []core.TransactionOutput{&txnOutput}, nil, nil, options, createTxnFunc)
 
@@ -1259,7 +1258,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 			logWallet.WithError(err).Warn("Couldn't create transaction")
 			return nil, err
 		}
-		return fromTxnResponse(txnR)
+		return fromTxnResponse(txnR), nil
 
 	}
 
@@ -1280,7 +1279,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 			logWallet.WithError(err).Warn("Couldn't load api client")
 			return nil, err
 		}
-		return fromTxnResponse(txnR)
+		return fromTxnResponse(txnR), nil
 
 	}
 
