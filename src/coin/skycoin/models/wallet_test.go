@@ -1,6 +1,14 @@
 package skycoin
 
 import (
+	"fmt"
+	"github.com/davecgh/go-spew/spew"
+	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
+	integrationtestutil "github.com/fibercrypto/FiberCryptoWallet/test/integration/util"
+	"github.com/skycoin/hardware-wallet-go/src/skywallet"
+	"github.com/skycoin/hardware-wallet-go/src/skywallet/wire"
+	messages "github.com/skycoin/hardware-wallet-protob/go"
 	"io/ioutil"
 	"math"
 	"strings"
@@ -528,8 +536,28 @@ func mockSkyApiUxOut(mock *SkycoinApiMock, ux coin.UxOut) {
 	mock.On("UxOut", ux.Hash().Hex()).Return(&rUxOut, nil)
 }
 
-func TestTransactionSignInput(t *testing.T) {
+func setUp(t *testing.T) {
+	cf := local.GetConfigManager()
+	err := core.GetMultiPool().CreateSection(PoolSection, NewSkycoinConnectionFactory(cf.GetNode()))
+	if err != nil {
+		return
+	}
+	util.RegisterAltcoin(NewSkyFiberPlugin(SkycoinMainNetParams))
+	dev := skywallet.NewDevice(skywallet.DeviceTypeEmulator)
+	keyTestData, err := generateTestKeyPair(t)
+	require.NoError(t, err)
+	integrationtestutil.ForceSetMnemonic(t, dev, keyTestData.Mnemonic)
+}
+
+func testTransactionSignInput(t *testing.T, signer core.TxnSigner) {
+	signerUid := core.UID(SignerIDLocalWallet)
+	if signer != nil {
+		signerUid = signer.GetSignerUID()
+		// TODO i18n
+		require.NotEqual(t, "undefined", string(signerUid))
+	}
 	txn, keysData, uxspent, err := makeTransactionMultipleInputs(t, 3)
+	spew.Dump(txn)
 	require.NoError(t, err)
 	// Mock UxOut API calls
 	for _, ux := range uxspent {
@@ -545,10 +573,19 @@ func TestTransactionSignInput(t *testing.T) {
 
 	// Load local wallets
 	wallets, err1 := makeLocalWalletsFromKeyData(t, keysData)
+	if signer != nil {
+		for idx := range wallets {
+			wallets[idx].AttachSignService(signer)
+		}
+	}
 	require.NoError(t, err1)
 
 	// Input is already signed
-	signedCoreTxn, err = wallets[0].Sign(uiTxn, SignerIDLocalWallet, util.EmptyPassword, []string{"0"})
+	addrIndexes := make([]string, len(keysData))
+	for idx, keyData := range keysData {
+		addrIndexes[idx] = fmt.Sprint(keyData.AddressIndex)
+	}
+	signedCoreTxn, err = wallets[0].Sign(uiTxn, signerUid, util.EmptyPassword, addrIndexes)
 	testutil.RequireError(t, err, "Transaction is fully signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
@@ -559,7 +596,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, SignerIDLocalWallet, nil, []string{"1"})
+	signedCoreTxn, err = wallets[1].Sign(uiTxn, signerUid, nil, []string{"1"})
 	require.NoError(t, err)
 	signedTxn, isUninjected := signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
@@ -606,6 +643,31 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
+}
+
+func TestTransactionSignInput(t *testing.T) {
+	testTransactionSignInput(t, nil)
+}
+
+func TestTransactionSignInputFromDevice(t *testing.T) {
+	setUp(t)
+	callback := func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error) {
+		var msg wire.Message
+		for outsLen > 0 {
+			msg = integrationtestutil.PressAcceptButton(t, dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
+			if outsLen == 1 {
+				msg = integrationtestutil.PressAcceptButton(t, dev, prvMsg, messages.MessageType_MessageType_ResponseTransactionSign)
+			} else {
+				msg = integrationtestutil.PressAcceptButton(t, dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
+			}
+			spew.Dump(msg)
+			outsLen--
+		}
+		return msg, nil
+	}
+	dev := skywallet.NewDevice(skywallet.DeviceTypeEmulator)
+	hs := hardware.NewSkyWallet(dev, callback)
+	testTransactionSignInput(t, hs)
 }
 
 func TestTransactionSignInputs(t *testing.T) {

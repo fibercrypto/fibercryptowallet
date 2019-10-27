@@ -2,11 +2,14 @@ package hardware
 
 import (
 	"errors"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
+	"github.com/skycoin/hardware-wallet-go/src/skywallet"
 	skyWallet "github.com/skycoin/hardware-wallet-go/src/skywallet"
+	"github.com/skycoin/hardware-wallet-go/src/skywallet/wire"
 	"github.com/skycoin/hardware-wallet-protob/go"
 )
 
@@ -15,22 +18,32 @@ const (
 )
 type SkyWallet struct {
 	dev skyWallet.Devicer
+	callback func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
 }
 
 // skyWallet.NewDevice(skyWallet.DeviceTypeUSB),
-func NewSkyWallet(dev skyWallet.Devicer) *SkyWallet {
+func NewSkyWallet(dev skyWallet.Devicer, callback func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)) *SkyWallet {
 	return &SkyWallet{
 		dev: dev,
+		callback: callback,
 	}
 }
 
 // SignTransaction using hardware wallet
 func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader, s []string) (core.Transaction, error) {
-	device := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+	device := sw.dev
 	if device == nil {
-		return nil, errors.New("error creating hardware wallet deice handler") // TODO i18n
+		// TODO i18n
+		return nil, errors.New("error creating hardware wallet deice handler")
 	}
-	defer device.Close()
+	//defer device.Close()
+	signed, err := tr.IsFullySigned()
+	if err != nil {
+		return tr, err
+	}
+	if signed {
+		return nil, errors.New("Transaction is fully signed")
+	}
 	var transactionInputs []*messages.SkycoinTransactionInput
 	for i, input := range tr.GetInputs() {
 		var transactionInput messages.SkycoinTransactionInput
@@ -54,20 +67,43 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		transactionOutput.Hour = proto.Uint64(uint64(coinHours))
 		transactionOutput.AddressIndex = proto.Uint32(uint32(i))
 		transactionOutput.Address = proto.String(output.GetAddress().String())
+		println("output.GetAddress()", output.GetAddress().String())
 
 		// TODO find index to check if it is determined as a owned address
 		//	transactionOutput.AddressIndex = proto.Uint32(uint32(addressIndex[i]))
 		transactionOutputs = append(transactionOutputs, &transactionOutput)
 	}
-	walletType := "deterministic" // todo use from library
+	// TODO use from library
+	walletType := "deterministic"
 	msg, err := device.TransactionSign(transactionInputs, transactionOutputs, walletType)
 	if err != nil {
-		msgStr, err1 := skyWallet.DecodeFailMsg(msg)
-		if err1 == nil {
-			logrus.WithFields(logrus.Fields{"transaction": tr, "error": err}).Error(msgStr)
+		logrus.WithError(err).Error("error signing transaction")
+		return nil, errors.New("unable to sign transaction")
+	}
+
+	msg, err = sw.callback(sw.dev, msg, len(tr.GetOutputs()))
+	if err != nil {
+		return tr, err
+	}
+	if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
+		msgStr, err := skyWallet.DecodeResponseTransactionSign(msg)
+		if err != nil {
+			// TODO i18n
+			logrus.WithError(err).Error("error decoding device response")
+			return tr, err
+		}
+		for str := range msgStr {
+			spew.Dump("str", str)
+		}
+	} else if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
+		msgStr, err := skyWallet.DecodeFailMsg(msg)
+		if err != nil {
+			// TODO i18n
+			logrus.WithError(err).Error("error decoding device response")
 			return nil, err
 		}
-		logrus.WithError(err1).Error("error decoding device response")
+		// TODO i18n
+		spew.Dump("msgStr", msgStr)
 		return nil, err
 	}
 	return tr, nil
