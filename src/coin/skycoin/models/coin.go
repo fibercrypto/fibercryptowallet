@@ -1,14 +1,14 @@
 package skycoin
 
 import (
-	"errors"
 	"fmt"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"strconv"
 	"time"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/coin"
@@ -201,7 +201,7 @@ func verifyReadableTransaction(rTxn readableTxn, checkSigned bool) error {
 func (txn *SkycoinPendingTransaction) VerifyUnsigned() error {
 	if !txn.Transaction.IsValid {
 		// FIXME: Unique error object
-		return errors.New("Invalid unconfirmed transaction")
+		return errors.ErrInvalidUnconfirmedTxn
 	}
 	return verifyReadableTransaction(txn, false)
 }
@@ -210,7 +210,7 @@ func (txn *SkycoinPendingTransaction) VerifyUnsigned() error {
 func (txn *SkycoinPendingTransaction) VerifySigned() error {
 	if !txn.Transaction.IsValid {
 		// FIXME: Unique error object
-		return errors.New("Invalid unconfirmed transaction")
+		return errors.ErrInvalidUnconfirmedTxn
 	}
 	return verifyReadableTransaction(txn, true)
 }

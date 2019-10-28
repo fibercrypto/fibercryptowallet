@@ -1,11 +1,11 @@
 package skycoin
 
 import (
-	"errors"
 	"fmt"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
@@ -127,7 +127,7 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 	logNetwork.Info("Broadcasting transaction")
 	unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 	if !ok {
-		return errors.New("Invalid Transaction")
+		return errors.ErrInvalidTxn
 	}
 	c, err := NewSkycoinApiClient(spex.poolSection)
 	if err != nil {
