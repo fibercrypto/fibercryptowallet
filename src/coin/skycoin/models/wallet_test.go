@@ -384,6 +384,7 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq1, crtTxn)
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq2, crtTxn)
 
+	//Testing HoursSelection to auto
 	wlt1 := &RemoteWallet{
 		Id:          "wallet1",
 		poolSection: PoolSection,
@@ -397,6 +398,7 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 
+	//Testing HoursSelection to manual
 	wlt2 := &RemoteWallet{
 		Id:          "wallet2",
 		poolSection: PoolSection,
@@ -408,6 +410,76 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	val, err = ret.ComputeFee(CoinHour)
 	require.Nil(t, err)
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
+}
+
+//	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
+
+func TestRemoteWalletSpend(t *testing.T) {
+	CleanGlobalMock()
+	destinationAddress := testutil.MakeAddress()
+	changeAddress := (testutil.MakeAddress()).String()
+	sky := 500
+	hash := testutil.RandSHA256(t)
+
+	toAddr := &SkycoinTransactionOutput{
+		skyOut: readable.TransactionOutput{
+			Address: destinationAddress.String(),
+			Coins:   strconv.Itoa(sky),
+			Hours:   uint64(250),
+		},
+	}
+	chgAddr := &SkycoinAddress{
+		address: changeAddress,
+	}
+
+	opt := NewTransferOptions()
+	opt.AddKeyValue("BurnFactor", "0.5")
+	opt.AddKeyValue("CoinHoursSelectionType", "auto")
+
+	req := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type:        "auto",
+			Mode:        "share",
+			ShareFactor: "0.5",
+		},
+		ChangeAddress: &changeAddress,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+			},
+		},
+	}
+
+	wreq := api.WalletCreateTransactionRequest{
+		Unsigned:                 true,
+		WalletID:                 "wallet",
+		CreateTransactionRequest: req,
+	}
+
+	txn := coin.Transaction{
+		Length:    100,
+		Type:      0,
+		InnerHash: hash,
+	}
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn.Transaction.Fee = "500"
+
+	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+
+	ret, err := wlt.Spend(nil, []core.TransactionOutput{toAddr}, chgAddr, opt)
+	require.Nil(t, err)
+	require.NotNil(t, ret)
+	val, err := ret.ComputeFee(CoinHour)
+	require.Nil(t, err)
+	require.Equal(t, uint64(sky), val)
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
 
