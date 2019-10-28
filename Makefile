@@ -5,11 +5,15 @@ UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
 
+deps: ## Add dependencies
+	dep ensure
+	rm -rf rm -rf vendor/github.com/therecipe
+
 run: build ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
 	@./deploy/linux/FiberCryptoWallet
 
-install-deps-no-envs: ##  Install whithout 
+install-deps-no-envs: ## Install therecipe/qt with -tags=no_env set
 	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
 	go get -t -d -v ./...
 	@echo "Dependencies installed"
@@ -37,7 +41,7 @@ install-deps-Windows: ## Install Windowns dependencies
 	qtsetup -test=false -ErrorAction SilentlyContinue 
 	go get -t -d -v ./...
 
-install-deps: install-deps-$(UNAME_S) install-linters ## 
+install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
 
 build-docker: ## Build project using docker
@@ -73,9 +77,11 @@ clean: ## Clean project FiberCrypto Wallet.
 	find . -path "*moc_*" -delete
 	@echo "Done."
 
-test: ## Run project test suite
+test-sky: ## Run Skycoin plugin test suite
 	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+
+test: test-sky ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck

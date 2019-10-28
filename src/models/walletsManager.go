@@ -267,7 +267,7 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	logWalletManager.Info("Broadcasting transaction")
 	altManager := core.LoadAltcoinManager()
-	plug, _ := altManager.LookupAltcoinManager(params.SkycoinTicker)
+	plug, _ := altManager.LookupAltcoinPlugin(params.SkycoinTicker)
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error loading PEX")
@@ -442,7 +442,7 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 		logWalletManager.Warn("Couldn't load wallet to Sign transaction")
 		return nil
 	}
-	txn, err := wlt.Sign(qTxn.txn, source, func(message string) (string, error) {
+	txn, err := wlt.Sign(qTxn.txn, core.UID(source), func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {

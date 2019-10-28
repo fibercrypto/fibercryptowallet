@@ -56,6 +56,6 @@ rcc__*
 *.orig
 *.bak
 
-# Dependencies
-# vendor
+# Temporary build files
+rcc_cgo_*.go
 
