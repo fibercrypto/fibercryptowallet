@@ -94,7 +94,7 @@ type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
 func NewSkycoinBlockchainStatus(invalidCacheTime uint64) *SkycoinBlockchainStatus {
 	return &SkycoinBlockchainStatus{CacheTime: invalidCacheTime}
 }
-func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (uint64, error) {
+func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueMetric, ticker string) (uint64, error) {
 	logBlockchain.Info("Getting Coin value")
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
