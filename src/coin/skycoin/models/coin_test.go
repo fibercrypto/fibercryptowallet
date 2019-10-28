@@ -1,11 +1,11 @@
 package skycoin
 
 import (
+	"github.com/stretchr/testify/require"
 	"testing"
 
-	"github.com/stretchr/testify/require"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/readable"
 )
 
@@ -117,4 +117,29 @@ func TestSkycoinTransactionOutputIsSpent(t *testing.T) {
 
 	require.Equal(t, output1.IsSpent(), false)
 	require.Equal(t, output2.IsSpent(), true)
+}
+
+func TestUninjectedTransactionSignedUnsigned(t *testing.T) {
+	txn, _, _, err1 := makeTransactionMultipleInputs(t, 2)
+	require.NoError(t, err1)
+	uiTxn, err := NewUninjectedTransaction(&txn, 1000)
+	require.NoError(t, err)
+	isFullySigned, err := uiTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.True(t, isFullySigned)
+
+	txn.Sigs[1] = cipher.Sig{}
+	isFullySigned, err = uiTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.False(t, isFullySigned)
+
+	txn.Sigs[0] = cipher.Sig{}
+	isFullySigned, err = uiTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.False(t, isFullySigned)
+
+	txn.Sigs = nil
+	isFullySigned, err = uiTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.False(t, isFullySigned)
 }
