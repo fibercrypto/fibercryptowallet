@@ -6,13 +6,13 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/stretchr/testify/assert"
 
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/testutil"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTransactionFinderAddressesActivity(t *testing.T) {
@@ -60,16 +60,16 @@ func TestTransactionFinderAddressesActivity(t *testing.T) {
 	thxF := &TransactionFinder{}
 
 	mask, err := thxF.AddressesActivity([]cipher.Address{})
-	assert.Nil(t, err)
-	assert.Equal(t, 0, len(mask))
-	assert.Equal(t, []bool{}, mask)
+	require.Nil(t, err)
+	require.Equal(t, 0, len(mask))
+	require.Equal(t, []bool{}, mask)
 
 	mask, err = thxF.AddressesActivity(addresses)
-	assert.Nil(t, err)
-	assert.Equal(t, 3, len(mask))
-	assert.Equal(t, false, mask[0])
+	require.Nil(t, err)
+	require.Equal(t, 3, len(mask))
+	require.Equal(t, false, mask[0])
 	for i := 1; i < 3; i++ {
-		assert.Equal(t, true, mask[i])
+		require.Equal(t, true, mask[i])
 	}
 }
 
@@ -100,8 +100,8 @@ func TestSkycoinRemoteWalletListWallets(t *testing.T) {
 	iter := wltSrv.ListWallets()
 	for iter.Next() {
 		wlt := iter.Value()
-		assert.Equal(t, "wallet", wlt.GetLabel())
-		assert.Equal(t, "FiberCrypto", wlt.GetId())
+		require.Equal(t, "wallet", wlt.GetLabel())
+		require.Equal(t, "FiberCrypto", wlt.GetId())
 	}
 }
 
@@ -152,14 +152,14 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 	}
 
 	wlt1, err := wltSrv.CreateWallet(label, seed, true, pwdReader, scanN)
-	assert.Nil(t, err)
-	assert.Equal(t, "walletEncrypted", wlt1.GetLabel())
-	assert.Equal(t, "FiberCrypto", wlt1.GetId())
+	require.Nil(t, err)
+	require.Equal(t, "walletEncrypted", wlt1.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt1.GetId())
 
 	wlt2, err := wltSrv.CreateWallet(label, seed, false, pwdReader, scanN)
-	assert.Nil(t, err)
-	assert.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
-	assert.Equal(t, "FiberCrypto", wlt2.GetId())
+	require.Nil(t, err)
+	require.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt2.GetId())
 }
 
 func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
@@ -182,12 +182,12 @@ func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 
 	encrypted, err := wltSrv.IsEncrypted("encrypted")
-	assert.Nil(t, err)
-	assert.Equal(t, true, encrypted)
+	require.Nil(t, err)
+	require.Equal(t, true, encrypted)
 
 	encrypted, err = wltSrv.IsEncrypted("nonEncrypted")
-	assert.Nil(t, err)
-	assert.Equal(t, false, encrypted)
+	require.Nil(t, err)
+	require.Equal(t, false, encrypted)
 }
 
 func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
@@ -209,8 +209,8 @@ func TestSkycoinRemoteWalletGetWallet(t *testing.T) {
 
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 	wlt := wltSrv.GetWallet("wallet")
-	assert.Equal(t, "wallet", wlt.GetLabel())
-	assert.Equal(t, "FiberCrypto", wlt.GetId())
+	require.Equal(t, "wallet", wlt.GetLabel())
+	require.Equal(t, "FiberCrypto", wlt.GetId())
 }
 
 func TestRemoteWalletSign(t *testing.T) {
@@ -227,7 +227,7 @@ func TestRemoteWalletSign(t *testing.T) {
 		fee:     100,
 	}
 	encodedResponse, err := unTxn.txn.SerializeHex()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 
 	walletSignTxn := api.WalletSignTransactionRequest{
 		EncodedTransaction: encodedResponse,
@@ -261,11 +261,11 @@ func TestRemoteWalletSign(t *testing.T) {
 	}
 
 	ret, err := wlt.Sign(&unTxn, "source", pwdReader, nil)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	value, err := ret.ComputeFee(CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, uint64(100), value)
-	assert.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
+	require.Nil(t, err)
+	require.Equal(t, uint64(100), value)
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
 
 type TransferOptions struct {
@@ -344,11 +344,11 @@ func TestRemoteWalletTransfer(t *testing.T) {
 	}
 
 	txn, err := wlt.Transfer(addr, uint64(sky*1e6), opt)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	val, err := txn.ComputeFee(CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, uint64(sky), val)
-	assert.Equal(t, crtTxn.Transaction.TxID, txn.GetId())
+	require.Nil(t, err)
+	require.Equal(t, uint64(sky), val)
+	require.Equal(t, crtTxn.Transaction.TxID, txn.GetId())
 
 }
 
@@ -461,11 +461,11 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	}
 
 	txn, err := wlt1.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	val, err := txn.ComputeFee(CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
-	assert.Equal(t, crtTxn1.Transaction.TxID, txn.GetId())
+	require.Nil(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	require.Equal(t, crtTxn1.Transaction.TxID, txn.GetId())
 
 	wlt2 := &RemoteWallet{
 		Id:          "wallet2",
@@ -473,11 +473,11 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	}
 
 	txn, err = wlt2.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	val, err = txn.ComputeFee(CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
-	assert.Equal(t, crtTxn2.Transaction.TxID, txn.GetId())
+	require.Nil(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	require.Equal(t, crtTxn2.Transaction.TxID, txn.GetId())
 }
 
 func TestRemoteWalletGenAddresses(t *testing.T) {
@@ -512,7 +512,7 @@ func TestRemoteWalletGenAddresses(t *testing.T) {
 	iter := wlt.GenAddresses(0, 0, 2, pwdReader)
 	for iter.Next() {
 		a := iter.Value()
-		assert.Equal(t, "addr", a.String())
+		require.Equal(t, "addr", a.String())
 	}
 }
 
@@ -523,12 +523,12 @@ func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
 		poolSection: PoolSection,
 	}
 	iter, err := wlt.GetLoadedAddresses()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	items := 0
 	for iter.Next() {
 		a := iter.Value()
 		items++
-		assert.Equal(t, "addr", a.String())
+		require.Equal(t, "addr", a.String())
 	}
-	assert.Equal(t, 1, items)
+	require.Equal(t, 1, items)
 }
