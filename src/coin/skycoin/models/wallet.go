@@ -14,7 +14,6 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
-	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -342,7 +341,7 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.
 	} else {
 		var isBound bool
 		if signer, isBound = wlt.signers[signerID]; !isBound {
-			logrus.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
+			logWallet.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
 			return nil, errors.ErrUnsupportedSigner
 		}
 	}
@@ -995,7 +994,7 @@ func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.P
 	} else {
 		var isBound bool
 		if signer, isBound = wlt.signers[signerID]; !isBound {
-			logrus.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
+			logWallet.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
 			return nil, errors.ErrUnsupportedSigner
 		}
 	}
@@ -1016,10 +1015,10 @@ func copyTransaction(txn *coin.Transaction) *coin.Transaction {
 	copy(txn2.Out, txn.Out)
 
 	if txnInnerHash != txn2.HashInner() {
-		logrus.Panic("copyTransaction copy broke InnerHash")
+		logWallet.Panic("copyTransaction copy broke InnerHash")
 	}
 	if txnHash != txn2.Hash() {
-		logrus.Panic("copyTransaction copy broke Hash")
+		logWallet.Panic("copyTransaction copy broke Hash")
 	}
 
 	return &txn2
@@ -1050,31 +1049,31 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		uxouts = make([]coin.UxOut, len(cTxn.In))
 		txnHash, err := cipher.SHA256FromHex(cTxn.TxID)
 		if err != nil {
-			logrus.Errorf("Error parsing transaction hash %s", cTxn.TxID)
+			logWallet.Errorf("Error parsing transaction hash %s", cTxn.TxID)
 			return nil, err
 		}
 		tmpInt64, err := strconv.ParseInt(cTxn.Fee, 10, 64)
 		if err != nil {
-			logrus.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
+			logWallet.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
 			return nil, err
 		}
 		txnFee = uint64(tmpInt64)
 		for i, cIn := range cTxn.In {
 			tmpInt64, err = strconv.ParseInt(cIn.Coins, 10, 64)
 			if err != nil {
-				logrus.Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
+				logWallet.Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
 				return nil, err
 			}
 			cInCoins := uint64(tmpInt64)
 			tmpInt64, err = strconv.ParseInt(cIn.Hours, 10, 64)
 			if err != nil {
-				logrus.Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
+				logWallet.Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
 				return nil, err
 			}
 			cInHours := uint64(tmpInt64)
 			cInAddr, err := cipher.DecodeBase58Address(cIn.Address)
 			if err != nil {
-				logrus.Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
+				logWallet.Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
 				return nil, err
 			}
 
