@@ -3,8 +3,8 @@ package skycoin
 import (
 	"io/ioutil"
 	"math"
-	"strings"
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
@@ -317,17 +317,13 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		CreateTransactionRequest: req,
 	}
 
-	crtTxn := &api.CreateTransactionResponse{
-		Transaction: api.CreatedTransaction{
-			Fee:       "500",
-			InnerHash: hash.Hex(),
-		},
-	}
-	tx := &coin.Transaction{
+	txn := coin.Transaction{
+		Length:    100,
+		Type:      0,
 		InnerHash: hash,
 	}
-	b, _ := tx.Serialize()
-	crtTxn.Transaction.TxID = cipher.SumSHA256(b).Hex()
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn.Transaction.Fee = "500"
 
 	global_mock.On("WalletCreateTransaction", wreq).Return(
 		crtTxn,
@@ -338,12 +334,13 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		poolSection: PoolSection,
 	}
 
-	txn, err := wlt.Transfer(addr, uint64(sky*1e6), opt)
+	ret, err := wlt.Transfer(addr, uint64(sky*1e6), opt)
 	require.Nil(t, err)
-	val, err := txn.ComputeFee(CoinHour)
+	require.NotNil(t, ret)
+	val, err := ret.ComputeFee(CoinHour)
 	require.Nil(t, err)
 	require.Equal(t, uint64(sky), val)
-	require.Equal(t, crtTxn.Transaction.TxID, txn.GetId())
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 
 }
 
@@ -396,13 +393,6 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		CreateTransactionRequest: req1,
 	}
 
-	crtTxn1 := &api.CreateTransactionResponse{
-		Transaction: api.CreatedTransaction{
-			Fee:       strconv.Itoa(sky),
-			InnerHash: hash.Hex(),
-		},
-	}
-
 	opt2 := NewTransferOptions()
 	opt2.AddKeyValue("BurnFactor", "0.5")
 	opt2.AddKeyValue("CoinHoursSelectionType", "manual")
@@ -429,25 +419,19 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		CreateTransactionRequest: req2,
 	}
 
-	crtTxn2 := &api.CreateTransactionResponse{
-		Transaction: api.CreatedTransaction{
-			Fee:       strconv.Itoa(sky),
-			InnerHash: hash.Hex(),
-		},
-	}
-
-	tx := &coin.Transaction{
+	txn := coin.Transaction{
+		Length:    100,
+		Type:      0,
 		InnerHash: hash,
 	}
-	b, _ := tx.Serialize()
-	crtTxn1.Transaction.TxID = cipher.SumSHA256(b).Hex()
-	crtTxn2.Transaction.TxID = crtTxn1.Transaction.TxID
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn.Transaction.Fee = strconv.Itoa(sky)
 
 	global_mock.On("WalletCreateTransaction", wreq1).Return(
-		crtTxn1,
+		crtTxn,
 		nil)
 	global_mock.On("WalletCreateTransaction", wreq2).Return(
-		crtTxn2,
+		crtTxn,
 		nil)
 
 	wlt1 := &RemoteWallet{
@@ -455,24 +439,26 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		poolSection: PoolSection,
 	}
 
-	txn, err := wlt1.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
+	ret, err := wlt1.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
 	require.Nil(t, err)
-	val, err := txn.ComputeFee(CoinHour)
+	require.NotNil(t, ret)
+	val, err := ret.ComputeFee(CoinHour)
 	require.Nil(t, err)
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
-	require.Equal(t, crtTxn1.Transaction.TxID, txn.GetId())
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 
 	wlt2 := &RemoteWallet{
 		Id:          "wallet2",
 		poolSection: PoolSection,
 	}
 
-	txn, err = wlt2.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
+	ret, err = wlt2.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
 	require.Nil(t, err)
-	val, err = txn.ComputeFee(CoinHour)
+	require.NotNil(t, ret)
+	val, err = ret.ComputeFee(CoinHour)
 	require.Nil(t, err)
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
-	require.Equal(t, crtTxn2.Transaction.TxID, txn.GetId())
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
 
 func TestRemoteWalletGenAddresses(t *testing.T) {
