@@ -3,8 +3,9 @@ package core
 import (
 	"errors"
 	"fmt"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"sync"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 )
 
 var logConnectionPool = logging.MustGetLogger("Connection Pool")
@@ -91,7 +92,7 @@ type MultiConnectionsPool struct {
 }
 
 func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection, error) {
-	logConnectionPool.Info("Geeting " + poolSection + "pool section")
+	logConnectionPool.Info("Getting " + poolSection + "pool section")
 	section, ok := mp.sections[poolSection]
 	if !ok {
 		return nil, errors.New("Invalid Section")
