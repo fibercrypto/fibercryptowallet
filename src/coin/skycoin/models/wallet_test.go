@@ -33,33 +33,7 @@ func TestTransactionFinderAddressesActivity(t *testing.T) {
 		addressesN = append(addressesN, s)
 	}
 
-	global_mock.On("Transactions", []string{}).Return(nil, nil)
-	global_mock.On("Transactions", []string{addressesN[0]}).Return(
-		[]readable.TransactionWithStatus{},
-		nil)
-	global_mock.On("Transactions", []string{addressesN[1]}).Return(
-		[]readable.TransactionWithStatus{
-			readable.TransactionWithStatus{
-				Status: readable.TransactionStatus{
-					Confirmed: true,
-				},
-			},
-		},
-		nil)
-	global_mock.On("Transactions", []string{addressesN[2]}).Return(
-		[]readable.TransactionWithStatus{
-			readable.TransactionWithStatus{
-				Status: readable.TransactionStatus{
-					Confirmed: true,
-				},
-			},
-			readable.TransactionWithStatus{
-				Status: readable.TransactionStatus{
-					Confirmed: false,
-				},
-			},
-		},
-		nil)
+	mockSkyApiTransactions(global_mock, addressesN)
 
 	thxF := &TransactionFinder{}
 
@@ -129,26 +103,8 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 		Encrypt: false,
 	}
 
-	global_mock.On("CreateWallet", wltOpt1).Return(
-		&api.WalletResponse{
-			Meta: readable.WalletMeta{
-				Coin:      "Sky",
-				Filename:  "FiberCrypto",
-				Label:     "walletEncrypted",
-				Encrypted: true,
-			},
-		},
-		nil)
-	global_mock.On("CreateWallet", wltOpt2).Return(
-		&api.WalletResponse{
-			Meta: readable.WalletMeta{
-				Coin:      "Sky",
-				Filename:  "FiberCrypto",
-				Label:     "walletNonEncrypted",
-				Encrypted: false,
-			},
-		},
-		nil)
+	mockSkyApiCreateWallet(global_mock, &wltOpt1, "walletEncrypted", true)
+	mockSkyApiCreateWallet(global_mock, &wltOpt2, "walletNonEncrypted", false)
 
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 	pwdReader := func(message string) (string, error) {
@@ -325,9 +281,7 @@ func TestRemoteWalletTransfer(t *testing.T) {
 	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
 	crtTxn.Transaction.Fee = "500"
 
-	global_mock.On("WalletCreateTransaction", wreq).Return(
-		crtTxn,
-		nil)
+	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
 
 	wlt := &RemoteWallet{
 		Id:          "wallet",
@@ -427,12 +381,8 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
 	crtTxn.Transaction.Fee = strconv.Itoa(sky)
 
-	global_mock.On("WalletCreateTransaction", wreq1).Return(
-		crtTxn,
-		nil)
-	global_mock.On("WalletCreateTransaction", wreq2).Return(
-		crtTxn,
-		nil)
+	mockSkyApiWalletCreateTransaction(global_mock, &wreq1, crtTxn)
+	mockSkyApiWalletCreateTransaction(global_mock, &wreq2, crtTxn)
 
 	wlt1 := &RemoteWallet{
 		Id:          "wallet1",
@@ -742,11 +692,6 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) []core.Wallet
 		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex+1), nil)
 	}
 	return wallets
-}
-
-func mockSkyApiUxOut(mock *SkycoinApiMock, ux coin.UxOut) {
-	rUxOut := makeSpentOutput(ux, 0, cipher.SHA256{})
-	mock.On("UxOut", ux.Hash().Hex()).Return(&rUxOut, nil)
 }
 
 func TestTransactionSignInput(t *testing.T) {
