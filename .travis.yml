@@ -62,7 +62,7 @@ matrix:
         - make lint
         # - make build
         # - make test
-    - make build-icon
+        # - make build-icon
 
     - stage: "MacOS"
       os: osx
@@ -75,7 +75,7 @@ matrix:
         - make clean
         - make build
         - make test
-    - make build-icon
+        - make build-icon
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
