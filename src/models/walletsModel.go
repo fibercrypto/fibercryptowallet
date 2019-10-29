@@ -4,6 +4,13 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
+	skyWallet "github.com/skycoin/hardware-wallet-go/src/skywallet"
+	"github.com/gogo/protobuf/proto"
+	"time"
+	"errors"
+	"github.com/sirupsen/logrus"
+	messages "github.com/skycoin/hardware-wallet-protob/go"
+	//"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
 )
 
 const (
@@ -61,6 +68,50 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectRemoveWallet(walletModel.removeWallet)
 	walletModel.ConnectLoadModel(walletModel.loadModel)
 
+// hWFirstAddr return the first address in the deterministic sequence if there is a configured
+// device connected, error if not device found or sme thing fail.
+func hWFirstAddr() (string, error) {
+	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+	// FIXME: dt := "walletTypeDeterministic"
+	msg, err := dev.AddressGen(1, 1, false, "deterministic")
+	if err != nil {
+		// TODO i18n
+		return "", errors.New("error getting address from device. " + err.Error())
+	}
+	switch msg.Kind {
+	case uint16(messages.MessageType_MessageType_ResponseSkycoinAddress):
+		addr := &messages.ResponseSkycoinAddress{}
+		err = proto.Unmarshal(msg.Data, addr)
+		if err != nil {
+			// TODO i18n
+			strErr := "error decoding device response"
+			logrus.WithError(err).Error(strErr)
+			return "", errors.New(strErr)
+		}
+		if len(addr.Addresses) != 1 {
+			// TODO i18n
+			strErr := "unexpected address count in response"
+			logrus.WithField("addr_len", len(addr.Addresses)).Error(strErr)
+			return "", errors.New(strErr)
+		}
+		return addr.Addresses[0], nil
+	case uint16(messages.MessageType_MessageType_Failure):
+		msgData, err := skyWallet.DecodeFailMsg(msg)
+		if err != nil {
+			// TODO i18n
+			strErr := "error decoding device response"
+			logrus.WithError(err).Error(strErr)
+			return "", errors.New(strErr)
+		}
+		// TODO i18n
+		strErr := "device response error"
+		logrus.Error(msgData, strErr)
+		return "", errors.New(strErr)
+	default:
+		// TODO i18n
+		logrus.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
+		return "", errors.New("unexpected device response")
+	}
 }
 
 func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
