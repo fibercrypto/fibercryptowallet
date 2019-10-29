@@ -56,8 +56,8 @@ rcc__*
 *.orig
 *.bak
 
-# Dependencies
-# vendor
+# Temporary build files
+rcc_cgo_*.go
 
 # Auto-generates go files.
 
