@@ -99,6 +99,8 @@ Item {
                 // BUG: Checking the wallet does not change the check state of addresses
                 // Is `checked: marked` ok? Or it should be the opposite?
                 checked: marked
+                width: parent.width
+                text: address 
 
                 onCheckedChanged: {
                     ListView.view.checkedDelegates += checked ? 1: -1
