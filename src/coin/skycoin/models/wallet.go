@@ -266,6 +266,28 @@ type WalletNode struct {
 	poolSection string
 }
 
+func (wltEnv *WalletNode) GetWallet(firstAddr string) (core.Wallet, error) {
+	ws := wltEnv.GetWalletSet()
+	if ws == nil {
+		// TODO i18n
+		return nil, errors.New("error getting wallet from addr, empty wallet set")
+	}
+	wls := wltEnv.GetWalletSet().ListWallets()
+	for wls.HasNext() {
+		wls.Next()
+		w := wls.Value()
+		addrs := w.GenAddresses(core.AccountAddress, 0, 0, nil)
+		if addrs.HasNext() {
+			addrs.Next()
+			addr := addrs.Value()
+			if addr.String() == firstAddr {
+				return w, nil
+			}
+		}
+	}
+	return nil, errors.New("error getting wallet from addr, no wallet found")
+}
+
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 	logWallet.Info("Getting wallet node storage")
 	if wltEnv.wltService == nil {
@@ -732,6 +754,29 @@ type WalletDirectory struct {
 	//Implements WallentEnv interface
 	WalletDir  string
 	wltService *SkycoinLocalWallet
+}
+
+func (wltDir *WalletDirectory) GetWallet(firstAddr string) (core.Wallet, error) {
+	ws := wltDir.GetWalletSet()
+	if ws == nil {
+		// TODO i18n
+		return nil, errors.New("error getting wallet from addr, empty wallet set")
+	}
+	wls := ws.ListWallets()
+	if wls.HasNext() {
+		wls.Next()
+		w := wls.Value()
+		addrs := w.GenAddresses(core.AccountAddress, 0, 1, nil)
+		if addrs.HasNext() {
+			addrs.Next()
+			addr := addrs.Value()
+			if addr.String() == firstAddr {
+				return w, nil
+			}
+		}
+	}
+	// TODO i18n
+	return nil, errors.New("error getting wallet from addr, no wallet found")
 }
 
 func (wltDir *WalletDirectory) GetStorage() core.WalletStorage {

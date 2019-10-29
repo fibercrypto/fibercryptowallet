@@ -80,10 +80,13 @@ type SeedGenerator interface {
 	VerifyMnemonic(seed string) (bool, error)
 }
 
-// WalletEnvironment is the entry point to manage wallets
+// WalletEnv is the entry point to manage wallets
 type WalletEnv interface {
 	// GetStorage provides access to wallet data store
 	GetStorage() WalletStorage
 	// GetWalletSet loads wallets in this environment
 	GetWalletSet() WalletSet
+	// GetWallet allow you to get a wallet from the first address in the
+	// deterministic sequence, error if not found or some thing was happen
+	GetWallet(firstAddr string) (Wallet, error)
 }
