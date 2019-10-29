@@ -3,8 +3,11 @@ package core
 import (
 	"errors"
 	"fmt"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"sync"
 )
+
+var logConnectionPool = logging.MustGetLogger("Connection Pool")
 
 var once sync.Once
 var multiConnectionsPool *MultiConnectionsPool
@@ -88,6 +91,7 @@ type MultiConnectionsPool struct {
 }
 
 func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection, error) {
+	logConnectionPool.Info("Geeting " + poolSection + "pool section")
 	section, ok := mp.sections[poolSection]
 	if !ok {
 		return nil, errors.New("Invalid Section")
@@ -96,7 +100,7 @@ func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection
 }
 
 func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) error {
-
+	logConnectionPool.Info("Creating pool section")
 	mp.sections[name] = &PoolSection{
 		mutex:     new(sync.Mutex),
 		capacity:  mp.capacity,
@@ -108,6 +112,7 @@ func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectF
 }
 
 func (mp *MultiConnectionsPool) ListSections() ([]string, error) {
+	logConnectionPool.Info("Listing pool sections")
 	sections := make([]string, 0)
 	for key, _ := range mp.sections {
 		sections = append(sections, key)
@@ -164,7 +169,7 @@ func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 	}
 }
 
-// GetMultiPool instantiates singleton connection pool obj=ect
+// GetMultiPool instantiates singleton connection pool object
 func GetMultiPool() MultiPool {
 
 	once.Do(func() {

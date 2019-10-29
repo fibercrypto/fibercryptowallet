@@ -46,12 +46,12 @@ func makeTransactionFromUxOut(t *testing.T, ux coin.UxOut, s cipher.SecKey) coin
 }
 
 var (
-	seedPairIndex        = 0
-	seedContinuation     []byte
-	seedMnemonic         string
-	seedEntropy          []byte
-	seedData             *skytestsuite.SeedTestData
-	genPublic, genSecret = cipher.GenerateKeyPair()
+	seedPairIndex    = 0
+	seedContinuation []byte
+	seedMnemonic     string
+	seedEntropy      []byte
+	seedData         *skytestsuite.SeedTestData
+	_, genSecret     = cipher.GenerateKeyPair()
 )
 
 type KeyData struct {
@@ -82,6 +82,7 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 		seedContinuation = seedEntropy
 		seedMnemonic = string(data.Seed)
 		seedData = data
+		seedPairIndex = 0
 	}
 
 	var keytestData KeyData
@@ -89,11 +90,15 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	if err != nil {
 		return nil, err
 	}
-	// TODO: Verify wallet crypto pair
 	keytestData.Mnemonic = seedMnemonic
 	keytestData.Entropy = seedEntropy
 	keytestData.AddressIndex = seedPairIndex
 	seedPairIndex++
+	if keytestData.AddressIndex < len(seedData.Keys) {
+		// Confirm that deterministic address sequence is correct
+		require.Equal(t, seedData.Keys[keytestData.AddressIndex].Public, keytestData.PubKey)
+		require.Equal(t, seedData.Keys[keytestData.AddressIndex].Secret, keytestData.SecKey)
+	}
 	return &keytestData, nil
 }
 
@@ -148,7 +153,7 @@ func makeTransactionMultipleInputs(t *testing.T, n int) (coin.Transaction, []Key
 	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, uxs, nil
 }
 
-func makeTransactions(t *testing.T, n int) (coin.Transactions, error) { //nolint:unparam
+func makeTransactions(t *testing.T, n int) (coin.Transactions, error) { //nolint:unparam,megacheck
 	txns := make(coin.Transactions, n)
 	for i := range txns {
 		var err error
