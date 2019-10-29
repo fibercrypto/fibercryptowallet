@@ -72,7 +72,8 @@ func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) (uint64, error) 
 	} else if util.StringInList(ticker, txn.SupportedAssets()) {
 		return uint64(0), nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 func newCreatedTransactionOutput(uxID, address, coins, hours string) api.CreatedTransactionOutput {
@@ -467,7 +468,8 @@ func (txn *SkycoinTransaction) ComputeFee(ticker string) (uint64, error) {
 	} else if util.StringInList(ticker, txn.SupportedAssets()) {
 		return uint64(0), nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 // EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
@@ -632,7 +634,8 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return in.skyIn.CalculatedHours * accuracy, nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 /**
@@ -700,7 +703,8 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return out.calculatedHours * accuracy, nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 func (out *SkycoinTransactionOutput) IsSpent() bool {
@@ -791,7 +795,8 @@ func (in *SkycoinCreatedTransactionInput) GetCoins(ticker string) (uint64, error
 		tmpResult, err = strconv.ParseInt(in.skyIn.CalculatedHours, 10, 64)
 		result = uint64(tmpResult)
 	} else {
-		return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+		logCoin.Errorf("Invalid ticker %v\n", ticker)
+		return uint64(0), errors.ErrInvalidAltcoinTicker
 	}
 	if err != nil {
 		return 0, err
@@ -845,9 +850,10 @@ func (out *SkycoinCreatedTransactionOutput) GetCoins(ticker string) (uint64, err
 		result = out.calculatedHours
 		err = nil
 	} else {
-		err = fmt.Errorf("Invalid ticker %v\n", ticker)
+		err = errors.ErrInvalidAltcoinTicker
 	}
 	if err != nil {
+		logCoin.WithError(err).Errorf("Could not retrieve coins for ticker %s", ticker)
 		return 0, err
 	}
 	return result, nil
@@ -935,7 +941,8 @@ func (txn *SkycoinCreatedTransaction) ComputeFee(ticker string) (uint64, error) 
 	} else if util.StringInList(ticker, txn.SupportedAssets()) {
 		return uint64(0), nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 // EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network

@@ -1,8 +1,6 @@
 package skycoin
 
 import (
-	"fmt"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
@@ -92,7 +90,8 @@ func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
 
 	skyApi, ok := obj.(SkycoinAPI)
 	if !ok {
-		return nil, fmt.Errorf("There is not propers client in %s pool", section)
+		logNetwork.Errorf("There is no proper client in %s pool", section)
+		return nil, errors.ErrInvalidPoolObjectType
 	}
 	return &SkycoinApiClient{
 		SkycoinAPI: skyApi,
