@@ -1,11 +1,10 @@
 package data
 
 import (
-	"./internal"
 	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
-	"github.com/gogo/protobuf/proto"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/visor/dbutil"
@@ -17,44 +16,78 @@ import (
 //go:generate protoc -I=. -I=$GOPATH/src/github.com/gogo/protobuf/protobuf -I=$GOPATH/src --gogo_out=. internal/config.proto
 
 var (
-	errBucketEmpty  = errors.New(" Error: bucket are empty.")
-	errValEmpty     = errors.New(" Error: value are empty.")
-	dbConfigDataKey = []byte("ConfigData")
-	dbAddrsBookBkt  = []byte("AddressBook")
-	dbConfigBkt     = []byte("Config")
+	addrsBook = addressBook{}
+	// Errors
+	errBucketEmpty = errors.New(" Error: bucket are empty.")
+	errValEmpty    = errors.New(" Error: value are empty.")
+	// Db buckets.
+	dbAddrsBookBkt = []byte("addressBook")
+	dbConfigBkt    = []byte("Config")
 )
 
-type AddressBook struct {
+type addressBook struct {
 	// db is a point of bolt.DB object. This handle all interaction with the db.
-	db          *bolt.DB
-	dbPath      string // ".fiber/data.db"
-	hasPassword bool
-	hash        []byte
-	entropy     []byte
+	db     *bolt.DB
+	dbPath string // ".fiber/data.db"
+	// hasPassword bool
+	hash    []byte
+	entropy []byte
 }
 
 //
-func (ab *AddressBook) generateHash(password []byte) error {
-	hash, err := bcrypt.GenerateFromPassword(password, 14)
-	if err != nil {
-		return err
-	}
-	ab.hash = hash
-	return nil
-}
-
-//
-func (ab *AddressBook) verifyHash(password []byte) error {
+func (ab *addressBook) verifyHash(password []byte) error {
 	if ab.hash == nil {
-		if err := ab.GetConfig(); err != nil {
+		if err := ab.GetHashFromConfig(); err != nil {
 			return err
 		}
 	}
 	return bcrypt.CompareHashAndPassword(ab.hash, password)
 }
 
+//
+func GetAddressBook() *addressBook {
+	return &addrsBook
+}
+
+func (ab *addressBook) New(password []byte, path, mnemonic string) error {
+	ab.dbPath = path
+	if err := ab.Open(); err != nil {
+		return err
+	}
+	if err := ab.GenerateEntropy(mnemonic); err != nil {
+		return err
+	}
+	hash, err := bcrypt.GenerateFromPassword(password, 14)
+
+	if err != nil {
+		return err
+	}
+	ab.hash = hash
+
+	tx, err := ab.db.Begin(true)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := tx.Rollback(); err != nil && err != bolt.ErrTxClosed {
+			logrus.Fatal(err)
+		}
+	}()
+
+	bConf := tx.Bucket(dbConfigBkt)
+	if err := bConf.Put([]byte("hash"), ab.hash); err != nil {
+		return err
+	}
+	if err := bConf.Put([]byte("entropy"), ab.entropy); err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
 // startUp function open the database.
-func (ab *AddressBook) Open() error {
+func (ab *addressBook) Open() error {
 	var err error
 	// Open database.
 	db, err := bolt.Open(ab.dbPath,
@@ -87,12 +120,11 @@ func (ab *AddressBook) Open() error {
 	if err != nil {
 		return err
 	}
-
 	return tx.Commit()
 }
 
 //
-func (ab *AddressBook) Insert(c *Contact, password []byte) error {
+func (ab *addressBook) InsertContact(c core.Contact, password []byte) error {
 	// Start a writeable transaction.
 	tx, err := ab.db.Begin(true)
 	if err != nil {
@@ -111,27 +143,26 @@ func (ab *AddressBook) Insert(c *Contact, password []byte) error {
 
 	// The sequence is an autoincrementing integer that is thansactionally safe.
 	seq, err := bkt.NextSequence()
-	c.ID = seq
+	c.SetID(seq)
 
 	if err := ab.verifyHash(password); err != nil {
 		return fmt.Errorf(" Error verify password: %s", err)
 	}
 
-	encryptedData, err := c.encryptContact(password, ab.entropy)
+	encryptedData, err := c.EncryptContact(password, ab.entropy)
 	if err != nil {
 		return err
 	}
 	// Save contact to the bucket.
-	if err := bkt.Put(dbutil.Itob(c.ID), encryptedData); err != nil {
+	if err := bkt.Put(dbutil.Itob(c.GetID()), encryptedData); err != nil {
 		return err
 	}
-
 	// Commit transaction and exit.
 	return tx.Commit()
 }
 
 // Get a contact by ID.
-func (ab *AddressBook) Get(id uint64, password []byte) (*Contact, error) {
+func (ab *addressBook) GetContact(id uint64, password []byte) (core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
 	if err != nil {
@@ -154,16 +185,15 @@ func (ab *AddressBook) Get(id uint64, password []byte) (*Contact, error) {
 	if encryptData == nil {
 		return nil, errValEmpty
 	}
-
 	var c Contact
-	if err := c.decryptContact(encryptData, password, ab.entropy); err != nil {
+	if err := c.DecryptContact(encryptData, password, ab.entropy); err != nil {
 		return nil, err
 	}
 	return &c, nil
 }
 
 //
-func (ab *AddressBook) List(password []byte) ([]*Contact, error) {
+func (ab *addressBook) ListContact(password []byte) ([]core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
 	if err != nil {
@@ -179,10 +209,10 @@ func (ab *AddressBook) List(password []byte) ([]*Contact, error) {
 	if bkt == nil {
 		return nil, errBucketEmpty
 	}
-	var contacts []*Contact
+	var contacts []core.Contact
 	if err := bkt.ForEach(func(k, v []byte) error {
 		var c Contact
-		if err := c.decryptContact(v, password, ab.entropy); err != nil {
+		if err := c.DecryptContact(v, password, ab.entropy); err != nil {
 			return err
 		}
 		contacts = append(contacts, &c)
@@ -194,7 +224,7 @@ func (ab *AddressBook) List(password []byte) ([]*Contact, error) {
 }
 
 //
-func (ab *AddressBook) Delete(id uint64) error {
+func (ab *addressBook) DeleteContact(id uint64) error {
 	return ab.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
 		if bkt == nil {
@@ -206,72 +236,42 @@ func (ab *AddressBook) Delete(id uint64) error {
 }
 
 //
-func (ab *AddressBook) Update(id uint64, newcontact Contact) error {
+func (ab *addressBook) Update(id uint64, newcontact Contact) error {
 	return nil
 }
 
 // Close shuts down the database.
-func (ab *AddressBook) Close() error {
+func (ab *addressBook) Close() error {
 	return ab.db.Close()
 }
 
 //
-func (ab *AddressBook) GetConfig() error {
-	tx, err := ab.db.Begin(false)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			logrus.Fatal(err)
-		}
-	}()
-
-	bkt := tx.Bucket(dbConfigBkt)
-	if bkt == nil {
-		return errBucketEmpty
-	}
-
-	// Read encoded contact bytes.
-	encryptData := bkt.Get(dbConfigDataKey)
-	if encryptData == nil {
-		return errValEmpty
-	}
-	return ab.UnmarshalBinary(encryptData)
-}
+// func (ab *addressBook) GetConfig() error {
+// 	tx, err := ab.db.Begin(false)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer func() {
+// 		if err := tx.Rollback(); err != nil {
+// 			logrus.Fatal(err)
+// 		}
+// 	}()
+//
+// 	bkt := tx.Bucket(dbConfigBkt)
+// 	if bkt == nil {
+// 		return errBucketEmpty
+// 	}
+//
+// 	// Read encoded contact bytes.
+// 	encryptData := bkt.Get(dbConfigDataKey)
+// 	if encryptData == nil {
+// 		return errValEmpty
+// 	}
+// 	return ab.UnmarshalBinary(encryptData)
+// }
 
 //
-func (ab *AddressBook) MarshalBinary() ([]byte, error) {
-
-	return proto.Marshal(&internal.Config{
-		Hash:          ab.hash,
-		Entropy:       ab.entropy,
-		HasPassphrase: ab.hasPassword,
-	})
-}
-
-//
-func (ab *AddressBook) UnmarshalBinary(data []byte) error {
-	var pb internal.Config
-	if err := proto.Unmarshal(data, &pb); err != nil {
-		return err
-	}
-	ab.hash = pb.Hash
-	ab.entropy = pb.Entropy
-	ab.hasPassword = pb.HasPassphrase
-	return nil
-}
-
-//
-func (ab *AddressBook) InsertPass(password []byte) error {
-	if password == nil {
-		ab.hasPassword = true
-	}
-	return ab.generateHash(password)
-}
-
-//
-func (ab *AddressBook) GenerateMnemonic(mnemonic string) error {
+func (ab *addressBook) GenerateEntropy(mnemonic string) error {
 	if mnemonic != "" {
 		if err := bip39.ValidateMnemonic(mnemonic); err != nil {
 			return err
@@ -292,5 +292,37 @@ func (ab *AddressBook) GenerateMnemonic(mnemonic string) error {
 		}
 		ab.entropy = e
 	}
+	return nil
+}
+
+func (ab *addressBook) SetPath(path string) {
+	ab.dbPath = path
+}
+
+func (ab *addressBook) GetPath() string {
+	return ab.dbPath
+}
+
+func (ab *addressBook) GetHashFromConfig() error {
+	tx, err := ab.db.Begin(false)
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			panic(err)
+		}
+	}()
+	buck := tx.Bucket(dbConfigBkt)
+	if buck == nil {
+		return errBucketEmpty
+	}
+
+	hash := buck.Get([]byte("hash"))
+	if hash == nil {
+		return errValEmpty
+	}
+	ab.hash = hash
 	return nil
 }
