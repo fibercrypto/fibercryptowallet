@@ -1,18 +1,18 @@
 package data
 
 import (
-	"./internal"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
 	"crypto/sha512"
 	"fmt"
+	"github.com/fibercrypto/FiberCryptoWallet/src/data/internal"
 	"github.com/gogo/protobuf/proto"
 	"golang.org/x/crypto/pbkdf2"
 	"io"
 )
 
-// Contact is a contact of the AddressBook
+// Contact is a contact of the addressBook
 type Contact struct {
 	ID      uint64
 	Address []Address
@@ -25,12 +25,11 @@ type Address struct {
 	Coin  []byte
 }
 
-func (c *Contact) encryptContact(password, mnemonic []byte) ([]byte, error) {
-	if mnemonic == nil {
+func (c *Contact) EncryptContact(password, entropy []byte) ([]byte, error) {
+	if entropy == nil {
 		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
 	}
-
-	block, err := aes.NewCipher(derivePassphrase(mnemonic, password))
+	block, err := aes.NewCipher(derivePassphrase(entropy, password))
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +51,7 @@ func (c *Contact) encryptContact(password, mnemonic []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-func (c *Contact) decryptContact(ciphermsg, password, mnemonic []byte) error {
+func (c *Contact) DecryptContact(cipherMsg, password, mnemonic []byte) error {
 	if mnemonic == nil {
 		return fmt.Errorf(" Error: Mnemonic are empty.")
 	}
@@ -67,7 +66,7 @@ func (c *Contact) decryptContact(ciphermsg, password, mnemonic []byte) error {
 	}
 
 	nonceSize := aesGCM.NonceSize()
-	nonce, ciphertext := ciphermsg[:nonceSize], ciphermsg[nonceSize:]
+	nonce, ciphertext := cipherMsg[:nonceSize], cipherMsg[nonceSize:]
 
 	data, err := aesGCM.Open(nil, nonce, ciphertext, nil)
 
@@ -110,7 +109,15 @@ func (c *Contact) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+func (c *Contact) GetID() uint64 {
+	return c.ID
+}
+
+func (c *Contact) SetID(id uint64) {
+	c.ID = id
+}
+
 //
-func derivePassphrase(mnemonic, password []byte) []byte {
-	return pbkdf2.Key(mnemonic, []byte("mnemonic"+string(password)), 4096, 32, sha512.New)
+func derivePassphrase(entropy, password []byte) []byte {
+	return pbkdf2.Key(entropy, []byte("entropy:"+string(password)), 4096, 32, sha512.New)
 }

@@ -1,7 +1,7 @@
-package data
+package data_test
 
 import (
-	"fmt"
+	"github.com/fibercrypto/FiberCryptoWallet/src/data"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
@@ -9,22 +9,22 @@ import (
 	"testing"
 )
 
-var AddressBookTestCases = []Contact{
+var AddressBookTestCases = []data.Contact{
 	{
-		Address: []Address{{
+		Address: []data.Address{{
 			Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
 			Coin:  []byte("skycoin"),
 		}},
 		Name: []byte("hsequeda"),
 	}, {
-		Address: []Address{{
+		Address: []data.Address{{
 			Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
 			Coin:  []byte("skycoin"),
 		}},
 		Name: []byte("hsequeda"),
 	},
 	{
-		Address: []Address{{
+		Address: []data.Address{{
 			Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
 			Coin:  []byte("skycoin"),
 		}, {
@@ -37,37 +37,13 @@ var AddressBookTestCases = []Contact{
 
 var pass = []byte("qwerty")
 
-func TestAddressBook_generateHash(t *testing.T) {
-	t.Log("Init test generateHash")
-	ab := AddressBook{}
-
-	testCases := make(map[string]string)
-	testCases["empty-address"] = ""
-	testCases["ok"] = "qwerty"
-
-	for k, v := range testCases {
-		t.Logf("Generating hash for %s...", k)
-		// Will be generated a hash.
-		if err := ab.generateHash([]byte(v)); err != nil {
-			t.Error(err)
-		}
-
-		t.Logf("Verify hash for %s...", k)
-		// Will be verify the hash
-		if err := ab.verifyHash([]byte(v)); err != nil {
-			t.Error(err)
-		}
-	}
-
-	t.Log("Success")
-}
-
 func TestAddressBook_Insert(t *testing.T) {
-	t.Log("Init test Insert:")
-	ab := OpenAddrsBook(t)
-	t.Log("Writing in the AddressBook.")
+	t.Log("New test Insert:")
+	ab := data.GetAddressBook()
+	OpenAddrsBook(t)
+	t.Log("Writing in the addressBook.")
 	for k := range AddressBookTestCases {
-		if err := ab.Insert(&AddressBookTestCases[k], pass); err != nil {
+		if err := ab.InsertContact(&AddressBookTestCases[k], pass); err != nil {
 			t.Errorf("Error inserting value into database: %s", err)
 		}
 	}
@@ -75,11 +51,12 @@ func TestAddressBook_Insert(t *testing.T) {
 		if err := ab.Close(); err != nil {
 			t.Errorf("Error closing db: %s", err)
 		}
+		if err := os.Remove(ab.GetPath()); err != nil {
+			t.Error(err)
+		}
 	}()
-
 	// Verify user can be retrived.
-	other, err := ab.Get(1, pass)
-	t.Log(AddressBookTestCases[0].ID)
+	other, err := ab.GetContact(1, pass)
 	if err != nil {
 		t.Error(err)
 	} else if !reflect.DeepEqual(other, &AddressBookTestCases[0]) {
@@ -90,9 +67,9 @@ func TestAddressBook_Insert(t *testing.T) {
 }
 
 func TestContact_MarshalBinary(t *testing.T) {
-	var c = Contact{
+	var c = data.Contact{
 		ID: 1,
-		Address: []Address{{
+		Address: []data.Address{{
 			Value: []byte("myaddress"),
 			Coin:  []byte("sky"),
 		}},
@@ -103,7 +80,7 @@ func TestContact_MarshalBinary(t *testing.T) {
 		t.Error(err)
 	}
 	assert.NotEmpty(t, b)
-	var newC Contact
+	var newC data.Contact
 	if err := newC.UnmarshalBinary(b); err != nil {
 		t.Error(err)
 	}
@@ -112,53 +89,36 @@ func TestContact_MarshalBinary(t *testing.T) {
 	t.Log("Success")
 }
 
-func TestAddressBook_MarshalBinary(t *testing.T) {
-	var ab = AddressBook{
-		hasPassword: false,
-		hash:        []byte("myhash"),
-		entropy:     []byte("entropy"),
-	}
-
-	b, err := ab.MarshalBinary()
-	t.Log(string(b))
-	if err != nil {
-		t.Error(err)
-	}
-	assert.NotEmpty(t, b)
-	var newAB AddressBook
-	if err := newAB.UnmarshalBinary(b); err != nil {
-		t.Error(err)
-	}
-	assert.ObjectsAreEqual(ab, newAB)
-
-	t.Log("Success")
-
-}
-
 func TestAddressBook_List(t *testing.T) {
-	t.Log("Init test Insert:")
-	ab := OpenAddrsBook(t)
-	t.Log("Reading AddressBook.")
-	contactList, err := ab.List(pass)
+	t.Log("New test Insert:")
+	ab := data.GetAddressBook()
+	OpenAddrsBook(t)
+	for e := range AddressBookTestCases {
+		if err := ab.InsertContact(&AddressBookTestCases[e], pass); err != nil {
+			t.Error(err)
+		}
+	}
+	t.Log("Reading addressBook.")
+	contactList, err := ab.ListContact(pass)
 	if err != nil {
 		t.Error(err)
 	}
 	for _, v := range contactList {
-		t.Logf("ID:%d \n", v.ID)
-		t.Logf("Name:%s \n", v.Name)
+		t.Logf("ID:%d/3 \n", v.GetID())
+		// t.Logf("Name:%s \n", v.Name)
 	}
 	defer func() {
 		if err := ab.Close(); err != nil {
 			t.Errorf("Error closing db: %s", err)
 		}
+		if err := os.Remove(ab.GetPath()); err != nil {
+			t.Error(err)
+		}
 	}()
+	t.Log("Success")
 }
 
-type TestAddressBook struct {
-	*AddressBook
-}
-
-func NewTestAddressBook(t *testing.T) *TestAddressBook {
+func GetFilePath(t *testing.T) string {
 	f, err := ioutil.TempFile("/home/hsequeda/temp", "testaddressbook-")
 	if err != nil {
 		t.Error(err)
@@ -167,35 +127,14 @@ func NewTestAddressBook(t *testing.T) *TestAddressBook {
 	if err := f.Close(); err != nil {
 		t.Error(err)
 	}
-
-	return &TestAddressBook{
-		AddressBook: &AddressBook{
-			dbPath: f.Name(),
-		},
-	}
+	return f.Name()
 }
 
-func OpenAddrsBook(t *testing.T) *TestAddressBook {
-	AddrsBook := NewTestAddressBook(t)
-	if err := AddrsBook.InsertPass(pass); err != nil {
+func OpenAddrsBook(t *testing.T) {
+	AddrsBook := data.GetAddressBook()
+	path := GetFilePath(t)
+	mnemonic := "mandate ride tide eternal laundry stem prison era calm topic rate remain"
+	if err := AddrsBook.New(pass, path, mnemonic); err != nil {
 		t.Error(err)
 	}
-	if err := AddrsBook.GenerateMnemonic("mandate ride tide eternal laundry stem prison era calm topic rate remain"); err != nil {
-		t.Error(err)
-	}
-
-	if err := AddrsBook.Open(); err != nil {
-		t.Error(err)
-	}
-	fmt.Printf("%#v \n", string(AddrsBook.AddressBook.entropy))
-	return AddrsBook
-}
-
-func (s *TestAddressBook) Close() error {
-	defer func() {
-		if err := os.Remove(s.dbPath); err != nil {
-			panic(err)
-		}
-	}()
-	return s.AddressBook.Close()
 }
