@@ -10,7 +10,6 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	messages "github.com/skycoin/hardware-wallet-protob/go"
-	//"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
 )
 
 const (
@@ -67,6 +66,28 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectEditWallet(walletModel.editWallet)
 	walletModel.ConnectRemoveWallet(walletModel.removeWallet)
 	walletModel.ConnectLoadModel(walletModel.loadModel)
+	sniffHw()
+}
+
+// sniffHw run for ever trying to find a hardware wallet device
+func sniffHw() {
+	go func() {
+		for {
+			//walletManager.WalletEnv.
+			addr, err := hWFirstAddr()
+			if err == nil {
+				logrus.Println("\n\naddr", addr)
+				a, e := walletManager.WalletEnv.GetWallet(addr)
+				logrus.Warnln("a, e", a, e)
+				//walletModel.Conn
+			} else {
+				logrus.Println("ddddddd", err)
+			}
+			// FIXME having an interval of 400ms cause a crash
+			time.Sleep(time.Second * 4)
+		}
+	}()
+}
 
 // hWFirstAddr return the first address in the deterministic sequence if there is a configured
 // device connected, error if not device found or sme thing fail.
