@@ -1,6 +1,11 @@
 package data
 
 import (
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
+	"crypto/rand"
+	"encoding"
 	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
@@ -9,6 +14,7 @@ import (
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/visor/dbutil"
 	"golang.org/x/crypto/bcrypt"
+	"io"
 	"time"
 )
 
@@ -130,11 +136,18 @@ func (ab *addressBook) InsertContact(c core.Contact, password []byte) error {
 	if err != nil {
 		return err
 	}
+
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != bolt.ErrTxClosed {
-			logrus.Fatal(err)
+			panic(err)
 		}
 	}()
+
+	for _, v := range c.(*Contact).Address {
+		if err := ab.SearchAddress(v.GetValue(), v.GetCoinType(), password); err != nil {
+			return err
+		}
+	}
 
 	bkt := tx.Bucket(dbAddrsBookBkt)
 	if bkt == nil {
@@ -148,17 +161,41 @@ func (ab *addressBook) InsertContact(c core.Contact, password []byte) error {
 	if err := ab.verifyHash(password); err != nil {
 		return fmt.Errorf(" Error verify password: %s", err)
 	}
+	if cc, ok := c.(*Contact); ok {
+		encryptedData, err := ab.Encrypt(cc, password)
+		if err != nil {
+			return err
+		}
 
-	encryptedData, err := c.EncryptContact(password, ab.entropy)
+		// Save contact to the bucket.
+		if err := bkt.Put(dbutil.Itob(c.GetID()), encryptedData); err != nil {
+			return err
+		}
+	}
+
+	// Commit transaction before exit.
+	return tx.Commit()
+}
+
+// SearchAddress search an address in the list of contacts into the AddressBook.
+// If find the address return error, else return nil.
+func (ab *addressBook) SearchAddress(address, coin, password []byte) error {
+	contacts, err := ab.ListContact(password)
 	if err != nil {
 		return err
 	}
-	// Save contact to the bucket.
-	if err := bkt.Put(dbutil.Itob(c.GetID()), encryptedData); err != nil {
-		return err
+	for _, v := range contacts {
+		c, ok := v.(*Contact)
+		if ok {
+			for _, addrs := range c.Address {
+				if bytes.Compare(addrs.GetValue(), address) == 0 && bytes.Compare(addrs.GetCoinType(), coin) == 0 {
+					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist.", address, coin)
+				}
+			}
+		}
 	}
-	// Commit transaction and exit.
-	return tx.Commit()
+
+	return nil
 }
 
 // Get a contact by ID.
@@ -185,11 +222,11 @@ func (ab *addressBook) GetContact(id uint64, password []byte) (core.Contact, err
 	if encryptData == nil {
 		return nil, errValEmpty
 	}
-	var c Contact
-	if err := c.DecryptContact(encryptData, password, ab.entropy); err != nil {
+	if c, err := ab.Decrypt(encryptData, password); err != nil {
 		return nil, err
+	} else {
+		return c, nil
 	}
-	return &c, nil
 }
 
 //
@@ -211,12 +248,13 @@ func (ab *addressBook) ListContact(password []byte) ([]core.Contact, error) {
 	}
 	var contacts []core.Contact
 	if err := bkt.ForEach(func(k, v []byte) error {
-		var c Contact
-		if err := c.DecryptContact(v, password, ab.entropy); err != nil {
+
+		if c, err := ab.Decrypt(v, password); err != nil {
 			return err
+		} else {
+			contacts = append(contacts, c)
+			return nil
 		}
-		contacts = append(contacts, &c)
-		return nil
 	}); err != nil {
 		return nil, err
 	}
@@ -325,4 +363,56 @@ func (ab *addressBook) GetHashFromConfig() error {
 	}
 	ab.hash = hash
 	return nil
+}
+
+func (ab *addressBook) Encrypt(c encoding.BinaryMarshaler, password []byte) ([]byte, error) {
+	if ab.entropy == nil {
+		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
+	}
+	block, err := aes.NewCipher(derivePassphrase(ab.entropy, password))
+	if err != nil {
+		return nil, err
+	}
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+
+	nonce := make([]byte, aesGCM.NonceSize())
+	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
+		return nil, err
+	}
+	bc, err := c.MarshalBinary()
+	if err != nil {
+		return nil, err
+	}
+
+	ciphertext := aesGCM.Seal(nonce, nonce, bc, nil)
+	return ciphertext, nil
+}
+
+//
+func (ab *addressBook) Decrypt(cipherMsg, password []byte) (core.Contact, error) {
+	if ab.entropy == nil {
+		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
+	}
+
+	block, err := aes.NewCipher(derivePassphrase(ab.entropy, password))
+	if err != nil {
+		return nil, err
+	}
+	aesGCM, err := cipher.NewGCM(block)
+	if err != nil {
+		return nil, err
+	}
+	var c Contact
+	nonceSize := aesGCM.NonceSize()
+	nonce, ciphertext := cipherMsg[:nonceSize], cipherMsg[nonceSize:]
+
+	data, err := aesGCM.Open(nil, nonce, ciphertext, nil)
+
+	if err := c.UnmarshalBinary(data); err != nil {
+		return nil, err
+	}
+	return &c, nil
 }

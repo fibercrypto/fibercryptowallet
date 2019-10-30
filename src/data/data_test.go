@@ -1,6 +1,7 @@
 package data_test
 
 import (
+	"errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/data"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -9,32 +10,47 @@ import (
 	"testing"
 )
 
-var AddressBookTestCases = []data.Contact{
-	{
-		Address: []data.Address{{
-			Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
-			Coin:  []byte("skycoin"),
-		}},
-		Name: []byte("hsequeda"),
-	}, {
-		Address: []data.Address{{
-			Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
-			Coin:  []byte("skycoin"),
-		}},
-		Name: []byte("hsequeda"),
-	},
-	{
-		Address: []data.Address{{
-			Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-			Coin:  []byte("skycoin"),
-		}, {
-			Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
-			Coin:  []byte("BTC"),
-		}},
-		Name: []byte("maria"),
-	},
+type TestCases struct {
+	name     string
+	Contacts data.Contact
 }
 
+var testCases = []TestCases{
+	{
+		name:     "empty-Contact",
+		Contacts: data.Contact{},
+	}, {
+		name: "one-address",
+		Contacts: data.Contact{
+			Address: []data.Address{{
+				Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
+				Coin:  []byte("skycoin"),
+			}},
+			Name: []byte("contact1"),
+		}},
+	{
+		name: "multi-address",
+		Contacts: data.Contact{
+			Address: []data.Address{{
+				Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+				Coin:  []byte("skycoin"),
+			}, {
+				Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
+				Coin:  []byte("BTC"),
+			}},
+			Name: []byte("contact3"),
+		},
+	},
+	{
+		name: "repeat-address",
+		Contacts: data.Contact{
+			Address: []data.Address{{
+				Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
+				Coin:  []byte("skycoin"),
+			}},
+			Name: []byte("contact"),
+		}},
+}
 var pass = []byte("qwerty")
 
 func TestAddressBook_Insert(t *testing.T) {
@@ -42,10 +58,26 @@ func TestAddressBook_Insert(t *testing.T) {
 	ab := data.GetAddressBook()
 	OpenAddrsBook(t)
 	t.Log("Writing in the addressBook.")
-	for k := range AddressBookTestCases {
-		if err := ab.InsertContact(&AddressBookTestCases[k], pass); err != nil {
+	for k := range testCases {
+		if testCases[k].name == "repeat-address" {
+			if err := ab.InsertContact(&testCases[k].Contacts, pass); err != nil {
+				assert.EqualError(t, errors.New("Address with value: JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ "+
+					" and Cointype: skycoin alredy exist."), err.Error())
+			}
+			continue
+		}
+		if err := ab.InsertContact(&testCases[k].Contacts, pass); err != nil {
 			t.Errorf("Error inserting value into database: %s", err)
 		}
+
+		// Verify user can be retrived.
+		other, err := ab.GetContact(testCases[k].Contacts.ID, pass)
+		if err != nil {
+			t.Error(err)
+		} else if !reflect.DeepEqual(other, &testCases[k].Contacts) {
+			t.Errorf("unexpected user: %#v \n and have:%#v", other, testCases[k].Contacts)
+		}
+
 	}
 	defer func() {
 		if err := ab.Close(); err != nil {
@@ -55,14 +87,6 @@ func TestAddressBook_Insert(t *testing.T) {
 			t.Error(err)
 		}
 	}()
-	// Verify user can be retrived.
-	other, err := ab.GetContact(1, pass)
-	if err != nil {
-		t.Error(err)
-	} else if !reflect.DeepEqual(other, &AddressBookTestCases[0]) {
-		t.Errorf("unexpected user: %#v \n and have:%#v", other, AddressBookTestCases[0])
-	}
-
 	t.Log("Success")
 }
 
@@ -93,8 +117,8 @@ func TestAddressBook_List(t *testing.T) {
 	t.Log("New test Insert:")
 	ab := data.GetAddressBook()
 	OpenAddrsBook(t)
-	for e := range AddressBookTestCases {
-		if err := ab.InsertContact(&AddressBookTestCases[e], pass); err != nil {
+	for e := range testCases[:len(testCases)-1] {
+		if err := ab.InsertContact(&testCases[e].Contacts, pass); err != nil {
 			t.Error(err)
 		}
 	}
