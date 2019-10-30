@@ -22,10 +22,10 @@ type BlockchainStatus interface {
 
 // BlockchainAPI abstract interface for transactions management and utility functions for specific blockchain.
 // The service should use the blockchain node to implement given interface.
-type BlockchainAPI interface {
-	// Transfer instantiates a transaction to send funds from wallet to known address account owner
-	// If null address is specified for unspent wallet output then any wallet address may be chosen to build transaction
-	Transfer(uxOuts []WalletOutput, to, change Address, options KeyValueStorage) (Transaction, error)
+type BlockchainTransactionAPI interface {
+	// SendFromAddress instantiates a transaction to send funds from specific source addresses
+	// to multiple destination addresses
+	SendFromAddress(from []WalletAddress, to []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
 	// Spend instantiate a transaction that spends specific outputs to send to multiple destination addresses
-	Spend(unspent, new []WalletOutput, change Address, options KeyValueStorage) (Transaction, error)
+	Spend(unspent []WalletOutput, new []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
 }

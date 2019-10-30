@@ -1205,6 +1205,21 @@ func fromTxnResponse(txnResponse *api.CreateTransactionResponse) *SkycoinCreated
 	return NewSkycoinCreatedTransaction(txnResponse.Transaction)
 }
 
+func skyAPICreateTxn(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
+	client, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't load api client")
+		return nil, err
+	}
+	defer ReturnSkycoinClient(client)
+	txnR, err := client.CreateTransaction(*txnReq)
+	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't create transaction")
+		return nil, err
+	}
+	return fromTxnResponse(txnR), nil
+}
+
 func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
 	logWallet.Info("Sending form local wallet")
 	quotient, err := util.AltcoinQuotient(Sky)
@@ -1227,23 +1242,10 @@ func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.Ke
 		addresses = append(addresses, iterAddr.Value())
 	}
 
-	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
-		client, err := NewSkycoinApiClient(PoolSection)
-		if err != nil {
-			logWallet.WithError(err).Warn("Couldn't load api client")
-			return nil, err
-		}
-		defer ReturnSkycoinClient(client)
-		txnR, err := client.CreateTransaction(*txnReq)
-		if err != nil {
-			logWallet.WithError(err).Warn("Couldn't create transaction")
-			return nil, err
-		}
-		return fromTxnResponse(txnR), nil
-	}
+	createTxnFunc := skyAPICreateTxn
 	return createTransaction(addresses, []core.TransactionOutput{&txnOutput}, nil, nil, options, createTxnFunc)
-
 }
+
 func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
 	logWallet.Info("Sending from addresses in local wallet")
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {

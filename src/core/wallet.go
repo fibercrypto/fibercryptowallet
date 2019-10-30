@@ -80,6 +80,14 @@ type WalletOutput interface {
 	GetOutput() TransactionOutput
 }
 
+// WalletAddress aggregates address with originating wallet
+type WalletAddress interface {
+	// GetWallet return wallet
+	GetWallet() Wallet
+	// GetOutput return transaction output.
+	GetAddress() Address
+}
+
 // SeedGenerator establishes the contract for generating BIP39-compatible mnemonics
 type SeedGenerator interface {
 	// GenerateMnemonic generates a valid BIP-39 mnemonic phrase
