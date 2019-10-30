@@ -1,15 +1,9 @@
 package data
 
 import (
-	"crypto/aes"
-	"crypto/cipher"
-	"crypto/rand"
-	"crypto/sha512"
-	"fmt"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/data/internal"
 	"github.com/gogo/protobuf/proto"
-	"golang.org/x/crypto/pbkdf2"
-	"io"
 )
 
 // Contact is a contact of the addressBook
@@ -25,64 +19,13 @@ type Address struct {
 	Coin  []byte
 }
 
-func (c *Contact) EncryptContact(password, entropy []byte) ([]byte, error) {
-	if entropy == nil {
-		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
-	}
-	block, err := aes.NewCipher(derivePassphrase(entropy, password))
-	if err != nil {
-		return nil, err
-	}
-	aesGCM, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, err
-	}
-
-	nonce := make([]byte, aesGCM.NonceSize())
-	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		return nil, err
-	}
-	bc, err := c.MarshalBinary()
-	if err != nil {
-		return nil, err
-	}
-
-	ciphertext := aesGCM.Seal(nonce, nonce, bc, nil)
-	return ciphertext, nil
-}
-
-func (c *Contact) DecryptContact(cipherMsg, password, mnemonic []byte) error {
-	if mnemonic == nil {
-		return fmt.Errorf(" Error: Mnemonic are empty.")
-	}
-
-	block, err := aes.NewCipher(derivePassphrase(mnemonic, password))
-	if err != nil {
-		return err
-	}
-	aesGCM, err := cipher.NewGCM(block)
-	if err != nil {
-		return err
-	}
-
-	nonceSize := aesGCM.NonceSize()
-	nonce, ciphertext := cipherMsg[:nonceSize], cipherMsg[nonceSize:]
-
-	data, err := aesGCM.Open(nil, nonce, ciphertext, nil)
-
-	if err := c.UnmarshalBinary(data); err != nil {
-		return err
-	}
-	return nil
-}
-
 // MarshalBinary encodes a user to binary format.
 func (c *Contact) MarshalBinary() ([]byte, error) {
 	var intrAddrs []internal.Address
 	for _, v := range c.Address {
 		intrAddrs = append(intrAddrs, internal.Address{
-			Address:  v.Value,
-			CoinType: v.Coin,
+			Address:  v.GetValue(),
+			CoinType: v.GetCoinType(),
 		})
 	}
 	return proto.Marshal(&internal.Contact{
@@ -109,15 +52,43 @@ func (c *Contact) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
+//
 func (c *Contact) GetID() uint64 {
 	return c.ID
 }
 
+//
 func (c *Contact) SetID(id uint64) {
 	c.ID = id
 }
 
 //
-func derivePassphrase(entropy, password []byte) []byte {
-	return pbkdf2.Key(entropy, []byte("entropy:"+string(password)), 4096, 32, sha512.New)
+func (c *Contact) GetAddress(pos int64) core.ReadableAddress {
+	return &c.Address[pos]
+}
+
+//
+func (c *Contact) SetAddress(addrs core.ReadableAddress) {
+	if v, ok := addrs.(*Address); ok {
+		c.Address = append(c.Address, *v)
+	} else {
+		panic("Error in SetAddress: addrs cannot parse to type data.Address")
+	}
+}
+
+// Address
+func (ad *Address) GetValue() []byte {
+	return ad.Value
+}
+
+func (ad *Address) SetValue(val []byte) {
+	ad.Value = val
+}
+
+func (ad *Address) GetCoinType() []byte {
+	return ad.Coin
+}
+
+func (ad *Address) SetType(coinType []byte) {
+	ad.Coin = coinType
 }

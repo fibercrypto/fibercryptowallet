@@ -4,6 +4,7 @@ type KeyValueStorage interface {
 	GetValue(key string) interface{}
 }
 
+// AddressBook provides method to manage a contact database.
 type AddressBook interface {
 	Open() error
 	GetContact(id uint64, password []byte) (Contact, error)
@@ -13,9 +14,17 @@ type AddressBook interface {
 	// UpdateContact() ()
 }
 
+// Contact provides Encrypt / Decrypt data.
 type Contact interface {
-	EncryptContact(password, entropy []byte) ([]byte, error)
-	DecryptContact(encryptMsg, password, entropy []byte) error
 	GetID() uint64
 	SetID(id uint64)
+	GetAddress(pos int64) ReadableAddress
+	SetAddress(ReadableAddress)
+}
+
+type ReadableAddress interface {
+	GetValue() []byte
+	SetValue(val []byte)
+	GetCoinType() []byte
+	SetType(val []byte)
 }
