@@ -72,6 +72,14 @@ type Wallet interface {
 	EnumerateSignServices() TxnSignerIterator
 }
 
+// WalletOutput binds transaction output to originating wallet
+type WalletOutput interface {
+	// GetWallet return wallet
+	GetWallet() Wallet
+	// GetOutput return transaction output.
+	GetOutput() TransactionOutput
+}
+
 // SeedGenerator establishes the contract for generating BIP39-compatible mnemonics
 type SeedGenerator interface {
 	// GenerateMnemonic generates a valid BIP-39 mnemonic phrase
