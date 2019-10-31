@@ -5,7 +5,6 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
-	"encoding"
 	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
@@ -22,16 +21,16 @@ import (
 //go:generate protoc -I=. -I=$GOPATH/src/github.com/gogo/protobuf/protobuf -I=$GOPATH/src --gogo_out=. internal/config.proto
 
 var (
-	addrsBook = addressBook{}
 	// Errors
 	errBucketEmpty = errors.New(" Error: bucket are empty.")
 	errValEmpty    = errors.New(" Error: value are empty.")
 	// Db buckets.
-	dbAddrsBookBkt = []byte("addressBook")
+	dbAddrsBookBkt = []byte("AddressBookWithBolt")
 	dbConfigBkt    = []byte("Config")
 )
 
-type addressBook struct {
+// AddressBookWithBolt implement AddressBook interface for boltdb database.
+type AddressBookWithBolt struct {
 	// db is a point of bolt.DB object. This handle all interaction with the db.
 	db     *bolt.DB
 	dbPath string // ".fiber/data.db"
@@ -41,7 +40,7 @@ type addressBook struct {
 }
 
 //
-func (ab *addressBook) verifyHash(password []byte) error {
+func (ab *AddressBookWithBolt) verifyHash(password []byte) error {
 	if ab.hash == nil {
 		if err := ab.GetHashFromConfig(); err != nil {
 			return err
@@ -50,17 +49,14 @@ func (ab *addressBook) verifyHash(password []byte) error {
 	return bcrypt.CompareHashAndPassword(ab.hash, password)
 }
 
-//
-func GetAddressBook() *addressBook {
-	return &addrsBook
-}
-
-func (ab *addressBook) New(password []byte, path, mnemonic string) error {
+// Init initialize an address book. Using this before do you use NewAddressBook.
+// If the address book has been init, use InitFromFile.
+func (ab *AddressBookWithBolt) Init(password []byte, path, mnemonic string) error {
 	ab.dbPath = path
 	if err := ab.Open(); err != nil {
 		return err
 	}
-	if err := ab.GenerateEntropy(mnemonic); err != nil {
+	if err := ab.genEntropy(mnemonic); err != nil {
 		return err
 	}
 	hash, err := bcrypt.GenerateFromPassword(password, 14)
@@ -92,8 +88,13 @@ func (ab *addressBook) New(password []byte, path, mnemonic string) error {
 	return tx.Commit()
 }
 
+// InitFromFile ***
+func (ab *AddressBookWithBolt) InitFromFile() {
+
+}
+
 // startUp function open the database.
-func (ab *addressBook) Open() error {
+func (ab *AddressBookWithBolt) Open() error {
 	var err error
 	// Open database.
 	db, err := bolt.Open(ab.dbPath,
@@ -105,7 +106,6 @@ func (ab *addressBook) Open() error {
 		return fmt.Errorf(" Error opening data base: %s", err)
 	}
 	ab.db = db
-
 	// Start a transaction.
 	tx, err := ab.db.Begin(true)
 	if err != nil {
@@ -130,7 +130,7 @@ func (ab *addressBook) Open() error {
 }
 
 //
-func (ab *addressBook) InsertContact(c core.Contact, password []byte) error {
+func (ab *AddressBookWithBolt) InsertContact(c core.Contact, password []byte) error {
 	// Start a writeable transaction.
 	tx, err := ab.db.Begin(true)
 	if err != nil {
@@ -162,7 +162,7 @@ func (ab *addressBook) InsertContact(c core.Contact, password []byte) error {
 		return fmt.Errorf(" Error verify password: %s", err)
 	}
 	if cc, ok := c.(*Contact); ok {
-		encryptedData, err := ab.Encrypt(cc, password)
+		encryptedData, err := ab.encryptAESGCM(cc, password)
 		if err != nil {
 			return err
 		}
@@ -177,29 +177,8 @@ func (ab *addressBook) InsertContact(c core.Contact, password []byte) error {
 	return tx.Commit()
 }
 
-// SearchAddress search an address in the list of contacts into the AddressBook.
-// If find the address return error, else return nil.
-func (ab *addressBook) SearchAddress(address, coin, password []byte) error {
-	contacts, err := ab.ListContact(password)
-	if err != nil {
-		return err
-	}
-	for _, v := range contacts {
-		c, ok := v.(*Contact)
-		if ok {
-			for _, addrs := range c.Address {
-				if bytes.Compare(addrs.GetValue(), address) == 0 && bytes.Compare(addrs.GetCoinType(), coin) == 0 {
-					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist.", address, coin)
-				}
-			}
-		}
-	}
-
-	return nil
-}
-
 // Get a contact by ID.
-func (ab *addressBook) GetContact(id uint64, password []byte) (core.Contact, error) {
+func (ab *AddressBookWithBolt) GetContact(id uint64, password []byte) (core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
 	if err != nil {
@@ -222,15 +201,15 @@ func (ab *addressBook) GetContact(id uint64, password []byte) (core.Contact, err
 	if encryptData == nil {
 		return nil, errValEmpty
 	}
-	if c, err := ab.Decrypt(encryptData, password); err != nil {
+	if c, err := ab.decryptAESGCM(encryptData, password); err != nil {
 		return nil, err
 	} else {
 		return c, nil
 	}
 }
 
-//
-func (ab *addressBook) ListContact(password []byte) ([]core.Contact, error) {
+// ListContact: List all contact in the address book.
+func (ab *AddressBookWithBolt) ListContact(password []byte) ([]core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
 	if err != nil {
@@ -249,7 +228,7 @@ func (ab *addressBook) ListContact(password []byte) ([]core.Contact, error) {
 	var contacts []core.Contact
 	if err := bkt.ForEach(func(k, v []byte) error {
 
-		if c, err := ab.Decrypt(v, password); err != nil {
+		if c, err := ab.decryptAESGCM(v, password); err != nil {
 			return err
 		} else {
 			contacts = append(contacts, c)
@@ -261,55 +240,34 @@ func (ab *addressBook) ListContact(password []byte) ([]core.Contact, error) {
 	return contacts, nil
 }
 
-//
-func (ab *addressBook) DeleteContact(id uint64) error {
+// DeleteContact: delete a contact from the address book by its id.
+func (ab *AddressBookWithBolt) DeleteContact(id uint64) error {
 	return ab.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
 		if bkt == nil {
 			return errBucketEmpty
+		}
+		if val := bkt.Get(dbutil.Itob(id)); val == nil {
+			return errValEmpty
 		}
 		return bkt.Delete(dbutil.Itob(id))
 	})
 
 }
 
-//
-func (ab *addressBook) Update(id uint64, newcontact Contact) error {
+// UpdateContact: update a contact in the address book by its id.
+func (ab *AddressBookWithBolt) UpdateContact(id uint64, newContact core.Contact, password []byte) error {
 	return nil
 }
 
 // Close shuts down the database.
-func (ab *addressBook) Close() error {
+func (ab *AddressBookWithBolt) Close() error {
 	return ab.db.Close()
 }
 
-//
-// func (ab *addressBook) GetConfig() error {
-// 	tx, err := ab.db.Begin(false)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer func() {
-// 		if err := tx.Rollback(); err != nil {
-// 			logrus.Fatal(err)
-// 		}
-// 	}()
-//
-// 	bkt := tx.Bucket(dbConfigBkt)
-// 	if bkt == nil {
-// 		return errBucketEmpty
-// 	}
-//
-// 	// Read encoded contact bytes.
-// 	encryptData := bkt.Get(dbConfigDataKey)
-// 	if encryptData == nil {
-// 		return errValEmpty
-// 	}
-// 	return ab.UnmarshalBinary(encryptData)
-// }
-
-//
-func (ab *addressBook) GenerateEntropy(mnemonic string) error {
+// genEntropy: generate a Entropy by a mnemonic. If mnemonic is nil,
+// it generate a random.
+func (ab *AddressBookWithBolt) genEntropy(mnemonic string) error {
 	if mnemonic != "" {
 		if err := bip39.ValidateMnemonic(mnemonic); err != nil {
 			return err
@@ -333,15 +291,18 @@ func (ab *addressBook) GenerateEntropy(mnemonic string) error {
 	return nil
 }
 
-func (ab *addressBook) SetPath(path string) {
+// Set the database path.
+func (ab *AddressBookWithBolt) SetPath(path string) {
 	ab.dbPath = path
 }
 
-func (ab *addressBook) GetPath() string {
+// Get the database path.
+func (ab *AddressBookWithBolt) GetPath() string {
 	return ab.dbPath
 }
 
-func (ab *addressBook) GetHashFromConfig() error {
+// Get hash from config bucket.
+func (ab *AddressBookWithBolt) GetHashFromConfig() error {
 	tx, err := ab.db.Begin(false)
 	if err != nil {
 		return err
@@ -365,7 +326,8 @@ func (ab *addressBook) GetHashFromConfig() error {
 	return nil
 }
 
-func (ab *addressBook) Encrypt(c encoding.BinaryMarshaler, password []byte) ([]byte, error) {
+// Encrypt a contact using a password with AES-GCM.
+func (ab *AddressBookWithBolt) encryptAESGCM(c *Contact, password []byte) ([]byte, error) {
 	if ab.entropy == nil {
 		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
 	}
@@ -387,12 +349,12 @@ func (ab *addressBook) Encrypt(c encoding.BinaryMarshaler, password []byte) ([]b
 		return nil, err
 	}
 
-	ciphertext := aesGCM.Seal(nonce, nonce, bc, nil)
-	return ciphertext, nil
+	cipherText := aesGCM.Seal(nonce, nonce, bc, nil)
+	return cipherText, nil
 }
 
-//
-func (ab *addressBook) Decrypt(cipherMsg, password []byte) (core.Contact, error) {
+// Decrypt a cipher message using a password with AES-GCM and return a Contact.
+func (ab *AddressBookWithBolt) decryptAESGCM(cipherMsg, password []byte) (core.Contact, error) {
 	if ab.entropy == nil {
 		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
 	}
@@ -410,9 +372,32 @@ func (ab *addressBook) Decrypt(cipherMsg, password []byte) (core.Contact, error)
 	nonce, ciphertext := cipherMsg[:nonceSize], cipherMsg[nonceSize:]
 
 	data, err := aesGCM.Open(nil, nonce, ciphertext, nil)
-
+	if err != nil {
+		return nil, err
+	}
 	if err := c.UnmarshalBinary(data); err != nil {
 		return nil, err
 	}
 	return &c, nil
+}
+
+// SearchAddress search an address in the list of contacts into the AddressBook.
+// If find the address return error, else return nil.
+func (ab *AddressBookWithBolt) SearchAddress(address, coin, password []byte) error {
+	contacts, err := ab.ListContact(password)
+	if err != nil {
+		return err
+	}
+	for _, v := range contacts {
+		c, ok := v.(*Contact)
+		if ok {
+			for _, addrs := range c.Address {
+				if bytes.Compare(addrs.GetValue(), address) == 0 && bytes.Compare(addrs.GetCoinType(), coin) == 0 {
+					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist.", address, coin)
+				}
+			}
+		}
+	}
+
+	return nil
 }

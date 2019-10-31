@@ -11,10 +11,10 @@ type AddressBook interface {
 	ListContact(password []byte) ([]Contact, error)
 	InsertContact(contact Contact, password []byte) error
 	DeleteContact(id uint64) error
-	// UpdateContact() ()
+	UpdateContact(id uint64, contact Contact, password []byte) error
 }
 
-// Contact provides Encrypt / Decrypt data.
+// Contact provides encrypt / decrypt data.
 type Contact interface {
 	GetID() uint64
 	SetID(id uint64)

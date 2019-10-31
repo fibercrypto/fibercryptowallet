@@ -6,7 +6,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
-// Contact is a contact of the addressBook
+// Contact is a contact of the AddressBookWithBolt
 type Contact struct {
 	ID      uint64
 	Address []Address
@@ -21,9 +21,9 @@ type Address struct {
 
 // MarshalBinary encodes a user to binary format.
 func (c *Contact) MarshalBinary() ([]byte, error) {
-	var intrAddrs []internal.Address
+	var intAddrs []internal.Address
 	for _, v := range c.Address {
-		intrAddrs = append(intrAddrs, internal.Address{
+		intAddrs = append(intAddrs, internal.Address{
 			Address:  v.GetValue(),
 			CoinType: v.GetCoinType(),
 		})
@@ -31,7 +31,7 @@ func (c *Contact) MarshalBinary() ([]byte, error) {
 	return proto.Marshal(&internal.Contact{
 		ID:      c.ID,
 		Name:    c.Name,
-		Address: intrAddrs,
+		Address: intAddrs,
 	})
 }
 
