@@ -55,7 +55,6 @@ func (a ByDate) Less(i, j int) bool {
 }
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
 	addresses := hm.getAddressesWithWallets()
-
 	var sent, internally bool
 	var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
 
@@ -72,6 +71,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		for addrIter.Next() {
 			_, ok := find[addrIter.Value().String()]
 			if ok {
+
 				tnxnsIter := addrIter.Value().GetCryptoAccount().ListTransactions()
 				for tnxnsIter.Next() {
 					_, ok2 := txnFind[tnxnsIter.Value().GetId()]

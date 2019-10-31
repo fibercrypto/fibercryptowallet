@@ -1,6 +1,7 @@
 package skycoin //nolint goimports
 
 import (
+	"encoding/json"
 	"errors"
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
@@ -96,7 +97,9 @@ func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 
 func init() {
 	registerConfig()
-	node, _ := getOption(SettingPathToNode)
-	core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(node))
+	nodeStr, _ := getOption(SettingPathToNode)
+	node := make(map[string]string, 0)
+	json.Unmarshal([]byte(nodeStr), &node)
+	core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(node["node"]))
 	util.RegisterAltcoin(NewSkyFiberPlugin(params.SkycoinMainNetParams))
 }
