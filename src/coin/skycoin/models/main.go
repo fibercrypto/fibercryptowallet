@@ -78,7 +78,7 @@ func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
 
 func (p *SkyFiberPlugin) LoadTransactionAPI(netType string) (core.BlockchainTransactionAPI, error) {
 	if netType != "MainNet" {
-		return nil, errors.New("Invalid netType")
+		return nil, errors.ErrInvalidNetworkType
 	}
 	// FIXME: Invalidate timeout
 	return NewSkycoinBlockchain(1000), nil
