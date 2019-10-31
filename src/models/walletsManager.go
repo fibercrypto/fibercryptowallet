@@ -667,7 +667,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	}
 
 	floatBl := float64(bl) / float64(accuracy)
-	qWallet.SetSky(fmt.Sprintf("%f", floatBl))
+	qWallet.SetSky(fmt.Sprint(floatBl))
 
 	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHoursTicker)
 	if err != nil {
@@ -675,7 +675,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours balance")
 		return qWallet
 	}
-	qWallet.SetCoinHours(fmt.Sprintf("%f", bl))
+	qWallet.SetCoinHours(fmt.Sprint(bl))
 
 	return qWallet
 }
