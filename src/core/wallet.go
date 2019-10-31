@@ -1,6 +1,6 @@
 package core
 
-// WalletIteratr iterates over sequences of wallets
+// WalletIterator iterates over sequences of wallets
 type WalletIterator interface {
 	// Value of wallet at iterator pointer position
 	Value() Wallet
@@ -62,7 +62,7 @@ type Wallet interface {
 	GetCryptoAccount() CryptoAccount
 	// GetLoadedAddresses iterates over wallet addresses discovered and known to have previous history and coins
 	GetLoadedAddresses() (AddressIterator, error)
-	// Sign creates a new transaction by (fully or partially) choosing a strategy to sign another transaction
+	// Sign creates a new transaction by (fully or partially) choosing a strategy to sign given transaction
 	Sign(txn Transaction, source UID, pwd PasswordReader, index []string) (Transaction, error)
 	// AttachSignService binds a signing strategy to this wallet
 	AttachSignService(TxnSigner) error
@@ -96,7 +96,7 @@ type SeedGenerator interface {
 	VerifyMnemonic(seed string) (bool, error)
 }
 
-// WalletEnvironment is the entry point to manage wallets
+// WalletEnv is the entry point to manage wallets
 type WalletEnv interface {
 	// GetStorage provides access to wallet data store
 	GetStorage() WalletStorage
