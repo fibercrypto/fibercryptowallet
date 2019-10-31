@@ -2,7 +2,6 @@ package skycoin
 
 import (
 	"encoding/hex"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -12,9 +11,9 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
-	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -290,7 +289,7 @@ type SeedService struct{}
 func (seedService *SeedService) GenerateMnemonic(entropyBits int) (string, error) {
 	logWallet.Info("Generating mnemonic for Seed service")
 	if entropyBits != 128 && entropyBits != 256 {
-		return "", errors.New("Entropy must be 128 or 256")
+		return "", errors.ErrInvalidWalletEntropy
 	}
 
 	entropy, err := bip39.NewEntropy(entropyBits)
@@ -342,8 +341,8 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.
 	} else {
 		var isBound bool
 		if signer, isBound = wlt.signers[signerID]; !isBound {
-			logrus.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
-			return nil, errors.New("Unsupported signer")
+			logWallet.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
+			return nil, errors.ErrUnsupportedSigner
 		}
 	}
 	signedTxn, err = signer.SignTransaction(txn, pwd, index)
@@ -360,8 +359,7 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 	skyTxn, isSkyTxn := txn.(skycoinTxn)
 	if !isSkyTxn {
 		logWallet.WithError(err).Warn(err)
-		// FIXME: Singleton error constant
-		return nil, errors.New("Invalid transaction")
+		return nil, errors.ErrInvalidTxn
 	}
 	password, err := pwd(fmt.Sprintf("Enter password to decrypt wallet '%s'", wlt.Id))
 	if err != nil {
@@ -473,14 +471,14 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 	coinHoursType, ok := obj.(string)
 	if !ok {
 		logWallet.WithError(nil).Warn("Couldn't get CoinHoursSelectionType")
-		return nil, errors.New("Invalid options")
+		return nil, errors.ErrInvalidOptions
 	}
 	obj = options.GetValue("BurnFactor")
 
 	burnFactor, ok := obj.(string)
 	if !ok {
 		logWallet.WithError(nil).Warn("Couldn't get BurnFactor")
-		return nil, errors.New("Invalid options")
+		return nil, errors.ErrInvalidOptions
 	}
 	coinHoursSelection := api.HoursSelection{
 		Type: "manual",
@@ -674,8 +672,7 @@ func (wlt *RemoteWallet) RemoveSignService(signSrv core.TxnSigner) error {
 		delete(wlt.signers, uid)
 		return nil
 	}
-	// FIXME: Global error object
-	return errors.New("Value errors")
+	return errors.ErrInvalidValue
 }
 
 // SignTransaction according to Skycoin SkyFiber rules
@@ -692,7 +689,7 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 		for i, strIdx := range strIdxs {
 			indices[i], err = strconv.Atoi(strIdx)
 			if err != nil {
-				return nil, errors.New("Value error: Transaction output references must be integer for signing")
+				return nil, errors.ErrIntegerInputsRequired
 			}
 		}
 	}
@@ -997,8 +994,8 @@ func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.P
 	} else {
 		var isBound bool
 		if signer, isBound = wlt.signers[signerID]; !isBound {
-			logrus.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
-			return nil, errors.New("Unsupported signer")
+			logWallet.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
+			return nil, errors.ErrUnsupportedSigner
 		}
 	}
 	signedTxn, err = signer.SignTransaction(txn, pwd, index)
@@ -1018,10 +1015,10 @@ func copyTransaction(txn *coin.Transaction) *coin.Transaction {
 	copy(txn2.Out, txn.Out)
 
 	if txnInnerHash != txn2.HashInner() {
-		logrus.Panic("copyTransaction copy broke InnerHash")
+		logWallet.Panic("copyTransaction copy broke InnerHash")
 	}
 	if txnHash != txn2.Hash() {
-		logrus.Panic("copyTransaction copy broke Hash")
+		logWallet.Panic("copyTransaction copy broke Hash")
 	}
 
 	return &txn2
@@ -1052,31 +1049,31 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		uxouts = make([]coin.UxOut, len(cTxn.In))
 		txnHash, err := cipher.SHA256FromHex(cTxn.TxID)
 		if err != nil {
-			logrus.Errorf("Error parsing transaction hash %s", cTxn.TxID)
+			logWallet.Errorf("Error parsing transaction hash %s", cTxn.TxID)
 			return nil, err
 		}
 		tmpInt64, err := strconv.ParseInt(cTxn.Fee, 10, 64)
 		if err != nil {
-			logrus.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
+			logWallet.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
 			return nil, err
 		}
 		txnFee = uint64(tmpInt64)
 		for i, cIn := range cTxn.In {
 			tmpInt64, err = strconv.ParseInt(cIn.Coins, 10, 64)
 			if err != nil {
-				logrus.Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
+				logWallet.Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
 				return nil, err
 			}
 			cInCoins := uint64(tmpInt64)
 			tmpInt64, err = strconv.ParseInt(cIn.Hours, 10, 64)
 			if err != nil {
-				logrus.Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
+				logWallet.Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
 				return nil, err
 			}
 			cInHours := uint64(tmpInt64)
 			cInAddr, err := cipher.DecodeBase58Address(cIn.Address)
 			if err != nil {
-				logrus.Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
+				logWallet.Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
 				return nil, err
 			}
 
@@ -1098,7 +1095,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 		if !ok {
 			logWallet.WithError(err).Warn("Couldn't load transaction un injected")
-			return nil, errors.New("Invalid Transaction")
+			return nil, errors.ErrInvalidTxn
 		}
 
 		// Uninjected transactions
@@ -1390,7 +1387,7 @@ func (wlt *LocalWallet) RemoveSignService(signSrv core.TxnSigner) error {
 		return nil
 	}
 	// FIXME: Global error object
-	return errors.New("Value errors")
+	return errors.ErrInvalidValue
 }
 
 // SignTransaction according to Skycoin SkyFiber rules
@@ -1407,7 +1404,7 @@ func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 		for i, strIdx := range strIdxs {
 			indices[i], err = strconv.Atoi(strIdx)
 			if err != nil {
-				return nil, errors.New("Value error: Transaction output references must be integer for signing")
+				return nil, errors.ErrIntegerInputsRequired
 			}
 		}
 	}
