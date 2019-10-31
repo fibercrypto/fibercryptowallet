@@ -71,14 +71,18 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 }
 
 func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
-	var poolSection string
-	if netType == "MainNet" {
-		poolSection = PoolSection
-	} else {
+	if netType != "MainNet" {
 		return nil, errors.New("Invalid netType")
 	}
-	return NewSkycoinPEX(poolSection), nil
+	return NewSkycoinPEX(PoolSection), nil
+}
 
+func (p *SkyFiberPlugin) LoadTransactionAPI(netType string) (core.BlockchainTransactionAPI, error) {
+	if netType != "MainNet" {
+		return nil, errors.New("Invalid netType")
+	}
+	// FIXME: Invalidate timeout
+	return NewSkycoinBlockchain(1000), nil
 }
 
 func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
@@ -86,3 +90,8 @@ func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 		Params: params,
 	}
 }
+
+// Type assertions
+var (
+	_ core.AltcoinPlugin = &SkyFiberPlugin{}
+)
