@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"sync"
 
@@ -134,30 +135,28 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		qAddress.SetWalletId(wlt.GetId())
 		skyFl, err := addr.GetCryptoAccount().GetBalance(params.SkycoinTicker)
 		if err != nil {
-			qAddress.SetAddressSky("0")
-			qAddress.SetAddressCoinHours("0")
+			qAddress.SetAddressSky("N/A")
+			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " Balance")
 			continue
 		}
 		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 		if err != nil {
-			qAddress.SetAddressSky("0")
-			qAddress.SetAddressCoinHours("0")
+			qAddress.SetAddressSky("N/A")
+			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " quotient")
 			continue
 		}
 		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
 		coinH, err := addr.GetCryptoAccount().GetBalance(params.CoinHoursTicker)
 		if err != nil {
-			qAddress.SetAddressSky("0")
-			qAddress.SetAddressCoinHours("0")
+			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " Balance")
 			continue
 		}
 		accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
 		if err != nil {
-			qAddress.SetAddressSky("0")
-			qAddress.SetAddressCoinHours("0")
+			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " quotient")
 			continue
 		}
@@ -203,13 +202,13 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		qout.SetOutputID(outsIter.Value().GetId())
 		skyV, err := outsIter.Value().GetCoins(sky.Sky)
 		if err != nil {
-			qout.SetAddressSky("0")
+			qout.SetAddressSky("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't get " + sky.Sky + " coins")
 			continue
 		}
 		quotient, err := util.AltcoinQuotient(sky.Sky)
 		if err != nil {
-			qout.SetAddressSky("0")
+			qout.SetAddressSky("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't get " + sky.Sky + " quotient")
 			continue
 		}
@@ -217,13 +216,13 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		qout.SetAddressSky(sSky)
 		ch, err := outsIter.Value().GetCoins(sky.CoinHour)
 		if err != nil {
-			qout.SetAddressCoinHours("0")
+			qout.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't get " + sky.CoinHour + " coins")
 			continue
 		}
 		quotient, err = util.AltcoinQuotient(sky.CoinHour)
 		if err != nil {
-			qout.SetAddressCoinHours("0")
+			qout.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't get " + sky.Sky + " quotient")
 			continue
 		}
@@ -653,30 +652,30 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 
 	bl, err := wlt.GetCryptoAccount().GetBalance(sky.Sky)
 	if err != nil {
-		qWallet.SetSky(0)
-		qWallet.SetCoinHours(0)
+		qWallet.SetSky("N/A")
+		qWallet.SetCoinHours("N/A")
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin balance")
 		return qWallet
 	}
 
 	accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 	if err != nil {
-		qWallet.SetSky(0)
-		qWallet.SetCoinHours(0)
+		qWallet.SetSky("N/A")
+		qWallet.SetCoinHours("N/A")
 		logWalletManager.WithError(err).Error("Couldn't get Skycoin Altcoin quotient")
 		return qWallet
 	}
 
 	floatBl := float64(bl) / float64(accuracy)
-	qWallet.SetSky(floatBl)
+	qWallet.SetSky(fmt.Sprintf("%f", floatBl))
 
 	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHoursTicker)
 	if err != nil {
-		qWallet.SetCoinHours(0)
+		qWallet.SetCoinHours("N/A")
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours balance")
 		return qWallet
 	}
-	qWallet.SetCoinHours(bl)
+	qWallet.SetCoinHours(fmt.Sprintf("%f", bl))
 
 	return qWallet
 }
