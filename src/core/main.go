@@ -46,6 +46,8 @@ type AltcoinPlugin interface {
 	LoadWalletEnvs() []WalletEnv
 	// LoadPEX instantiates proxy object to interact with nodes nodes of the P2P network
 	LoadPEX(netType string) (PEX, error)
+	// LoadTransactionAPI
+	LoadTransactionAPI(netType string) (BlockchainTransactionAPI, error)
 }
 
 // AltcoinManager defines the contract for altcoin repositories
