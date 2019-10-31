@@ -33,11 +33,16 @@ func getMultiPlatformUserDirectory() string {
 
 func registerConfig() error {
 	cm := local.GetConfigManager()
-	node := local.NewOption(SettingPathToNode, []string{}, false, "https://staging.node.skycoin.net")
+	node := map[string]string{"node": "https://staging.node.skycoin.net"}
+	nodeBytes, err := json.Marshal(node)
+	if err != nil {
+		return err
+	}
+	nodeOpt := local.NewOption(SettingPathToNode, []string{}, false, string(nodeBytes))
 	walletsDefaultDirectory := getMultiPlatformUserDirectory()
 	wltSrc := &walletSource{
 		id:     1,
-		Tp:     LocalWallet,
+		Tp:     string(LocalWallet),
 		Source: walletsDefaultDirectory,
 	}
 	wltSrcBytes, err := json.Marshal(wltSrc)
@@ -47,7 +52,7 @@ func registerConfig() error {
 
 	wltOpt := local.NewOption(string(wltSrc.id), []string{SettingPathToWalletSource}, false, string(wltSrcBytes))
 
-	sectionManager = cm.RegisterSection(SectionName, []*local.Option{node, wltOpt})
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt})
 	return nil
 }
 
@@ -78,6 +83,6 @@ func getWalletSources() ([]*walletSource, error) {
 
 type walletSource struct {
 	id     int
-	Tp     int    `json:"SourceType"`
+	Tp     string `json:"SourceType"`
 	Source string `json:"Source"`
 }

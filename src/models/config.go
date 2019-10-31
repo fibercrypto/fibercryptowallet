@@ -1,6 +1,8 @@
 package models
 
 import (
+	"encoding/json"
+
 	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 
 	"github.com/therecipe/qt/qml"
@@ -8,72 +10,109 @@ import (
 	qtcore "github.com/therecipe/qt/core"
 )
 
-type WalletSource struct {
-	qtcore.QObject
-	_ int    `property:"sourceType"`
-	_ string `property:"source"`
-}
-
 type ConfigManager struct {
 	qtcore.QObject
 	configManager *local.ConfigManager
-	_             func() `constructor:"init"`
-	//_             func() []*WalletSource          `slot:"getSources"`
-	//_             func() string                   `slot:"getNodeString"`
-	//_             func() string                   `slot:"getSourceString"`
-	//_             func() int                      `slot:"getTypeSource` // 1 is Local, 0 is Remote
-	//_             func(node, src string, tp bool) `slot:"edit"`
+	_             func()                                 `constructor:"init"`
+	_             func(string, []string, string, string) `slot:"edit"`
+	_             func() []string                        `slot:"getSections"`
+	_             func(string) *ConfigSection            `slot:"getSection"`
 }
 
 func (cm *ConfigManager) init() {
 	qml.QQmlEngine_SetObjectOwnership(cm, qml.QQmlEngine__CppOwnership)
-	//cm.configManager = local.GetConfigManager()
-	//cm.ConnectGetSources(cm.getSources)
-	//cm.ConnectGetNodeString(cm.getNodeString)
-	//cm.ConnectGetSourceString(cm.getSourceString)
-	//cm.ConnectGetTypeSource(cm.getTypeSource)
-	//cm.ConnectEdit(cm.edit)
+	cm.configManager = local.GetConfigManager()
+	cm.ConnectEdit(cm.edit)
+	cm.ConnectGetSections(cm.getSections)
+	cm.ConnectGetSection(cm.getSection)
 
 }
 
-// func (cm *ConfigManager) edit(node, src string, tp bool) {
-// 	var tpSrc int
-// 	if tp {
-// 		tpSrc = local.LocalWallet
-// 	} else {
-// 		tpSrc = local.RemoteWallet
-// 	}
-// 	cm.configManager.EditWalletSource(1, src, tpSrc)
-// 	cm.configManager.EditNode(node)
-// 	cm.configManager.Save()
+func (cm *ConfigManager) getSections() []string {
+	return cm.configManager.GetSections()
+}
 
-// }
-// func (cm *ConfigManager) getNodeString() string {
-// 	return cm.configManager.GetNode()
-// }
+func (cm *ConfigManager) getSection(sectionName string) *ConfigSection {
+	sm := NewConfigSection(nil)
+	sm.sm = cm.configManager.GetSectionManager(sectionName)
+	return sm
+}
 
-// func (cm *ConfigManager) getSourceString() string {
-// 	src := cm.configManager.GetSources()[0]
-// 	return src.GetSource()
-// }
+type ConfigSection struct {
+	qtcore.QObject
+	sm *local.SectionManager
+	_  func() [][]string                 `slot:"getPaths"`
+	_  func([]string) []*KeyValueStorage `slot:getOptions"`
+}
 
-// func (cm *ConfigManager) getTypeSource() int {
-// 	src := cm.configManager.GetSources()[0]
-// 	if src.GetType() == local.LocalWallet {
-// 		return 1
-// 	} else {
-// 		return 0
-// 	}
-// }
+func (cs *ConfigSection) init() {
+	qml.QQmlEngine_SetObjectOwnership(cs, qml.QQmlEngine__CppOwnership)
+	cs.ConnectGetPaths(cs.getPaths)
+	cs.ConnectGetOptions(cs.getOptions)
+}
 
-// func (cm *ConfigManager) getSources() []*WalletSource {
-// 	wltsSource := make([]*WalletSource, 0)
-// 	for _, wltS := range cm.configManager.GetSources() {
-// 		newWltSource := NewWalletSource(nil)
-// 		qml.QQmlEngine_SetObjectOwnership(newWltSource, qml.QQmlEngine__CppOwnership)
-// 		newWltSource.SetSourceType(wltS.GetType())
-// 		newWltSource.SetSource(wltS.GetSource())
-// 		wltsSource = append(wltsSource, newWltSource)
-// 	}
-// 	return wltsSource
-// }
+func (cs *ConfigSection) getPaths() [][]string {
+	return cs.sm.GetPaths()
+}
+
+func (cs *ConfigSection) getOptions(path []string) []*KeyValueStorage {
+	opts, err := cs.sm.GetValues(path)
+	if err != nil {
+		//log error
+		return nil
+	}
+
+	resul := make([]*KeyValueStorage, 0)
+	for _, opt := range opts {
+		kv := NewKeyValueStorage(nil)
+		data := make(map[string]string, 0)
+		json.Unmarshal([]byte(opt), &data)
+		kv.setValues(data)
+		resul = append(resul, kv)
+	}
+	return resul
+}
+
+func (cm *ConfigManager) edit(section string, sectionPath []string, name, value string) {
+
+	sm := cm.configManager.GetSectionManager(section)
+	sm.Save(name, sectionPath, value)
+
+}
+
+type KeyValueStorage struct {
+	qtcore.QObject
+	_         func() []string     `slot:"getKeys"`
+	_         func(string) string `slot:"getValue"`
+	keyValues map[string]string
+}
+
+func (kv *KeyValueStorage) init() {
+	kv.ConnectGetKeys(kv.getKeys)
+	kv.ConnectGetValue(kv.getValue)
+}
+
+func (kv *KeyValueStorage) setValues(values map[string]string) {
+	kv.keyValues = values
+}
+
+func (kv *KeyValueStorage) setValue(key, value string) {
+	kv.keyValues[key] = value
+}
+
+func (kv *KeyValueStorage) getKeys() []string {
+	keys := make([]string, 0)
+	for key, _ := range kv.keyValues {
+		keys = append(keys, key)
+	}
+	return keys
+}
+
+func (kv *KeyValueStorage) getValue(key string) string {
+	val, ok := kv.keyValues[key]
+	if !ok {
+		//log error
+		return ""
+	}
+	return val
+}

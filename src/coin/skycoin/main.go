@@ -68,14 +68,13 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 		tp := wltS.Tp
 		source := wltS.Source
 		var wltEnv core.WalletEnv
-		if tp == LocalWallet {
+		if tp == string(LocalWallet) {
 			wltEnv = &sky.WalletDirectory{WalletDir: source}
-		} else if tp == RemoteWallet {
+		} else if tp == string(RemoteWallet) {
 			wltEnv = sky.NewWalletNode(source)
 		}
 		wltEnvs = append(wltEnvs, wltEnv)
 	}
-
 	return wltEnvs
 }
 

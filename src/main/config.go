@@ -2,7 +2,6 @@ package local
 
 import (
 	"errors"
-	"fmt"
 	"sync"
 
 	qtcore "github.com/therecipe/qt/core"
@@ -16,7 +15,6 @@ var (
 
 func init() {
 	qs := qtcore.NewQSettings("Simelo", "FiberCrypto Wallet", nil)
-	fmt.Println(qs.ApplicationName())
 	confManager = &ConfigManager{
 		setting: qs,
 	}
@@ -24,6 +22,17 @@ func init() {
 
 type ConfigManager struct {
 	setting *qtcore.QSettings
+}
+
+func (cm *ConfigManager) GetSections() []string {
+	return cm.setting.ChildGroups()
+}
+
+func (cm *ConfigManager) GetSectionManager(section string) *SectionManager {
+	return &SectionManager{
+		name:     section,
+		settings: cm.setting,
+	}
 }
 
 func (cm *ConfigManager) RegisterSection(name string, options []*Option) *SectionManager {
@@ -108,11 +117,11 @@ func (sm *SectionManager) GetValues(sectionPath []string) ([]string, error) {
 	defer sm.settings.EndGroup()
 
 	for _, sect := range sectionPath {
+
 		groups := sm.settings.ChildGroups()
 		finded := false
 		for _, grp := range groups {
 			if grp == sect {
-				fmt.Println("FINDED ", grp)
 				finded = true
 				break
 			}
@@ -129,6 +138,31 @@ func (sm *SectionManager) GetValues(sectionPath []string) ([]string, error) {
 		values = append(values, sm.settings.Value(key, qtcore.NewQVariant()).ToString())
 	}
 	return values, nil
+}
+
+func (sm *SectionManager) GetPaths() [][]string {
+	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
+	return sm.getPaths([]string{})
+}
+
+func (sm *SectionManager) getPaths(prefix []string) [][]string {
+	if len(prefix) > 0 {
+		lastGrp := prefix[len(prefix)-1]
+		sm.settings.BeginGroup(lastGrp)
+		defer sm.settings.EndGroup()
+	}
+
+	grps := sm.settings.ChildGroups()
+	if len(grps) == 0 {
+		return [][]string{prefix}
+	}
+	values := make([][]string, 0)
+	for _, grp := range grps {
+		values = append(values, sm.getPaths(append(prefix, grp))...)
+	}
+	return values
+
 }
 
 type Option struct {
