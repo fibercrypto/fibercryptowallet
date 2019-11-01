@@ -8,7 +8,7 @@ import (
 
 // Contact is a contact of the AddressBookWithBolt
 type Contact struct {
-	ID      uint64
+	id      uint64
 	Address []Address
 	Name    []byte
 }
@@ -29,7 +29,7 @@ func (c *Contact) MarshalBinary() ([]byte, error) {
 		})
 	}
 	return proto.Marshal(&internal.Contact{
-		ID:      c.ID,
+		ID:      c.id,
 		Name:    c.Name,
 		Address: intAddrs,
 	})
@@ -41,7 +41,7 @@ func (c *Contact) UnmarshalBinary(data []byte) error {
 	if err := proto.Unmarshal(data, &pb); err != nil {
 		return err
 	}
-	c.ID = pb.ID
+	c.id = pb.ID
 	c.Name = pb.Name
 	for _, v := range pb.Address {
 		c.Address = append(c.Address, Address{
@@ -54,12 +54,12 @@ func (c *Contact) UnmarshalBinary(data []byte) error {
 
 //
 func (c *Contact) GetID() uint64 {
-	return c.ID
+	return c.id
 }
 
 //
 func (c *Contact) SetID(id uint64) {
-	c.ID = id
+	c.id = id
 }
 
 //

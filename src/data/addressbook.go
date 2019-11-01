@@ -177,7 +177,7 @@ func (ab *AddressBookWithBolt) InsertContact(c core.Contact, password []byte) er
 	return tx.Commit()
 }
 
-// Get a contact by ID.
+// Get a contact by id.
 func (ab *AddressBookWithBolt) GetContact(id uint64, password []byte) (core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
