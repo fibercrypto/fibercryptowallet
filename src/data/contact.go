@@ -6,7 +6,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 )
 
-// Contact is a contact of the AddressBookWithBolt
+// Contact is a contact of the DB
 type Contact struct {
 	id      uint64
 	Address []Address
@@ -63,17 +63,28 @@ func (c *Contact) SetID(id uint64) {
 }
 
 //
-func (c *Contact) GetAddress(pos int64) core.ReadableAddress {
-	return &c.Address[pos]
+func (c *Contact) GetAddresses() []core.ReadableAddress {
+	var addresses []core.ReadableAddress
+	for e := range c.Address {
+		addresses = append(addresses, &c.Address[e])
+	}
+	return addresses
 }
 
 //
-func (c *Contact) SetAddress(addrs core.ReadableAddress) {
-	if v, ok := addrs.(*Address); ok {
-		c.Address = append(c.Address, *v)
-	} else {
-		panic("Error in SetAddress: addrs cannot parse to type data.Address")
+func (c *Contact) SetAddresses(addrs []core.ReadableAddress) {
+	for e := range addrs {
+		if v, ok := addrs[e].(*Address); ok {
+			c.Address = append(c.Address, *v)
+		} else {
+			panic("Error in SetAddress: addrs cannot parse to type data.Address")
+
+		}
 	}
+}
+
+func (c *Contact) GetAddressLen() int {
+	return len(c.Address)
 }
 
 // Address

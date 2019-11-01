@@ -154,7 +154,7 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 			if err := ab.InsertContact(&Contact{
 				Address: tt.field.Address,
 				Name:    tt.field.Name,
-			}, []byte(defaultPass)); err != nil {
+			}); err != nil {
 				t.Errorf("Error inserting contact: %s", err)
 			}
 			if err := ab.DeleteContact(tt.args.id); (err != nil) != tt.wantErr {
@@ -170,8 +170,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 		Name    []byte
 	}
 	type args struct {
-		id       uint64
-		password []byte
+		id uint64
 	}
 	tests := []struct {
 		name    string
@@ -183,8 +182,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 		{name: "empty",
 			fields: fields{},
 			args: args{
-				id:       1,
-				password: []byte(defaultPass),
+				id: 1,
 			},
 			want: &Contact{
 				id: 1,
@@ -198,8 +196,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 				}},
 				Name: []byte("Contact1"),
 			}, args: args{
-				id:       2,
-				password: []byte(defaultPass),
+				id: 2,
 			},
 			want: &Contact{
 				id: 2,
@@ -221,8 +218,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 			}},
 			Name: []byte("Contact2"),
 		}, args: args{
-			id:       3,
-			password: []byte(defaultPass),
+			id: 3,
 		},
 			want: &Contact{
 				id: 3,
@@ -242,27 +238,26 @@ func Test_addressBook_GetContact(t *testing.T) {
 				Name: []byte("Contact3"),
 			},
 			args: args{
-				id:       6,
-				password: []byte(defaultPass),
+				id: 6,
 			},
 			want:    nil,
 			wantErr: true,
 		},
-		{name: "bad-password",
-			fields: fields{
-				Name: []byte("Contact3"),
-				Address: []Address{{
-					Value: []byte("2TFC2Ktc6UAUqo7WGA55X6mqoKZRaFp9s"),
-					Coin:  []byte("BTC"),
-				}},
-			},
-			args: args{
-				id:       5,
-				password: []byte("wrongPass"),
-			},
-			want:    nil,
-			wantErr: true,
-		},
+		// {name: "bad-password",
+		// 	fields: fields{
+		// 		Name: []byte("Contact3"),
+		// 		Address: []Address{{
+		// 			Value: []byte("2TFC2Ktc6UAUqo7WGA55X6mqoKZRaFp9s"),
+		// 			Coin:  []byte("BTC"),
+		// 		}},
+		// 	},
+		// 	args: args{
+		// 		id:       5,
+		// 		password: []byte("wrongPass"),
+		// 	},
+		// 	want:    nil,
+		// 	wantErr: true,
+		// },
 	}
 
 	ab := OpenAddrsBook(t)
@@ -274,11 +269,11 @@ func Test_addressBook_GetContact(t *testing.T) {
 			if err := ab.InsertContact(&Contact{
 				Address: tt.fields.Address,
 				Name:    tt.fields.Name,
-			}, []byte(defaultPass)); err != nil {
+			}); err != nil {
 				t.Errorf("Error inserting contact: %s", err)
 			}
 
-			got, err := ab.GetContact(tt.args.id, tt.args.password)
+			got, err := ab.GetContact(tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetContact() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -292,8 +287,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 
 func Test_addressBook_InsertContact(t *testing.T) {
 	type args struct {
-		c        core.Contact
-		password []byte
+		c core.Contact
 	}
 	tests := []struct {
 		name    string
@@ -302,8 +296,7 @@ func Test_addressBook_InsertContact(t *testing.T) {
 	}{
 		{name: "empty",
 			args: args{
-				c:        &Contact{},
-				password: []byte(defaultPass),
+				c: &Contact{},
 			},
 			wantErr: false,
 		}, {name: "one-address",
@@ -315,7 +308,6 @@ func Test_addressBook_InsertContact(t *testing.T) {
 					}},
 					Name: []byte("Contact1"),
 				},
-				password: []byte(defaultPass),
 			},
 			wantErr: false,
 		}, {name: "two-address",
@@ -330,7 +322,6 @@ func Test_addressBook_InsertContact(t *testing.T) {
 					}},
 					Name: []byte("Contact2"),
 				},
-				password: []byte(defaultPass),
 			},
 			wantErr: false,
 		}, {name: "repeat-address-diff-type",
@@ -342,7 +333,6 @@ func Test_addressBook_InsertContact(t *testing.T) {
 					}},
 					Name: []byte("Contact3"),
 				},
-				password: []byte(defaultPass),
 			},
 			wantErr: false,
 		}, {name: "repeat-address-same-type",
@@ -354,7 +344,6 @@ func Test_addressBook_InsertContact(t *testing.T) {
 					}},
 					Name: []byte("Contact4"),
 				},
-				password: []byte(defaultPass),
 			},
 			wantErr: true,
 		},
@@ -367,29 +356,28 @@ func Test_addressBook_InsertContact(t *testing.T) {
 		// 			}},
 		// 			Name: []byte("Contact4"),
 		// 		},
-		// 		password: []byte(defaultPass),
 		// 	},
 		// 	wantErr: true,
 		// },
-		{name: "wrong-password",
-			args: args{
-				c: &Contact{
-					Address: []Address{{
-						Value: []byte("25MP2EHPZyfEqUnXfapgasdQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
-					}},
-					Name: []byte("Contact5"),
-				},
-				password: []byte("defaultPass"),
-			},
-			wantErr: true,
-		},
+		// {name: "wrong-password",
+		// 	args: args{
+		// 		c: &Contact{
+		// 			Address: []Address{{
+		// 				Value: []byte("25MP2EHPZyfEqUnXfapgasdQfZVXdn5RrZ"),
+		// 				Coin:  []byte("skycoin"),
+		// 			}},
+		// 			Name: []byte("Contact5"),
+		// 		},
+		// 		password: []byte("defaultPass"),
+		// 	},
+		// 	wantErr: true,
+		// },
 	}
 	ab := OpenAddrsBook(t)
 	defer CloseTest(t, &ab)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := ab.InsertContact(tt.args.c, tt.args.password); (err != nil) != tt.wantErr {
+			if err := ab.InsertContact(tt.args.c); (err != nil) != tt.wantErr {
 				t.Errorf("InsertContact() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -401,7 +389,6 @@ func Test_addressBook_ListContact(t *testing.T) {
 		Contacts []Contact
 	}
 	type args struct {
-		password []byte
 	}
 	tests := []struct {
 		name    string
@@ -412,7 +399,6 @@ func Test_addressBook_ListContact(t *testing.T) {
 	}{
 		{name: "empty",
 			fields:  fields{Contacts: []Contact(nil)},
-			args:    args{password: []byte(defaultPass)},
 			want:    []core.Contact(nil),
 			wantErr: false},
 		{name: "one-contact",
@@ -424,8 +410,6 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact1"),
 				},
 			}},
-			args: args{
-				password: []byte(defaultPass)},
 			want: []core.Contact{&Contact{
 				id: 1,
 				Address: []Address{{
@@ -478,8 +462,6 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact5"),
 				},
 			}},
-			args: args{
-				password: []byte(defaultPass)},
 			want: []core.Contact{
 				&Contact{
 					id: 1,
@@ -533,17 +515,17 @@ func Test_addressBook_ListContact(t *testing.T) {
 				},
 			},
 			wantErr: false},
-		{name: "wrong-password",
-			fields: fields{Contacts: []Contact{{
-				Address: []Address{{
-					Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
-					Coin:  []byte("skycoin"),
-				}},
-				Name: []byte("contact1"),
-			}}},
-			args:    args{password: []byte("defaultPass")},
-			want:    []core.Contact(nil),
-			wantErr: true},
+		// {name: "wrong-password",
+		// 	fields: fields{Contacts: []Contact{{
+		// 		Address: []Address{{
+		// 			Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+		// 			Coin:  []byte("skycoin"),
+		// 		}},
+		// 		Name: []byte("contact1"),
+		// 	}}},
+		// 	args:    args{password: []byte("defaultPass")},
+		// 	want:    []core.Contact(nil),
+		// 	wantErr: true},
 	}
 
 	for _, tt := range tests {
@@ -551,18 +533,200 @@ func Test_addressBook_ListContact(t *testing.T) {
 			ab := OpenAddrsBook(t)
 			defer CloseTest(t, &ab)
 			for _, contact := range tt.fields.Contacts {
-				if err := ab.InsertContact(&contact, []byte(defaultPass)); err != nil {
+				if err := ab.InsertContact(&contact); err != nil {
 					t.Error(err)
 					return
 				}
 			}
-			got, err := ab.ListContact(tt.args.password)
+			got, err := ab.ListContact()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ListContact() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ListContact() got = %#v, want %#v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDB_UpdateContact(t *testing.T) {
+	type args struct {
+		id         uint64
+		newContact core.Contact
+	}
+	type insertArgs struct {
+		contacts []core.Contact
+	}
+	tests := []struct {
+		name       string
+		args       args
+		insertArgs insertArgs
+		wantErr    bool
+	}{
+		{name: "empty-insert",
+			args: args{
+				id: 1,
+				newContact: &Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				},
+			},
+			insertArgs: insertArgs{contacts: []core.Contact{&Contact{}}},
+			wantErr:    false,
+		},
+		{name: "empty-update",
+			args: args{
+				id:         1,
+				newContact: &Contact{},
+			},
+			insertArgs: insertArgs{
+				contacts: []core.Contact{&Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				}}},
+			wantErr: false,
+		},
+		{name: "update-coinType",
+			args: args{
+				id: 1,
+				newContact: &Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("BTC"),
+					}},
+					Name: []byte("Contact1"),
+				},
+			},
+			insertArgs: insertArgs{
+				contacts: []core.Contact{&Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				}}},
+			wantErr: false,
+		},
+		{name: "update-address",
+			args: args{
+				id: 1,
+				newContact: &Contact{
+					Address: []Address{{
+						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				},
+			},
+			insertArgs: insertArgs{
+				contacts: []core.Contact{&Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				}}},
+			wantErr: false,
+		},
+		{name: "same-contact",
+			args: args{
+				id: 1,
+				newContact: &Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				},
+			},
+			insertArgs: insertArgs{
+				contacts: []core.Contact{&Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				}}},
+			wantErr: false,
+		}, {name: "repeat-address",
+			args: args{
+				id: 1,
+				newContact: &Contact{
+					Address: []Address{{
+						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				},
+			},
+			insertArgs: insertArgs{
+				contacts: []core.Contact{&Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				},
+					&Contact{
+						Address: []Address{{
+							Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+							Coin:  []byte("skycoin"),
+						}},
+						Name: []byte("Contact2"),
+					}}},
+			wantErr: true,
+		},
+		// {name: "repeat-name",
+		// 	args: args{
+		// 		id: 1,
+		// 		newContact: &Contact{
+		// 			Address: []Address{{
+		// 				Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+		// 				Coin:  []byte("skycoin"),
+		// 			}},
+		// 			Name: []byte("Contact2"),
+		// 		},
+		// 	},
+		// 	insertArgs: insertArgs{
+		// 		contacts: []core.Contact{&Contact{
+		// 			Address: []Address{{
+		// 				Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+		// 				Coin:  []byte("skycoin"),
+		// 			}},
+		// 			Name: []byte("Contact1"),
+		// 		},
+		// 			&Contact{
+		// 				Address: []Address{{
+		// 					Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+		// 					Coin:  []byte("skycoin"),
+		// 				}},
+		// 				Name: []byte("Contact2"),
+		// 			}}},
+		// 	wantErr: true,
+		// },
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ab := OpenAddrsBook(t)
+			defer CloseTest(t, &ab)
+			for e := range tt.insertArgs.contacts {
+				if err := ab.InsertContact(tt.insertArgs.contacts[e]); err != nil {
+					t.Error(err)
+					return
+				}
+
+			}
+
+			if err := ab.UpdateContact(tt.args.id, tt.args.newContact); (err != nil) != tt.wantErr {
+				t.Errorf("UpdateContact() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -584,7 +748,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -599,7 +763,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 
 // func Test_addressBook_GetHashFromConfig(t *testing.T) {
 // 	type fields struct {
-// 		ab AddressBookWithBolt
+// 		ab DB
 // 	}
 // 	tests := []struct {
 // 		name    string
@@ -640,7 +804,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -669,7 +833,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -704,7 +868,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -712,41 +876,6 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 			}
 // 			if err := ab.SearchAddress(tt.args.address, tt.args.coin, tt.args.password); (err != nil) != tt.wantErr {
 // 				t.Errorf("SearchAddress() error = %v, wantErr %v", err, tt.wantErr)
-// 			}
-// 		})
-// 	}
-// }
-
-// func Test_addressBook_UpdateContact(t *testing.T) {
-// 	type fields struct {
-// 		db      *bolt.DB
-// 		dbPath  string
-// 		hash    []byte
-// 		entropy []byte
-// 	}
-// 	type args struct {
-// 		id         uint64
-// 		newContact core.Contact
-// 		password   []byte
-// 	}
-// 	tests := []struct {
-// 		name    string
-// 		fields  fields
-// 		args    args
-// 		wantErr bool
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
-// 				db:      tt.fields.db,
-// 				dbPath:  tt.fields.dbPath,
-// 				hash:    tt.fields.hash,
-// 				entropy: tt.fields.entropy,
-// 			}
-// 			if err := ab.UpdateContact(tt.args.id, tt.args.newContact, tt.args.password); (err != nil) != tt.wantErr {
-// 				t.Errorf("UpdateContact() error = %v, wantErr %v", err, tt.wantErr)
 // 			}
 // 		})
 // 	}
@@ -774,7 +903,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -814,7 +943,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -852,7 +981,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -885,7 +1014,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
+// 			ab := &DB{
 // 				db:      tt.fields.db,
 // 				dbPath:  tt.fields.dbPath,
 // 				hash:    tt.fields.hash,
@@ -933,8 +1062,8 @@ func GetFilePath(t *testing.T) string {
 }
 
 // Open a address book using a test file.
-func OpenAddrsBook(t *testing.T) AddressBookWithBolt {
-	AddrsBook := AddressBookWithBolt{}
+func OpenAddrsBook(t *testing.T) DB {
+	AddrsBook := DB{}
 	path := GetFilePath(t)
 	mnemonic := "mandate ride tide eternal laundry stem prison era calm topic rate remain"
 	if err := AddrsBook.Init([]byte(defaultPass), path, mnemonic); err != nil {
@@ -943,7 +1072,7 @@ func OpenAddrsBook(t *testing.T) AddressBookWithBolt {
 	return AddrsBook
 }
 
-func CloseTest(t *testing.T, ab *AddressBookWithBolt) {
+func CloseTest(t *testing.T, ab *DB) {
 	if err := ab.Close(); err != nil {
 		t.Errorf("Error closing db: %s", err)
 	}
