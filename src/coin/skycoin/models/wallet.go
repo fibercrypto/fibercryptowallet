@@ -417,8 +417,12 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
-	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6, 10)
-
+	quot, err := util.AltcoinQuotient(params.SkycoinTicker)
+	if err != nil {
+		logWallet.WithError(err).Warnf("Couldn't get quotient for %s", params.SkycoinTicker)
+		return nil, err
+	}
+	txnOutput.skyOut.Coins = util.FormatCoins(amount, quot)
 	createTxnFunc := func(txnR *api.CreateTransactionRequest) (core.Transaction, error) {
 		logWallet.Info("Creating transaction for remote wallet")
 		var req api.WalletCreateTransactionRequest

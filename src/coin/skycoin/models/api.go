@@ -118,3 +118,8 @@ func (m *SkycoinApiMock) CreateTransaction(req api.CreateTransactionRequest) (*a
 	args := m.Called(req)
 	return args.Get(0).(*api.CreateTransactionResponse), args.Error(1)
 }
+
+func (m *SkycoinApiMock) InjectEncodedTransaction(rawTxn string) (string, error) {
+	args := m.Called(rawTxn)
+	return args.Get(0).(string), args.Error(1)
+}
