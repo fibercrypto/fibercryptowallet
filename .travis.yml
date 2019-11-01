@@ -55,6 +55,7 @@ matrix:
       os: windows
       install:
         - choco install make -y
+        - choco install dep -y
         - make deps
         - travis_wait make install-deps-Windows
         - make install-linters
