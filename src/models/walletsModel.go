@@ -24,6 +24,7 @@ const (
 
 var logWalletsModel = logging.MustGetLogger("Wallets Model")
 var hadHwConnected = false
+var hwConnectedOn = -1
 
 type WalletModel struct {
 	core.QAbstractListModel
@@ -114,6 +115,7 @@ func (walletModel *WalletModel) updateWallet(fn string) {
 		index = walletModel.Index(row, 0, core.NewQModelIndex())
 		fileName := walletModel.data(index, FileName)
 		if  fileName.ToString() == fn {
+			hwConnectedOn = row
 			walletModel.DataChanged(index, index, []int{HasHardwareWallet})
 			break
 		}
@@ -205,7 +207,7 @@ func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QV
 		{
 			// FIXME: consider a double checking here instead of hadHwConnected
 			// be careful this can have a big performance impact
-			return core.NewQVariant1(hadHwConnected)
+			return core.NewQVariant1(hwConnectedOn == index.Row() && hadHwConnected)
 		}
 
 	default:
