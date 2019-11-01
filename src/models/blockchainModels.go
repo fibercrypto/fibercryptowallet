@@ -6,6 +6,7 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	qtcore "github.com/therecipe/qt/core"
@@ -42,7 +43,7 @@ func (blockchainStatus *BlockchainStatusModel) init() {
 	blockchainStatus.SetCurrentCoinHoursSupplyDefault("0")
 	blockchainStatus.SetTotalCoinHoursSupplyDefault("0")
 
-	blockchainStatus.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
+	blockchainStatus.infoRequester = skycoin.NewSkycoinBlockchain(params.DataRefreshTimeout)
 }
 
 func (blockchainStatus *BlockchainStatusModel) update() {
@@ -68,7 +69,7 @@ func (blockchainStatus *BlockchainStatusModel) updateInfo() error {
 		logBlockchain.WithError(err).Warn("Couldn't get the hash of the last block")
 		return err
 	}
-	numberOfBlocks,err := blockchainStatus.infoRequester.GetNumberOfBlocks()
+	numberOfBlocks, err := blockchainStatus.infoRequester.GetNumberOfBlocks()
 	if err != nil {
 		logBlockchain.WithError(err).Warn("Couldn't get the number of blocks")
 		return err
