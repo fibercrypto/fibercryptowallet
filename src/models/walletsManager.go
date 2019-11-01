@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"sync"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
@@ -57,6 +58,7 @@ func (walletM *WalletManager) init() {
 	logWalletManager.Info("Initializing WalletManager")
 	once.Do(func() {
 		qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
+		walletM.ConnectEditWallet(walletM.editWallet)
 		walletM.ConnectCreateEncryptedWallet(walletM.createEncryptedWallet)
 		walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
 		walletM.ConnectGetNewSeed(walletM.getNewSeed)

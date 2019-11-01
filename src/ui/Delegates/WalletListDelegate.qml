@@ -213,6 +213,7 @@ Item {
 
         onAccepted: {
             var qwallet = walletManager.editWallet(fileName, name)
+            console.log("NEW NAME: "+qwallet.name)
             walletModel.editWallet(index, qwallet.name, encryptionEnabled, qwallet.sky, qwallet.coinHours )
         }
     } // DialogEditWallet

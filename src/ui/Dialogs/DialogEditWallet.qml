@@ -28,7 +28,7 @@ Dialog {
     }
 
     onAboutToHide: {
-        clear()
+        //clear()
     }
 
     TextField {
