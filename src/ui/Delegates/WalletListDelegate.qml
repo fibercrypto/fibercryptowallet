@@ -43,6 +43,12 @@ Item {
                 anchors.rightMargin: listWalletRightMargin
                 spacing: listWalletSpacing
 
+                Rectangle {
+                    width: 10
+                    height: 6
+                    visible: hasHardwareWallet
+                    color: "red"
+                }
                 Image {
                     id: status
                     source: statusIcon
