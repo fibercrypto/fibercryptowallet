@@ -101,7 +101,7 @@ func (walletModel *WalletModel) sniffHw() {
 		if hadHwConnected {
 			hadHwConnected = false
 			beginIndex := walletModel.Index(0, 0, core.NewQModelIndex())
-			endIndex := walletModel.Index(walletModel.rowCount(core.NewQModelIndex()), 0, core.NewQModelIndex())
+			endIndex := walletModel.Index(walletModel.rowCount(core.NewQModelIndex()) - 1, 0, core.NewQModelIndex())
 			walletModel.DataChanged(beginIndex, endIndex, []int{HasHardwareWallet})
 			logrus.WithError(err).Info("connection to hardware wallet was lose")
 		}
