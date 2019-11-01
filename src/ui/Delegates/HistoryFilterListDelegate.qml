@@ -58,10 +58,10 @@ Item {
             property AddressModel listAddresses
             property int checkedDelegates: 0
             property bool allChecked: false
-            model: 5//listAddresses
+            model: listAddresses
             
             Layout.fillWidth: true
-            height: contentHeight
+            implicitHeight: contentHeight
             interactive: false
 
             onCheckedDelegatesChanged: {
@@ -93,11 +93,11 @@ Item {
             } // HistoryFilterListAddressDelegate
                 
             onAllCheckedChanged: {
-                if (allChecked) {
-                    listAddresses.editAddress(index, address, sky, coinHours, true)
-                } else {
-                    listAddresses.editAddress(index, address, sky, coinHours, false)
-                }
+                //if (allChecked) {
+                //    listAddresses.editAddress(index, address, sky, coinHours, true)
+                //} else {
+                //    listAddresses.editAddress(index, address, sky, coinHours, false)
+                //}
             }
             
             Component.onCompleted:{
