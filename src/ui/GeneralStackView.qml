@@ -105,6 +105,12 @@ Item {
 
                 onWalletCreationRequested: {
                     stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,0)
+                }
+
+                onWalletLoadingRequested:{
+                    stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,10)
                 }
             }
         }
