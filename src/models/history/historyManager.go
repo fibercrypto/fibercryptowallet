@@ -85,11 +85,19 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		return make([]*transactions.TransactionDetails,0)
 	}
 	for wltIterator.Next() {
-		addressIterator, _ := wltIterator.Value().GetLoadedAddresses()
+		addressIterator, err := wltIterator.Value().GetLoadedAddresses()
+		if err != nil {
+			logHistoryManager.Warn("Couldn't get address iterator")
+			continue
+		}
 		for addressIterator.Next() {
 			_, ok := find[addressIterator.Value().String()]
 			if ok {
 				txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
+				if txnsIterator == nil {
+					logHistoryManager.Warn("Couldn't get transaction iterator")
+					continue
+				}
 				for txnsIterator.Next() {
 					_, ok2 := txnFind[txnsIterator.Value().GetId()]
 					if !ok2 {

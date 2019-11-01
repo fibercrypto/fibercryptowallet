@@ -177,7 +177,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(wallet,"source", dialogSendTransaction.passwordText, [], txn)
+			var signedTxn = walletManager.signTxn(wallet,"", dialogSendTransaction.passwordText, [], txn)
 			var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }
