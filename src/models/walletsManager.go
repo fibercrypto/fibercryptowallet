@@ -12,6 +12,7 @@ import (
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
@@ -711,7 +712,7 @@ func (gOut *GenericOutput) GetCoins(ticker string) (uint64, error) {
 		return val, nil
 	}
 
-	return 0, errors.New("invalid ticker")
+	return 0, errors.ErrInvalidAltcoinTicker
 }
 
 type TransferOptions struct {
