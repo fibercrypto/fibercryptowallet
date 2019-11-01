@@ -33,50 +33,42 @@ var (
 // DB implement AddressBook interface for boltdb database.
 type DB struct {
 	// db is a point of bolt.DB object. This handle all interaction with the db.
-	db          *bolt.DB
-	dbPath      string
-	hash        []byte
-	hasPassword bool
-	key         []byte
-	entropy     []byte
+	db      *bolt.DB
+	dbPath  string
+	key     []byte
+	entropy []byte
 }
 
 //
-func (ab *DB) verifyHash(password []byte) error {
-	if ab.hash == nil {
-		if err := ab.GetHashFromConfig(); err != nil {
-			return err
-		}
+func (ab *DB) verifyHash() error {
+	if hash, err := ab.GetHashFromConfig(); err != nil {
+		return err
+	} else {
+		return bcrypt.CompareHashAndPassword(hash, ab.key)
 	}
-	return bcrypt.CompareHashAndPassword(ab.hash, password)
+
 }
 
 // Init initialize an address book. Using this before do you use NewAddressBook.
-// If the address book has been init, use InitFromFile.
-func (ab *DB) Init(password []byte, path, mnemonic string) error {
+// If the address book has been init, use LoadFromFile.
+func Init(password []byte, path, mnemonic string) (*DB, error) {
+	var ab DB
 	ab.dbPath = path
-	if err := ab.Open(nil); err != nil {
-		return err
+	if err := ab.open(); err != nil {
+		return nil, err
 	}
 	if err := ab.genEntropy(mnemonic); err != nil {
-		return err
+		return nil, err
 	}
 	hash, err := bcrypt.GenerateFromPassword(password, 14)
 
 	if err != nil {
-		return err
-	}
-	ab.hash = hash
-
-	if bytes.Compare(password, []byte{}) != 0 {
-		ab.hasPassword = true
-	} else {
-		ab.hasPassword = false
+		return nil, err
 	}
 
 	tx, err := ab.db.Begin(true)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer func() {
@@ -85,33 +77,63 @@ func (ab *DB) Init(password []byte, path, mnemonic string) error {
 		}
 	}()
 
+	// Initialize buckets to guarantee that they exist.
+	_, err = tx.CreateBucketIfNotExists(dbAddrsBookBkt)
+	if err != nil {
+		return nil, err
+	}
+	_, err = tx.CreateBucketIfNotExists(dbConfigBkt)
+	if err != nil {
+		return nil, err
+	}
 	bConf := tx.Bucket(dbConfigBkt)
-	if err := bConf.Put([]byte("hash"), ab.hash); err != nil {
-		return err
+	if err := bConf.Put([]byte("hash"), hash); err != nil {
+		return nil, err
 	}
 	if err := bConf.Put([]byte("entropy"), ab.entropy); err != nil {
-		return err
+		return nil, err
 	}
 	ab.key = password
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return &ab, nil
 }
 
-// InitFromFile ***
-func (ab *DB) InitFromFile() {
-
+// LoadFromFile ***
+func LoadFromFile(path string, password []byte) (*DB, error) {
+	var ab DB
+	ab.dbPath = path
+	ab.key = password
+	if err := ab.open(); err != nil {
+		return nil, err
+	}
+	tx, err := ab.db.Begin(false)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			panic(err)
+		}
+	}()
+	if bConf := tx.Bucket(dbConfigBkt); bConf == nil {
+		return nil, errBucketEmpty
+	} else {
+		ab.entropy = bConf.Get([]byte("entropy"))
+	}
+	if err := ab.verifyHash(); err != nil {
+		return nil, err
+	}
+	return &ab, nil
 }
 
 // Open function open the database.
-func (ab *DB) Open(key []byte) error {
+func (ab *DB) open() error {
 	var err error
-	if ab.hasPassword {
-		if err := ab.verifyHash(key); err != nil {
-			return fmt.Errorf(" Error verify password: %s", err)
-		}
-	}
 	// Open database.
 	db, err := bolt.Open(ab.dbPath,
-		0666,
+		0600,
 		&bolt.Options{
 			Timeout: 1 * time.Second,
 		})
@@ -129,16 +151,6 @@ func (ab *DB) Open(key []byte) error {
 			logrus.Fatal(err)
 		}
 	}()
-
-	// Initialize buckets to guarantee that they exist.
-	_, err = tx.CreateBucketIfNotExists(dbAddrsBookBkt)
-	if err != nil {
-		return err
-	}
-	_, err = tx.CreateBucketIfNotExists(dbConfigBkt)
-	if err != nil {
-		return err
-	}
 	return tx.Commit()
 }
 
@@ -322,7 +334,7 @@ func (ab *DB) Close() error {
 	return ab.db.Close()
 }
 
-// genEntropy: generate a Entropy by a mnemonic. If mnemonic is nil,
+// genEntropy generate an Entropy by a mnemonic. If mnemonic is nil,
 // it generate a random.
 func (ab *DB) genEntropy(mnemonic string) error {
 	if mnemonic != "" {
@@ -359,10 +371,10 @@ func (ab *DB) GetPath() string {
 }
 
 // Get hash from config bucket.
-func (ab *DB) GetHashFromConfig() error {
+func (ab *DB) GetHashFromConfig() ([]byte, error) {
 	tx, err := ab.db.Begin(false)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	defer func() {
@@ -372,15 +384,15 @@ func (ab *DB) GetHashFromConfig() error {
 	}()
 	buck := tx.Bucket(dbConfigBkt)
 	if buck == nil {
-		return errBucketEmpty
+		return nil, errBucketEmpty
 	}
 
 	hash := buck.Get([]byte("hash"))
 	if hash == nil {
-		return errValEmpty
+		return nil, errValEmpty
 	}
-	ab.hash = hash
-	return nil
+
+	return hash, nil
 }
 
 // Encrypt a contact using a password with AES-GCM.
