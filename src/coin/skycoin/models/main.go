@@ -7,10 +7,12 @@ import (
 	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 )
 
+// SkyFiberPlugin provide support for SkyFiber coins
 type SkyFiberPlugin struct {
 	Params params.SkyFiberParams
 }
 
+// ListSupportedAltcoins to enumerate supported assets and related metadata
 func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 	return []core.AltcoinMetadata{
 		core.AltcoinMetadata{
@@ -30,24 +32,29 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 	}
 }
 
+// ListSupportedFamilies classifies similar cryptocurrencies into a family
 func (p *SkyFiberPlugin) ListSupportedFamilies() []string {
 	return []string{SkycoinFamily}
 }
 
+// RegisterTo boilerplate to register this plugin against an altcoin manager and enable it
 func (p *SkyFiberPlugin) RegisterTo(manager core.AltcoinManager) {
 	for _, info := range p.ListSupportedAltcoins() {
 		manager.RegisterAltcoin(info, p)
 	}
 }
 
+// GetName provides concise human-readable caption o identify this plugin
 func (p *SkyFiberPlugin) GetName() string {
 	return "SkyFiber"
 }
 
+// GetDescription describes plugin and its features
 func (p *SkyFiberPlugin) GetDescription() string {
 	return "FiberCrypto wallet connector for Skycoin and SkyFiber altcoins"
 }
 
+// LoadWalletEnvs loads wallet environments to lookup and create wallets
 func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 
 	config := local.GetConfigManager()
@@ -69,6 +76,7 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 	return wltEnvs
 }
 
+// LoadPEX instantiates proxy object to interact with nodes nodes of the P2P network
 func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
 	if netType != "MainNet" {
 		return nil, errors.ErrInvalidNetworkType
@@ -76,12 +84,18 @@ func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
 	return NewSkycoinPEX(PoolSection), nil
 }
 
+// LoadTransactionAPI blockchain transaction API entry poiny
 func (p *SkyFiberPlugin) LoadTransactionAPI(netType string) (core.BlockchainTransactionAPI, error) {
 	if netType != "MainNet" {
 		return nil, errors.ErrInvalidNetworkType
 	}
 	// FIXME: Invalidate timeout
 	return NewSkycoinBlockchain(1000), nil
+}
+
+// LoadSignService sign service entry point
+func (p *SkyFiberPlugin) LoadSignService() (core.BlockchainSignService, error) {
+	return &SkycoinSignService{}, nil
 }
 
 func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
