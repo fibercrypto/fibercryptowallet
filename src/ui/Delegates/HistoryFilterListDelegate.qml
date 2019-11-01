@@ -45,6 +45,20 @@ Item {
                 }
             }
 
+            onCheckStateChanged:{
+                if (checkState === Qt.Unchecked){
+                    for (var i = 0; i < listViewFilterAddress.listAddresses.addresses.length; i++){
+                        var address = listViewFilterAddress.listAddresses.addresses[i]
+                        listViewFilterAddress.listAddresses.editAddress(i, address.address, address.sky, address.coinHours, false)
+                    }
+                } else if(checkState === Qt.Checked){
+                    for (var i = 0; i < listViewFilterAddress.listAddresses.addresses.length; i++){
+                        var address = listViewFilterAddress.listAddresses.addresses[i]
+                        listViewFilterAddress.listAddresses.editAddress(i, address.address, address.sky, address.coinHours, true)
+                    }
+                }
+            }
+
             contentItem: Label {
                 leftPadding: checkDelegate.indicator.width + checkDelegate.spacing
                 verticalAlignment: Qt.AlignVCenter
@@ -58,10 +72,10 @@ Item {
             property AddressModel listAddresses
             property int checkedDelegates: 0
             property bool allChecked: false
-            model: 5//listAddresses
+            model: listAddresses
             
             Layout.fillWidth: true
-            height: contentHeight
+            implicitHeight: contentHeight
             interactive: false
 
             onCheckedDelegatesChanged: {
@@ -77,7 +91,7 @@ Item {
             delegate: HistoryFilterListAddressDelegate {
                 // BUG: Checking the wallet does not change the check state of addresses
                 // Is `checked: marked` ok? Or it should be the opposite?
-                checked: true 
+                checked: marked 
                 width: parent.width
                 text: address 
                 onCheckedChanged: {                   
@@ -92,13 +106,7 @@ Item {
                 }
             } // HistoryFilterListAddressDelegate
                 
-            onAllCheckedChanged: {
-                if (allChecked) {
-                    listAddresses.editAddress(index, address, sky, coinHours, true)
-                } else {
-                    listAddresses.editAddress(index, address, sky, coinHours, false)
-                }
-            }
+            
             
             Component.onCompleted:{
                 modelManager.setWalletManager(walletManager)
