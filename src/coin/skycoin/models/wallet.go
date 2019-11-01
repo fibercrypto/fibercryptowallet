@@ -745,12 +745,10 @@ func getWallet(env core.WalletEnv, firstAddr string) (core.Wallet, error) {
 		return nil, errors.New("error getting wallet from addr, empty wallet set")
 	}
 	wls := ws.ListWallets()
-	if wls.HasNext() {
-		wls.Next()
+	for wls.Next() {
 		w := wls.Value()
 		addrs := w.GenAddresses(core.AccountAddress, 0, 1, nil)
-		if addrs.HasNext() {
-			addrs.Next()
+		for addrs.Next() {
 			addr := addrs.Value()
 			if addr.String() == firstAddr {
 				return w, nil
