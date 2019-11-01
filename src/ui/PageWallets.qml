@@ -32,7 +32,7 @@ Page {
                 Layout.fillWidth: true
             }
             Label {
-                text: qsTr("Sky")
+                text: qsTr("SKY")
                 font.pointSize: 9
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: internalLabelsWidth
