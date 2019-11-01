@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
@@ -444,7 +443,6 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 		logWalletManager.Warn("Couldn't load wallet to Sign transaction")
 		return nil
 	}
-	fmt.Println("PASSWORD ", password)
 	txn, err := wlt.Sign(qTxn.txn, core.UID(source), func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
