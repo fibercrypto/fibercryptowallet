@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -730,6 +731,79 @@ func TestDB_UpdateContact(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestLoadFromFile(t *testing.T) {
+
+	initPath := GetFilePath(t)
+	initAddrsBook, err := Init([]byte(defaultPass), initPath, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := initAddrsBook.Close(); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := os.Remove(initPath); err != nil {
+			t.Fatal(err)
+		}
+	}()
+	type args struct {
+		path     string
+		password []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{
+			name: "ok",
+			args: args{
+				path:     initPath,
+				password: []byte(defaultPass),
+			},
+			wantErr: false,
+		},
+		{
+			name: "wrong-password",
+			args: args{
+				path:     initPath,
+				password: []byte("defaultPass"),
+			},
+			wantErr: true,
+		}, {
+			name: "wrong-path",
+			args: args{
+				path:     "/home/xxx/asd.dt",
+				password: []byte(defaultPass),
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			loadedAddrsBook, err := LoadFromFile(tt.args.path, tt.args.password)
+			if err != nil {
+				if tt.wantErr {
+					return
+				} else {
+					t.Fatal(err)
+				}
+			}
+			defer func() {
+				if err := loadedAddrsBook.Close(); err != nil {
+					t.Fatal(err)
+				}
+			}()
+			assert.Equal(t, initAddrsBook.dbPath, loadedAddrsBook.dbPath)
+			assert.Equal(t, initAddrsBook.entropy, loadedAddrsBook.entropy)
+			assert.Equal(t, initAddrsBook.key, loadedAddrsBook.key)
+		})
+	}
+
 }
 
 // Generate a temporal file and return its path.
