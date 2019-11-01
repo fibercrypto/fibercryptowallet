@@ -336,7 +336,7 @@ type RemoteWallet struct {
 func (wlt *RemoteWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
 	logWallet.Info("Signing using remote wallet")
 	var signer core.TxnSigner
-	if signerID == wlt.GetSignerUID() {
+	if signerID == wlt.GetSignerUID() || signerID == "" {
 		signer = wlt
 	} else {
 		var isBound bool
@@ -989,7 +989,7 @@ type LocalWallet struct {
 func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
 	var signer core.TxnSigner
 	logWallet.Info("Signing local wallet")
-	if signerID == wlt.GetSignerUID() {
+	if signerID == wlt.GetSignerUID() || signerID == "" {
 		signer = wlt
 	} else {
 		var isBound bool
