@@ -1,6 +1,8 @@
 package skycoin
 
 import (
+	"encoding/hex"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
@@ -38,6 +40,7 @@ type SkycoinAPI interface {
 	WalletUnconfirmedTransactionsVerbose(id string) (*api.UnconfirmedTxnsVerboseResponse, error)
 	NetworkConnections(filters *api.NetworkConnectionsFilter) (*api.Connections, error)
 	InjectTransaction(txn *coin.Transaction) (string, error)
+	InjectEncodedTransaction(rawTxn string) (string, error)
 	WalletSignTransaction(req api.WalletSignTransactionRequest) (*api.CreateTransactionResponse, error)
 	WalletCreateTransaction(req api.WalletCreateTransactionRequest) (*api.CreateTransactionResponse, error)
 	CreateTransaction(req api.CreateTransactionRequest) (*api.CreateTransactionResponse, error)
@@ -124,7 +127,7 @@ func (spex *SkycoinPEX) GetConnections() (core.PexNodeSet, error) {
 
 func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 	logNetwork.Info("Broadcasting transaction")
-	unTxn, ok := txn.(*SkycoinUninjectedTransaction)
+	unTxn, ok := txn.(skycoinTxn)
 	if !ok {
 		return errors.ErrInvalidTxn
 	}
@@ -133,7 +136,11 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 		return err
 	}
 	defer ReturnSkycoinClient(c)
-	_, err = c.InjectTransaction(unTxn.txn)
+	txnBytes, err := unTxn.EncodeSkycoinTransaction()
+	if err != nil {
+		return err
+	}
+	_, err = c.InjectEncodedTransaction(hex.EncodeToString(txnBytes))
 	if err != nil {
 		return err
 	}
