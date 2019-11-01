@@ -44,6 +44,13 @@ Item {
                 } else {
                     stackView.push(componentGeneralSwipeView)
                 }
+            } else{
+                if (stackView.depth > 1) {
+                    stackView.replace(componentPageCreateLoadWallet)
+                } else {
+                    stackView.push(componentPageCreateLoadWallet)
+                }
+
             }
         }
     }
