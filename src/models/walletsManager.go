@@ -1,8 +1,9 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"sync"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
