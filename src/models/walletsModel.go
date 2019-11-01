@@ -80,6 +80,11 @@ func (walletModel *WalletModel) sniffHw() {
 	addr, err := hWFirstAddr()
 	if err == nil {
 		wlt, err := walletManager.WalletEnv.GetWallet(addr)
+		if err != nil {
+			logrus.WithError(err).Warnln("can not find a wallet matching the hardware one")
+			// FIXME handle this scenario with a wallet registration.
+			return
+		}
 		dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
 		cb := func(dev skyWallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error) {
 			return wire.Message{}, nil
