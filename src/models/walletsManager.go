@@ -59,6 +59,7 @@ func (walletM *WalletManager) init() {
 	logWalletManager.Info("Initializing WalletManager")
 	once.Do(func() {
 		qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
+		walletM.ConnectEditWallet(walletM.editWallet)
 		walletM.ConnectCreateEncryptedWallet(walletM.createEncryptedWallet)
 		walletM.ConnectCreateUnencryptedWallet(walletM.createUnencryptedWallet)
 		walletM.ConnectGetNewSeed(walletM.getNewSeed)
