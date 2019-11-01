@@ -6,8 +6,6 @@ import (
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 
 	"github.com/therecipe/qt/qml"
