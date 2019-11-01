@@ -685,16 +685,50 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices = make([]int, len(strIdxs))
-		for i, strIdx := range strIdxs {
-			indices[i], err = strconv.Atoi(strIdx)
-			if err != nil {
-				return nil, errors.ErrIntegerInputsRequired
-			}
+		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		if err != nil {
+			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
+			return nil, err
 		}
 	}
 	signedTxn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)
 	return
+}
+
+func getHashIndices(ins []core.TransactionInput, strIdxs []string) (indices []int, err error) {
+	cache := make(map[string]int, len(ins))
+	indices = make([]int, len(strIdxs))
+	scanIdx := 0
+	for i, strIdx := range strIdxs {
+		if strIdx[0] == '#' {
+			// Parse index
+			index, err := strconv.Atoi(strIdx[1:])
+			if err != nil {
+				return nil, errors.ErrIntegerInputsRequired
+			}
+			indices[i] = index
+		} else if index, isCached := cache[strIdx]; isCached {
+			// Found in previous scan
+			indices[i] = index
+		} else {
+			logWallet.Infof("Scanning inputs array looking for %s", strIdx)
+			// Continue scanning for UXID position in slice
+			notfound := true
+			for ; scanIdx < len(ins) && notfound; scanIdx++ {
+				uxID := ins[scanIdx].GetId()
+				logWallet.Infof("Scanning inputs array found %s", uxID)
+				cache[uxID] = scanIdx
+				if uxID == strIdx {
+					indices[i] = scanIdx
+					notfound = false
+				}
+			}
+			if notfound {
+				return nil, errors.ErrNotFound
+			}
+		}
+	}
+	return indices, nil
 }
 
 func (wlt *RemoteWallet) GetSignerUID() core.UID {
@@ -1400,12 +1434,10 @@ func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices = make([]int, len(strIdxs))
-		for i, strIdx := range strIdxs {
-			indices[i], err = strconv.Atoi(strIdx)
-			if err != nil {
-				return nil, errors.ErrIntegerInputsRequired
-			}
+		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		if err != nil {
+			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
+			return nil, err
 		}
 	}
 	signedTxn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)
