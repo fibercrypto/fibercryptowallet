@@ -35,7 +35,7 @@ func TestContact_MarshalBinary(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Contact{
-				ID:      tt.fields.ID,
+				id:      tt.fields.ID,
 				Address: tt.fields.Address,
 				Name:    tt.fields.Name,
 			}
@@ -81,7 +81,7 @@ func TestContact_UnmarshalBinary(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Contact{
-				ID:      tt.fields.ID,
+				id:      tt.fields.ID,
 				Address: tt.fields.Address,
 				Name:    tt.fields.Name,
 			}
@@ -106,27 +106,45 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{name: "empty", field: fields{}, args: args{id: 1}, wantErr: false},
-		{name: "one-contact", field: fields{
-			Address: []Address{{
-				Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
-				Coin:  []byte("skycoin"),
-			}},
-			Name: []byte("Contact1"),
-		}, args: args{id: 2}, wantErr: false},
-		{name: "two-address", field: fields{
-			Address: []Address{{
-				Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-				Coin:  []byte("skycoin"),
-			}, {
-				Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
-				Coin:  []byte("BTC"),
-			}},
-			Name: []byte("Contact2"),
-		}, args: args{id: 3}, wantErr: false},
-		{name: "bad-id", field: fields{
-			Name: []byte("Contact3"),
-		}, args: args{id: 6}, wantErr: true},
+		{name: "empty",
+			field: fields{},
+			args: args{
+				id: 1,
+			},
+			wantErr: false,
+		},
+		{name: "one-contact",
+			field: fields{
+				Address: []Address{{
+					Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
+					Coin:  []byte("skycoin"),
+				}},
+				Name: []byte("Contact1"),
+			}, args: args{
+				id: 2},
+			wantErr: false,
+		},
+		{name: "two-address",
+			field: fields{
+				Address: []Address{{
+					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+					Coin:  []byte("skycoin"),
+				}, {
+					Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
+					Coin:  []byte("BTC"),
+				}},
+				Name: []byte("Contact2"),
+			}, args: args{
+				id: 3},
+			wantErr: false,
+		},
+		{name: "bad-id",
+			field: fields{
+				Name: []byte("Contact3"),
+			}, args: args{
+				id: 6},
+			wantErr: true,
+		},
 	}
 
 	ab := OpenAddrsBook(t)
@@ -169,7 +187,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 				password: []byte(defaultPass),
 			},
 			want: &Contact{
-				ID: 1,
+				id: 1,
 			},
 			wantErr: false},
 		{name: "one-address",
@@ -180,11 +198,11 @@ func Test_addressBook_GetContact(t *testing.T) {
 				}},
 				Name: []byte("Contact1"),
 			}, args: args{
-			id:       2,
-			password: []byte(defaultPass),
-		},
+				id:       2,
+				password: []byte(defaultPass),
+			},
 			want: &Contact{
-				ID: 2,
+				id: 2,
 				Address: []Address{{
 					Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
 					Coin:  []byte("skycoin"),
@@ -207,7 +225,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 			password: []byte(defaultPass),
 		},
 			want: &Contact{
-				ID: 3,
+				id: 3,
 				Address: []Address{{
 					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
 					Coin:  []byte("skycoin"),
@@ -272,34 +290,283 @@ func Test_addressBook_GetContact(t *testing.T) {
 	}
 }
 
-// func Test_addressBook_GetHashFromConfig(t *testing.T) {
-// 	type fields struct {
-// 		db      *bolt.DB
-// 		dbPath  string
-// 		hash    []byte
-// 		entropy []byte
-// 	}
-// 	tests := []struct {
-// 		name    string
-// 		fields  fields
-// 		wantErr bool
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
-// 				db:      tt.fields.db,
-// 				dbPath:  tt.fields.dbPath,
-// 				hash:    tt.fields.hash,
-// 				entropy: tt.fields.entropy,
-// 			}
-// 			if err := ab.GetHashFromConfig(); (err != nil) != tt.wantErr {
-// 				t.Errorf("GetHashFromConfig() error = %v, wantErr %v", err, tt.wantErr)
-// 			}
-// 		})
-// 	}
-// }
+func Test_addressBook_InsertContact(t *testing.T) {
+	type args struct {
+		c        core.Contact
+		password []byte
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+	}{
+		{name: "empty",
+			args: args{
+				c:        &Contact{},
+				password: []byte(defaultPass),
+			},
+			wantErr: false,
+		}, {name: "one-address",
+			args: args{
+				c: &Contact{
+					Address: []Address{{
+						Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact1"),
+				},
+				password: []byte(defaultPass),
+			},
+			wantErr: false,
+		}, {name: "two-address",
+			args: args{
+				c: &Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
+						Coin:  []byte("BTC"),
+					}},
+					Name: []byte("Contact2"),
+				},
+				password: []byte(defaultPass),
+			},
+			wantErr: false,
+		}, {name: "repeat-address-diff-type",
+			args: args{
+				c: &Contact{
+					Address: []Address{{
+						Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact3"),
+				},
+				password: []byte(defaultPass),
+			},
+			wantErr: false,
+		}, {name: "repeat-address-same-type",
+			args: args{
+				c: &Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact4"),
+				},
+				password: []byte(defaultPass),
+			},
+			wantErr: true,
+		},
+		// {name: "repeat-name",
+		// 	args: args{
+		// 		c: &Contact{
+		// 			Address: []Address{{
+		// 				Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+		// 				Coin:  []byte("skycoin"),
+		// 			}},
+		// 			Name: []byte("Contact4"),
+		// 		},
+		// 		password: []byte(defaultPass),
+		// 	},
+		// 	wantErr: true,
+		// },
+		{name: "wrong-password",
+			args: args{
+				c: &Contact{
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgasdQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("Contact5"),
+				},
+				password: []byte("defaultPass"),
+			},
+			wantErr: true,
+		},
+	}
+	ab := OpenAddrsBook(t)
+	defer CloseTest(t, &ab)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if err := ab.InsertContact(tt.args.c, tt.args.password); (err != nil) != tt.wantErr {
+				t.Errorf("InsertContact() error = %v, wantErr %v", err, tt.wantErr)
+			}
+		})
+	}
+}
+
+func Test_addressBook_ListContact(t *testing.T) {
+	type fields struct {
+		Contacts []Contact
+	}
+	type args struct {
+		password []byte
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		args    args
+		want    []core.Contact
+		wantErr bool
+	}{
+		{name: "empty",
+			fields:  fields{Contacts: []Contact(nil)},
+			args:    args{password: []byte(defaultPass)},
+			want:    []core.Contact(nil),
+			wantErr: false},
+		{name: "one-contact",
+			fields: fields{Contacts: []Contact{
+				{Address: []Address{{
+					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+					Coin:  []byte("skycoin"),
+				}},
+					Name: []byte("contact1"),
+				},
+			}},
+			args: args{
+				password: []byte(defaultPass)},
+			want: []core.Contact{&Contact{
+				id: 1,
+				Address: []Address{{
+					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+					Coin:  []byte("skycoin"),
+				}},
+				Name: []byte("contact1"),
+			}},
+			wantErr: false},
+		{name: "multiple-contacts",
+			fields: fields{Contacts: []Contact{
+				{Address: []Address{{
+					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+					Coin:  []byte("skycoin"),
+				}},
+					Name: []byte("contact1"),
+				},
+				{Address: []Address{{
+					Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+					Coin:  []byte("skycoin"),
+				}, {
+					Value: []byte("29cnQPHuWHCRF26LEAb2gR83ywnF3F9HduW"),
+					Coin:  []byte("skycoin")}},
+					Name: []byte("contact2"),
+				},
+				{Address: []Address{{
+					Value: []byte("2ymjULRdbiFoUNJKNhWbQ3JqdE8TXnZkyU"),
+					Coin:  []byte("BTC"),
+				}},
+					Name: []byte("contact3"),
+				}, {
+					Address: []Address{{
+						Value: []byte("oHvj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2SGMfTFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
+						Coin:  []byte("skycoin")}},
+					Name: []byte("contact4"),
+				}, {
+					Address: []Address{{
+						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2EVNa4CK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("contact5"),
+				},
+			}},
+			args: args{
+				password: []byte(defaultPass)},
+			want: []core.Contact{
+				&Contact{
+					id: 1,
+					Address: []Address{{
+						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("contact1"),
+				},
+				&Contact{
+					id: 2,
+					Address: []Address{{
+						Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("29cnQPHuWHCRF26LEAb2gR83ywnF3F9HduW"),
+						Coin:  []byte("skycoin")}},
+					Name: []byte("contact2"),
+				},
+				&Contact{
+					id: 3,
+					Address: []Address{{
+						Value: []byte("2ymjULRdbiFoUNJKNhWbQ3JqdE8TXnZkyU"),
+						Coin:  []byte("BTC"),
+					}},
+					Name: []byte("contact3"),
+				},
+				&Contact{
+					id: 4,
+					Address: []Address{{
+						Value: []byte("oHvj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2SGMfTFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
+						Coin:  []byte("skycoin")}},
+					Name: []byte("contact4"),
+				},
+				&Contact{
+					id: 5,
+					Address: []Address{{
+						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2EVNa4CK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("contact5"),
+				},
+			},
+			wantErr: false},
+		{name: "wrong-password",
+			fields: fields{Contacts: []Contact{{
+				Address: []Address{{
+					Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+					Coin:  []byte("skycoin"),
+				}},
+				Name: []byte("contact1"),
+			}}},
+			args:    args{password: []byte("defaultPass")},
+			want:    []core.Contact(nil),
+			wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ab := OpenAddrsBook(t)
+			defer CloseTest(t, &ab)
+			for _, contact := range tt.fields.Contacts {
+				if err := ab.InsertContact(&contact, []byte(defaultPass)); err != nil {
+					t.Error(err)
+					return
+				}
+			}
+			got, err := ab.ListContact(tt.args.password)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("ListContact() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("ListContact() got = %#v, want %#v", got, tt.want)
+			}
+		})
+	}
+}
 
 // func Test_addressBook_GetPath(t *testing.T) {
 // 	type fields struct {
@@ -330,74 +597,22 @@ func Test_addressBook_GetContact(t *testing.T) {
 // 	}
 // }
 
-// func Test_addressBook_InsertContact(t *testing.T) {
+// func Test_addressBook_GetHashFromConfig(t *testing.T) {
 // 	type fields struct {
-// 		db      *bolt.DB
-// 		dbPath  string
-// 		hash    []byte
-// 		entropy []byte
-// 	}
-// 	type args struct {
-// 		c        core.Contact
-// 		password []byte
+// 		ab AddressBookWithBolt
 // 	}
 // 	tests := []struct {
 // 		name    string
 // 		fields  fields
-// 		args    args
 // 		wantErr bool
 // 	}{
 // 		// TODO: Add test cases.
 // 	}
 // 	for _, tt := range tests {
 // 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
-// 				db:      tt.fields.db,
-// 				dbPath:  tt.fields.dbPath,
-// 				hash:    tt.fields.hash,
-// 				entropy: tt.fields.entropy,
-// 			}
-// 			if err := ab.InsertContact(tt.args.c, tt.args.password); (err != nil) != tt.wantErr {
-// 				t.Errorf("InsertContact() error = %v, wantErr %v", err, tt.wantErr)
-// 			}
-// 		})
-// 	}
-// }
-
-// func Test_addressBook_ListContact(t *testing.T) {
-// 	type fields struct {
-// 		db      *bolt.DB
-// 		dbPath  string
-// 		hash    []byte
-// 		entropy []byte
-// 	}
-// 	type args struct {
-// 		password []byte
-// 	}
-// 	tests := []struct {
-// 		name    string
-// 		fields  fields
-// 		args    args
-// 		want    []core.Contact
-// 		wantErr bool
-// 	}{
-// 		// TODO: Add test cases.
-// 	}
-// 	for _, tt := range tests {
-// 		t.Run(tt.name, func(t *testing.T) {
-// 			ab := &AddressBookWithBolt{
-// 				db:      tt.fields.db,
-// 				dbPath:  tt.fields.dbPath,
-// 				hash:    tt.fields.hash,
-// 				entropy: tt.fields.entropy,
-// 			}
-// 			got, err := ab.ListContact(tt.args.password)
-// 			if (err != nil) != tt.wantErr {
-// 				t.Errorf("ListContact() error = %v, wantErr %v", err, tt.wantErr)
-// 				return
-// 			}
-// 			if !reflect.DeepEqual(got, tt.want) {
-// 				t.Errorf("ListContact() got = %v, want %v", got, tt.want)
+//
+// 			if err := tt.fields.ab.GetHashFromConfig(); (err != nil) != tt.wantErr {
+// 				t.Errorf("GetHashFromConfig() error = %v, wantErr %v", err, tt.wantErr)
 // 			}
 // 		})
 // 	}
