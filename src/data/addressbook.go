@@ -114,7 +114,7 @@ func LoadFromFile(path string, password []byte) (*DB, error) {
 	}
 	defer func() {
 		if err := tx.Rollback(); err != nil {
-			panic(err)
+			logrus.Fatal(err)
 		}
 	}()
 	if bConf := tx.Bucket(dbConfigBkt); bConf == nil {
@@ -166,7 +166,7 @@ func (ab *DB) InsertContact(c core.Contact) error {
 
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != bolt.ErrTxClosed {
-			panic(err)
+			logrus.Fatal(err)
 		}
 	}()
 
@@ -379,7 +379,7 @@ func (ab *DB) GetHashFromConfig() ([]byte, error) {
 
 	defer func() {
 		if err := tx.Rollback(); err != nil {
-			panic(err)
+			logrus.Fatal(err)
 		}
 	}()
 	buck := tx.Bucket(dbConfigBkt)
