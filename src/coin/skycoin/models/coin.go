@@ -2,12 +2,14 @@ package skycoin
 
 import (
 	"fmt"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"strconv"
 	"time"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
@@ -44,7 +46,7 @@ func (txn *SkycoinPendingTransaction) GetInputs() []core.TransactionInput {
 	logCoin.Info("Getting inputs from Skycoin pending transaction")
 	inputs := make([]core.TransactionInput, 0)
 	for _, input := range txn.Transaction.Transaction.In {
-		inputs = append(inputs, &SkycoinPendingTransactionInput{Input: input})
+		inputs = append(inputs, &SkycoinTransactionInput{skyIn: input})
 	}
 	return inputs
 }
@@ -53,7 +55,7 @@ func (txn *SkycoinPendingTransaction) GetOutputs() []core.TransactionOutput {
 	logCoin.Info("Getting outputs from Skycoin pending transaction")
 	outputs := make([]core.TransactionOutput, 0)
 	for _, output := range txn.Transaction.Transaction.Out {
-		outputs = append(outputs, &SkycoinPendingTransactionOutput{Output: output})
+		outputs = append(outputs, &SkycoinTransactionOutput{skyOut: output, spent: false})
 	}
 	return outputs
 }
@@ -70,7 +72,165 @@ func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) (uint64, error) 
 	} else if util.StringInList(ticker, txn.SupportedAssets()) {
 		return uint64(0), nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
+}
+
+func newCreatedTransactionOutput(uxID, address, coins, hours string) api.CreatedTransactionOutput {
+	return api.CreatedTransactionOutput{
+		UxID:    uxID,
+		Address: address,
+		Coins:   coins,
+		Hours:   hours,
+	}
+}
+
+func newCreatedTransactionInput(uxID, address, coins, hours, calculatedHours string, time, block uint64, txID string) api.CreatedTransactionInput {
+	return api.CreatedTransactionInput{
+		UxID:            uxID,
+		Address:         address,
+		Coins:           coins,
+		Hours:           hours,
+		CalculatedHours: calculatedHours,
+		Time:            time,
+		Block:           block,
+		TxID:            txID,
+	}
+}
+
+func newCreatedTransaction(length uint32, txnType uint8, txID string, innerHash string, fee string, ins []api.CreatedTransactionInput, outs []api.CreatedTransactionOutput, sigs []string) *api.CreatedTransaction {
+	rTxn := api.CreatedTransaction{
+		Length:    length,
+		Type:      txnType,
+		TxID:      txID,
+		InnerHash: innerHash,
+		Fee:       fee,
+		Sigs:      sigs,
+		In:        ins,
+		Out:       outs,
+	}
+	return &rTxn
+}
+
+func blockTxnToCreatedTxn(blockTxn readable.BlockTransactionVerbose, timestamp uint64) (*api.CreatedTransaction, error) {
+	sigs := append([]string{}, blockTxn.Sigs...)
+	ins := make([]api.CreatedTransactionInput, len(blockTxn.In))
+	outs := make([]api.CreatedTransactionOutput, len(blockTxn.Out))
+	for i, input := range blockTxn.In {
+		ins[i] = newCreatedTransactionInput(
+			input.Hash,
+			input.Address,
+			input.Coins,
+			fmt.Sprint(input.Hours),
+			fmt.Sprint(input.CalculatedHours),
+			timestamp,
+			// Unconfirmed transactions are not included in a block yet
+			0,
+			blockTxn.Hash,
+		)
+	}
+	for i, output := range blockTxn.Out {
+		outs[i] = newCreatedTransactionOutput(
+			output.Hash,
+			output.Address,
+			output.Coins,
+			fmt.Sprint(output.Hours),
+		)
+	}
+	return newCreatedTransaction(
+		blockTxn.Length,
+		blockTxn.Type,
+		blockTxn.Hash,
+		blockTxn.InnerHash,
+		fmt.Sprint(blockTxn.Fee),
+		ins, outs, sigs,
+	), nil
+}
+
+// ToCreatedTransaction return an instance of api.CreatedTransaction equivalent to he current transaction object
+func (txn *SkycoinPendingTransaction) ToCreatedTransaction() (*api.CreatedTransaction, error) {
+	return blockTxnToCreatedTxn(txn.Transaction.Transaction, uint64(txn.Transaction.Announced.UnixNano()))
+}
+
+func serializeCreatedTransaction(txn readableTxn) ([]byte, error) {
+	rTxn, err := txn.ToCreatedTransaction()
+	if err != nil {
+		return nil, err
+	}
+	skyTxn, err := rTxn.ToTransaction()
+	if err != nil {
+		return nil, err
+	}
+	return skyTxn.Serialize()
+}
+
+// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+func (txn *SkycoinPendingTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return serializeCreatedTransaction(txn)
+}
+
+// skycoinTxn represents the common internal operations that should be applied upon Skycoin transaction wrapper types
+type skycoinTxn interface {
+	// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+	EncodeSkycoinTransaction() ([]byte, error)
+}
+
+// readableTxn expreses the contract to use Skycoin readable transactions for signing
+type readableTxn interface {
+	// ToCreatedTransaction return an instance of api.CreatedTransaction equivalent to he current transaction object
+	ToCreatedTransaction() (*api.CreatedTransaction, error)
+}
+
+func verifyReadableTransaction(rTxn readableTxn, checkSigned bool) error {
+	var createdTxn *api.CreatedTransaction
+	if cTxn, err := rTxn.ToCreatedTransaction(); err != nil {
+		createdTxn = cTxn
+	} else {
+		return err
+	}
+	txn, err := createdTxn.ToTransaction()
+	if err != nil {
+		return err
+	}
+	if checkSigned {
+		return txn.Verify()
+	}
+	return txn.VerifyUnsigned()
+}
+
+// VerifyUnsigned checks for valid unsigned transaction
+func (txn *SkycoinPendingTransaction) VerifyUnsigned() error {
+	if !txn.Transaction.IsValid {
+		// FIXME: Unique error object
+		return errors.ErrInvalidUnconfirmedTxn
+	}
+	return verifyReadableTransaction(txn, false)
+}
+
+// VerifySigned checks for valid unsigned transaction
+func (txn *SkycoinPendingTransaction) VerifySigned() error {
+	if !txn.Transaction.IsValid {
+		// FIXME: Unique error object
+		return errors.ErrInvalidUnconfirmedTxn
+	}
+	return verifyReadableTransaction(txn, true)
+}
+
+func checkFullySigned(rTxn readableTxn) (bool, error) {
+	cTxn, err := rTxn.ToCreatedTransaction()
+	if err != nil {
+		return false, err
+	}
+	txn, err2 := cTxn.ToTransaction()
+	if err2 != nil {
+		return false, err2
+	}
+	return txn.IsFullySigned(), nil
+}
+
+// IsFullySigned deermine whether all transaction elements have been signed
+func (txn *SkycoinPendingTransaction) IsFullySigned() (bool, error) {
+	return checkFullySigned(txn)
 }
 
 /**
@@ -99,72 +259,6 @@ func (it *SkycoinTransactionIterator) HasNext() bool {
 
 func NewSkycoinTransactionIterator(transactions []core.Transaction) *SkycoinTransactionIterator {
 	return &SkycoinTransactionIterator{Transactions: transactions, Current: -1}
-}
-
-/**
- * SkycoinPendingTransactionInput
- */
-type SkycoinPendingTransactionInput struct { //Implements TransactionInput interface
-	Input readable.TransactionInput
-}
-
-func (in *SkycoinPendingTransactionInput) GetId() string {
-	return ""
-}
-
-func (in *SkycoinPendingTransactionInput) IsSpent() bool {
-	return true
-}
-
-func (in *SkycoinPendingTransactionInput) GetSpentOutput() core.TransactionOutput {
-	return nil
-}
-
-func (in *SkycoinPendingTransactionInput) GetCoins(ticker string) (uint64, error) {
-	logCoin.Info("Getting coins from " + ticker + " ticker")
-	if util.StringInList(ticker, []string{Sky, CoinHour, CalculatedHour}) {
-		return uint64(0), nil
-	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
-}
-
-/**
- * SkycoinPendingTransactionOutput
- */
-type SkycoinPendingTransactionOutput struct { //Implements TransactionOutput interface
-	Output readable.TransactionOutput
-}
-
-func (sto *SkycoinPendingTransactionOutput) GetId() string {
-	return sto.Output.Hash
-}
-
-func (sto *SkycoinPendingTransactionOutput) IsSpent() bool {
-	return false
-}
-
-func (sto *SkycoinPendingTransactionOutput) GetAddress() core.Address {
-	return &SkycoinAddress{address: sto.Output.Address}
-}
-
-func (sto *SkycoinPendingTransactionOutput) GetCoins(ticker string) (uint64, error) {
-	logCoin.Info("Getting coins from " + ticker + " ticker")
-	accuracy, err := util.AltcoinQuotient(ticker)
-	if err != nil {
-		return uint64(0), err
-	}
-	if ticker == Sky {
-		coin, err2 := strconv.ParseFloat(sto.Output.Coins, 64)
-		if err2 != nil {
-			return uint64(0), err2
-		}
-		return uint64(coin * float64(accuracy)), nil
-	} else if ticker == CoinHour {
-		return sto.Output.Hours * accuracy, nil
-	} else if ticker == CalculatedHour {
-		return uint64(0), nil
-	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
 }
 
 /**
@@ -270,6 +364,25 @@ func (skyTxn *SkycoinUninjectedTransaction) GetId() string {
 	return skyTxn.txn.Hash().String()
 }
 
+// VerifyUnsigned checks for valid unsigned transaction
+func (txn *SkycoinUninjectedTransaction) VerifyUnsigned() error {
+	return txn.txn.VerifyUnsigned()
+}
+
+// VerifySigned checks for valid unsigned transaction
+func (txn *SkycoinUninjectedTransaction) VerifySigned() error {
+	return txn.txn.Verify()
+}
+
+// IsFullySigned deermine whether all transaction elements have been signed
+func (txn *SkycoinUninjectedTransaction) IsFullySigned() (bool, error) {
+	return txn.txn.IsFullySigned(), nil
+}
+
+func (txn *SkycoinUninjectedTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return txn.txn.Serialize()
+}
+
 /*
 SkycoinTransaction
 */
@@ -355,8 +468,35 @@ func (txn *SkycoinTransaction) ComputeFee(ticker string) (uint64, error) {
 	} else if util.StringInList(ticker, txn.SupportedAssets()) {
 		return uint64(0), nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
+
+// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+func (txn *SkycoinTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return serializeCreatedTransaction(txn)
+}
+
+// ToCreatedTransaction retrieve the equivalent core.Transaction object
+func (txn *SkycoinTransaction) ToCreatedTransaction() (*api.CreatedTransaction, error) {
+	return blockTxnToCreatedTxn(txn.skyTxn.BlockTransactionVerbose, uint64(txn.skyTxn.Timestamp))
+}
+
+// VerifyUnsigned checks for valid unsigned transaction
+func (txn *SkycoinTransaction) VerifyUnsigned() error {
+	return verifyReadableTransaction(txn, false)
+}
+
+// VerifySigned checks for valid unsigned transaction
+func (txn *SkycoinTransaction) VerifySigned() error {
+	return verifyReadableTransaction(txn, true)
+}
+
+// IsFullySigned deermine whether all transaction elements have been signed
+func (txn *SkycoinTransaction) IsFullySigned() (bool, error) {
+	return checkFullySigned(txn)
+}
+
 func getSkycoinTransactionInputsFromTxnHash(hash string) ([]core.TransactionInput, error) {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -429,6 +569,9 @@ func getSkycoinTransactionInputsFromInputsHashes(inputsHashes []cipher.SHA256) (
 	return inputs, nil
 }
 
+/*
+SkycoinTransacionInput wraps verbose readable transaction input data
+*/
 type SkycoinTransactionInput struct {
 	skyIn       readable.TransactionInput
 	spentOutput *SkycoinTransactionOutput
@@ -491,7 +634,8 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return in.skyIn.CalculatedHours * accuracy, nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 /**
@@ -559,7 +703,8 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return out.calculatedHours * accuracy, nil
 	}
-	return uint64(0), fmt.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 func (out *SkycoinTransactionOutput) IsSpent() bool {
@@ -583,3 +728,273 @@ func (out *SkycoinTransactionOutput) IsSpent() bool {
 	}
 	return false
 }
+
+func newCreatedTransactionInputs(rIns []api.CreatedTransactionInput) []core.TransactionInput {
+	ins := make([]core.TransactionInput, len(rIns))
+	for i, rIn := range rIns {
+		ins[i] = &SkycoinCreatedTransactionInput{
+			skyIn: rIn,
+		}
+	}
+	return ins
+}
+
+/*
+SkycoinCreatedTransacionInput wraps created transaction input data
+*/
+type SkycoinCreatedTransactionInput struct {
+	skyIn       api.CreatedTransactionInput
+	spentOutput *SkycoinCreatedTransactionOutput
+}
+
+// GetId return transaction UXID
+func (in *SkycoinCreatedTransactionInput) GetId() string {
+	return in.skyIn.UxID
+}
+
+func (in *SkycoinCreatedTransactionInput) GetSpentOutput() core.TransactionOutput {
+	if in.spentOutput == nil {
+
+		calculatedHours, err := in.GetCoins(in.skyIn.CalculatedHours)
+		if err != nil {
+			calculatedHours = 0
+		}
+		skyOut := &SkycoinCreatedTransactionOutput{
+			skyOut: api.CreatedTransactionOutput{
+				Address: in.skyIn.Address,
+				Coins:   in.skyIn.Coins,
+				Hours:   in.skyIn.Hours,
+				UxID:    in.skyIn.UxID,
+			},
+			calculatedHours: calculatedHours,
+			spent:           false}
+		in.spentOutput = skyOut
+
+	}
+	return in.spentOutput
+
+}
+
+// GetCoins return input balance in one of supported coins , or error
+func (in *SkycoinCreatedTransactionInput) GetCoins(ticker string) (uint64, error) {
+	accuracy, err2 := util.AltcoinQuotient(ticker)
+	if err2 != nil {
+		return uint64(0), err2
+	}
+	var result uint64
+	var tmpResult int64
+	var err error
+	if ticker == Sky {
+		var skyf float64
+		skyf, err = strconv.ParseFloat(in.skyIn.Coins, 64)
+		result = uint64(skyf * float64(accuracy))
+	} else if ticker == CoinHour {
+		tmpResult, err = strconv.ParseInt(in.skyIn.Hours, 10, 64)
+		result = uint64(tmpResult)
+	} else if ticker == CalculatedHour {
+		tmpResult, err = strconv.ParseInt(in.skyIn.CalculatedHours, 10, 64)
+		result = uint64(tmpResult)
+	} else {
+		logCoin.Errorf("Invalid ticker %v\n", ticker)
+		return uint64(0), errors.ErrInvalidAltcoinTicker
+	}
+	if err != nil {
+		return 0, err
+	}
+	return result, nil
+}
+
+func newCreatedTransactionOutputs(rOuts []api.CreatedTransactionOutput) []core.TransactionOutput {
+	ins := make([]core.TransactionOutput, len(rOuts))
+	for i, rOut := range rOuts {
+		ins[i] = &SkycoinCreatedTransactionOutput{
+			skyOut: rOut,
+		}
+	}
+	return ins
+}
+
+/**
+ * SkycoinCreatedTransactionOutput
+ */
+type SkycoinCreatedTransactionOutput struct {
+	skyOut          api.CreatedTransactionOutput
+	spent           bool
+	calculatedHours uint64
+}
+
+func (out *SkycoinCreatedTransactionOutput) GetId() string {
+	return out.skyOut.UxID
+}
+
+func (out *SkycoinCreatedTransactionOutput) GetAddress() core.Address {
+	return &SkycoinAddress{address: out.skyOut.Address}
+}
+
+func (out *SkycoinCreatedTransactionOutput) GetCoins(ticker string) (uint64, error) {
+	accuracy, err2 := util.AltcoinQuotient(ticker)
+	if err2 != nil {
+		return uint64(0), err2
+	}
+	var tmpResult int64
+	var result uint64
+	var err error
+	if ticker == Sky {
+		var skyf float64
+		skyf, err = strconv.ParseFloat(out.skyOut.Coins, 64)
+		result = uint64(skyf * float64(accuracy))
+	} else if ticker == CoinHour {
+		tmpResult, err = strconv.ParseInt(out.skyOut.Hours, 10, 64)
+		result = uint64(tmpResult)
+	} else if ticker == CalculatedHour {
+		result = out.calculatedHours
+		err = nil
+	} else {
+		err = errors.ErrInvalidAltcoinTicker
+	}
+	if err != nil {
+		logCoin.WithError(err).Errorf("Could not retrieve coins for ticker %s", ticker)
+		return 0, err
+	}
+	return result, nil
+}
+
+func (out *SkycoinCreatedTransactionOutput) IsSpent() bool {
+	if out.spent {
+		return true
+	}
+
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		return true
+	}
+	defer ReturnSkycoinClient(c)
+	ou, err := c.UxOut(out.skyOut.UxID)
+	if err != nil {
+		return false
+	}
+	if ou.SpentTxnID != "0000000000000000000000000000000000000000000000000000000000000000" {
+		out.spent = true
+		return true
+	}
+	return false
+}
+
+// NewSkycoinCreatedTransaction return readable created transaction wrapper
+func NewSkycoinCreatedTransaction(rTxn api.CreatedTransaction) *SkycoinCreatedTransaction {
+	return &SkycoinCreatedTransaction{
+		skyTxn: rTxn,
+	}
+}
+
+/*
+SkycoinCreatedTransaction wraps a readable created transaction to implement core.Transaction interface
+*/
+type SkycoinCreatedTransaction struct {
+	skyTxn api.CreatedTransaction
+
+	inputs  []core.TransactionInput
+	outputs []core.TransactionOutput
+}
+
+// SupportedAssets are SKY, SKYCH, and accumulated SKYCH
+func (txn *SkycoinCreatedTransaction) SupportedAssets() []string {
+	return []string{Sky, CoinHour, CalculatedHour}
+}
+
+// GetTimestamp will return zero
+func (txn *SkycoinCreatedTransaction) GetTimestamp() core.Timestamp {
+	return 0
+}
+
+func (txn *SkycoinCreatedTransaction) GetStatus() core.TransactionStatus {
+	return core.TXN_STATUS_CREATED
+}
+
+// GetInputs return inputs spent by this transaction
+func (txn *SkycoinCreatedTransaction) GetInputs() []core.TransactionInput {
+	if txn.inputs == nil {
+		txn.inputs = newCreatedTransactionInputs(txn.skyTxn.In)
+	}
+	return txn.inputs
+}
+
+// GetOuptuts return outputs owned by transaction receivers
+func (txn *SkycoinCreatedTransaction) GetOutputs() []core.TransactionOutput {
+	if txn.outputs == nil {
+		txn.outputs = newCreatedTransactionOutputs(txn.skyTxn.Out)
+	}
+	return txn.outputs
+}
+
+func (txn *SkycoinCreatedTransaction) GetId() string {
+	return txn.skyTxn.TxID
+}
+
+func (txn *SkycoinCreatedTransaction) ComputeFee(ticker string) (uint64, error) {
+	if ticker == CoinHour {
+		fee, err := strconv.ParseInt(txn.skyTxn.Fee, 10, 64)
+		if err != nil {
+			return uint64(0), err
+		}
+		return uint64(fee), nil
+	} else if util.StringInList(ticker, txn.SupportedAssets()) {
+		return uint64(0), nil
+	}
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
+}
+
+// EncodeSkycoinTransaction serialize transaction data for subsequent broadcast through the peer-to-peer network
+func (txn *SkycoinCreatedTransaction) EncodeSkycoinTransaction() ([]byte, error) {
+	return serializeCreatedTransaction(txn)
+}
+
+// ToCreatedTransaction retrieve the equivalent core.Transaction object
+func (txn *SkycoinCreatedTransaction) ToCreatedTransaction() (*api.CreatedTransaction, error) {
+	return &txn.skyTxn, nil
+}
+
+// VerifyUnsigned checks for valid unsigned transaction
+func (txn *SkycoinCreatedTransaction) VerifyUnsigned() error {
+	return verifyReadableTransaction(txn, false)
+}
+
+// VerifySigned checks for valid unsigned transaction
+func (txn *SkycoinCreatedTransaction) VerifySigned() error {
+	return verifyReadableTransaction(txn, true)
+}
+
+// IsFullySigned deermine whether all transaction elements have been signed
+func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
+	return checkFullySigned(txn)
+}
+
+// Type assertions to abort compilation if contracts not satisfied
+var (
+	pendingTxn         SkycoinPendingTransaction                         // nolint: varcheck,megacheck
+	skyTxnInIter       SkycoinTransactionInputIterator                   // nolint: varcheck,megacheck
+	skyTxnIter         SkycoinTransactionIterator                        // nolint: varcheck,megacheck
+	skyTxnOutIter      SkycoinTransactionOutputIterator                  // nolint: varcheck,megacheck
+	uninjectedTxn      SkycoinUninjectedTransaction                      // nolint: varcheck,megacheck
+	skyTxn             SkycoinTransaction                                // nolint: varcheck,megacheck
+	skyTxnIn           SkycoinTransactionInput                           // nolint: varcheck,megacheck
+	skyTxnOut          SkycoinTransactionOutput                          // nolint: varcheck,megacheck
+	cTxn               SkycoinCreatedTransaction                         // nolint: varcheck,megacheck
+	pendingTxnSky      skycoinTxn                       = &pendingTxn    // nolint: varcheck,megacheck
+	pendingTxnReadable readableTxn                      = &pendingTxn    // nolint: varcheck,megacheck
+	pendingTxnCore     core.Transaction                 = &pendingTxn    // nolint: varcheck,megacheck
+	skyTxnIterator     core.TransactionIterator         = &skyTxnIter    // nolint: varcheck,megacheck
+	skyTxnInIterator   core.TransactionInputIterator    = &skyTxnInIter  // nolint: varcheck,megacheck
+	skyTxnOutIterator  core.TransactionOutputIterator   = &skyTxnOutIter // nolint: varcheck,megacheck
+	uninjectedTxnCore  core.Transaction                 = &uninjectedTxn // nolint: varcheck,megacheck
+	uninjectedTxnSky   skycoinTxn                       = &uninjectedTxn // nolint: varcheck,megacheck
+	skyTxnSky          skycoinTxn                       = &skyTxn        // nolint: varcheck,megacheck
+	skyTxnReadable     readableTxn                      = &skyTxn        // nolint: varcheck,megacheck
+	skyTxnCore         core.Transaction                 = &skyTxn        // nolint: varcheck,megacheck
+	skyTxnInCore       core.TransactionInput            = &skyTxnIn      // nolint: varcheck,megacheck
+	skyTxnOutCore      core.TransactionOutput           = &skyTxnOut     // nolint: varcheck,megacheck
+	cTxnSky            skycoinTxn                       = &cTxn          // nolint: varcheck,megacheck
+	cTxnReadable       readableTxn                      = &cTxn          // nolint: varcheck,megacheck
+	cTxnCore           core.Transaction                 = &cTxn          // nolint: varcheck,megacheck
+)

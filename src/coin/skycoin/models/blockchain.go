@@ -1,13 +1,13 @@
 package skycoin
 
 import (
-	"errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"time"
 
 	"github.com/skycoin/skycoin/src/readable"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
@@ -20,7 +20,7 @@ type SkycoinBlock struct { //implements core.Block interface
 func (sb *SkycoinBlock) GetHash() ([]byte, error) {
 	logBlockchain.Info("Getting hash")
 	if sb.Block == nil {
-		return nil, errors.New("block not setted or nil")
+		return nil, errors.ErrBlockNotSet
 	}
 	return []byte(sb.Block.Head.Hash), nil
 }
@@ -28,7 +28,7 @@ func (sb *SkycoinBlock) GetHash() ([]byte, error) {
 func (sb *SkycoinBlock) GetPrevHash() ([]byte, error) {
 	logBlockchain.Info("Getting previous block hash")
 	if sb.Block == nil {
-		return nil, errors.New("Block not setted or nil")
+		return nil, errors.ErrBlockNotSet
 	}
 	return []byte(sb.Block.Head.PreviousHash), nil
 }
@@ -36,7 +36,7 @@ func (sb *SkycoinBlock) GetPrevHash() ([]byte, error) {
 func (sb *SkycoinBlock) GetVersion() (uint32, error) {
 	logBlockchain.Info("Getting version")
 	if sb.Block == nil {
-		return 0, errors.New("Block not setted or nil")
+		return 0, errors.ErrBlockNotSet
 	}
 	return sb.Block.Head.Version, nil
 }
@@ -44,14 +44,14 @@ func (sb *SkycoinBlock) GetVersion() (uint32, error) {
 func (sb *SkycoinBlock) GetTime() (core.Timestamp, error) {
 	logBlockchain.Info("Getting time")
 	if sb.Block == nil {
-		return 0, errors.New("Block not setted or nil")
+		return 0, errors.ErrBlockNotSet
 	}
 	return core.Timestamp(sb.Block.Head.Time), nil
 }
 func (sb *SkycoinBlock) GetHeight() (uint64, error) {
 	logBlockchain.Info("Getting height")
 	if sb.Block == nil {
-		return 0, errors.New("Block not setted or nil")
+		return 0, errors.ErrBlockNotSet
 	}
 	return 0, nil //TODO ???
 }
@@ -59,7 +59,7 @@ func (sb *SkycoinBlock) GetHeight() (uint64, error) {
 func (sb *SkycoinBlock) GetFee(ticker string) (uint64, error) {
 	logBlockchain.Info("Getting fee")
 	if sb.Block == nil {
-		return 0, errors.New("Block not setted or nil")
+		return 0, errors.ErrBlockNotSet
 	}
 	if ticker == CoinHour {
 		return sb.Block.Head.Fee, nil
@@ -70,7 +70,7 @@ func (sb *SkycoinBlock) GetFee(ticker string) (uint64, error) {
 func (sb *SkycoinBlock) IsGenesisBlock() (bool, error) {
 	logBlockchain.Info("Getting if is Genesis block")
 	if sb.Block == nil {
-		return false, errors.New("Block not setted or nil")
+		return false, errors.ErrBlockNotSet
 	}
 	return true, nil
 }
@@ -94,7 +94,7 @@ type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
 func NewSkycoinBlockchainStatus(invalidCacheTime uint64) *SkycoinBlockchainStatus {
 	return &SkycoinBlockchainStatus{CacheTime: invalidCacheTime}
 }
-func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueKey, ticker string) (uint64, error) {
+func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueMetric, ticker string) (uint64, error) {
 	logBlockchain.Info("Getting Coin value")
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
@@ -143,7 +143,8 @@ func (ss *SkycoinBlockchainStatus) GetNumberOfBlocks() (uint64, error) {
 			ss.cachedStatus = new(SkycoinBlockchainInfo)
 		}
 		if err := ss.requestStatusInfo(); err != nil {
-			return 0, errors.New("Number of Blocks unset ")
+			logBlockchain.Errorf("Skycoin node API error for status info %s", err)
+			return 0, err
 		}
 	}
 

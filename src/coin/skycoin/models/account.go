@@ -1,11 +1,11 @@
 package skycoin //nolint goimports
 
 import (
-	"fmt"
 	"path/filepath"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/cli"
@@ -326,13 +326,14 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count confirmed balances
 	for _, o := range outs.HeadOutputs {
 		if _, ok := addrsMap[o.Address]; !ok {
-			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
+			log.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
+			return nil, errors.ErrUnexpectedUxOutAddress
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
 			log.WithError(err).Error("droplet.FromString failed")
-			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
+			return nil, errors.ErrParseTxnCoins
 		}
 
 		b := addrBalances[o.Address]
@@ -345,13 +346,14 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count spendable balances
 	for _, o := range outs.SpendableOutputs() {
 		if _, ok := addrsMap[o.Address]; !ok {
-			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
+			log.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
+			return nil, errors.ErrUnexpectedUxOutAddress
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
 			log.WithError(err).Error("droplet.FromString failed")
-			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
+			return nil, errors.ErrParseTxnCoins
 		}
 
 		b := addrBalances[o.Address]
@@ -364,13 +366,14 @@ func getBalanceOfAddresses(outs *readable.UnspentOutputsSummary, addrs []string)
 	// Count predicted balances
 	for _, o := range outs.ExpectedOutputs() {
 		if _, ok := addrsMap[o.Address]; !ok {
-			return nil, fmt.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
+			log.Errorf("Found address %s in GetUnspentOutputs result, but this address wasn't requested", o.Address)
+			return nil, errors.ErrUnexpectedUxOutAddress
 		}
 
 		amt, err := droplet.FromString(o.Coins)
 		if err != nil {
 			log.WithError(err).Error("droplet.FromString failed")
-			return nil, fmt.Errorf("droplet.FromString failed: %v", err)
+			return nil, errors.ErrParseTxnCoins
 		}
 
 		b := addrBalances[o.Address]

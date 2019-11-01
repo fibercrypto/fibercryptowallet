@@ -2,12 +2,13 @@ package local
 
 import (
 	"encoding/json"
-	"errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 )
 
 var logConfigManager = logging.MustGetLogger("ConfigManager")
@@ -78,7 +79,7 @@ func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
 		}
 	}
 	if src == nil {
-		return errors.New("invalid Id")
+		return errors.ErrInvalidID
 	}
 
 	if tp != LocalWallet && tp != RemoteWallet {

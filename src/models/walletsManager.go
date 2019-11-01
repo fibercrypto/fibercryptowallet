@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"sync"
 
@@ -11,6 +10,7 @@ import (
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
@@ -267,7 +267,7 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	logWalletManager.Info("Broadcasting transaction")
 	altManager := core.LoadAltcoinManager()
-	plug, _ := altManager.LookupAltcoinManager(params.SkycoinTicker)
+	plug, _ := altManager.LookupAltcoinPlugin(params.SkycoinTicker)
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error loading PEX")
@@ -442,7 +442,7 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 		logWalletManager.Warn("Couldn't load wallet to Sign transaction")
 		return nil
 	}
-	txn, err := wlt.Sign(qTxn.txn, source, func(message string) (string, error) {
+	txn, err := wlt.Sign(qTxn.txn, core.UID(source), func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {
@@ -711,7 +711,7 @@ func (gOut *GenericOutput) GetCoins(ticker string) (uint64, error) {
 		return val, nil
 	}
 
-	return 0, errors.New("invalid ticker")
+	return 0, errors.ErrInvalidAltcoinTicker
 }
 
 type TransferOptions struct {
