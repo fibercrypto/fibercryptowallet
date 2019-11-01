@@ -180,9 +180,8 @@ Item {
         headerMessageColor: Material.color(Material.Red)
         focus: true
         modal: true
-
         onAccepted: {
-            var isEncrypted = walletManager.decryptWallet(fileName, password.text)
+            var isEncrypted = walletManager.decryptWallet(fileName, password)
             walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
         }
     }
