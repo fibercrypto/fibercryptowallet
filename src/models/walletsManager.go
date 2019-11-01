@@ -1,7 +1,6 @@
 package models
 
 import (
-	"errors"
 	"fmt"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"sync"
