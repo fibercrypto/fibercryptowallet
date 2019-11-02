@@ -5,7 +5,7 @@ import QtQuick.Layouts 1.12
 import WalletsManager 1.0
 
 // Resource imports
-// import "qrc:/ui/src/ui"
+// import "qrc:/ui/src/ui/"
 import "../" // For quick UI development, switch back to resources when making a release
 
 Item {

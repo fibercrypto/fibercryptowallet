@@ -1,5 +1,6 @@
 import QtQuick 2.0
-import "qqr.js" as QRCodeBackend
+
+import "qqr.js" as QRCodeBackend // For quick UI development, switch back to resources when making a release
 
 Canvas {
     id: canvas
