@@ -5,4 +5,6 @@ grep -rl 'import "../Dialogs/"' ./src/ui | xargs sed -i 's/import "..\/Dialogs\/
 grep -rl 'import "Dialogs/"' ./src/ui | xargs sed -i 's/import "Dialogs\/"/\/\/import "Dialogs\/"/g'
 grep -rl 'import "Controls"' ./src/ui | xargs sed -i 's/import "Controls"/\/\/import "Controls"/g'
 grep -rl 'import "../Utils"' ./src/ui | xargs sed -i 's/import "..\/Utils"/\/\/import "..\/Utils"/g'
+grep -rl '// url := core.NewQUrl3("qrc' ./src/ui | xargs sed -i 's/\/\/ url := core.NewQUrl3("qrc/url := core.NewQUrl3("qrc/g'
+grep -rl 'url := core.NewQUrl3("src' ./src/ui | xargs sed -i 's/url := core.NewQUrl3("src/url := core.NewQUrl3("src/g'
 grep -rl '// import "qrc:/ui/src/ui' ./src/ui | xargs sed -i 's/\/\/ import "qrc:\/ui\/src\/ui/import "qrc:\/ui\/src\/ui/g'
