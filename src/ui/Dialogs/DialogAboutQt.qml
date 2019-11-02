@@ -5,6 +5,8 @@ import QtQuick.Controls 2.12
 Dialog {
     id: aboutQt
 
+    readonly property string qtVersionString: "5.13.1"
+
     modal: true
     title: qsTr("About") + " Qt"
     standardButtons: Dialog.Close
@@ -30,7 +32,7 @@ Dialog {
 
             Label {
                 width: parent.width
-                text: "<b>" + qsTr("This program uses Qt %1").arg("5.13.0") + "</b><br>"
+                text: "<b>" + qsTr("This program uses Qt %1").arg(qtVersionString) + "</b><br>"
                     + qsTr("<p>Qt is a <i>C++ toolkit for cross-platform application " +
                            "development</i>.</p>" +
                            "<p>Qt provides single-source portability across all major desktop and mobile " +
