@@ -574,7 +574,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		walletM.updateWallets()
 	}
 	logWalletManager.Info("Getting wallets")
-	qWallets := make([]*QWallet, 0)
+	walletM.wallets = make([]*QWallet, 0)
 	if walletM.WalletEnv == nil {
 		walletM.UpdateWalletEnvs()
 	}
@@ -582,7 +582,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 
 	if it == nil {
 		logWalletManager.WithError(nil).Error("Couldn't load wallets")
-		return qWallets
+		return walletM.wallets
 
 	}
 
@@ -591,17 +591,18 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {
 			logWalletManager.WithError(err).Error("Couldn't get wallets")
-			return qWallets
+			return walletM.wallets
 		}
 		if encrypted {
 			qw := fromWalletToQWallet(it.Value(), true)
-			qWallets = append(qWallets, qw)
+			walletM.wallets = append(walletM.wallets, qw)
 		} else {
 			qw := fromWalletToQWallet(it.Value(), false)
-			qWallets = append(qWallets, qw)
+			walletM.wallets = append(walletM.wallets, qw)
 		}
 
 	}
+	//walletM.wallets = make([]*QWallet, 0)
 
 	logWalletManager.Info("Wallets obtained")
 	return walletM.wallets
@@ -637,6 +638,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	qWallet := NewQWallet(nil)
 	qml.QQmlEngine_SetObjectOwnership(qWallet, qml.QQmlEngine__CppOwnership)
 	qWallet.SetName(wlt.GetLabel())
+	qWallet.SetExpand(false)
 
 	qWallet.SetFileName(wlt.GetId())
 
