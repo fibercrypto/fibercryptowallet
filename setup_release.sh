@@ -4,4 +4,5 @@ grep -rl 'import "Delegates/"' ./src/ui | xargs sed -i 's/import "Delegates\/"/\
 grep -rl 'import "../Dialogs/"' ./src/ui | xargs sed -i 's/import "..\/Dialogs\/"/\/\/import "..\/Dialogs\/"/g'
 grep -rl 'import "Dialogs/"' ./src/ui | xargs sed -i 's/import "Dialogs\/"/\/\/import "Dialogs\/"/g'
 grep -rl 'import "Controls"' ./src/ui | xargs sed -i 's/import "Controls"/\/\/import "Controls"/g'
+grep -rl 'import "../Utils"' ./src/ui | xargs sed -i 's/import "..\/Utils"/\/\/import "..\/Utils"/g'
 grep -rl '// import "qrc:/ui/src/ui' ./src/ui | xargs sed -i 's/\/\/ import "qrc:\/ui\/src\/ui/import "qrc:\/ui\/src\/ui/g'
