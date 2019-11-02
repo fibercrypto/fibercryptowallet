@@ -52,17 +52,17 @@ func (c *Contact) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-//
+// GetID get id of current contact.
 func (c *Contact) GetID() uint64 {
 	return c.id
 }
 
-//
+// SetID set an id to current contact.
 func (c *Contact) SetID(id uint64) {
 	c.id = id
 }
 
-//
+// GetAddresses get address list of current contact.
 func (c *Contact) GetAddresses() []core.ReadableAddress {
 	var addresses []core.ReadableAddress
 	for e := range c.Address {
@@ -71,7 +71,7 @@ func (c *Contact) GetAddresses() []core.ReadableAddress {
 	return addresses
 }
 
-//
+// SetAddresses set an address list to the current contact.
 func (c *Contact) SetAddresses(addrs []core.ReadableAddress) {
 	for e := range addrs {
 		if v, ok := addrs[e].(*Address); ok {
@@ -83,23 +83,24 @@ func (c *Contact) SetAddresses(addrs []core.ReadableAddress) {
 	}
 }
 
-func (c *Contact) GetAddressLen() int {
-	return len(c.Address)
-}
+// .....Address
 
-// Address
+// GetValue get address string.
 func (ad *Address) GetValue() []byte {
 	return ad.Value
 }
 
+// SetValue set an address string.
 func (ad *Address) SetValue(val []byte) {
 	ad.Value = val
 }
 
+// GetCoinType get coin type of an address.
 func (ad *Address) GetCoinType() []byte {
 	return ad.Coin
 }
 
-func (ad *Address) SetType(coinType []byte) {
+// SetCoinType set the coin type to current address.
+func (ad *Address) SetCoinType(coinType []byte) {
 	ad.Coin = coinType
 }

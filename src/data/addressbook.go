@@ -21,9 +21,9 @@ import (
 
 var (
 	// Errors
-	errBucketEmpty  = errors.New(" Error: bucket are empty.")
-	errValEmpty     = errors.New(" Error: value are empty.")
-	errParseContact = errors.New(" The inserted cannot be parse.")
+	errBucketEmpty  = errors.New(" Error: bucket are empty")
+	errValEmpty     = errors.New(" Error: value are empty")
+	errParseContact = errors.New(" The inserted cannot be parse")
 	// Db buckets.
 	dbAddrsBookBkt = []byte("AddressBook")
 	dbConfigBkt    = []byte("Config")
@@ -40,11 +40,11 @@ type DB struct {
 
 //
 func (ab *DB) verifyHash() error {
-	if hash, err := ab.GetHashFromConfig(); err != nil {
+	hash, err := ab.GetHashFromConfig()
+	if err != nil {
 		return err
-	} else {
-		return bcrypt.CompareHashAndPassword(hash, ab.key)
 	}
+	return bcrypt.CompareHashAndPassword(hash, ab.key)
 
 }
 
@@ -116,11 +116,13 @@ func LoadFromFile(path string, password []byte) (*DB, error) {
 			logrus.Fatal(err)
 		}
 	}()
-	if bConf := tx.Bucket(dbConfigBkt); bConf == nil {
+	bConf := tx.Bucket(dbConfigBkt)
+	if bConf == nil {
 		return nil, errBucketEmpty
-	} else {
-		ab.entropy = bConf.Get([]byte("entropy"))
 	}
+
+	ab.entropy = bConf.Get([]byte("entropy"))
+
 	if err := ab.verifyHash(); err != nil {
 		return nil, err
 	}
@@ -205,7 +207,7 @@ func (ab *DB) InsertContact(c core.Contact) error {
 	return tx.Commit()
 }
 
-// Get a contact by id.
+// GetContact get a contact by id.
 func (ab *DB) GetContact(id uint64) (core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
@@ -229,14 +231,14 @@ func (ab *DB) GetContact(id uint64) (core.Contact, error) {
 	if encryptData == nil {
 		return nil, errValEmpty
 	}
-	if c, err := ab.decryptAESGCM(encryptData); err != nil {
+	c, err := ab.decryptAESGCM(encryptData)
+	if err != nil {
 		return nil, err
-	} else {
-		return c, nil
 	}
+	return c, nil
 }
 
-// ListContact: List all contact in the address book.
+// ListContact list all contact in the address book.
 func (ab *DB) ListContact() ([]core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
@@ -255,20 +257,20 @@ func (ab *DB) ListContact() ([]core.Contact, error) {
 	}
 	var contacts []core.Contact
 	if err := bkt.ForEach(func(k, v []byte) error {
-
-		if c, err := ab.decryptAESGCM(v); err != nil {
+		c, err := ab.decryptAESGCM(v)
+		if err != nil {
 			return err
-		} else {
-			contacts = append(contacts, c)
-			return nil
 		}
+
+		contacts = append(contacts, c)
+		return nil
 	}); err != nil {
 		return nil, err
 	}
 	return contacts, nil
 }
 
-// DeleteContact: delete a contact from the address book by its id.
+// DeleteContact delete a contact from the address book by its id.
 func (ab *DB) DeleteContact(id uint64) error {
 	return ab.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
@@ -283,7 +285,7 @@ func (ab *DB) DeleteContact(id uint64) error {
 
 }
 
-// UpdateContact: update a contact in the address book by its id.
+// UpdateContact update a contact in the address book by its id.
 func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	var contacts []core.Contact
 	var err error
@@ -307,21 +309,22 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	}
 
 	if err := ab.db.Update(func(tx *bolt.Tx) error {
-		if bkt := tx.Bucket(dbAddrsBookBkt); bkt == nil {
+		bkt := tx.Bucket(dbAddrsBookBkt)
+		if bkt == nil {
 			return errBucketEmpty
-		} else {
-			if cc, ok := newContact.(*Contact); ok {
-				encryptedData, err := ab.encryptAESGCM(cc)
-				if err != nil {
-					return err
-				}
-				if err := bkt.Put(itob(id), encryptedData); err != nil {
-					return err
-				}
-			} else {
-				return errParseContact
-			}
 		}
+		if cc, ok := newContact.(*Contact); ok {
+			encryptedData, err := ab.encryptAESGCM(cc)
+			if err != nil {
+				return err
+			}
+			if err := bkt.Put(itob(id), encryptedData); err != nil {
+				return err
+			}
+		} else {
+			return errParseContact
+		}
+
 		return nil
 	}); err != nil {
 		return err
@@ -360,17 +363,17 @@ func (ab *DB) genEntropy(mnemonic string) error {
 	return nil
 }
 
-// Set the database path.
+// SetPath set database path.
 func (ab *DB) SetPath(path string) {
 	ab.dbPath = path
 }
 
-// Get the database path.
+// GetPath get database path.
 func (ab *DB) GetPath() string {
 	return ab.dbPath
 }
 
-// Get hash from config bucket.
+// GetHashFromConfig get hash from config bucket.
 func (ab *DB) GetHashFromConfig() ([]byte, error) {
 	tx, err := ab.db.Begin(false)
 	if err != nil {
@@ -395,10 +398,10 @@ func (ab *DB) GetHashFromConfig() ([]byte, error) {
 	return hash, nil
 }
 
-// Encrypt a contact using a password with AES-GCM.
+// encryptAESGCM encrypt a contact using a password with AES-GCM.
 func (ab *DB) encryptAESGCM(c *Contact) ([]byte, error) {
 	if ab.entropy == nil {
-		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
+		return nil, fmt.Errorf(" Error: Mnemonic are empty")
 	}
 	block, err := aes.NewCipher(derivePassphrase(ab.entropy, ab.key))
 	if err != nil {
@@ -425,7 +428,7 @@ func (ab *DB) encryptAESGCM(c *Contact) ([]byte, error) {
 // Decrypt a cipher message using a password with AES-GCM and return a Contact.
 func (ab *DB) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
 	if ab.entropy == nil {
-		return nil, fmt.Errorf(" Error: Mnemonic are empty.")
+		return nil, fmt.Errorf(" Error: Mnemonic are empty")
 	}
 
 	block, err := aes.NewCipher(derivePassphrase(ab.entropy, ab.key))
@@ -459,7 +462,7 @@ func (ab *DB) AddressExists(address core.ReadableAddress, contacts []core.Contac
 			for _, addrs := range c.Address {
 				if bytes.Compare(addrs.GetValue(), address.GetValue()) == 0 &&
 					bytes.Compare(addrs.GetCoinType(), address.GetCoinType()) == 0 {
-					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist.",
+					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist",
 						address.GetValue(), address.GetCoinType())
 				}
 			}
@@ -475,7 +478,7 @@ func (ab *DB) NameExists(contact core.Contact, contacts []core.Contact) error {
 	for _, c := range contacts {
 		if dataContact, ok := c.(*Contact); ok {
 			if bytes.Compare(contact.(*Contact).Name, dataContact.Name) == 0 {
-				return fmt.Errorf(" Contact with name: %s alredy exist.", contact.(*Contact).Name)
+				return fmt.Errorf(" Contact with name: %s alredy exist", contact.(*Contact).Name)
 			}
 		}
 	}
