@@ -749,9 +749,8 @@ func TestLoadFromFile(t *testing.T) {
 			if err != nil {
 				if tt.wantErr {
 					return
-				} else {
-					t.Fatal(err)
 				}
+				t.Fatal(err)
 			}
 			defer func() {
 				if err := loadedAddrsBook.Close(); err != nil {

@@ -25,5 +25,5 @@ type ReadableAddress interface {
 	GetValue() []byte
 	SetValue(val []byte)
 	GetCoinType() []byte
-	SetType(val []byte)
+	SetCoinType(val []byte)
 }
