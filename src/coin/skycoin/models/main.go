@@ -33,7 +33,7 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 		core.AltcoinMetadata{
 			Name:     CalculatedHoursName,
 			Ticker:   CalculatedHoursTicker,
-			Family:   CalculatedHoursFamily,
+			Family:   SkycoinFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
