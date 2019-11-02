@@ -13,7 +13,6 @@ import (
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"golang.org/x/crypto/bcrypt"
 	"io"
-	"reflect"
 	"time"
 )
 
@@ -100,7 +99,7 @@ func Init(password []byte, path, mnemonic string) (*DB, error) {
 	return &ab, nil
 }
 
-// LoadFromFile ***
+// LoadFromFile load a existing db file.
 func LoadFromFile(path string, password []byte) (*DB, error) {
 	var ab DB
 	ab.dbPath = path
@@ -156,7 +155,6 @@ func (ab *DB) open() error {
 
 // InsertContact insert a contact into the address book.
 // If any of its address exist return error.
-// If its name exist return error.TODO
 func (ab *DB) InsertContact(c core.Contact) error {
 	// Start a writeable transaction.
 	tx, err := ab.db.Begin(true)
@@ -170,10 +168,14 @@ func (ab *DB) InsertContact(c core.Contact) error {
 		}
 	}()
 
-	for _, v := range c.(*Contact).Address {
-		if err := ab.SearchAddress(v.GetValue(), v.GetCoinType()); err != nil {
+	contacts, err := ab.ListContact()
+	for _, v := range c.GetAddresses() {
+		if err := ab.AddressExists(v, contacts); err != nil {
 			return err
 		}
+	}
+	if err := ab.NameExists(c, contacts); err != nil {
+		return err
 	}
 
 	bkt := tx.Bucket(dbAddrsBookBkt)
@@ -290,22 +292,20 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	}
 	for e := range contacts {
 		if contacts[e].GetID() == id {
-			contacts[e] = &Contact{}
+			contacts[e] = nil
 			break
 		}
 	}
+
 	for _, ncAddrs := range newContact.GetAddresses() {
-		for _, c := range contacts {
-			for _, addrs := range c.GetAddresses() {
-				if reflect.DeepEqual(ncAddrs, addrs) {
-					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist.",
-						ncAddrs.GetValue(), ncAddrs.GetCoinType())
-				}
-				// if bytes.Compare(addrs.GetValue(), ncAddrs.GetValue()) == 0 && bytes.Compare(addrs.GetCoinType(), ncAddrs.GetCoinType()) == 0 {
-				// }
-			}
+		if err := ab.AddressExists(ncAddrs, contacts); err != nil {
+			return err
 		}
 	}
+	if err := ab.NameExists(newContact, contacts); err != nil {
+		return err
+	}
+
 	if err := ab.db.Update(func(tx *bolt.Tx) error {
 		if bkt := tx.Bucket(dbAddrsBookBkt); bkt == nil {
 			return errBucketEmpty
@@ -450,20 +450,32 @@ func (ab *DB) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
 	return &c, nil
 }
 
-// SearchAddress search an address in the list of contacts into the AddressBook.
+// AddressExists search an address in the list of contacts into the AddressBook.
 // If find the address return error, else return nil.
-func (ab *DB) SearchAddress(address, coin []byte) error {
-	contacts, err := ab.ListContact()
-	if err != nil {
-		return err
-	}
+func (ab *DB) AddressExists(address core.ReadableAddress, contacts []core.Contact) error {
 	for _, v := range contacts {
 		c, ok := v.(*Contact)
 		if ok {
 			for _, addrs := range c.Address {
-				if bytes.Compare(addrs.GetValue(), address) == 0 && bytes.Compare(addrs.GetCoinType(), coin) == 0 {
-					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist.", address, coin)
+				if bytes.Compare(addrs.GetValue(), address.GetValue()) == 0 &&
+					bytes.Compare(addrs.GetCoinType(), address.GetCoinType()) == 0 {
+					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist.",
+						address.GetValue(), address.GetCoinType())
 				}
+			}
+		}
+	}
+
+	return nil
+}
+
+// NameExists search an name in the list of contacts into the AddressBook.
+// If find the address return error, else return nil.
+func (ab *DB) NameExists(contact core.Contact, contacts []core.Contact) error {
+	for _, c := range contacts {
+		if dataContact, ok := c.(*Contact); ok {
+			if bytes.Compare(contact.(*Contact).Name, dataContact.Name) == 0 {
+				return fmt.Errorf(" Contact with name: %s alredy exist.", contact.(*Contact).Name)
 			}
 		}
 	}
