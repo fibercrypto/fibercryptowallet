@@ -1,11 +1,12 @@
 package history
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"sort"
 	"strconv"
 	"time"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 
 	coin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -21,6 +22,7 @@ const (
 	dateTimeFormatForGo  = "2006-01-02T15:04:05"
 	dateTimeFormatForQML = "yyyy-MM-ddThh:mm:ss"
 )
+
 /*
 	HistoryManager
 	Represent the controller of history page and all the actions over this page
@@ -82,7 +84,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
 	if wltIterator == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
-		return make([]*transactions.TransactionDetails,0)
+		return make([]*transactions.TransactionDetails, 0)
 	}
 	for wltIterator.Next() {
 		addressIterator, err := wltIterator.Value().GetLoadedAddresses()

@@ -27,10 +27,7 @@ Dialog {
         standardButton(Dialog.Ok).enabled = name && name != originalWalletName
     }
 
-    onAboutToHide: {
-        clear()
-    }
-
+    
     TextField {
         id: textFieldName
 
