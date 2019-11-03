@@ -83,6 +83,14 @@ func (c *Contact) SetAddresses(addrs []core.ReadableAddress) {
 	}
 }
 
+func (c *Contact) GetName() string {
+	return string(c.Name)
+}
+
+func (c *Contact) SetName(newName string) {
+	c.Name = []byte(newName)
+}
+
 // .....Address
 
 // GetValue get address string.

@@ -97,6 +97,17 @@ ApplicationWindow {
             enableSettings = false
         }
 
+        onAddressBookRequested: {
+                    generalStackView.openAddressBookPage()
+                    customHeader.text = qsTr("AddressBook")
+
+                    enableOutputs = true
+                    enablePendingTransactions = true
+                    enableBlockchain = true
+                    enableNetworking = true
+                    enableSettings = false
+                }
+
         onAboutRequested: {
             dialogAbout.open()
         }

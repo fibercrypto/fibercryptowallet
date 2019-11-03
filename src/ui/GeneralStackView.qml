@@ -76,6 +76,14 @@ Item {
         }
     }
 
+    function openAddressBookPage() {
+            if (stackView.depth > 1) {
+                stackView.replace(componentAddressBook)
+            } else {
+                stackView.push(componentAddressBook)
+            }
+        }
+
     function pop() {
         stackView.pop()
     }
@@ -155,6 +163,14 @@ Item {
             id: settings
         }
     }
+
+    Component {
+            id: componentAddressBook
+
+            AddressBook {
+                id: addressBook
+            }
+        }
 
     
 }
