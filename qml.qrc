@@ -64,8 +64,6 @@
         <file>src/ui/Controls/TextField.qml</file>
         <file>src/ui/Controls/+material/TextArea.qml</file>
         <file>src/ui/Controls/+material/TextField.qml</file>
-    </qresource>
-    <qresource prefix="/utils">
         <file>src/ui/Utils/qqr.js</file>
         <file>src/ui/Utils/QRCode.qml</file>
     </qresource>
