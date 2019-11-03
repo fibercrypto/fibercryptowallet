@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -356,7 +357,7 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		return nil, err
 	}
 	defer ReturnSkycoinClient(client)
-	skyTxn, isSkyTxn := txn.(skycoinTxn)
+	skyTxn, isSkyTxn := txn.(skytypes.SkycoinTxn)
 	if !isSkyTxn {
 		logWallet.WithError(err).Warn(err)
 		return nil, errors.ErrInvalidTxn
@@ -1040,7 +1041,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
-	if rTxn, isReadableTxn := txn.(readableTxn); isReadableTxn {
+	if rTxn, isReadableTxn := txn.(skytypes.ReadableTxn); isReadableTxn {
 		// Readable tranasctions should not need extra API calls
 		cTxn, err := rTxn.ToCreatedTransaction()
 		if err != nil {

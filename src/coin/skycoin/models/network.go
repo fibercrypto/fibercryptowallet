@@ -97,7 +97,7 @@ func (spex *SkycoinPEX) GetConnections() (core.PexNodeSet, error) {
 
 func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 	logNetwork.Info("Broadcasting transaction")
-	unTxn, ok := txn.(skycoinTxn)
+	unTxn, ok := txn.(skytypes.SkycoinTxn)
 	if !ok {
 		return errors.ErrInvalidTxn
 	}
