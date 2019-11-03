@@ -19,6 +19,8 @@ type Contact interface {
 	SetID(id uint64)
 	GetAddresses() []ReadableAddress
 	SetAddresses([]ReadableAddress)
+	GetName() string
+	SetName(string)
 }
 
 type ReadableAddress interface {

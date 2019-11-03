@@ -26,6 +26,8 @@ RowLayout {
     signal aboutRequested()
     signal aboutQtRequested()
     signal licenseRequested()
+    signal addressBookRequested()
+
 
     // Functions
     function back() {
@@ -135,6 +137,14 @@ RowLayout {
 
                 onClicked: settingsRequested()
             }
+
+            CustomMenuItem {
+                            id: menuItemAddressBook
+                            text: qsTr("&Address Book")
+                            iconSource: "qrc:/images/resources/images/icons/settings.svg"
+
+                            onClicked: addressBookRequested()
+                        }
         } // menuTools
 
         Menu {

@@ -3,38 +3,25 @@ package main
 import (
 	"os"
 
-	_ "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
-	_ "github.com/fibercrypto/fibercryptowallet/src/models"
-	_ "github.com/fibercrypto/fibercryptowallet/src/models/history"
-	_ "github.com/fibercrypto/fibercryptowallet/src/models/pending"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/addressBook"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/history"
+	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/pending"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
-	"github.com/therecipe/qt/widgets"
 )
 
 func main() {
 
-	// Enable High DPI scaling
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 
-	// Create a Qt Application
-	// On embedded devices, a `QGuiApplication` must be used instead
-	app := widgets.NewQApplication(len(os.Args), os.Args)
-
-	// Setup the splash screen
-	splashPixmap := gui.NewQPixmap3(":/images/resources/images/icons/appIcon/splash.png", "", core.Qt__AutoColor)
-	splash := widgets.NewQSplashScreen(splashPixmap, core.Qt__SplashScreen)
-	splash.Show()
-	// Process the pending `show` event
-	app.QCoreApplication.ProcessEvents(core.QEventLoop__AllEvents)
-
-	// Set the application information
-	app.SetOrganizationName("Simelo.Tech")
-	app.SetOrganizationDomain("simelo.tech")
-	app.SetApplicationName("FiberCryptoWallet")
-	app.SetApplicationVersion("0.27.0")
-	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon/appIcon.png"))
+	app := gui.NewQGuiApplication(len(os.Args), os.Args)
+	app.SetOrganizationName("Simelo")
+	app.SetApplicationName("FiberCrypto Wallet")
+	app.SetApplicationVersion("0.1")
+	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon.png"))
 
 	// Add this monospaced font
 	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/code-new-roman/code-new-roman.otf")
@@ -53,7 +40,6 @@ func main() {
 		}
 	})
 	engine.Load(url)
-	splash.QWidget.Close()
 
 	// A `core.Qt__QueuedConnection` will allows us to remove the condition bellow, leaving only `app.Exec()`
 	if allOk == true {
