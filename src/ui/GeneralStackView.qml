@@ -44,6 +44,13 @@ Item {
                 } else {
                     stackView.push(componentGeneralSwipeView)
                 }
+            } else{
+                if (stackView.depth > 1) {
+                    stackView.replace(componentPageCreateLoadWallet)
+                } else {
+                    stackView.push(componentPageCreateLoadWallet)
+                }
+
             }
         }
     }
@@ -106,6 +113,12 @@ Item {
 
                 onWalletCreationRequested: {
                     stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,0)
+                }
+
+                onWalletLoadingRequested:{
+                    stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,10)
                 }
             }
         }
