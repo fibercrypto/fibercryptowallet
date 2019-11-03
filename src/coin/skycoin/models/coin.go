@@ -961,29 +961,20 @@ func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
 
 // Type assertions to abort compilation if contracts not satisfied
 var (
-	pendingTxn         SkycoinPendingTransaction                         // nolint: varcheck,megacheck
-	skyTxnInIter       SkycoinTransactionInputIterator                   // nolint: varcheck,megacheck
-	skyTxnIter         SkycoinTransactionIterator                        // nolint: varcheck,megacheck
-	skyTxnOutIter      SkycoinTransactionOutputIterator                  // nolint: varcheck,megacheck
-	uninjectedTxn      SkycoinUninjectedTransaction                      // nolint: varcheck,megacheck
-	skyTxn             SkycoinTransaction                                // nolint: varcheck,megacheck
-	skyTxnIn           SkycoinTransactionInput                           // nolint: varcheck,megacheck
-	skyTxnOut          SkycoinTransactionOutput                          // nolint: varcheck,megacheck
-	cTxn               SkycoinCreatedTransaction                         // nolint: varcheck,megacheck
-	pendingTxnSky      skytypes.SkycoinTxn              = &pendingTxn    // nolint: varcheck,megacheck
-	pendingTxnReadable skytypes.ReadableTxn             = &pendingTxn    // nolint: varcheck,megacheck
-	pendingTxnCore     core.Transaction                 = &pendingTxn    // nolint: varcheck,megacheck
-	skyTxnIterator     core.TransactionIterator         = &skyTxnIter    // nolint: varcheck,megacheck
-	skyTxnInIterator   core.TransactionInputIterator    = &skyTxnInIter  // nolint: varcheck,megacheck
-	skyTxnOutIterator  core.TransactionOutputIterator   = &skyTxnOutIter // nolint: varcheck,megacheck
-	uninjectedTxnCore  core.Transaction                 = &uninjectedTxn // nolint: varcheck,megacheck
-	uninjectedTxnSky   skytypes.SkycoinTxn              = &uninjectedTxn // nolint: varcheck,megacheck
-	skyTxnSky          skytypes.SkycoinTxn              = &skyTxn        // nolint: varcheck,megacheck
-	skyTxnReadable     skytypes.ReadableTxn             = &skyTxn        // nolint: varcheck,megacheck
-	skyTxnCore         core.Transaction                 = &skyTxn        // nolint: varcheck,megacheck
-	skyTxnInCore       core.TransactionInput            = &skyTxnIn      // nolint: varcheck,megacheck
-	skyTxnOutCore      core.TransactionOutput           = &skyTxnOut     // nolint: varcheck,megacheck
-	cTxnSky            skytypes.SkycoinTxn              = &cTxn          // nolint: varcheck,megacheck
-	cTxnReadable       skytypes.ReadableTxn             = &cTxn          // nolint: varcheck,megacheck
-	cTxnCore           core.Transaction                 = &cTxn          // nolint: varcheck,megacheck
+	_ skytypes.SkycoinTxn            = &SkycoinPendingTransaction{}
+	_ skytypes.ReadableTxn           = &SkycoinPendingTransaction{}
+	_ core.Transaction               = &SkycoinPendingTransaction{}
+	_ core.TransactionIterator       = &SkycoinTransactionIterator{}
+	_ core.TransactionInputIterator  = &SkycoinTransactionInputIterator{}
+	_ core.TransactionOutputIterator = &SkycoinTransactionOutputIterator{}
+	_ core.Transaction               = &SkycoinUninjectedTransaction{}
+	_ skytypes.SkycoinTxn            = &SkycoinUninjectedTransaction{}
+	_ skytypes.SkycoinTxn            = &SkycoinTransaction{}
+	_ skytypes.ReadableTxn           = &SkycoinTransaction{}
+	_ core.Transaction               = &SkycoinTransaction{}
+	_ core.TransactionInput          = &SkycoinTransactionInput{}
+	_ core.TransactionOutput         = &SkycoinTransactionOutput{}
+	_ skytypes.SkycoinTxn            = &SkycoinCreatedTransaction{}
+	_ skytypes.ReadableTxn           = &SkycoinCreatedTransaction{}
+	_ core.Transaction               = &SkycoinCreatedTransaction{}
 )
