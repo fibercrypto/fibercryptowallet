@@ -1,6 +1,6 @@
 package core
 
-// WalletIteratr iterates over sequences of wallets
+// WalletIterator iterates over sequences of wallets
 type WalletIterator interface {
 	// Value of wallet at iterator pointer position
 	Value() Wallet
@@ -48,12 +48,12 @@ type Wallet interface {
 	GetLabel() string
 	// SetLabel establishes a label for this wallet
 	SetLabel(wltName string)
-	// Transfer instantiates a transaction to send funds from any wallet address to known address account owner
-	Transfer(to Address, amount uint64, options KeyValueStorage) (Transaction, error)
-	// SendFromAddress instantiates a transaction to send funds from specific source addresses
+	// Transfer instantiates unsigned transaction to send funds from any wallet address to single destination
+	Transfer(to TransactionOutput, options KeyValueStorage) (Transaction, error)
+	// SendFromAddress instantiates unsigned transaction to send funds from specific source addresses
 	// to multiple destination addresses
 	SendFromAddress(from []Address, to []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
-	// Spend instantiate a transaction that spends specific outputs to send to multiple destination addresses
+	// Spend instantiate unsigned transaction spending specific outputs to send to multiple destination addresses
 	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
 	// GenAddresses discover new addresses based on default hierarchically deterministic derivation sequences
 	// FIXME: Support account index to be fully compatible with BIP44
