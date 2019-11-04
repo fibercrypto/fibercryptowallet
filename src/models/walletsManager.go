@@ -12,7 +12,6 @@ import (
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
@@ -298,10 +297,10 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 		return nil
 	}
 	outputsFrom := make([]core.TransactionOutput, 0)
-	for _, out := range from {
-		outputsFrom = append(outputsFrom, &GenericOutput{
-			addr: out,
-		})
+	for _, outAddr := range from {
+		addr := util.NewGenericAddress(outAddr)
+		out := util.NewGenericOutput(&addr)
+		outputsFrom = append(outputsFrom, &out)
 	}
 	outputsTo := make([]core.TransactionOutput, 0)
 	for i := 0; i < len(addrTo); i++ {
@@ -309,22 +308,32 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 		if !automaticCoinHours {
 			ch = coinHoursTo[i]
 		}
-		outputsTo = append(outputsTo, &GenericOutput{
-			addr: addrTo[i],
-			sky:  skyTo[i],
-			ch:   ch,
-		})
+		addr := util.NewGenericAddress(addrTo[i])
+		out := util.NewGenericOutput(&addr)
+		// FIXME: Remove explicit reference to Skycoin
+		err := out.PushCoins(sky.Sky, skyTo[i])
+		if err != nil {
+			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			return nil
+		}
+		// FIXME: Remove explicit reference to Skycoin
+		err = out.PushCoins(sky.CoinHour, ch)
+		if err != nil {
+			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			return nil
+		}
+		outputsTo = append(outputsTo, &out)
 	}
-	changeAddr := &GenericAddress{change}
-	opt := NewTransferOptions()
-	opt.AddKeyValue("BurnFactor", burnFactor)
+	changeAddr := util.NewGenericAddress(change)
+	opt := util.NewKeyValueMap()
+	opt.SetValue("BurnFactor", burnFactor)
 	if automaticCoinHours {
-		opt.AddKeyValue("CoinHoursSelectionType", "auto")
+		opt.SetValue("CoinHoursSelectionType", "auto")
 	} else {
-		opt.AddKeyValue("CoinHoursSelectionType", "manual")
+		opt.SetValue("CoinHoursSelectionType", "manual")
 	}
 
-	txn, err := wlt.Spend(outputsFrom, outputsTo, changeAddr, opt)
+	txn, err := wlt.Spend(outputsFrom, outputsTo, &changeAddr, opt)
 	if err != nil {
 		logWalletManager.WithError(err).Info("Error creating transaction")
 		return nil
@@ -346,7 +355,7 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 	addrsFrom := make([]core.Address, 0)
 	for _, addr := range from {
 
-		addrsFrom = append(addrsFrom, &GenericAddress{addr})
+		addrsFrom = append(addrsFrom, &util.GenericAddress{addr})
 	}
 	outputsTo := make([]core.TransactionOutput, 0)
 	for i := 0; i < len(addrTo); i++ {
@@ -354,20 +363,30 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 		if !automaticCoinHours {
 			ch = coinHoursTo[i]
 		}
-		outputsTo = append(outputsTo, &GenericOutput{
-			addr: addrTo[i],
-			sky:  skyTo[i],
-			ch:   ch,
-		})
+		addr := util.NewGenericAddress(addrTo[i])
+		out := util.NewGenericOutput(&addr)
+		// FIXME: Remove explicit reference to Skycoin
+		err := out.PushCoins(sky.Sky, skyTo[i])
+		if err != nil {
+			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			return nil
+		}
+		// FIXME: Remove explicit reference to Skycoin
+		err = out.PushCoins(sky.CoinHour, ch)
+		if err != nil {
+			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			return nil
+		}
+		outputsTo = append(outputsTo, &out)
 	}
-	changeAddr := &GenericAddress{change}
+	changeAddr := &util.GenericAddress{change}
 
-	opt := NewTransferOptions()
-	opt.AddKeyValue("BurnFactor", burnFactor)
+	opt := util.NewKeyValueMap()
+	opt.SetValue("BurnFactor", burnFactor)
 	if automaticCoinHours {
-		opt.AddKeyValue("CoinHoursSelectionType", "auto")
+		opt.SetValue("CoinHoursSelectionType", "auto")
 	} else {
-		opt.AddKeyValue("CoinHoursSelectionType", "manual")
+		opt.SetValue("CoinHoursSelectionType", "manual")
 	}
 
 	txn, err := wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
@@ -412,26 +431,20 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *QTransaction {
 	logWalletManager.Info("Creating Transaction")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
-	/*
-		addr := &GenericAddress{
-			Address: destinationAddress,
-		}
-	*/
-	coins, err := util.GetCoinValue(amount, params.SkycoinTicker)
-	if err != nil {
-		logWalletManager.WithError(err).Warn("Couldn't get Skycoin's")
-		return nil
-	}
-	opt := NewTransferOptions()
-	opt.AddKeyValue("BurnFactor", "0.5")
-	opt.AddKeyValue("CoinHoursSelectionType", "auto")
+	addr := util.NewGenericAddress(destinationAddress)
+	opt := util.NewKeyValueMap()
+	opt.SetValue("BurnFactor", "0.5")
+	opt.SetValue("CoinHoursSelectionType", "auto")
 	if wlt == nil {
 		logWalletManager.Warn("Couldn't load wallet to create transaction")
 		return nil
 	}
-	txOut := GenericOutput{
-		addr: destinationAddress,
-		sky:  fmt.Sprint(coins),
+	txOut := util.NewGenericOutput(&addr)
+	// FIXME: Remove explicit reference to Skycoin
+	err := txOut.PushCoins(sky.Sky, amount)
+	if err != nil {
+		logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+		return nil
 	}
 	txn, err := wlt.Transfer(&txOut, opt)
 	if err != nil {
@@ -686,86 +699,4 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	qWallet.SetCoinHours(fmt.Sprint(bl))
 
 	return qWallet
-}
-
-type TransferOptions struct {
-	values map[string]interface{}
-}
-
-func (tOpt *TransferOptions) GetValue(key string) interface{} {
-	return tOpt.values[key]
-}
-
-func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
-	tOpt.values[key] = value
-}
-
-func NewTransferOptions() *TransferOptions {
-	tOptions := TransferOptions{
-		values: make(map[string]interface{}, 0),
-	}
-	return &tOptions
-}
-
-type GenericAddress struct {
-	Address string
-}
-
-func (ga *GenericAddress) IsBip32() bool {
-	return true
-}
-
-func (ga *GenericAddress) String() string {
-	return ga.Address
-}
-
-func (ga *GenericAddress) GetCryptoAccount() core.CryptoAccount {
-	return nil
-}
-
-// GenericOutput is a transient editable transaction output
-type GenericOutput struct {
-	addr string
-	sky  string
-	ch   string
-}
-
-// GetId provides transaction output ID
-func (gOut *GenericOutput) GetId() string {
-	return ""
-}
-
-// IsSpent determines whether there exists a confirmed transaction with an input spending this output
-func (gOut *GenericOutput) IsSpent() bool {
-	return false
-}
-
-// GetAddress returns the address of the party receiving funds
-func (gOut *GenericOutput) GetAddress() core.Address {
-	return &GenericAddress{Address: gOut.addr}
-}
-
-// GetCoins looks up coins for asset represented by ticker that have been transferred in this output
-func (gOut *GenericOutput) GetCoins(ticker string) (uint64, error) {
-	if ticker == sky.Sky {
-		val, err := util.GetCoinValue(gOut.sky, ticker)
-		if err != nil {
-			return 0, err
-		}
-		return val, nil
-	}
-	if ticker == sky.CoinHour {
-		val, err := util.GetCoinValue(gOut.ch, ticker)
-		if err != nil {
-			return 0, err
-		}
-		return val, nil
-	}
-
-	return 0, errors.ErrInvalidAltcoinTicker
-}
-
-// SupportedAssets enumerates tickers of crypto assets supported by this output
-func (gOut *GenericOutput) SupportedAssets() []string {
-	return []string{sky.Sky, sky.CoinHour}
 }
