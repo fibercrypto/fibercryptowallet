@@ -605,6 +605,12 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 
 }
 
+// SupportedAssets enumerates tickers of crypto assets supported by this output
+func (in *SkycoinTransactionInput) SupportedAssets() []string {
+	return []string{Sky, CoinHour, CalculatedHour}
+}
+
+// GetCoins return input balance in one of supported coins , or error
 func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 	logCoin.Info("Getting coins for transaction inputs using " + ticker + "ticker")
 
@@ -675,6 +681,12 @@ func (out *SkycoinTransactionOutput) GetAddress() core.Address {
 	return &SkycoinAddress{address: out.skyOut.Address}
 }
 
+// SupportedAssets enumerates tickers of crypto assets supported by this output
+func (in *SkycoinTransactionOutput) SupportedAssets() []string {
+	return []string{Sky, CoinHour, CalculatedHour}
+}
+
+// GetCoins return input balance in one of supported coins , or error
 func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	logCoin.Info("Getting coins for transaction outputs using " + ticker + "ticker")
 	accuracy, err2 := util.AltcoinQuotient(ticker)
@@ -764,6 +776,11 @@ func (in *SkycoinCreatedTransactionInput) GetSpentOutput() core.TransactionOutpu
 
 }
 
+// SupportedAssets enumerates tickers of crypto assets supported by this output
+func (in *SkycoinCreatedTransactionInput) SupportedAssets() []string {
+	return []string{Sky, CoinHour, CalculatedHour}
+}
+
 // GetCoins return input balance in one of supported coins , or error
 func (in *SkycoinCreatedTransactionInput) GetCoins(ticker string) (uint64, error) {
 	accuracy, err2 := util.AltcoinQuotient(ticker)
@@ -820,6 +837,12 @@ func (out *SkycoinCreatedTransactionOutput) GetAddress() core.Address {
 	return &SkycoinAddress{address: out.skyOut.Address}
 }
 
+// SupportedAssets enumerates tickers of crypto assets supported by this output
+func (in *SkycoinCreatedTransactionOutput) SupportedAssets() []string {
+	return []string{Sky, CoinHour, CalculatedHour}
+}
+
+// GetCoins return input balance in one of supported coins , or error
 func (out *SkycoinCreatedTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	accuracy, err2 := util.AltcoinQuotient(ticker)
 	if err2 != nil {

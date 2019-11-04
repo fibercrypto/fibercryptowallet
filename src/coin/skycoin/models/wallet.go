@@ -413,8 +413,14 @@ func (wlt *RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
 	logWallet.Info("Transfer from remote wallet")
+	amount, err := destination.GetCoins(SkycoinTicker)
+	if err != nil {
+		logWallet.WithError(err).Warnf("Couldn't retrieve %s to transfer", params.SkycoinTicker)
+		return nil, err
+	}
+	to := destination.GetAddress()
 
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
@@ -1223,8 +1229,15 @@ func fromTxnResponse(txnResponse *api.CreateTransactionResponse) *SkycoinCreated
 	return NewSkycoinCreatedTransaction(txnResponse.Transaction)
 }
 
-func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
-	logWallet.Info("Sending form local wallet")
+func (wlt *LocalWallet) Transfer(destination core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
+	logWallet.Info("Transfer from local wallet")
+	amount, err := destination.GetCoins(SkycoinTicker)
+	if err != nil {
+		logWallet.WithError(err).Warnf("Couldn't retrieve %s to transfer", params.SkycoinTicker)
+		return nil, err
+	}
+	to := destination.GetAddress()
+
 	quotient, err := util.AltcoinQuotient(Sky)
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't get skycoin quotient")
