@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -356,7 +357,7 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		return nil, err
 	}
 	defer ReturnSkycoinClient(client)
-	skyTxn, isSkyTxn := txn.(skycoinTxn)
+	skyTxn, isSkyTxn := txn.(skytypes.SkycoinTxn)
 	if !isSkyTxn {
 		logWallet.WithError(err).Warn(err)
 		return nil, errors.ErrInvalidTxn
@@ -417,8 +418,12 @@ func (wlt *RemoteWallet) Transfer(to core.Address, amount uint64, options core.K
 
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
-	txnOutput.skyOut.Coins = strconv.FormatUint(amount/1e6, 10)
-
+	quot, err := util.AltcoinQuotient(params.SkycoinTicker)
+	if err != nil {
+		logWallet.WithError(err).Warnf("Couldn't get quotient for %s", params.SkycoinTicker)
+		return nil, err
+	}
+	txnOutput.skyOut.Coins = util.FormatCoins(amount, quot)
 	createTxnFunc := func(txnR *api.CreateTransactionRequest) (core.Transaction, error) {
 		logWallet.Info("Creating transaction for remote wallet")
 		var req api.WalletCreateTransactionRequest
@@ -1036,7 +1041,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
-	if rTxn, isReadableTxn := txn.(readableTxn); isReadableTxn {
+	if rTxn, isReadableTxn := txn.(skytypes.ReadableTxn); isReadableTxn {
 		// Readable tranasctions should not need extra API calls
 		cTxn, err := rTxn.ToCreatedTransaction()
 		if err != nil {

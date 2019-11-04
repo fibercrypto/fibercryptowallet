@@ -1,12 +1,13 @@
 package skycoin
 
 import (
+	"encoding/hex"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/readable"
 )
 
 var logNetwork = logging.MustGetLogger("Skycoin network")
@@ -14,34 +15,6 @@ var logNetwork = logging.MustGetLogger("Skycoin network")
 const (
 	PoolSection = "skycoin"
 )
-
-type SkycoinAPI interface {
-	Transaction(txid string) (*readable.TransactionWithStatus, error)
-	Transactions(addrs []string) ([]readable.TransactionWithStatus, error)
-	TransactionVerbose(txid string) (*readable.TransactionWithStatusVerbose, error)
-	TransactionsVerbose(addrs []string) ([]readable.TransactionWithStatusVerbose, error)
-	UxOut(uxID string) (*readable.SpentOutput, error)
-	PendingTransactionsVerbose() ([]readable.UnconfirmedTransactionVerbose, error)
-	CoinSupply() (*api.CoinSupply, error)
-	LastBlocks(n uint64) (*readable.Blocks, error)
-	BlockchainProgress() (*readable.BlockchainProgress, error)
-	Balance(addrs []string) (*api.BalanceResponse, error)
-	OutputsForAddresses(addrs []string) (*readable.UnspentOutputsSummary, error)
-	Wallet(id string) (*api.WalletResponse, error)
-	UpdateWallet(id, label string) error
-	NewWalletAddress(id string, n int, password string) ([]string, error)
-	Wallets() ([]api.WalletResponse, error)
-	CreateWallet(o api.CreateWalletOptions) (*api.WalletResponse, error)
-	EncryptWallet(id, password string) (*api.WalletResponse, error)
-	DecryptWallet(id, password string) (*api.WalletResponse, error)
-	WalletBalance(id string) (*api.BalanceResponse, error)
-	WalletUnconfirmedTransactionsVerbose(id string) (*api.UnconfirmedTxnsVerboseResponse, error)
-	NetworkConnections(filters *api.NetworkConnectionsFilter) (*api.Connections, error)
-	InjectTransaction(txn *coin.Transaction) (string, error)
-	WalletSignTransaction(req api.WalletSignTransactionRequest) (*api.CreateTransactionResponse, error)
-	WalletCreateTransaction(req api.WalletCreateTransactionRequest) (*api.CreateTransactionResponse, error)
-	CreateTransaction(req api.CreateTransactionRequest) (*api.CreateTransactionResponse, error)
-}
 
 type SkycoinConnectionFactory struct {
 	url string
@@ -60,7 +33,7 @@ func NewSkycoinConnectionFactory(url string) *SkycoinConnectionFactory {
 }
 
 type SkycoinApiClient struct {
-	SkycoinAPI
+	skytypes.SkycoinAPI
 	pool core.MultiPoolSection
 }
 
@@ -69,7 +42,7 @@ func (sc *SkycoinApiClient) returnToPool() {
 	sc.pool.Put(sc.SkycoinAPI)
 }
 
-func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
+func NewSkycoinApiClient(section string) (skytypes.SkycoinAPI, error) {
 	logNetwork.Info("Creating Skycoin api client")
 	mpool := core.GetMultiPool()
 	pool, err := mpool.GetSection(section)
@@ -88,7 +61,7 @@ func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
 		return nil, err
 	}
 
-	skyApi, ok := obj.(SkycoinAPI)
+	skyApi, ok := obj.(skytypes.SkycoinAPI)
 	if !ok {
 		logNetwork.Errorf("There is no proper client in %s pool", section)
 		return nil, errors.ErrInvalidPoolObjectType
@@ -99,7 +72,7 @@ func NewSkycoinApiClient(section string) (SkycoinAPI, error) {
 	}, nil
 }
 
-func ReturnSkycoinClient(obj SkycoinAPI) {
+func ReturnSkycoinClient(obj skytypes.SkycoinAPI) {
 	poolObj, ok := obj.(*SkycoinApiClient)
 	if !ok {
 		return
@@ -124,7 +97,7 @@ func (spex *SkycoinPEX) GetConnections() (core.PexNodeSet, error) {
 
 func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 	logNetwork.Info("Broadcasting transaction")
-	unTxn, ok := txn.(*SkycoinUninjectedTransaction)
+	unTxn, ok := txn.(skytypes.SkycoinTxn)
 	if !ok {
 		return errors.ErrInvalidTxn
 	}
@@ -133,7 +106,11 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 		return err
 	}
 	defer ReturnSkycoinClient(c)
-	_, err = c.InjectTransaction(unTxn.txn)
+	txnBytes, err := unTxn.EncodeSkycoinTransaction()
+	if err != nil {
+		return err
+	}
+	_, err = c.InjectEncodedTransaction(hex.EncodeToString(txnBytes))
 	if err != nil {
 		return err
 	}

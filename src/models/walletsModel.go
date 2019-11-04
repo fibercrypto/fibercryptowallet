@@ -26,7 +26,7 @@ type WalletModel struct {
 	_ []*QWallet               `property:"wallets"`
 
 	_ func(*QWallet)                                                                    `slot:"addWallet"`
-	_ func(row int, name string, encryptionEnabled bool, sky float64, coinHours uint64) `slot:"editWallet"`
+	_ func(row int, name string, encryptionEnabled bool, sky string, coinHours string)  `slot:"editWallet"`
 	_ func(row int)                                                                     `slot:"removeWallet"`
 	_ func([]*QWallet)                                                                  `slot:"loadModel"`
 	_ func([]*QWallet)                                                                  `slot:"updateModel"`
@@ -37,8 +37,8 @@ type QWallet struct {
 	core.QObject
 	_ string  `property:"name"`
 	_ int     `property:"encryptionEnabled"`
-	_ float64 `property:"sky"`
-	_ uint64  `property:"coinHours"`
+	_ string  `property:"sky"`
+	_ string  `property:"coinHours"`
 	_ string  `property:"fileName"`
 	_ bool    `property:"expand"`
 }
@@ -183,7 +183,7 @@ func (walletModel *WalletModel) addWallet(w *QWallet) {
 	walletModel.EndInsertRows()
 }
 
-func (walletModel *WalletModel) editWallet(row int, name string, encrypted bool, sky float64, coinHours uint64) {
+func (walletModel *WalletModel) editWallet(row int, name string, encrypted bool, sky string, coinHours string) {
 	logWalletsModel.Info("Edit Wallet")
 	pIndex := walletModel.Index(row, 0, core.NewQModelIndex())
 
