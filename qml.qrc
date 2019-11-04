@@ -14,10 +14,21 @@
         <file>src/ui/BusyPopup.qml</file>
         <file>src/ui/ControlCustomSwitch.qml</file>
         <file>src/ui/ControlGenerateSeed.qml</file>
+        <file>src/ui/CustomHeader.qml</file>
+        <file>src/ui/CustomMenuBar.qml</file>
+        <file>src/ui/CustomMenuItem.qml</file>
+        <file>src/ui/FilterComboBoxPopup.qml</file>
         <file>src/ui/CreateLoadWallet.qml</file>
+        <file>src/ui/PageCreateLoadWallet.qml</file>
         <file>src/ui/Outputs.qml</file>
         <file>src/ui/Blockchain.qml</file>
+        <file>src/ui/PendingTransactions.qml</file>
         <file>src/ui/Networking.qml</file>
+        <file>src/ui/NetworkSettings.qml</file>
+        <file>src/ui/WalletSettings.qml</file>
+        <file>src/ui/Settings.qml</file>
+        <file>src/ui/MenuThemeAccent.qml</file>
+        <file>src/ui/ToolButtonQR.qml</file>
         <file>src/ui/Delegates/WalletListDelegate.qml</file>
         <file>src/ui/Delegates/WalletListAddressDelegate.qml</file>
         <file>src/ui/Delegates/NetworkingListDelegate.qml</file>
@@ -29,6 +40,8 @@
         <file>src/ui/Delegates/HistoryListDelegate.qml</file>
         <file>src/ui/Delegates/HistoryFilterListDelegate.qml</file>
         <file>src/ui/Delegates/HistoryFilterListAddressDelegate.qml</file>
+        <file>src/ui/Delegates/PendingTransactionsDelegate.qml</file>
+        <file>src/ui/Delegates/TransactionAddressDelegate.qml</file>
         <file>src/ui/Dialogs/MsgDialog.qml</file>
         <file>src/ui/Dialogs/DialogTransactionDetails.qml</file>
         <file>src/ui/Dialogs/RestoreBackupWordsDialog.qml</file>
@@ -37,9 +50,21 @@
         <file>src/ui/Dialogs/NumPadDialog.qml</file>
         <file>src/ui/Dialogs/DialogAddAddresses.qml</file>
         <file>src/ui/Dialogs/DialogAddLoadWallet.qml</file>
+        <file>src/ui/Dialogs/DialogEditWallet.qml</file>
         <file>src/ui/Dialogs/DialogUnconfiguredWallet.qml</file>
         <file>src/ui/Dialogs/DialogSendTransaction.qml</file>
         <file>src/ui/Dialogs/DialogAbout.qml</file>
         <file>src/ui/Dialogs/DialogAboutQt.qml</file>
+        <file>src/ui/Dialogs/DialogAboutLicense.qml</file>
+        <file>src/ui/Dialogs/DialogGetPassword.qml</file>
+        <file>src/ui/Dialogs/DialogSetPassword.qml</file>
+        <file>src/ui/Dialogs/DialogQR.qml</file>
+        <file>src/ui/Dialogs/DialogSelectAddressByWallet.qml</file>
+        <file>src/ui/Controls/TextArea.qml</file>
+        <file>src/ui/Controls/TextField.qml</file>
+        <file>src/ui/Controls/+material/TextArea.qml</file>
+        <file>src/ui/Controls/+material/TextField.qml</file>
+        <file>src/ui/Utils/qqr.js</file>
+        <file>src/ui/Utils/QRCode.qml</file>
     </qresource>
 </RCC>
