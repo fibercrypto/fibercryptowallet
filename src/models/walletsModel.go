@@ -51,10 +51,11 @@ func (walletModel *WalletModel) init() {
 		Sky:               core.NewQByteArray2("sky", -1),
 		CoinHours:         core.NewQByteArray2("coinHours", -1),
 		FileName:          core.NewQByteArray2("fileName", -1),
-		Expand:          core.NewQByteArray2("expand", -1),
+		Expand:            core.NewQByteArray2("expand", -1),
 	})
 	qml.QQmlEngine_SetObjectOwnership(walletModel, qml.QQmlEngine__CppOwnership)
 	walletModel.ConnectData(walletModel.data)
+	walletModel.ConnectSetData(walletModel.setData)
 	walletModel.ConnectRowCount(walletModel.rowCount)
 	walletModel.ConnectColumnCount(walletModel.columnCount)
 	walletModel.ConnectRoleNames(walletModel.roleNames)
@@ -114,6 +115,53 @@ func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QV
 	}
 }
 
+func (walletModel *WalletModel) setData(index *core.QModelIndex, value *core.QVariant, role int) bool {
+	
+	if !index.IsValid() {
+		return false
+	}
+
+	if index.Row() >= len(walletModel.Wallets()) {
+		return false
+	}
+
+	var w = walletModel.Wallets()[index.Row()]
+
+	switch role {
+	case Name:
+		{
+			w.SetName(value.ToString())
+		}
+	case EncryptionEnabled:
+		{
+			w.SetEncryptionEnabled(value.ToInt(nil))
+		}
+	case Sky:
+		{
+			w.SetSky(value.ToDouble(nil))
+		}
+	case CoinHours:
+		{
+			w.SetCoinHours(value.ToULongLong(nil))
+		}
+	case FileName:
+		{
+			w.SetFileName(value.ToString())
+		}
+	case Expand:
+		{
+			w.SetExpand(value.ToBool())
+		}
+	default:
+		{
+			return false
+		}
+	}
+
+	walletModel.DataChanged(index, index, []int { role })
+	return true
+}
+
 func (walletModel *WalletModel) rowCount(parent *core.QModelIndex) int {
 	return len(walletModel.Wallets())
 }
@@ -131,36 +179,30 @@ func (walletModel *WalletModel) addWallet(w *QWallet) {
 	walletModel.BeginInsertRows(core.NewQModelIndex(), len(walletModel.Wallets()), len(walletModel.Wallets()))
 	qml.QQmlEngine_SetObjectOwnership(w, qml.QQmlEngine__CppOwnership)
 	walletModel.SetWallets(append(walletModel.Wallets(), w))
-	walletModel.EndInsertRows()
 	walletModel.SetCount(walletModel.Count() + 1)
-
+	walletModel.EndInsertRows()
 }
 
 func (walletModel *WalletModel) editWallet(row int, name string, encrypted bool, sky float64, coinHours uint64) {
 	logWalletsModel.Info("Edit Wallet")
-	w := walletModel.Wallets()[row]
-	w.SetName(name)
-	w.SetEncryptionEnabled(0)
-	if encrypted {
-		w.SetEncryptionEnabled(1)
-	}
-
-	w.SetSky(sky)
-	w.SetCoinHours(coinHours)
-	w.SetFileName(w.FileName())
-
 	pIndex := walletModel.Index(row, 0, core.NewQModelIndex())
-	walletModel.DataChanged(pIndex, pIndex, []int{Name, EncryptionEnabled, Sky, CoinHours, FileName, Expand})
 
+	walletModel.setData(pIndex, core.NewQVariant1(name), Name)	
+	if encrypted {
+		walletModel.setData(pIndex, core.NewQVariant1(1), EncryptionEnabled)
+	} else {
+		walletModel.setData(pIndex, core.NewQVariant1(0), EncryptionEnabled)
+	}
+	walletModel.setData(pIndex, core.NewQVariant1(sky), Sky)
+	walletModel.setData(pIndex, core.NewQVariant1(coinHours), CoinHours)
 }
 
 func (walletModel *WalletModel) removeWallet(row int) {
 	logWalletsModel.Info("Remove wallets for index")
 	walletModel.BeginRemoveRows(core.NewQModelIndex(), row, row)
 	walletModel.SetWallets(append(walletModel.Wallets()[:row], walletModel.Wallets()[row+1:]...))
-	walletModel.EndRemoveRows()
 	walletModel.SetCount(walletModel.Count() - 1)
-
+	walletModel.EndRemoveRows()
 }
 
 func (walletModel *WalletModel) loadModelUsingExpanded(wallets []*QWallet, exp []bool) {
@@ -173,9 +215,8 @@ func (walletModel *WalletModel) loadModelUsingExpanded(wallets []*QWallet, exp [
 	}
 	walletModel.BeginResetModel()
 	walletModel.SetWallets(wallets)
-
-	walletModel.EndResetModel()
 	walletModel.SetCount(len(walletModel.Wallets()))
+	walletModel.EndResetModel()
 }
 
 
