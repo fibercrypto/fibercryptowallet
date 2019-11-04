@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	Name              = int(core.Qt__UserRole) + iota +1
+	Name = int(core.Qt__UserRole) + iota + 1
 	EncryptionEnabled
 	Sky
 	CoinHours
@@ -29,7 +29,7 @@ type WalletModel struct {
 	_ func(row int, name string, encryptionEnabled bool, sky float64, coinHours uint64) `slot:"editWallet"`
 	_ func(row int)                                                                     `slot:"removeWallet"`
 	_ func([]*QWallet)                                                                  `slot:"loadModel"`
-	_ func([]*QWallet, []bool)                                                          `slot:"loadModelUsingExpanded"`
+	_ func([]*QWallet)                                                                  `slot:"updateModel"`
 	_ int                                                                               `property:"count"`
 }
 
@@ -64,7 +64,7 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectEditWallet(walletModel.editWallet)
 	walletModel.ConnectRemoveWallet(walletModel.removeWallet)
 	walletModel.ConnectLoadModel(walletModel.loadModel)
-	walletModel.ConnectLoadModelUsingExpanded(walletModel.loadModelUsingExpanded)
+	walletModel.ConnectUpdateModel(walletModel.updateModel)
 
 }
 
@@ -116,7 +116,7 @@ func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QV
 }
 
 func (walletModel *WalletModel) setData(index *core.QModelIndex, value *core.QVariant, role int) bool {
-	
+
 	if !index.IsValid() {
 		return false
 	}
@@ -158,7 +158,7 @@ func (walletModel *WalletModel) setData(index *core.QModelIndex, value *core.QVa
 		}
 	}
 
-	walletModel.DataChanged(index, index, []int { role })
+	walletModel.DataChanged(index, index, []int{role})
 	return true
 }
 
@@ -187,7 +187,7 @@ func (walletModel *WalletModel) editWallet(row int, name string, encrypted bool,
 	logWalletsModel.Info("Edit Wallet")
 	pIndex := walletModel.Index(row, 0, core.NewQModelIndex())
 
-	walletModel.setData(pIndex, core.NewQVariant1(name), Name)	
+	walletModel.setData(pIndex, core.NewQVariant1(name), Name)
 	if encrypted {
 		walletModel.setData(pIndex, core.NewQVariant1(1), EncryptionEnabled)
 	} else {
@@ -205,20 +205,11 @@ func (walletModel *WalletModel) removeWallet(row int) {
 	walletModel.EndRemoveRows()
 }
 
-func (walletModel *WalletModel) loadModelUsingExpanded(wallets []*QWallet, exp []bool) {
-	logWalletsModel.Info("Loading wallets")
+func (walletModel *WalletModel) updateModel(wallets []*QWallet) {
 	for i, wlt := range wallets {
-		if i < len(exp){
-			wallets[i].SetExpand(exp[i])
-		}
-		qml.QQmlEngine_SetObjectOwnership(wlt, qml.QQmlEngine__CppOwnership)
+		walletModel.editWallet(i, wlt.Name(), wlt.EncryptionEnabled() == 1, wlt.Sky(), wlt.CoinHours())
 	}
-	walletModel.BeginResetModel()
-	walletModel.SetWallets(wallets)
-	walletModel.SetCount(len(walletModel.Wallets()))
-	walletModel.EndResetModel()
 }
-
 
 func (walletModel *WalletModel) loadModel(wallets []*QWallet) {
 	logWalletsModel.Info("Loading wallets")

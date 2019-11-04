@@ -101,30 +101,6 @@ Page {
             clip: true // limit the painting to it's bounding rectangle
             model: walletModel
             delegate: WalletListDelegate {}
-            function updateView(wallets, walletsExpanded) {
-                var index = 0;
-                for(var child in walletList.contentItem.children) {
-                    walletList.contentItem.children[child].name = wallets[index].name;
-                    walletList.contentItem.children[child].sky = wallets[index].sky;
-                    walletList.contentItem.children[child].encryptionEnabled = wallets[index].encryptionEnabled;
-                    walletList.contentItem.children[child].coinHours = wallets[index].coinHours;
-                    walletList.contentItem.children[child].fileName = wallets[index].fileName;
-                    walletList.contentItem.children[child].expanded = walletsExpanded[index];
-                }
-                if (index < wallets.length) {
-                    var i;
-                    for(i = index; i < wallets.length; i++) {
-                        walletModel.addWallet(wallets[i]);
-                        walletList.contentItem.children[i].expanded = walletsExpanded[i].expanded;
-                    }
-                }
-            }
-            function getChildWithName(contentItem, index) {
-                if (index < contentItem.children.length) {
-                    return contentItem.children[index];
-                }
-                return undefined
-            }
         }
     }
 
@@ -140,21 +116,7 @@ Page {
             repeat: true
             running: true
             onTriggered: {
-                var index;
-                var walletsExpanded = []
-                console.log(walletModel)
-                for (index = 0; index < walletList.count; index++) {
-                    walletsExpanded.push(walletList.getChildWithName(walletList.contentItem, index).expanded);
-                }
-                console.log("SUPERRRR");
-                console.log(walletsExpanded);
-////                walletManager.updateWallets()
-//                walletModel.loadModelUsingExpanded(walletManager.getWallets(), walletsExpanded)
-                walletList.updateView(walletManager.getWallets(), walletsExpanded)
-                console.log("Finito")
-//                for (index = 0; index < walletList.count; index++) {
-//                    walletList.itemAtIndex(index).expanded = walletsExpanded[index]
-//                }
+                walletModel.updateModel(walletManager.getWallets())
             }
         }
     }
