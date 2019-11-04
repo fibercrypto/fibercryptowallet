@@ -225,15 +225,16 @@ Item {
 
         id: listAddresses
         property Timer timer: Timer {
-                                id: addressModelTimer
-                                interval: 0
-                                repeat: false
-                                running: true
-                                onTriggered: {
-                                    listAddresses.loadModel(walletManager.getAddresses(fileName))
-                                    addressModelTimer.running = false
-
-                                    }
-                            }
+            id: addressModelTimer
+            interval: 7000
+            repeat: true
+            running: true
+            onTriggered: {
+                listAddresses.updateModel(fileName);
+            }
+        }
+    }
+    Component.onCompleted: {
+        listAddresses.updateModel(fileName);
     }
 }
