@@ -19,7 +19,7 @@ func (tOpt *KeyValueMap) SetValue(key string, value interface{}) {
 
 func NewKeyValueMap() *KeyValueMap {
 	tOptions := KeyValueMap{
-		values: make(map[string]interface{}, 0),
+		values: make(map[string]interface{}),
 	}
 	return &tOptions
 }
