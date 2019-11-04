@@ -6,7 +6,6 @@ import QtGraphicalEffects 1.12
 import WalletsManager 1.0
 
 // Resource imports
-// import "qrc:/ui/src/ui/"
 // import "qrc:/ui/src/ui/Dialogs"
 import "../Dialogs/" // For quick UI development, switch back to resources when making a release
 
@@ -180,9 +179,8 @@ Item {
         headerMessageColor: Material.color(Material.Red)
         focus: true
         modal: true
-
         onAccepted: {
-            var isEncrypted = walletManager.decryptWallet(fileName, password.text)
+            var isEncrypted = walletManager.decryptWallet(fileName, password)
             walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
         }
     }
