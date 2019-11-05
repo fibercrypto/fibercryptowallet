@@ -64,6 +64,9 @@ clean-Windows: ## Clean project FiberCrypto Wallet.
 	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "rcc"} | Remove-Item -recurse
 	@echo "Done."
 
+prepare-release: ## Change the resources in the app and prepare to release the app
+	./setup_release.sh
+
 clean: ## Clean project FiberCrypto Wallet.
 	@echo "Cleaning project FiberCrypto Wallet..."
 	rm -rf deploy/

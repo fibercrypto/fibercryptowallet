@@ -3,9 +3,6 @@ import QtQuick.Controls 2.12
 import BlockchainModels 1.0
 import WalletsManager 1.0
 
-// Resource imports
-// import "qrc:/ui/src/ui/"
-
 Item {
     id: generalStackView
 

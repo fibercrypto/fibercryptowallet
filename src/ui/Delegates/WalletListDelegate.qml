@@ -6,7 +6,6 @@ import QtGraphicalEffects 1.12
 import WalletsManager 1.0
 
 // Resource imports
-// import "qrc:/ui/src/ui/"
 // import "qrc:/ui/src/ui/Dialogs"
 import "../Dialogs/" // For quick UI development, switch back to resources when making a release
 
