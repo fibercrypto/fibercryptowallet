@@ -52,6 +52,7 @@ Page {
 
                 Layout.fillWidth: true
                 textRole: "name"
+                displayText: comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky ? comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky + " --- " + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name : currentText
 
                 model: WalletModel {
                     Component.onCompleted: {
@@ -62,7 +63,7 @@ Page {
                 // Taken from Qt 5.13.0 source code:
                 delegate: MenuItem {
                     width: parent.width
-                    text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
+                    text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData["sky"] + " --- " + modelData[comboBoxWalletsSendFrom.textRole] : model["sky"] + " --- " + model[comboBoxWalletsSendFrom.textRole]) : " --- " + modelData
                     Material.foreground: comboBoxWalletsSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
                     highlighted: comboBoxWalletsSendFrom.highlightedIndex === index
                     hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
@@ -71,7 +72,6 @@ Page {
                 }
 
                 onActivated: {
-                    console.log("sdfwerw")
                     root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
                     root.walletEncrypted = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
                 }
