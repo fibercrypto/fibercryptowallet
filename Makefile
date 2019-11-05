@@ -64,6 +64,9 @@ clean-Windows: ## Clean project FiberCrypto Wallet.
 	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "rcc"} | Remove-Item -recurse
 	@echo "Done."
 
+prepare-release: ## Change the resources in the app and prepare to release the app
+	./setup_release.sh
+
 mocks: ## Create all mock files for unit tests
 	mockery -name Devicer -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
 	mockery -name DeviceDriver -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore

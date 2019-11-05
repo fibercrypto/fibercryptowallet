@@ -2,7 +2,9 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 
-import "../"
+// Resource imports
+// import "qrc:/ui/src/ui/"
+import "../" // For quick UI development, switch back to resources when making a release
 
 Dialog {
     id: dialogGetPassword
