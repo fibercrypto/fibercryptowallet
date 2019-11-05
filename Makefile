@@ -165,6 +165,11 @@ clean-Linux: ## Clean project in Linux
 clean: clean-$(OS) ## Clean project FiberCrypto Wallet
 	# Regular generated files
 	@echo "Cleaning project $(APP_NAME)..."
+prepare-release: ## Change the resources in the app and prepare to release the app
+	./setup_release.sh
+
+clean: ## Clean project FiberCrypto Wallet.
+	@echo "Cleaning project FiberCrypto Wallet..."
 	rm -rf deploy/
 	rm -rf linux/
 	rm -rf rcc.cpp

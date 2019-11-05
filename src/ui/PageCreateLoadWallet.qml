@@ -12,7 +12,9 @@ Item {
 
     signal walletCreationRequested()
     signal walletLoadingRequested()
-
+    property alias name: createLoadWallet.name
+    property alias seed: createLoadWallet.seed
+    property alias confirmedSeed: createLoadWallet.seedConfirm
     Column {
         anchors.fill: parent
         spacing: 30
@@ -46,10 +48,40 @@ Item {
             height: 60
             font.bold: true
             font.pointSize: Qt.application.font.pointSize * 1.2
+            Connections{
+                target: createLoadWallet
+                onModeChanged:{
+                    if( createLoadWallet.mode === CreateLoadWallet.Load){
+                        buttonCreateLoadWallet.enabled = true
+                    }
+                    
+                }
+                onSeedChanged:{
+                    if (createLoadWallet.mode === CreateLoadWallet.Create){
+                    
+                        if (createLoadWallet.seed != createLoadWallet.seedConfirm){
+                            buttonCreateLoadWallet.enabled = false
+                        } else{
+                            buttonCreateLoadWallet.enabled = true
+                        }
+                    }
 
+                }
+                onSeedConfirmChanged:{
+                    if (createLoadWallet.mode === CreateLoadWallet.Create){
+                         if (createLoadWallet.seed != createLoadWallet.seedConfirm){
+                            buttonCreateLoadWallet.enabled = false
+                        } else{
+                            buttonCreateLoadWallet.enabled = true
+                        }
+                    }
+                   
+
+                }
+            }
             text: createLoadWallet.mode === CreateLoadWallet.Create ? qsTr("Create") : qsTr("Load")
             highlighted: true
-
+            
             onClicked: {
                 if (createLoadWallet.mode === CreateLoadWallet.Create) {
                     walletCreationRequested()
