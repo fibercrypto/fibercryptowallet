@@ -59,8 +59,8 @@ matrix:
         - make deps
         - set GO111MODULE=off
         - go get -v github.com/therecipe/qt/cmd/...
-        - travis_wait for /f %v in ('go env GOPATH') do %v\bin\qtsetup 
-        #- travis_wait make install-deps-Windows
+        - travis_wait qtsetup.exe 
+        # travis_wait make install-deps-Windows
         - make install-linters
 
       script:
