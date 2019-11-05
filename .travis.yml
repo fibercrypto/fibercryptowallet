@@ -57,7 +57,10 @@ matrix:
         - choco install make -y
         - choco install dep -y
         - make deps
-        - travis_wait make install-deps-Windows
+        - set GO111MODULE=off
+        - go get -v github.com/therecipe/qt/cmd/...
+        - travis_wait for /f %v in ('go env GOPATH') do %v\bin\qtsetup 
+        #- travis_wait make install-deps-Windows
         - make install-linters
 
       script:
