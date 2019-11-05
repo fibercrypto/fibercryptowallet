@@ -59,7 +59,7 @@ matrix:
         - make deps
         - set GO111MODULE=off
         - go get -v github.com/therecipe/qt/cmd/...
-        - travis_wait qtsetup.exe 
+        - travis_wait 50 qtsetup.exe 
         # travis_wait make install-deps-Windows
         - make install-linters
 
