@@ -752,23 +752,18 @@ type WalletDirectory struct {
 
 func getWallet(env core.WalletEnv, firstAddr string) (core.Wallet, error) {
 	ws := env.GetWalletSet()
-	if ws == nil {
-		// TODO i18n
-		return nil, errors.New("error getting wallet from addr, empty wallet set")
-	}
 	wls := ws.ListWallets()
 	for wls.Next() {
 		w := wls.Value()
 		addrs := w.GenAddresses(core.AccountAddress, 0, 1, nil)
-		for addrs.Next() {
+		if addrs.Next() {
 			addr := addrs.Value()
 			if addr.String() == firstAddr {
 				return w, nil
 			}
 		}
 	}
-	// TODO i18n
-	return nil, errors.New("error getting wallet from addr, no wallet found")
+	return nil, errors.ErrWltFromAddrNotFound
 }
 
 func (wltDir *WalletDirectory) GetWallet(firstAddr string) (core.Wallet, error) {
