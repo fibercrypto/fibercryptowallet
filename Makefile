@@ -23,7 +23,8 @@ DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
-	CONVERT		= magick convert
+	MAGICK_PATH := ~/magick
+	CONVERT		 = $(MAGICK_PATH)/convert
 	WINDRES		:= windres
 	RC_FILE		:= resources/platform/windows/winResources.rc
 	RC_OBJ		:= winResources.syso
@@ -76,6 +77,8 @@ install-deps-Windows: ## Install Windowns dependencies
 	go get -u -v github.com/therecipe/qt/cmd/...
 	qtsetup -test=false -ErrorAction SilentlyContinue
 	go get -t -d -v ./...
+	wget -O magick.zip https://imagemagick.org/download/binaries/ImageMagick-7.0.9-2-portable-Q16-x64.zip
+	unzip magick.zip -d $(MAGICK_PATH)
 
 install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
@@ -89,15 +92,15 @@ build-docker: ## Build project using docker
 build-icon-Windows_NT: ## Build the application icon in Windows
 	mkdir -p $(ICONS_BUILDPATH)
 	# For Windows icons we need the `convert` tool provided by "Imagemagick"
-	$(CONVERT) -resize 16x16 "$(APP_ICON_PATH)/appIcon-wallet.png" "$(ICONS_BUILDPATH)/appIcon_16x16.png"
-	$(CONVERT) -resize 24x24 "$(APP_ICON_PATH)/appIcon-wallet.png" "$(ICONS_BUILDPATH)/appIcon_24x24.png"
-	$(CONVERT) -resize 32x32 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_32x32.png"
-	$(CONVERT) -resize 48x48 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_48x48.png"
-	$(CONVERT) -resize 64x64 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_64x64.png"
-	$(CONVERT) -resize 96x96 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_96x96.png"
-	$(CONVERT) -resize 128x128 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_128x128.png"
-	$(CONVERT) -resize 256x256 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_256x256.png"
-	$(CONVERT) -resize 512x512 "$(APP_ICON_PATH)/appIcon.png" "$(ICONS_BUILDPATH)/appIcon_512x512.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon-wallet.png" -resize 16x16 "$(ICONS_BUILDPATH)/appIcon_16x16.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon-wallet.png" -resize 24x24 "$(ICONS_BUILDPATH)/appIcon_24x24.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 32x32 "$(ICONS_BUILDPATH)/appIcon_32x32.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 48x48 "$(ICONS_BUILDPATH)/appIcon_48x48.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 64x64 "$(ICONS_BUILDPATH)/appIcon_64x64.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 96x96 "$(ICONS_BUILDPATH)/appIcon_96x96.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 128x128 "$(ICONS_BUILDPATH)/appIcon_128x128.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 256x256 "$(ICONS_BUILDPATH)/appIcon_256x256.png"
+	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 512x512 "$(ICONS_BUILDPATH)/appIcon_512x512.png"
 	$(CONVERT) "$(ICONS_BUILDPATH)/appIcon_*.png" "$(APP_ICON_PATH)/appIcon.ico"
 
 build-icon-Darwin: ## Build the application icon in Darwin
@@ -124,12 +127,12 @@ build-icon: build-icon-$(OS) ## Build the application icon (Windows_NT and Darwi
 build-Linux: ## Build FiberCryptoWallet in Windows
 	@echo "Building on Linux"
 
-build-Windows_NT: ## Build FiberCrypto Wallet in Windows
+build-Windows_NT: build-icon ## Build FiberCrypto Wallet in Windows
 	@echo "Building on windows"
 	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
 
 
-build-Darwin: ## Build FiberCrypto Wallet in Darwin
+build-Darwin: build-icon ## Build FiberCrypto Wallet in Darwin
 	@echo "Building on Darwin"
 	mkdir -p "$(DARWIN_RES)/Content/Resources"
 	cp "$(PLIST)" "$(DARWIN_RES)/Content/"
@@ -141,30 +144,6 @@ build: build-$(OS)  ## Build FiberCrypto Wallet
 	qtdeploy build $(DEFAULT_TARGET)
 	@echo "Done."
 
-clean-Windows: ## Clean project FiberCrypto Wallet.
-	@echo "Cleaning project FiberCrypto Wallet..."
-	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "moc"} | Remove-Item
-	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "deploy"} | Remove-Item -recurse
-	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "windows"} | Remove-Item -recurse
-	Get-ChildItem $Path -Recurse | Where{$_.Name -Match "rcc"} | Remove-Item -recurse
-	@echo "Done."
-
-clean-Windows_NT: ## Clean project in Windows
-	# Windows actions
-	rm -rf "$(ICONS_BUILDPATH)"
-	rm -rf "$(RC_OBJ)"
-
-clean-Darwin: ## Clean project in Darwin
-	# Darwin actions
-	rm -rf "$(ICONSET)"
-
-clean-Linux: ## Clean project in Linux
-	# Linux actions
-	@echo "Cleaned"
-
-clean: clean-$(OS) ## Clean project FiberCrypto Wallet
-	# Regular generated files
-	@echo "Cleaning project $(APP_NAME)..."
 prepare-release: ## Change the resources in the app and prepare to release the app
 	./setup_release.sh
 
@@ -172,13 +151,17 @@ clean: ## Clean project FiberCrypto Wallet.
 	@echo "Cleaning project FiberCrypto Wallet..."
 	rm -rf deploy/
 	rm -rf linux/
+	rm -rf windows/
 	rm -rf rcc.cpp
 	rm -rf rcc.qrc
-	rm -rf rcc_cgo_linux_linux_amd64.go
+	rm -rf rcc_cgo_*.go
 	rm -rf rcc_*.cpp
 	rm -rf rcc__*
 	find . -path "*moc.*" -delete
 	find . -path "*moc_*" -delete
+	rm -rf "$(ICONS_BUILDPATH)"
+	rm -rf "$(RC_OBJ)"
+	rm -rf "$(ICONSET)"
 
 	@echo "Done."
 
