@@ -12,20 +12,20 @@ type Devicer struct {
 	mock.Mock
 }
 
-// AddressGen provides a mock function with given fields: addressN, startIndex, confirmAddress
-func (_m *Devicer) AddressGen(addressN uint32, startIndex uint32, confirmAddress bool) (wire.Message, error) {
-	ret := _m.Called(addressN, startIndex, confirmAddress)
+// AddressGen provides a mock function with given fields: addressN, startIndex, confirmAddress, walletType
+func (_m *Devicer) AddressGen(addressN uint32, startIndex uint32, confirmAddress bool, walletType string) (wire.Message, error) {
+	ret := _m.Called(addressN, startIndex, confirmAddress, walletType)
 
 	var r0 wire.Message
-	if rf, ok := ret.Get(0).(func(uint32, uint32, bool) wire.Message); ok {
-		r0 = rf(addressN, startIndex, confirmAddress)
+	if rf, ok := ret.Get(0).(func(uint32, uint32, bool, string) wire.Message); ok {
+		r0 = rf(addressN, startIndex, confirmAddress, walletType)
 	} else {
 		r0 = ret.Get(0).(wire.Message)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(uint32, uint32, bool) error); ok {
-		r1 = rf(addressN, startIndex, confirmAddress)
+	if rf, ok := ret.Get(1).(func(uint32, uint32, bool, string) error); ok {
+		r1 = rf(addressN, startIndex, confirmAddress, walletType)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -374,20 +374,20 @@ func (_m *Devicer) SetMnemonic(mnemonic string) (wire.Message, error) {
 	return r0, r1
 }
 
-// SignMessage provides a mock function with given fields: addressIndex, message
-func (_m *Devicer) SignMessage(addressIndex int, message string) (wire.Message, error) {
-	ret := _m.Called(addressIndex, message)
+// SignMessage provides a mock function with given fields: addressN, addressIndex, message, walletType
+func (_m *Devicer) SignMessage(addressN int, addressIndex int, message string, walletType string) (wire.Message, error) {
+	ret := _m.Called(addressN, addressIndex, message, walletType)
 
 	var r0 wire.Message
-	if rf, ok := ret.Get(0).(func(int, string) wire.Message); ok {
-		r0 = rf(addressIndex, message)
+	if rf, ok := ret.Get(0).(func(int, int, string, string) wire.Message); ok {
+		r0 = rf(addressN, addressIndex, message, walletType)
 	} else {
 		r0 = ret.Get(0).(wire.Message)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int, string) error); ok {
-		r1 = rf(addressIndex, message)
+	if rf, ok := ret.Get(1).(func(int, int, string, string) error); ok {
+		r1 = rf(addressN, addressIndex, message, walletType)
 	} else {
 		r1 = ret.Error(1)
 	}
