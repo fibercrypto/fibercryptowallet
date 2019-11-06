@@ -23,7 +23,7 @@ DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
-	MAGICK_PATH := ~/magick
+	MAGICK_PATH := magick
 	CONVERT		 = $(MAGICK_PATH)/convert
 	WINDRES		:= windres
 	RC_FILE		:= resources/platform/windows/winResources.rc
