@@ -135,7 +135,7 @@ build-Darwin: build-icon ## Build FiberCrypto Wallet in Darwin
 	@echo "Building on Darwin"
 	mkdir -p "$(DARWIN_RES)/Content/Resources"
 	cp "$(PLIST)" "$(DARWIN_RES)/Content/"
-	cp "$(APP_ICON_PATH/appIcon.icns)" "$(DARWIN_RES)/Content/"
+	cp "$(APP_ICON_PATH)/appIcon.icns" "$(DARWIN_RES)/Content/"
 
 build: build-$(OS)  ## Build FiberCrypto Wallet
 	@echo "Building $(APP_NAME)..."
