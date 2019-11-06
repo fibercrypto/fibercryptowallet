@@ -677,8 +677,11 @@ func (wlt *RemoteWallet) AttachSignService(signSrv core.TxnSigner) error {
 }
 
 func (wlt *RemoteWallet) EnumerateSignServices() core.TxnSignerIterator {
-	// TODO: Implement
-	return nil
+	var signers []core.TxnSigner
+	for _, v := range wlt.signers {
+		signers = append(signers, v)
+	}
+	return NewSignerIterator(signers)
 }
 
 func (wlt *RemoteWallet) RemoveSignService(signSrv core.TxnSigner) error {
@@ -1437,8 +1440,11 @@ func (wlt *LocalWallet) AttachSignService(signSrv core.TxnSigner) error {
 }
 
 func (wlt *LocalWallet) EnumerateSignServices() core.TxnSignerIterator {
-	// TODO: Implement
-	return nil
+	var signers []core.TxnSigner
+	for _, v := range wlt.signers {
+		signers = append(signers, v)
+	}
+	return NewSignerIterator(signers)
 }
 
 func (wlt *LocalWallet) RemoveSignService(signSrv core.TxnSigner) error {
