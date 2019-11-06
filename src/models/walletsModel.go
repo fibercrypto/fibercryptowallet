@@ -3,6 +3,7 @@ package models
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	fc "github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/hardware-wallet-go/src/skywallet/wire"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
@@ -76,24 +77,53 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectSniffHw(walletModel.sniffHw)
 }
 
+func attachHwAsSigner(wlt fc.Wallet) error {
+	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+	cb := func(dev skyWallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error) {
+		return wire.Message{}, nil
+	}
+	hw := hardware.NewSkyWallet(dev, cb)
+	if !hwMatchWallet(*hw, wlt) {
+		// TODO i18n
+		return errors.New("address sequence does not match for wallets")
+	}
+	wlt.AttachSignService(hw)
+	err := wlt.AttachSignService(hw)
+	if err != nil {
+		logrus.Errorln("error registering hardware wallet as signer")
+		return err
+	}
+	return nil
+}
+
+func hwMatchWallet(hw hardware.SkyWallet, wlt fc.Wallet) bool {
+	firstAddr, err := hWFirstAddr()
+	if err != nil {
+		// TODO i18n
+		logrus.WithError(err).Errorln("unable to get first address from hw")
+	}
+	addrs := wlt.GenAddresses(fc.AccountAddress, 0, 1, nil)
+	if addrs.Next() {
+		addr := addrs.Value()
+		return addr.String() == firstAddr
+	}
+	return false
+}
+
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
 	addr, err := hWFirstAddr()
 	if err == nil {
 		wlt, err := walletManager.WalletEnv.GetWallet(addr)
 		if err != nil {
-			logrus.WithError(err).Warnln("can not find a wallet matching the hardware one")
+			// TODO i18n
+			logrus.Warnln("can not find a wallet matching the hardware one")
 			// FIXME handle this scenario with a wallet registration.
 			return
 		}
-		dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
-		cb := func(dev skyWallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error) {
-			return wire.Message{}, nil
-		}
-		hw := hardware.NewSkyWallet(dev, cb)
-		err = wlt.AttachSignService(hw)
+		err = AttachHwAsSigner(wlt)
 		if err != nil {
-			logrus.WithError(err).Errorln("error registering hardware wallet as signer")
+			logrus.WithError(err).Errorln("unable to attach signer")
 			return
 		}
 		hadHwConnected = true
