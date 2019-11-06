@@ -138,11 +138,11 @@ func (walletModel *WalletModel) setData(index *core.QModelIndex, value *core.QVa
 		}
 	case Sky:
 		{
-			w.SetSky(value.ToDouble(nil))
+			w.SetSky(value.ToString())
 		}
 	case CoinHours:
 		{
-			w.SetCoinHours(value.ToULongLong(nil))
+			w.SetCoinHours(value.ToString())
 		}
 	case FileName:
 		{
