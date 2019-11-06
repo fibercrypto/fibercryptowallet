@@ -23,8 +23,7 @@ DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
-	MAGICK_PATH := magick
-	CONVERT		 = $(MAGICK_PATH)/convert
+	CONVERT		 = ./convert.exe
 	WINDRES		:= windres
 	RC_FILE		:= resources/platform/windows/winResources.rc
 	RC_OBJ		:= winResources.syso
@@ -78,7 +77,7 @@ install-deps-Windows: ## Install Windowns dependencies
 	qtsetup -test=false -ErrorAction SilentlyContinue
 	go get -t -d -v ./...
 	wget -O magick.zip https://imagemagick.org/download/binaries/ImageMagick-7.0.9-2-portable-Q16-x64.zip
-	unzip magick.zip -d $(MAGICK_PATH)
+	unzip magick.zip convert.exe
 
 install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
