@@ -85,15 +85,31 @@ onAccepted:{
                 anchors.fill: parent
                 clip: true
                 ListView {
+
+//                 signal pressAndHold(int index)
+//                    flickDeceleration: 1497
+//
+//                    focus: true
+//                    boundsBehavior: Flickable.StopAtBounds
+
                     id: addrsBook
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     model: abm
-                    delegate: ItemDelegate{
-                    text: name
-                    width: parent.width
-                                     font.pointSize: 15
+                    section.property: "name"
+                    section.criteria: ViewSection.FirstCharacter
+                    section.delegate: SectionDelegate {
+                        width: addrsBook.width
+                    }
 
+                    delegate: ContactDelegate{
+                   id:contactDelegate
+                     width: addrsBook.width
+
+//        Connections {
+//            target: contactDelegate
+//            onPressAndHold: addrsBook.pressAndHold(index)
+//        }
                     }
                 }
        }// GroupBox
