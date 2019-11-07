@@ -11,12 +11,17 @@ import "Controls" // For quick UI development, switch back to resources when mak
 Page {
     id: root
     property string walletSelected
-    property bool walletEncrypted: false 
+    property string signerSelected
+    property bool walletEncrypted: false
     property string amount
     property string destinationAddress
     function getSelectedWallet(){
         return walletSelected
     }
+    function getSignerSelected() {
+        return signerSelected;
+    }
+
     function getAmount(){
         return amount
     }
@@ -40,43 +45,87 @@ Page {
         anchors.rightMargin: 10
         spacing: 20
 
-        ColumnLayout {
-            id: columnLayoutSendFrom
+        Row {
+            Layout.fillWidth: true
+            spacing: 20
+            ColumnLayout {
+                id: columnLayoutSendFrom
 
-            Layout.alignment: Qt.AlignTop
-
-            Label { text: qsTr("Send from") }
-
-            ComboBox {
-                id: comboBoxWalletsSendFrom
-
-                Layout.fillWidth: true
-                textRole: "name"
-
-                model: WalletModel {
-                    Component.onCompleted: {
-                        loadModel(walletManager.getWallets())
-                    }
-                } 
+                Layout.alignment: Qt.AlignTop
                 
-                // Taken from Qt 5.13.0 source code:
-                delegate: MenuItem {
-                    width: parent.width
-                    text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
-                    Material.foreground: comboBoxWalletsSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
-                    highlighted: comboBoxWalletsSendFrom.highlightedIndex === index
-                    hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
-                    leftPadding: highlighted ? 2*padding : padding // added
-                    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
-                }
+                Label { text: qsTr("Send from") }
+                
+                ComboBox {
+                    id: comboBoxWalletsSendFrom
+                    textRole: "name"
+                    
+                    model: WalletModel {
+                        Component.onCompleted: {
+                            loadModel(walletManager.getWallets())
+                        }
+                    }
+                    
+                    // Taken from Qt 5.13.0 source code:
+                    delegate: MenuItem {
+                        width: parent.width
+                        text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
+                        Material.foreground: comboBoxWalletsSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
+                        highlighted: comboBoxWalletsSendFrom.highlightedIndex === index
+                        hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
+                        leftPadding: highlighted ? 2*padding : padding // added
+                        Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+                    }
+                    
+                    onActivated: {
+                        root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
+                        root.walletEncrypted = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
+                        signerSelector.reset(root.walletSelected);
+                    }
+                } // ComboBox
+            } // ColumnLayout (send from)
+            ColumnLayout {
+                id: signerSelectorId
+                Layout.alignment: Qt.AlignTop
+                visible: false
 
-                onActivated: {
-                    console.log("sdfwerw")
-                    root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
-                    root.walletEncrypted = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
+                Label { text: qsTr("Change signer") }
+                ComboBox {
+                    // property string signerId: selectedSignerDelegateId.model[signerSelector.textRole]
+                    property string slectedSignerRR: ""
+                    id: signerSelector
+                    textRole: "description"
+                    model: SignerModel {
+                        id: signerModelId
+                    }
+                    // Taken from Qt 5.13.0 source code:
+                    delegate: MenuItem {
+                        id: selectedSignerDelegateId
+                        width: parent.width
+                        text: signerSelector.textRole ?
+                                  (Array.isArray(signerSelector.model)
+                                   ? modelData[signerSelector.textRole]
+                                   : model[signerSelector.textRole])
+                                : modelData
+                        Material.foreground: signerSelector.currentIndex === index ? parent.Material.accent : parent.Material.foreground
+                        highlighted: signerSelector.highlightedIndex === index
+                        hoverEnabled: signerSelector.hoverEnabled
+                        leftPadding: highlighted ? 2*padding : padding // added
+                        Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+                        onClicked: {
+                            root.signerSelected =
+                                Array.isArray(signerSelector.model)
+                                ? modelData["id"] : model["id"];
+                        }
+                    }
+                    function reset(wltId) {
+                        currentIndex = -1;
+                        signerModelId.loadModel(wltId)
+                        signerSelectorId.visible = signerModelId.rowCount() > 1
+                    }
                 }
-            } // ComboBox
-        } // ColumnLayout (send from)
+            }
+        }
+
 
         ColumnLayout {
             id: columnLayoutSendTo

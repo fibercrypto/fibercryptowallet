@@ -13,6 +13,7 @@ Page {
 
     property alias advancedMode: switchAdvancedMode.checked
     property string walletSelected
+    property string signerSelected
     property string walletEncrypted
     property string destinationAddress
     property string amount
@@ -177,7 +178,9 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(wallet,"", dialogSendTransaction.passwordText, [], txn)
+            signerSelected = stackView.currentItem.simplePage.getSignerSelected()
+			var signedTxn = walletManager.signTxn(wallet, signerSelected, dialogSendTransaction.passwordText, [], txn)
+            // FIXME check return error from walletManager.signTxn
 			var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }
