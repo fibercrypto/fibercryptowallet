@@ -279,7 +279,8 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		Type:      0,
 		InnerHash: hash,
 	}
-	crtTxn, _ := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	require.Nil(t, err)
 	crtTxn.Transaction.Fee = "500"
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
@@ -387,7 +388,8 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		Type:      0,
 		InnerHash: hash,
 	}
-	crtTxn, _ := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	require.Nil(t, err)
 	crtTxn.Transaction.Fee = strconv.Itoa(sky)
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq1, crtTxn)
@@ -473,7 +475,8 @@ func TestRemoteWalletSpend(t *testing.T) {
 		Type:      0,
 		InnerHash: hash,
 	}
-	crtTxn, _ := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	require.Nil(t, err)
 	crtTxn.Transaction.Fee = "500"
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
