@@ -94,9 +94,9 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 		Address:         "addr1",
 	}
 	response := &readable.UnspentOutputsSummary{
-		HeadOutputs:     readable.UnspentOutputs{usOut, usOut},
-		OutgoingOutputs: readable.UnspentOutputs{usOut, usOut},
+		HeadOutputs: readable.UnspentOutputs{usOut, usOut},
 	}
+
 	global_mock.On("OutputsForAddresses", []string{"addr1"}).Return(response, nil)
 
 	addr := &SkycoinAddress{address: "addr1"}

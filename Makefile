@@ -4,7 +4,8 @@
 UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
-COIN = skycoin 					##In future use as a parameter tu make command.
+##In future use as a parameter tu make command.
+COIN = skycoin
 COVERAGEPATH = src/coin/$(COIN)
 COVERAGEFILE = $(COVERAGEPATH)/coverage.out
 COVERAGEHTML = $(COVERAGEPATH)/coverage.html
