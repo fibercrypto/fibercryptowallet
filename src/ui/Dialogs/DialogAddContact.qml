@@ -18,13 +18,11 @@ Dialog{
 
 
     onAccepted:{
-console.log("Dialog Create contact accepted(^_^)")
 updateAcceptButtonStatus()
 
     }
 
     function updateAcceptButtonStatus() {
-console.log("Inside of updateAcceptButtonStatus func");
 abm.newContact(name.text,address.text)
     } // function updateAcceptButtonStatus()
 

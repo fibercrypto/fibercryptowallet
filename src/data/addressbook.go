@@ -124,12 +124,15 @@ func LoadFromFile(path string, password []byte) (*DB, error) {
 	ab.entropy = bConf.Get([]byte("entropy"))
 
 	if err := ab.verifyHash(); err != nil {
+		if err := ab.db.Close(); err != nil {
+			return nil, err
+		}
 		return nil, err
 	}
 	return &ab, nil
 }
 
-// Open function open the database.
+// open function open the database.
 func (ab *DB) open() error {
 	var err error
 	// Open database.
@@ -139,7 +142,7 @@ func (ab *DB) open() error {
 			Timeout: 1 * time.Second,
 		})
 	if err != nil {
-		return fmt.Errorf(" Error opening data base: %s", err)
+		return fmt.Errorf(" error opening data base: %s", err)
 	}
 	ab.db = db
 	// Start a transaction.
