@@ -170,7 +170,6 @@ func (adm *AddrsBookModel) newContact(name, address string) {
 	if err := db.InsertContact(&contact); err != nil {
 		logAddressBook.Error(err)
 	}
-	logAddressBook.Infof("inside of new Contact: name: %s \t address: %s", name, address)
 	adm.addContact(qc)
 }
 

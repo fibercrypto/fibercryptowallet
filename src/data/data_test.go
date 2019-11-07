@@ -433,6 +433,45 @@ func Test_addressBook_ListContact(t *testing.T) {
 						Coin:  []byte("skycoin"),
 					}},
 					Name: []byte("contact5"),
+				}, {Address: []Address{{
+					Value: []byte("25MP2EHddPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+					Coin:  []byte("skycoin"),
+				}},
+					Name: []byte("contact6"),
+				},
+				{Address: []Address{{
+					Value: []byte("9BSEAEEr3XddGtQ2X43BCT2XCYgheGLQQigEG"),
+					Coin:  []byte("skycoin"),
+				}, {
+					Value: []byte("29cnQPHuweWHCRF26LEAb2gR83ywnF3F9HduW"),
+					Coin:  []byte("skycoin")}},
+					Name: []byte("contact7"),
+				},
+				{Address: []Address{{
+					Value: []byte("2ymjULRdbiasdFoUNJKNhWbQ3JqdE8TXnZkyU"),
+					Coin:  []byte("BTC"),
+				}},
+					Name: []byte("contact8"),
+				}, {
+					Address: []Address{{
+						Value: []byte("oHvrwfj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2SGMfTsaazFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
+						Coin:  []byte("skycoin")}},
+					Name: []byte("contact9"),
+				}, {
+					Address: []Address{{
+						Value: []byte("2DprrreofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2EVNa4esdfsCK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("n5SteDkkYdRfsf3VJtMnVYcQ45L16rDDrseG8"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("contact10"),
 				},
 			}},
 			want: []core.Contact{
@@ -485,6 +524,53 @@ func Test_addressBook_ListContact(t *testing.T) {
 						Coin:  []byte("skycoin"),
 					}},
 					Name: []byte("contact5"),
+				}, &Contact{
+					id: 6,
+					Address: []Address{{
+						Value: []byte("25MP2EHddPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("contact6"),
+				},
+				&Contact{
+					id: 7,
+					Address: []Address{{
+						Value: []byte("9BSEAEEr3XddGtQ2X43BCT2XCYgheGLQQigEG"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("29cnQPHuweWHCRF26LEAb2gR83ywnF3F9HduW"),
+						Coin:  []byte("skycoin")}},
+					Name: []byte("contact7"),
+				},
+				&Contact{
+					id: 8,
+					Address: []Address{{
+						Value: []byte("2ymjULRdbiasdFoUNJKNhWbQ3JqdE8TXnZkyU"),
+						Coin:  []byte("BTC"),
+					}},
+					Name: []byte("contact8"),
+				}, &Contact{
+					id: 9,
+					Address: []Address{{
+						Value: []byte("oHvrwfj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2SGMfTsaazFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
+						Coin:  []byte("skycoin")}},
+					Name: []byte("contact9"),
+				}, &Contact{
+					id: 10,
+					Address: []Address{{
+						Value: []byte("2DprrreofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("2EVNa4esdfsCK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
+						Coin:  []byte("skycoin"),
+					}, {
+						Value: []byte("n5SteDkkYdRfsf3VJtMnVYcQ45L16rDDrseG8"),
+						Coin:  []byte("skycoin"),
+					}},
+					Name: []byte("contact10"),
 				},
 			},
 			wantErr: false},
