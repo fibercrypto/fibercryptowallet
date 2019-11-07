@@ -11,6 +11,7 @@ import (
 	skyWallet "github.com/skycoin/hardware-wallet-go/src/skywallet"
 	"github.com/skycoin/hardware-wallet-go/src/skywallet/wire"
 	"github.com/skycoin/hardware-wallet-protob/go"
+	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
 )
 
 const (
@@ -80,20 +81,24 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		logrus.WithError(err).Error("error signing transaction")
 		return nil, errors.New("unable to sign transaction")
 	}
-
 	msg, err = sw.callback(sw.dev, msg, len(tr.GetOutputs()))
 	if err != nil {
+		if err == fce.ErrHwSignTransactionFailed {
+			logrus.WithError(err).Errorln("failed to sign transaction")
+		} else if err == fce.ErrHwSignTransactionCanceled {
+			logrus.WithError(err).Warnln("action canceled from device")
+		}
 		return tr, err
 	}
 	if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
-		msgStr, err := skyWallet.DecodeResponseTransactionSign(msg)
+		signatures, err := skyWallet.DecodeResponseTransactionSign(msg)
 		if err != nil {
 			// TODO i18n
 			logrus.WithError(err).Error("error decoding device response")
 			return tr, err
 		}
-		for str := range msgStr {
-			spew.Dump("str", str)
+		for _, sign := range signatures {
+			spew.Dump("str", sign)
 		}
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
 		msgStr, err := skyWallet.DecodeFailMsg(msg)
@@ -105,6 +110,9 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		// TODO i18n
 		spew.Dump("msgStr", msgStr)
 		return nil, err
+	} else {
+		logrus.WithField("msg", msg).Errorln("unexpected error signing transaction with hw")
+		return nil, errors.New("unexpected error signing transaction with hw")
 	}
 	return tr, nil
 }

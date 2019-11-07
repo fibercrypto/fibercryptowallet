@@ -9,6 +9,7 @@ import (
 	"github.com/therecipe/qt/qml"
 	skyWallet "github.com/skycoin/hardware-wallet-go/src/skywallet"
 	"github.com/gogo/protobuf/proto"
+	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"errors"
 	"github.com/sirupsen/logrus"
 	messages "github.com/skycoin/hardware-wallet-protob/go"
@@ -77,10 +78,68 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectSniffHw(walletModel.sniffHw)
 }
 
-func attachHwAsSigner(wlt fc.Wallet) error {
+// AttachHwAsSigner add a hw as signer to the given wallet
+func AttachHwAsSigner(wlt fc.Wallet) error {
 	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+	pb := func(dev skyWallet.Devicer, prvMsg wire.Message, nextMsg messages.MessageType) (wire.Message, error) {
+		msg, err := dev.ButtonAck()
+		if err != nil {
+			// TODO i18n
+			logrus.WithError(err).Errorln("unexpected error")
+			return msg, err
+		}
+		if msg.Kind != uint16(nextMsg) {
+			if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
+				str, err := skyWallet.DecodeFailMsg(msg)
+				if err != nil {
+					// TODO i18n
+					logrus.WithField("msg", msg).Errorln("error decoding msg")
+					return msg, fce.ErrHwSignTransactionFailed
+				}
+				// FIXME: this can become broken with device internationalization
+				if str == "Action cancelled by user" {
+					return msg, fce.ErrHwSignTransactionCanceled
+				}
+			}
+			// TODO i18n
+			logrus.WithFields(
+				logrus.Fields{
+					"expected": nextMsg,
+					"actual": msg.Kind}).Errorln("unexpected msg type")
+			return msg, fce.ErrHwSignTransactionFailed
+		}
+		if msg.Kind == uint16(messages.MessageType_MessageType_Success) {
+			successMsg, err := skyWallet.DecodeSuccessMsg(msg)
+			if err != nil {
+				// TODO i18n
+				logrus.WithError(err).Errorln("error decoding msg")
+				return wire.Message{}, err
+			}
+			// TODO i18n
+			logrus.Debugln("signing transaction with hw", successMsg)
+			return msg, err
+		}
+		return msg, nil
+	}
 	cb := func(dev skyWallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error) {
-		return wire.Message{}, nil
+		var msg wire.Message
+		for outsLen > 0 {
+			var err error
+			msg, err = pb(dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
+			if err != nil {
+				return wire.Message{}, err
+			}
+			if outsLen == 1 {
+				msg, err = pb(dev, prvMsg, messages.MessageType_MessageType_ResponseTransactionSign)
+			} else {
+				msg, err = pb(dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
+			}
+			if err != nil {
+				return wire.Message{}, err
+			}
+			outsLen--
+		}
+		return msg, nil
 	}
 	hw := hardware.NewSkyWallet(dev, cb)
 	if !hwMatchWallet(*hw, wlt) {
