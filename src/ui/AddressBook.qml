@@ -11,14 +11,32 @@ import "Dialogs/" // For quick UI development, switch back to resources when mak
 
 Page{
     id:addressBook
+
     property int currentContact: -1
-    GroupBox{
-     anchors.fill: parent
-            anchors.topMargin: 30
-            anchors.bottomMargin: 40
-            anchors.rightMargin: 30
-            anchors.leftMargin: 30
-            clip: true
+
+            header: ColumnLayout {
+RowLayout {
+            spacing: listWalletSpacing
+            Layout.topMargin: 30
+
+            Label {
+                text: qsTr("Contacts")
+                font.bold:true
+                 font.pointSize: 15
+                   horizontalAlignment: Qt.AlignHCenter
+                        verticalAlignment: Qt.AlignVCenter
+                Layout.leftMargin: listWalletLeftMargin
+                Layout.fillWidth: true
+            }
+        } // RowLayout
+    Rectangle {
+            id: rect
+            Layout.fillWidth: true
+            height: 1
+            color: "#DDDDDD"
+        }
+             }//ColumnLayout
+
 
     DialogAddContact{
     id: contactDialog
@@ -31,14 +49,38 @@ Page{
         height: applicationWindow.height > 640 ? 640 - 200 : applicationWindow.height - 200
 
         onAccepted: {
-            console.log("Add contact")
+//            console.log("Add contact")
             }
     }
 
+ Component.onCompleted: {
+     if(abm.exist()){
+     getpass.open()
+     }else{
+     setpass.open()
+     }
+     }
+
 AddrsBookModel{
-id:abm
+    id:abm
 }
 
+DialogSetPassword{
+id:setpass
+onAccepted:{
+abm.initAddrsBook(setpass.password)
+}
+}
+
+DialogGetPassword{
+id:getpass
+height:180
+onAccepted:{
+ if(!abm.openAddrsBook(getpass.password)){
+ getpass.open()
+ }
+}
+}
        ScrollView {
                 anchors.fill: parent
                 clip: true
@@ -48,8 +90,10 @@ id:abm
                     Layout.fillHeight: true
                     model: abm
                     delegate: ItemDelegate{
-                    text: name+"\t\t\t"+address
+                    text: name
                     width: parent.width
+                                     font.pointSize: 15
+
                     }
                 }
        }// GroupBox
@@ -62,14 +106,14 @@ id:abm
           onClicked: {
                     contactDialog.open()
           }
-      }
-     }
+      }//RoundButton
 
-     ListModel {
-             id: listContacts
-             ListElement { name: "My first wallet"; address:"qrxw7364w8xerusftaxkw87ues" }
-             ListElement { name: "My second wallet"; address:"8745yuetsrk8tcsku4ryj48ije"}
-             ListElement { name: "My third wallet";  address:"gfdhgs343kweru38200384uwqd"}
-             ListElement { name: "My first wallet";  address:"00qdqsdjkssvmchskjkxxdg374"}
-         }
+
+//     ListModel {
+//             id: listContacts
+//             ListElement { name: "My first wallet"; address:"qrxw7364w8xerusftaxkw87ues" }
+//             ListElement { name: "My second wallet"; address:"8745yuetsrk8tcsku4ryj48ije"}
+//             ListElement { name: "My third wallet";  address:"gfdhgs343kweru38200384uwqd"}
+//             ListElement { name: "My first wallet";  address:"00qdqsdjkssvmchskjkxxdg374"}
+//         }
 }

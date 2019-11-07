@@ -1,6 +1,7 @@
 package addressBook
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/data"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
@@ -16,6 +17,8 @@ const (
 
 const path = ".fiber/data.dt"
 
+var isOpen = false
+var db *data.DB
 var logAddressBook = logging.MustGetLogger("AddressBook")
 
 func init() { AddrsBookModel_QmlRegisterType2("AddrsBookManager", 1, 0, "AddrsBookModel") }
@@ -25,13 +28,16 @@ type AddrsBookModel struct {
 
 	_ map[int]*qtcore.QByteArray               `property:"roles"`
 	_ []*QContact                              `property:"contacts"`
+	_ int                                      `property:"count"`
 	_ func()                                   `constructor:"init"`
 	_ func(row int)                            `slot:"removeContact,auto"`
 	_ func(*QContact)                          `slot:"addContact,auto"`
 	_ func(row int, name string, addrs string) `slot:"editContact,auto"`
 	_ func([]*QContact)                        `slot:"loadContacts,auto"`
 	_ func(name, address string)               `slot:"newContact"`
-	_ int                                      `property:"count"`
+	_ func(string) bool                        `slot:"openAddrsBook"`
+	_ func(string) bool                        `slot:"initAddrsBook"`
+	_ func() bool                              `slot:"exist"`
 }
 
 type QContact struct {
@@ -47,9 +53,6 @@ type QContact struct {
 
 func (adm *AddrsBookModel) init() {
 	logAddressBook.Info("Init addressBook model")
-	if _, err := data.Init([]byte(""), getConfigFileDir(), ""); err != nil {
-		logAddressBook.Error(err)
-	}
 	adm.SetRoles(map[int]*qtcore.QByteArray{
 		Name:    qtcore.NewQByteArray2("name", -1),
 		Address: qtcore.NewQByteArray2("address", -1),
@@ -65,6 +68,10 @@ func (adm *AddrsBookModel) init() {
 	adm.ConnectAddContact(adm.addContact)
 	adm.ConnectLoadContacts(adm.loadContacts)
 	adm.ConnectNewContact(adm.newContact)
+	adm.ConnectDestroyAddrsBookModel(adm.close)
+	adm.ConnectOpenAddrsBook(adm.openAddrsBook)
+	adm.ConnectInitAddrsBook(adm.initAddrsBook)
+	adm.ConnectExist(adm.exist)
 }
 
 func (adm *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
@@ -156,6 +163,78 @@ func (adm *AddrsBookModel) newContact(name, address string) {
 	qc := NewQContact(nil)
 	qc.SetName(name)
 	qc.SetAddress(address)
+	contact := data.Contact{Name: []byte(name), Address: []data.Address{{
+		Value: []byte(address),
+		Coin:  []byte("SKY"),
+	}}}
+	if err := db.InsertContact(&contact); err != nil {
+		logAddressBook.Error(err)
+	}
 	logAddressBook.Infof("inside of new Contact: name: %s \t address: %s", name, address)
 	adm.addContact(qc)
+}
+
+func (*AddrsBookModel) close() {
+	logAddressBook.Info("Closing address book")
+	if isOpen {
+		if err := db.Close(); err != nil {
+			logAddressBook.Error(err)
+		} else {
+			isOpen = false
+		}
+	}
+}
+
+func (abm *AddrsBookModel) openAddrsBook(password string) bool {
+	var err error
+	logAddressBook.Info("Opening address book")
+	if db, err = data.LoadFromFile(getConfigFileDir(), []byte(password)); err != nil {
+		logAddressBook.Error(err)
+
+		return false
+	}
+
+	contacts, err := db.ListContact()
+	if err != nil {
+		logAddressBook.Error(err)
+	}
+	qcontacts := fromContactToQContact(contacts)
+	abm.loadContacts(qcontacts)
+	isOpen = true
+	return true
+}
+
+func (abm *AddrsBookModel) initAddrsBook(password string) bool {
+	var err error
+	logAddressBook.Info("Creating address book")
+
+	if db, err = data.Init([]byte(password), getConfigFileDir(), ""); err != nil {
+		logAddressBook.Error(err)
+	}
+
+	isOpen = true
+	return true
+}
+
+func (*AddrsBookModel) exist() bool {
+	_, err := os.Stat(getConfigFileDir())
+	if os.IsNotExist(err) {
+		return false
+	}
+	if err != nil {
+		logAddressBook.Error(err)
+		return false
+	}
+	return true
+}
+
+func fromContactToQContact(contacts []core.Contact) []*QContact {
+	var qcontacts = make([]*QContact, 0)
+	for _, c := range contacts {
+		qc := NewQContact(nil)
+		qc.SetName(c.GetName())
+		qc.SetAddress(string(c.GetAddresses()[0].GetValue()))
+		qcontacts = append(qcontacts, qc)
+	}
+	return qcontacts
 }
