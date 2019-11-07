@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -227,7 +228,7 @@ func (tOpt *TransferOptions) GetValue(key string) interface{} {
 	return tOpt.values[key]
 }
 
-func (tOpt *TransferOptions) AddKeyValue(key string, value interface{}) {
+func (tOpt *TransferOptions) SetValue(key string, value interface{}) {
 	tOpt.values[key] = value
 }
 
@@ -249,8 +250,8 @@ func TestRemoteWalletTransfer(t *testing.T) {
 	}
 
 	opt := NewTransferOptions()
-	opt.AddKeyValue("BurnFactor", "0.5")
-	opt.AddKeyValue("CoinHoursSelectionType", "auto")
+	opt.SetValue("BurnFactor", "0.5")
+	opt.SetValue("CoinHoursSelectionType", "auto")
 
 	req := api.CreateTransactionRequest{
 		IgnoreUnconfirmed: false,
@@ -287,8 +288,16 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		Id:          "wallet",
 		poolSection: PoolSection,
 	}
+	quot, err := util.AltcoinQuotient(params.SkycoinTicker)
+	require.Nil(t, err)
 
-	ret, err := wlt.Transfer(addr, uint64(sky*1e6), opt)
+	destination := &SkycoinTransactionOutput{
+		skyOut: readable.TransactionOutput{
+			Address: addr.address,
+			Coins:   util.FormatCoins(uint64(sky*1e6), quot),
+		}}
+
+	ret, err := wlt.Transfer(destination, opt)
 	require.Nil(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)
@@ -321,8 +330,8 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	}
 
 	opt1 := NewTransferOptions()
-	opt1.AddKeyValue("BurnFactor", "0.5")
-	opt1.AddKeyValue("CoinHoursSelectionType", "auto")
+	opt1.SetValue("BurnFactor", "0.5")
+	opt1.SetValue("CoinHoursSelectionType", "auto")
 
 	req1 := api.CreateTransactionRequest{
 		IgnoreUnconfirmed: false,
@@ -348,8 +357,8 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	}
 
 	opt2 := NewTransferOptions()
-	opt2.AddKeyValue("BurnFactor", "0.5")
-	opt2.AddKeyValue("CoinHoursSelectionType", "manual")
+	opt2.SetValue("BurnFactor", "0.5")
+	opt2.SetValue("CoinHoursSelectionType", "manual")
 
 	req2 := api.CreateTransactionRequest{
 		IgnoreUnconfirmed: false,
@@ -434,8 +443,8 @@ func TestRemoteWalletSpend(t *testing.T) {
 	}
 
 	opt := NewTransferOptions()
-	opt.AddKeyValue("BurnFactor", "0.5")
-	opt.AddKeyValue("CoinHoursSelectionType", "auto")
+	opt.SetValue("BurnFactor", "0.5")
+	opt.SetValue("CoinHoursSelectionType", "auto")
 
 	req := api.CreateTransactionRequest{
 		IgnoreUnconfirmed: false,
