@@ -234,7 +234,7 @@ func (tOpt *TransferOptions) SetValue(key string, value interface{}) {
 
 func NewTransferOptions() *TransferOptions {
 	tOptions := TransferOptions{
-		values: make(map[string]interface{}, 0),
+		values: make(map[string]interface{}),
 	}
 	return &tOptions
 }
@@ -279,7 +279,7 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		Type:      0,
 		InnerHash: hash,
 	}
-	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn, _ := api.NewCreateTransactionResponse(&txn, nil)
 	crtTxn.Transaction.Fee = "500"
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
@@ -387,7 +387,7 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		Type:      0,
 		InnerHash: hash,
 	}
-	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn, _ := api.NewCreateTransactionResponse(&txn, nil)
 	crtTxn.Transaction.Fee = strconv.Itoa(sky)
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq1, crtTxn)
@@ -473,7 +473,7 @@ func TestRemoteWalletSpend(t *testing.T) {
 		Type:      0,
 		InnerHash: hash,
 	}
-	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	crtTxn, _ := api.NewCreateTransactionResponse(&txn, nil)
 	crtTxn.Transaction.Fee = "500"
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
