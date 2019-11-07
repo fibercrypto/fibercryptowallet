@@ -1,10 +1,10 @@
 package core
 
 import (
-	"errors"
 	"fmt"
 	"sync"
 
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 )
 
@@ -95,7 +95,7 @@ func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection
 	logConnectionPool.Info("Getting " + poolSection + "pool section")
 	section, ok := mp.sections[poolSection]
 	if !ok {
-		return nil, errors.New("Invalid Section")
+		return nil, errors.ErrInvalidPoolSection
 	}
 	return section, nil
 }
@@ -135,7 +135,7 @@ func (ps *PoolSection) Get() interface{} {
 
 	if len(ps.available) == 0 {
 		if len(ps.inUse) == ps.capacity {
-			return errors.New("There is not available objects")
+			return errors.ErrObjectPoolUndeflow
 		}
 		obj, err := ps.factory.Create()
 		if err != nil {

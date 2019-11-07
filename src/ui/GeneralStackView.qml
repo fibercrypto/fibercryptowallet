@@ -3,9 +3,6 @@ import QtQuick.Controls 2.12
 import BlockchainModels 1.0
 import WalletsManager 1.0
 
-// Resource imports
-// import "qrc:/ui/src/ui/"
-
 Item {
     id: generalStackView
 
@@ -44,6 +41,13 @@ Item {
                 } else {
                     stackView.push(componentGeneralSwipeView)
                 }
+            } else{
+                if (stackView.depth > 1) {
+                    stackView.replace(componentPageCreateLoadWallet)
+                } else {
+                    stackView.push(componentPageCreateLoadWallet)
+                }
+
             }
         }
     }
@@ -98,6 +102,12 @@ Item {
 
                 onWalletCreationRequested: {
                     stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,0)
+                }
+
+                onWalletLoadingRequested:{
+                    stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,10)
                 }
             }
         }
