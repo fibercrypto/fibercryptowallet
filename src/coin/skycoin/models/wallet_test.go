@@ -39,12 +39,12 @@ func TestTransactionFinderAddressesActivity(t *testing.T) {
 	thxF := &TransactionFinder{}
 
 	mask, err := thxF.AddressesActivity([]cipher.Address{})
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, 0, len(mask))
 	require.Equal(t, []bool{}, mask)
 
 	mask, err = thxF.AddressesActivity(addresses)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, 3, len(mask))
 	require.Equal(t, false, mask[0])
 	for i := 1; i < 3; i++ {
@@ -113,12 +113,12 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 	}
 
 	wlt1, err := wltSrv.CreateWallet(label, seed, true, pwdReader, scanN)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, "walletEncrypted", wlt1.GetLabel())
 	require.Equal(t, "FiberCrypto", wlt1.GetId())
 
 	wlt2, err := wltSrv.CreateWallet(label, seed, false, pwdReader, scanN)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
 	require.Equal(t, "FiberCrypto", wlt2.GetId())
 }
@@ -143,11 +143,11 @@ func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 
 	encrypted, err := wltSrv.IsEncrypted("encrypted")
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, true, encrypted)
 
 	encrypted, err = wltSrv.IsEncrypted("nonEncrypted")
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, false, encrypted)
 }
 
@@ -188,7 +188,7 @@ func TestRemoteWalletSignSkycoinTxn(t *testing.T) {
 		fee:     100,
 	}
 	encodedResponse, err := unTxn.txn.SerializeHex()
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	walletSignTxn := api.WalletSignTransactionRequest{
 		EncodedTransaction: encodedResponse,
@@ -199,7 +199,7 @@ func TestRemoteWalletSignSkycoinTxn(t *testing.T) {
 
 	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
 	crtTxn.Transaction.Fee = "100"
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	global_mock.On("WalletSignTransaction", walletSignTxn).Return(
 		crtTxn,
@@ -280,7 +280,7 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		InnerHash: hash,
 	}
 	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	crtTxn.Transaction.Fee = "500"
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
@@ -290,7 +290,7 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		poolSection: PoolSection,
 	}
 	quot, err := util.AltcoinQuotient(params.SkycoinTicker)
-	require.Nil(t, err)
+	require.NoError(t, err)
 
 	destination := &SkycoinTransactionOutput{
 		skyOut: readable.TransactionOutput{
@@ -299,10 +299,10 @@ func TestRemoteWalletTransfer(t *testing.T) {
 		}}
 
 	ret, err := wlt.Transfer(destination, opt)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, uint64(sky), val)
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 
@@ -389,7 +389,7 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		InnerHash: hash,
 	}
 	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	crtTxn.Transaction.Fee = strconv.Itoa(sky)
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq1, crtTxn)
@@ -402,10 +402,10 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	}
 
 	ret, err := wlt1.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 
@@ -416,15 +416,13 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 	}
 
 	ret, err = wlt2.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err = ret.ComputeFee(CoinHour)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
-
-//	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 
 func TestRemoteWalletSpend(t *testing.T) {
 	CleanGlobalMock()
@@ -476,7 +474,7 @@ func TestRemoteWalletSpend(t *testing.T) {
 		InnerHash: hash,
 	}
 	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	crtTxn.Transaction.Fee = "500"
 
 	mockSkyApiWalletCreateTransaction(global_mock, &wreq, crtTxn)
@@ -487,10 +485,10 @@ func TestRemoteWalletSpend(t *testing.T) {
 	}
 
 	ret, err := wlt.Spend(nil, []core.TransactionOutput{toAddr}, chgAddr, opt)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, uint64(sky), val)
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
@@ -538,7 +536,7 @@ func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
 		poolSection: PoolSection,
 	}
 	iter, err := wlt.GetLoadedAddresses()
-	require.Nil(t, err)
+	require.NoError(t, err)
 	items := 0
 	for iter.Next() {
 		a := iter.Value()
