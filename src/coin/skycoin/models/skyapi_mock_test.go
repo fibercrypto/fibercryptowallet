@@ -60,3 +60,9 @@ func mockSkyApiWalletCreateTransaction(mock *SkycoinApiMock, wreq *api.WalletCre
 		crtTxn,
 		nil)
 }
+
+func mockSkyApiCreateTransaction(mock *SkycoinApiMock, req *api.CreateTransactionRequest, crtTxn *api.CreateTransactionResponse) {
+	mock.On("CreateTransaction", *req).Return(
+		crtTxn,
+		nil)
+}

@@ -918,3 +918,85 @@ func TestTransactionSignInputs(t *testing.T) {
 	require.Error(t, cipher.VerifyAddressSignedHash(a, signedTxn.txn.Sigs[1], cipher.AddSHA256(h, signedTxn.txn.In[0])))
 	require.Error(t, cipher.VerifyAddressSignedHash(a2, signedTxn.txn.Sigs[0], cipher.AddSHA256(h, signedTxn.txn.In[1])))
 }
+
+func makeLocalWallet(t *testing.T) core.Wallet {
+	_, kd, err := makeUxOutWithSecret(t)
+	require.NoError(t, err)
+	require.NoError(t, err)
+	wallets := makeLocalWalletsFromKeyData(t, []KeyData{*kd})
+	wallet := wallets[0]
+	seed, seckeys, err2 := cipher.GenerateDeterministicKeyPairsSeed([]byte(kd.Mnemonic), kd.AddressIndex+1)
+	require.NoError(t, err2)
+	require.Equal(t, kd.SecKey, seckeys[kd.AddressIndex])
+	_, _, err3 := cipher.GenerateDeterministicKeyPair(seed)
+	require.NoError(t, err3)
+	wallet.GenAddresses(core.AccountAddress, uint32(kd.AddressIndex), 2, nil)
+	return wallet
+}
+
+func TestLocalWalletTransfer(t *testing.T) {
+	CleanGlobalMock()
+	destinationAddress := testutil.MakeAddress()
+	sky := 500
+	wlt := makeLocalWallet(t)
+
+	addr := &SkycoinAddress{
+		address: destinationAddress.String(),
+	}
+
+	loadedAddrs, err := wlt.GetLoadedAddresses()
+	require.NoError(t, err)
+	addrs := make([]string, 0)
+	for loadedAddrs.Next() {
+		addrs = append(addrs, loadedAddrs.Value().String())
+	}
+
+	opt := NewTransferOptions()
+	opt.SetValue("BurnFactor", "0.5")
+	opt.SetValue("CoinHoursSelectionType", "auto")
+
+	req := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type:        "auto",
+			Mode:        "share",
+			ShareFactor: "0.5",
+		},
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+			},
+		},
+		Addresses: addrs,
+	}
+
+	hash := testutil.RandSHA256(t)
+	txn := coin.Transaction{
+		Length:    100,
+		Type:      0,
+		InnerHash: hash,
+	}
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	require.NoError(t, err)
+	crtTxn.Transaction.Fee = "500"
+
+	mockSkyApiCreateTransaction(global_mock, &req, crtTxn)
+
+	quot, err := util.AltcoinQuotient(params.SkycoinTicker)
+	require.NoError(t, err)
+
+	destination := &SkycoinTransactionOutput{
+		skyOut: readable.TransactionOutput{
+			Address: addr.address,
+			Coins:   util.FormatCoins(uint64(sky*1e6), quot),
+		}}
+
+	ret, err := wlt.Transfer(destination, opt)
+	require.NoError(t, err)
+	require.NotNil(t, ret)
+	val, err := ret.ComputeFee(CoinHour)
+	require.NoError(t, err)
+	require.Equal(t, uint64(sky), val)
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
+}
