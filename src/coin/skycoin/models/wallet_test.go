@@ -1000,3 +1000,98 @@ func TestLocalWalletTransfer(t *testing.T) {
 	require.Equal(t, uint64(sky), val)
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
+
+func TestLocalWalletSendFromAddress(t *testing.T) {
+	CleanGlobalMock()
+	startAddress := testutil.MakeAddress()
+	destinationAddress := testutil.MakeAddress()
+	changeAddress := (testutil.MakeAddress()).String()
+	sky := 500
+	wlt := makeLocalWallet(t)
+
+	toAddr := &SkycoinTransactionOutput{
+		skyOut: readable.TransactionOutput{
+			Address: destinationAddress.String(),
+			Coins:   strconv.Itoa(sky),
+			Hours:   uint64(250),
+		},
+	}
+	fromAddr := &SkycoinAddress{
+		address: startAddress.String(),
+	}
+	chgAddr := &SkycoinAddress{
+		address: changeAddress,
+	}
+
+	opt1 := NewTransferOptions()
+	opt1.SetValue("BurnFactor", "0.5")
+	opt1.SetValue("CoinHoursSelectionType", "auto")
+
+	req1 := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type:        "auto",
+			Mode:        "share",
+			ShareFactor: "0.5",
+		},
+		ChangeAddress: &changeAddress,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+			},
+		},
+		Addresses: []string{startAddress.String()},
+	}
+
+	opt2 := NewTransferOptions()
+	opt2.SetValue("BurnFactor", "0.5")
+	opt2.SetValue("CoinHoursSelectionType", "manual")
+
+	req2 := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type: "manual",
+		},
+		ChangeAddress: &changeAddress,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+				Hours:   "250",
+			},
+		},
+		Addresses: []string{startAddress.String()},
+	}
+
+	hash := testutil.RandSHA256(t)
+	txn := coin.Transaction{
+		Length:    100,
+		Type:      0,
+		InnerHash: hash,
+	}
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	require.NoError(t, err)
+	crtTxn.Transaction.Fee = strconv.Itoa(sky)
+
+	mockSkyApiCreateTransaction(global_mock, &req1, crtTxn)
+	mockSkyApiCreateTransaction(global_mock, &req2, crtTxn)
+
+	//Testing HoursSelection to auto
+	ret, err := wlt.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
+	require.NoError(t, err)
+	require.NotNil(t, ret)
+	val, err := ret.ComputeFee(CoinHour)
+	require.NoError(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
+
+	//Testing HoursSelection to manual
+	ret, err = wlt.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
+	require.NoError(t, err)
+	require.NotNil(t, ret)
+	val, err = ret.ComputeFee(CoinHour)
+	require.NoError(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
+}
