@@ -42,14 +42,9 @@ type AddrsBookModel struct {
 
 type QContact struct {
 	qtcore.QObject
-	_ string `property:"name"`
-	_ string `property:"address"`
+	_ string               `property:"name"`
+	_ *AddrsBkAddressModel `property:"address"`
 }
-
-// type QAddress struct {
-// 	_ string `property:"value"`
-// 	_ string `property:"coinType"`
-// }
 
 func (adm *AddrsBookModel) init() {
 	logAddressBook.Info("Init addressBook model")
@@ -87,12 +82,10 @@ func (adm *AddrsBookModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVa
 		return qtcore.NewQVariant()
 	}
 	contact := adm.Contacts()[index.Row()]
-	logAddressBook.Info("Outside of swith")
 
 	switch role {
 	case Name:
 		{
-			logAddressBook.Info("Inside of Name case.")
 			return qtcore.NewQVariant1(contact.Name())
 		}
 	case Address:
@@ -159,10 +152,10 @@ func (adm *AddrsBookModel) loadContacts(contacts []*QContact) {
 	adm.SetCount(len(adm.Contacts()))
 }
 
-func (adm *AddrsBookModel) newContact(name, address string) {
+func (adm *AddrsBookModel) newContact(name string, address string) {
 	qc := NewQContact(nil)
 	qc.SetName(name)
-	qc.SetAddress(address)
+	// qc.SetAddress([]*QAddress{})
 	contact := data.Contact{Name: []byte(name), Address: []data.Address{{
 		Value: []byte(address),
 		Coin:  []byte("SKY"),
@@ -198,6 +191,7 @@ func (abm *AddrsBookModel) openAddrsBook(password string) bool {
 		logAddressBook.Error(err)
 	}
 	qcontacts := fromContactToQContact(contacts)
+	logAddressBook.Infof("%#v", qcontacts)
 	abm.loadContacts(qcontacts)
 	isOpen = true
 	return true
@@ -228,12 +222,14 @@ func (*AddrsBookModel) exist() bool {
 }
 
 func fromContactToQContact(contacts []core.Contact) []*QContact {
-	var qcontacts = make([]*QContact, 0)
+	var qContacts = make([]*QContact, 0)
 	for _, c := range contacts {
 		qc := NewQContact(nil)
 		qc.SetName(c.GetName())
-		qc.SetAddress(string(c.GetAddresses()[0].GetValue()))
-		qcontacts = append(qcontacts, qc)
+		qAddressModel := NewAddrsBkAddressModel(nil)
+		qAddressModel.SetAddress(FromAddressToQAddress(c.GetAddresses()))
+		qc.SetAddress(qAddressModel)
+		qContacts = append(qContacts, qc)
 	}
-	return qcontacts
+	return qContacts
 }
