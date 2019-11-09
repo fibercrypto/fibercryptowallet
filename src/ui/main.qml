@@ -99,7 +99,7 @@ ApplicationWindow {
 
         onAddressBookRequested: {
                     generalStackView.openAddressBookPage()
-                    customHeader.text = qsTr("AddressBook")
+                    customHeader.text = qsTr("Address Book")
 
                     enableOutputs = true
                     enablePendingTransactions = true

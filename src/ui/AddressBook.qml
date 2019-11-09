@@ -14,29 +14,6 @@ Page{
 
     property int currentContact: -1
 
-            header: ColumnLayout {
-RowLayout {
-            spacing: listWalletSpacing
-            Layout.topMargin: 30
-
-            Label {
-                text: qsTr("Contacts")
-                font.bold:true
-                 font.pointSize: 15
-                   horizontalAlignment: Qt.AlignHCenter
-                        verticalAlignment: Qt.AlignVCenter
-                Layout.leftMargin: listWalletLeftMargin
-                Layout.fillWidth: true
-            }
-        } // RowLayout
-    Rectangle {
-            id: rect
-            Layout.fillWidth: true
-            height: 1
-            color: "#DDDDDD"
-        }
-             }//ColumnLayout
-
 
     DialogAddContact{
     id: contactDialog
@@ -67,6 +44,7 @@ AddrsBookModel{
 
 DialogSetPassword{
 id:setpass
+anchors.centerIn: Overlay.overlay
 onAccepted:{
 abm.initAddrsBook(setpass.password)
 }
@@ -74,6 +52,7 @@ abm.initAddrsBook(setpass.password)
 
 DialogGetPassword{
 id:getpass
+anchors.centerIn: Overlay.overlay
 height:180
 onAccepted:{
  if(!abm.openAddrsBook(getpass.password)){
@@ -112,7 +91,7 @@ onAccepted:{
 //        }
                     }
                 }
-       }// GroupBox
+       }// ScrollView
   RoundButton {
           text: qsTr("+")
           highlighted: true
