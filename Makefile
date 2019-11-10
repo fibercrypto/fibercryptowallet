@@ -52,6 +52,7 @@ build-docker: ## Build project using docker
 
 build: ## Build FiberCrypto Wallet.
 	@echo "Building FiberCrypto Wallet..."
+	make -C src/data/ regenerate
 	# Add the flag `-quickcompiler` when making a release
 	@qtdeploy build $(DEFAULT_TARGET)
 	@echo "Done."
@@ -84,7 +85,11 @@ test-sky: ## Run Skycoin plugin test suite
 	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 
-test: test-sky ## Run project test suite
+test: test-sky data-test ## Run project test suite
+
+
+data-test: ##Run test for data package
+	make -C src/data/ run_test
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck

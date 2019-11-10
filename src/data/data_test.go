@@ -782,7 +782,7 @@ func TestDB_UpdateContact(t *testing.T) {
 func TestLoadFromFile(t *testing.T) {
 
 	initPath := GetFilePath(t)
-	initAddrsBook, err := Init([]byte(defaultPass), initPath, "")
+	initAddrsBook, err := Init([]byte(defaultPass), initPath)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -867,8 +867,7 @@ func GetFilePath(t *testing.T) string {
 // Open a address book using a test file.
 func OpenAddrsBook(t *testing.T) DB {
 	path := GetFilePath(t)
-	mnemonic := "mandate ride tide eternal laundry stem prison era calm topic rate remain"
-	AddrsBook, err := Init([]byte(defaultPass), path, mnemonic)
+	AddrsBook, err := Init([]byte(defaultPass), path)
 	if err != nil {
 		t.Error(err)
 	}
