@@ -1,9 +1,11 @@
 package addressBook
 
 import (
+	"bytes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
+	"sort"
 )
 
 const (
@@ -30,7 +32,7 @@ type AddrsBkAddressModel struct {
 func (m *AddrsBkAddressModel) init() {
 	m.SetRoles(map[int]*qtcore.QByteArray{
 		Value:    qtcore.NewQByteArray2("value", -1),
-		CoinType: qtcore.NewQByteArray2("coin", -1),
+		CoinType: qtcore.NewQByteArray2("coinType", -1),
 	})
 	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
 	m.ConnectRowCount(m.rowCount)
@@ -76,18 +78,11 @@ func (m *AddrsBkAddressModel) data(index *qtcore.QModelIndex, role int) *qtcore.
 	}
 }
 
-// func (m *AddrsBkAddressModel) insertRows(row int, count int) bool {
-// 	m.BeginInsertRows(qtcore.NewQModelIndex(), row, row+count)
-// 	m.EndInsertRows()
-// 	return true
-// }
-// func (m *AddrsBkAddressModel) addAddress(mo []*AddrsBookModel) {
-//
-// 	// m.insertRows(len(m.Outputs()), len(mo))
-// }
-
-func FromAddressToQAddress(addresses []core.ReadableAddress) []*QAddress {
+func fromAddressToQAddress(addresses []core.ReadableAddress) []*QAddress {
 	var qAddresses = make([]*QAddress, 0)
+	sort.Slice(addresses, func(i, j int) bool {
+		return bytes.Compare(addresses[i].GetCoinType(), addresses[j].GetCoinType()) == -1
+	})
 	for _, addrs := range addresses {
 		qa := NewQAddress(nil)
 		qa.SetCoinType(string(addrs.GetCoinType()))

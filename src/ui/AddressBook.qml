@@ -22,8 +22,8 @@ Page{
         modal: true
         focus: true
 
-        width: applicationWindow.width > 540 ? 540 - 200 : applicationWindow.width - 200
-        height: applicationWindow.height > 640 ? 640 - 200 : applicationWindow.height - 200
+        width: applicationWindow.width > 540 ? 540  : applicationWindow.width
+        height: applicationWindow.height > 640 ? 640: applicationWindow.height
 
         onAccepted: {
 //            console.log("Add contact")
@@ -65,12 +65,6 @@ onAccepted:{
                 clip: true
                 ListView {
 
-//                 signal pressAndHold(int index)
-//                    flickDeceleration: 1497
-//
-//                    focus: true
-//                    boundsBehavior: Flickable.StopAtBounds
-
                     id: addrsBook
                     Layout.fillWidth: true
                     Layout.fillHeight: true
@@ -84,16 +78,11 @@ onAccepted:{
                     delegate: ContactDelegate{
                    id:contactDelegate
                      width: addrsBook.width
-
-//        Connections {
-//            target: contactDelegate
-//            onPressAndHold: addrsBook.pressAndHold(index)
-//        }
                     }
                 }
        }// ScrollView
   RoundButton {
-          text: qsTr("+")
+          text: qsTr("Add Contact")
           highlighted: true
           anchors.margins: 10
           anchors.right: parent.right

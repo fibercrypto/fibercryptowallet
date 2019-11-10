@@ -50,13 +50,13 @@ func (ab *DB) verifyHash() error {
 
 // Init initialize an address book. Using this before do you use NewAddressBook.
 // If the address book has been init, use LoadFromFile.
-func Init(password []byte, path, mnemonic string) (*DB, error) {
+func Init(password []byte, path string) (*DB, error) {
 	var ab DB
 	ab.dbPath = path
 	if err := ab.open(); err != nil {
 		return nil, err
 	}
-	if err := ab.genEntropy(mnemonic); err != nil {
+	if err := ab.genEntropy(); err != nil {
 		return nil, err
 	}
 	hash, err := bcrypt.GenerateFromPassword(password, 14)
@@ -342,27 +342,16 @@ func (ab *DB) Close() error {
 
 // genEntropy generate an Entropy by a mnemonic. If mnemonic is nil,
 // it generate a random.
-func (ab *DB) genEntropy(mnemonic string) error {
-	if mnemonic != "" {
-		if err := bip39.ValidateMnemonic(mnemonic); err != nil {
-			return err
-		}
-		e, err := bip39.EntropyFromMnemonic(mnemonic)
-		if err != nil {
-			return err
-		}
-		ab.entropy = e
-	} else {
-		mn, err := bip39.NewDefaultMnemonic()
-		if err != nil {
-			return err
-		}
-		e, err := bip39.EntropyFromMnemonic(mn)
-		if err != nil {
-			return err
-		}
-		ab.entropy = e
+func (ab *DB) genEntropy() error {
+	mn, err := bip39.NewDefaultMnemonic()
+	if err != nil {
+		return err
 	}
+	e, err := bip39.EntropyFromMnemonic(mn)
+	if err != nil {
+		return err
+	}
+	ab.entropy = e
 	return nil
 }
 
