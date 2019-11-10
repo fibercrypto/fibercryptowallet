@@ -98,13 +98,13 @@ ApplicationWindow {
 
         onAddressBookRequested: {
                     generalStackView.openAddressBookPage()
-                    customHeader.text = qsTr("Address Book")
+                    customHeader.text = qsTr("Address book")
 
                     enableOutputs = true
                     enablePendingTransactions = true
                     enableBlockchain = true
                     enableNetworking = true
-                    enableSettings = false
+                    enableSettings = true
                 }
 
         onAboutRequested: {

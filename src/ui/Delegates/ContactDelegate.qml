@@ -12,45 +12,23 @@ dialogShowContact.open()
 
 DialogShowContact{
 id:dialogShowContact
-width:300
-height:300
+anchors.centerIn: Overlay.overlay
+width:350
+height:400
 }
-
-    contentItem: ColumnLayout {
-        spacing: 10
-
-
+    contentItem: RowLayout {
+        spacing: 20
+        Image{
+        source:"../../../resources/images/icons/user_icon-icons.com_66546.svg"
+        sourceSize.width: 24
+            sourceSize.height:24
+        }
         Label {
             text: name
             font.bold: true
+
             elide: Text.ElideRight
             Layout.fillWidth: true
         }
-
-//        GridLayout {
-//            id: grid
-//            visible: false
-//
-//            columns: 2
-//            rowSpacing: 10
-//            columnSpacing: 10
-//
-//            Label {
-//                text: qsTr("Addresses:")
-////                Layout.leftMargin: 60
-//            }
-//        }
-
 }
-//    states: [
-//        State {
-//            name: "expanded"
-//            when: contactDelegate.checked
-//
-//            PropertyChanges {
-//                target: grid
-//                visible: true
-//            }
-//        }
-//    ]
 }

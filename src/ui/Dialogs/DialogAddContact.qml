@@ -7,6 +7,8 @@ import AddrsBookManager 1.0
 
 import "../Controls" // For quick UI development, switch back to resources when making a release
 import "../" // For quick UI development, switch back to resources when making a release
+import "../Delegates"
+
 
 Dialog{
   id: dialogAddContact
@@ -15,21 +17,22 @@ Dialog{
     Component.onCompleted: {
         standardButton(Dialog.Ok).enabled=false
     }
-
-
     onAccepted:{
 updateAcceptButtonStatus()
-
     }
 
+
+
     function updateAcceptButtonStatus() {
-abm.newContact(name.text,address.text)
+//    var addresses=new []QAddress();
+    for(var i=0;i<listModelAddresses.count;i++){
+    abm.addAddress(listModelAddresses.get(i).address,listModelAddresses.get(i).coinType)
+    }
+
+abm.newContact(name.text)
     } // function updateAcceptButtonStatus()
 
 
-    onAboutToShow: {
-//        createLoadWallet.clear()
-    }
 
 Flickable{
         id:flickable
@@ -38,31 +41,51 @@ Flickable{
         clip: true
         ColumnLayout{
             id: columnLayoutRoot
-            //anchors.fill: parent
             width: parent.width
             spacing: 30
 
                     Behavior on Layout.preferredHeight {NumberAnimation{duration: 500;easing.type:Easing.OutQuint}}
                     TextField{
                         id:name
-                        placeholderText: "name"
+                        placeholderText: "Name"
                         Layout.fillWidth: true
                         onTextChanged:{
-                        standardButton(Dialog.Ok).enabled=(name.text!="")&&(address.text!="")
+                        standardButton(Dialog.Ok).enabled=(name.text!="")
                         }
 
                     }
-                    TextField{
-                        id:address
-                        placeholderText: "address"
-                        Layout.fillWidth: true
-                        onTextChanged:{
-                        standardButton(Dialog.Ok).enabled=(name.text!="")&&(address.text!="")
-                        }
+                   ColumnLayout {
+                               id: columnLayoutDestinations
 
-                    }
+                               Layout.alignment: Qt.AlignTop
+
+                               ListView {
+                                   id: listViewDestinations
+
+                                   property real delegateHeight: 47
+
+                                   Layout.fillWidth: true
+                                   Layout.topMargin: -16
+                                   implicitHeight: count * delegateHeight
+
+                                   Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
+
+                                   interactive: false
+                                   clip: true
+
+                                   model: listModelAddresses
+
+                                   delegate: AddressListDelegate {
+                                       width: listViewDestinations.width
+                                       implicitHeight: ListView.view.delegateHeight
+                                   }
+                               } // ListView
+                           } // ColumnLayout (destinations)
+ListModel {
+        id: listModelAddresses
+        ListElement { address: ""; coinType: ""; }
+    }
         }//ColumnLayoutRoot
-
         ScrollIndicator.vertical: ScrollIndicator{
         parent: dialogAddContact.contentItem
         anchors.top: flickable.top

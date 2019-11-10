@@ -61,7 +61,6 @@ func (m *AddressesModel) init() {
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
 	m.ConnectRoleNames(m.roleNames)
-
 	m.ConnectAddAddress(m.addAddress)
 	m.ConnectEditAddress(m.editAddress)
 	m.ConnectRemoveAddress(m.removeAddress)

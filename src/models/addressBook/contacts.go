@@ -23,6 +23,8 @@ var logAddressBook = logging.MustGetLogger("AddressBook")
 
 func init() { AddrsBookModel_QmlRegisterType2("AddrsBookManager", 1, 0, "AddrsBookModel") }
 
+var addresses = make([]core.ReadableAddress, 0)
+
 type AddrsBookModel struct {
 	qtcore.QAbstractListModel
 
@@ -34,16 +36,17 @@ type AddrsBookModel struct {
 	_ func(*QContact)                          `slot:"addContact,auto"`
 	_ func(row int, name string, addrs string) `slot:"editContact,auto"`
 	_ func([]*QContact)                        `slot:"loadContacts,auto"`
-	_ func(name, address string)               `slot:"newContact"`
+	_ func(name string)                        `slot:"newContact"`
 	_ func(string) bool                        `slot:"openAddrsBook"`
 	_ func(string) bool                        `slot:"initAddrsBook"`
 	_ func() bool                              `slot:"exist"`
+	_ func(value, coinType string)             `slot:"addAddress"`
 }
 
 type QContact struct {
 	qtcore.QObject
-	_ string               `property:"name"`
-	_ *AddrsBkAddressModel `property:"address"`
+	_ string              `property:"name"`
+	_ AddrsBkAddressModel `property:"address"`
 }
 
 func (adm *AddrsBookModel) init() {
@@ -67,6 +70,7 @@ func (adm *AddrsBookModel) init() {
 	adm.ConnectOpenAddrsBook(adm.openAddrsBook)
 	adm.ConnectInitAddrsBook(adm.initAddrsBook)
 	adm.ConnectExist(adm.exist)
+	adm.ConnectAddAddress(adm.addAddress)
 }
 
 func (adm *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
@@ -116,19 +120,15 @@ func (adm *AddrsBookModel) removeContact(row int) {
 
 func (adm *AddrsBookModel) addContact(c *QContact) {
 	logAddressBook.Info("Add Contact")
-	adm.BeginInsertColumns(qtcore.NewQModelIndex(), len(adm.Contacts()), len(adm.Contacts()))
-	// db, err := data.LoadFromFile(getConfigFileDir(), []byte(""))
-	// if err != nil {
-	// 	logAddressBook.Error(err)
-	// }
-	// defer db.Close()
+	var row = 0
+	for row < len(adm.Contacts()) && c.Name() > adm.Contacts()[row].Name() {
+		row++
+	}
+	adm.BeginInsertColumns(qtcore.NewQModelIndex(), row, row)
 	qml.QQmlEngine_SetObjectOwnership(c, qml.QQmlEngine__CppOwnership)
-	adm.SetContacts(append(adm.Contacts(), c))
 
-	// if err := db.InsertContact(&data.Contact{}); err != nil {
-	// 	logAddressBook.Error(err)
-	// }
-	// adm.ConnectData(adm.data)
+	adm.SetContacts(append(append(adm.Contacts()[:row], c), adm.Contacts()[row:]...))
+
 	adm.EndInsertRows()
 	adm.SetCount(adm.Count() + 1)
 }
@@ -141,28 +141,30 @@ func getConfigFileDir() string {
 	return fileDir
 }
 
+var s qtcore.QMap
+
 func (adm *AddrsBookModel) loadContacts(contacts []*QContact) {
 	logAddressBook.Info("loading contacts")
 	for _, c := range contacts {
-		qml.QQmlEngine_SetObjectOwnership(c, qml.QQmlEngine__CppOwnership)
+		adm.addContact(c)
 	}
-	adm.BeginResetModel()
-	adm.SetContacts(contacts)
-	adm.EndResetModel()
-	adm.SetCount(len(adm.Contacts()))
 }
 
-func (adm *AddrsBookModel) newContact(name string, address string) {
+func (adm *AddrsBookModel) newContact(name string) {
 	qc := NewQContact(nil)
 	qc.SetName(name)
-	// qc.SetAddress([]*QAddress{})
-	contact := data.Contact{Name: []byte(name), Address: []data.Address{{
-		Value: []byte(address),
-		Coin:  []byte("SKY"),
-	}}}
+	qa := fromAddressToQAddress(addresses)
+	am := NewAddrsBkAddressModel(nil)
+	am.SetAddress(qa)
+	qc.SetAddress(am)
+	var contact data.Contact
+	contact.SetName(name)
+	logAddressBook.Infof("%#v", addresses[0])
+	contact.SetAddresses(addresses)
 	if err := db.InsertContact(&contact); err != nil {
 		logAddressBook.Error(err)
 	}
+	addresses = []core.ReadableAddress{}
 	adm.addContact(qc)
 }
 
@@ -201,7 +203,7 @@ func (abm *AddrsBookModel) initAddrsBook(password string) bool {
 	var err error
 	logAddressBook.Info("Creating address book")
 
-	if db, err = data.Init([]byte(password), getConfigFileDir(), ""); err != nil {
+	if db, err = data.Init([]byte(password), getConfigFileDir()); err != nil {
 		logAddressBook.Error(err)
 	}
 
@@ -227,9 +229,15 @@ func fromContactToQContact(contacts []core.Contact) []*QContact {
 		qc := NewQContact(nil)
 		qc.SetName(c.GetName())
 		qAddressModel := NewAddrsBkAddressModel(nil)
-		qAddressModel.SetAddress(FromAddressToQAddress(c.GetAddresses()))
+		qAddressModel.SetAddress(fromAddressToQAddress(c.GetAddresses()))
 		qc.SetAddress(qAddressModel)
 		qContacts = append(qContacts, qc)
 	}
 	return qContacts
+}
+
+func (*AddrsBookModel) addAddress(value, coinType string) {
+	logAddressBook.Infof("%#v", addresses)
+	logAddressBook.Infof("value: %#v, type: %#v", value, coinType)
+	addresses = append(addresses, &data.Address{Value: []byte(value), Coin: []byte(coinType)})
 }
