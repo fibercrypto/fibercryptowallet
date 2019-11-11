@@ -13,6 +13,7 @@ import (
 const (
 	Name = int(qtcore.Qt__UserRole + (iota + 1))
 	Address
+	ID
 )
 
 const path = ".fiber/data.dt"
@@ -32,10 +33,8 @@ type AddrsBookModel struct {
 	_ []*QContact                              `property:"contacts"`
 	_ int                                      `property:"count"`
 	_ func()                                   `constructor:"init"`
-	_ func(row int)                            `slot:"removeContact,auto"`
-	_ func(*QContact)                          `slot:"addContact,auto"`
+	_ func(row int, id uint64)                 `slot:"removeContact,auto"`
 	_ func(row int, name string, addrs string) `slot:"editContact,auto"`
-	_ func([]*QContact)                        `slot:"loadContacts,auto"`
 	_ func(name string)                        `slot:"newContact"`
 	_ func(string) bool                        `slot:"openAddrsBook"`
 	_ func(string) bool                        `slot:"initAddrsBook"`
@@ -45,47 +44,44 @@ type AddrsBookModel struct {
 
 type QContact struct {
 	qtcore.QObject
+	_ uint64              `property:"id"`
 	_ string              `property:"name"`
 	_ AddrsBkAddressModel `property:"address"`
 }
 
-func (adm *AddrsBookModel) init() {
+func (abm *AddrsBookModel) init() {
 	logAddressBook.Info("Init addressBook model")
-	adm.SetRoles(map[int]*qtcore.QByteArray{
+	abm.SetRoles(map[int]*qtcore.QByteArray{
 		Name:    qtcore.NewQByteArray2("name", -1),
 		Address: qtcore.NewQByteArray2("address", -1),
+		ID:      qtcore.NewQByteArray2("id", -1),
 	})
-	qml.QQmlEngine_SetObjectOwnership(adm, qml.QQmlEngine__CppOwnership)
-	adm.ConnectRowCount(adm.rowCount)
-	adm.ConnectData(adm.data)
-	adm.ConnectColumnCount(adm.columnCount)
-	adm.ConnectRoleNames(adm.roleNames)
-
-	adm.ConnectEditContact(adm.editContact)
-	adm.ConnectRemoveContact(adm.removeContact)
-	adm.ConnectAddContact(adm.addContact)
-	adm.ConnectLoadContacts(adm.loadContacts)
-	adm.ConnectNewContact(adm.newContact)
-	adm.ConnectDestroyAddrsBookModel(adm.close)
-	adm.ConnectOpenAddrsBook(adm.openAddrsBook)
-	adm.ConnectInitAddrsBook(adm.initAddrsBook)
-	adm.ConnectExist(adm.exist)
-	adm.ConnectAddAddress(adm.addAddress)
+	qml.QQmlEngine_SetObjectOwnership(abm, qml.QQmlEngine__CppOwnership)
+	abm.ConnectRowCount(abm.rowCount)
+	abm.ConnectData(abm.data)
+	abm.ConnectColumnCount(abm.columnCount)
+	abm.ConnectRoleNames(abm.roleNames)
+	abm.ConnectNewContact(abm.newContact)
+	abm.ConnectDestroyAddrsBookModel(abm.close)
+	abm.ConnectOpenAddrsBook(abm.openAddrsBook)
+	abm.ConnectInitAddrsBook(abm.initAddrsBook)
+	abm.ConnectExist(abm.exist)
+	abm.ConnectAddAddress(abm.addAddress)
 }
 
-func (adm *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
-	return len(adm.Contacts())
+func (abm *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
+	return len(abm.Contacts())
 }
 
-func (adm *AddrsBookModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
+func (abm *AddrsBookModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
 	logAddressBook.Info("Loading data for index")
 	if !index.IsValid() {
 		return qtcore.NewQVariant()
 	}
-	if index.Row() >= len(adm.Contacts()) {
+	if index.Row() >= len(abm.Contacts()) {
 		return qtcore.NewQVariant()
 	}
-	contact := adm.Contacts()[index.Row()]
+	contact := abm.Contacts()[index.Row()]
 
 	switch role {
 	case Name:
@@ -96,44 +92,61 @@ func (adm *AddrsBookModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVa
 		{
 			return qtcore.NewQVariant1(contact.Address())
 		}
+	case ID:
+		{
+			return qtcore.NewQVariant1(contact.Id())
+		}
 	default:
 		return qtcore.NewQVariant()
 	}
 }
 
-func (adm *AddrsBookModel) roleNames() map[int]*qtcore.QByteArray {
-	return adm.Roles()
+func (abm *AddrsBookModel) roleNames() map[int]*qtcore.QByteArray {
+	return abm.Roles()
 }
 
-func (adm *AddrsBookModel) columnCount(parent *qtcore.QModelIndex) int {
+func (abm *AddrsBookModel) columnCount(parent *qtcore.QModelIndex) int {
 	return 1
 }
 
-func (adm *AddrsBookModel) removeContact(row int) {
-	logAddressBook.Info("Remove contact for index")
-	adm.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
-	adm.SetContacts(append(adm.Contacts()[:row], adm.Contacts()[row+1:]...))
-	adm.EndRemoveRows()
-	adm.SetCount(adm.Count() - 1)
+func (abm *AddrsBookModel) removeContact(row int, id uint64) {
+	logAddressBook.Info("Remove contact")
+	if row < 0 || row >= abm.Count() {
+		return
+	}
+
+	if err := db.DeleteContact(id); err != nil {
+		logAddressBook.Error(err)
+	}
+
+	abm.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
+	logAddressBook.Info(len(abm.Contacts()))
+	abm.SetContacts(append(abm.Contacts()[:row], abm.Contacts()[row+1:]...))
+	logAddressBook.Info(len(abm.Contacts()))
+
+	abm.EndRemoveRows()
+	abm.SetCount(abm.Count() - 1)
 
 }
 
-func (adm *AddrsBookModel) addContact(c *QContact) {
+func (abm *AddrsBookModel) addContact(c *QContact) {
 	logAddressBook.Info("Add Contact")
 	var row = 0
-	for row < len(adm.Contacts()) && c.Name() > adm.Contacts()[row].Name() {
+	for row < len(abm.Contacts()) && c.Name() > abm.Contacts()[row].Name() {
 		row++
 	}
-	adm.BeginInsertColumns(qtcore.NewQModelIndex(), row, row)
+	abm.BeginInsertColumns(qtcore.NewQModelIndex(), row, row)
 	qml.QQmlEngine_SetObjectOwnership(c, qml.QQmlEngine__CppOwnership)
 
-	adm.SetContacts(append(append(adm.Contacts()[:row], c), adm.Contacts()[row:]...))
+	abm.SetContacts(append(append(abm.Contacts()[:row], c), abm.Contacts()[row:]...))
 
-	adm.EndInsertRows()
-	adm.SetCount(adm.Count() + 1)
+	abm.EndInsertRows()
+	abm.SetCount(abm.Count() + 1)
 }
 
-func (adm *AddrsBookModel) editContact(row int, name string, addrs string) {}
+func (abm *AddrsBookModel) editContact(row int, name string, addrs string) {
+	logAddressBook.Info("Edit contact")
+}
 
 func getConfigFileDir() string {
 	homeDir := os.Getenv("HOME")
@@ -141,16 +154,14 @@ func getConfigFileDir() string {
 	return fileDir
 }
 
-var s qtcore.QMap
-
-func (adm *AddrsBookModel) loadContacts(contacts []*QContact) {
+func (abm *AddrsBookModel) loadContacts(contacts []*QContact) {
 	logAddressBook.Info("loading contacts")
 	for _, c := range contacts {
-		adm.addContact(c)
+		abm.addContact(c)
 	}
 }
 
-func (adm *AddrsBookModel) newContact(name string) {
+func (abm *AddrsBookModel) newContact(name string) {
 	qc := NewQContact(nil)
 	qc.SetName(name)
 	qa := fromAddressToQAddress(addresses)
@@ -161,11 +172,13 @@ func (adm *AddrsBookModel) newContact(name string) {
 	contact.SetName(name)
 	logAddressBook.Infof("%#v", addresses[0])
 	contact.SetAddresses(addresses)
-	if err := db.InsertContact(&contact); err != nil {
+	if id, err := db.InsertContact(&contact); err != nil {
 		logAddressBook.Error(err)
+	} else {
+		qc.SetId(id)
 	}
 	addresses = []core.ReadableAddress{}
-	adm.addContact(qc)
+	abm.addContact(qc)
 }
 
 func (*AddrsBookModel) close() {
@@ -228,6 +241,7 @@ func fromContactToQContact(contacts []core.Contact) []*QContact {
 	for _, c := range contacts {
 		qc := NewQContact(nil)
 		qc.SetName(c.GetName())
+		qc.SetId(c.GetID())
 		qAddressModel := NewAddrsBkAddressModel(nil)
 		qAddressModel.SetAddress(fromAddressToQAddress(c.GetAddresses()))
 		qc.SetAddress(qAddressModel)

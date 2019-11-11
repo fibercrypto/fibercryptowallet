@@ -12,7 +12,7 @@ type KeyValueStorage interface {
 type AddressBook interface {
 	GetContact(id uint64) (Contact, error)
 	ListContact() ([]Contact, error)
-	InsertContact(contact Contact) error
+	InsertContact(contact Contact) (uint64, error)
 	DeleteContact(id uint64) error
 	UpdateContact(id uint64, contact Contact) error
 }

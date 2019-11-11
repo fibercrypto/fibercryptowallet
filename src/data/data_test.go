@@ -152,7 +152,7 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 	defer CloseTest(t, &ab)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := ab.InsertContact(&Contact{
+			if _, err := ab.InsertContact(&Contact{
 				Address: tt.field.Address,
 				Name:    tt.field.Name,
 			}); err != nil {
@@ -252,7 +252,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if err := ab.InsertContact(&Contact{
+			if _, err := ab.InsertContact(&Contact{
 				Address: tt.fields.Address,
 				Name:    tt.fields.Name,
 			}); err != nil {
@@ -350,7 +350,7 @@ func Test_addressBook_InsertContact(t *testing.T) {
 	defer CloseTest(t, &ab)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := ab.InsertContact(tt.args.c); (err != nil) != tt.wantErr {
+			if _, err := ab.InsertContact(tt.args.c); (err != nil) != tt.wantErr {
 				t.Errorf("InsertContact() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -581,7 +581,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 			ab := OpenAddrsBook(t)
 			defer CloseTest(t, &ab)
 			for _, contact := range tt.fields.Contacts {
-				if err := ab.InsertContact(&contact); err != nil {
+				if _, err := ab.InsertContact(&contact); err != nil {
 					t.Error(err)
 					return
 				}
@@ -766,7 +766,7 @@ func TestDB_UpdateContact(t *testing.T) {
 			ab := OpenAddrsBook(t)
 			defer CloseTest(t, &ab)
 			for e := range tt.insertArgs.contacts {
-				if err := ab.InsertContact(tt.insertArgs.contacts[e]); err != nil {
+				if _, err := ab.InsertContact(tt.insertArgs.contacts[e]); err != nil {
 					t.Error(err)
 					return
 				}
