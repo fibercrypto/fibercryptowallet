@@ -160,11 +160,11 @@ func (ab *DB) open() error {
 
 // InsertContact insert a contact into the address book.
 // If any of its address exist return error.
-func (ab *DB) InsertContact(c core.Contact) error {
+func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 	// Start a writeable transaction.
 	tx, err := ab.db.Begin(true)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	defer func() {
@@ -176,16 +176,16 @@ func (ab *DB) InsertContact(c core.Contact) error {
 	contacts, err := ab.ListContact()
 	for _, v := range c.GetAddresses() {
 		if err := ab.AddressExists(v, contacts); err != nil {
-			return err
+			return 0, err
 		}
 	}
 	if err := ab.NameExists(c, contacts); err != nil {
-		return err
+		return 0, err
 	}
 
 	bkt := tx.Bucket(dbAddrsBookBkt)
 	if bkt == nil {
-		return errBucketEmpty
+		return 0, errBucketEmpty
 	}
 
 	// The sequence is an auto-incrementing integer that is transactionally safe.
@@ -195,19 +195,19 @@ func (ab *DB) InsertContact(c core.Contact) error {
 	if cc, ok := c.(*Contact); ok {
 		encryptedData, err := ab.encryptAESGCM(cc)
 		if err != nil {
-			return err
+			return 0, err
 		}
 
 		// Save contact to the bucket.
 		if err := bkt.Put(itob(c.GetID()), encryptedData); err != nil {
-			return err
+			return 0, err
 		}
 	} else {
-		return errParseContact
+		return 0, errParseContact
 	}
 
 	// Commit transaction before exit.
-	return tx.Commit()
+	return c.GetID(), tx.Commit()
 }
 
 // GetContact get a contact by id.
