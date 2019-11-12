@@ -24,7 +24,6 @@ Page {
 	   	upperCoinBound = 0;
 	   	upperAltCointBound = 0;
 	   	minFeeAmount = 0;
-	   	console.log(comboBoxWalletsSendFrom.checkedElements)
 		var valCH = 0;
 		if (comboBoxWalletsAddressesSendFrom.enabled) {
        		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
@@ -157,7 +156,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "name"
-                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("wallets selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No wallet selected")
+                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("addresse selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No address selected")
                 model: WalletModel {
                     Component.onCompleted: {
                         loadModel(walletManager.getWallets())
@@ -211,7 +210,7 @@ Page {
                         }
 
                         width: parent.width
-                        text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData["sky"] + " --- " + modelData[comboBoxWalletsSendFrom.textRole] : model["sky"] + " --- " + model[comboBoxWalletsSendFrom.textRole]) : " --- " + modelData
+                        text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] + " - " + modelData["sky"] + " SKY (" + modelData["coinHours"] + " CoinHours)"  : model[comboBoxWalletsSendFrom.textRole] + " - " + model["sky"] + " SKY (" + model["coinHours"] + " CoinHours)") : " --- " + modelData
                         // Load the saved state when the delegate is recicled:
                         checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) >= 0
                         hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
@@ -282,7 +281,7 @@ Page {
                 }
 
                 textRole: "address"
-                displayText: checkBoxAllAddresses.checked ? qsTr("All addresses selected") : numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("addresses selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No address selected")
+                displayText: !checkBoxAllAddresses.checked ? (numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("addresses selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No addresses selected")): "All address selected" 
                 enabled: !checkBoxAllAddresses.checked
                 delegate: Item {
 
@@ -300,7 +299,7 @@ Page {
                         id: checkDelegate
 
                         width: parent.width
-                        text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData["addressSky"] + " --- " +  modelData[comboBoxWalletsAddressesSendFrom.textRole] : model["addressSky"] + " --- " + model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
+                        text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData["addressSky"] + " --- " +  modelData[comboBoxWalletsAddressesSendFrom.textRole]  + " - " + modelData["addressSky"] + " SKY (" + modelData["addressCoinHours"] + " CoinHours)" : model[comboBoxWalletsAddressesSendFrom.textRole] + " - " + model["addressSky"] + " SKY (" + model["addressCoinHours"] + " CoinHours)") : modelData
                         font.family: "Code New Roman"
 
                         LayoutMirroring.enabled: true
@@ -338,7 +337,7 @@ Page {
                                 }
                             }
 							subPageSendAdvanced.updateInfo();
-                            comboBoxWalletsAddressesSendFrom.numberOfCheckedElements = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length
+                            comboBoxWalletsAddressesSendFrom.numberOfCheckedElements = comboBoxWalletsAddressesSendFrom.checkedElements.length
                         }
 
                     } // CheckDelegate
@@ -434,7 +433,7 @@ Page {
                         }
 
                         width: parent.width
-                        text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData["addressSky"] + " --- " + modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model["addressSky"] + " --- " + model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
+                        text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + modelData["addressSky"] + " SKY (" + modelData["coinHours"] + " CoinHours)" :model[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + model["addressSky"] + " SKY (" + model["coinHours"] + " CoinHours)") : modelData
                         font.family: "Code New Roman"
                         // Load the saved state when the delegate is recicled:
                         checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) >= 0
