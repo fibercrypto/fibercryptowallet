@@ -7,10 +7,10 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
-	"github.com/skycoin/hardware-wallet-go/src/skywallet"
-	skyWallet "github.com/skycoin/hardware-wallet-go/src/skywallet"
-	"github.com/skycoin/hardware-wallet-go/src/skywallet/wire"
-	"github.com/skycoin/hardware-wallet-protob/go"
+	"github.com/fibercrypto/skywallet-go/src/skywallet"
+	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
+	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
+	"github.com/fibercrypto/skywallet-protob/go"
 	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
 )
 

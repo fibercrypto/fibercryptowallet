@@ -4,15 +4,15 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	fc "github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/skycoin/hardware-wallet-go/src/skywallet/wire"
+	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
-	skyWallet "github.com/skycoin/hardware-wallet-go/src/skywallet"
+	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/gogo/protobuf/proto"
 	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"errors"
 	"github.com/sirupsen/logrus"
-	messages "github.com/skycoin/hardware-wallet-protob/go"
+	messages "github.com/fibercrypto/skywallet-protob/go"
 )
 
 const (
