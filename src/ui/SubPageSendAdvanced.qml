@@ -37,23 +37,19 @@ Page {
 				valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
 			} 
 		}
+	   	//if (comboBoxWalletsUnspentOutputsSendFrom.enabled) {
+       	//	for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++){
+       	//		upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10);
+       	//	    valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 11);
+       	//	}
+		//} else {
+		//	for(var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.model.addresses.length; i++) {
+		//		upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressSky, 10)
+		//		valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
+		//	} 
+		//}
 		upperAltCointBound = valCH*9/10
 		minFeeAmount = valCH/10
-	   	if (comboBoxWalletsUnspentOutputsSendFrom.enabled) {
-       		for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++){
-       			upperCoinBound += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10);
-       		    valCH = parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours, 10);
-       		    upperAltCointBound += valCH*9/10;
-       		    minFeeAmount += valCH/10;
-       		}
-		} else {
-			for(var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.model.addresses.length; i++) {
-				upperCoinBound += comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressSky
-				valCH = parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressCoinHours, 10);
-       		    upperAltCointBound += valCH*9/10;
-       		    minFeeAmount += valCH/10;
-			} 
-		}
 	}
     function getSelectedAddresses(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
