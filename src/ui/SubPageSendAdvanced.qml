@@ -15,6 +15,46 @@ import "Controls" // For quick UI development, switch back to resources when mak
 
 Page {
     id: subPageSendAdvanced
+
+    property int upperCoinBound: 0
+    property int upperAltCointBound: 0
+    property int minFeeAmount: 0
+
+    function updateInfo() {
+	   	upperCoinBound = 0;
+	   	upperAltCointBound = 0;
+	   	minFeeAmount = 0;
+	   	console.log(comboBoxWalletsSendFrom.checkedElements)
+		var valCH = 0;
+		if (comboBoxWalletsAddressesSendFrom.enabled) {
+       		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
+       			upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressSky, 10);
+       		    valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 11);
+       		}
+		} else {
+			for(var i = 0; i < comboBoxWalletsAddressesSendFrom.model.addresses.length; i++) {
+				upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressSky, 10)
+				valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
+			} 
+		}
+		upperAltCointBound = valCH*9/10
+		minFeeAmount = valCH/10
+	   	if (comboBoxWalletsUnspentOutputsSendFrom.enabled) {
+       		for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++){
+       			upperCoinBound += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10);
+       		    valCH = parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours, 10);
+       		    upperAltCointBound += valCH*9/10;
+       		    minFeeAmount += valCH/10;
+       		}
+		} else {
+			for(var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.model.addresses.length; i++) {
+				upperCoinBound += comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressSky
+				valCH = parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressCoinHours, 10);
+       		    upperAltCointBound += valCH*9/10;
+       		    minFeeAmount += valCH/10;
+			} 
+		}
+	}
     function getSelectedAddresses(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
@@ -34,7 +74,7 @@ Page {
     }
 
     function getSelectedWallet(){
-        
+
         var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
         var files = []
         for (var i=0; i < indexs.length; i++){
@@ -82,7 +122,7 @@ Page {
         }
         return addrs
     }
-    
+
 
     ColumnLayout {
         id: columnLayoutRoot
@@ -126,8 +166,8 @@ Page {
                     Component.onCompleted: {
                         loadModel(walletManager.getWallets())
                     }
-                } 
-                
+                }
+
                 popup: FilterComboBoxPopup {
                     id: filterPopupWallets
                     comboBox: comboBoxWalletsSendFrom
@@ -158,7 +198,6 @@ Page {
                                     comboBoxWalletsSendFrom.checkedElements.push(index)
                                     comboBoxWalletsSendFrom.checkedElementsText.push(text)
                                 }
-                                // Update Outputs and Addresses Model
                                 listAddresses.addAddresses(walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                                 listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                             } else {
@@ -171,6 +210,7 @@ Page {
                                 listAddresses.removeAddressesFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                                 listOutputs.removeOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                             }
+							subPageSendAdvanced.updateInfo();
                             comboBoxWalletsSendFrom.numberOfCheckedElements = comboBoxWalletsSendFrom.checkedElements.length
                         }
 
@@ -208,6 +248,9 @@ Page {
                     id: checkBoxAllAddresses
                     text: qsTr("All Addresses of the selected addresses")
                     checked: true
+					onClicked: {
+						subPageSendAdvanced.updateInfo()
+					}
                 }
             }
 
@@ -245,8 +288,6 @@ Page {
                 textRole: "address"
                 displayText: checkBoxAllAddresses.checked ? qsTr("All addresses selected") : numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("addresses selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No address selected")
                 enabled: !checkBoxAllAddresses.checked
-//                displayText: "No address selected"
-//                displayText: numberOfCheckedAddresses > 1 ? (numberOfCheckedAddresses + ' ' + qsTr("addresses selected")) : numberOfCheckedElements === 1 ? checkedItems[0] : qsTr("No address selected")
                 delegate: Item {
 
                     property alias checked: checkDelegate.checked
@@ -300,6 +341,7 @@ Page {
                                     comboBoxWalletsAddressesSendFrom.checkedElementsText.splice(pos, 1)
                                 }
                             }
+							subPageSendAdvanced.updateInfo();
                             comboBoxWalletsAddressesSendFrom.numberOfCheckedElements = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length
                         }
 
@@ -321,6 +363,9 @@ Page {
                     id: checkBoxUnspentOutputsUseAllOutputs
                     text: qsTr("All outputs of the selected addresses")
                     checked: true
+					onClicked: {
+						subPageSendAdvanced.updateInfo()
+					}
                 }
             }
 
@@ -334,7 +379,7 @@ Page {
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
                 property alias filterString: filterPopupOutputs.filterText
-                
+
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "outputID"
@@ -352,7 +397,7 @@ Page {
                         numberOfCheckedElements = 0
                     }
                 }
-                
+
                 popup: FilterComboBoxPopup {
                     id: filterPopupOutputs
                     comboBox: comboBoxWalletsUnspentOutputsSendFrom
@@ -364,7 +409,7 @@ Page {
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
                     readonly property bool matchFilter: !comboBoxWalletsUnspentOutputsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsUnspentOutputsSendFrom.filterString.toLowerCase())
-                    
+
                     width: parent.width
                     height: matchFilter ? checkDelegate.height : 0
                     Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
@@ -388,6 +433,7 @@ Page {
                                     comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
                             }
+							subPageSendAdvanced.updateInfo();
                             comboBoxWalletsUnspentOutputsSendFrom.numberOfCheckedElements = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length
                         }
 
@@ -415,10 +461,11 @@ Page {
 
         } // ColumnLayout (send from)
 
+
         Label {
             Layout.fillWidth: true
             Layout.preferredHeight: 30
-            text: qsTr("With your current selection you can send up to <b>%1 SKY</b> and <b>%2 Coin Hours</b> (at least <b>%3 Coin Hours</b> must be used for the transaction fee)").arg(0).arg(0).arg(0)
+            text: "With your current selection you can send up to <b>" + subPageSendAdvanced.upperCoinBound + " SKY</b> and <b>" + subPageSendAdvanced.upperAltCointBound + " Coin Hours</b> (at least <b>" + subPageSendAdvanced.minFeeAmount + " Coin Hours</b> must be used for the transaction fee)"
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
         }
@@ -491,7 +538,7 @@ Page {
 
             TextField {
                 id: textFieldCustomChangeAddress
-                
+
                 Layout.fillWidth: true
                 Layout.topMargin: -16
                 placeholderText: qsTr("Address to receive change")
