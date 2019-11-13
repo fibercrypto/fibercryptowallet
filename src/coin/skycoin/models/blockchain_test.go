@@ -1,8 +1,9 @@
 package skycoin
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/api"
@@ -23,17 +24,17 @@ func TestSkycoinBlockchainStatusGetCoinValue(t *testing.T) {
 
 	block := &SkycoinBlockchain{CacheTime: 20}
 	val, err := block.GetCoinValue(core.CoinCurrentSupply, Sky)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(200111111))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(200111111))
 	val, err = block.GetCoinValue(core.CoinCurrentSupply, CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(200))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(200))
 	val, err = block.GetCoinValue(core.CoinTotalSupply, Sky)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(300000000))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(300000000))
 	val, err = block.GetCoinValue(core.CoinTotalSupply, CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(300))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(300))
 }
 
 func TestSkycoinBlockchainStatusGetNumberOfBlocks(t *testing.T) {
@@ -57,8 +58,8 @@ func TestSkycoinBlockchainStatusGetNumberOfBlocks(t *testing.T) {
 
 	block := &SkycoinBlockchain{CacheTime: 20}
 	val, err := block.GetNumberOfBlocks()
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(20))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(20))
 }
 
 func TestSkycoinBlockchainStatusGetLastBlock(t *testing.T) {
@@ -77,8 +78,8 @@ func TestSkycoinBlockchainStatusGetLastBlock(t *testing.T) {
 
 	status := &SkycoinBlockchain{CacheTime: 20}
 	block, err := status.GetLastBlock()
-	assert.Nil(t, err)
+	require.Nil(t, err)
 	val, err2 := block.GetVersion()
-	assert.Nil(t, err2)
-	assert.Equal(t, val, uint32(3))
+	require.Nil(t, err2)
+	require.Equal(t, val, uint32(3))
 }

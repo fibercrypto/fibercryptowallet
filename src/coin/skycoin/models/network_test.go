@@ -3,7 +3,7 @@ package skycoin
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/skycoin/skycoin/src/readable"
 )
@@ -43,18 +43,18 @@ func TestSkycoinPEXGetTxnPool(t *testing.T) {
 
 	pex := &SkycoinPEX{poolSection: PoolSection}
 	txns, err2 := pex.GetTxnPool()
-	assert.Nil(t, err2)
+	require.Nil(t, err2)
 
 	for txns.Next() {
 		iter := NewSkycoinTransactionOutputIterator(txns.Value().GetOutputs())
 		for iter.Next() {
 			output := iter.Value()
 			val, err3 := output.GetCoins(Sky)
-			assert.Nil(t, err3)
-			assert.Equal(t, val, uint64(1000000))
+			require.Nil(t, err3)
+			require.Equal(t, val, uint64(1000000))
 			val, err3 = output.GetCoins(CoinHour)
-			assert.Nil(t, err3)
-			assert.Equal(t, val, uint64(2000))
+			require.Nil(t, err3)
+			require.Equal(t, val, uint64(2000))
 		}
 	}
 }

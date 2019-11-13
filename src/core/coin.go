@@ -58,6 +58,8 @@ type TransactionInput interface {
 	// GetCoins looks up coins for asset represented by ticker
 	// that have been spent by this input
 	GetCoins(ticker string) (uint64, error)
+	// SupportedAssets enumerates tickers of crypto assets supported by this output
+	SupportedAssets() []string
 }
 
 // TransactionInputIterator iterates over a sequence of transaction inputs
@@ -78,9 +80,10 @@ type TransactionOutput interface {
 	IsSpent() bool
 	// GetAddress returns the address of the party receiving funds
 	GetAddress() Address
-	// GetCoins looks up coins for asset represented by ticker
-	// that have been transferred in this output
+	// GetCoins looks up coins for asset represented by ticker that have been transferred in this output
 	GetCoins(ticker string) (uint64, error)
+	// SupportedAssets enumerates tickers of crypto assets supported by this output
+	SupportedAssets() []string
 }
 
 // TransactionOutputIterator iterates over a sequence of transaction outputs

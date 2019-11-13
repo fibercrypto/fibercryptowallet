@@ -1,8 +1,9 @@
 package skycoin //nolint goimports
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"testing"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 
 	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/stretchr/testify/require"
@@ -11,4 +12,5 @@ import (
 func TestRegisterSkycoinPlugin(t *testing.T) {
 	require.Equal(t, "Skycoin", util.AltcoinCaption(params.SkycoinTicker))
 	require.Equal(t, "Coin Hours", util.AltcoinCaption(params.CoinHoursTicker))
+	require.Equal(t, "Calculated Hours", util.AltcoinCaption(params.CalculatedHoursTicker))
 }
