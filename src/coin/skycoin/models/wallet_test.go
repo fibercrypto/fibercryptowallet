@@ -1235,6 +1235,10 @@ func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
 		Addresses: []string{startAddress1.String(), startAddress2.String()},
 	}
 
+	opt2 := NewTransferOptions()
+	opt2.SetValue("BurnFactor", "0.5")
+	opt2.SetValue("CoinHoursSelectionType", "manual")
+
 	req2 := api.CreateTransactionRequest{
 		IgnoreUnconfirmed: false,
 		HoursSelection: api.HoursSelection{
@@ -1278,12 +1282,12 @@ func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
 	require.Equal(t, ctxnR.Transaction.TxID, txnResult.GetId())
 
 	//Testing Hours selection to manual
-	from := []core.WalletAddress{makeSimpleWalletAddress(wlt, fromAddr[0]), makeSimpleWalletAddress(wlt, fromAddr[1])}
-	to := []core.TransactionOutput{toAddr}
-	txnResult, err := bc.SendFromAddress(from, to, chgAddr, opt1)
+	from = []core.WalletAddress{makeSimpleWalletAddress(wlt, fromAddr[0]), makeSimpleWalletAddress(wlt, fromAddr[1])}
+	to = []core.TransactionOutput{toAddr}
+	txnResult, err = bc.SendFromAddress(from, to, chgAddr, opt2)
 	require.NoError(t, err)
 	require.NotNil(t, txnResult)
-	val, err := txnResult.ComputeFee(params.CoinHoursTicker)
+	val, err = txnResult.ComputeFee(params.CoinHoursTicker)
 	require.NoError(t, err)
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
 	require.Equal(t, ctxnR.Transaction.TxID, txnResult.GetId())
