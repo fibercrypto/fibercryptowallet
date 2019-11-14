@@ -174,11 +174,14 @@ func TestLocalWalletGetBalance(t *testing.T) {
 			"6gnBM5gMSSb7XRUEap7q3WxFnuvbN9usTq",
 		},
 	).Return(response, nil)
-	addr := &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
-	val, err := addr.GetBalance(Sky)
+	wlt := &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
+	val, err := wlt.GetBalance(Sky)
 	require.NoError(t, err)
-	require.Equal(t, val, uint64(84000000))
-	val, err = addr.GetBalance(CoinHour)
+	require.Equal(t, uint64(84000000), val)
+	val, err = wlt.GetBalance(CoinHour)
 	require.NoError(t, err)
-	require.Equal(t, val, uint64(84))
+	require.Equal(t, uint64(84), val)
+	val, err = wlt.GetBalance("INVALID_TICKER")
+	require.Error(t, err)
+	require.Equal(t, uint64(0), val)
 }
