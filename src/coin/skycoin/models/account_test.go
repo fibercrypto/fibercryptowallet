@@ -185,3 +185,140 @@ func TestLocalWalletGetBalance(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, uint64(0), val)
 }
+
+func TestRemoteWalletGetBalance(t *testing.T) {
+	CleanGlobalMock()
+	response := new(api.BalanceResponse)
+	response.Confirmed = readable.Balance{Coins: uint64(42000000), Hours: uint64(200)}
+	global_mock.On("WalletBalance", "wallet").Return(response, nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+	val, err := wlt.GetBalance(Sky)
+	require.NoError(t, err)
+	require.Equal(t, val, uint64(42000000))
+	val, err = wlt.GetBalance(CoinHour)
+	require.NoError(t, err)
+	require.Equal(t, val, uint64(200))
+	val, err = wlt.GetBalance("INVALID_TICKER")
+	require.Error(t, err)
+	require.Equal(t, val, uint64(0))
+}
+
+func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
+	CleanGlobalMock()
+
+	global_mock.On("Wallet", "wallet").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "wallet",
+				Encrypted: true,
+			},
+			Entries: []readable.WalletEntry{
+				readable.WalletEntry{Address: "addr"},
+			},
+		},
+		nil)
+
+	global_mock.On("Wallet", "wallet_no_outputs").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "wallet_no_outputs",
+				Encrypted: true,
+			},
+		},
+		nil)
+
+	usOut := readable.UnspentOutput{
+		Hash:            "hash1",
+		Coins:           "42",
+		Hours:           uint64(42),
+		CalculatedHours: uint64(42),
+		Address:         "addr",
+	}
+	response := &readable.UnspentOutputsSummary{
+		HeadOutputs: readable.UnspentOutputs{usOut},
+	}
+
+	global_mock.On("OutputsForAddresses", []string{"addr"}).Return(response, nil)
+
+	global_mock.On("OutputsForAddresses", []string{"no_outputs"}).Return(&readable.UnspentOutputsSummary{}, nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+	iter := wlt.ScanUnspentOutputs()
+	items := 0
+	for iter.Next() {
+		to := iter.Value()
+		items++
+		require.Equal(t, "addr", to.GetAddress().String())
+	}
+	require.Equal(t, 1, items)
+
+	//No outputs
+	wlt = &RemoteWallet{
+		Id:          "wallet_no_outputs",
+		poolSection: PoolSection,
+	}
+	iter = wlt.ScanUnspentOutputs()
+	items = 0
+	for iter.Next() {
+		to := iter.Value()
+		items++
+		require.Nil(t, to)
+	}
+	require.Equal(t, 0, items)
+}
+
+func TestRemoteWalletListTransactions(t *testing.T) {
+	CleanGlobalMock()
+
+	response := readable.TransactionWithStatusVerbose{
+		Status: readable.TransactionStatus{
+			Confirmed: false,
+		},
+	}
+	response.Transaction.Hash = "hash1"
+
+	global_mock.On("TransactionsVerbose", []string{"addr"}).Return(
+		[]readable.TransactionWithStatusVerbose{
+			response,
+		},
+		nil,
+	)
+
+	global_mock.On("Wallet", "wallet").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "wallet",
+				Encrypted: true,
+			},
+			Entries: []readable.WalletEntry{
+				readable.WalletEntry{Address: "addr"},
+			},
+		},
+		nil)
+
+	wlt := &RemoteWallet{
+		Id:          "wallet",
+		poolSection: PoolSection,
+	}
+	iter := wlt.ListTransactions()
+	items := 0
+	for iter.Next() {
+		tx := iter.Value()
+		items++
+		require.Equal(t, "hash1", tx.GetId())
+	}
+	require.Equal(t, 1, items)
+}
