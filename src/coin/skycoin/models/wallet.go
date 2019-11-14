@@ -1278,17 +1278,22 @@ func skyAPICreateTxn(txnReq *api.CreateTransactionRequest) (core.Transaction, er
 	return fromTxnResponse(txnR), nil
 }
 
-func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
 	logWallet.Info("Sending form local wallet")
 	quotient, err := util.AltcoinQuotient(Sky)
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't get skycoin quotient")
 		return nil, err
 	}
+	amount, err := to.GetCoins(params.SkycoinTicker)
+	if err != nil {
+		logWallet.WithError(err).Warnf("Couldn't get ticker %s from TransactionOutput", params.SkycoinTicker)
+		return nil, err
+	}
 	strAmount := util.FormatCoins(amount, quotient)
 
 	var txnOutput SkycoinTransactionOutput
-	txnOutput.skyOut.Address = to.String()
+	txnOutput.skyOut.Address = to.GetAddress().String()
 	txnOutput.skyOut.Coins = strAmount
 	addresses := make([]core.Address, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()

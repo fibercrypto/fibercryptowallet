@@ -952,6 +952,10 @@ func makeLocalWallet(t *testing.T) core.Wallet {
 	return wallet
 }
 
+func makeSkycoinBlockchain(t *testing.T) core.BlockchainTransactionAPI {
+	return NewSkycoinBlockchain(0)
+}
+
 func TestLocalWalletTransfer(t *testing.T) {
 	CleanGlobalMock()
 	destinationAddress := testutil.MakeAddress()
@@ -1171,4 +1175,117 @@ func TestLocalWalletSpend(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(sky), val)
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
+}
+
+func makeSimpleWalletAddress(wallet core.Wallet, address core.Address) *util.SimpleWalletAddress {
+	return &util.SimpleWalletAddress{
+		Wallet: wallet,
+		UxOut:  address,
+	}
+}
+
+func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
+	CleanGlobalMock()
+
+	startAddress1 := testutil.MakeAddress()
+	startAddress2 := testutil.MakeAddress()
+
+	destinationAddress := testutil.MakeAddress()
+	changeAddress := (testutil.MakeAddress()).String()
+	sky := 500
+	hash := testutil.RandSHA256(t)
+
+	toAddr := &SkycoinTransactionOutput{
+		skyOut: readable.TransactionOutput{
+			Address: destinationAddress.String(),
+			Coins:   strconv.Itoa(sky),
+			Hours:   uint64(250),
+		},
+	}
+	fromAddr := []*SkycoinAddress{
+		&SkycoinAddress{
+			address: startAddress1.String(),
+		},
+		&SkycoinAddress{
+			address: startAddress2.String(),
+		},
+	}
+	chgAddr := &SkycoinAddress{
+		address: changeAddress,
+	}
+
+	opt1 := NewTransferOptions()
+	opt1.SetValue("BurnFactor", "0.5")
+	opt1.SetValue("CoinHoursSelectionType", "auto")
+
+	req1 := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type:        "auto",
+			Mode:        "share",
+			ShareFactor: "0.5",
+		},
+		ChangeAddress: &changeAddress,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+			},
+		},
+		Addresses: []string{startAddress1.String(), startAddress2.String()},
+	}
+
+	req2 := api.CreateTransactionRequest{
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type: "manual",
+		},
+		ChangeAddress: &changeAddress,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+				Hours:   "250",
+			},
+		},
+		Addresses: []string{startAddress1.String(), startAddress2.String()},
+	}
+
+	txn := &coin.Transaction{
+		Length:    100,
+		Type:      0,
+		InnerHash: hash,
+	}
+	ctxnR, err := api.NewCreateTransactionResponse(txn, nil)
+	ctxnR.Transaction.Fee = strconv.Itoa(sky)
+	require.NoError(t, err)
+
+	mockSkyApiCreateTransaction(global_mock, &req1, ctxnR)
+	mockSkyApiCreateTransaction(global_mock, &req2, ctxnR)
+
+	bc := makeSkycoinBlockchain(t)
+	wlt := &LocalWallet{}
+
+	//Testing Hours selection to auto
+	from := []core.WalletAddress{makeSimpleWalletAddress(wlt, fromAddr[0]), makeSimpleWalletAddress(wlt, fromAddr[1])}
+	to := []core.TransactionOutput{toAddr}
+	txnResult, err := bc.SendFromAddress(from, to, chgAddr, opt1)
+	require.NoError(t, err)
+	require.NotNil(t, txnResult)
+	val, err := txnResult.ComputeFee(params.CoinHoursTicker)
+	require.NoError(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	require.Equal(t, ctxnR.Transaction.TxID, txnResult.GetId())
+
+	//Testing Hours selection to manual
+	from := []core.WalletAddress{makeSimpleWalletAddress(wlt, fromAddr[0]), makeSimpleWalletAddress(wlt, fromAddr[1])}
+	to := []core.TransactionOutput{toAddr}
+	txnResult, err := bc.SendFromAddress(from, to, chgAddr, opt1)
+	require.NoError(t, err)
+	require.NotNil(t, txnResult)
+	val, err := txnResult.ComputeFee(params.CoinHoursTicker)
+	require.NoError(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+	require.Equal(t, ctxnR.Transaction.TxID, txnResult.GetId())
+
 }
