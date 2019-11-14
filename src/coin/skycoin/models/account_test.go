@@ -55,16 +55,16 @@ func TestWalletListPendingTransactions(t *testing.T) {
 
 	for wallets.Next() {
 		txns, err := wallets.Value().GetCryptoAccount().ListPendingTransactions()
-		require.Nil(t, err)
+		require.NoError(t, err)
 		for txns.Next() {
 			iter := NewSkycoinTransactionOutputIterator(txns.Value().GetOutputs())
 			for iter.Next() {
 				output := iter.Value()
 				val, err3 := output.GetCoins(Sky)
-				require.Nil(t, err3)
+				require.NoError(t, err3)
 				require.Equal(t, val, uint64(1000000))
 				val, err3 = output.GetCoins(CoinHour)
-				require.Nil(t, err3)
+				require.NoError(t, err3)
 				require.Equal(t, val, uint64(2000))
 			}
 		}
@@ -78,11 +78,14 @@ func TestSkycoinAddressGetBalance(t *testing.T) {
 
 	addr := &SkycoinAddress{address: "addr1"}
 	val, err := addr.GetBalance(Sky)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, val, uint64(42000000))
 	val, err = addr.GetBalance(CoinHour)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, val, uint64(200))
+	val, err = addr.GetBalance("INVALID_TICKER")
+	require.Error(t, err)
+	require.Equal(t, val, uint64(0))
 }
 
 func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
@@ -107,10 +110,10 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 		require.Equal(t, output.GetId(), "hash1")
 		require.Equal(t, output.GetAddress().String(), "addr1")
 		val, err := output.GetCoins(Sky)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		require.Equal(t, val, uint64(42000000))
 		val, err = output.GetCoins(CoinHour)
-		require.Nil(t, err)
+		require.NoError(t, err)
 		require.Equal(t, val, uint64(42))
 	}
 }
@@ -173,9 +176,9 @@ func TestLocalWalletGetBalance(t *testing.T) {
 	).Return(response, nil)
 	addr := &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
 	val, err := addr.GetBalance(Sky)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, val, uint64(84000000))
 	val, err = addr.GetBalance(CoinHour)
-	require.Nil(t, err)
+	require.NoError(t, err)
 	require.Equal(t, val, uint64(84))
 }
