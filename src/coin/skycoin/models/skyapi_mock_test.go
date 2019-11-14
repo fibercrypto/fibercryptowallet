@@ -66,3 +66,81 @@ func mockSkyApiCreateTransaction(mock *SkycoinApiMock, req *api.CreateTransactio
 		crtTxn,
 		nil)
 }
+
+func mockSkyApiOutputsForAddresses(mock *SkycoinApiMock, addresses []string) {
+	usOut := readable.UnspentOutput{
+		Hash:            "hash1",
+		Coins:           "42",
+		Hours:           uint64(42),
+		CalculatedHours: uint64(42),
+		Address:         "2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP",
+	}
+	response := &readable.UnspentOutputsSummary{
+		HeadOutputs: readable.UnspentOutputs{usOut, usOut},
+	}
+
+	global_mock.On(
+		"OutputsForAddresses",
+		[]string{
+			"6gnBM5gMSSb7XRUEap7q3WxFnuvbN9usTq",
+		},
+	).Return(response, nil)
+
+	global_mock.On(
+		"OutputsForAddresses",
+		[]string{
+			"2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP",
+		},
+	).Return(response, nil)
+
+	global_mock.On(
+		"OutputsForAddresses",
+		[]string{
+			"7wqRjpVwg5uSsz72oAZcDrBevHQRHQudyj",
+		},
+	).Return(response, nil)
+
+	global_mock.On(
+		"OutputsForAddresses",
+		[]string{
+			"2G9wDPX14WsbZuZU1f7MveYc9vpLxj2qNsz",
+		},
+	).Return(response, nil)
+}
+
+func mockSkyApiTransactionsVerbose(mock *SkycoinApiMock, addresses []string) {
+	response := readable.TransactionWithStatusVerbose{
+		Status: readable.TransactionStatus{
+			Confirmed: false,
+		},
+	}
+	response.Transaction.Hash = "hash1"
+
+	global_mock.On("TransactionsVerbose", []string{"2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP"}).Return(
+		[]readable.TransactionWithStatusVerbose{
+			response,
+		},
+		nil,
+	)
+
+	global_mock.On("TransactionsVerbose", []string{"7wqRjpVwg5uSsz72oAZcDrBevHQRHQudyj"}).Return(
+		[]readable.TransactionWithStatusVerbose{
+			response,
+		},
+		nil,
+	)
+
+	global_mock.On("TransactionsVerbose", []string{"2G9wDPX14WsbZuZU1f7MveYc9vpLxj2qNsz"}).Return(
+		[]readable.TransactionWithStatusVerbose{
+			response,
+		},
+		nil,
+	)
+
+	global_mock.On("TransactionsVerbose", []string{"6gnBM5gMSSb7XRUEap7q3WxFnuvbN9usTq"}).Return(
+		[]readable.TransactionWithStatusVerbose{
+			response,
+		},
+		nil,
+	)
+}
