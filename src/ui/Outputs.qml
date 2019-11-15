@@ -4,7 +4,6 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import OutputsModels 1.0
 
-
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
