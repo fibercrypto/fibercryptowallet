@@ -21,25 +21,36 @@ Page {
     property int minFeeAmount: 0
 
     function updateInfo() {
+		subPageSendAdvanced.updateOutputs()
 	   	upperCoinBound = 0;
 	   	upperAltCointBound = 0;
 	   	minFeeAmount = 0;
 		var valCH = 0;
-		if (comboBoxWalletsAddressesSendFrom.enabled) {
-       		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
-       			upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressSky, 10);
-       		    valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 11);
+		if (comboBoxWalletsUnspentOutputsSendFrom.enabled) {
+       		for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++){
+       			upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10);
+				var s = comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours;
+				console.log(parseInt(s.replace('\,',''), 10))
+       		    valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10);
        		}
 		} else {
-			for(var i = 0; i < comboBoxWalletsAddressesSendFrom.model.addresses.length; i++) {
-				upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressSky, 10)
-				valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
-			} 
+
+			if (comboBoxWalletsAddressesSendFrom.enabled) {
+    	   		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
+    	   			upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressSky, 10);
+    	   		    valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10);
+    	   		}
+			} else {
+				for(var i = 0; i < comboBoxWalletsAddressesSendFrom.model.addresses.length; i++) {
+					upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressSky, 10)
+					valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
+				} 
+			}
 		}
 		upperAltCointBound = valCH*9/10
 		minFeeAmount = valCH/10
-		subPageSendAdvanced.updateOutputs()
-	}
+    }
+
     function getSelectedAddresses(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
@@ -47,7 +58,7 @@ Page {
             addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
         }
         return addresses
-    }
+	}
 
     function getSelectedOutputs(){
         var indexs =  comboBoxWalletsUnspentOutputsSendFrom.getCheckedDelegates()
@@ -439,12 +450,12 @@ Page {
                                     comboBoxWalletsUnspentOutputsSendFrom.checkedElementsText.splice(pos, 1)
                                 }
                             }
-							subPageSendAdvanced.updateInfo();
                             comboBoxWalletsUnspentOutputsSendFrom.numberOfCheckedElements = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length
+							subPageSendAdvanced.updateInfo();
                         }
 
                         width: parent.width
-                        text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + modelData["addressSky"] + " SKY (" + modelData["coinHours"] + " CoinHours)" :model[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + model["addressSky"] + " SKY (" + model["coinHours"] + " CoinHours)") : modelData
+                        text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + modelData["addressSky"] + " SKY (" + modelData["addressCoinHours"] + " CoinHours)" :model[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + model["addressSky"] + " SKY (" + model["addressCoinHours"] + " CoinHours)") : modelData
                         font.family: "Code New Roman"
                         // Load the saved state when the delegate is recicled:
                         checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) >= 0
