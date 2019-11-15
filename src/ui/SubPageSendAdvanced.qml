@@ -36,19 +36,9 @@ Page {
 				valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
 			} 
 		}
-	   	//if (comboBoxWalletsUnspentOutputsSendFrom.enabled) {
-       	//	for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++){
-       	//		upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10);
-       	//	    valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 11);
-       	//	}
-		//} else {
-		//	for(var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.model.addresses.length; i++) {
-		//		upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressSky, 10)
-		//		valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
-		//	} 
-		//}
 		upperAltCointBound = valCH*9/10
 		minFeeAmount = valCH/10
+		subPageSendAdvanced.updateOutputs()
 	}
     function getSelectedAddresses(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
@@ -117,7 +107,28 @@ Page {
         }
         return addrs
     }
-
+	function updateOutputs() {
+		listOutputs.cleanModel()
+		if (checkBoxAllAddresses.checked) {
+       		for (var i = 0; i < comboBoxWalletsSendFrom.checkedElements.length; i++){
+				walletManager.updateAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
+				var addresses = walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
+				for(var j = 0; j < addresses.length; j++) {
+					console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
+					walletManager.updateOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName, addresses[j].address)
+					listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName, addresses[j].address))
+				}
+			}
+		} else {
+       		for (var j = 0; j < comboBoxWalletsSendFrom.checkedElements.length; j++){
+				walletManager.updateAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[j]].fileName)
+			}
+       		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
+				walletManager.updateOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].walletId, comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].address)
+				listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].walletId, comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].address))
+			}
+		}
+	}
 
     ColumnLayout {
         id: columnLayoutRoot
