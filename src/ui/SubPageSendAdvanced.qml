@@ -178,7 +178,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "name"
-                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("addresse selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No address selected")
+                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("address selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No address selected")
                 model: WalletModel {
                     Component.onCompleted: {
                         loadModel(walletManager.getWallets())
