@@ -12,7 +12,7 @@ COVERAGEHTML = $(COVERAGEPATH)/coverage.html
 
 deps: ## Add dependencies
 	dep ensure
-	rm -rf rm -rf vendor/github.com/therecipe
+	rm -rf vendor/github.com/therecipe
 
 run: build ## Run FiberCrypto Wallet.
 	@echo "Running FiberCrypto Wallet..."
