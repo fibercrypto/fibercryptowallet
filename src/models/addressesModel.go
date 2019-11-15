@@ -1,10 +1,14 @@
 package models
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 )
+
+var logAddressesModel = logging.MustGetLogger("Addresses Model")
 
 const (
 	Address    = int(core.Qt__UserRole) + 1
@@ -160,11 +164,17 @@ func (m *AddressesModel) removeAddress(row int) {
 func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64, marked int) {
 	a := m.Addresses()[row]
 	a.SetAddress(address)
-	//TODO: report possible error
-	accuracy, _ := util.AltcoinQuotient("SKY")
+	accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+	if err != nil {
+		logAddressesModel.WithError(err).Warn("Couldn't get" + params.SkycoinTicker + " quotient")
+		return
+	}
 	a.SetAddressSky(util.FormatCoins(sky, accuracy))
-	//TODO: report possible error
-	accuracy, _ = util.AltcoinQuotient("SKYCH")
+	accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
+	if err != nil {
+		logAddressesModel.WithError(err).Warn("Couldn't get" + params.CoinHoursTicker + " quotient")
+		return
+	}
 	a.SetAddressCoinHours(util.FormatCoins(coinHours, accuracy))
 	changeMarked := true
 	if marked == a.Marked() {

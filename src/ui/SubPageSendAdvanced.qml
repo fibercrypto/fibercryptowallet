@@ -8,8 +8,9 @@ import OutputsModels 1.0
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
 // import "qrc:/ui/src/ui/Dialogs"
-import "Delegates/" // For quick UI development, switch back to resources when making a release
-import "Dialogs/" // For quick UI development, switch back to resources when making a release
+// import "qrc:/ui/src/ui/Controls"
+import "Delegates" // For quick UI development, switch back to resources when making a release
+import "Dialogs" // For quick UI development, switch back to resources when making a release
 import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {

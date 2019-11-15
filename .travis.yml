@@ -1,77 +1,79 @@
 sudo: required
 language: go
 go:
-- 1.11.1
+  - 1.11.1
 
 services:
-- docker
+  - docker
 
 go_import_path: github.com/fibercrypto/FiberCryptoWallet
 
 matrix:
   include:
-  - stage: "RPI"
-    if: branch = release*$
-    install:
-    - DEFAULT_ARCH=rpi1 make install-docker-deps 
-    - DEFAULT_ARCH=rpi2 make install-docker-deps 
-    - DEFAULT_ARCH=rpi3 make install-docker-deps 
-    - make install-deps-no-envs
-    
-    script:
-    - make clean
-    - DEFAULT_TARGET=rpi1 make build-docker
-    - DEFAULT_TARGET=rpi2 make build-docker
-    - DEFAULT_TARGET=rpi3 make build-docker
-    - make test
+    - stage: "RPI"
+      if: branch = release*$
+      install:
+        - DEFAULT_ARCH=rpi1 make install-docker-deps
+        - DEFAULT_ARCH=rpi2 make install-docker-deps
+        - DEFAULT_ARCH=rpi3 make install-docker-deps
+        - make install-deps-no-envs
 
-  - stage: "Android"
-    if: branch = release*$
+      script:
+        - make clean
+        - DEFAULT_TARGET=rpi1 make build-docker
+        - DEFAULT_TARGET=rpi2 make build-docker
+        - DEFAULT_TARGET=rpi3 make build-docker
+        - make lint
+        - make test
 
-    install:
-    - DEFAULT_ARCH=android make install-docker-deps 
-    - make install-deps-no-envs
+    - stage: "Android"
+      if: branch = release*$
 
-    script:
-    - make clean
-    - DEFAULT_TARGET=android make build-docker
-    - DEFAULT_TARGET=android-emulator make build-docker
-    - make test
+      install:
+        - DEFAULT_ARCH=android make install-docker-deps
+        - make install-deps-no-envs
 
-  - stage: "Linux"
-    install:
-    - make install-deps 
-    
-    script:
-    - make lint
-    - make clean
-    - make build
-    - make test 
-  
-  - stage: "Windows"
-    os: windows
-    install:
-    - choco install make -y
-    - travis_wait make install-deps-Windows 
-    - make install-linters
-    
-    script:
-    - make lint
-    - make build
-    - make test 
+      script:
+        - make clean
+        - DEFAULT_TARGET=android make build-docker
+        - DEFAULT_TARGET=android-emulator make build-docker
+        - make lint
+        - make test
 
-  - stage: "MacOS"
-    os: osx
-    osx_image: xcode10.2
-    install:
-    - make install-deps 
-    
-    script:
-    - make lint
-    - make clean
-    - make build
-    - make test 
+    - stage: "Linux"
+      install:
+        - make install-deps
+        - make test
 
+      script:
+        - make lint
+        - make clean
+        - make build
+        - make test
+
+    - stage: "Windows"
+      os: windows
+      install:
+        - choco install make -y
+        - travis_wait make install-deps-Windows
+        - make install-linters
+
+      script:
+        - make lint
+        # - make build
+        # - make test
+
+    - stage: "MacOS"
+      os: osx
+      osx_image: xcode10.2
+      install:
+        - make install-deps
+
+      script:
+        - make lint
+        - make clean
+        - make build
+        - make test
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify

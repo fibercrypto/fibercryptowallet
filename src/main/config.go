@@ -2,12 +2,16 @@ package local
 
 import (
 	"encoding/json"
-	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 )
+
+var logConfigManager = logging.MustGetLogger("ConfigManager")
 
 const (
 	pathToConfigFromHome         = ".fiber/config.json"
@@ -33,16 +37,20 @@ type WalletSource struct {
 }
 
 func (ws *WalletSource) GetType() int {
+	logConfigManager.Info("Getting wallet type")
 	return ws.sourceType
 }
 func (ws *WalletSource) GetSource() string {
+	logConfigManager.Info("Getting wallet source")
 	return ws.source
 }
 func (ws *WalletSource) GetId() int {
+	logConfigManager.Info("Getting wallet id")
 	return ws.id
 }
 
 func (ws *WalletSource) edit(source string, tp int) {
+	logConfigManager.Info("Editing wallet source")
 	ws.source = source
 	ws.sourceType = tp
 }
@@ -71,7 +79,7 @@ func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
 		}
 	}
 	if src == nil {
-		return errors.New("Invalid Id")
+		return errors.ErrInvalidID
 	}
 
 	if tp != LocalWallet && tp != RemoteWallet {
@@ -92,6 +100,7 @@ func (cm *ConfigManager) EditNode(node string) {
 }
 
 func (cm *ConfigManager) Save() error {
+	logConfigManager.Info("Saving configuration")
 
 	jsonFormat, err := json.Marshal(cm.getConfigManagerJson())
 	if err != nil {
@@ -101,6 +110,8 @@ func (cm *ConfigManager) Save() error {
 }
 
 func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
+	logConfigManager.Info("Getting configuration from JSON")
+
 	wltSources := make([]*walletSourceJson, 0)
 	for _, wltS := range cm.sourceList {
 		wltSources = append(wltSources, wltS.getWalletSourceJson())

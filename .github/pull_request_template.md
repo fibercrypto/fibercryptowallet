@@ -12,6 +12,7 @@ no
 related to PR skycoin/hardware-wallet-protob# for issue skycoin/hardware-wallet-protob#
 
 **Requires testing**
+Requires testing
 yes | no
 
 *Comments about testing , should you have some*

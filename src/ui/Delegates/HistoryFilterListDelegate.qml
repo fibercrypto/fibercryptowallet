@@ -3,7 +3,10 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
-import "../"
+
+// Resource imports
+// import "qrc:/ui/src/ui/"
+import "../" // For quick UI development, switch back to resources when making a release
 
 Item {
     id: root
@@ -98,7 +101,7 @@ Item {
             delegate: HistoryFilterListAddressDelegate {
                 // BUG: Checking the wallet does not change the check state of addresses
                 // Is `checked: marked` ok? Or it should be the opposite?
-                checked: marked
+                checked: true 
                 width: parent.width
                 text: address 
 

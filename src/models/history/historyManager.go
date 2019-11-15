@@ -5,21 +5,30 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+
 	coin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
 	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	qtcore "github.com/therecipe/qt/core"
+	qtCore "github.com/therecipe/qt/core"
 )
+
+var logHistoryManager = logging.MustGetLogger("modelsHistoryManager")
 
 const (
 	dateTimeFormatForGo  = "2006-01-02T15:04:05"
 	dateTimeFormatForQML = "yyyy-MM-ddThh:mm:ss"
 )
 
+/*
+	HistoryManager
+	Represent the controller of history page and all the actions over this page
+*/
 type HistoryManager struct {
-	qtcore.QObject
+	qtCore.QObject
 	filters []string
 	_       func() `constructor:"init"`
 
@@ -59,6 +68,7 @@ func (a ByDate) Less(i, j int) bool {
 	return d1.After(d2)
 }
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
+	logHistoryManager.Info("Getting transactions of Addresses")
 	addresses := hm.getAddressesWithWallets()
 
 	var sent, internally bool
@@ -71,18 +81,30 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 	txnFind := make(map[string]struct{})
 	txns := make([]core.Transaction, 0)
 
-	wltIter := hm.walletEnv.GetWalletSet().ListWallets()
-	for wltIter.Next() {
-		addrIter, _ := wltIter.Value().GetLoadedAddresses()
-		for addrIter.Next() {
-			_, ok := find[addrIter.Value().String()]
+	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
+	if wltIterator == nil {
+		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
+		return make([]*transactions.TransactionDetails, 0)
+	}
+	for wltIterator.Next() {
+		addressIterator, err := wltIterator.Value().GetLoadedAddresses()
+		if err != nil {
+			logHistoryManager.Warn("Couldn't get address iterator")
+			continue
+		}
+		for addressIterator.Next() {
+			_, ok := find[addressIterator.Value().String()]
 			if ok {
-				tnxnsIter := addrIter.Value().GetCryptoAccount().ListTransactions()
-				for tnxnsIter.Next() {
-					_, ok2 := txnFind[tnxnsIter.Value().GetId()]
+				txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
+				if txnsIterator == nil {
+					logHistoryManager.Warn("Couldn't get transaction iterator")
+					continue
+				}
+				for txnsIterator.Next() {
+					_, ok2 := txnFind[txnsIterator.Value().GetId()]
 					if !ok2 {
-						txns = append(txns, tnxnsIter.Value())
-						txnFind[tnxnsIter.Value().GetId()] = struct{}{}
+						txns = append(txns, txnsIterator.Value())
+						txnFind[txnsIterator.Value().GetId()] = struct{}{}
 					}
 				}
 			}
@@ -108,13 +130,28 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		for _, in := range txnIns {
 			qIn := address.NewAddressDetails(nil)
 			qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
-			//TODO: report possible errors
-			skyUint64, _ := in.GetCoins("SKY")
-			accuracy, _ := util.AltcoinQuotient("SKY")
+			skyUint64, err := in.GetCoins(params.SkycoinTicker)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
+				continue
+			}
+			accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+				continue
+			}
 			skyFloat := float64(skyUint64) / float64(accuracy)
 			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			chUint64, _ := in.GetCoins("SKYCHC")
-			accuracy, _ = util.AltcoinQuotient("SKYCH")
+			chUint64, err := in.GetCoins(params.CoinHoursTicker)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
+				continue
+			}
+			accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
+				continue
+			}
 			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64/accuracy, 10))
 			inputs.AddAddress(qIn)
 			_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
@@ -132,17 +169,29 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		txnDetails.SetInputs(inputs)
 
 		for _, out := range txn.GetOutputs() {
-			//TODO: return an error
-			sky, _ := out.GetCoins("SKY")
+			sky, err := out.GetCoins(params.SkycoinTicker)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
+				continue
+			}
 			qOu := address.NewAddressDetails(nil)
 			qOu.SetAddress(out.GetAddress().String())
-			//TODO: report possible error
-			accuracy, _ := util.AltcoinQuotient("SKY")
+			accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+				continue
+			}
 			qOu.SetAddressSky(util.FormatCoins(sky, accuracy))
-			//TODO: return an error
-			val, _ := out.GetCoins("SKYCH")
-			//TODO: report possible error
-			accuracy, _ = util.AltcoinQuotient(coin.CoinHour)
+			val, err := out.GetCoins(params.CoinHoursTicker)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
+				continue
+			}
+			accuracy, err = util.AltcoinQuotient(coin.CoinHour)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
+				continue
+			}
 			qOu.SetAddressCoinHours(util.FormatCoins(val, accuracy))
 			outputs.AddAddress(qOu)
 			if sent {
@@ -152,14 +201,21 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 
 				} else {
 					internally = false
-					//TODO: return an error
-					val, _ = out.GetCoins("SKYCH")
+					val, err = out.GetCoins(params.CoinHoursTicker)
+					if err != nil {
+						logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours send it")
+						continue
+					}
 					traspassedHoursOut += val
 				}
 			} else {
 				_, ok := find[out.GetAddress().String()]
 				if ok {
-					val, _ = out.GetCoins("SKYCH")
+					val, err = out.GetCoins(params.CoinHoursTicker)
+					if err != nil {
+						logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
+						continue
+					}
 					traspassedHoursIn += val
 					skyAmountIn += sky
 
@@ -176,7 +232,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		}
 		txnDetails.SetOutputs(outputs)
 		t := time.Unix(int64(txn.GetTimestamp()), 0)
-		txnDetails.SetDate(qtcore.NewQDateTime3(qtcore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtcore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtcore.Qt__LocalTime))
+		txnDetails.SetDate(qtCore.NewQDateTime3(qtCore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtCore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtCore.Qt__LocalTime))
 		txnDetails.SetStatus(transactions.TransactionStatusPending)
 
 		if txn.GetStatus() == core.TXN_STATUS_CONFIRMED {
@@ -189,7 +245,11 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 				txnDetails.SetType(transactions.TransactionTypeInternal)
 			}
 		}
-		fee, _ := txn.ComputeFee("SKYCH")
+		fee, err := txn.ComputeFee(params.CoinHoursTicker)
+		if err != nil {
+			logHistoryManager.WithError(err).Warn("Couldn't compute fee of the operation")
+			continue
+		}
 		txnDetails.SetHoursBurned(strconv.FormatUint(fee, 10))
 
 		switch txnDetails.Type() {
@@ -197,8 +257,11 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			{
 				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursIn, 10))
 				val := float64(skyAmountIn)
-				//TODO: report possible error.
-				accuracy, _ := util.AltcoinQuotient("SKY")
+				accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+				if err != nil {
+					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+					continue
+				}
 				val = val / float64(accuracy)
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
 
@@ -217,20 +280,34 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 				for _, addr := range outs {
 					_, ok := inFind[addr.Address()]
 					if !ok {
-						hours, _ := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
+						hours, err := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
+						if err != nil {
+							logHistoryManager.WithError(err).Warn("Couldn't parse Coin Hours from address")
+							continue
+						}
 						traspassedHoursMoved += hours
-						skyf, _ := strconv.ParseFloat(addr.AddressSky(), 64)
-						//TODO: report possible error
-						accuracy, _ := util.AltcoinQuotient("SKY")
-						sky := uint64(skyf * float64(accuracy))
+						skyFloat, err := strconv.ParseFloat(addr.AddressSky(), 64)
+						if err != nil {
+							logHistoryManager.WithError(err).Warn("Couldn't parse Skycoins from addresses")
+							continue
+						}
+						accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+						if err != nil {
+							logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+							continue
+						}
+						sky := uint64(skyFloat * float64(accuracy))
 						skyAmountMoved += sky
 					}
 
 				}
 				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursMoved, 10))
 				val := float64(skyAmountMoved)
-				//TODO: report possible error.
-				accuracy, _ := util.AltcoinQuotient("SKY")
+				accuracy, _ := util.AltcoinQuotient(params.SkycoinTicker)
+				if err != nil {
+					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+					continue
+				}
 				val = val / float64(accuracy)
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
 
@@ -239,8 +316,11 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			{
 				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursOut, 10))
 				val := float64(skyAmountOut)
-				//TODO: report possible error.
-				accuracy, _ := util.AltcoinQuotient("SKY")
+				accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+				if err != nil {
+					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+					continue
+				}
 				val = val / float64(accuracy)
 				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
 
@@ -256,12 +336,14 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 	return txnsDetails
 }
 func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
+	logHistoryManager.Info("Loading history with some filters")
 	filterAddresses := hm.filters
 	return hm.getTransactionsOfAddresses(filterAddresses)
 
 }
 
 func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
+	logHistoryManager.Info("Loading history")
 	addresses := hm.getAddressesWithWallets()
 
 	filterAddresses := make([]string, 0)
@@ -274,9 +356,10 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 }
 
 func (hm *HistoryManager) addFilter(addr string) {
+	logHistoryManager.Info("Add filter")
 	alreadyIs := false
-	for _, filt := range hm.filters {
-		if filt == addr {
+	for _, filter := range hm.filters {
+		if filter == addr {
 			alreadyIs = true
 			break
 		}
@@ -288,6 +371,7 @@ func (hm *HistoryManager) addFilter(addr string) {
 }
 
 func (hm *HistoryManager) removeFilter(addr string) {
+	logHistoryManager.Info("Remove filter")
 
 	for i := 0; i < len(hm.filters); i++ {
 		if hm.filters[i] == addr {
@@ -298,14 +382,22 @@ func (hm *HistoryManager) removeFilter(addr string) {
 
 }
 func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
+	logHistoryManager.Info("Get Addresses with wallets")
 	response := make(map[string]string, 0)
 	it := hm.walletEnv.GetWalletSet().ListWallets()
+	if it == nil {
+		logHistoryManager.WithError(nil).Warn("Couldn't load addresses")
+		return response
+	}
 	for it.Next() {
 		wlt := it.Value()
-		addrs, _ := wlt.GetLoadedAddresses()
-
-		for addrs.Next() {
-			response[addrs.Value().String()] = wlt.GetId()
+		addresses, err := wlt.GetLoadedAddresses()
+		if err != nil {
+			logHistoryManager.WithError(err).Warn("Couldn't get loaded addresses")
+			continue
+		}
+		for addresses.Next() {
+			response[addresses.Value().String()] = wlt.GetId()
 		}
 
 	}
