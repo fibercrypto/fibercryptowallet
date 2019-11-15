@@ -473,7 +473,7 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 	if uxOut != nil {
 		uxOuts := make([]string, 0)
 		for _, out := range uxOut {
-			uxOuts = append(uxOuts, out.GetAddress().String())
+			uxOuts = append(uxOuts, out.GetId())
 		}
 		req.UxOuts = uxOuts
 	}

@@ -1177,13 +1177,6 @@ func TestLocalWalletSpend(t *testing.T) {
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
 
-func makeSimpleWalletAddress(wallet core.Wallet, address core.Address) *util.SimpleWalletAddress {
-	return &util.SimpleWalletAddress{
-		Wallet: wallet,
-		UxOut:  address,
-	}
-}
-
 func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
 	CleanGlobalMock()
 
@@ -1292,4 +1285,135 @@ func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
 	require.Equal(t, ctxnR.Transaction.TxID, txnResult.GetId())
 
+}
+
+func TestSkycoinBlockchainSpend(t *testing.T) {
+	CleanGlobalMock()
+
+	hash := testutil.RandSHA256(t)
+	sky := 500
+	//chgAddr :=
+	changeAddr := testutil.MakeAddress().String()
+	chgAddr := &SkycoinAddress{
+		address:     changeAddr,
+		poolSection: "",
+	}
+	destinationAddress := testutil.MakeAddress()
+
+	toAddr := &SkycoinTransactionOutput{
+		skyOut: readable.TransactionOutput{
+			Address: destinationAddress.String(),
+			Coins:   strconv.Itoa(sky),
+			Hours:   uint64(250),
+		},
+	}
+
+	uxOuts := make([]coin.UxOut, 2)
+	for i := 0; i < 2; i++ {
+		ux, _, _ := makeUxOutWithSecret(t)
+		uxOuts[i] = ux
+	}
+
+	skyOuts := make([]core.TransactionOutput, len(uxOuts))
+	for i := 0; i < len(uxOuts); i++ {
+		ux := uxOuts[i]
+		quot, err := util.AltcoinQuotient(params.SkycoinTicker)
+		require.NoError(t, err)
+		sky := util.FormatCoins(ux.Body.Coins, quot)
+		skOut := SkycoinTransactionOutput{
+			spent: false,
+			skyOut: readable.TransactionOutput{
+				Address: ux.Body.Address.String(),
+				Hash:    ux.Body.Hash().String(),
+				Coins:   sky,
+				Hours:   ux.Body.Hours,
+			},
+		}
+		skyOuts[i] = &skOut
+	}
+
+	wltOuts := make([]core.WalletOutput, len(uxOuts))
+	for i := 0; i < len(uxOuts); i++ {
+		wltOuts[i] = makeSimpleWalletOutput(nil, skyOuts[i])
+	}
+
+	uxOutsStr := make([]string, len(uxOuts))
+	for i := 0; i < len(uxOuts); i++ {
+		uxOutsStr[i] = uxOuts[i].Hash().String()
+	}
+
+	opt1 := NewTransferOptions()
+	opt1.SetValue("BurnFactor", "0.5")
+	opt1.SetValue("CoinHoursSelectionType", "auto")
+
+	req1 := api.CreateTransactionRequest{
+		UxOuts:            uxOutsStr,
+		IgnoreUnconfirmed: false,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+			},
+		},
+		HoursSelection: api.HoursSelection{
+			Type:        "auto",
+			Mode:        "share",
+			ShareFactor: "0.5",
+		},
+		ChangeAddress: &changeAddr,
+	}
+
+	opt2 := NewTransferOptions()
+	opt2.SetValue("BurnFactor", "0.5")
+	opt2.SetValue("CoinHoursSelectionType", "manual")
+
+	req2 := api.CreateTransactionRequest{
+		UxOuts:            uxOutsStr,
+		IgnoreUnconfirmed: false,
+		HoursSelection: api.HoursSelection{
+			Type: "manual",
+		},
+		ChangeAddress: &changeAddr,
+		To: []api.Receiver{
+			api.Receiver{
+				Address: destinationAddress.String(),
+				Coins:   strconv.Itoa(sky),
+				Hours:   "250",
+			},
+		},
+	}
+
+	txn := coin.Transaction{
+		InnerHash: hash,
+		Type:      0,
+		Length:    100,
+	}
+
+	crtTxn, err := api.NewCreateTransactionResponse(&txn, nil)
+	require.NoError(t, err)
+	crtTxn.Transaction.Fee = strconv.Itoa(sky)
+
+	mockSkyApiCreateTransaction(global_mock, &req1, crtTxn)
+	mockSkyApiCreateTransaction(global_mock, &req2, crtTxn)
+
+	bc := makeSkycoinBlockchain(t)
+
+	to := []core.TransactionOutput{toAddr}
+	//Testing Hours selection auto
+	txnR, err := bc.Spend(wltOuts, to, chgAddr, opt1)
+	require.NoError(t, err)
+	require.NotNil(t, txnR)
+	require.Equal(t, txnR.GetId(), crtTxn.Transaction.TxID)
+	val, err := txnR.ComputeFee(params.CoinHoursTicker)
+	require.NoError(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val), 10))
+
+	//Testing Hours selection manual
+	txnR2, err := bc.Spend(wltOuts, to, chgAddr, opt2)
+	require.NoError(t, err)
+	require.NotNil(t, txnR2)
+	require.Equal(t, txnR2.GetId(), crtTxn.Transaction.TxID)
+	val2, err := txnR2.ComputeFee(params.CoinHoursTicker)
+	require.NoError(t, err)
+	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val2), 10))
 }

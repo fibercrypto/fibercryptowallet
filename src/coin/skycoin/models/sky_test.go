@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/cipher"
 	skytestsuite "github.com/skycoin/skycoin/src/cipher/testsuite"
 	"github.com/skycoin/skycoin/src/coin"
@@ -176,4 +178,18 @@ func makeSpentOutput(uxout coin.UxOut, spentBkSeq uint64, spentTxId cipher.SHA25
 	rOut.SpentBlockSeq = spentBkSeq
 	rOut.SpentTxnID = spentTxId.Hex()
 	return
+}
+
+func makeSimpleWalletAddress(wallet core.Wallet, address core.Address) core.WalletAddress {
+	return &util.SimpleWalletAddress{
+		Wallet: wallet,
+		UxOut:  address,
+	}
+}
+
+func makeSimpleWalletOutput(wallet core.Wallet, out core.TransactionOutput) core.WalletOutput {
+	return &util.SimpleWalletOutput{
+		Wallet: wallet,
+		UxOut:  out,
+	}
 }
