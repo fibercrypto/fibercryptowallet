@@ -62,7 +62,7 @@ Item {
             property int checkedDelegates: 0
             property bool allChecked: false
 
-            model: 5//listAddresses
+            model: listAddresses
             
             Layout.fillWidth: true
             height: contentHeight
@@ -92,11 +92,6 @@ Item {
                 modelManager.setWalletManager(walletManager)
                 listAddresses = modelManager.getAddressModel(fileName)
             }
-
-            Layout.fillWidth: true
-            interactive: false
-            model: listAddresses
-            height: contentItem.height
 
             delegate: HistoryFilterListAddressDelegate {
                 // BUG: Checking the wallet does not change the check state of addresses
