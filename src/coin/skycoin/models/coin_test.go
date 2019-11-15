@@ -1,8 +1,10 @@
 package skycoin
 
 import (
-	"github.com/stretchr/testify/require"
+	"encoding/hex"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/cipher"
@@ -142,4 +144,47 @@ func TestUninjectedTransactionSignedUnsigned(t *testing.T) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
+}
+
+func TestSkycoinUninjectedTransactionGetInputs(t *testing.T) {
+	CleanGlobalMock()
+
+	fee := uint64(500)
+	txn, err := makeTransaction(t)
+	require.NoError(t, err)
+	ut, err := NewUninjectedTransaction(&txn, fee)
+	require.NoError(t, err)
+
+	b := randBytes(t, 32)
+	h, err := cipher.SHA256FromBytes(b)
+	require.NoError(t, err)
+
+	ut.txn.In = []cipher.SHA256{h}
+
+	addr := makeAddress()
+
+	global_mock.On("UxOut", h.String()).Return(
+		&readable.SpentOutput{
+			OwnerAddress: addr.String(),
+			Coins:        uint64(1000000),
+			Hours:        uint64(20),
+			Uxid:         "out1",
+			SrcTx:        hex.EncodeToString(h[:]),
+		},
+		nil,
+	)
+
+	tiList := ut.GetInputs()
+	ti := tiList[0]
+	require.Equal(t, 1, len(tiList))
+	sky, err := ti.GetCoins(Sky)
+	require.NoError(t, err)
+	require.Equal(t, sky, uint64(1000000))
+	hours, err := ti.GetCoins(CoinHour)
+	require.NoError(t, err)
+	require.Equal(t, hours, uint64(20))
+	//TODO: Find a way to get the calculatedHours for the expected value
+	val, err := ti.GetCoins("INVALID_TICKER")
+	require.Error(t, err)
+	require.Equal(t, uint64(0), val)
 }

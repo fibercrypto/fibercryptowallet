@@ -314,6 +314,7 @@ func (skyTxn *SkycoinUninjectedTransaction) GetInputs() []core.TransactionInput 
 	if skyTxn.inputs == nil {
 		inputs, err := getSkycoinTransactionInputsFromInputsHashes(skyTxn.txn.In)
 		if err != nil {
+			//TODO: This method should also returns error
 			return nil
 		}
 		skyTxn.inputs = inputs
