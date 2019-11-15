@@ -3,7 +3,7 @@ package skycoin
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/skycoin/skycoin/src/api"
@@ -55,17 +55,17 @@ func TestWalletListPendingTransactions(t *testing.T) {
 
 	for wallets.Next() {
 		txns, err := wallets.Value().GetCryptoAccount().ListPendingTransactions()
-		assert.Nil(t, err)
+		require.Nil(t, err)
 		for txns.Next() {
 			iter := NewSkycoinTransactionOutputIterator(txns.Value().GetOutputs())
 			for iter.Next() {
 				output := iter.Value()
 				val, err3 := output.GetCoins(Sky)
-				assert.Nil(t, err3)
-				assert.Equal(t, val, uint64(1000000))
+				require.Nil(t, err3)
+				require.Equal(t, val, uint64(1000000))
 				val, err3 = output.GetCoins(CoinHour)
-				assert.Nil(t, err3)
-				assert.Equal(t, val, uint64(2000))
+				require.Nil(t, err3)
+				require.Equal(t, val, uint64(2000))
 			}
 		}
 	}
@@ -78,11 +78,11 @@ func TestSkycoinAddressGetBalance(t *testing.T) {
 
 	addr := &SkycoinAddress{address: "addr1"}
 	val, err := addr.GetBalance(Sky)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(42000000))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(42000000))
 	val, err = addr.GetBalance(CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(200))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(200))
 }
 
 func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
@@ -94,9 +94,9 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 		Address:         "addr1",
 	}
 	response := &readable.UnspentOutputsSummary{
-		HeadOutputs:     readable.UnspentOutputs{usOut, usOut},
-		OutgoingOutputs: readable.UnspentOutputs{usOut, usOut},
+		HeadOutputs: readable.UnspentOutputs{usOut, usOut},
 	}
+
 	global_mock.On("OutputsForAddresses", []string{"addr1"}).Return(response, nil)
 
 	addr := &SkycoinAddress{address: "addr1"}
@@ -104,14 +104,14 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 
 	for it.Next() {
 		output := it.Value()
-		assert.Equal(t, output.GetId(), "hash1")
-		assert.Equal(t, output.GetAddress().String(), "addr1")
+		require.Equal(t, output.GetId(), "hash1")
+		require.Equal(t, output.GetAddress().String(), "addr1")
 		val, err := output.GetCoins(Sky)
-		assert.Nil(t, err)
-		assert.Equal(t, val, uint64(42000000))
+		require.Nil(t, err)
+		require.Equal(t, val, uint64(42000000))
 		val, err = output.GetCoins(CoinHour)
-		assert.Nil(t, err)
-		assert.Equal(t, val, uint64(42))
+		require.Nil(t, err)
+		require.Equal(t, val, uint64(42))
 	}
 }
 
@@ -142,10 +142,10 @@ func TestSkycoinAddressListTransactions(t *testing.T) {
 	it := addr.ListTransactions()
 	it.Next()
 	thx := it.Value()
-	assert.Equal(t, thx.GetStatus(), core.TXN_STATUS_CONFIRMED)
+	require.Equal(t, thx.GetStatus(), core.TXN_STATUS_CONFIRMED)
 	it.Next()
 	thx = it.Value()
-	assert.Equal(t, thx.GetStatus(), core.TXN_STATUS_PENDING)
+	require.Equal(t, thx.GetStatus(), core.TXN_STATUS_PENDING)
 }
 
 func TestLocalWalletGetBalance(t *testing.T) {
@@ -173,9 +173,9 @@ func TestLocalWalletGetBalance(t *testing.T) {
 	).Return(response, nil)
 	addr := &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
 	val, err := addr.GetBalance(Sky)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(84000000))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(84000000))
 	val, err = addr.GetBalance(CoinHour)
-	assert.Nil(t, err)
-	assert.Equal(t, val, uint64(84))
+	require.Nil(t, err)
+	require.Equal(t, val, uint64(84))
 }

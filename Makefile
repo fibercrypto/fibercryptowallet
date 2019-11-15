@@ -4,6 +4,11 @@
 UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
+##In future use as a parameter tu make command.
+COIN = skycoin
+COVERAGEPATH = src/coin/$(COIN)
+COVERAGEFILE = $(COVERAGEPATH)/coverage.out
+COVERAGEHTML = $(COVERAGEPATH)/coverage.html
 
 deps: ## Add dependencies
 	dep ensure
@@ -81,8 +86,19 @@ clean: ## Clean project FiberCrypto Wallet.
 	@echo "Done."
 
 test-sky: ## Run Skycoin plugin test suite
-	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
-	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+
+test-clean:
+	rm $(COVERAGEFILE)
+	rm $(COVERAGEHTML)
+
+test-sky-launch-html-cover:
+	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
+
+test-cover: test-sky-launch-html-cover ## Show more details of test coverage
 
 test: test-sky ## Run project test suite
 
