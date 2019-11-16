@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/readable"
 )
@@ -187,4 +188,27 @@ func TestSkycoinUninjectedTransactionGetInputs(t *testing.T) {
 	val, err := ti.GetCoins("INVALID_TICKER")
 	require.Error(t, err)
 	require.Equal(t, uint64(0), val)
+}
+
+func TestSkycoinCreatedTransactionOutputIsSpent(t *testing.T) {
+	global_mock.On("UxOut", "out1").Return(
+		&readable.SpentOutput{
+			SpentTxnID: "0000000000000000000000000000000000000000000000000000000000000000",
+		},
+		nil,
+	)
+	global_mock.On("UxOut", "out2").Return(
+		&readable.SpentOutput{
+			SpentTxnID: "0",
+		},
+		nil,
+	)
+
+	output1 := &SkycoinCreatedTransactionOutput{skyOut: api.CreatedTransactionOutput{UxID: "out1"}}
+	output2 := &SkycoinCreatedTransactionOutput{skyOut: api.CreatedTransactionOutput{UxID: "out2"}}
+
+	require.Equal(t, output1.IsSpent(), false)
+	require.Equal(t, output2.IsSpent(), true)
+	require.Equal(t, output2.IsSpent(), true)
+
 }
