@@ -123,6 +123,30 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 	require.Equal(t, "FiberCrypto", wlt2.GetId())
 }
 
+func TestSkycoinRemoteWalletEncrypt(t *testing.T) {
+	CleanGlobalMock()
+	global_mock.On("EncryptWallet", "wallet", "pwd").Return(&api.WalletResponse{}, nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
+	pwdReader := func(message string) (string, error) {
+		return "pwd", nil
+	}
+
+	wltSrv.Encrypt("wallet", pwdReader)
+}
+
+func TestSkycoinRemoteWalletDecrypt(t *testing.T) {
+	CleanGlobalMock()
+	global_mock.On("DecryptWallet", "wallet", "pwd").Return(&api.WalletResponse{}, nil)
+
+	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
+	pwdReader := func(message string) (string, error) {
+		return "pwd", nil
+	}
+
+	wltSrv.Decrypt("wallet", pwdReader)
+}
+
 func TestSkycoinRemoteWalletIsEncrypted(t *testing.T) {
 
 	global_mock.On("Wallet", "encrypted").Return(
@@ -218,6 +242,18 @@ func TestRemoteWalletSignSkycoinTxn(t *testing.T) {
 	value, err := ret.ComputeFee(CoinHour)
 	require.NoError(t, err)
 	require.Equal(t, uint64(100), value)
+}
+
+func TestRemoteWalletSetLabel(t *testing.T) {
+	CleanGlobalMock()
+	global_mock.On("UpdateWallet", "walletId", "wallet").Return(nil)
+
+	wlt := &RemoteWallet{
+		Id:          "walletId",
+		poolSection: PoolSection,
+	}
+
+	wlt.SetLabel("wallet")
 }
 
 type TransferOptions struct {
