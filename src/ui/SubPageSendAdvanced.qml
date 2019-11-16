@@ -502,15 +502,13 @@ Page {
                     icon.color: Material.color(Material.Grey)
                 }
             }
+
             ListView {
                 id: listViewDestinations
 
-                property real delegateHeight: 47
-
                 Layout.fillWidth: true
                 Layout.topMargin: -16
-                implicitHeight: count * delegateHeight
-
+                implicitHeight: contentItem.height
                 Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
                 interactive: false
@@ -520,7 +518,6 @@ Page {
 
                 delegate: DestinationListDelegate {
                     width: listViewDestinations.width
-                    implicitHeight: ListView.view.delegateHeight
                 }
             } // ListView
         } // ColumnLayout (destinations)
