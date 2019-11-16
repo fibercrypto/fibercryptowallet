@@ -6,6 +6,7 @@
 # Configuration
 *.vscode
 *.pro.user*
+config.json
 CMake*
 
 # Icons
