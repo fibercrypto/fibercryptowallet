@@ -56,7 +56,7 @@ venv.bak/
 deploy/
 rcc.cpp
 rcc.qrc
-rcc_cgo_linux_linux_amd64.go
+rcc_cgo_*.go
 rcc_*.cpp
 rcc__*
 *moc.*
