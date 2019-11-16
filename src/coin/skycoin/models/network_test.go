@@ -46,17 +46,17 @@ func TestSkycoinPEXGetTxnPool(t *testing.T) {
 
 	pex := &SkycoinPEX{poolSection: PoolSection}
 	txns, err2 := pex.GetTxnPool()
-	require.Nil(t, err2)
+	require.NoError(t, err2)
 
 	for txns.Next() {
 		iter := NewSkycoinTransactionOutputIterator(txns.Value().GetOutputs())
 		for iter.Next() {
 			output := iter.Value()
 			val, err3 := output.GetCoins(Sky)
-			require.Nil(t, err3)
+			require.NoError(t, err3)
 			require.Equal(t, val, uint64(1000000))
 			val, err3 = output.GetCoins(CoinHour)
-			require.Nil(t, err3)
+			require.NoError(t, err3)
 			require.Equal(t, val, uint64(2000))
 		}
 	}
