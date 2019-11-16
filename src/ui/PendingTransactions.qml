@@ -23,12 +23,7 @@ Page {
             checked: showOnlyMine
             onCheckedChanged: {
                 showOnlyMine = checked
-                if(checked){
-                    modelPendingTransactions.getMine()
-                }
-                else{
-                    modelPendingTransactions.getAll()
-                }
+                modelPendingTransactions.recoverTransactions(showOnlyMine)
             }
         }
 
@@ -78,9 +73,11 @@ Page {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                model: modelPendingTransactions.transactions
+                model: modelPendingTransactions.recoverTransactions(showOnlyMine)
                 delegate: PendingTransactionsDelegate {
                     property bool hide: false
+
+                    width: parent.width
 
                     modelMine: modelData.mine
                     modelTransactionID: modelData.transactionID
@@ -88,20 +85,40 @@ Page {
                     modelCoinHours: modelData.coinHours
                     modelTimestamp: modelData.timeStamp
 
-                    width: parent.width
-                    clip: true
                     height: hide ? 0 : implicitHeight
                     Behavior on height { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
                     opacity: hide ? 0 : 1
                     Behavior on opacity { NumberAnimation { duration: 100 } }
 
-                    ScrollBar.vertical: ScrollBar { }
-                }
+                    clip: true
+                } // PendingTransactionsDelegate (delegate)
+
+                ScrollBar.vertical: ScrollBar { }
             } // ListView
         } // ColumnLayout (frame)
-    } // Frame
+    } // GroupBox
 
     QPendingList {
         id: modelPendingTransactions
+        property Timer timer: Timer{
+            id: pendingTxnTimer
+            repeat: true
+            running: true
+            interval: 3000
+            onTriggered: {
+                modelPendingTransactions.cleanPendingTxns()
+                modelPendingTransactions.recoverTransactions(showOnlyMine)
+            }
+
+        }
+
+    }
+
+    BusyIndicator {
+        id: busyIndicator
+
+        anchors.centerIn: parent
+
+        running: modelPendingTransactions.loading
     }
 }
