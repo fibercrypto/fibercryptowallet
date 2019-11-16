@@ -1428,7 +1428,7 @@ func TestSkycoinBlockchainSpend(t *testing.T) {
 func TestSkycoinSignServiceSign(t *testing.T) {
 	CleanGlobalMock()
 
-	txn, keyData, uxOuts, err := makeTransactionMultipleInputs(t, 3)
+	txn, keyData, uxOuts, err := makeTransactionFromMultipleWallets(t, 3)
 	require.NoError(t, err)
 
 	//require.Equal(t, keyData, "")

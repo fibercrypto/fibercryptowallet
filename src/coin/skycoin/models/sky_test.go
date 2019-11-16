@@ -128,6 +128,19 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	return &keytestData, nil
 }
 
+func makeUxBodyWithRandomSecret(t *testing.T) (coin.UxBody, *KeyData, error) {
+	keydata, err := generateRandomKeyData(t)
+	if err != nil {
+		return coin.UxBody{}, nil, err
+	}
+	return coin.UxBody{
+		SrcTransaction: testutil.RandSHA256(t),
+		Address:        cipher.AddressFromPubKey(keydata.PubKey),
+		Coins:          1e6,
+		Hours:          100,
+	}, keydata, nil
+}
+
 func makeUxBodyWithSecret(t *testing.T) (coin.UxBody, *KeyData, error) {
 	keydata, err := generateTestKeyPair(t)
 	if err != nil {
@@ -139,6 +152,20 @@ func makeUxBodyWithSecret(t *testing.T) (coin.UxBody, *KeyData, error) {
 		Coins:          1e6,
 		Hours:          100,
 	}, keydata, nil
+}
+
+func makeUxWithRandomSecret(t *testing.T) (coin.UxOut, *KeyData, error) {
+	body, kd, err := makeUxBodyWithRandomSecret(t)
+	if err != nil {
+		return coin.UxOut{}, nil, err
+	}
+	return coin.UxOut{
+		Head: coin.UxHead{
+			Time:  100,
+			BkSeq: 2,
+		},
+		Body: body,
+	}, kd, nil
 }
 
 func makeUxOutWithSecret(t *testing.T) (coin.UxOut, *KeyData, error) {
@@ -161,6 +188,22 @@ func makeTransaction(t *testing.T) (coin.Transaction, error) {
 		return coin.Transaction{}, err
 	}
 	return makeTransactionFromUxOut(t, ux, kd.SecKey), nil
+}
+
+func makeTransactionFromMultipleWallets(t *testing.T, n int) (coin.Transaction, []KeyData, []coin.UxOut, error) {
+	uxs := make([]coin.UxOut, n)
+	keysdata := make([]KeyData, n)
+	secs := make([]cipher.SecKey, n)
+
+	for i := 0; i < n; i++ {
+		ux, kd, err := makeUxWithRandomSecret(t)
+		require.NoError(t, err)
+		uxs[i] = ux
+		secs[i] = kd.SecKey
+		keysdata[i] = *kd
+	}
+
+	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, uxs, nil
 }
 
 func makeTransactionMultipleInputs(t *testing.T, n int) (coin.Transaction, []KeyData, []coin.UxOut, error) {
