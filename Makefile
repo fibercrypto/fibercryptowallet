@@ -85,8 +85,7 @@ install-deps-Windows: ## Install Windowns dependencies
 	go get -u -v github.com/therecipe/qt/cmd/...
 	qtsetup -test=false -ErrorAction SilentlyContinue
 	go get -t -d -v ./...
-	wget -A "ImageMagick-*-portable-Q16-x64.zip" -r -nc -np -nd -e robots=off https://imagemagick.org/download/binaries
-	mv ImageMagick-*-portable-Q16-x64.zip magick.zip
+	wget -O magick.zip https://imagemagick.org/download/binaries/ImageMagick-6.9.10-73-portable-Q16-x64.zip
 	unzip magick.zip convert.exe
 
 install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
