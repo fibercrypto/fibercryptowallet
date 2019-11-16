@@ -67,7 +67,7 @@ func (m *SkycoinApiMock) Wallet(id string) (*api.WalletResponse, error) {
 }
 func (m *SkycoinApiMock) UpdateWallet(id, label string) error {
 	args := m.Called(id, label)
-	return args.Error(1)
+	return args.Error(0)
 }
 func (m *SkycoinApiMock) NewWalletAddress(id string, n int, password string) ([]string, error) {
 	args := m.Called(id, n, password)
