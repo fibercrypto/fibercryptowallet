@@ -4,6 +4,8 @@ import (
 	"path/filepath"
 	"testing"
 
+	"github.com/skycoin/skycoin/src/cipher/bip39"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -66,11 +68,33 @@ type KeyData struct {
 
 // generateTestKeyPair provides deterministic sequence of test keys
 // that can be recovered later inside a wallet
+
+func generateRandomKeyData(t *testing.T) (*KeyData, error) {
+	entropy, err := bip39.NewEntropy(128)
+	require.NoError(t, err)
+	mnemonic, err := bip39.NewMnemonic(entropy)
+	require.NoError(t, err)
+	seed, err := bip39.NewSeed(mnemonic, "")
+	require.NoError(t, err)
+	pubKey, secKey, err := cipher.GenerateDeterministicKeyPair(seed)
+	require.NoError(t, err)
+
+	kd := &KeyData{
+		AddressIndex: 0,
+		Entropy:      entropy,
+		Mnemonic:     mnemonic,
+		PubKey:       pubKey,
+		SecKey:       secKey,
+	}
+
+	return kd, nil
+}
+
 func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	var err error
 	if seedEntropy == nil {
 		// Load suite test data
-		fn := filepath.Join(testsuite.GetSkycoinCipherTestDataDir(), testsuite.ManyAddressesFilename)
+		fn := filepath.Join(testsuite.GetSkycoinCipherTestDataDir(), "seed-0000.golden") //testsuite.ManyAddressesFilename)
 
 		var dataJSON skytestsuite.SeedTestDataJSON
 		err := file.LoadJSON(fn, &dataJSON)

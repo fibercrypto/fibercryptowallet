@@ -1,11 +1,14 @@
 package skycoin
 
 import (
+	"fmt"
 	"io/ioutil"
 	"math"
 	"strconv"
 	"strings"
 	"testing"
+
+	"github.com/skycoin/skycoin/src/visor"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
@@ -956,6 +959,10 @@ func makeSkycoinBlockchain(t *testing.T) core.BlockchainTransactionAPI {
 	return NewSkycoinBlockchain(0)
 }
 
+func makeSkycoinSignService(t *testing.T) core.BlockchainSignService {
+	return &SkycoinSignService{}
+}
+
 func TestLocalWalletTransfer(t *testing.T) {
 	CleanGlobalMock()
 	destinationAddress := testutil.MakeAddress()
@@ -1416,4 +1423,55 @@ func TestSkycoinBlockchainSpend(t *testing.T) {
 	val2, err := txnR2.ComputeFee(params.CoinHoursTicker)
 	require.NoError(t, err)
 	require.Equal(t, util.FormatCoins(uint64(sky), 10), util.FormatCoins(uint64(val2), 10))
+}
+
+func TestSkycoinSignServiceSign(t *testing.T) {
+	CleanGlobalMock()
+
+	txn, keyData, uxOuts, err := makeTransactionMultipleInputs(t, 3)
+	require.NoError(t, err)
+
+	//require.Equal(t, keyData, "")
+	ins := make([]visor.TransactionInput, 0)
+	for _, out := range uxOuts {
+		in, err := visor.NewTransactionInput(out, out.Head.Time)
+		require.NoError(t, err)
+
+		ins = append(ins, in)
+	}
+
+	//SkycoinCreatedTransaction
+	sigs := txn.Sigs
+	txn.Sigs = []cipher.Sig{}
+	apiCreTxn, err := api.NewCreatedTransaction(&txn, ins)
+	txn.Sigs = sigs
+	apiCreTxn.Sigs = make([]string, 0)
+	require.NoError(t, err)
+	require.NotNil(t, apiCreTxn)
+	require.Equal(t, apiCreTxn.InnerHash, txn.HashInner().Hex())
+	skyCreTxn := NewSkycoinCreatedTransaction(*apiCreTxn)
+
+	signer := makeSkycoinSignService(t)
+	wallets := makeLocalWalletsFromKeyData(t, keyData)
+
+	require.NotEqual(t, wallets[0], wallets[1])
+
+	isds := make([]core.InputSignDescriptor, 0)
+	for i, wlt := range wallets {
+		descriptor := core.InputSignDescriptor{
+			InputIndex: fmt.Sprintf("#%d", i),
+			SignerID:   SignerIDLocalWallet,
+			Wallet:     wlt,
+		}
+		isds = append(isds, descriptor)
+
+	}
+
+	pwdReader := func(message string) (string, error) {
+		return "", nil
+	}
+	signedTxn, err := signer.Sign(skyCreTxn, isds, pwdReader)
+	require.NoError(t, err)
+	require.NotNil(t, signedTxn)
+
 }
