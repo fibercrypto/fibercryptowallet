@@ -14,7 +14,6 @@ A clear and concise description of the problem and bug effects.
 
 - OS: e.g. Linux, Windows, Mac OS X
 - Platform: the equivalent of `uname -smr` or `uname -smrv` e.g. Darwin 17.4.0 x86_64
-- Firmware Version: e.g. 0.5.18
 
 **Steps to Reproduce**
 Steps to reproduce the behavior:

@@ -23,12 +23,7 @@ Page {
             checked: showOnlyMine
             onCheckedChanged: {
                 showOnlyMine = checked
-                if(checked){
-                    modelPendingTransactions.getMine()
-                }
-                else{
-                    modelPendingTransactions.getAll()
-                }
+                modelPendingTransactions.recoverTransactions(showOnlyMine)
             }
         }
 
@@ -83,7 +78,7 @@ Page {
                     anchors.fill: parent
                     clip: true
 
-                    model: modelPendingTransactions.transactions
+                    model: modelPendingTransactions.recoverTransactions(showOnlyMine)
                     delegate: PendingTransactionsDelegate {
                         property bool hide: false
 
@@ -109,5 +104,25 @@ Page {
 
     QPendingList{
         id: modelPendingTransactions
+        property Timer timer: Timer{
+            id: pendingTxnTimer
+            repeat: true
+            running: true
+            interval: 3000
+            onTriggered: {
+                modelPendingTransactions.cleanPendingTxns()
+                modelPendingTransactions.recoverTransactions(showOnlyMine)
+            }
+
+        }
+
+    }
+
+    BusyIndicator {
+        id: busyIndicator
+
+        anchors.centerIn: parent
+
+        running: modelPendingTransactions.loading
     }
 }

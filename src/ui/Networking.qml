@@ -3,13 +3,13 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import NetworkingManager 1.0
+
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: root
-
 
     Frame {
         anchors.fill: parent
@@ -100,5 +100,14 @@ Page {
             }
 
         }
+    }
+
+    BusyIndicator {
+        id: busyIndicator
+
+        anchors.centerIn: parent
+        // Create a `busy` property in the backend and bind it to `running` here:
+        running: modelNetworking.networks.length === 0
+
     }
 }

@@ -10,6 +10,15 @@ APP_VERSION		:= 0.27.0
 LICENSE			:= GPLv3
 COPYRIGHT		:= Copyright © 2019 $(ORG_NAME)
 
+UNAME_S = $(shell uname -s)
+DEFAULT_TARGET ?= desktop
+DEFAULT_ARCH ?= linux
+## In future use as a parameter tu make command.
+COIN = skycoin
+COVERAGEPATH = src/coin/$(COIN)
+COVERAGEFILE = $(COVERAGEPATH)/coverage.out
+COVERAGEHTML = $(COVERAGEPATH)/coverage.html
+
 # Icons
 APP_ICON_PATH	:= resources/images/icons/appIcon
 ICONS_BUILDPATH	:= resources/images/icons/appIcon/build
@@ -23,7 +32,7 @@ DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
-	CONVERT		= magick convert
+	CONVERT		 = magick convert
 	WINDRES		:= windres
 	RC_FILE		:= resources/platform/windows/winResources.rc
 	RC_OBJ		:= winResources.syso
@@ -84,7 +93,6 @@ build-docker: ## Build project using docker
 	@echo "Building FiberCrypto Wallet..."
 	qtdeploy -docker build $(DEFAULT_TARGET)
 	@echo "Done."
-
 
 build-icon-Windows_NT: ## Build the application icon in Windows
 	mkdir -p $(ICONS_BUILDPATH)
@@ -162,6 +170,9 @@ clean-Linux: ## Clean project in Linux
 	# Linux actions
 	@echo "Cleaned"
 
+prepare-release: ## Change the resources in the app and prepare to release the app
+	./setup_release.sh
+
 clean: clean-$(OS) ## Clean project FiberCrypto Wallet
 	# Regular generated files
 	@echo "Cleaning project $(APP_NAME)..."
@@ -178,8 +189,19 @@ clean: clean-$(OS) ## Clean project FiberCrypto Wallet
 	@echo "Done."
 
 test-sky: ## Run Skycoin plugin test suite
-	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
-	go test -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+
+test-clean:
+	rm $(COVERAGEFILE)
+	rm $(COVERAGEHTML)
+
+test-sky-launch-html-cover:
+	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
+
+test-cover: test-sky-launch-html-cover ## Show more details of test coverage
 
 test: test-sky ## Run project test suite
 
