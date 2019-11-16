@@ -98,8 +98,6 @@ build-docker: ## Build project using docker
 
 build-icon-Windows_NT: ## Build the application icon in Windows
 	mkdir -p $(ICONS_BUILDPATH)
-	# For Windows icons we need the `convert` tool provided by "Imagemagick"
-<<<<<<< HEAD
 	$(CONVERT) "$(APP_ICON_PATH)/appIcon-wallet.png" -resize 16x16 "$(ICONS_BUILDPATH)/appIcon_1_16x16.png"
 	$(CONVERT) "$(APP_ICON_PATH)/appIcon-wallet.png" -resize 24x24 "$(ICONS_BUILDPATH)/appIcon_2_24x24.png"
 	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 32x32 "$(ICONS_BUILDPATH)/appIcon_3_32x32.png"
@@ -109,17 +107,6 @@ build-icon-Windows_NT: ## Build the application icon in Windows
 	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 128x128 "$(ICONS_BUILDPATH)/appIcon_7_128x128.png"
 	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 256x256 "$(ICONS_BUILDPATH)/appIcon_8_256x256.png"
 	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 512x512 "$(ICONS_BUILDPATH)/appIcon_9_512x512.png"
-=======
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon-wallet.png" -resize 16x16 "$(ICONS_BUILDPATH)/appIcon_16x16.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon-wallet.png" -resize 24x24 "$(ICONS_BUILDPATH)/appIcon_24x24.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 32x32 "$(ICONS_BUILDPATH)/appIcon_32x32.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 48x48 "$(ICONS_BUILDPATH)/appIcon_48x48.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 64x64 "$(ICONS_BUILDPATH)/appIcon_64x64.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 96x96 "$(ICONS_BUILDPATH)/appIcon_96x96.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 128x128 "$(ICONS_BUILDPATH)/appIcon_128x128.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 256x256 "$(ICONS_BUILDPATH)/appIcon_256x256.png"
-	$(CONVERT) "$(APP_ICON_PATH)/appIcon.png" -resize 512x512 "$(ICONS_BUILDPATH)/appIcon_512x512.png"
->>>>>>> c53e5d8143eb7c9f505e40cd4b655948b2e55081
 	$(CONVERT) "$(ICONS_BUILDPATH)/appIcon_*.png" "$(APP_ICON_PATH)/appIcon.ico"
 
 build-icon-Darwin: ## Build the application icon in Darwin
@@ -167,11 +154,7 @@ prepare-release: ## Change the resources in the app and prepare to release the a
 	./setup_release.sh
 
 clean: ## Clean project FiberCrypto Wallet.
-<<<<<<< HEAD
 	@echo "Cleaning project $(APP_NAME)..."
-=======
-	@echo "Cleaning project FiberCrypto Wallet..."
->>>>>>> c53e5d8143eb7c9f505e40cd4b655948b2e55081
 	rm -rf deploy/
 	rm -rf linux/
 	rm -rf windows/

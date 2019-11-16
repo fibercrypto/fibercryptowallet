@@ -62,10 +62,6 @@ matrix:
         - make lint
         - make build
         - make test
-<<<<<<< HEAD
-=======
-        - make build-icon
->>>>>>> c53e5d8143eb7c9f505e40cd4b655948b2e55081
 
     - stage: "MacOS"
       os: osx
