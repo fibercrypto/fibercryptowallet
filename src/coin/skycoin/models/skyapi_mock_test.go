@@ -79,33 +79,14 @@ func mockSkyApiOutputsForAddresses(mock *SkycoinApiMock, addresses []string) {
 		HeadOutputs: readable.UnspentOutputs{usOut, usOut},
 	}
 
-	mock.On(
-		"OutputsForAddresses",
-		[]string{
-			"6gnBM5gMSSb7XRUEap7q3WxFnuvbN9usTq",
-		},
-	).Return(response, nil)
-
-	mock.On(
-		"OutputsForAddresses",
-		[]string{
-			"2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP",
-		},
-	).Return(response, nil)
-
-	mock.On(
-		"OutputsForAddresses",
-		[]string{
-			"7wqRjpVwg5uSsz72oAZcDrBevHQRHQudyj",
-		},
-	).Return(response, nil)
-
-	mock.On(
-		"OutputsForAddresses",
-		[]string{
-			"2G9wDPX14WsbZuZU1f7MveYc9vpLxj2qNsz",
-		},
-	).Return(response, nil)
+	for _, addr := range addresses {
+		mock.On(
+			"OutputsForAddresses",
+			[]string{
+				addr,
+			},
+		).Return(response, nil)
+	}
 }
 
 func mockSkyApiTransactionsVerbose(mock *SkycoinApiMock, addresses []string) {
@@ -116,31 +97,12 @@ func mockSkyApiTransactionsVerbose(mock *SkycoinApiMock, addresses []string) {
 	}
 	response.Transaction.Hash = "hash1"
 
-	mock.On("TransactionsVerbose", []string{"2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP"}).Return(
-		[]readable.TransactionWithStatusVerbose{
-			response,
-		},
-		nil,
-	)
-
-	mock.On("TransactionsVerbose", []string{"7wqRjpVwg5uSsz72oAZcDrBevHQRHQudyj"}).Return(
-		[]readable.TransactionWithStatusVerbose{
-			response,
-		},
-		nil,
-	)
-
-	mock.On("TransactionsVerbose", []string{"2G9wDPX14WsbZuZU1f7MveYc9vpLxj2qNsz"}).Return(
-		[]readable.TransactionWithStatusVerbose{
-			response,
-		},
-		nil,
-	)
-
-	mock.On("TransactionsVerbose", []string{"6gnBM5gMSSb7XRUEap7q3WxFnuvbN9usTq"}).Return(
-		[]readable.TransactionWithStatusVerbose{
-			response,
-		},
-		nil,
-	)
+	for _, addr := range addresses {
+		mock.On("TransactionsVerbose", []string{addr}).Return(
+			[]readable.TransactionWithStatusVerbose{
+				response,
+			},
+			nil,
+		)
+	}
 }
