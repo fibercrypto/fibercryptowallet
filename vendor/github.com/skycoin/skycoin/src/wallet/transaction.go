@@ -140,7 +140,7 @@ func SignTransaction(w Wallet, txn *coin.Transaction, signIndexes []int, uxOuts 
 	}
 
 	if len(toSign) != len(addrs) {
-		return nil, NewError(errors.New("Wallet cannot sign all requested inputs"))
+		return nil, NewError(errors.New(fmt.Sprintf("Wallet cannot sign %v %v all requested inputs %s Outs %v", addrs, toSign, w.GetEntries()[0].SkycoinAddress(), uxOuts)))
 	}
 
 	// Sign the selected inputs

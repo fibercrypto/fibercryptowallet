@@ -74,9 +74,8 @@ func generateRandomKeyData(t *testing.T) (*KeyData, error) {
 	require.NoError(t, err)
 	mnemonic, err := bip39.NewMnemonic(entropy)
 	require.NoError(t, err)
-	seed, err := bip39.NewSeed(mnemonic, "")
 	require.NoError(t, err)
-	pubKey, secKey, err := cipher.GenerateDeterministicKeyPair(seed)
+	pubKey, secKey, err := cipher.GenerateDeterministicKeyPair([]byte(mnemonic))
 	require.NoError(t, err)
 
 	kd := &KeyData{
@@ -94,7 +93,7 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	var err error
 	if seedEntropy == nil {
 		// Load suite test data
-		fn := filepath.Join(testsuite.GetSkycoinCipherTestDataDir(), "seed-0000.golden") //testsuite.ManyAddressesFilename)
+		fn := filepath.Join(testsuite.GetSkycoinCipherTestDataDir(), testsuite.ManyAddressesFilename)
 
 		var dataJSON skytestsuite.SeedTestDataJSON
 		err := file.LoadJSON(fn, &dataJSON)

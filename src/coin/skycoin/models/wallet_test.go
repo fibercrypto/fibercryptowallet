@@ -1431,7 +1431,6 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 	txn, keyData, uxOuts, err := makeTransactionFromMultipleWallets(t, 3)
 	require.NoError(t, err)
 
-	//require.Equal(t, keyData, "")
 	ins := make([]visor.TransactionInput, 0)
 	for _, out := range uxOuts {
 		in, err := visor.NewTransactionInput(out, out.Head.Time)
@@ -1471,6 +1470,7 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 		return "", nil
 	}
 	signedTxn, err := signer.Sign(skyCreTxn, isds, pwdReader)
+	require.Equal(t, err.Error(), keyData)
 	require.NoError(t, err)
 	require.NotNil(t, signedTxn)
 
