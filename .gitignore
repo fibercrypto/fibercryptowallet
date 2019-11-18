@@ -8,6 +8,12 @@
 *.pro.user*
 config.json
 CMake*
+*.cflags
+*.config
+*.creator
+*.cxxflags
+*.files
+*.includes
 
 # Icons
 resources/images/icons/appIcon/build/
