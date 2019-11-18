@@ -10,7 +10,7 @@ go_import_path: github.com/fibercrypto/FiberCryptoWallet
 
 env:
   global:
-  - XARGS="-screen 0 1024x768x24"
+    - XARGS="-screen 0 1024x768x24"
 
 matrix:
   include:
@@ -45,34 +45,34 @@ matrix:
         - make test
 
     - stage: "Linux"
-    before_install:
-    - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
+      before_install:
+        - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
       install:
         - make install-deps
         - make test
 
-    before_script:
-    # Install hardware wallet for running tests against emulator
-    - mkdir -p tmp/hardware-wallet
-    - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
-    - git -C tmp/hardware-wallet submodule update --init --recursive
-    # Define env vars for Linux builds
-    - export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH"
-    - echo "PATH=$PATH";
-    - echo "PIP=$PIP";
+      before_script:
+        # Install hardware wallet for running tests against emulator
+        - mkdir -p tmp/hardware-wallet
+        - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
+        - git -C tmp/hardware-wallet submodule update --init --recursive
+        # Define env vars for Linux builds
+        - export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH"
+        - echo "PATH=$PATH";
+        - echo "PIP=$PIP";
 
       script:
         - make lint
         - make clean
         - make build
-    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
-    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
-    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
-    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
-    # On GNU/Linux wrap emulator in xvfb graphics context
-    - xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true;
-    # Run self-tests
-    - ps aux | grep emulator
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
+        # On GNU/Linux wrap emulator in xvfb graphics context
+        - xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true;
+        # Run self-tests
+        - ps aux | grep emulator
         - make test
 
     - stage: "Windows"
@@ -90,6 +90,15 @@ matrix:
     - stage: "MacOS"
       os: osx
       osx_image: xcode10.2
+      before_script:
+        # Start Xvfb on osx
+        - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then    
+          ( sudo Xvfb :99 -ac ${XARGS}; echo "Xvfb ok" )&
+          fi
+        # Install OS-specific test and build dependencies for hardware-wallet
+        - ( cd ./tmp/hardware-wallet && sh "ci-scripts/install-${TRAVIS_OS_NAME}.sh" )
+        # Include paths for brew packages e.g. SDL2
+        - export SDL_INCLUDE="$(brew --prefix sdl2)/include/SDL2";
       install:
         - make install-deps
 
