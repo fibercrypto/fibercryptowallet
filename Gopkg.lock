@@ -50,6 +50,26 @@
   version = "v1.1.1"
 
 [[projects]]
+  branch = "develop"
+  digest = "1:dcb66e2ee977b89e6dd2c96bc7accfa28aed62ec82c13fe3987feab000b83305"
+  name = "github.com/fibercrypto/skywallet-go"
+  packages = [
+    "src/skywallet",
+    "src/skywallet/usb",
+    "src/skywallet/wire",
+  ]
+  pruneopts = "UT"
+  revision = "e0502cef440eee10f9187b1b678b056862d0bf94"
+
+[[projects]]
+  branch = "master"
+  digest = "1:d7a76af72df2ed0f483d04e76890bf9cf551a4c2fcee56a42b84480dcb793398"
+  name = "github.com/fibercrypto/skywallet-protob"
+  packages = ["go"]
+  pruneopts = "UT"
+  revision = "bd9f95c53447f97ac56f24a415c25d04680552de"
+
+[[projects]]
   digest = "1:4caab6f14c6b9654ccb7d398791d1f71a2d4e693ea508d29659a173e1b2e644a"
   name = "github.com/gogo/protobuf"
   packages = ["proto"]
@@ -161,7 +181,7 @@
   version = "v0.7.0"
 
 [[projects]]
-  digest = "1:a210815b437763623ecca8eb91e6a0bf4f2d6773c5a6c9aec0e28f19e5fd6deb"
+  digest = "1:d595a2d569e6dc765a657fb7ce3f65c840d9deefe4654e50ebb0cf2e356c1738"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -169,8 +189,8 @@
     "internal/util",
   ]
   pruneopts = "UT"
-  revision = "499c85531f756d1129edd26485a5f73871eeb308"
-  version = "v0.0.5"
+  revision = "3a8122e6a950185a58d8d6a909450a575602becd"
+  version = "v0.0.7"
 
 [[projects]]
   digest = "1:c5dfe46811af7e2eff7c11fc84b6c841520338613c056f659f262d5a4fb42fa8"
@@ -197,7 +217,7 @@
   version = "v1.4.2"
 
 [[projects]]
-  branch = "develop"
+  branch = "master"
   digest = "1:3e8dde169837f2bd97f64305de43f61fe9be28ab50783a413fa3bd731c537493"
   name = "github.com/skycoin/hardware-wallet-go"
   packages = [
@@ -208,7 +228,7 @@
     "src/usb/lowlevel/libusb",
   ]
   pruneopts = "UT"
-  revision = "e0502cef440eee10f9187b1b678b056862d0bf94"
+  revision = "cde8af2770f90f22ee9a69705027b4f4b5700c37"
 
 [[projects]]
   digest = "1:c6d4676e48550d1af188ed2c0d844ec9d31432277080c3ea33126ad7ceeb1421"
@@ -319,16 +339,17 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1f2ac409d4e44c88b9fdd8b9ce57b02cf42825293e76ad2dd98dab6288e1fd4a"
+  digest = "1:3ebd50b1f9fa9943f836eb1ce4882cbb6696bc4d26dc3e3adff598a45037584f"
   name = "github.com/therecipe/qt"
   packages = [
     "core",
     "gui",
+    "internal/binding/runtime",
     "network",
     "qml",
   ]
   pruneopts = "UT"
-  revision = "590f404884c99350e2ae27bc5f4a1aa44fcf4249"
+  revision = "93eff24f3013c28b41abc516b97df6cd22c42936"
 
 [[projects]]
   branch = "master"
@@ -336,7 +357,7 @@
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
   pruneopts = "UT"
-  revision = "87dc89f01550277dc22b74ffcf4cd89fa2f40f4c"
+  revision = "497ca9f6d64f9bb73048a960b4098309edcd2205"
 
 [[projects]]
   branch = "master"
@@ -344,28 +365,33 @@
   name = "golang.org/x/net"
   packages = ["context"]
   pruneopts = "UT"
-  revision = "ec77196f6094c3492a8b61f2c11cf937f78992ae"
+  revision = "d06c31c94caefa2de32f9a8bcc857498fd9c1232"
 
 [[projects]]
   branch = "master"
-  digest = "1:0451cf21ce34bcd708e508b7a80c92f3718b4df72fadef0dd3a60bee403e9f37"
+  digest = "1:b4f65fd5555a50953c6af51eacf90b81250e3073c52d85cb881f7f64ce71a5c2"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "UT"
-  revision = "b4ff53e7a1cb8ab8ce2e12d50d5d63530183e1a9"
+  revision = "cf1e2d57716972ea102acf35e82471062c8906a1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
+    "github.com/davecgh/go-spew/spew",
+    "github.com/fibercrypto/skywallet-go/src/skywallet",
+    "github.com/fibercrypto/skywallet-go/src/skywallet/usb",
+    "github.com/fibercrypto/skywallet-go/src/skywallet/wire",
+    "github.com/fibercrypto/skywallet-protob/go",
     "github.com/gogo/protobuf/proto",
+    "github.com/mgutz/ansi",
     "github.com/micro/protobuf/proto",
     "github.com/sirupsen/logrus",
     "github.com/skycoin/hardware-wallet-go/src/skywallet",
-    "github.com/skycoin/hardware-wallet-go/src/skywallet/usb",
     "github.com/skycoin/hardware-wallet-go/src/skywallet/wire",
     "github.com/skycoin/hardware-wallet-protob/go",
     "github.com/skycoin/skycoin/src/api",
@@ -379,15 +405,16 @@
     "github.com/skycoin/skycoin/src/testutil",
     "github.com/skycoin/skycoin/src/util/droplet",
     "github.com/skycoin/skycoin/src/util/file",
+    "github.com/skycoin/skycoin/src/util/logging",
     "github.com/skycoin/skycoin/src/visor",
     "github.com/skycoin/skycoin/src/wallet",
-    "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
     "github.com/stretchrcom/testify/require",
     "github.com/therecipe/qt/core",
     "github.com/therecipe/qt/gui",
     "github.com/therecipe/qt/qml",
+    "golang.org/x/crypto/ssh/terminal",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1

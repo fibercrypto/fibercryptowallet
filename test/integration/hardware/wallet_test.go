@@ -2,7 +2,7 @@ package hardware
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
-	"github.com/skycoin/hardware-wallet-go/src/skywallet"
+	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"testing"
 
 	//MM "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"

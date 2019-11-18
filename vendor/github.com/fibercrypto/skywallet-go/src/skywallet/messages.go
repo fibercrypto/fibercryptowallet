@@ -7,7 +7,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/skycoin/skycoin/src/cipher"
 
-	messages "github.com/fibercrypto/skywallet-protob/go"
+	messages "github.com/skycoin/hardware-wallet-protob/go"
 )
 
 // MessageCancel prepare Cancel request
@@ -80,30 +80,6 @@ func MessageAddressGen(addressN, startIndex uint32, confirmAddress bool) ([][64]
 		AddressN:       proto.Uint32(addressN),
 		ConfirmAddress: proto.Bool(confirmAddress),
 		StartIndex:     proto.Uint32(startIndex),
-	}
-
-	data, err := proto.Marshal(skycoinAddress)
-	if err != nil {
-		return [][64]byte{}, err
-	}
-
-	chunks := makeSkyWalletMessage(data, messages.MessageType_MessageType_SkycoinAddress)
-	return chunks, nil
-}
-
-// MessageAddressGen prepare MessageAddressGen request
-func MessageAddressGenBip44(addressN, startIndex, coinType, account uint32, confirmAddress bool) ([][64]byte, error) {
-	skycoinAddress := &messages.SkycoinAddress{
-		ConfirmAddress: proto.Bool(confirmAddress),
-		StartIndex:     proto.Uint32(0), // TODO remove this field from here
-		AddressN:		proto.Uint32(0), // TODO remove this field from here
-		Bip44Addr:      &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
-			AddressStartIndex: proto.Uint32(startIndex),
-			AddressN: proto.Uint32(addressN),
-		},
 	}
 
 	data, err := proto.Marshal(skycoinAddress)
@@ -309,29 +285,6 @@ func MessageSignMessage(addressIndex int, message string) ([][64]byte, error) {
 	return chunks, nil
 }
 
-// MessageSignMessageBip44 prepare MessageSignMessage request
-func MessageSignMessageBip44(startIndex, addressN, coinType, account uint32, message string) ([][64]byte, error) {
-	skycoinSignMessage := &messages.SkycoinSignMessage{
-		AddressN: proto.Uint32(uint32(0)),  // TODO remove this field
-		Message:  proto.String(message),
-		Bip44Addr:      &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
-			AddressStartIndex: proto.Uint32(startIndex),
-			AddressN: proto.Uint32(addressN),
-		},
-	}
-
-	data, err := proto.Marshal(skycoinSignMessage)
-	if err != nil {
-		return [][64]byte{}, err
-	}
-
-	chunks := makeSkyWalletMessage(data, messages.MessageType_MessageType_SkycoinSignMessage)
-	return chunks, nil
-}
-
 // MessageTransactionSign prepare MessageTransactionSign request
 func MessageTransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput) ([][64]byte, error) {
 	skycoinTransactionSignMessage := &messages.TransactionSign{
@@ -341,42 +294,6 @@ func MessageTransactionSign(inputs []*messages.SkycoinTransactionInput, outputs 
 		TransactionOut: outputs,
 	}
 	log.Println(skycoinTransactionSignMessage)
-
-	data, err := proto.Marshal(skycoinTransactionSignMessage)
-	if err != nil {
-		return [][64]byte{}, err
-	}
-
-	chunks := makeSkyWalletMessage(data, messages.MessageType_MessageType_TransactionSign)
-	return chunks, nil
-}
-
-// MessageTransactionSignBip44 prepare MessageTransactionSign request
-func MessageTransactionSignBip44(coinType, account uint32, inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput) ([][64]byte, error) {
-	for idxInput := range inputs {
-		inputs[idxInput].Bip44Addr = &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
-			AddressStartIndex: proto.Uint32(*inputs[idxInput].Index),
-			AddressN: proto.Uint32(1),
-		}
-	}
-	for idxOutput := range outputs {
-		outputs[idxOutput].Bip44Addr = &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
-			AddressStartIndex: proto.Uint32(*outputs[idxOutput].AddressIndex),
-			AddressN: proto.Uint32(1),
-		}
-	}
-	skycoinTransactionSignMessage := &messages.TransactionSign{
-		NbIn:           proto.Uint32(uint32(len(inputs))),
-		NbOut:          proto.Uint32(uint32(len(outputs))),
-		TransactionIn:  inputs,
-		TransactionOut: outputs,
-	}
 
 	data, err := proto.Marshal(skycoinTransactionSignMessage)
 	if err != nil {
