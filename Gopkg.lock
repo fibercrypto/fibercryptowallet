@@ -218,10 +218,9 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3e8dde169837f2bd97f64305de43f61fe9be28ab50783a413fa3bd731c537493"
+  digest = "1:722c1139475ed41f6642381dec38fd46030634d4370ec5c7094e836c55c275d7"
   name = "github.com/skycoin/hardware-wallet-go"
   packages = [
-    "src/skywallet",
     "src/skywallet/usb",
     "src/skywallet/wire",
     "src/usb/lowlevel/hidapi",
@@ -391,9 +390,6 @@
     "github.com/mgutz/ansi",
     "github.com/micro/protobuf/proto",
     "github.com/sirupsen/logrus",
-    "github.com/skycoin/hardware-wallet-go/src/skywallet",
-    "github.com/skycoin/hardware-wallet-go/src/skywallet/wire",
-    "github.com/skycoin/hardware-wallet-protob/go",
     "github.com/skycoin/skycoin/src/api",
     "github.com/skycoin/skycoin/src/cipher",
     "github.com/skycoin/skycoin/src/cipher/bip39",

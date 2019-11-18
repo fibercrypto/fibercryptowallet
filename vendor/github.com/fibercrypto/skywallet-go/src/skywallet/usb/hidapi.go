@@ -10,7 +10,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	lowlevel "github.com/skycoin/hardware-wallet-go/src/usb/lowlevel/hidapi"
+	lowlevel "github.com/fibercrypto/skywallet-go/src/usb/lowlevel/hidapi"
 )
 
 const (

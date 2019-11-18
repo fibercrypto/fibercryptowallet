@@ -7,13 +7,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/skycoin/hardware-wallet-go/src/skywallet/usb"
+	"github.com/fibercrypto/skywallet-go/src/skywallet/usb"
 
 	"github.com/skycoin/skycoin/src/util/logging"
 
-	messages "github.com/skycoin/hardware-wallet-protob/go"
+	messages "github.com/fibercrypto/skywallet-protob/go"
 
-	"github.com/skycoin/hardware-wallet-go/src/skywallet/wire"
+	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 )
 
 var (
@@ -48,13 +48,27 @@ var (
 	ErrInvalidWordCount = errors.New("word count must be 12 or 24")
 	// ErrNoDeviceConnected is returned if no device is connected to the system
 	ErrNoDeviceConnected = errors.New("no device connected")
+	// ErrInvalidWalletType a valid wallet type should  be specified
+	ErrInvalidWalletType = errors.New("invalid wallet type, options are: " + WalletTypeDeterministic + " or " + WalletTypeBip44)
+)
+
+const (
+	// WalletTypeDeterministic specify use deterministic derivation to get
+	// for example an address
+	WalletTypeDeterministic = "deterministic"
+
+	// WalletTypeBip44 specify use BIP 44 derivation to get
+	// for example an address
+	WalletTypeBip44 = "bip44"
+	coinTypeSkycoin = 8000
+	firstHardenedChild = uint32(0x80000000)
 )
 
 //go:generate mockery -name Devicer -case underscore -inpkg -testonly
 
 // Devicer provides api for the hw wallet functions
 type Devicer interface {
-	AddressGen(addressN, startIndex uint32, confirmAddress bool) (wire.Message, error)
+	AddressGen(addressN, startIndex uint32, confirmAddress bool, walletType string) (wire.Message, error)
 	ApplySettings(usePassphrase *bool, label string, language string) (wire.Message, error)
 	Backup() (wire.Message, error)
 	Cancel() (wire.Message, error)
@@ -67,8 +81,8 @@ type Devicer interface {
 	GenerateMnemonic(wordCount uint32, usePassphrase bool) (wire.Message, error)
 	Recovery(wordCount uint32, usePassphrase *bool, dryRun bool) (wire.Message, error)
 	SetMnemonic(mnemonic string) (wire.Message, error)
-	TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput) (wire.Message, error)
-	SignMessage(addressIndex int, message string) (wire.Message, error)
+	TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput, walletType string) (wire.Message, error)
+	SignMessage(addressN, addressIndex int, message string, walletType string) (wire.Message, error)
 	Wipe() (wire.Message, error)
 	PinMatrixAck(p string) (wire.Message, error)
 	WordAck(word string) (wire.Message, error)
@@ -192,7 +206,7 @@ func (d *Device) GetUsbInfo() ([]usb.Info, error) {
 }
 
 // AddressGen Ask the device to generate an address
-func (d *Device) AddressGen(addressN, startIndex uint32, confirmAddress bool) (wire.Message, error) {
+func (d *Device) AddressGen(addressN, startIndex uint32, confirmAddress bool, walletType string) (wire.Message, error) {
 	if err := d.Connect(); err != nil {
 		return wire.Message{}, err
 	}
@@ -202,7 +216,16 @@ func (d *Device) AddressGen(addressN, startIndex uint32, confirmAddress bool) (w
 		return wire.Message{}, ErrAddressNZero
 	}
 
-	addressGenChunks, err := MessageAddressGen(addressN, startIndex, confirmAddress)
+	var err error
+	var addressGenChunks [][64]byte
+	switch walletType {
+	case WalletTypeDeterministic:
+		addressGenChunks, err = MessageAddressGen(addressN, startIndex, confirmAddress)
+	case WalletTypeBip44:
+		addressGenChunks, err = MessageAddressGenBip44(addressN, startIndex, coinTypeSkycoin, 0, confirmAddress)
+	default:
+		return wire.Message{}, ErrInvalidWalletType
+	}
 	if err != nil {
 		return wire.Message{}, err
 	}
@@ -729,13 +752,22 @@ func (d *Device) SetMnemonic(mnemonic string) (wire.Message, error) {
 }
 
 // SignMessage Ask the device to sign a message using the secret key at given index.
-func (d *Device) SignMessage(addressIndex int, message string) (wire.Message, error) {
+func (d *Device) SignMessage(addressN, addressIndex int, message, walletType string) (wire.Message, error) {
 	if err := d.Connect(); err != nil {
 		return wire.Message{}, err
 	}
 	defer d.Disconnect()
 
-	signMessageChunks, err := MessageSignMessage(addressIndex, message)
+	var err error
+	var signMessageChunks [][64]byte
+	switch walletType {
+	case WalletTypeDeterministic:
+		signMessageChunks, err = MessageSignMessage(addressIndex, message)
+	case WalletTypeBip44:
+		signMessageChunks, err = MessageSignMessageBip44(uint32(addressIndex), uint32(addressN), coinTypeSkycoin, 0, message)
+	default:
+		return wire.Message{}, ErrInvalidWalletType
+	}
 	if err != nil {
 		return wire.Message{}, err
 	}
@@ -749,13 +781,22 @@ func (d *Device) SignMessage(addressIndex int, message string) (wire.Message, er
 }
 
 // TransactionSign Ask the device to sign a transaction using the given information.
-func (d *Device) TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput) (wire.Message, error) {
+func (d *Device) TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput, walletType string) (wire.Message, error) {
 	if err := d.Connect(); err != nil {
 		return wire.Message{}, err
 	}
 	defer d.Disconnect()
 
-	transactionSignChunks, err := MessageTransactionSign(inputs, outputs)
+	var err error
+	var transactionSignChunks [][64]byte
+	switch walletType {
+	case WalletTypeDeterministic:
+		transactionSignChunks, err = MessageTransactionSign(inputs, outputs)
+	case WalletTypeBip44:
+		transactionSignChunks, err = MessageTransactionSignBip44(coinTypeSkycoin, 0, inputs, outputs)
+	default:
+		return wire.Message{}, ErrInvalidWalletType
+	}
 	if err != nil {
 		return wire.Message{}, err
 	}
