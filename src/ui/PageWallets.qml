@@ -112,12 +112,21 @@ Page {
             delegate: WalletListDelegate {}
         }
     }
-    
+
     WalletModel {
         id: walletModel
 
         Component.onCompleted: {
             walletModel.loadModel(walletManager.getWallets())
+        }
+        property Timer timer: Timer {
+            id: walletListTimer
+            interval: 5000
+            repeat: true
+            running: true
+            onTriggered: {
+                walletModel.updateModel(walletManager.getWallets())
+            }
         }
     }
 

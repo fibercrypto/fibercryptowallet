@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"crypto/rand"
 	"path/filepath"
 	"testing"
 
@@ -176,4 +177,12 @@ func makeSpentOutput(uxout coin.UxOut, spentBkSeq uint64, spentTxId cipher.SHA25
 	rOut.SpentBlockSeq = spentBkSeq
 	rOut.SpentTxnID = spentTxId.Hex()
 	return
+}
+
+func randBytes(t *testing.T, n int) []byte {
+	b := make([]byte, n)
+	x, err := rand.Read(b)
+	require.Equal(t, n, x)
+	require.Nil(t, err)
+	return b
 }
