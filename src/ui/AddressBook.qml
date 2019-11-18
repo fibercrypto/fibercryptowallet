@@ -48,6 +48,10 @@ anchors.centerIn: Overlay.overlay
 onAccepted:{
 abm.initAddrsBook(setpass.password)
 }
+onRejected:{
+generalStackView.pop()
+console.log("asd")
+}
 }
 
 DialogGetPassword{
@@ -58,6 +62,11 @@ onAccepted:{
  if(!abm.openAddrsBook(getpass.password)){
  getpass.open()
  }
+}
+
+onRejected:{
+generalStackView.pop()
+console.log("asd")
 }
 }
        ScrollView {
