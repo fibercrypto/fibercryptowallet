@@ -1430,6 +1430,9 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 
 	txn, keyData, uxOuts, err := makeTransactionFromMultipleWallets(t, 3)
 	require.NoError(t, err)
+	for _, ux := range uxOuts {
+		mockSkyApiUxOut(global_mock, ux)
+	}
 
 	ins := make([]visor.TransactionInput, 0)
 	for _, out := range uxOuts {
@@ -1469,8 +1472,8 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 	pwdReader := func(message string) (string, error) {
 		return "", nil
 	}
+	//require.Equal(t, "AQUI", "FIRMANDO TODAS")
 	signedTxn, err := signer.Sign(skyCreTxn, isds, pwdReader)
-	require.Equal(t, err.Error(), keyData)
 	require.NoError(t, err)
 	require.NotNil(t, signedTxn)
 

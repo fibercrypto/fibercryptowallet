@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/skycoin/skycoin/src/visor"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -22,6 +20,7 @@ import (
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
+	"github.com/skycoin/skycoin/src/visor"
 	"github.com/skycoin/skycoin/src/wallet"
 )
 
@@ -1075,22 +1074,24 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	var skyTxn *coin.Transaction
 	var err error
 	var uxouts []coin.UxOut
-	//var txnFee uint64
-	timeStamp := txn.GetTimestamp()
+	var txnFee uint64
+	var resultTxn core.Transaction
 	walletDir := filepath.Join(wlt.WalletDir, wlt.Id)
 	skyWlt, err := wallet.Load(walletDir)
+	var originalInputs []api.CreatedTransactionInput
+
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
-	if rTxn, isReadableTxn := txn.(skytypes.ReadableTxn); isReadableTxn {
+	rTxn, isReadableTxn := txn.(skytypes.ReadableTxn)
+	if isReadableTxn {
 		// Readable tranasctions should not need extra API calls
 		//TO DELETE
 		logWallet.WithError(err).Warn("GOODDD")
+
 		cTxn, err := rTxn.ToCreatedTransaction()
-		if err != nil {
-			return nil, err
-		}
+		originalInputs = cTxn.In
 
 		if skyWlt.IsEncrypted() {
 			pass, err := pwd("Type your password")
@@ -1156,8 +1157,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 	} else {
 		// Raw transaction
-		//TO DELETE
-		logWallet.WithError(err).Warn("WRONGGGGG")
 
 		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 		if !ok {
@@ -1166,7 +1165,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 
 		// Uninjected transactions
-		//txnFee = unTxn.fee
+		txnFee = unTxn.fee
 		skyTxn = copyTransaction(unTxn.txn)
 		clt, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
@@ -1193,6 +1192,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		uxouts = make([]coin.UxOut, 0)
 		for _, in := range unTxn.txn.In {
 			ux, err := clt.UxOut(in.String())
+
 			if err != nil {
 				return nil, err
 			}
@@ -1226,32 +1226,35 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	}
 
 	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
+
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't sign transaction using local wallet")
 		return nil, err
 	}
-	// FIXME: Return readable SkycoinCreatedTransaction since UX data is available
-	//resultTxn, err := NewUninjectedTransaction(signedTxn, txnFee)
-	vins := make([]visor.TransactionInput, 0)
-	for _, ux := range uxouts {
-		vin, err := visor.NewTransactionInput(ux, uint64(timeStamp))
+
+	if isReadableTxn {
+		vins := make([]visor.TransactionInput, 0)
+		for _, ux := range uxouts {
+			vin, err := visor.NewTransactionInput(ux, 0)
+			if err != nil {
+				logWallet.WithError(err).Warn("Couldn't create a transaction input")
+				return nil, err
+			}
+			vins = append(vins, vin)
+		}
+
+		crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
+		crtTxn.In = originalInputs
+
 		if err != nil {
-			logWallet.WithError(err).Warn("Couldn't create a transaction input")
+			logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
 			return nil, err
 		}
-		vins = append(vins, vin)
+
+		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
+	} else {
+		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
 	}
-
-	crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
-	//TO DELETE
-	logWallet.WithError(err).Warnf("FEES %s", crtTxn.Fee)
-
-	if err != nil {
-		logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
-		return nil, err
-	}
-
-	resultTxn := NewSkycoinCreatedTransaction(*crtTxn)
 
 	return resultTxn, nil
 
