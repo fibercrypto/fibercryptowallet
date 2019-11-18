@@ -66,3 +66,43 @@ func mockSkyApiCreateTransaction(mock *SkycoinApiMock, req *api.CreateTransactio
 		crtTxn,
 		nil)
 }
+
+func mockSkyApiOutputsForAddresses(mock *SkycoinApiMock, addresses []string) {
+	usOut := readable.UnspentOutput{
+		Hash:            "hash1",
+		Coins:           "42",
+		Hours:           uint64(42),
+		CalculatedHours: uint64(42),
+		Address:         "2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP",
+	}
+	response := &readable.UnspentOutputsSummary{
+		HeadOutputs: readable.UnspentOutputs{usOut, usOut},
+	}
+
+	for _, addr := range addresses {
+		mock.On(
+			"OutputsForAddresses",
+			[]string{
+				addr,
+			},
+		).Return(response, nil)
+	}
+}
+
+func mockSkyApiTransactionsVerbose(mock *SkycoinApiMock, addresses []string) {
+	response := readable.TransactionWithStatusVerbose{
+		Status: readable.TransactionStatus{
+			Confirmed: false,
+		},
+	}
+	response.Transaction.Hash = "hash1"
+
+	for _, addr := range addresses {
+		mock.On("TransactionsVerbose", []string{addr}).Return(
+			[]readable.TransactionWithStatusVerbose{
+				response,
+			},
+			nil,
+		)
+	}
+}
