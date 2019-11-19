@@ -70,7 +70,7 @@ clean-Windows: ## Clean project FiberCrypto Wallet.
 	@echo "Done."
 
 prepare-release: ## Change the resources in the app and prepare to release the app
-	./setup_release.sh
+	./.travis/setup_release.sh
 
 mocks: ## Create all mock files for unit tests
 	mockery -name Devicer -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore

@@ -63,13 +63,8 @@ type Wallet interface {
 	// GetLoadedAddresses iterates over wallet addresses discovered and known to have previous history and coins
 	GetLoadedAddresses() (AddressIterator, error)
 	// Sign creates a new transaction by (fully or partially) choosing a strategy to sign another transaction
-	Sign(txn Transaction, source UID, pwd PasswordReader, index []string) (Transaction, error)
-	// AttachSignService binds a signing strategy to this wallet
-	AttachSignService(TxnSigner) error
-	// RemoveSignService detaches a signing strategy from this wallet
-	RemoveSignService(TxnSigner) error
-	// EnumerateSignServices returns an object to iterate over signing srategies attached to this wallet
-	EnumerateSignServices() TxnSignerIterator
+	// If signer instance is nil then default wallet strategy should be used for signing
+	Sign(txn Transaction, signer TxnSigner, pwd PasswordReader, index []string) (Transaction, error)
 }
 
 // SeedGenerator establishes the contract for generating BIP39-compatible mnemonics
