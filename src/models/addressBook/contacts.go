@@ -65,8 +65,8 @@ func (abm *AddrsBookModel) init() {
 	abm.ConnectDestroyAddrsBookModel(abm.close)
 	abm.ConnectOpenAddrsBook(abm.openAddrsBook)
 	abm.ConnectInitAddrsBook(abm.initAddrsBook)
-	// abm.ConnectEditContact(abm.editContact)
-	// abm.ConnectRemoveContact(abm.removeContact)
+	abm.ConnectEditContact(abm.editContact)
+	abm.ConnectRemoveContact(abm.removeContact)
 	abm.ConnectExist(abm.exist)
 	abm.ConnectAddAddress(abm.addAddress)
 }
