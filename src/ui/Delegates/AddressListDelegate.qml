@@ -29,7 +29,6 @@ Item {
         spacing: 20
         opacity: 0.0
 
-        // TODO: Use `add`, `remove`, etc. transitions
         Component.onCompleted: { opacity = 1.0 } // Not the best way to do this
         Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
 
@@ -43,26 +42,27 @@ Item {
                 iconSize: "24x24"
 
                 onClicked: {
-                    qrCodeRequested(address)
+                    qrCodeRequested(value)
                 }
             }
 
             TextField {
-                id: value
+                id: tfAddr
                 font.family: "Code New Roman"
                 placeholderText: qsTr("Address")
-                text: address
+                text: value
                 selectByMouse: true
                 Layout.fillWidth: true
-                onTextChanged: address = text
+                onTextChanged: value = text
             }
         } // RowLayout
 
         RowLayout {
-ComboBox{
-id:cbCoinTypes
-Layout.fillWidth: true
-model:coins
+        ComboBox{
+        id:cbCoinTypes
+        Layout.fillWidth: true
+        model:coins
+        currentIndex:getIndexForCoinType(coinType)
 onCurrentTextChanged:{
 coinType=cbCoinTypes.currentText
 }
@@ -106,5 +106,15 @@ coinType=cbCoinTypes.currentText
     ListElement{
     type:"BTC"
     }
+    }
+
+    function getIndexForCoinType(coinType){
+    var index=0;
+    for(var i=0;i<coins.count;i++){
+    if (coins.get(i).type==coinType){
+index=i
+    }
+    }
+  return index;
     }
 }
