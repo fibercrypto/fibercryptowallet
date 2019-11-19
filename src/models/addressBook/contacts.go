@@ -163,7 +163,6 @@ func (abm *AddrsBookModel) editContact(row int, id uint64, name string) {
 	abm.SetContacts(append(abm.Contacts()[:row], abm.Contacts()[row+1:]...))
 	abm.EndRemoveRows()
 	abm.SetCount(abm.Count() - 1)
-
 	abm.addContact(qc)
 	addresses = []core.ReadableAddress{}
 }

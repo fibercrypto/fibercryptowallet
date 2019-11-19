@@ -18,14 +18,15 @@ Dialog{
     standardButton(Dialog.Ok).enabled=false
     }
     onAboutToShow:{
-    name.text=menu.name
 if(isEdit){
+    name.text=menu.name
 listModelAddresses.clear()
 for(var i=0;i<menu.address.rowCount();i++){
 listModelAddresses.append({value:menu.address.address[i].value,
 coinType:menu.address.address[i].coinType})
 }
 }else{
+    name.text=""
 listModelAddresses.append({value:"",coinType:""})
 }
 }
