@@ -58,6 +58,8 @@ type AltcoinManager interface {
 	DescribeAltcoin(ticker string) (AltcoinMetadata, bool)
 	// AttachSignService registers a signing strategy for use by wallets
 	AttachSignService(TxnSigner) error
+	// LookupSignService returns a reference to signer identified by ID
+	LookupSignService(UID) TxnSigner
 	// RemoveSignService detaches a signing strategy
 	RemoveSignService(TxnSigner) error
 	// EnumerateSignServices returns an object to iterate over global signing srategies

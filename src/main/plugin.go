@@ -61,12 +61,21 @@ func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (core.Altcoin
 }
 
 func (m *fibercryptoAltcoinManager) AttachSignService(signSrv core.TxnSigner) error {
-	m.signers[signSrv.GetSignerUID()] = signSrv
+	if signSrv != nil {
+		m.signers[signSrv.GetSignerUID()] = signSrv
+	}
 	return nil
 }
 
 func (m *fibercryptoAltcoinManager) EnumerateSignServices() core.TxnSignerIterator {
 	return signutil.NewTxnSignerIteratorFromMap(m.signers)
+}
+
+func (m *fibercryptoAltcoinManager) LookupSignService(id core.UID) core.TxnSigner {
+	if signSrv, isFound := m.signers[id]; isFound {
+		return signSrv
+	}
+	return nil
 }
 
 func (m *fibercryptoAltcoinManager) RemoveSignService(signSrv core.TxnSigner) error {
@@ -96,3 +105,8 @@ func LoadAltcoinManager() core.AltcoinManager {
 	}
 	return &manager
 }
+
+// Type assertions
+var (
+	_ core.AltcoinManager = &manager
+)

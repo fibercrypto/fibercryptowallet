@@ -26,7 +26,20 @@ func RegisterAltcoin(p core.AltcoinPlugin) {
 	local.LoadAltcoinManager().RegisterPlugin(p)
 }
 
-// LoadAltcoinManager duplicated to avoid recursive import loop
-func LoadAltcoinManager() core.AltcoinManager {
-	return local.LoadAltcoinManager()
+// LookupSigner searchs for signer matching given ID
+func LookupSignerByUID(wlt core.Wallet, id core.UID) core.TxnSigner {
+	wltSigner, isSigner := wlt.(core.TxnSigner)
+	// Reference to self
+	if id == core.UID("") {
+		if isSigner {
+			return wltSigner
+		}
+		return nil
+	}
+	// Wallet matches ID
+	if isSigner && wltSigner.GetSignerUID() == id {
+		return wltSigner
+	}
+	// Lookup global signers
+	return local.LoadAltcoinManager().LookupSignService(id)
 }
