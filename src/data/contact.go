@@ -1,9 +1,8 @@
 package data
 
 import (
+	"encoding/json"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/data/internal"
-	"github.com/gogo/protobuf/proto"
 )
 
 // Contact is a contact of the DB
@@ -21,35 +20,12 @@ type Address struct {
 
 // MarshalBinary encodes a user to binary format.
 func (c *Contact) MarshalBinary() ([]byte, error) {
-	var intAddrs []internal.Address
-	for _, v := range c.Address {
-		intAddrs = append(intAddrs, internal.Address{
-			Address:  v.GetValue(),
-			CoinType: v.GetCoinType(),
-		})
-	}
-	return proto.Marshal(&internal.Contact{
-		ID:      c.id,
-		Name:    c.Name,
-		Address: intAddrs,
-	})
+	return json.Marshal(c)
 }
 
 // UnmarshalBinary decodes a user from binary data.
 func (c *Contact) UnmarshalBinary(data []byte) error {
-	var pb internal.Contact
-	if err := proto.Unmarshal(data, &pb); err != nil {
-		return err
-	}
-	c.id = pb.ID
-	c.Name = pb.Name
-	for _, v := range pb.Address {
-		c.Address = append(c.Address, Address{
-			Value: v.Address,
-			Coin:  v.CoinType,
-		})
-	}
-	return nil
+	return json.Unmarshal(data, &c)
 }
 
 // GetID get id of current contact.

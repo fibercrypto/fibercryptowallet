@@ -52,7 +52,6 @@ build-docker: ## Build project using docker
 
 build: ## Build FiberCrypto Wallet.
 	@echo "Building FiberCrypto Wallet..."
-	make -C src/data/ regenerate
 	# Add the flag `-quickcompiler` when making a release
 	@qtdeploy build $(DEFAULT_TARGET)
 	@echo "Done."
