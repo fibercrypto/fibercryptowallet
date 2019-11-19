@@ -18,16 +18,10 @@ Page{
     DialogAddContact{
     id: contactDialog
  anchors.centerIn: Overlay.overlay
-
-        modal: true
         focus: true
-
         width: applicationWindow.width > 540 ? 540  : applicationWindow.width
         height: applicationWindow.height > 640 ? 640: applicationWindow.height
 
-        onAccepted: {
-//            console.log("Add contact")
-            }
     }
 
  Component.onCompleted: {
@@ -97,9 +91,51 @@ console.log("asd")
           anchors.right: parent.right
           anchors.bottom: parent.bottom
           onClicked: {
+          contactDialog.isEdit=false
                     contactDialog.open()
           }
       }//RoundButton
+
+Menu{
+            id:menu
+            property int index: -1
+            property int cId: -1
+            property string name
+            property AddrsBkAddressModel address
+            MenuItem{
+                text: "&View"
+                onTriggered: {
+                console.log("Show Contact")
+                    console.log(menu.name)
+                    dialogShowContact.open()
+                }
+            }
+            MenuSeparator{}
+
+            MenuItem{
+                text: "&Edit"
+                onTriggered: {
+                contactDialog.isEdit=true
+                 contactDialog.open()
+                  }
+            }
+             MenuSeparator{}
+
+            MenuItem{
+                text: "&Remove"
+                onTriggered: {
+            abm.removeContact(menu.index,menu.cId)
+                }
+            }
+        }//Menu
+
+DialogShowContact{
+id:dialogShowContact
+anchors.centerIn: Overlay.overlay
+width:350
+focus:true
+height:400
+}
 
 
 //     ListModel {

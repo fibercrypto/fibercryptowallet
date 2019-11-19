@@ -21,7 +21,7 @@ Image{
                 RowLayout {
            Layout.topMargin: 20
 Label{
- text:name
+ text:menu.name
   font.bold: true
     horizontalAlignment: Qt.AlignHCenter
           verticalAlignment: Qt.AlignVCenter
@@ -37,7 +37,7 @@ Label{
                     id: addresses
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    model: address
+                    model: menu.address
                     section.property: "coinType"
                     section.criteria: ViewSection.FullString
                     section.delegate: SectionDelegate {

@@ -2,7 +2,6 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
-import AddrsBookManager 1.0
 
 
 import "../Controls" // For quick UI development, switch back to resources when making a release
@@ -12,24 +11,50 @@ import "../Delegates"
 
 Dialog{
   id: dialogAddContact
+  property bool isEdit:false
   title: Qt.application.name
   standardButtons: Dialog.Ok | Dialog.Cancel
     Component.onCompleted: {
-        standardButton(Dialog.Ok).enabled=false
+    standardButton(Dialog.Ok).enabled=false
     }
+    onAboutToShow:{
+    console.log(menu.name)
+    console.log(menu.address)
+if(isEdit){
+listModelAddresses.clear()
+for(var i=0;i<menu.address.rowCount();i++){
+listModelAddresses.append({value:menu.address.address[i].value,
+coinType:menu.address.address[i].coinType})
+}
+}else{
+listModelAddresses.append({value:"",coinType:""})
+}
+}
     onAccepted:{
 updateAcceptButtonStatus()
+    name.text=""
+    listModelAddresses.clear()
+//    listModelAddresses.append( { value: "", coinType: "" } )
+    }
+
+    onRejected:{
+    name.text=""
+    listModelAddresses.clear()
+//    listModelAddresses.append( { value: "", coinType: "" } )
     }
 
 
 
     function updateAcceptButtonStatus() {
-//    var addresses=new []QAddress();
     for(var i=0;i<listModelAddresses.count;i++){
-    abm.addAddress(listModelAddresses.get(i).address,listModelAddresses.get(i).coinType)
+    abm.addAddress(listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)
     }
 
-abm.newContact(name.text)
+    if (isEdit){
+abm.editContact(menu.index, menu.cId, name.text)
+    }else{
+    abm.newContact(name.text)
+    }
     } // function updateAcceptButtonStatus()
 
 
@@ -47,8 +72,9 @@ Flickable{
                     Behavior on Layout.preferredHeight {NumberAnimation{duration: 500;easing.type:Easing.OutQuint}}
                     TextField{
                         id:name
-                        placeholderText: "Name"
+                        placeholderText: qsTr("Name")
                         Layout.fillWidth: true
+                        text: qsTr(menu.name)
                         onTextChanged:{
                         standardButton(Dialog.Ok).enabled=(name.text!="")
                         }
@@ -83,8 +109,7 @@ Flickable{
                            } // ColumnLayout (destinations)
 ListModel {
         id: listModelAddresses
-        ListElement { address: ""; coinType: ""; }
-    }
+      }
         }//ColumnLayoutRoot
         ScrollIndicator.vertical: ScrollIndicator{
         parent: dialogAddContact.contentItem

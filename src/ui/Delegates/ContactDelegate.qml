@@ -6,19 +6,15 @@ ItemDelegate {
     id: contactDelegate
 
 onClicked:{
-//abm.removeContact(1,1)
 menu.index=index
-menu.id=id
+console.log(id)
+menu.cId=id
+menu.name=name
+menu.address=address
 menu.popup()
 }
     checkable: true
 
-DialogShowContact{
-id:dialogShowContact
-anchors.centerIn: Overlay.overlay
-width:350
-height:400
-}
     contentItem: RowLayout {
         spacing: 20
         Image{
@@ -34,34 +30,4 @@ height:400
             Layout.fillWidth: true
         }
 }
-
-Menu{
-            id:menu
-            property int index: -1
-            property int id: -1
-            MenuItem{
-                text: "&View"
-                onTriggered: {
-                console.log("Show Contact")
-                    dialogShowContact.open()
-                }
-            }
-            MenuSeparator{}
-
-            MenuItem{
-                text: "&Edit"
-                onTriggered: {
-                  abm.editContact(1,"mock","mock")
-                }
-            }
-             MenuSeparator{}
-
-            MenuItem{
-                text: "&Remove"
-                onTriggered: {
-//                console.log("Remove Contact")
-            abm.removeContact(menu.index,id)
-                }
-            }
-        }//Menu
 }

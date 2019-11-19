@@ -7,7 +7,7 @@ import (
 )
 
 func derivePassphrase(entropy, password []byte) []byte {
-	return pbkdf2.Key(entropy, []byte("entropy:"+string(password)), 4096, 32, sha512.New)
+	return pbkdf2.Key(entropy, password, 4096, 32, sha512.New)
 }
 
 // Itob converts uint64 to bytes
