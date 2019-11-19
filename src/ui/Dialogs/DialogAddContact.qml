@@ -18,8 +18,6 @@ Dialog{
     standardButton(Dialog.Ok).enabled=false
     }
     onAboutToShow:{
-    console.log(menu.name)
-    console.log(menu.address)
 if(isEdit){
 listModelAddresses.clear()
 for(var i=0;i<menu.address.rowCount();i++){
@@ -34,7 +32,6 @@ listModelAddresses.append({value:"",coinType:""})
 updateAcceptButtonStatus()
     name.text=""
     listModelAddresses.clear()
-//    listModelAddresses.append( { value: "", coinType: "" } )
     }
 
     onRejected:{
@@ -74,7 +71,7 @@ Flickable{
                         id:name
                         placeholderText: qsTr("Name")
                         Layout.fillWidth: true
-                        text: qsTr(menu.name)
+                        text: menu.name
                         onTextChanged:{
                         standardButton(Dialog.Ok).enabled=(name.text!="")
                         }
