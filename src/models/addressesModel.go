@@ -30,6 +30,7 @@ type AddressesModel struct {
 	_ func(*QAddress)                        `slot:"addAddress"`
 	_ func([]*QAddress)                      `slot:"addAddresses"`
 	_ func(int)                              `slot:"removeAddress"`
+	_ func(string)                           `slot:"updateModel"`
 	_ func(int, string, uint64, uint64, int) `slot:"editAddress"`
 	_ func([]*QAddress)                      `slot:"loadModel"`
 	_ int                                    `property:"count"`
@@ -62,6 +63,7 @@ func (m *AddressesModel) init() {
 	m.ConnectColumnCount(m.columnCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectAddAddress(m.addAddress)
+	m.ConnectUpdateModel(m.updateModel)
 	m.ConnectEditAddress(m.editAddress)
 	m.ConnectRemoveAddress(m.removeAddress)
 	m.ConnectLoadModel(m.loadModel)
@@ -187,6 +189,10 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 		m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
 	}
 
+}
+
+func (m *AddressesModel) updateModel(fileName string) {
+	m.LoadModel(walletManager.getAddresses(fileName))
 }
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {

@@ -14,11 +14,11 @@ Item {
 
     readonly property real delegateHeight: 30
     property bool emptyAddressVisible: true
-    property bool expanded: false
+    property bool expanded: expand
     // The following property is used to avoid a binding conflict with the `height` property.
     // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
-    
+
 
     width: walletList.width
     height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
@@ -90,7 +90,7 @@ Item {
             } // RowLayout
 
             onClicked: {
-                        
+
                 expanded = !expanded
             }
         } // ItemDelegate
@@ -99,7 +99,7 @@ Item {
             id: addressList
             model: listAddresses
             implicitHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
-            property alias parentRoot: root 
+            property alias parentRoot: root
             opacity: expanded ? 1.0 : 0.0
             clip: true
             interactive: false
@@ -139,14 +139,14 @@ Item {
                 dialogGetPasswordForAddAddresses.height = dialogGetPassword.height - 20
                 dialogGetPasswordForAddAddresses.nAddress = spinValue
                 dialogGetPasswordForAddAddresses.open()
-                
+
 
             } else{
                 walletManager.newWalletAddress(fileName, spinValue, "")
                 listAddresses.loadModel(walletManager.getAddresses(fileName))
             }
-            
-            
+
+
         }
         onRejected: {
             console.log("Adding rejected")
@@ -161,7 +161,7 @@ Item {
 
         focus: true
         modal: true
-        
+
         onAccepted: {
             walletManager.newWalletAddress(fileName, nAddress, dialogGetPasswordForAddAddresses.password)
             listAddresses.loadModel(walletManager.getAddresses(fileName))
@@ -196,7 +196,7 @@ Item {
         headerMessageColor: Material.color(Material.Red)
         focus: true
         modal: true
-       
+
         onAccepted: {
             var isEncypted = walletManager.encryptWallet(fileName, password)
             walletModel.editWallet(index, name, isEncypted, sky, coinHours)
@@ -223,30 +223,16 @@ Item {
 
         id: listAddresses
         property Timer timer: Timer {
-                                id: addressModelTimer
-                                interval: 0
-                                repeat: false
-                                running: true
-                                onTriggered: {
-                                    listAddresses.loadModel(walletManager.getAddresses(fileName))
-                                    addressModelTimer.running = false 
-                                       
-                                    }
-                            }
+            id: addressModelTimer
+            interval: 7000
+            repeat: true
+            running: true
+            onTriggered: {
+                listAddresses.updateModel(fileName);
+            }
+        }
     }
-
-    
-
-     //Roles: address, addressSky, addressCoinHours
-     //Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
-     //Or implement the model in the backend (a more recommendable approach)
-    //ListModel {
-    //    id: listAddresses
-    //    // The first element must exist but will not be used
-    //    ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
-    //    ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
-    //    ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
-    //    ListElement { address: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
-    //    ListElement { address: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
-    //}
+    Component.onCompleted: {
+        listAddresses.updateModel(fileName);
+    }
 }

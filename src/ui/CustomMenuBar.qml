@@ -145,6 +145,28 @@ RowLayout {
                             onClicked: addressBookRequested()
                         }
         } // menuTools
+
+        Menu {
+            id: menuLanguage
+
+            title: qsTr("&Language")
+
+            CustomMenuItem {
+                text: qsTr("&System")
+                iconSource: "qrc:/images/resources/images/icons/system-language.svg"
+                enabled: false
+
+                onClicked: { /* nothing to do (for now) */ }
+            }
+
+            CustomMenuItem {
+                text: "English"
+                iconSource: "qrc:/images/resources/images/icons/country-flags/united states.svg"
+
+                onClicked: { /* nothing to do (for now) */ }
+            }
+        }
+
         Menu {
             id: menuHelp
 

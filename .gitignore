@@ -59,6 +59,3 @@ rcc__*
 # Temporary build files
 rcc_cgo_*.go
 
-# Auto-generates go files.
-
-*.pb.go

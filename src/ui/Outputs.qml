@@ -84,7 +84,25 @@ Page {
 
     // Roles: name
     // Implement the model in the backend (a more recommendable approach)
-    QWallets{
+    QWallets {
         id: modelWallets
+    }
+    property Timer timer: Timer {
+        id: addressModelTimer
+        interval: 0
+        repeat: false
+        running: true
+        onTriggered: {
+            modelWallets.cleanModel()
+            modelWallets.loadModel()
+        }
+    }
+
+    BusyIndicator {
+        id: busyIndicator
+
+        anchors.centerIn: parent
+        // Create a `busy` property in the backend and bind it to `running` here:
+        running: modelWallets.loading
     }
 }

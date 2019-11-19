@@ -53,8 +53,7 @@ func (remoteNetwork *SkycoinNetworkConnections) ListPeers() core.PexNodeIterator
 	nets, err := c.NetworkConnections(nil)
 
 	if err != nil {
-
-		//log.Print("Error getting connections")
+		logNetwork.WithError(err).Warn("Couldn't get connections")
 		return nil
 	}
 	var netIterator []core.PexNode
