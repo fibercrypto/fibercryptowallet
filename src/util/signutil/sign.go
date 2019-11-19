@@ -30,7 +30,7 @@ func FilterSignersFromMap(signers map[core.UID]core.TxnSigner, cond func(core.Tx
 	}
 }
 
-// DefaultTxnSignerIterator iterate over items in transaciton signer slicer
+// DefaultTxnSignerIterator iterate over items in transaction signer slicer
 type DefaultTxnSignerIterator struct {
 	signers []core.TxnSigner
 	nextIdx int
