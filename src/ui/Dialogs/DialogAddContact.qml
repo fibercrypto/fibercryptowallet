@@ -18,6 +18,7 @@ Dialog{
     standardButton(Dialog.Ok).enabled=false
     }
     onAboutToShow:{
+    name.text=menu.name
 if(isEdit){
 listModelAddresses.clear()
 for(var i=0;i<menu.address.rowCount();i++){
