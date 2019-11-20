@@ -1,8 +1,11 @@
 package address
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/therecipe/qt/core"
 )
+
+var logAddressModel = logging.MustGetLogger("Address Model")
 
 func init() {
 	AddressDetails_QmlRegisterType2("HistoryModels", 1, 0, "QAddress")
@@ -58,12 +61,14 @@ func (al *AddressList) roleNames() map[int]*core.QByteArray {
 }
 
 func (al *AddressList) addAddress(address *AddressDetails) {
+	logAddressModel.Info("Adding Address")
 	al.BeginInsertRows(core.NewQModelIndex(), len(al.Addresses()), len(al.Addresses()))
 	al.SetAddresses(append(al.Addresses(), address))
 	al.EndInsertRows()
 }
 
 func (al *AddressList) removeAddress(index int) {
+	logAddressModel.Info("Removing Address")
 	al.BeginRemoveRows(core.NewQModelIndex(), index, index)
 	al.SetAddresses(append(al.Addresses()[:index], al.Addresses()[index+1:]...))
 	al.EndRemoveRows()

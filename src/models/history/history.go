@@ -27,6 +27,7 @@ type TransactionList struct {
 }
 
 func (hm *TransactionList) init() {
+	logHistoryManager.Info("Initialize Transaction list for History")
 	hm.SetRoles(map[int]*core.QByteArray{
 		transactions.Date:            core.NewQByteArray2("date", -1),
 		transactions.Status:          core.NewQByteArray2("status", -1),
@@ -57,12 +58,14 @@ func (hm *TransactionList) roleNames() map[int]*core.QByteArray {
 }
 
 func (hm *TransactionList) addTransaction(transaction *transactions.TransactionDetails) {
+	logHistoryManager.Info("Adding transaction for history")
 	hm.BeginInsertRows(core.NewQModelIndex(), len(hm.Transactions()), len(hm.Transactions()))
 	hm.SetTransactions(append(hm.Transactions(), transaction))
 	hm.EndInsertRows()
 }
 
 func (hm *TransactionList) removeTransaction(index int) {
+	logHistoryManager.Info("Removing transaction for history")
 	hm.BeginRemoveRows(core.NewQModelIndex(), index, index)
 	hm.SetTransactions(append(hm.Transactions()[:index], hm.Transactions()[index+1:]...))
 	hm.EndRemoveRows()
@@ -128,9 +131,7 @@ func (hm *TransactionList) addMultipleTransactions(txns []*transactions.Transact
 
 	for _, txn := range txns {
 		hm.addTransaction(txn)
-
 	}
-
 }
 
 func (hm *TransactionList) clear() {

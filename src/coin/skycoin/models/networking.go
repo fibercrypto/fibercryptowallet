@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"log"
 	"strings"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -49,13 +48,12 @@ func (remoteNetwork *SkycoinNetworkConnections) newClient() *api.Client {
 }
 
 func (remoteNetwork *SkycoinNetworkConnections) ListPeers() core.PexNodeIterator {
-
+	logNetwork.Info("Getting list of peers in Skycoin network connections")
 	c := remoteNetwork.newClient()
 	nets, err := c.NetworkConnections(nil)
 
 	if err != nil {
-
-		log.Print("Error getting connections")
+		logNetwork.WithError(err).Warn("Couldn't get connections")
 		return nil
 	}
 	var netIterator []core.PexNode
