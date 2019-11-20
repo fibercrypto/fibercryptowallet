@@ -26,7 +26,7 @@ func RegisterAltcoin(p core.AltcoinPlugin) {
 	local.LoadAltcoinManager().RegisterPlugin(p)
 }
 
-// LookupSigner searchs for signer matching given ID
+// LookupSignerByUID search for signer matching given ID
 func LookupSignerByUID(wlt core.Wallet, id core.UID) core.TxnSigner {
 	wltSigner, isSigner := wlt.(core.TxnSigner)
 	// Reference to self
