@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: run build clean help lint install-linters
+.PHONY: run build clean help lint install-linters gen-mocks
 
 UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
@@ -84,6 +84,9 @@ clean: ## Clean project FiberCrypto Wallet.
 	find . -path "*moc.*" -delete
 	find . -path "*moc_*" -delete
 	@echo "Done."
+
+gen-mocks: ## Generate mocks for interface types
+	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
