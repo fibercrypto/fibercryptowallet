@@ -1,4 +1,4 @@
-package skycoin
+package config
 
 import (
 	"encoding/json"
@@ -56,7 +56,7 @@ func registerConfig() error {
 	return nil
 }
 
-func getOption(path string) (string, error) {
+func GetOption(path string) (string, error) {
 	stringList := strings.Split(path, "/")
 	return sectionManager.GetValue(stringList[len(stringList)-1], stringList[:len(stringList)-1])
 }
@@ -65,7 +65,7 @@ func getValues(prefix string) ([]string, error) {
 	return sectionManager.GetValues(strings.Split(prefix, "/"))
 }
 
-func getWalletSources() ([]*walletSource, error) {
+func GetWalletSources() ([]*walletSource, error) {
 	wltsString, err := getValues(SettingPathToWalletSource)
 	if err != nil {
 		return nil, err
