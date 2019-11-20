@@ -58,6 +58,16 @@ func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (core.Altcoin
 	return core.AltcoinMetadata{}, false
 }
 
+// LoadAltcoinManager load altcoin manager singleton instance
+func LoadAltcoinManager() core.AltcoinManager {
+	logMainPlugin.Info("Loading Altcoin manager")
+	if manager.altcoinMap == nil {
+		manager.altcoinMap = make(map[string]altcoinRecord, 5)
+		manager.signers = make(map[core.UID]core.TxnSigner, 5)
+	}
+	return &manager
+}
+
 // Type assertions
 var (
 	_ core.AltcoinManager = &manager

@@ -42,12 +42,3 @@ func (m *fibercryptoAltcoinManager) SignServicesForTxn(wlt core.Wallet, txn core
 			return err == nil && canSign
 		})
 }
-
-// LoadAltcoinManager load alcoin manager singleton instance
-func LoadAltcoinManager() core.AltcoinManager {
-	logMainPlugin.Info("Loading Altcoin manager")
-	if manager.altcoinMap == nil {
-		manager.altcoinMap = make(map[string]altcoinRecord, 5)
-	}
-	return &manager
-}
