@@ -87,6 +87,7 @@ clean: ## Clean project FiberCrypto Wallet.
 
 gen-mocks: ## Generate mocks for interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
+	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/FiberCryptoWallet/g' PATH
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
