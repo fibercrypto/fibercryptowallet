@@ -34,8 +34,10 @@ Project files are organized as follows:
 - `./src/core` : Core go-lang interfaces.
 - `./src/main` : Project specific source code.
 - `./src/util` : Reusable code.
+- `./src/util/logging` : Event logging infrastructure.
 - `./src/models` : QT models linking coin-specific models to application GUI.
 - `./src/coin` : Source code for altcoin integrations.
+- `./src/coin/mocks` : Types implementing `core` interfaces for generic testing scenarios
 - `./src/coin/skycoin` : Skycoin wallet integration
 - `./src/coin/skycoin/models` : Skycoin implementation of golang core interfaces.
 - `./src/coin/skycoin/blockchain` : Skycoin blockchain API.
