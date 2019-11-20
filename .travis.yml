@@ -59,9 +59,9 @@ matrix:
         - make install-linters
 
       script:
-        - make lint
-        - make build
-        - make test
+        # - make lint
+        # - make build
+        # - make test
 
     - stage: "MacOS"
       os: osx
