@@ -4,6 +4,7 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
+	wlcore "github.com/fibercrypto/FiberCryptoWallet/src/main"
 )
 
 const (
@@ -92,7 +93,8 @@ func (signerModel *SignerModel) loadModel(wltId string) {
 		// TODO i18n
 		logSignersModel.WithError(err).Debugln("trying to attach hw signer failed")
 	}
-	signers := wlt.EnumerateSignServices()
+	am := wlcore.LoadAltcoinManager()
+	signers := am.EnumerateSignServices()
 	var qSigners []*QSigner
 	for signers.Next() {
 		qSigner := NewQSigner(nil)

@@ -22,6 +22,10 @@ type SkyWallet struct {
 	callback func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
 }
 
+func (sw SkyWallet) ReadyForTxn(core.Wallet, core.Transaction) (bool, error) {
+	panic("implement me")
+}
+
 // skyWallet.NewDevice(skyWallet.DeviceTypeUSB),
 func NewSkyWallet(dev skyWallet.Devicer, callback func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)) *SkyWallet {
 	return &SkyWallet{

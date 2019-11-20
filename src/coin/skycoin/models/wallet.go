@@ -674,10 +674,6 @@ func (wlt *RemoteWallet) ReadyForTxn(w core.Wallet, txn core.Transaction) (bool,
 	return checkTxnSupported(wlt, w, txn)
 }
 
-	for _, v := range wlt.signers {
-		signers = append(signers, v)
-	}
-	return NewSignerIterator(signers)
 // SignTransaction according to Skycoin SkyFiber rules
 //
 // @param txn Transacion object

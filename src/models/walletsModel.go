@@ -12,6 +12,7 @@ import (
 	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"errors"
 	"github.com/sirupsen/logrus"
+	wlcore "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 )
 
@@ -151,8 +152,8 @@ func AttachHwAsSigner(wlt fc.Wallet) error {
 		// TODO i18n
 		return errors.New("address sequence does not match for wallets")
 	}
-	wlt.AttachSignService(hw)
-	err := wlt.AttachSignService(hw)
+	am := wlcore.LoadAltcoinManager()
+	err := am.AttachSignService(hw)
 	if err != nil {
 		logrus.Errorln("error registering hardware wallet as signer")
 		return err
