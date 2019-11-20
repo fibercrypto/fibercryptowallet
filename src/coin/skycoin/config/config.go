@@ -31,7 +31,7 @@ func getMultiPlatformUserDirectory() string {
 	return filepath.Join(usr.HomeDir, string(os.PathSeparator), ".skycoin", string(os.PathSeparator), "wallets")
 }
 
-func registerConfig() error {
+func RegisterConfig() error {
 	cm := local.GetConfigManager()
 	node := map[string]string{"node": "https://staging.node.skycoin.net"}
 	nodeBytes, err := json.Marshal(node)
