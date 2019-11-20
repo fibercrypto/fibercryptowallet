@@ -1442,16 +1442,9 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 		ins = append(ins, in)
 	}
 
-	//SkycoinCreatedTransaction
-	sigs := txn.Sigs
-	txn.Sigs = []cipher.Sig{}
-	apiCreTxn, err := api.NewCreatedTransaction(&txn, ins)
-	txn.Sigs = sigs
-	apiCreTxn.Sigs = make([]string, 0)
-	require.NoError(t, err)
-	require.NotNil(t, apiCreTxn)
-	require.Equal(t, apiCreTxn.InnerHash, txn.HashInner().Hex())
-	skyCreTxn := NewSkycoinCreatedTransaction(*apiCreTxn)
+	pwdReader := func(message string) (string, error) {
+		return "", nil
+	}
 
 	signer := makeSkycoinSignService(t)
 	wallets := makeLocalWalletsFromKeyData(t, keyData)
@@ -1469,12 +1462,40 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 
 	}
 
-	pwdReader := func(message string) (string, error) {
-		return "", nil
-	}
-	//require.Equal(t, "AQUI", "FIRMANDO TODAS")
+	//SkycoinCreatedTransaction
+	sigs := txn.Sigs
+	txn.Sigs = []cipher.Sig{}
+	apiCreTxn, err := api.NewCreatedTransaction(&txn, ins)
+	txn.Sigs = sigs
+	apiCreTxn.Sigs = make([]string, 0)
+	require.NoError(t, err)
+	require.NotNil(t, apiCreTxn)
+	require.Equal(t, apiCreTxn.InnerHash, txn.HashInner().Hex())
+	skyCreTxn := NewSkycoinCreatedTransaction(*apiCreTxn)
+
 	signedTxn, err := signer.Sign(skyCreTxn, isds, pwdReader)
 	require.NoError(t, err)
 	require.NotNil(t, signedTxn)
+	err = signedTxn.VerifySigned()
+	require.NoError(t, err)
+	//require.Equal(t, txn.Hash().String(), signedTxn.GetId())
+
+	//SkycoinUninjectedTransaction
+	sigs = txn.Sigs
+	txn.Sigs = []cipher.Sig{}
+	skyUninTxn := SkycoinUninjectedTransaction{
+		txn: &txn,
+		fee: 300,
+	}
+
+	signedTxn = nil
+
+	signedTxn, err = signer.Sign(&skyUninTxn, isds, pwdReader)
+	require.NoError(t, err)
+	require.NotNil(t, signedTxn)
+
+	signed, err := signedTxn.IsFullySigned()
+	require.NoError(t, err)
+	require.Equal(t, true, signed)
 
 }
