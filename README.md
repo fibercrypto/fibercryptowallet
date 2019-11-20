@@ -87,8 +87,14 @@ install-deps                   Install dependencies
 build-docker                   Build project using docker
 build                          Build FiberCrypto Wallet.
 clean-Windows                  Clean project FiberCrypto Wallet.
-clean                          Clean project FiberCrypto Wallet.
+prepare-release                Change the resources in the app and prepare to release the app
+clean-test                     Remove temporary test files
+clean-build                    Remove temporary files
+clean                          Remove temporary files
+gen-mocks                      Generate mocks for interface types
 test-sky                       Run Skycoin plugin test suite
+test-core                      Run tests for API core and helpers
+test-cover                     Show more details of test coverage
 test                           Run project test suite
 install-linters                Install linters
 lint                           Run linters. Use make install-linters first.
