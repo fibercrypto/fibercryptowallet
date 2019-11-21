@@ -15,20 +15,29 @@ import "Controls" // For quick UI development, switch back to resources when mak
 
 Page {
     id: subPageSendAdvanced
-    function getSelectedAddresses(){
+
+    function getSelectedAddressesWithWallets(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
+        addresses.push([])
+        addresses.push([])
         for (var i =0;i< indexs.length; i++){
-            addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
+            addresses[0].push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
+            addresses[1].push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].walletId)
+            //addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
         }
         return addresses
     }
 
-    function getSelectedOutputs(){
+    function getSelectedOutputsWithWallets(){
         var indexs =  comboBoxWalletsUnspentOutputsSendFrom.getCheckedDelegates()
         var outputs = []
+        outputs.push([])
+        outputs.push([])
         for (var i =0;i< indexs.length; i++){
-            outputs.push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
+            outputs[0].push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
+            outputs[1].push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].walletOwner)
+            //outputs.push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
         }
         return outputs
     }
@@ -75,10 +84,14 @@ Page {
         return sliderCoinHoursShareFactor.value
     }
 
-    function getAllAddresses(){
+    function getAllAddressesWithWallets(){
         var addrs = []
+        addrs.push([])
+        addrs.push([])
         for (var i = 0; i < listAddresses.count; i++){
-            addrs.push(listAddresses.addresses[i].address)
+            addrs[0].push(listAddresses.addresses[i].address)
+            addrs[1].push(listAddresses.addresses[i].walletId)
+            //addrs.push(listAddresses.addresses[i].address)
         }
         return addrs
     }
