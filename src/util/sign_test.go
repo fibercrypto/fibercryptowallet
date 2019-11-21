@@ -35,6 +35,43 @@ func TestSignerMethods(t *testing.T) {
 	testutil.RequireError(t, err, "Invalid Id")
 }
 
+func TestSignersEnum(t *testing.T) {
+	signerIDs := []core.UID{
+		core.UID("TestSignersEnum#0"),
+		core.UID("TestSignersEnum#1"),
+		core.UID("TestSignersEnum#2"),
+	}
+	signers := make([]*mocks.TxnSigner, len(signerIDs))
+	// Install global signers
+	for i, uid := range signerIDs {
+		signer := new(mocks.TxnSigner)
+		signer.On("GetSignerUID").Return(uid)
+		require.Equal(t, signer.GetSignerUID(), uid)
+		err := AttachSignService(signer)
+		require.NoError(t, err)
+		signers[i] = signer
+	}
+	defer RemoveSignService(signerIDs[0])
+	defer RemoveSignService(signerIDs[1])
+	defer RemoveSignService(signerIDs[2])
+
+	allSigners := EnumerateSignServices()
+	signersFound := make(map[core.UID]struct{})
+	for allSigners.HasNext() {
+		signerID := allSigners.Value().GetSignerUID()
+		_, wasFound := signersFound[signerID]
+		require.False(t, wasFound)
+		signersFound[signerID] = struct{}{}
+		allSigners.Next()
+	}
+	_, wasFound := signersFound[signerIDs[0]]
+	require.True(t, wasFound)
+	_, wasFound = signersFound[signerIDs[1]]
+	require.True(t, wasFound)
+	_, wasFound = signersFound[signerIDs[2]]
+	require.True(t, wasFound)
+}
+
 func TestSignersReadyForTxn(t *testing.T) {
 	signerIDs := []core.UID{
 		core.UID("TestSignersReadyForTxn#0"),
