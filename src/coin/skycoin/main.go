@@ -14,7 +14,7 @@ func init() {
 	nodeStr, _ := config.GetOption(config.SettingPathToNode)
 	node := make(map[string]string, 0)
 	json.Unmarshal([]byte(nodeStr), &node)
-	core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(node["node"]))
+	core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(node["address"]))
 	util.RegisterAltcoin(sky.NewSkyFiberPlugin(sky.SkycoinMainNetParams))
 
 }

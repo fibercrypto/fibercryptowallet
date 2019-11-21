@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	LocalWallet = iota
-	RemoteWallet
+	LocalWallet               = "local"
+	RemoteWallet              = "remote"
 	SectionName               = "skycoin"
 	SettingPathToNode         = "node"
 	SettingPathToWalletSource = "walletSource"
@@ -33,7 +33,7 @@ func getMultiPlatformUserDirectory() string {
 
 func RegisterConfig() error {
 	cm := local.GetConfigManager()
-	node := map[string]string{"node": "https://staging.node.skycoin.net"}
+	node := map[string]string{"address": "https://staging.node.skycoin.net"}
 	nodeBytes, err := json.Marshal(node)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func RegisterConfig() error {
 	nodeOpt := local.NewOption(SettingPathToNode, []string{}, false, string(nodeBytes))
 	walletsDefaultDirectory := getMultiPlatformUserDirectory()
 	wltSrc := &walletSource{
-		id:     1,
+		id:     "1",
 		Tp:     string(LocalWallet),
 		Source: walletsDefaultDirectory,
 	}
@@ -82,7 +82,7 @@ func GetWalletSources() ([]*walletSource, error) {
 }
 
 type walletSource struct {
-	id     int
+	id     string
 	Tp     string `json:"SourceType"`
 	Source string `json:"Source"`
 }

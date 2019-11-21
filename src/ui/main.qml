@@ -102,6 +102,7 @@ ApplicationWindow {
         }
 
         onAboutQtRequested: {
+            
             dialogAboutQt.open()
         }
 
@@ -117,9 +118,7 @@ ApplicationWindow {
     GeneralStackView {
         id: generalStackView
         anchors.fill: parent
-        //property WalletManager  walletManger: WalletManager{
-        //id: walletManager
-        //}
+       
         WalletManager {
             id: walletManager
         }

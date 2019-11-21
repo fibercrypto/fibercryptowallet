@@ -46,7 +46,7 @@ func (cm *ConfigManager) setValue(path, value string) {
 	splitedPath := strings.Split(path, "/")
 	section := splitedPath[0]
 	optPath := splitedPath[1 : len(splitedPath)-1]
-	name := splitedPath[len(splitedPath)-2]
+	name := splitedPath[len(splitedPath)-1]
 	optName := optPath[len(optPath)-1]
 	optPath = optPath[:len(optPath)-1]
 	cm.GetSection(section).saveOptionValue(optName, optPath, name, value)
@@ -57,7 +57,7 @@ func (cm *ConfigManager) getValue(path string) string {
 	splitedPath := strings.Split(path, "/")
 	section := splitedPath[0]
 	optPath := splitedPath[1 : len(splitedPath)-1]
-	name := splitedPath[len(splitedPath)-2]
+	name := splitedPath[len(splitedPath)-1]
 	optName := optPath[len(optPath)-1]
 	optPath = optPath[:len(optPath)-1]
 	return cm.GetSection(section).getValue(optName, optPath, name)
