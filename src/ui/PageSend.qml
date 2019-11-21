@@ -58,6 +58,11 @@ Page {
                 } else{
                     walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
+                    var addrs = []
+                    addrs.push([])
+                    addrs.push([])
+                    addrs[0].push(stackView.currentItem.simplePage.getDestinationAddress())
+                    addrs[1].push(walletSelected)
                     txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
                 console.log("HT "+txn.hoursTraspassed)

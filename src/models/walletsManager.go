@@ -338,14 +338,14 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 				logWalletManager.Warn("Couldn't load wallet to create transaction")
 				return nil
 			}
+			wltCache[wltId] = wlt
 		}
 		wlts = append(wlts, wlt)
 	}
 
 	outputsFrom := make([]core.TransactionOutput, 0)
 	for _, outAddr := range from {
-		addr := util.NewGenericAddress(outAddr)
-		out := util.NewGenericOutput(&addr)
+		out := util.NewGenericOutput(nil, outAddr)
 		outputsFrom = append(outputsFrom, &out)
 	}
 	outputsTo := make([]core.TransactionOutput, 0)
@@ -355,7 +355,7 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 			ch = coinHoursTo[i]
 		}
 		addr := util.NewGenericAddress(addrTo[i])
-		out := util.NewGenericOutput(&addr)
+		out := util.NewGenericOutput(&addr, "")
 		// FIXME: Remove explicit reference to Skycoin
 		err := out.PushCoins(sky.Sky, skyTo[i])
 		if err != nil {
@@ -381,6 +381,7 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 	var txn core.Transaction
 	var err error
 	if len(wltCache) > 1 {
+		fmt.Println("MULTI TXN")
 		walletsOutputs := make([]core.WalletOutput, 0)
 		for i, wlt := range wlts {
 			walletsOutputs = append(walletsOutputs, &util.SimpleWalletOutput{
@@ -390,6 +391,7 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 		}
 		txn, err = walletM.transactionAPI.Spend(walletsOutputs, outputsTo, &changeAddr, opt)
 	} else {
+		fmt.Println("SIMPLE TXN")
 		txn, err = wlts[0].Spend(outputsFrom, outputsTo, &changeAddr, opt)
 	}
 
@@ -436,7 +438,7 @@ func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, s
 			ch = coinHoursTo[i]
 		}
 		addr := util.NewGenericAddress(addrTo[i])
-		out := util.NewGenericOutput(&addr)
+		out := util.NewGenericOutput(&addr, "")
 		// FIXME: Remove explicit reference to Skycoin
 		err := out.PushCoins(sky.Sky, skyTo[i])
 		if err != nil {
@@ -526,7 +528,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 		logWalletManager.Warn("Couldn't load wallet to create transaction")
 		return nil
 	}
-	txOut := util.NewGenericOutput(&addr)
+	txOut := util.NewGenericOutput(&addr, "")
 	// FIXME: Remove explicit reference to Skycoin
 	err := txOut.PushCoins(sky.Sky, amount)
 	if err != nil {
