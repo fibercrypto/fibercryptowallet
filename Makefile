@@ -1,5 +1,11 @@
 .DEFAULT_GOAL := help
-.PHONY: run build clean help lint install-linters
+.PHONY: deps install-deps-no-envs install-docker-deps install-deps install-linters
+.PHONY: install-deps-Linux install-deps-Darwin install-deps-Windows
+.PHONY: build build-docker
+.PHONY: prepare-release gen-mocks
+.PHONY: run help
+.PHONY: test test-core test-sky test-sky-launch-html-cover test-cover lint
+.PHONY: clean-test clean-build clean clean-Windows
 
 UNAME_S = $(shell uname -s)
 DEFAULT_TARGET ?= desktop
@@ -72,12 +78,15 @@ clean-Windows: ## Clean project FiberCrypto Wallet.
 prepare-release: ## Change the resources in the app and prepare to release the app
 	./.travis/setup_release.sh
 
+clean-test: ## Remove temporary test files
+	rm -f $(COVERAGEFILE)
+	rm -f $(COVERAGEHTML)
+	
 mocks: ## Create all mock files for unit tests
 	mockery -name Devicer -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
 	mockery -name DeviceDriver -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
 
-
-clean: ## Clean project FiberCrypto Wallet.
+clean-build: ## Remove temporary files
 	@echo "Cleaning project FiberCrypto Wallet..."
 	rm -rf deploy/
 	rm -rf linux/
@@ -90,26 +99,31 @@ clean: ## Clean project FiberCrypto Wallet.
 	find . -path "*moc_*" -delete
 	@echo "Done."
 
+clean: clean-test clean-build ## Remove temporary files
+
+gen-mocks: ## Generate mocks for interface types
+
 test-hw: mocks ## Run Hardware wallet tests
 	go test github.com/fibercrypto/FiberCryptoWallet/src/hardware
+
+	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
+	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/FiberCryptoWallet/g' PATH
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 
-test-clean:
-	rm $(COVERAGEFILE)
-	rm $(COVERAGEHTML)
+test-core: ## Run tests for API core and helpers
+	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/util
 
 test-sky-launch-html-cover:
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
 
-test-cover: test-sky-launch-html-cover ## Show more details of test coverage
+test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test-integration: ## Run integration tests
-	go test github.com/fibercrypto/FiberCryptoWallet/test/integration/hardware
+test: clean-test test-core test-sky ## Run project test suite
 
 test: test-sky test-hw test-integration ## Run project test suite
 
