@@ -325,11 +325,21 @@ func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 
 func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
 	logWalletManager.Info("Creating transaction")
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltIds[0])
-	if wlt == nil {
-		logWalletManager.Warn("Couldn't load wallet to create transaction")
-		return nil
+	wltCache := make(map[string]core.Wallet, 0)
+	wlts := make([]core.Wallet, 0)
+	for _, wltId := range wltIds {
+		var wlt core.Wallet
+		wlt, exist := wltCache[wltId]
+		if !exist {
+			wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+			if wlt == nil {
+				logWalletManager.Warn("Couldn't load wallet to create transaction")
+				return nil
+			}
+		}
+		wlts = append(wlts, wlt)
 	}
+
 	outputsFrom := make([]core.TransactionOutput, 0)
 	for _, outAddr := range from {
 		addr := util.NewGenericAddress(outAddr)
@@ -366,8 +376,21 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 	} else {
 		opt.SetValue("CoinHoursSelectionType", "manual")
 	}
+	var txn core.Transaction
+	var err error
+	if len(wltCache) > 1 {
+		walletsOutputs := make([]core.WalletOutput, 0)
+		for i, wlt := range wlts {
+			walletsOutputs = append(walletsOutputs, &util.SimpleWalletOutput{
+				Wallet: wlt,
+				UxOut:  outputsFrom[i],
+			})
+		}
+		txn, err = walletM.transactionAPI.Spend(walletsOutputs, outputsTo, &changeAddr, opt)
+	} else {
+		txn, err = wlts[0].Spend(outputsFrom, outputsTo, &changeAddr, opt)
+	}
 
-	txn, err := wlt.Spend(outputsFrom, outputsTo, &changeAddr, opt)
 	if err != nil {
 		logWalletManager.WithError(err).Info("Error creating transaction")
 		return nil
