@@ -46,10 +46,10 @@ matrix:
         - make test
 
       script:
-        - make lint
         - make clean
         - make build
         - make test
+        - make lint
 
     - stage: "Windows"
       os: windows
@@ -59,10 +59,10 @@ matrix:
         - make install-linters
 
       script:
-        - make lint
         - make build
         - make test
         - make build-icon
+        - make lint
 
     - stage: "MacOS"
       os: osx
@@ -71,11 +71,12 @@ matrix:
         - make install-deps
 
       script:
-        - make lint
         - make clean
         - make build
         - make test
         - make build-icon
+        - make lint
+
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
