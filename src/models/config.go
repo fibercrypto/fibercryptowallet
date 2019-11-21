@@ -14,7 +14,8 @@ type ConfigManager struct {
 	qtcore.QObject
 	configManager *local.ConfigManager
 	_             func()                                 `constructor:"init"`
-	_             func(string, []string, string, string) `slot:"edit"`
+	_             func(string, []string, string, string) `slot:"setValue"`
+	_             func(string, []string, string) string  `slot:"getValue"`
 	_             func() []string                        `slot:"getSections"`
 	_             func(string) *ConfigSection            `slot:"getSection"`
 }
@@ -22,7 +23,7 @@ type ConfigManager struct {
 func (cm *ConfigManager) init() {
 	qml.QQmlEngine_SetObjectOwnership(cm, qml.QQmlEngine__CppOwnership)
 	cm.configManager = local.GetConfigManager()
-	cm.ConnectEdit(cm.edit)
+	cm.ConnectSetValue(cm.setValue)
 	cm.ConnectGetSections(cm.getSections)
 	cm.ConnectGetSection(cm.getSection)
 
@@ -73,7 +74,15 @@ func (cs *ConfigSection) getOptions(path []string) []*KeyValueStorage {
 	return resul
 }
 
-func (cm *ConfigManager) edit(section string, sectionPath []string, name, value string) {
+func (cm *ConfigManager) getValue(section string, sectionPath []string, name string) string {
+
+	sm := cm.configManager.GetSectionManager(section)
+	result, _ := sm.GetValue(name, sectionPath)
+	return result
+
+}
+
+func (cm *ConfigManager) setValue(section string, sectionPath []string, name string, value string) {
 
 	sm := cm.configManager.GetSectionManager(section)
 	sm.Save(name, sectionPath, value)
