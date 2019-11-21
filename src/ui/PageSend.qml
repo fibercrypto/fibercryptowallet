@@ -70,7 +70,7 @@ Page {
                 dialogSendTransaction.previewtransactionID = txn.transactionId
                 dialogSendTransaction.inputs = txn.inputs
                 dialogSendTransaction.outputs = txn.outputs
-                dialogSendTransaction.wallet = walletSelected
+                dialogSendTransaction.walletsAddresses = addrs
                 dialogSendTransaction.open()
                 
                 
@@ -168,7 +168,7 @@ Page {
     DialogSendTransaction {
         id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
-        property string wallet
+        property var walletsAddresses
         readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
@@ -177,7 +177,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(wallet,"", dialogSendTransaction.passwordText, [], txn)
+			var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", dialogSendTransaction.passwordText, [], txn)
 			var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -46,7 +48,7 @@ type WalletManager struct {
 	_ func(id string, password string) int                                                                                             `slot:"decryptWallet"`
 	_ func() []*QWallet                                                                                                                `slot:"getWallets"`
 	_ func(id string) []*QAddress                                                                                                      `slot:"getAddresses"`
-	_ func(id string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                                   `slot:"signTxn"`
+	_ func(wltIds, addresses []string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                  `slot:"signTxn"`
 	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                       `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                                                  `slot:"editWallet"`
 	_ func(wltId, address string) []*QOutput                                                                                           `slot:"getOutputs"`
@@ -404,6 +406,7 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 	return qTransaction
 }
 func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
+	fmt.Printf("WLTS %v\n", wltIds)
 	wltCache := make(map[string]core.Wallet, 0)
 	wlts := make([]core.Wallet, 0)
 	for _, wltId := range wltIds {
@@ -415,10 +418,12 @@ func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, s
 				logWalletManager.Warn("Couldn't load wallet to create transaction")
 				return nil
 			}
+			wltCache[wltId] = wlt
 		}
 		wlts = append(wlts, wlt)
 	}
-
+	spew.Dump(wltCache)
+	fmt.Println(wlts)
 	addrsFrom := make([]core.Address, 0)
 	for _, addr := range from {
 
@@ -465,8 +470,10 @@ func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, s
 				UxOut:  addrsFrom[i],
 			})
 		}
+		fmt.Println("MULTIPLE TRANSACTION")
 		txn, err = walletM.transactionAPI.SendFromAddress(walletsAddresses, outputsTo, changeAddr, opt)
 	} else {
+		fmt.Println("SINGLE TRANSACTION")
 		txn, err = wlts[0].SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	}
 
@@ -541,17 +548,54 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) *QTransaction {
+func (walletM *WalletManager) signTxn(wltIds, address []string, source, password string, index []int, qTxn *QTransaction) *QTransaction {
 	logWalletManager.Info("Signig transaction")
-	// Get wallet
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-	if wlt == nil {
-		logWalletManager.Warn("Couldn't load wallet to Sign transaction")
+
+	if len(wltIds) != len(address) {
+		logWalletManager.Error("Wallets and addresses provided are incorrect")
 		return nil
 	}
-	txn, err := wlt.Sign(qTxn.txn, core.UID(source), func(message string) (string, error) {
+
+	wltCache := make(map[string]core.Wallet)
+	wltByAddr := make(map[string]core.Wallet)
+	wlts := make([]core.Wallet, 0)
+
+	pwd := func(message string) (string, error) {
 		return password, nil
-	}, nil) // TODO Get index for sign specific txn indexes
+	}
+
+	for i, wltId := range wltIds {
+		var wlt core.Wallet
+		wlt, exist := wltCache[wltId]
+		if !exist {
+			wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+			if wlt == nil {
+				logWalletManager.Warn("Couldn't load wallet to Sign transaction")
+				return nil
+			}
+			wltCache[wltId] = wlt
+		}
+		wltByAddr[address[i]] = wlt
+		wlts = append(wlts, wlt)
+	}
+
+	var txn core.Transaction
+	var err error
+	if len(wltCache) > 1 {
+		signDescriptors := make([]core.InputSignDescriptor, 0)
+		for _, in := range qTxn.txn.GetInputs() {
+			sd := core.InputSignDescriptor{
+				InputIndex: in.GetId(),
+				SignerID:   core.UID(source),
+				Wallet:     wltByAddr[in.GetSpentOutput().GetAddress().String()],
+			}
+			signDescriptors = append(signDescriptors, sd)
+		}
+		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
+	} else {
+		txn, err = wlts[0].Sign(qTxn.txn, core.UID(source), pwd, nil)
+	}
+
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error signing txn")
 		return nil
