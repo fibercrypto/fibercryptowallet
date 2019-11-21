@@ -113,9 +113,9 @@ test-sky-launch-html-cover:
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
 
-test-cover: test-clean test-sky-launch-html-cover ## Show more details of test coverage
+test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test: test-clean test-core test-sky ## Run project test suite
+test: clean-test test-core test-sky ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
