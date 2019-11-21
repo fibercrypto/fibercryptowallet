@@ -15,9 +15,9 @@ Page {
 
     // These are defaults. Will be restored when the "DEFAULT" button is clicked
     // TODO: How to get the defaults from the config manager
-    readonly property string defaultWalletPath: configManager.getSourceString()
-    readonly property string defaultNodeUrl: configManager.getNodeString()
-    readonly property bool defaultIsRemoteWalletEnv: configManager.getTypeSource()
+    readonly property string defaultWalletPath: configManager.getValue("skycoin", ["walletSource"], "Source")
+    readonly property string defaultNodeUrl: configManager.getValue("skycoin", ["node"], "node")
+    readonly property bool defaultIsRemoteWalletEnv: configManager.getValue("skycoin", ["walletSource"], "SourceType")
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
@@ -36,6 +36,8 @@ Page {
         walletPath = savedWalletPath
         nodeUrl = savedNodeUrl
         isRemoteWalletEnv = savedIsRemoteWalletEnv
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        console.log(defaultWalletPath + '\n' + defaultNodeUrl + '\n' + defaultIsRemoteWalletEnv)
     }
 
     footer: DialogButtonBox {
