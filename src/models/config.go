@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"strings"
 
 	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 
@@ -13,18 +14,20 @@ import (
 type ConfigManager struct {
 	qtcore.QObject
 	configManager *local.ConfigManager
-	_             func()                                 `constructor:"init"`
-	_             func(string, []string, string, string) `slot:"edit"`
-	_             func() []string                        `slot:"getSections"`
-	_             func(string) *ConfigSection            `slot:"getSection"`
+	_             func()                      `constructor:"init"`
+	_             func(string, string)        `slot:"setValue"`
+	_             func(string) string         `slot:"getValue"`
+	_             func() []string             `slot:"getSections"`
+	_             func(string) *ConfigSection `slot:"getSection"`
 }
 
 func (cm *ConfigManager) init() {
 	qml.QQmlEngine_SetObjectOwnership(cm, qml.QQmlEngine__CppOwnership)
 	cm.configManager = local.GetConfigManager()
-	cm.ConnectEdit(cm.edit)
+	cm.ConnectSetValue(cm.setValue)
 	cm.ConnectGetSections(cm.getSections)
 	cm.ConnectGetSection(cm.getSection)
+	cm.ConnectGetValue(cm.getValue)
 
 }
 
@@ -36,6 +39,28 @@ func (cm *ConfigManager) getSection(sectionName string) *ConfigSection {
 	sm := NewConfigSection(nil)
 	sm.sm = cm.configManager.GetSectionManager(sectionName)
 	return sm
+}
+
+func (cm *ConfigManager) setValue(path, value string) {
+
+	splitedPath := strings.Split(path, "/")
+	section := splitedPath[0]
+	optPath := splitedPath[1 : len(splitedPath)-1]
+	name := splitedPath[len(splitedPath)-2]
+	optName := optPath[len(optPath)-1]
+	optPath = optPath[:len(optPath)-1]
+	cm.GetSection(section).saveOptionValue(optName, optPath, name, value)
+
+}
+
+func (cm *ConfigManager) getValue(path string) string {
+	splitedPath := strings.Split(path, "/")
+	section := splitedPath[0]
+	optPath := splitedPath[1 : len(splitedPath)-1]
+	name := splitedPath[len(splitedPath)-2]
+	optName := optPath[len(optPath)-1]
+	optPath = optPath[:len(optPath)-1]
+	return cm.GetSection(section).getValue(optName, optPath, name)
 }
 
 type ConfigSection struct {
@@ -53,6 +78,7 @@ func (cs *ConfigSection) init() {
 
 func (cs *ConfigSection) getPaths() [][]string {
 	return cs.sm.GetPaths()
+
 }
 
 func (cs *ConfigSection) getOptions(path []string) []*KeyValueStorage {
@@ -71,12 +97,47 @@ func (cs *ConfigSection) getOptions(path []string) []*KeyValueStorage {
 		resul = append(resul, kv)
 	}
 	return resul
+
 }
 
-func (cm *ConfigManager) edit(section string, sectionPath []string, name, value string) {
+func (cs *ConfigSection) getOption(name string, path []string) *KeyValueStorage {
+	opt, err := cs.sm.GetValue(name, path)
+	if err != nil {
+		//log error
+		return nil
+	}
 
-	sm := cm.configManager.GetSectionManager(section)
-	sm.Save(name, sectionPath, value)
+	kv := NewKeyValueStorage(nil)
+	data := make(map[string]string, 0)
+	json.Unmarshal([]byte(opt), &data)
+	kv.setValues(data)
+	return kv
+}
+
+func (cs *ConfigSection) saveOptionValue(opt string, path []string, name string, value string) {
+	optV := cs.getOption(opt, path)
+	if optV == nil {
+		//log error
+		return
+	}
+
+	optV.setValue(name, value)
+	data, err := json.Marshal(optV.keyValues)
+	if err != nil {
+		//log error
+		return
+	}
+	cs.sm.Save(opt, path, string(data))
+
+}
+
+func (cs *ConfigSection) getValue(opt string, path []string, name string) string {
+	optV := cs.getOption(opt, path)
+	if optV == nil {
+		//log error
+		return ""
+	}
+	return optV.getValue(name)
 
 }
 

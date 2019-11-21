@@ -50,6 +50,7 @@ ApplicationWindow {
         ConfigManager{
             id: configManager
         }
+        
 
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()
@@ -127,6 +128,7 @@ ApplicationWindow {
     //! Settings
     Settings {
         id: settings
+        
     }
 
     //! Dialogs
