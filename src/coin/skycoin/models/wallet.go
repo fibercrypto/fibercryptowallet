@@ -1087,8 +1087,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	rTxn, isReadableTxn := txn.(skytypes.ReadableTxn)
 	if isReadableTxn {
 		// Readable tranasctions should not need extra API calls
-		//TO DELETE
-		logWallet.WithError(err).Warn("GOODDD")
 
 		cTxn, err := rTxn.ToCreatedTransaction()
 		originalInputs = cTxn.In

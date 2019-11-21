@@ -30,6 +30,7 @@ type WalletManager struct {
 	outputsByAddress    map[string][]*QOutput
 	altManager          core.AltcoinManager
 	signer              core.BlockchainSignService
+	transactionAPI      core.BlockchainTransactionAPI
 
 	_ func()                                                                                                                                 `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                            `slot:"updateOutputs"`
@@ -88,6 +89,8 @@ func (walletM *WalletManager) init() {
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
 		walletM.updateWalletEnvs()
+		walletM.updateSigner()
+		walletM.updateTransactionAPI()
 	})
 
 	walletM = walletManager
@@ -115,12 +118,25 @@ func (walletM *WalletManager) updateSigner() {
 	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
 		sing, err := plug.LoadSignService()
 		if err != nil {
-			logWalletManager.Errorf("Error loading signer from %s plugin", plug.GetName())
+			logWalletManager.WithError(err).Errorf("Error loading signer from %s plugin", plug.GetName())
 		}
 		signers = append(signers, sing)
 	}
 
 	walletM.signer = signers[0]
+}
+
+func (walletM *WalletManager) updateTransactionAPI() {
+	logWalletManager.Info("Updating TransactionAPI")
+	txnAPIS := make([]core.BlockchainTransactionAPI, 0)
+
+	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
+		txnAPI, err := plug.LoadTransactionAPI()
+		if err != nil {
+			logWalletManager.WithError(err).Errorf("Error loading transaction API from %s plugin", plug.GetName())
+		}
+		txnAPIS = append(txnAPIS, txnAPI)
+	}
 }
 func (walletM *WalletManager) updateWalletEnvs() {
 	logWalletManager.Info("Updating WalletEnvs")
