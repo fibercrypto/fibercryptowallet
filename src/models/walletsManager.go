@@ -137,6 +137,8 @@ func (walletM *WalletManager) updateTransactionAPI() {
 		}
 		txnAPIS = append(txnAPIS, txnAPI)
 	}
+
+	walletM.transactionAPI = txnAPIS[0]
 }
 func (walletM *WalletManager) updateWalletEnvs() {
 	logWalletManager.Info("Updating WalletEnvs")
