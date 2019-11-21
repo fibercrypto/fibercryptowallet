@@ -381,11 +381,21 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 	return qTransaction
 }
 func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltIds[0])
-	if wlt == nil {
-		logWalletManager.Warn("Couldn't load wallet to create transaction")
-		return nil
+	wltCache := make(map[string]core.Wallet, 0)
+	wlts := make([]core.Wallet, 0)
+	for _, wltId := range wltIds {
+		var wlt core.Wallet
+		wlt, exist := wltCache[wltId]
+		if !exist {
+			wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+			if wlt == nil {
+				logWalletManager.Warn("Couldn't load wallet to create transaction")
+				return nil
+			}
+		}
+		wlts = append(wlts, wlt)
 	}
+
 	addrsFrom := make([]core.Address, 0)
 	for _, addr := range from {
 
@@ -402,13 +412,13 @@ func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, s
 		// FIXME: Remove explicit reference to Skycoin
 		err := out.PushCoins(sky.Sky, skyTo[i])
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			logWalletManager.WithError(err).Warnf("Error parsing value for %s", sky.Sky)
 			return nil
 		}
 		// FIXME: Remove explicit reference to Skycoin
 		err = out.PushCoins(sky.CoinHour, ch)
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			logWalletManager.WithError(err).Warnf("Error parsing value for %s", sky.Sky)
 			return nil
 		}
 		outputsTo = append(outputsTo, &out)
@@ -422,8 +432,21 @@ func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, s
 	} else {
 		opt.SetValue("CoinHoursSelectionType", "manual")
 	}
+	var txn core.Transaction
+	var err error
+	if len(wltCache) > 1 {
+		walletsAddresses := make([]core.WalletAddress, 0)
+		for i, wlt := range wlts {
+			walletsAddresses = append(walletsAddresses, &util.SimpleWalletAddress{
+				Wallet: wlt,
+				UxOut:  addrsFrom[i],
+			})
+		}
+		txn, err = walletM.transactionAPI.SendFromAddress(walletsAddresses, outputsTo, changeAddr, opt)
+	} else {
+		txn, err = wlts[0].SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
+	}
 
-	txn, err := wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
 		logWalletManager.WithError(err).Info("Error creating transaction")
 		return nil
