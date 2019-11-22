@@ -122,7 +122,7 @@ test-cover: clean-test test-sky-launch-html-cover ## Show more details of test c
 
 test: clean-test test-core test-sky ## Run project test suite
 
-test: test-sky test-hw test-integration ## Run project test suite
+test: test-sky test-hw ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
