@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/sirupsen/logrus"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	wlcore "github.com/fibercrypto/FiberCryptoWallet/src/main"
@@ -88,18 +89,26 @@ func (signerModel *SignerModel) loadModel(wltId string) {
 	if wlt == nil {
 		return
 	}
-	err := AttachHwAsSigner(wlt)
-	if err != nil {
-		// TODO i18n
-		logSignersModel.WithError(err).Debugln("trying to attach hw signer failed")
-	}
 	am := wlcore.LoadAltcoinManager()
 	signers := am.EnumerateSignServices()
 	var qSigners []*QSigner
+	qSigner := NewQSigner(nil)
+	qml.QQmlEngine_SetObjectOwnership(qSigner, qml.QQmlEngine__CppOwnership)
+	qSigner.SetId(wlt.GetId())
+	qSigner.SetDescription(wlt.GetLabel())
+	qSigners = append(qSigners, qSigner)
 	for signers.Next() {
-		qSigner := NewQSigner(nil)
+		qSigner = NewQSigner(nil)
 		qml.QQmlEngine_SetObjectOwnership(qSigner, qml.QQmlEngine__CppOwnership)
 		signer := signers.Value()
+		sameSeedAsWlt, err := signer.ReadyForTxn(wlt, nil)
+		if err != nil {
+			logrus.WithError(err).Errorln("unable to check wallet and signer compatibility")
+			return
+		}
+		if !sameSeedAsWlt {
+			continue
+		}
 		qSigner.SetId(string(signer.GetSignerUID()))
 		qSigner.SetDescription(signer.GetSignerDescription())
 		qSigners = append(qSigners, qSigner)
