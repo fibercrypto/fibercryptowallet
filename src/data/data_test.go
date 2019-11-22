@@ -23,20 +23,18 @@ func TestContact_MarshalBinary(t *testing.T) {
 		want    []byte
 		wantErr bool
 	}{
-		{name: "empty-Contact", fields: fields{}, want: []byte{}, wantErr: false},
+		{name: "empty-Contact", fields: fields{}, want: []byte(`{"Id":0,"Address":null,"Name":null}`), wantErr: false},
 		{name: "not-empty-Contact", fields: fields{
 			ID:      1,
 			Address: []Address{{Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"), Coin: []byte("skycoin")}},
 			Name:    []byte("Foo"),
-		}, want: []byte{0x8, 0x1, 0x12, 0x3, 0x46, 0x6f, 0x6f, 0x1a, 0x2e, 0xa, 0x23, 0x4a, 0x55, 0x64, 0x52, 0x75,
-			0x54, 0x69, 0x71, 0x44, 0x31, 0x6d, 0x47, 0x63, 0x77, 0x33, 0x73, 0x35, 0x38, 0x74, 0x77, 0x4d, 0x67, 0x33,
-			0x56, 0x50, 0x70, 0x58, 0x70, 0x7a, 0x62, 0x6b, 0x64, 0x52, 0x76, 0x4a, 0x12, 0x7, 0x73, 0x6b, 0x79, 0x63,
-			0x6f, 0x69, 0x6e}, wantErr: false},
+		}, want: []byte(`{"Id":1,"Address":[{"Value":"SlVkUnVUaXFEMW1HY3czczU4dHdNZzNWUHBYcHpia2RSdko=",` +
+			`"Coin":"c2t5Y29pbg=="}],"Name":"Rm9v"}`), wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Contact{
-				id:      tt.fields.ID,
+				Id:      tt.fields.ID,
 				Address: tt.fields.Address,
 				Name:    tt.fields.Name,
 			}
@@ -46,7 +44,7 @@ func TestContact_MarshalBinary(t *testing.T) {
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MarshalBinary() got = %#v, want %v", got, string(tt.want))
+				t.Errorf("MarshalBinary() got = %v, want %v", string(got), string(tt.want))
 			}
 		})
 	}
@@ -67,28 +65,25 @@ func TestContact_UnmarshalBinary(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		{name: "empty", fields: fields{}, args: args{data: []byte{}}, wantErr: false},
+		{name: "empty", fields: fields{}, args: args{data: []byte{}}, wantErr: true},
 		{name: "not-empty", fields: fields{
 			ID:      1,
 			Address: []Address{{Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"), Coin: []byte("skycoin")}},
 			Name:    []byte("Foo"),
-		}, args: args{data: []byte{0x8, 0x1, 0x12, 0x3, 0x46, 0x6f, 0x6f, 0x1a, 0x2e, 0xa, 0x23, 0x4a, 0x55, 0x64, 0x52, 0x75,
-			0x54, 0x69, 0x71, 0x44, 0x31, 0x6d, 0x47, 0x63, 0x77, 0x33, 0x73, 0x35, 0x38, 0x74, 0x77, 0x4d, 0x67, 0x33,
-			0x56, 0x50, 0x70, 0x58, 0x70, 0x7a, 0x62, 0x6b, 0x64, 0x52, 0x76, 0x4a, 0x12, 0x7, 0x73, 0x6b, 0x79, 0x63,
-			0x6f, 0x69, 0x6e}}, wantErr: false},
-		{name: "EOF", fields: fields{ID: 2}, args: args{data: []byte{0x12, 0x3, 0x46, 0x6f, 0x6f, 0x1a, 0x2e, 0xa, 0x23,
-			0x4a, 0x55, 0x64, 0x52, 0x75, 0x54, 0x69, 0x71, 0x44, 0x31, 0x6d, 0x47, 0x63, 0x77, 0x33}}, wantErr: true},
+		}, args: args{data: []byte(`{"Address":[{"Value":null}]}`)}, wantErr: false},
+		{name: "EOF", fields: fields{ID: 2}, args: args{data: []byte(`{"ID":2,"Address":null,"Name":null}`)}, wantErr: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Contact{
-				id:      tt.fields.ID,
+				Id:      tt.fields.ID,
 				Address: tt.fields.Address,
 				Name:    tt.fields.Name,
 			}
 			if err := c.UnmarshalBinary(tt.args.data); (err != nil) != tt.wantErr {
 				t.Errorf("UnmarshalBinary() error = %v, wantErr %v", err, tt.wantErr)
 			}
+			t.Logf("%s", string(c.Name))
 		})
 	}
 }
@@ -139,7 +134,7 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 				id: 3},
 			wantErr: false,
 		},
-		{name: "bad-id",
+		{name: "bad-Id",
 			field: fields{
 				Name: []byte("Contact3"),
 			}, args: args{
@@ -186,7 +181,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 				id: 1,
 			},
 			want: &Contact{
-				id: 1,
+				Id: 1,
 			},
 			wantErr: false},
 		{name: "one-address",
@@ -200,7 +195,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 				id: 2,
 			},
 			want: &Contact{
-				id: 2,
+				Id: 2,
 				Address: []Address{{
 					Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
 					Coin:  []byte("skycoin"),
@@ -222,7 +217,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 			id: 3,
 		},
 			want: &Contact{
-				id: 3,
+				Id: 3,
 				Address: []Address{{
 					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
 					Coin:  []byte("skycoin"),
@@ -234,7 +229,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{name: "bad-id",
+		{name: "bad-Id",
 			fields: fields{
 				Name: []byte("Contact3"),
 			},
@@ -259,6 +254,10 @@ func Test_addressBook_GetContact(t *testing.T) {
 				t.Errorf("Error inserting contact: %s", err)
 			}
 
+			c, _ := ab.ListContact()
+			for _, v := range c {
+				t.Logf("%#v", v.GetID())
+			}
 			got, err := ab.GetContact(tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetContact() error = %v, wantErr %v", err, tt.wantErr)
@@ -384,7 +383,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 				},
 			}},
 			want: []core.Contact{&Contact{
-				id: 1,
+				Id: 1,
 				Address: []Address{{
 					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
 					Coin:  []byte("skycoin"),
@@ -476,7 +475,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 			}},
 			want: []core.Contact{
 				&Contact{
-					id: 1,
+					Id: 1,
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
 						Coin:  []byte("skycoin"),
@@ -484,7 +483,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact1"),
 				},
 				&Contact{
-					id: 2,
+					Id: 2,
 					Address: []Address{{
 						Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
 						Coin:  []byte("skycoin"),
@@ -494,7 +493,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact2"),
 				},
 				&Contact{
-					id: 3,
+					Id: 3,
 					Address: []Address{{
 						Value: []byte("2ymjULRdbiFoUNJKNhWbQ3JqdE8TXnZkyU"),
 						Coin:  []byte("BTC"),
@@ -502,7 +501,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact3"),
 				},
 				&Contact{
-					id: 4,
+					Id: 4,
 					Address: []Address{{
 						Value: []byte("oHvj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
 						Coin:  []byte("skycoin"),
@@ -512,7 +511,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact4"),
 				},
 				&Contact{
-					id: 5,
+					Id: 5,
 					Address: []Address{{
 						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
 						Coin:  []byte("skycoin"),
@@ -525,7 +524,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 					}},
 					Name: []byte("contact5"),
 				}, &Contact{
-					id: 6,
+					Id: 6,
 					Address: []Address{{
 						Value: []byte("25MP2EHddPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
 						Coin:  []byte("skycoin"),
@@ -533,7 +532,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact6"),
 				},
 				&Contact{
-					id: 7,
+					Id: 7,
 					Address: []Address{{
 						Value: []byte("9BSEAEEr3XddGtQ2X43BCT2XCYgheGLQQigEG"),
 						Coin:  []byte("skycoin"),
@@ -543,14 +542,14 @@ func Test_addressBook_ListContact(t *testing.T) {
 					Name: []byte("contact7"),
 				},
 				&Contact{
-					id: 8,
+					Id: 8,
 					Address: []Address{{
 						Value: []byte("2ymjULRdbiasdFoUNJKNhWbQ3JqdE8TXnZkyU"),
 						Coin:  []byte("BTC"),
 					}},
 					Name: []byte("contact8"),
 				}, &Contact{
-					id: 9,
+					Id: 9,
 					Address: []Address{{
 						Value: []byte("oHvrwfj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
 						Coin:  []byte("skycoin"),
@@ -559,7 +558,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 						Coin:  []byte("skycoin")}},
 					Name: []byte("contact9"),
 				}, &Contact{
-					id: 10,
+					Id: 10,
 					Address: []Address{{
 						Value: []byte("2DprrreofcsamDfanrRz34qjYvskRzKqzNKMcj"),
 						Coin:  []byte("skycoin"),
