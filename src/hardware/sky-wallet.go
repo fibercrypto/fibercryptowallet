@@ -149,9 +149,7 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		//	transactionOutput.AddressIndex = proto.Uint32(uint32(addressIndex[i]))
 		transactionOutputs = append(transactionOutputs, &transactionOutput)
 	}
-	// TODO use from library
-	walletType := "deterministic"
-	msg, err := device.TransactionSign(transactionInputs, transactionOutputs, walletType)
+	msg, err := device.TransactionSign(transactionInputs, transactionOutputs, skyWallet.WalletTypeDeterministic)
 	if err != nil {
 		logrus.WithError(err).Error("error signing transaction")
 		return nil, errors.New("unable to sign transaction")

@@ -81,8 +81,8 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectSniffHw(walletModel.sniffHw)
 }
 
-// AttachHwAsSigner add a hw as signer to the given wallet
-func AttachHwAsSigner(wlt fc.Wallet) error {
+// attachHwAsSigner add a hw as signer
+func attachHwAsSigner() error {
 	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
 	pb := func(dev skyWallet.Devicer, prvMsg wire.Message, nextMsg messages.MessageType) (wire.Message, error) {
 		msg, err := dev.ButtonAck()
@@ -145,13 +145,8 @@ func AttachHwAsSigner(wlt fc.Wallet) error {
 		return msg, nil
 	}
 	hw := hardware.NewSkyWallet(dev, cb)
-	if !hwMatchWallet(*hw, wlt) {
-		// TODO i18n
-		return errors.New("address sequence does not match for wallets")
-	}
 	am := wlcore.LoadAltcoinManager()
-	err := am.AttachSignService(hw)
-	if err != nil {
+	if err := am.AttachSignService(hw); err != nil {
 		logrus.Errorln("error registering hardware wallet as signer")
 		return err
 	}
@@ -169,7 +164,7 @@ func (walletModel *WalletModel) sniffHw() {
 			// FIXME handle this scenario with a wallet registration.
 			return
 		}
-		err = AttachHwAsSigner(wlt)
+		err = attachHwAsSigner()
 		if err != nil {
 			logrus.WithError(err).Errorln("unable to attach signer")
 			return
@@ -352,7 +347,6 @@ func (walletModel *WalletModel) updateModel(wallets []*QWallet) {
 func (walletModel *WalletModel) loadModel(wallets []*QWallet) {
 	logWalletsModel.Info("Loading wallets")
 	for _, wlt := range wallets {
-		//wallets[i].SetSky(58)
 		qml.QQmlEngine_SetObjectOwnership(wlt, qml.QQmlEngine__CppOwnership)
 	}
 	walletModel.BeginResetModel()
