@@ -29,17 +29,13 @@ ignored = [
 ]
 
 [[constraint]]
-  name = "github.com/sirupsen/logrus"
-  version = "1.4.2"
-
-[[constraint]]
-  name = "github.com/skycoin/skycoin"
   branch = "develop"
-
-[prune]
-  go-tests = true
-  unused-packages = true
+  name = "github.com/skycoin/skycoin"
 
 [[constraint]]
   branch = "develop"
   name = "github.com/fibercrypto/skywallet-go"
+
+[[constraint]]
+  name = "github.com/sirupsen/logrus"
+  version = "1.4.2"

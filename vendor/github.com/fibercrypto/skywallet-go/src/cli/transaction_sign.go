@@ -51,8 +51,8 @@ func transactionSignCmd() gcli.Command {
 				EnvVar: "DEVICE_TYPE",
 			},
 			gcli.StringFlag{
-				Name: "walletType",
-				Usage: "Wallet type. Types are \"deterministic\" or \"bip44\"",
+				Name:     "walletType",
+				Usage:    "Wallet type. Types are \"deterministic\" or \"bip44\"",
 				Required: true,
 			},
 		},

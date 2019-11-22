@@ -91,18 +91,18 @@ func MessageAddressGen(addressN, startIndex uint32, confirmAddress bool) ([][64]
 	return chunks, nil
 }
 
-// MessageAddressGen prepare MessageAddressGen request
+// MessageAddressGenBip44 prepare MessageAddressGen request
 func MessageAddressGenBip44(addressN, startIndex, coinType, account uint32, confirmAddress bool) ([][64]byte, error) {
 	skycoinAddress := &messages.SkycoinAddress{
 		ConfirmAddress: proto.Bool(confirmAddress),
 		StartIndex:     proto.Uint32(0), // TODO remove this field from here
-		AddressN:		proto.Uint32(0), // TODO remove this field from here
-		Bip44Addr:      &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
+		AddressN:       proto.Uint32(0), // TODO remove this field from here
+		Bip44Addr: &messages.Bip44AddrIndex{
+			CoinType:          proto.Uint32(firstHardenedChild + coinType), // coinType'
+			Account:           proto.Uint32(firstHardenedChild + account),  // account'
+			Change:            proto.Uint32(0),
 			AddressStartIndex: proto.Uint32(startIndex),
-			AddressN: proto.Uint32(addressN),
+			AddressN:          proto.Uint32(addressN),
 		},
 	}
 
@@ -312,14 +312,14 @@ func MessageSignMessage(addressIndex int, message string) ([][64]byte, error) {
 // MessageSignMessageBip44 prepare MessageSignMessage request
 func MessageSignMessageBip44(startIndex, addressN, coinType, account uint32, message string) ([][64]byte, error) {
 	skycoinSignMessage := &messages.SkycoinSignMessage{
-		AddressN: proto.Uint32(uint32(0)),  // TODO remove this field
+		AddressN: proto.Uint32(uint32(0)), // TODO remove this field
 		Message:  proto.String(message),
-		Bip44Addr:      &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
+		Bip44Addr: &messages.Bip44AddrIndex{
+			CoinType:          proto.Uint32(firstHardenedChild + coinType), // coinType'
+			Account:           proto.Uint32(firstHardenedChild + account),  // account'
+			Change:            proto.Uint32(0),
 			AddressStartIndex: proto.Uint32(startIndex),
-			AddressN: proto.Uint32(addressN),
+			AddressN:          proto.Uint32(addressN),
 		},
 	}
 
@@ -355,20 +355,20 @@ func MessageTransactionSign(inputs []*messages.SkycoinTransactionInput, outputs 
 func MessageTransactionSignBip44(coinType, account uint32, inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput) ([][64]byte, error) {
 	for idxInput := range inputs {
 		inputs[idxInput].Bip44Addr = &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
+			CoinType:          proto.Uint32(firstHardenedChild + coinType), // coinType'
+			Account:           proto.Uint32(firstHardenedChild + account),  // account'
+			Change:            proto.Uint32(0),
 			AddressStartIndex: proto.Uint32(*inputs[idxInput].Index),
-			AddressN: proto.Uint32(1),
+			AddressN:          proto.Uint32(1),
 		}
 	}
 	for idxOutput := range outputs {
 		outputs[idxOutput].Bip44Addr = &messages.Bip44AddrIndex{
-			CoinType: proto.Uint32(firstHardenedChild + coinType), // coinType'
-			Account: proto.Uint32(firstHardenedChild + account), // account'
-			Change: proto.Uint32(0),
+			CoinType:          proto.Uint32(firstHardenedChild + coinType), // coinType'
+			Account:           proto.Uint32(firstHardenedChild + account),  // account'
+			Change:            proto.Uint32(0),
 			AddressStartIndex: proto.Uint32(*outputs[idxOutput].AddressIndex),
-			AddressN: proto.Uint32(1),
+			AddressN:          proto.Uint32(1),
 		}
 	}
 	skycoinTransactionSignMessage := &messages.TransactionSign{

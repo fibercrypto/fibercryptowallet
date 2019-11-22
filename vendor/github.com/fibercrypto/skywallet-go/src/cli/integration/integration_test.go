@@ -15,8 +15,8 @@ import (
 
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 
-	"github.com/gogo/protobuf/proto"
 	messages "github.com/fibercrypto/skywallet-protob/go"
+	"github.com/gogo/protobuf/proto"
 	"github.com/skycoin/skycoin/src/util/logging"
 	"github.com/stretchr/testify/require"
 )
@@ -36,7 +36,6 @@ const (
 )
 
 func execCommand(args ...string) *exec.Cmd {
-	args = append(args)
 	cmd := exec.Command(binaryPath, args...)
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, "AUTO_PRESS_BUTTONS="+autopressButtons())
@@ -62,6 +61,18 @@ func mode(t *testing.T) string {
 		t.Fatalf("Invalid test mode %s, must be emulator or wallet", mode)
 	}
 	return mode
+}
+
+func walletType(t *testing.T) string {
+	walletType := os.Getenv("HW_GO_INTEGRATION_TEST_WALLET_TYPE")
+	switch walletType {
+	case "":
+		walletType = skywallet.WalletTypeDeterministic
+	case skywallet.WalletTypeDeterministic, skywallet.WalletTypeBip44:
+	default:
+		t.Fatalf("Invalid wallet type %s, must be %s or %s", walletType, skywallet.WalletTypeDeterministic, skywallet.WalletTypeBip44)
+	}
+	return walletType
 }
 
 func enabled() bool {
@@ -94,7 +105,7 @@ func TestMain(m *testing.M) {
 	// Build cli binary file.
 	args := []string{"build", "-ldflags", "-X main.AUTO_PRESS_BUTTONS=true", "-o", binaryPath, "../../../cmd/cli/cli.go"}
 	if err := exec.Command("go", args...).Run(); err != nil {
-		fmt.Fprintf(os.Stderr, fmt.Sprintf("Make %v binary failed: %v\n", binaryName, err))
+		fmt.Fprint(os.Stderr, fmt.Sprintf("Make %v binary failed: %v\n", binaryName, err))
 		os.Exit(1)
 	}
 
@@ -215,14 +226,14 @@ func TestAddressGen(t *testing.T) {
 		expectOutput string
 	}{
 		{
-			name:         "addressGen -n 2",
-			args:         []string{"addressGen", "-addressN", "2"},
+			name:         "addressGen -n 2 -wt " + walletType(t),
+			args:         []string{"addressGen", "-addressN", "2", "--walletType", walletType(t)},
 			expectOutput: "[2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw zC8GAQGQBfwk7vtTxVoRG7iMperHNuyYPs]",
 		},
 
 		{
-			name:         "addressGen -n 2 -s 2",
-			args:         []string{"addressGen", "-addressN", "2", "--startIndex", "2"},
+			name:         "addressGen -n 2 -s 2 -wt " + walletType(t),
+			args:         []string{"addressGen", "-addressN", "2", "--startIndex", "2", "--walletType", walletType(t)},
 			expectOutput: "[28L2fexvThTVz6e2dWUV4pSuCP8SAnCUVku 2NckPkQRQFa5E7HtqDkZmV1TH4HCzR2N5J6]",
 		},
 	}
@@ -699,7 +710,7 @@ func TestSignMessage(t *testing.T) {
 		return
 	}
 
-	output, err := execCommandCombinedOutput([]string{"signMessage", "--message", "Hello World"}...)
+	output, err := execCommandCombinedOutput([]string{"signMessage", "--message", "Hello World", "--walletType", walletType(t)}...)
 	if err != nil {
 		require.Equal(t, err, "exit status 1")
 	}
@@ -729,7 +740,7 @@ func TestTransactionSign(t *testing.T) {
 		{
 			name: "transactionSign sample 1",
 			args: []string{"transactionSign", "--inputHash", "181bd5656115172fe81451fae4fb56498a97744d89702e73da75ba91ed5200f9",
-				"--inputIndex", "0", "--outputAddress=K9TzLrgqz7uXn3QJHGxmzdRByAzH33J2ot", "--coin", "100000", "--hour", "2"},
+				"--inputIndex", "0", "--outputAddress=K9TzLrgqz7uXn3QJHGxmzdRByAzH33J2ot", "--coin", "100000", "--hour", "2", "--walletType", walletType(t)},
 			message: []string{"d11c62b1e0e9abf629b1f5f4699cef9fbc504b45ceedf0047ead686979498218"},
 			address: []string{"2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw"},
 		},
@@ -738,7 +749,7 @@ func TestTransactionSign(t *testing.T) {
 			name: "transactionSign sample 2",
 			args: []string{"transactionSign", "--inputHash", "01a9ef6c25271229ef9760e1536c3dc5ccf0ead7de93a64c12a01340670d87e9",
 				"--inputHash", "8c2c97bfd34e0f0f9833b789ce03c2e80ac0b94b9d0b99cee6ea76fb662e8e1c", "--inputIndex", "0", "--inputIndex", "0",
-				"--outputAddress=K9TzLrgqz7uXn3QJHGxmzdRByAzH33J2ot", "--coin", "20800000", "--hour", "255"},
+				"--outputAddress=K9TzLrgqz7uXn3QJHGxmzdRByAzH33J2ot", "--coin", "20800000", "--hour", "255", "--walletType", walletType(t)},
 			message: []string{"9bbde062d665a8b11ae15aee6d4f32f0f3d61af55160c142060795a219378a54", "f947b0352b19672f7b7d04dc2f1fdc47bc5355878f3c47a43d4d4cfbae07d026"},
 			address: []string{"2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw", "2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw"},
 		},
@@ -749,7 +760,7 @@ func TestTransactionSign(t *testing.T) {
 				"--inputHash", "33e826d62489932905dd936d3edbb74f37211d68d4657689ed4b8027edcad0fb", "--inputIndex", "0",
 				"--inputHash", "668f4c144ad2a4458eaef89a38f10e5307b4f0e8fce2ade96fb2cc2409fa6592", "--inputIndex", "0",
 				"--outputAddress=K9TzLrgqz7uXn3QJHGxmzdRByAzH33J2ot", "--coin", "111000000", "--hour", "6464556",
-				"--outputAddress=2iNNt6fm9LszSWe51693BeyNUKX34pPaLx8", "--coin", "1900000", "--hour", "1"},
+				"--outputAddress=2iNNt6fm9LszSWe51693BeyNUKX34pPaLx8", "--coin", "1900000", "--hour", "1", "--walletType", walletType(t)},
 			message: []string{"ff383c647551a3ba0387f8334b3f397e45f9fc7b3b5c3b18ab9f2b9737bce039",
 				"c918d83d8d3b1ee85c1d2af6885a0067bacc636d2ebb77655150f86e80bf4417",
 				"0e827c5d16bab0c3451850cc6deeaa332cbcb88322deea4ea939424b072e9b97"},
@@ -760,7 +771,7 @@ func TestTransactionSign(t *testing.T) {
 			name: "transactionSign sample 4",
 			args: []string{"transactionSign", "--inputHash", "b99f62c5b42aec6be97f2ca74bb1a846be9248e8e19771943c501e0b48a43d82", "--inputIndex", "0",
 				"--inputHash", "cd13f705d9c1ce4ac602e4c4347e986deab8e742eae8996b34c429874799ebb2", "--inputIndex", "0",
-				"--outputAddress=22S8njPeKUNJBijQjNCzaasXVyf22rWv7gF", "--coin", "23100000", "--hour", "0"},
+				"--outputAddress=22S8njPeKUNJBijQjNCzaasXVyf22rWv7gF", "--coin", "23100000", "--hour", "0", "--walletType", walletType(t)},
 			message: []string{"42a26380399172f2024067a17704fceda607283a0f17cb0024ab7a96fc6e4ac6",
 				"5e0a5a8c7ea4a2a500c24e3a4bfd83ef9f74f3c2ff4bdc01240b66a41e34ebbf"},
 			address: []string{"2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw", "2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw"},
@@ -769,7 +780,7 @@ func TestTransactionSign(t *testing.T) {
 		{
 			name: "transactionSign sample 5",
 			args: []string{"transactionSign", "--inputHash", "4c12fdd28bd580989892b0518f51de3add96b5efb0f54f0cd6115054c682e1f1", "--inputIndex", "0",
-				"--outputAddress=2iNNt6fm9LszSWe51693BeyNUKX34pPaLx8", "--coin", "1000000", "--hour", "0"},
+				"--outputAddress=2iNNt6fm9LszSWe51693BeyNUKX34pPaLx8", "--coin", "1000000", "--hour", "0", "--walletType", walletType(t)},
 			message: []string{"c40e110f5e460532bfb03a5a0e50262d92d8913a89c87869adb5a443463dea69"},
 			address: []string{"2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw"},
 		},
@@ -779,7 +790,7 @@ func TestTransactionSign(t *testing.T) {
 			args: []string{"transactionSign", "--inputHash", "c5467f398fc3b9d7255d417d9ca208c0a1dfa0ee573974a5fdeb654e1735fc59", "--inputIndex", "0",
 				"--outputAddress=K9TzLrgqz7uXn3QJHGxmzdRByAzH33J2ot", "--coin", "10000000", "--hour", "1",
 				"--outputAddress=VNz8LR9JTSoz5o7qPHm3QHj4EiJB6LV18L", "--coin", "5500000", "--hour", "0",
-				"--outputAddress=22S8njPeKUNJBijQjNCzaasXVyf22rWv7gF", "--coin", "4500000", "--hour", "1"},
+				"--outputAddress=22S8njPeKUNJBijQjNCzaasXVyf22rWv7gF", "--coin", "4500000", "--hour", "1", "--walletType", walletType(t)},
 			message: []string{"7edea77354eca0999b1b023014eb04638b05313d40711707dd03a9935696ccd1"},
 			address: []string{"2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw"},
 		},
@@ -787,7 +798,7 @@ func TestTransactionSign(t *testing.T) {
 		{
 			name: "transactionSign sample 7",
 			args: []string{"transactionSign", "--inputHash", "ae6fcae589898d6003362aaf39c56852f65369d55bf0f2f672bcc268c15a32da", "--inputIndex", "0",
-				"--outputAddress=3pXt9MSQJkwgPXLNePLQkjKq8tsRnFZGQA", "--coin", "1000000", "--hour", "1000"},
+				"--outputAddress=3pXt9MSQJkwgPXLNePLQkjKq8tsRnFZGQA", "--coin", "1000000", "--hour", "1000", "--walletType", walletType(t)},
 			message: []string{"47bfa37c79f7960df8e8a421250922c5165167f4c91ecca5682c1106f9010a7f"},
 			address: []string{"2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw"},
 		},
@@ -796,7 +807,7 @@ func TestTransactionSign(t *testing.T) {
 			name: "transactionSign sample 8",
 			args: []string{"transactionSign", "--inputHash", "ae6fcae589898d6003362aaf39c56852f65369d55bf0f2f672bcc268c15a32da", "--inputIndex", "0",
 				"--outputAddress=3pXt9MSQJkwgPXLNePLQkjKq8tsRnFZGQA", "--coin", "300000", "--hour", "500",
-				"--outputAddress=S6Dnv6gRTgsHCmZQxjN7cX5aRjJvDvqwp9", "--coin", "700000", "--hour", "500"},
+				"--outputAddress=S6Dnv6gRTgsHCmZQxjN7cX5aRjJvDvqwp9", "--coin", "700000", "--hour", "500", "--walletType", walletType(t)},
 			message: []string{"e0c6e4982b1b8c33c5be55ac115b69be68f209c5d9054954653e14874664b57d"},
 			address: []string{"2EU3JbveHdkxW6z5tdhbbB2kRAWvXC2pLzw"},
 		},

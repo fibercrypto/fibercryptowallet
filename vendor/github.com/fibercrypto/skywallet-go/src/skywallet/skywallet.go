@@ -59,8 +59,8 @@ const (
 
 	// WalletTypeBip44 specify use BIP 44 derivation to get
 	// for example an address
-	WalletTypeBip44 = "bip44"
-	coinTypeSkycoin = 8000
+	WalletTypeBip44    = "bip44"
+	coinTypeSkycoin    = 8000
 	firstHardenedChild = uint32(0x80000000)
 )
 

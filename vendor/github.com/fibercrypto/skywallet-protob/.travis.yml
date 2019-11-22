@@ -1,0 +1,41 @@
+matrix:
+  include:
+    - os: linux
+      python: 3.5
+      language: python
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+    - os: osx
+      language: generic
+      env:
+        - PYTHON=python3
+install:
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
+    export PATH="$PATH:$HOME/bin" ;
+    echo "PATH=$PATH";
+    fi
+  # Install OS-specific dependencies
+  - sh "./ci-scripts/install-${TRAVIS_OS_NAME}.sh"
+  # Install go
+  - eval "$(gimme 1.10)"
+  - if [ -z "$GOPATH" ] ; then
+    mkdir -p $HOME/gopath ;
+    export GOPATH="$HOME/gopath" ;
+    export PATH="$PATH:$GOPATH/bin" ;
+    fi
+script:
+  - make check-go
+  - make build-c
+  - make build-py
+  - make build-js
+  - make clean-js
+  - make clean-c
+  - make clean-py
+  - git checkout -- js/package-lock.json && git status --ignored
+  - test -z "$(git status --porcelain --ignored | grep -v '[.]DS_Store' | grep -v 'go/')"
+notifications:
+  # https://github.com/kvld/travisci-telegram TravisCI Telegram Bot integration
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+
