@@ -81,10 +81,6 @@ prepare-release: ## Change the resources in the app and prepare to release the a
 clean-test: ## Remove temporary test files
 	rm -f $(COVERAGEFILE)
 	rm -f $(COVERAGEHTML)
-	
-mocks: ## Create all mock files for unit tests
-	mockery -name Devicer -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
-	mockery -name DeviceDriver -dir ./vendor/github.com/skycoin/hardware-wallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
 
 clean-build: ## Remove temporary files
 	@echo "Cleaning project FiberCrypto Wallet..."
@@ -102,12 +98,13 @@ clean-build: ## Remove temporary files
 clean: clean-test clean-build ## Remove temporary files
 
 gen-mocks: ## Generate mocks for interface types
-
-test-hw: mocks ## Run Hardware wallet tests
-	go test github.com/fibercrypto/FiberCryptoWallet/src/hardware
-
+	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
+	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/FiberCryptoWallet/g' PATH
+
+test-hw: gen-mocks ## Run Hardware wallet tests
+	go test github.com/fibercrypto/FiberCryptoWallet/src/hardware
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
