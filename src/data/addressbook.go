@@ -210,9 +210,9 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 	return c.GetID(), tx.Commit()
 }
 
-// GetContact get a contact by id.
+// GetContact get a contact by Id.
 func (ab *DB) GetContact(id uint64) (core.Contact, error) {
-	// Start a redeable transaction.
+	// Start a readable transaction.
 	tx, err := ab.db.Begin(false)
 	if err != nil {
 		return nil, err
@@ -273,7 +273,7 @@ func (ab *DB) ListContact() ([]core.Contact, error) {
 	return contacts, nil
 }
 
-// DeleteContact delete a contact from the address book by its id.
+// DeleteContact delete a contact from the address book by its Id.
 func (ab *DB) DeleteContact(id uint64) error {
 	return ab.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
@@ -288,7 +288,7 @@ func (ab *DB) DeleteContact(id uint64) error {
 
 }
 
-// UpdateContact update a contact in the address book by its id.
+// UpdateContact update a contact in the address book by its Id.
 func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	var contacts []core.Contact
 	var err error

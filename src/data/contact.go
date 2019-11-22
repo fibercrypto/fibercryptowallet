@@ -7,7 +7,7 @@ import (
 
 // Contact is a contact of the DB
 type Contact struct {
-	id      uint64
+	Id      uint64
 	Address []Address
 	Name    []byte
 }
@@ -28,14 +28,14 @@ func (c *Contact) UnmarshalBinary(data []byte) error {
 	return json.Unmarshal(data, &c)
 }
 
-// GetID get id of current contact.
+// GetID get Id of current contact.
 func (c *Contact) GetID() uint64 {
-	return c.id
+	return c.Id
 }
 
-// SetID set an id to current contact.
+// SetID set an Id to current contact.
 func (c *Contact) SetID(id uint64) {
-	c.id = id
+	c.Id = id
 }
 
 // GetAddresses get address list of current contact.
