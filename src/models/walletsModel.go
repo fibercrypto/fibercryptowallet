@@ -3,14 +3,11 @@ package models
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
-	fc "github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
-	"github.com/gogo/protobuf/proto"
 	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	"errors"
 	"github.com/sirupsen/logrus"
 	wlcore "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	messages "github.com/fibercrypto/skywallet-protob/go"
@@ -161,23 +158,9 @@ func AttachHwAsSigner(wlt fc.Wallet) error {
 	return nil
 }
 
-func hwMatchWallet(hw hardware.SkyWallet, wlt fc.Wallet) bool {
-	firstAddr, err := hWFirstAddr()
-	if err != nil {
-		// TODO i18n
-		logrus.WithError(err).Errorln("unable to get first address from hw")
-	}
-	addrs := wlt.GenAddresses(fc.AccountAddress, 0, 1, nil)
-	if addrs.Next() {
-		addr := addrs.Value()
-		return addr.String() == firstAddr
-	}
-	return false
-}
-
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
-	addr, err := hWFirstAddr()
+	addr, err := hardware.HwFirstAddr()
 	if err == nil {
 		wlt, err := walletManager.WalletEnv.GetWallet(addr)
 		if err != nil {
@@ -214,52 +197,6 @@ func (walletModel *WalletModel) updateWallet(fn string) {
 			walletModel.DataChanged(index, index, []int{HasHardwareWallet})
 			break
 		}
-	}
-}
-
-// hWFirstAddr return the first address in the deterministic sequence if there is a configured
-// device connected, error if not device found or sme thing fail.
-func hWFirstAddr() (string, error) {
-	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
-	// FIXME: dt := "walletTypeDeterministic"
-	msg, err := dev.AddressGen(1, 0, false, "deterministic")
-	if err != nil {
-		// TODO i18n
-		return "", errors.New("error getting address from device. " + err.Error())
-	}
-	switch msg.Kind {
-	case uint16(messages.MessageType_MessageType_ResponseSkycoinAddress):
-		addr := &messages.ResponseSkycoinAddress{}
-		err = proto.Unmarshal(msg.Data, addr)
-		if err != nil {
-			// TODO i18n
-			strErr := "error decoding device response"
-			logrus.WithError(err).Error(strErr)
-			return "", errors.New(strErr)
-		}
-		if len(addr.Addresses) != 1 {
-			// TODO i18n
-			strErr := "unexpected address count in response"
-			logrus.WithField("addr_len", len(addr.Addresses)).Error(strErr)
-			return "", errors.New(strErr)
-		}
-		return addr.Addresses[0], nil
-	case uint16(messages.MessageType_MessageType_Failure):
-		msgData, err := skyWallet.DecodeFailMsg(msg)
-		if err != nil {
-			// TODO i18n
-			strErr := "error decoding device response"
-			logrus.WithError(err).Error(strErr)
-			return "", errors.New(strErr)
-		}
-		// TODO i18n
-		strErr := "device response error"
-		logrus.Error(msgData, strErr)
-		return "", errors.New(strErr)
-	default:
-		// TODO i18n
-		logrus.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
-		return "", errors.New("unexpected device response")
 	}
 }
 
