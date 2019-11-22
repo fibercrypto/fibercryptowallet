@@ -19,7 +19,7 @@ func TestSignerMethods(t *testing.T) {
 	require.Equal(t, signer1.GetSignerDescription(), string(signerID1))
 	err := AttachSignService(signer1)
 	require.NoError(t, err)
-	defer func() { _ = RemoveSignService(signerID1) }()
+	defer RemoveSignService(signerID1) // nolint gosec
 
 	signer := LookupSignService(signerID1)
 	require.NotNil(t, signer)
@@ -52,9 +52,9 @@ func TestSignersEnum(t *testing.T) {
 		require.NoError(t, err)
 		signers[i] = signer
 	}
-	defer func() { _ = RemoveSignService(signerIDs[0]) }()
-	defer func() { _ = RemoveSignService(signerIDs[1]) }()
-	defer func() { _ = RemoveSignService(signerIDs[2]) }()
+	defer RemoveSignService(signerIDs[0]) // nolint gosec
+	defer RemoveSignService(signerIDs[1]) // nolint gosec
+	defer RemoveSignService(signerIDs[2]) // nolint gosec
 
 	allSigners := EnumerateSignServices()
 	signersFound := make(map[core.UID]struct{})
@@ -92,12 +92,12 @@ func TestSignersReadyForTxn(t *testing.T) {
 		require.NoError(t, err)
 		signers[i] = signer
 	}
-	defer func() { _ = RemoveSignService(signerIDs[0]) }()
-	defer func() { _ = RemoveSignService(signerIDs[1]) }()
-	defer func() { _ = RemoveSignService(signerIDs[2]) }()
-	defer func() { _ = RemoveSignService(signerIDs[3]) }()
-	defer func() { _ = RemoveSignService(signerIDs[4]) }()
-	defer func() { _ = RemoveSignService(signerIDs[5]) }()
+	defer RemoveSignService(signerIDs[0]) // nolint gosec
+	defer RemoveSignService(signerIDs[1]) // nolint gosec
+	defer RemoveSignService(signerIDs[2]) // nolint gosec
+	defer RemoveSignService(signerIDs[3]) // nolint gosec
+	defer RemoveSignService(signerIDs[4]) // nolint gosec
+	defer RemoveSignService(signerIDs[5]) // nolint gosec
 
 	var txn core.Transaction = new(mocks.Transaction)
 	var wlt core.Wallet = new(mocks.Wallet)
