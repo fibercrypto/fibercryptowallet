@@ -139,10 +139,25 @@ func (m *ModelOutputs) addOutputs(mo []*QOutput) {
 	m.insertRows(len(m.Outputs()), len(mo))
 }
 
+func contains(outputs []*QOutput, output *QOutput) bool {
+	for _, out := range outputs {
+		x := output.OutputID()
+		y := out.OutputID()
+		if y == x {
+			return true
+		}
+	}
+	return false
+}
+
 func (m *ModelOutputs) insertOutputs(mo []*QOutput) {
-	m.BeginInsertRows(core.NewQModelIndex(), len(m.Outputs()), len(m.Outputs())+len(mo)-1)
-	m.SetOutputs(append(m.Outputs(), mo...))
-	m.EndInsertRows()
+	toInsert := m.Outputs()
+	for _, outputToInsert := range mo {
+		if !contains(toInsert, outputToInsert) {
+			toInsert = append(toInsert, outputToInsert)
+		}
+	}
+	m.loadModel(toInsert)
 }
 
 func (m *ModelOutputs) loadModel(mo []*QOutput) {
