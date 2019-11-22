@@ -852,7 +852,9 @@ func TestLoadFromFile(t *testing.T) {
 
 // Generate a temporal file and return its path.
 func GetFilePath(t *testing.T) string {
-	f, err := ioutil.TempFile("/home/hsequeda/temp", "testaddressbook-")
+	home := os.Getenv("HOME")
+
+	f, err := ioutil.TempFile(home+"/temp", "testaddressbook-")
 	if err != nil {
 		t.Error(err)
 	}
