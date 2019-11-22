@@ -4,7 +4,6 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 )
 
 // AttachSignService registers a signing strategy for use by wallets
@@ -87,7 +86,7 @@ func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescr
 
 	for signPair, indices := range groups {
 
-		signer := util.LookupSignService(signPair.signer)
+		signer := LookupSignService(signPair.signer)
 		if signer == nil {
 			logUtil.WithError(errors.ErrInvalidID).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
 			return nil, errors.ErrInvalidID
