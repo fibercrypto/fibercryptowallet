@@ -58,12 +58,11 @@ func TestSignersEnum(t *testing.T) {
 
 	allSigners := EnumerateSignServices()
 	signersFound := make(map[core.UID]struct{})
-	for allSigners.HasNext() {
+	for allSigners.Next() {
 		signerID := allSigners.Value().GetSignerUID()
 		_, wasFound := signersFound[signerID]
 		require.False(t, wasFound)
 		signersFound[signerID] = struct{}{}
-		allSigners.Next()
 	}
 	_, wasFound := signersFound[signerIDs[0]]
 	require.True(t, wasFound)
@@ -110,12 +109,11 @@ func TestSignersReadyForTxn(t *testing.T) {
 
 	supportedSigners := SignServicesForTxn(wlt, txn)
 	signersFound := make(map[core.UID]struct{})
-	for supportedSigners.HasNext() {
+	for supportedSigners.Next() {
 		signerID := supportedSigners.Value().GetSignerUID()
 		_, wasFound := signersFound[signerID]
 		require.False(t, wasFound)
 		signersFound[signerID] = struct{}{}
-		supportedSigners.Next()
 	}
 	_, wasFound := signersFound[signerIDs[0]]
 	require.True(t, wasFound)

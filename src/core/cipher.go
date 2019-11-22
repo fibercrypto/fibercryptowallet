@@ -33,6 +33,8 @@ type TxnSigner interface {
 }
 
 // TxnSignerIterator enumerates a set if TxSigner strategies
+// at the begin the iterator is in an invalid state, so to get the first
+// value (using the Value function) a first call to Next is required
 type TxnSignerIterator interface {
 	// Value of signer at iterator pointer position
 	Value() TxnSigner
