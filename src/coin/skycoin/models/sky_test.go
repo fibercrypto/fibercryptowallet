@@ -12,11 +12,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/skycoin/skycoin/src/cipher/bip39"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/skycoin/skycoin/src/cipher"
 	skytestsuite "github.com/skycoin/skycoin/src/cipher/testsuite"
 	"github.com/skycoin/skycoin/src/coin"
@@ -76,27 +72,6 @@ type KeyData struct {
 
 // generateTestKeyPair provides deterministic sequence of test keys
 // that can be recovered later inside a wallet
-
-func generateRandomKeyData(t *testing.T) (*KeyData, error) {
-	entropy, err := bip39.NewEntropy(128)
-	require.NoError(t, err)
-	mnemonic, err := bip39.NewMnemonic(entropy)
-	require.NoError(t, err)
-	require.NoError(t, err)
-	pubKey, secKey, err := cipher.GenerateDeterministicKeyPair([]byte(mnemonic))
-	require.NoError(t, err)
-
-	kd := &KeyData{
-		AddressIndex: 0,
-		Entropy:      entropy,
-		Mnemonic:     mnemonic,
-		PubKey:       pubKey,
-		SecKey:       secKey,
-	}
-
-	return kd, nil
-}
-
 func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	var err error
 	if seedEntropy == nil {
@@ -135,19 +110,6 @@ func generateTestKeyPair(t *testing.T) (*KeyData, error) {
 	return &keytestData, nil
 }
 
-func makeUxBodyWithRandomSecret(t *testing.T) (coin.UxBody, *KeyData, error) {
-	keydata, err := generateRandomKeyData(t)
-	if err != nil {
-		return coin.UxBody{}, nil, err
-	}
-	return coin.UxBody{
-		SrcTransaction: testutil.RandSHA256(t),
-		Address:        cipher.AddressFromPubKey(keydata.PubKey),
-		Coins:          1e6,
-		Hours:          100,
-	}, keydata, nil
-}
-
 func makeUxBodyWithSecret(t *testing.T) (coin.UxBody, *KeyData, error) {
 	keydata, err := generateTestKeyPair(t)
 	if err != nil {
@@ -159,20 +121,6 @@ func makeUxBodyWithSecret(t *testing.T) (coin.UxBody, *KeyData, error) {
 		Coins:          1e6,
 		Hours:          100,
 	}, keydata, nil
-}
-
-func makeUxWithRandomSecret(t *testing.T) (coin.UxOut, *KeyData, error) {
-	body, kd, err := makeUxBodyWithRandomSecret(t)
-	if err != nil {
-		return coin.UxOut{}, nil, err
-	}
-	return coin.UxOut{
-		Head: coin.UxHead{
-			Time:  100,
-			BkSeq: 2,
-		},
-		Body: body,
-	}, kd, nil
 }
 
 func makeUxOutWithSecret(t *testing.T) (coin.UxOut, *KeyData, error) {
@@ -195,22 +143,6 @@ func makeTransaction(t *testing.T) (coin.Transaction, error) {
 		return coin.Transaction{}, err
 	}
 	return makeTransactionFromUxOut(t, ux, kd.SecKey), nil
-}
-
-func makeTransactionFromMultipleWallets(t *testing.T, n int) (coin.Transaction, []KeyData, []coin.UxOut, error) {
-	uxs := make([]coin.UxOut, n)
-	keysdata := make([]KeyData, n)
-	secs := make([]cipher.SecKey, n)
-
-	for i := 0; i < n; i++ {
-		ux, kd, err := makeUxWithRandomSecret(t)
-		require.NoError(t, err)
-		uxs[i] = ux
-		secs[i] = kd.SecKey
-		keysdata[i] = *kd
-	}
-
-	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, uxs, nil
 }
 
 func makeTransactionMultipleInputs(t *testing.T, n int) (coin.Transaction, []KeyData, []coin.UxOut, error) {
@@ -254,24 +186,10 @@ func makeSpentOutput(uxout coin.UxOut, spentBkSeq uint64, spentTxId cipher.SHA25
 	return
 }
 
-func makeSimpleWalletAddress(wallet core.Wallet, address core.Address) core.WalletAddress {
-	return &util.SimpleWalletAddress{
-		Wallet: wallet,
-		UxOut:  address,
-	}
-}
-
 func randBytes(t *testing.T, n int) []byte {
 	b := make([]byte, n)
 	x, err := rand.Read(b)
 	require.Equal(t, n, x)
 	require.Nil(t, err)
 	return b
-}
-
-func makeSimpleWalletOutput(wallet core.Wallet, out core.TransactionOutput) core.WalletOutput {
-	return &util.SimpleWalletOutput{
-		Wallet: wallet,
-		UxOut:  out,
-	}
 }
