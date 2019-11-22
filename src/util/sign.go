@@ -25,12 +25,15 @@ func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescr
 		groups[key] = append(inputs, descriptor.InputIndex)
 	}
 	signedTxn = txn
+
 	for signPair, indices := range groups {
+
 		signedTxn, err = signPair.wallet.Sign(signedTxn, signPair.signer, pwd, indices)
 		if err != nil {
 			logUtil.WithError(err).Errorf("Error signing inputs %v of wallet %v with signer %s", indices, signPair.wallet, string(signPair.signer))
 			return nil, err
 		}
+
 	}
 	return signedTxn, nil
 }

@@ -35,29 +35,34 @@ Page {
 
                 var isEncrypted
                 var walletSelected
+                var walletSelecteds
                 if (advancedMode){
-                    var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
-                    var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
-                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()[0]
+                    var outs = stackView.currentItem.advancedPage.getSelectedOutputsWithWallets()
+                    var addrs = stackView.currentItem.advancedPage.getSelectedAddressesWithWallets()
+                    //walletSelecteds = stackView.currentItem.advancedPage.getSelectedWallet()
                     var destinationSummary = stackView.currentItem.advancedPage.getDestinationsSummary()
                     var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
-                    if (outs.length > 0){
+                    if (outs[0].length > 0){
                         console.log(outs)
-                        txn = walletManager.sendFromOutputs(walletSelected, outs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                        txn = walletManager.sendFromOutputs(outs[1], outs[0], destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } else {
-                        if (addrs.length == 0){
-                            addrs = stackView.currentItem.advancedPage.getAllAddresses()
-                            
+                        if (addrs[0].length == 0){
+                            addrs = stackView.currentItem.advancedPage.getAllAddressesWithWallets()                            
                         }
-                        txn = walletManager.sendFromAddresses(walletSelected, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                        txn = walletManager.sendFromAddresses(addrs[1], addrs[0], destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } 
                     
                     isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()[0]
                 } else{
                     walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
+                    var addrs = []
+                    addrs.push([])
+                    addrs.push([])
+                    addrs[0].push(stackView.currentItem.simplePage.getDestinationAddress())
+                    addrs[1].push(walletSelected)
                     txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
                 console.log("HT "+txn.hoursTraspassed)
@@ -70,7 +75,7 @@ Page {
                 dialogSendTransaction.previewtransactionID = txn.transactionId
                 dialogSendTransaction.inputs = txn.inputs
                 dialogSendTransaction.outputs = txn.outputs
-                dialogSendTransaction.wallet = walletSelected
+                dialogSendTransaction.walletsAddresses = addrs
                 dialogSendTransaction.open()
                 
                 
@@ -168,7 +173,7 @@ Page {
     DialogSendTransaction {
         id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
-        property string wallet
+        property var walletsAddresses
         readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
@@ -177,7 +182,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(wallet,"", dialogSendTransaction.passwordText, [], txn)
+			var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", dialogSendTransaction.passwordText, [], txn)
 			var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -29,29 +31,32 @@ type WalletManager struct {
 	addresseseByWallets map[string][]*QAddress
 	outputsByAddress    map[string][]*QOutput
 	altManager          core.AltcoinManager
-	_                   func()                                                                                                                                 `slot:"updateWalletEnvs"`
-	_                   func(wltId, address string)                                                                                                            `slot:"updateOutputs"`
-	_                   func(string)                                                                                                                           `slot:"updateAddresses"`
-	_                   func()                                                                                                                                 `slot:"updateWallets"`
-	_                   func()                                                                                                                                 `constructor:"init"`
-	_                   func(seed string, label string, password string, scanN int) *QWallet                                                                   `slot:"createEncryptedWallet"`
-	_                   func(seed string, label string, scanN int) *QWallet                                                                                    `slot:"createUnencryptedWallet"`
-	_                   func(entropy int) string                                                                                                               `slot:"getNewSeed"`
-	_                   func(seed string) int                                                                                                                  `slot:"verifySeed"`
-	_                   func(id string, n int, password string)                                                                                                `slot:"newWalletAddress"`
-	_                   func(id string, password string) int                                                                                                   `slot:"encryptWallet"`
-	_                   func(id string, password string) int                                                                                                   `slot:"decryptWallet"`
-	_                   func() []*QWallet                                                                                                                      `slot:"getWallets"`
-	_                   func(id string) []*QAddress                                                                                                            `slot:"getAddresses"`
-	_                   func(id string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                                         `slot:"signTxn"`
-	_                   func(wltId string, destinationAddress string, amount string) *QTransaction                                                             `slot:"sendTo"`
-	_                   func(id, label string) *QWallet                                                                                                        `slot:"editWallet"`
-	_                   func(wltId, address string) []*QOutput                                                                                                 `slot:"getOutputs"`
-	_                   func(txn *QTransaction) bool                                                                                                           `slot:"broadcastTxn"`
-	_                   func(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
-	_                   func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
-	_                   func() []*QAddress                                                                                                                     `slot:"getAllAddresses"`
-	_                   func(wltId string) []*QOutput                                                                                                          `slot:"getOutputsFromWallet"`
+	signer              core.BlockchainSignService
+	transactionAPI      core.BlockchainTransactionAPI
+
+	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
+	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
+	_ func(string)                                                                                                                     `slot:"updateAddresses"`
+	_ func()                                                                                                                           `slot:"updateWallets"`
+	_ func()                                                                                                                           `constructor:"init"`
+	_ func(seed string, label string, password string, scanN int) *QWallet                                                             `slot:"createEncryptedWallet"`
+	_ func(seed string, label string, scanN int) *QWallet                                                                              `slot:"createUnencryptedWallet"`
+	_ func(entropy int) string                                                                                                         `slot:"getNewSeed"`
+	_ func(seed string) int                                                                                                            `slot:"verifySeed"`
+	_ func(id string, n int, password string)                                                                                          `slot:"newWalletAddress"`
+	_ func(id string, password string) int                                                                                             `slot:"encryptWallet"`
+	_ func(id string, password string) int                                                                                             `slot:"decryptWallet"`
+	_ func() []*QWallet                                                                                                                `slot:"getWallets"`
+	_ func(id string) []*QAddress                                                                                                      `slot:"getAddresses"`
+	_ func(wltIds, addresses []string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                  `slot:"signTxn"`
+	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                       `slot:"sendTo"`
+	_ func(id, label string) *QWallet                                                                                                  `slot:"editWallet"`
+	_ func(wltId, address string) []*QOutput                                                                                           `slot:"getOutputs"`
+	_ func(txn *QTransaction) bool                                                                                                     `slot:"broadcastTxn"`
+	_ func(wltIds, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromAddresses"`
+	_ func(wltIds, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
+	_ func() []*QAddress                                                                                                               `slot:"getAllAddresses"`
+	_ func(wltId string) []*QOutput                                                                                                    `slot:"getOutputsFromWallet"`
 }
 
 func (walletM *WalletManager) init() {
@@ -83,10 +88,11 @@ func (walletM *WalletManager) init() {
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 		walletM.altManager = core.LoadAltcoinManager()
-
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
 		walletM.updateWalletEnvs()
+		walletM.updateSigner()
+		walletM.updateTransactionAPI()
 	})
 
 	walletM = walletManager
@@ -105,6 +111,36 @@ func GetWalletEnv() core.WalletEnv {
 
 func GetWalletManager() *WalletManager {
 	return walletManager
+}
+
+func (walletM *WalletManager) updateSigner() {
+	logWalletManager.Info("Updating Signers")
+	signers := make([]core.BlockchainSignService, 0)
+
+	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
+		sing, err := plug.LoadSignService()
+		if err != nil {
+			logWalletManager.WithError(err).Errorf("Error loading signer from %s plugin", plug.GetName())
+		}
+		signers = append(signers, sing)
+	}
+
+	walletM.signer = signers[0]
+}
+
+func (walletM *WalletManager) updateTransactionAPI() {
+	logWalletManager.Info("Updating TransactionAPI")
+	txnAPIS := make([]core.BlockchainTransactionAPI, 0)
+
+	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
+		txnAPI, err := plug.LoadTransactionAPI("MainNet")
+		if err != nil {
+			logWalletManager.WithError(err).Errorf("Error loading transaction API from %s plugin", plug.GetName())
+		}
+		txnAPIS = append(txnAPIS, txnAPI)
+	}
+
+	walletM.transactionAPI = txnAPIS[0]
 }
 func (walletM *WalletManager) updateWalletEnvs() {
 	logWalletManager.Info("Updating WalletEnvs")
@@ -289,17 +325,27 @@ func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	return true
 }
 
-func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
+func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
 	logWalletManager.Info("Creating transaction")
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
-	if wlt == nil {
-		logWalletManager.Warn("Couldn't load wallet to create transaction")
-		return nil
+	wltCache := make(map[string]core.Wallet, 0)
+	wlts := make([]core.Wallet, 0)
+	for _, wltId := range wltIds {
+		var wlt core.Wallet
+		wlt, exist := wltCache[wltId]
+		if !exist {
+			wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+			if wlt == nil {
+				logWalletManager.Warn("Couldn't load wallet to create transaction")
+				return nil
+			}
+			wltCache[wltId] = wlt
+		}
+		wlts = append(wlts, wlt)
 	}
+
 	outputsFrom := make([]core.TransactionOutput, 0)
 	for _, outAddr := range from {
-		addr := util.NewGenericAddress(outAddr)
-		out := util.NewGenericOutput(&addr)
+		out := util.NewGenericOutput(nil, outAddr)
 		outputsFrom = append(outputsFrom, &out)
 	}
 	outputsTo := make([]core.TransactionOutput, 0)
@@ -309,7 +355,7 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 			ch = coinHoursTo[i]
 		}
 		addr := util.NewGenericAddress(addrTo[i])
-		out := util.NewGenericOutput(&addr)
+		out := util.NewGenericOutput(&addr, "")
 		// FIXME: Remove explicit reference to Skycoin
 		err := out.PushCoins(sky.Sky, skyTo[i])
 		if err != nil {
@@ -332,8 +378,23 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 	} else {
 		opt.SetValue("CoinHoursSelectionType", "manual")
 	}
+	var txn core.Transaction
+	var err error
+	if len(wltCache) > 1 {
+		fmt.Println("MULTI TXN")
+		walletsOutputs := make([]core.WalletOutput, 0)
+		for i, wlt := range wlts {
+			walletsOutputs = append(walletsOutputs, &util.SimpleWalletOutput{
+				Wallet: wlt,
+				UxOut:  outputsFrom[i],
+			})
+		}
+		txn, err = walletM.transactionAPI.Spend(walletsOutputs, outputsTo, &changeAddr, opt)
+	} else {
+		fmt.Println("SIMPLE TXN")
+		txn, err = wlts[0].Spend(outputsFrom, outputsTo, &changeAddr, opt)
+	}
 
-	txn, err := wlt.Spend(outputsFrom, outputsTo, &changeAddr, opt)
 	if err != nil {
 		logWalletManager.WithError(err).Info("Error creating transaction")
 		return nil
@@ -346,12 +407,25 @@ func (walletM *WalletManager) sendFromOutputs(wltId string, from, addrTo, skyTo,
 	}
 	return qTransaction
 }
-func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
-	if wlt == nil {
-		logWalletManager.Warn("Couldn't load wallet to create transaction")
-		return nil
+func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
+	fmt.Printf("WLTS %v\n", wltIds)
+	wltCache := make(map[string]core.Wallet, 0)
+	wlts := make([]core.Wallet, 0)
+	for _, wltId := range wltIds {
+		var wlt core.Wallet
+		wlt, exist := wltCache[wltId]
+		if !exist {
+			wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+			if wlt == nil {
+				logWalletManager.Warn("Couldn't load wallet to create transaction")
+				return nil
+			}
+			wltCache[wltId] = wlt
+		}
+		wlts = append(wlts, wlt)
 	}
+	spew.Dump(wltCache)
+	fmt.Println(wlts)
 	addrsFrom := make([]core.Address, 0)
 	for _, addr := range from {
 
@@ -364,17 +438,17 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 			ch = coinHoursTo[i]
 		}
 		addr := util.NewGenericAddress(addrTo[i])
-		out := util.NewGenericOutput(&addr)
+		out := util.NewGenericOutput(&addr, "")
 		// FIXME: Remove explicit reference to Skycoin
 		err := out.PushCoins(sky.Sky, skyTo[i])
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			logWalletManager.WithError(err).Warnf("Error parsing value for %s", sky.Sky)
 			return nil
 		}
 		// FIXME: Remove explicit reference to Skycoin
 		err = out.PushCoins(sky.CoinHour, ch)
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Error parsing value for %s", sky.Sky)
+			logWalletManager.WithError(err).Warnf("Error parsing value for %s", sky.Sky)
 			return nil
 		}
 		outputsTo = append(outputsTo, &out)
@@ -388,8 +462,23 @@ func (walletM *WalletManager) sendFromAddresses(wltId string, from, addrTo, skyT
 	} else {
 		opt.SetValue("CoinHoursSelectionType", "manual")
 	}
+	var txn core.Transaction
+	var err error
+	if len(wltCache) > 1 {
+		walletsAddresses := make([]core.WalletAddress, 0)
+		for i, wlt := range wlts {
+			walletsAddresses = append(walletsAddresses, &util.SimpleWalletAddress{
+				Wallet: wlt,
+				UxOut:  addrsFrom[i],
+			})
+		}
+		fmt.Println("MULTIPLE TRANSACTION")
+		txn, err = walletM.transactionAPI.SendFromAddress(walletsAddresses, outputsTo, changeAddr, opt)
+	} else {
+		fmt.Println("SINGLE TRANSACTION")
+		txn, err = wlts[0].SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
+	}
 
-	txn, err := wlt.SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	if err != nil {
 		logWalletManager.WithError(err).Info("Error creating transaction")
 		return nil
@@ -439,7 +528,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 		logWalletManager.Warn("Couldn't load wallet to create transaction")
 		return nil
 	}
-	txOut := util.NewGenericOutput(&addr)
+	txOut := util.NewGenericOutput(&addr, "")
 	// FIXME: Remove explicit reference to Skycoin
 	err := txOut.PushCoins(sky.Sky, amount)
 	if err != nil {
@@ -461,17 +550,54 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(id, source, password string, index []int, qTxn *QTransaction) *QTransaction {
+func (walletM *WalletManager) signTxn(wltIds, address []string, source, password string, index []int, qTxn *QTransaction) *QTransaction {
 	logWalletManager.Info("Signig transaction")
-	// Get wallet
-	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-	if wlt == nil {
-		logWalletManager.Warn("Couldn't load wallet to Sign transaction")
+
+	if len(wltIds) != len(address) {
+		logWalletManager.Error("Wallets and addresses provided are incorrect")
 		return nil
 	}
-	txn, err := wlt.Sign(qTxn.txn, core.UID(source), func(message string) (string, error) {
+
+	wltCache := make(map[string]core.Wallet)
+	wltByAddr := make(map[string]core.Wallet)
+	wlts := make([]core.Wallet, 0)
+
+	pwd := func(message string) (string, error) {
 		return password, nil
-	}, nil) // TODO Get index for sign specific txn indexes
+	}
+
+	for i, wltId := range wltIds {
+		var wlt core.Wallet
+		wlt, exist := wltCache[wltId]
+		if !exist {
+			wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+			if wlt == nil {
+				logWalletManager.Warn("Couldn't load wallet to Sign transaction")
+				return nil
+			}
+			wltCache[wltId] = wlt
+		}
+		wltByAddr[address[i]] = wlt
+		wlts = append(wlts, wlt)
+	}
+
+	var txn core.Transaction
+	var err error
+	if len(wltCache) > 1 {
+		signDescriptors := make([]core.InputSignDescriptor, 0)
+		for _, in := range qTxn.txn.GetInputs() {
+			sd := core.InputSignDescriptor{
+				InputIndex: in.GetId(),
+				SignerID:   core.UID(source),
+				Wallet:     wltByAddr[in.GetSpentOutput().GetAddress().String()],
+			}
+			signDescriptors = append(signDescriptors, sd)
+		}
+		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
+	} else {
+		txn, err = wlts[0].Sign(qTxn.txn, core.UID(source), pwd, nil)
+	}
+
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error signing txn")
 		return nil

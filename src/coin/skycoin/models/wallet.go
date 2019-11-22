@@ -20,6 +20,7 @@ import (
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
+	"github.com/skycoin/skycoin/src/visor"
 	"github.com/skycoin/skycoin/src/wallet"
 )
 
@@ -473,7 +474,7 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 	if uxOut != nil {
 		uxOuts := make([]string, 0)
 		for _, out := range uxOut {
-			uxOuts = append(uxOuts, out.GetAddress().String())
+			uxOuts = append(uxOuts, out.GetId())
 		}
 		req.UxOuts = uxOuts
 	}
@@ -1074,19 +1075,21 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	var err error
 	var uxouts []coin.UxOut
 	var txnFee uint64
-
+	var resultTxn core.Transaction
 	walletDir := filepath.Join(wlt.WalletDir, wlt.Id)
 	skyWlt, err := wallet.Load(walletDir)
+	var originalInputs []api.CreatedTransactionInput
+
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
-	if rTxn, isReadableTxn := txn.(skytypes.ReadableTxn); isReadableTxn {
+	rTxn, isReadableTxn := txn.(skytypes.ReadableTxn)
+	if isReadableTxn {
 		// Readable tranasctions should not need extra API calls
+
 		cTxn, err := rTxn.ToCreatedTransaction()
-		if err != nil {
-			return nil, err
-		}
+		originalInputs = cTxn.In
 
 		if skyWlt.IsEncrypted() {
 			pass, err := pwd("Type your password")
@@ -1117,7 +1120,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 			logWallet.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
 			return nil, err
 		}
-		txnFee = uint64(tmpInt64)
+		//txnFee = uint64(tmpInt64)
 		for i, cIn := range cTxn.In {
 			tmpInt64, err = util.GetCoinValue(cIn.Coins, params.SkycoinTicker)
 			if err != nil {
@@ -1152,6 +1155,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 	} else {
 		// Raw transaction
+
 		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 		if !ok {
 			logWallet.WithError(err).Warn("Couldn't load transaction un injected")
@@ -1186,9 +1190,11 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		uxouts = make([]coin.UxOut, 0)
 		for _, in := range unTxn.txn.In {
 			ux, err := clt.UxOut(in.String())
+
 			if err != nil {
 				return nil, err
 			}
+
 			addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
 			if err != nil {
 				return nil, err
@@ -1216,17 +1222,38 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	if len(skyTxn.Sigs) == 0 {
 		skyTxn.Sigs = make([]cipher.Sig, len(skyTxn.In))
 	}
+
 	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
+
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't sign transaction using local wallet")
 		return nil, err
 	}
-	// FIXME: Return readable SkycoinCreatedTransaction since UX data is available
-	resultTxn, err := NewUninjectedTransaction(signedTxn, txnFee)
-	if err != nil {
-		logWallet.WithError(err).Warn("Couldn't create an un injected transaction")
-		return nil, err
+
+	if isReadableTxn {
+		vins := make([]visor.TransactionInput, 0)
+		for _, ux := range uxouts {
+			vin, err := visor.NewTransactionInput(ux, 0)
+			if err != nil {
+				logWallet.WithError(err).Warn("Couldn't create a transaction input")
+				return nil, err
+			}
+			vins = append(vins, vin)
+		}
+
+		crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
+		crtTxn.In = originalInputs
+
+		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
+			return nil, err
+		}
+
+		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
+	} else {
+		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
 	}
+
 	return resultTxn, nil
 
 }
@@ -1278,17 +1305,22 @@ func skyAPICreateTxn(txnReq *api.CreateTransactionRequest) (core.Transaction, er
 	return fromTxnResponse(txnR), nil
 }
 
-func (wlt *LocalWallet) Transfer(to core.Address, amount uint64, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
 	logWallet.Info("Sending form local wallet")
 	quotient, err := util.AltcoinQuotient(Sky)
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't get skycoin quotient")
 		return nil, err
 	}
+	amount, err := to.GetCoins(params.SkycoinTicker)
+	if err != nil {
+		logWallet.WithError(err).Warnf("Couldn't get ticker %s from TransactionOutput", params.SkycoinTicker)
+		return nil, err
+	}
 	strAmount := util.FormatCoins(amount, quotient)
 
 	var txnOutput SkycoinTransactionOutput
-	txnOutput.skyOut.Address = to.String()
+	txnOutput.skyOut.Address = to.GetAddress().String()
 	txnOutput.skyOut.Coins = strAmount
 	addresses := make([]core.Address, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()
