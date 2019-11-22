@@ -1,15 +1,19 @@
 package hardware
 
 import (
+	"errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/hardware/mocks"
-	"github.com/micro/protobuf/proto"
+	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
-	"github.com/fibercrypto/skywallet-protob/go"
-	"github.com/stretchrcom/testify/require"
+	"github.com/gogo/protobuf/proto"
+	"github.com/stretchr/testify/require"
 	"testing"
-	"errors"
+	messages "github.com/fibercrypto/skywallet-protob/go"
 )
+
+var callback func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
+
 
 func TestGetSignerUIDShouldBeOk(t *testing.T) {
 	// Giving
@@ -25,7 +29,7 @@ func TestGetSignerUIDShouldBeOk(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devId := sw.GetSignerUID()
@@ -49,7 +53,7 @@ func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
 	// Giving
 	dev := mocks.Devicer{}
 	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devId := sw.GetSignerUID()
@@ -69,7 +73,7 @@ func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devId := sw.GetSignerUID()
@@ -85,7 +89,7 @@ func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devId := sw.GetSignerUID()
@@ -108,7 +112,7 @@ func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devDescription := sw.GetSignerDescription()
@@ -132,7 +136,7 @@ func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 	// Giving
 	dev := mocks.Devicer{}
 	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devId := sw.GetSignerDescription()
@@ -152,7 +156,7 @@ func TestGetSignerDescriptionShouldFailForFailResponse(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devId := sw.GetSignerDescription()
@@ -168,7 +172,7 @@ func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev)
+	sw := NewSkyWallet(&dev, callback)
 
 	// When
 	devId := sw.GetSignerDescription()
