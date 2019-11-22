@@ -19,7 +19,7 @@ func TestSignerMethods(t *testing.T) {
 	require.Equal(t, signer1.GetSignerDescription(), string(signerID1))
 	err := AttachSignService(signer1)
 	require.NoError(t, err)
-	defer func() { _ := RemoveSignService(signerID1) }()
+	defer func() { _ = RemoveSignService(signerID1) }()
 
 	signer := LookupSignService(signerID1)
 	require.NotNil(t, signer)
