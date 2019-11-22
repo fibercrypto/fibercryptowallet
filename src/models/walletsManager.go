@@ -14,6 +14,7 @@ import (
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
@@ -87,7 +88,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
-		walletM.altManager = core.LoadAltcoinManager()
+		walletM.altManager = local.LoadAltcoinManager()
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
 		walletM.updateWalletEnvs()
@@ -309,7 +310,7 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 }
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	logWalletManager.Info("Broadcasting transaction")
-	altManager := core.LoadAltcoinManager()
+	altManager := local.LoadAltcoinManager()
 	plug, _ := altManager.LookupAltcoinPlugin(params.SkycoinTicker)
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
