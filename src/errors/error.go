@@ -53,4 +53,6 @@ var (
 	ErrInvalidWalletEntropy = errors.New("Entropy must be 128 or 256")
 	// ErrInvalidValue invalid value was supplied in to function
 	ErrInvalidValue = errors.New("Value errors")
+	// ErrWalletCantSign wallet can not sign transactions
+	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
 )

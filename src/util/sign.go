@@ -86,7 +86,17 @@ func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescr
 
 	for signPair, indices := range groups {
 
-		signer := LookupSignService(signPair.signer)
+		var signer core.TxnSigner
+		if signPair.signer == "" {
+			wltSigner, isTxnSigner := signPair.wallet.(core.TxnSigner)
+			if !isTxnSigner {
+				logUtil.WithError(errors.ErrInvalidID).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
+				return nil, errors.ErrWalletCantSign
+			}
+			signer = wltSigner
+		} else {
+			signer = LookupSignService(signPair.signer)
+		}
 		if signer == nil {
 			logUtil.WithError(errors.ErrInvalidID).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
 			return nil, errors.ErrInvalidID

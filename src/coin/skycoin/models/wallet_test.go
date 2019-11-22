@@ -834,7 +834,7 @@ func TestTransactionSignInput(t *testing.T) {
 	wallets := makeLocalWalletsFromKeyData(t, keysData)
 
 	// Input is already signed
-	_, err = wallets[0].Sign(uiTxn, nil, util.EmptyPassword, []string{"0"})
+	_, err = wallets[0].Sign(uiTxn, nil, util.EmptyPassword, []string{"#0"})
 	testutil.RequireError(t, err, "Transaction is fully signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
@@ -845,7 +845,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, nil, nil, []string{"1"})
+	signedCoreTxn, err = wallets[1].Sign(uiTxn, nil, nil, []string{"#1"})
 	require.NoError(t, err)
 	signedTxn, isUninjected := signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
@@ -856,14 +856,14 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
-	_, err = wallets[1].Sign(signedTxn, nil, nil, []string{"1"})
+	_, err = wallets[1].Sign(signedTxn, nil, nil, []string{"#1"})
 	testutil.RequireError(t, err, "Transaction is fully signed")
 	// Repeat using UXID
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
 	uxId := txn.In[1].Hex()
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, SignerIDLocalWallet, nil, []string{uxId})
+	signedCoreTxn, err = wallets[1].Sign(uiTxn, nil, nil, []string{uxId})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
@@ -874,7 +874,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
-	_, err = wallets[1].Sign(signedTxn, SignerIDLocalWallet, nil, []string{"#1"})
+	_, err = wallets[1].Sign(signedTxn, nil, nil, []string{"#1"})
 	testutil.RequireError(t, err, "Transaction is fully signed")
 
 	// Transaction has no sigs; sigs array is initialized
@@ -882,7 +882,7 @@ func TestTransactionSignInput(t *testing.T) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[2].Sign(uiTxn, nil, nil, []string{"2"})
+	signedCoreTxn, err = wallets[2].Sign(uiTxn, nil, nil, []string{"#2"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
@@ -896,14 +896,14 @@ func TestTransactionSignInput(t *testing.T) {
 	require.False(t, signedTxn.txn.Sigs[2].Null())
 
 	// Signing the rest of the inputs individually works
-	signedCoreTxn, err = wallets[1].Sign(signedTxn, nil, nil, []string{"1"})
+	signedCoreTxn, err = wallets[1].Sign(signedTxn, nil, nil, []string{"#1"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[0].Sign(signedTxn, nil, nil, []string{"0"})
+	signedCoreTxn, err = wallets[0].Sign(signedTxn, nil, nil, []string{"#0"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
@@ -957,7 +957,7 @@ func TestTransactionSignInputs(t *testing.T) {
 
 	// Valid signing
 	h := txn.HashInner()
-	signedCoreTxn, err := wallet.Sign(uiTxn, nil, util.EmptyPassword, []string{"0", "1"})
+	signedCoreTxn, err := wallet.Sign(uiTxn, nil, util.EmptyPassword, []string{"#0", "#1"})
 	require.NoError(t, err)
 	signedTxn, isUninjected := signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
@@ -1491,7 +1491,7 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 	for i, wlt := range wallets {
 		descriptor := core.InputSignDescriptor{
 			InputIndex: fmt.Sprintf("#%d", i),
-			SignerID:   SignerIDLocalWallet,
+			SignerID:   "", // Use wallet
 			Wallet:     wlt,
 		}
 		isds = append(isds, descriptor)
