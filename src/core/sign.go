@@ -13,5 +13,5 @@ type InputSignDescriptor struct {
 // BlockchainSignService implement multi-wallet transaction signing for the blockchain
 type BlockchainSignService interface {
 	// Sign creates a new transaction by (fully or partially) signing a given transaction
-	Sign(txn Transaction, signSpec []InputSignDescriptor, pwd PasswordReader) (Transaction, error)
+	Sign(txn Transaction, signSpec []InputSignDescriptor, pwds []PasswordReader) (Transaction, error)
 }
