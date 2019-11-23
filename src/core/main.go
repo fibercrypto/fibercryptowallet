@@ -1,9 +1,5 @@
 package core
 
-import "github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
-
-var logPlugin = logging.MustGetLogger("Altcoin Plugin")
-
 // UID is a type that holds unique ID values, including UUIDs.
 // Because we don't ONLY use UUIDs, this is an alias to string.
 // Being a type captures intent and helps make sure that UIDs and names do not get conflated.
@@ -60,62 +56,14 @@ type AltcoinManager interface {
 	LookupAltcoinPlugin(ticker string) (AltcoinPlugin, bool)
 	// DescribeAltcoin returns metadata for coin identified by ticker
 	DescribeAltcoin(ticker string) (AltcoinMetadata, bool)
-}
-
-type altcoinRecord struct {
-	Manager  AltcoinPlugin
-	Metadata AltcoinMetadata
-}
-
-// fibercoinAltcoinManager is a singleton class
-type fibercryptoAltcoinManager struct {
-	registeredPlugins []AltcoinPlugin
-	altcoinMap        map[string]altcoinRecord
-}
-
-var (
-	manager fibercryptoAltcoinManager
-)
-
-func (m *fibercryptoAltcoinManager) RegisterPlugin(p AltcoinPlugin) {
-	logPlugin.Info("Register plugin to Altcoin manager")
-	p.RegisterTo(m)
-	m.registeredPlugins = append(m.registeredPlugins, p)
-}
-
-func (m *fibercryptoAltcoinManager) RegisterAltcoin(info AltcoinMetadata, plugin AltcoinPlugin) {
-	logPlugin.Info("Register altcoin to Altcoin manager")
-	m.altcoinMap[info.Ticker] = altcoinRecord{
-		Manager:  plugin,
-		Metadata: info,
-	}
-}
-
-func (m *fibercryptoAltcoinManager) ListRegisteredPlugins() []AltcoinPlugin {
-	logPlugin.Info("Listing registered plugins in Altcoin manager")
-	return m.registeredPlugins
-}
-
-func (m *fibercryptoAltcoinManager) LookupAltcoinPlugin(ticker string) (AltcoinPlugin, bool) {
-	logPlugin.Info("Looking up for registered altcoin's")
-	if r, isRegistered := m.altcoinMap[ticker]; isRegistered {
-		return r.Manager, true
-	}
-	return nil, false
-}
-
-func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (AltcoinMetadata, bool) {
-	logPlugin.Info("Describing Altcoin manager")
-	if r, isRegistered := m.altcoinMap[ticker]; isRegistered {
-		return r.Metadata, true
-	}
-	return AltcoinMetadata{}, false
-}
-
-func LoadAltcoinManager() AltcoinManager {
-	logPlugin.Info("Loading Altcoin manager")
-	if manager.altcoinMap == nil {
-		manager.altcoinMap = make(map[string]altcoinRecord, 5)
-	}
-	return &manager
+	// AttachSignService registers a signing strategy for use by wallets
+	AttachSignService(TxnSigner) error
+	// LookupSignService returns a reference to signer identified by ID
+	LookupSignService(UID) TxnSigner
+	// RemoveSignService detaches a signing strategy
+	RemoveSignService(TxnSigner) error
+	// EnumerateSignServices returns an object to iterate over global signing srategies
+	EnumerateSignServices() TxnSignerIterator
+	// SignServicesForTxn returns an object to iterate over strategies supported to sign a given transaction on behalf of a wallet
+	SignServicesForTxn(Wallet, Transaction) TxnSignerIterator
 }

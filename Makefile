@@ -100,7 +100,7 @@ test-sky-launch-html-cover:
 
 test-cover: test-sky-launch-html-cover ## Show more details of test coverage
 
-test: test-sky data-test ## Run project test suite
+test: clean-test test-core test-sky data-test ## Run project test suite
 
 
 data-test: ##Run test for data package
