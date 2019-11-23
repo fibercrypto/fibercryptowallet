@@ -84,7 +84,7 @@ type signingKeyPair struct {
 }
 
 // MultiWalletSign generic strategy for using multiple wallets to sign a transaction
-func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescriptor, pwd core.PasswordReader) (signedTxn core.Transaction, err error) {
+func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescriptor, pwds map[string]core.PasswordReader) (signedTxn core.Transaction, err error) {
 	groups := make(map[signingKeyPair][]string)
 	// Aggregate inputs by wallet,signer combination
 	for _, descriptor := range signSpec {
