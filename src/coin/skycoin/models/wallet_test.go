@@ -991,11 +991,11 @@ func makeLocalWallet(t *testing.T) core.Wallet {
 	return wallet
 }
 
-func makeSkycoinBlockchain(t *testing.T) core.BlockchainTransactionAPI {
+func makeSkycoinBlockchain() core.BlockchainTransactionAPI {
 	return NewSkycoinBlockchain(0)
 }
 
-func makeSkycoinSignService(t *testing.T) core.BlockchainSignService {
+func makeSkycoinSignService() core.BlockchainSignService {
 	return &SkycoinSignService{}
 }
 
@@ -1303,7 +1303,7 @@ func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
 	mockSkyApiCreateTransaction(global_mock, &req1, ctxnR)
 	mockSkyApiCreateTransaction(global_mock, &req2, ctxnR)
 
-	bc := makeSkycoinBlockchain(t)
+	bc := makeSkycoinBlockchain()
 	wlt := &LocalWallet{}
 
 	//Testing Hours selection to auto
@@ -1440,7 +1440,7 @@ func TestSkycoinBlockchainSpend(t *testing.T) {
 	mockSkyApiCreateTransaction(global_mock, &req1, crtTxn)
 	mockSkyApiCreateTransaction(global_mock, &req2, crtTxn)
 
-	bc := makeSkycoinBlockchain(t)
+	bc := makeSkycoinBlockchain()
 
 	to := []core.TransactionOutput{toAddr}
 	//Testing Hours selection auto
@@ -1465,8 +1465,7 @@ func TestSkycoinBlockchainSpend(t *testing.T) {
 func TestSkycoinSignServiceSign(t *testing.T) {
 	CleanGlobalMock()
 
-	txn, keyData, uxOuts, err := makeTransactionFromMultipleWallets(t, 3)
-	require.NoError(t, err)
+	txn, keyData, uxOuts := makeTransactionFromMultipleWallets(t, 3)
 	for _, ux := range uxOuts {
 		mockSkyApiUxOut(global_mock, ux)
 	}
@@ -1483,7 +1482,7 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 		return "", nil
 	}
 
-	signer := makeSkycoinSignService(t)
+	signer := makeSkycoinSignService()
 	wallets := makeLocalWalletsFromKeyData(t, keyData)
 
 	require.NotEqual(t, wallets[0], wallets[1])
