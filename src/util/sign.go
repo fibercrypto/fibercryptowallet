@@ -107,6 +107,7 @@ func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescr
 			logUtil.WithError(err).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
 			return nil, errors.ErrInvalidID
 		}
+		pwd := pwds[signPair.wallet.GetId()]
 		signedTxn, err = signPair.wallet.Sign(signedTxn, signer, pwd, indices)
 		if err != nil {
 			logUtil.WithError(err).Errorf("Error signing inputs %v of wallet %v with signer %s", indices, signPair.wallet, string(signPair.signer))
