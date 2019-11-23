@@ -596,7 +596,12 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source, password
 		}
 		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
 	} else {
-		txn, err = wlts[0].Sign(qTxn.txn, core.UID(source), pwd, nil)
+		signer, err := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
+		if err != nil {
+			logWalletManager.WithError(err).Warn("No signer %s for wallet %v", source, wlts[0])
+			return nil
+		}
+		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
 	}
 
 	if err != nil {

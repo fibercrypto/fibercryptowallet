@@ -62,6 +62,22 @@ func GetSignerDescription(signerID core.UID) (string, error) {
 	return signer.GetSignerDescription(), nil
 }
 
+// LookupSignServiceForWallet instantiate signing straegy identified by UID. Fall back to wallet if empty
+func LookupSignServiceForWallet(wlt core.Wallet, signerID core.UID) (core.TxnSigner, error) {
+	if signerID == "" {
+		wltSigner, isTxnSigner := wlt.(core.TxnSigner)
+		if !isTxnSigner {
+			logUtil.WithError(errors.ErrInvalidID).Errorf("Wallet %v can not sign transactions", wlt)
+			return nil, errors.ErrWalletCantSign
+		}
+		return wltSigner, nil
+	}
+	if signer := LookupSignService(signerID); signer != nil {
+		return signer, nil
+	}
+	return nil, errors.ErrInvalidID
+}
+
 type signingKeyPair struct {
 	wallet core.Wallet
 	signer core.UID
@@ -86,19 +102,9 @@ func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescr
 
 	for signPair, indices := range groups {
 
-		var signer core.TxnSigner
-		if signPair.signer == "" {
-			wltSigner, isTxnSigner := signPair.wallet.(core.TxnSigner)
-			if !isTxnSigner {
-				logUtil.WithError(errors.ErrInvalidID).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
-				return nil, errors.ErrWalletCantSign
-			}
-			signer = wltSigner
-		} else {
-			signer = LookupSignService(signPair.signer)
-		}
-		if signer == nil {
-			logUtil.WithError(errors.ErrInvalidID).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
+		signer, err := LookupSignServiceForWallet(signPair.wallet, signPair.signer)
+		if err != nil {
+			logUtil.WithError(err).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
 			return nil, errors.ErrInvalidID
 		}
 		signedTxn, err = signPair.wallet.Sign(signedTxn, signer, pwd, indices)
