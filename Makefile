@@ -104,6 +104,7 @@ test: test-sky data-test ## Run project test suite
 
 
 data-test: ##Run test for data package
+	if [ ! -d $(HOME)/temp/ ] ; then mkdir $(HOME)/temp/ ; fi
 	make -C src/data/ run_test
 
 install-linters: ## Install linters
