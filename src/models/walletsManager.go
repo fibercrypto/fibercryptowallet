@@ -551,7 +551,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(wltIds, address []string, source, password []string, index []int, qTxn *QTransaction) *QTransaction {
+func (walletM *WalletManager) signTxn(wltIds, address []string, source string, password []string, index []int, qTxn *QTransaction) *QTransaction {
 	logWalletManager.Info("Signig transaction")
 
 	if len(wltIds) != len(address) {
@@ -567,12 +567,12 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source, password
 	wltCache := make(map[string]core.Wallet)
 	wltByAddr := make(map[string]core.Wallet)
 	wlts := make([]core.Wallet, 0)
-	passwords := make([]core.PasswordReader, 0)
-	for _, pass := range password {
+	passwords := make(map[string]core.PasswordReader, 0)
+	for i, pass := range password {
 		pwd := func(message string) (string, error) {
-			return password, nil
+			return pass, nil
 		}
-		passwords = append(passwords, pwd)
+		passwords[wltIds[i]] = pwd
 	}
 
 	for i, wltId := range wltIds {
@@ -609,7 +609,7 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source, password
 			logWalletManager.WithError(err).Warn("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
-		txn, err = wlts[0].Sign(qTxn.txn, signer, passwords[0], nil)
+		txn, err = wlts[0].Sign(qTxn.txn, signer, passwords[wlts[0].GetId()], nil)
 	}
 
 	if err != nil {

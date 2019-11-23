@@ -51,6 +51,7 @@ Page {
 		minFeeAmount = valCH/10
     }
 
+    function getSelectedAddressesWithWallets(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
         addresses.push([])
@@ -90,7 +91,11 @@ Page {
         var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
         var enc = []
         for (var i = 0; i < indexs.length; i++){
-            enc.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
+            walletEncrypted = []
+            walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
+            walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].name)
+            walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
+            enc.push(walletEncrypted)
         }
         return enc
     }
