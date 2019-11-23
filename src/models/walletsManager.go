@@ -14,6 +14,7 @@ import (
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
@@ -87,7 +88,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
-		walletM.altManager = core.LoadAltcoinManager()
+		walletM.altManager = local.LoadAltcoinManager()
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
 		walletM.updateWalletEnvs()
@@ -309,7 +310,7 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 }
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	logWalletManager.Info("Broadcasting transaction")
-	altManager := core.LoadAltcoinManager()
+	altManager := local.LoadAltcoinManager()
 	plug, _ := altManager.LookupAltcoinPlugin(params.SkycoinTicker)
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
@@ -595,7 +596,12 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source, password
 		}
 		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
 	} else {
-		txn, err = wlts[0].Sign(qTxn.txn, core.UID(source), pwd, nil)
+		signer, err := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
+		if err != nil {
+			logWalletManager.WithError(err).Warn("No signer %s for wallet %v", source, wlts[0])
+			return nil
+		}
+		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
 	}
 
 	if err != nil {
@@ -726,7 +732,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		walletM.updateWallets()
 	}
 	logWalletManager.Info("Getting wallets")
-	qWallets := make([]*QWallet, 0)
+	walletM.wallets = make([]*QWallet, 0)
 	if walletM.WalletEnv == nil {
 		walletM.UpdateWalletEnvs()
 	}
@@ -734,7 +740,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 
 	if it == nil {
 		logWalletManager.WithError(nil).Error("Couldn't load wallets")
-		return qWallets
+		return walletM.wallets
 
 	}
 
@@ -743,17 +749,18 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {
 			logWalletManager.WithError(err).Error("Couldn't get wallets")
-			return qWallets
+			return walletM.wallets
 		}
 		if encrypted {
 			qw := fromWalletToQWallet(it.Value(), true)
-			qWallets = append(qWallets, qw)
+			walletM.wallets = append(walletM.wallets, qw)
 		} else {
 			qw := fromWalletToQWallet(it.Value(), false)
-			qWallets = append(qWallets, qw)
+			walletM.wallets = append(walletM.wallets, qw)
 		}
 
 	}
+	//walletM.wallets = make([]*QWallet, 0)
 
 	logWalletManager.Info("Wallets obtained")
 	return walletM.wallets
@@ -789,6 +796,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 	qWallet := NewQWallet(nil)
 	qml.QQmlEngine_SetObjectOwnership(qWallet, qml.QQmlEngine__CppOwnership)
 	qWallet.SetName(wlt.GetLabel())
+	qWallet.SetExpand(false)
 
 	qWallet.SetFileName(wlt.GetId())
 

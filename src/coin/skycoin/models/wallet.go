@@ -330,22 +330,20 @@ type RemoteWallet struct {
 	Id          string
 	Label       string
 	CoinType    string
+	Type        string
 	Encrypted   bool
 	poolSection string
 	signers     map[core.UID]core.TxnSigner
 }
 
-func (wlt *RemoteWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
+func (wlt *RemoteWallet) GetSkycoinWalletType() string {
+	return wlt.Type
+}
+
+func (wlt *RemoteWallet) Sign(txn core.Transaction, signer core.TxnSigner, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
 	logWallet.Info("Signing using remote wallet")
-	var signer core.TxnSigner
-	if signerID == wlt.GetSignerUID() || signerID == "" {
+	if signer == nil {
 		signer = wlt
-	} else {
-		var isBound bool
-		if signer, isBound = wlt.signers[signerID]; !isBound {
-			logWallet.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
-			return nil, errors.ErrUnsupportedSigner
-		}
 	}
 	signedTxn, err = signer.SignTransaction(txn, pwd, index)
 	return
@@ -668,23 +666,9 @@ func (wlt *RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	return NewSkycoinAddressIterator(addresses), nil
 }
 
-func (wlt *RemoteWallet) AttachSignService(signSrv core.TxnSigner) error {
-	wlt.signers[signSrv.GetSignerUID()] = signSrv
-	return nil
-}
-
-func (wlt *RemoteWallet) EnumerateSignServices() core.TxnSignerIterator {
-	// TODO: Implement
-	return nil
-}
-
-func (wlt *RemoteWallet) RemoveSignService(signSrv core.TxnSigner) error {
-	uid := signSrv.GetSignerUID()
-	if _, isBound := wlt.signers[uid]; isBound {
-		delete(wlt.signers, uid)
-		return nil
-	}
-	return errors.ErrInvalidValue
+// ReadyForTxn determines whether this signer instance can be used by wallet to sign given transaction
+func (wlt *RemoteWallet) ReadyForTxn(w core.Wallet, txn core.Transaction) (bool, error) {
+	return checkTxnSupported(wlt, w, txn)
 }
 
 // SignTransaction according to Skycoin SkyFiber rules
@@ -756,6 +740,7 @@ func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
 		CoinType:  string(wltR.Meta.Coin),
 		Encrypted: wltR.Meta.Encrypted,
 		Label:     wltR.Meta.Label,
+		Type:      wltR.Meta.Type,
 		Id:        wltR.Meta.Filename,
 		signers:   make(map[core.UID]core.TxnSigner),
 	}
@@ -827,7 +812,6 @@ func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
 				Type:      w.Type(),
 				CoinType:  string(w.Coin()),
 				WalletDir: wltSrv.walletDir,
-				signers:   make(map[core.UID]core.TxnSigner),
 			})
 		}
 	}
@@ -850,7 +834,6 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 		Type:      w.Type(),
 		CoinType:  string(w.Coin()),
 		WalletDir: wltSrv.walletDir,
-		signers:   make(map[core.UID]core.TxnSigner),
 	}
 }
 
@@ -900,7 +883,6 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		Type:      wlt.Type(),
 		CoinType:  string(wlt.Coin()),
 		WalletDir: wltSrv.walletDir,
-		signers:   make(map[core.UID]core.TxnSigner),
 	}, nil
 }
 
@@ -1029,20 +1011,12 @@ type LocalWallet struct {
 	Encrypted bool
 	Type      string
 	WalletDir string
-	signers   map[core.UID]core.TxnSigner
 }
 
-func (wlt *LocalWallet) Sign(txn core.Transaction, signerID core.UID, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
-	var signer core.TxnSigner
+func (wlt *LocalWallet) Sign(txn core.Transaction, signer core.TxnSigner, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
 	logWallet.Info("Signing local wallet")
-	if signerID == wlt.GetSignerUID() || signerID == "" {
+	if signer == nil {
 		signer = wlt
-	} else {
-		var isBound bool
-		if signer, isBound = wlt.signers[signerID]; !isBound {
-			logWallet.Error(fmt.Sprintf("RemoteWallet '%s': Unsupported signer '%s'", wlt.Id, signerID))
-			return nil, errors.ErrUnsupportedSigner
-		}
 	}
 	signedTxn, err = signer.SignTransaction(txn, pwd, index)
 	return
@@ -1089,6 +1063,10 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		// Readable tranasctions should not need extra API calls
 
 		cTxn, err := rTxn.ToCreatedTransaction()
+		if err != nil {
+			logWallet.WithError(err).Warn("Failed to convert to readable transaction")
+			return nil, err
+		}
 		originalInputs = cTxn.In
 
 		if skyWlt.IsEncrypted() {
@@ -1120,7 +1098,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 			logWallet.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
 			return nil, err
 		}
-		//txnFee = uint64(tmpInt64)
+		txnFee = uint64(tmpInt64)
 		for i, cIn := range cTxn.In {
 			tmpInt64, err = util.GetCoinValue(cIn.Coins, params.SkycoinTicker)
 			if err != nil {
@@ -1252,6 +1230,9 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
 	} else {
 		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return resultTxn, nil
@@ -1463,24 +1444,53 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 
 }
 
-func (wlt *LocalWallet) AttachSignService(signSrv core.TxnSigner) error {
-	wlt.signers[signSrv.GetSignerUID()] = signSrv
-	return nil
+func (wlt *LocalWallet) GetSkycoinWalletType() string {
+	return wlt.Type
 }
 
-func (wlt *LocalWallet) EnumerateSignServices() core.TxnSignerIterator {
-	// TODO: Implement
-	return nil
-}
-
-func (wlt *LocalWallet) RemoveSignService(signSrv core.TxnSigner) error {
-	uid := signSrv.GetSignerUID()
-	if _, isBound := wlt.signers[uid]; isBound {
-		delete(wlt.signers, uid)
-		return nil
+func checkEquivalentSkycoinWallets(wlt1, wlt2 core.Wallet) (bool, error) {
+	if wlt1 == wlt2 {
+		return true, nil
 	}
-	// FIXME: Global error object
-	return errors.ErrInvalidValue
+	// Must be Skycoin wallet
+	skyWlt1, isSkycoinWallet := wlt1.(skytypes.SkycoinWallet)
+	if !isSkycoinWallet {
+		return false, nil
+	}
+	skyWlt2, isSkycoinWallet := wlt2.(skytypes.SkycoinWallet)
+	if !isSkycoinWallet {
+		return false, nil
+	}
+	// Must be of same Skycoin wallet type
+	// FIXME: Is this enough for distribution-only wallets (i.e. xpub , collection) ?
+	if skyWlt1.GetSkycoinWalletType() != skyWlt2.GetSkycoinWalletType() {
+		return false, nil
+	}
+	// Must have a match for first address in deterministic sequence
+	addrs1, err := wlt1.GetLoadedAddresses()
+	if err != nil {
+		return false, err
+	}
+	addrs2, err := wlt2.GetLoadedAddresses()
+	if err != nil {
+		return false, err
+	}
+	return addrs1.HasNext() && addrs2.HasNext() && addrs1.Value().String() == addrs2.Value().String(), nil
+}
+
+func checkTxnSupported(wlt1, wlt2 core.Wallet, txn core.Transaction) (bool, error) {
+	// Wallets must match
+	if isMatch, err := checkEquivalentSkycoinWallets(wlt1, wlt2); err != nil || !isMatch {
+		return false, err
+	}
+	// Necessary and sufficient to be Skycoin transaction
+	_, isSkycoinTxn := txn.(skytypes.SkycoinTxn)
+	return isSkycoinTxn, nil
+}
+
+// ReadyForTxn determines whether transaction can be signed with this signer instance
+func (wlt *LocalWallet) ReadyForTxn(w core.Wallet, txn core.Transaction) (bool, error) {
+	return checkTxnSupported(wlt, w, txn)
 }
 
 // SignTransaction according to Skycoin SkyFiber rules
@@ -1510,3 +1520,11 @@ func (wlt *LocalWallet) GetSignerUID() core.UID {
 func (wlt *LocalWallet) GetSignerDescription() string {
 	return "Remote Skycoin wallet " + wlt.Id
 }
+
+// Typoe assertions
+var (
+	_ core.Wallet            = &LocalWallet{}
+	_ core.Wallet            = &RemoteWallet{}
+	_ skytypes.SkycoinWallet = &LocalWallet{}
+	_ skytypes.SkycoinWallet = &RemoteWallet{}
+)

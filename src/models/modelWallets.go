@@ -3,6 +3,7 @@ package models
 import (
 	coin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
@@ -23,8 +24,10 @@ type ModelWallets struct {
 
 	_ map[int]*qtcore.QByteArray `property:"roles"`
 	_ []*ModelAddresses          `property:"addresses"`
+	_ bool                       `property:"loading"`
 
 	_ func()                  `slot:"loadModel"`
+	_ func()                  `slot:"cleanModel"`
 	_ func([]*ModelAddresses) `slot:"addAddresses"`
 }
 
@@ -35,11 +38,13 @@ func (m *ModelWallets) init() {
 	})
 
 	m.ConnectRowCount(m.rowCount)
+	m.ConnectCleanModel(m.cleanModel)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
-	altManager := core.LoadAltcoinManager()
+	m.SetLoading(true)
+	altManager := local.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
@@ -91,8 +96,14 @@ func (m *ModelWallets) insertRows(row int, count int) bool {
 	return true
 }
 
+func (m *ModelWallets) cleanModel() {
+	m.SetLoading(false)
+	m.SetAddresses(make([]*ModelAddresses, 0))
+}
+
 func (m *ModelWallets) loadModel() {
 	logWalletsModel.Info("Loading Model")
+	m.SetLoading(true)
 	aModels := make([]*ModelAddresses, 0)
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
@@ -154,6 +165,7 @@ func (m *ModelWallets) loadModel() {
 		ma.addOutputs(oModels)
 		aModels = append(aModels, ma)
 	}
+	m.SetLoading(false)
 	m.addAddresses(aModels)
 }
 

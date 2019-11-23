@@ -15,3 +15,8 @@ type ReadableTxn interface {
 	// ToCreatedTransaction return an instance of api.CreatedTransaction equivalent to he current transaction object
 	ToCreatedTransaction() (*api.CreatedTransaction, error)
 }
+
+// SkycoinWallet internal contract to be satisfied by Skycoin wallets
+type SkycoinWallet interface {
+	GetSkycoinWalletType() string
+}

@@ -16,7 +16,41 @@ import "Controls" // For quick UI development, switch back to resources when mak
 Page {
     id: subPageSendAdvanced
 
-    function getSelectedAddressesWithWallets(){
+    property int upperCoinBound: 0
+    property int upperAltCointBound: 0
+    property int minFeeAmount: 0
+
+    function updateInfo() {
+		subPageSendAdvanced.updateOutputs()
+	   	upperCoinBound = 0;
+	   	upperAltCointBound = 0;
+	   	minFeeAmount = 0;
+		var valCH = 0;
+		if (comboBoxWalletsUnspentOutputsSendFrom.enabled) {
+       		for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++){
+       			upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10);
+				var s = comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours;
+				console.log(parseInt(s.replace('\,',''), 10))
+       		    valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10);
+       		}
+		} else {
+
+			if (comboBoxWalletsAddressesSendFrom.enabled) {
+    	   		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
+    	   			upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressSky, 10);
+    	   		    valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10);
+    	   		}
+			} else {
+				for(var i = 0; i < comboBoxWalletsAddressesSendFrom.model.addresses.length; i++) {
+					upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressSky, 10)
+					valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
+				} 
+			}
+		}
+		upperAltCointBound = valCH*9/10
+		minFeeAmount = valCH/10
+    }
+
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
         addresses.push([])
@@ -27,7 +61,7 @@ Page {
             //addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
         }
         return addresses
-    }
+	}
 
     function getSelectedOutputsWithWallets(){
         var indexs =  comboBoxWalletsUnspentOutputsSendFrom.getCheckedDelegates()
@@ -43,7 +77,7 @@ Page {
     }
 
     function getSelectedWallet(){
-        
+
         var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
         var files = []
         for (var i=0; i < indexs.length; i++){
@@ -95,7 +129,28 @@ Page {
         }
         return addrs
     }
-    
+	function updateOutputs() {
+		listOutputs.cleanModel()
+		if (checkBoxAllAddresses.checked) {
+       		for (var i = 0; i < comboBoxWalletsSendFrom.checkedElements.length; i++){
+				walletManager.updateAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
+				var addresses = walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
+				for(var j = 0; j < addresses.length; j++) {
+					console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
+					walletManager.updateOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName, addresses[j].address)
+					listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName, addresses[j].address))
+				}
+			}
+		} else {
+       		for (var j = 0; j < comboBoxWalletsSendFrom.checkedElements.length; j++){
+				walletManager.updateAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[j]].fileName)
+			}
+       		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
+				walletManager.updateOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].walletId, comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].address)
+				listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].walletId, comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].address))
+			}
+		}
+	}
 
     ColumnLayout {
         id: columnLayoutRoot
@@ -134,13 +189,13 @@ Page {
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "name"
-                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("wallets selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No wallet selected")
+                displayText: numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("address selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No address selected")
                 model: WalletModel {
                     Component.onCompleted: {
                         loadModel(walletManager.getWallets())
                     }
-                } 
-                
+                }
+
                 popup: FilterComboBoxPopup {
                     id: filterPopupWallets
                     comboBox: comboBoxWalletsSendFrom
@@ -171,7 +226,6 @@ Page {
                                     comboBoxWalletsSendFrom.checkedElements.push(index)
                                     comboBoxWalletsSendFrom.checkedElementsText.push(text)
                                 }
-                                // Update Outputs and Addresses Model
                                 listAddresses.addAddresses(walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                                 listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName))
                             } else {
@@ -184,11 +238,12 @@ Page {
                                 listAddresses.removeAddressesFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                                 listOutputs.removeOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[index].fileName)
                             }
+							subPageSendAdvanced.updateInfo();
                             comboBoxWalletsSendFrom.numberOfCheckedElements = comboBoxWalletsSendFrom.checkedElements.length
                         }
 
                         width: parent.width
-                        text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] : model[comboBoxWalletsSendFrom.textRole]) : modelData
+                        text: comboBoxWalletsSendFrom.textRole ? (Array.isArray(comboBoxWalletsSendFrom.model) ? modelData[comboBoxWalletsSendFrom.textRole] + " - " + modelData["sky"] + " SKY (" + modelData["coinHours"] + " CoinHours)"  : model[comboBoxWalletsSendFrom.textRole] + " - " + model["sky"] + " SKY (" + model["coinHours"] + " CoinHours)") : " --- " + modelData
                         // Load the saved state when the delegate is recicled:
                         checked: comboBoxWalletsSendFrom.checkedElements.indexOf(index) >= 0
                         hoverEnabled: comboBoxWalletsSendFrom.hoverEnabled
@@ -217,59 +272,67 @@ Page {
                     icon.source: "qrc:/images/resources/images/icons/help.svg"
                     icon.color: Material.color(Material.Grey)
                 }
+                CheckBox {
+                    id: checkBoxAllAddresses
+                    text: qsTr("All Addresses of the selected addresses")
+                    checked: true
+					onClicked: {
+						subPageSendAdvanced.updateInfo()
+					}
+                }
             }
 
             ComboBox {
                 id: comboBoxWalletsAddressesSendFrom
-
-                //Layout.fillWidth: true
-                //Layout.topMargin: -12
-                //textRole: "address"
-                //model: AddressModel{
-                //    id: listAddresses
-                //}
-
-                //// Taken from Qt 5.13.0 source code:
-                //delegate: MenuItem {
-                //    width: parent.width
-                //    text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
-                //    Material.foreground: comboBoxWalletsAddressesSendFrom.currentIndex === index ? parent.Material.accent : parent.Material.foreground
-                //    highlighted: comboBoxWalletsAddressesSendFrom.highlightedIndex === index
-                //    hoverEnabled: comboBoxWalletsAddressesSendFrom.hoverEnabled
-                //    leftPadding: highlighted ? 2*padding : padding // added
-                //    Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
-                //}
-                // This function returns all checked index in the ComboBox's popup
                 function getCheckedDelegates() {
-                    var checkedItems = []
-                    for (var i = 0; i < popup.contentItem.contentItem.children.length; i++) {
-                        if (popup.contentItem.contentItem.children[i].checked) {
-                            checkedItems.push(i)
-                        }
-                    }
-                    return checkedItems
+                    return checkedElements
+                }
+                property var checkedElements: []
+                property var checkedElementsText: []
+                property int numberOfCheckedElements: checkedElements.length
+                property alias filterString: filterPopupAddresses.filterText
+
+                popup: FilterComboBoxPopup {
+                    id: filterPopupAddresses
+                    comboBox: comboBoxWalletsAddressesSendFrom
+                    filterPlaceholderText: qsTr("Filter Addresses")
                 }
 
                 Layout.fillWidth: true
                 Layout.topMargin: -12
 
-                
+                onModelChanged: {
+                    if (!model) {
+                        checkedElements = []
+                        checkedElementsText = []
+                        numberOfCheckedElements = 0
+                    }
+                }
+
                 model: AddressModel{
                     id: listAddresses
                 }
-                textRole: "address"
 
+                textRole: "address"
+                displayText: !checkBoxAllAddresses.checked ? (numberOfCheckedElements > 1 ? (numberOfCheckedElements + ' ' + qsTr("addresses selected")) : numberOfCheckedElements === 1 ? checkedElementsText[0] : qsTr("No addresses selected")): "All address selected" 
+                enabled: !checkBoxAllAddresses.checked
                 delegate: Item {
-                    width: parent.width
-                    height: checkDelegate.height
 
                     property alias checked: checkDelegate.checked
+                    property alias text: checkDelegate.text
+                    readonly property bool matchFilter: !comboBoxWalletsAddressesSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsAddressesSendFrom.filterString.toLowerCase())
+
+                    width: parent.width
+                    height: matchFilter ? checkDelegate.height : 0
+                    Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
+                    clip: true
+
 
                     CheckDelegate {
                         id: checkDelegate
 
                         width: parent.width
-                        text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData
+                        text: comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData["addressSky"] + " --- " +  modelData[comboBoxWalletsAddressesSendFrom.textRole]  + " - " + modelData["addressSky"] + " SKY (" + modelData["addressCoinHours"] + " CoinHours)" : model[comboBoxWalletsAddressesSendFrom.textRole] + " - " + model["addressSky"] + " SKY (" + model["addressCoinHours"] + " CoinHours)") : modelData
                         font.family: "Code New Roman"
 
                         LayoutMirroring.enabled: true
@@ -279,16 +342,20 @@ Page {
                             verticalAlignment: Qt.AlignVCenter
                             color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
                         }
-
-                        onCheckedChanged:{
-                            if (checked){
+                        onClicked: {
+                            if (checked) {
+                                var addrText = comboBoxWalletsAddressesSendFrom.textRole ? (Array.isArray(comboBoxWalletsAddressesSendFrom.model) ? modelData[comboBoxWalletsAddressesSendFrom.textRole] : model[comboBoxWalletsAddressesSendFrom.textRole]) : modelData;
                                 if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length > 1){
-                                    listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
+                                    listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, addrText))
                                 } else{
-                                    listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, text))
-                                }                               
-                                                              
-                            } else{
+                                    listOutputs.loadModel(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[index].walletId, addrText))
+                                }
+                                var pos = comboBoxWalletsAddressesSendFrom.checkedElements.indexOf(index)
+                                if (pos < 0) {
+                                    comboBoxWalletsAddressesSendFrom.checkedElements.push(index)
+                                    comboBoxWalletsAddressesSendFrom.checkedElementsText.push(text)
+                                }
+                            } else {
                                 listOutputs.removeOutputsFromAddress(text)
                                 if (comboBoxWalletsAddressesSendFrom.getCheckedDelegates().length == 0){
                                     var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
@@ -296,9 +363,16 @@ Page {
                                         listOutputs.insertOutputs(walletManager.getOutputsFromWallet(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName))
                                     }
                                 }
+                                var pos = comboBoxWalletsAddressesSendFrom.checkedElements.indexOf(index)
+                                if (pos >= 0) {
+                                    comboBoxWalletsAddressesSendFrom.checkedElements.splice(pos, 1)
+                                    comboBoxWalletsAddressesSendFrom.checkedElementsText.splice(pos, 1)
+                                }
                             }
-                            
+							subPageSendAdvanced.updateInfo();
+                            comboBoxWalletsAddressesSendFrom.numberOfCheckedElements = comboBoxWalletsAddressesSendFrom.checkedElements.length
                         }
+
                     } // CheckDelegate
                 } // Item (delegate)
             } // ComboBox (addresses, send from)
@@ -317,6 +391,9 @@ Page {
                     id: checkBoxUnspentOutputsUseAllOutputs
                     text: qsTr("All outputs of the selected addresses")
                     checked: true
+					onClicked: {
+						subPageSendAdvanced.updateInfo()
+					}
                 }
             }
 
@@ -330,7 +407,7 @@ Page {
                 property var checkedElementsText: []
                 property int numberOfCheckedElements: checkedElements.length
                 property alias filterString: filterPopupOutputs.filterText
-                
+
                 Layout.fillWidth: true
                 Layout.topMargin: -12
                 textRole: "outputID"
@@ -348,7 +425,7 @@ Page {
                         numberOfCheckedElements = 0
                     }
                 }
-                
+
                 popup: FilterComboBoxPopup {
                     id: filterPopupOutputs
                     comboBox: comboBoxWalletsUnspentOutputsSendFrom
@@ -360,7 +437,7 @@ Page {
                     property alias checked: checkDelegate.checked
                     property alias text: checkDelegate.text
                     readonly property bool matchFilter: !comboBoxWalletsUnspentOutputsSendFrom.filterString || text.toLowerCase().includes(comboBoxWalletsUnspentOutputsSendFrom.filterString.toLowerCase())
-                    
+
                     width: parent.width
                     height: matchFilter ? checkDelegate.height : 0
                     Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
@@ -385,10 +462,11 @@ Page {
                                 }
                             }
                             comboBoxWalletsUnspentOutputsSendFrom.numberOfCheckedElements = comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length
+							subPageSendAdvanced.updateInfo();
                         }
 
                         width: parent.width
-                        text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] : model[comboBoxWalletsUnspentOutputsSendFrom.textRole]) : modelData
+                        text: comboBoxWalletsUnspentOutputsSendFrom.textRole ? (Array.isArray(comboBoxWalletsUnspentOutputsSendFrom.model) ? modelData[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + modelData["addressSky"] + " SKY (" + modelData["addressCoinHours"] + " CoinHours)" :model[comboBoxWalletsUnspentOutputsSendFrom.textRole] + " - " + model["addressSky"] + " SKY (" + model["addressCoinHours"] + " CoinHours)") : modelData
                         font.family: "Code New Roman"
                         // Load the saved state when the delegate is recicled:
                         checked: comboBoxWalletsUnspentOutputsSendFrom.checkedElements.indexOf(index) >= 0
@@ -411,10 +489,11 @@ Page {
 
         } // ColumnLayout (send from)
 
+
         Label {
             Layout.fillWidth: true
             Layout.preferredHeight: 30
-            text: qsTr("With your current selection you can send up to <b>%1 SKY</b> and <b>%2 Coin Hours</b> (at least <b>%3 Coin Hours</b> must be used for the transaction fee)").arg(0).arg(0).arg(0)
+            text: "With your current selection you can send up to <b>" + subPageSendAdvanced.upperCoinBound + " SKY</b> and <b>" + subPageSendAdvanced.upperAltCointBound + " Coin Hours</b> (at least <b>" + subPageSendAdvanced.minFeeAmount + " Coin Hours</b> must be used for the transaction fee)"
             wrapMode: Text.WordWrap
             horizontalAlignment: Text.AlignHCenter
         }
@@ -434,15 +513,13 @@ Page {
                     icon.color: Material.color(Material.Grey)
                 }
             }
+
             ListView {
                 id: listViewDestinations
 
-                property real delegateHeight: 47
-
                 Layout.fillWidth: true
                 Layout.topMargin: -16
-                implicitHeight: count * delegateHeight
-
+                implicitHeight: contentItem.height
                 Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
                 interactive: false
@@ -452,7 +529,6 @@ Page {
 
                 delegate: DestinationListDelegate {
                     width: listViewDestinations.width
-                    implicitHeight: ListView.view.delegateHeight
                 }
             } // ListView
         } // ColumnLayout (destinations)
@@ -487,7 +563,7 @@ Page {
 
             TextField {
                 id: textFieldCustomChangeAddress
-                
+
                 Layout.fillWidth: true
                 Layout.topMargin: -16
                 placeholderText: qsTr("Address to receive change")

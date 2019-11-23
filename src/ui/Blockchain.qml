@@ -182,4 +182,22 @@ Page {
             } // GridLayout
         } // GroupBox (sky details)
     } // ColumnLayout (root)
+
+    BusyIndicator {
+        id: busyIndicator
+
+        anchors.centerIn: parent
+        // Create a `busy` property in the backend and bind it to `running` here:
+        running: model.loading
+		property Timer timer: Timer{
+			id: blockchainTimer
+			repeat: true
+			running: true
+			interval: 3000
+			onTriggered: {
+				model.update()
+			}   
+
+		} 
+    }
 }

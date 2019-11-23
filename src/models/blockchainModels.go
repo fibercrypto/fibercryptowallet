@@ -22,6 +22,7 @@ type BlockchainStatusModel struct {
 	infoRequester core.BlockchainStatus
 
 	_ string            `property:"numberOfBlocks"`
+	_ bool              `property:"loading"`
 	_ *qtcore.QDateTime `property:"timestampLastBlock"`
 	_ string            `property:"hashLastBlock"`
 	_ string            `property:"currentSkySupply"`
@@ -42,7 +43,7 @@ func (blockchainStatus *BlockchainStatusModel) init() {
 	blockchainStatus.SetTotalSkySupplyDefault("0")
 	blockchainStatus.SetCurrentCoinHoursSupplyDefault("0")
 	blockchainStatus.SetTotalCoinHoursSupplyDefault("0")
-
+	blockchainStatus.SetLoading(true)
 	blockchainStatus.infoRequester = skycoin.NewSkycoinBlockchain(params.DataRefreshTimeout)
 }
 
@@ -58,6 +59,8 @@ func (blockchainStatus *BlockchainStatusModel) update() {
 // updateInfo request the needed information
 func (blockchainStatus *BlockchainStatusModel) updateInfo() error {
 	logBlockchain.Info("Updating Blockchain Status")
+	blockchainStatus.SetLoading(true)
+
 	block, err := blockchainStatus.infoRequester.GetLastBlock()
 	if err != nil {
 		logBlockchain.WithError(err).Warn("Couldn't get last block")
@@ -112,6 +115,7 @@ func (blockchainStatus *BlockchainStatusModel) updateInfo() error {
 	blockchainStatus.SetTotalSkySupply(strconv.FormatUint(totalSkySupply, 10))
 	blockchainStatus.SetCurrentCoinHoursSupply(strconv.FormatUint(currentCoinHoursSupply, 10))
 	blockchainStatus.SetTotalCoinHoursSupply(strconv.FormatUint(totalCoinHoursSupply, 10))
+	blockchainStatus.SetLoading(false)
 
 	return nil
 }

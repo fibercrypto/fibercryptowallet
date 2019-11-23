@@ -314,6 +314,7 @@ func (skyTxn *SkycoinUninjectedTransaction) GetInputs() []core.TransactionInput 
 	if skyTxn.inputs == nil {
 		inputs, err := getSkycoinTransactionInputsFromInputsHashes(skyTxn.txn.In)
 		if err != nil {
+			//TODO: This method should also returns error
 			return nil
 		}
 		skyTxn.inputs = inputs
@@ -629,8 +630,9 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return in.skyIn.CalculatedHours * accuracy, nil
 	}
+	//TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied 
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
-	return uint64(0), errors.ErrInvalidAltcoinTicker
+	return uint64(0), errors.ErrInvalidAltcoinTicker 
 }
 
 /**
@@ -704,6 +706,7 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return out.calculatedHours * accuracy, nil
 	}
+	//TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }

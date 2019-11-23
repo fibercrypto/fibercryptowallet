@@ -1,13 +1,13 @@
 package pending
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
-
 
 var logPendingTxn = logging.MustGetLogger("modelsPendingTransaction")
 
@@ -16,10 +16,14 @@ type PendingTransactionList struct {
 	PEX       core.PEX
 	WalletEnv core.WalletEnv
 
-	_ func()                `constructor:"init"`
-	_ []*PendingTransaction `property:"transactions"`
-	_ func()                `slot:"getAll"`
-	_ func()                `slot:"getMine"`
+	_ func() `constructor:"init"`
+
+	_ []*PendingTransaction            `property:"transactions"`
+	_ bool                             `property:"loading"`
+	_ func(bool) []*PendingTransaction `slot:"recoverTransactions"`
+	_ func()                           `slot:"getAll"`
+	_ func()                           `slot:"cleanPendingTxns"`
+	_ func()                           `slot:"getMine"`
 }
 
 type PendingTransaction struct {
@@ -35,8 +39,11 @@ type PendingTransaction struct {
 func (model *PendingTransactionList) init() {
 	model.ConnectGetAll(model.getAll)
 	model.ConnectGetMine(model.getMine)
+	model.ConnectRecoverTransactions(model.recoverTransactions)
+	model.SetLoading(true)
+	model.ConnectCleanPendingTxns(model.cleanPendingTxns)
 
-	altManager := core.LoadAltcoinManager()
+	altManager := local.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
@@ -44,7 +51,20 @@ func (model *PendingTransactionList) init() {
 	model.PEX = &skycoin.SkycoinPEX{}
 	model.WalletEnv = walletsEnvs[0]
 
-	model.getAll()
+}
+
+func (model *PendingTransactionList) cleanPendingTxns() {
+	model.SetTransactions(make([]*PendingTransaction, 0))
+}
+
+func (model *PendingTransactionList) recoverTransactions(mine bool) []*PendingTransaction {
+	model.SetLoading(true)
+	if mine {
+		model.getMine()
+	} else {
+		model.getAll()
+	}
+	return model.Transactions()
 }
 
 func (model *PendingTransactionList) getAll() {
@@ -61,7 +81,9 @@ func (model *PendingTransactionList) getAll() {
 		ptModel.SetMine(0)
 		ptModels = append(ptModels, ptModel)
 	}
+	model.SetLoading(false)
 	model.SetTransactions(ptModels)
+
 }
 
 func (model *PendingTransactionList) getMine() {
@@ -90,6 +112,7 @@ func (model *PendingTransactionList) getMine() {
 			}
 		}
 	}
+	model.SetLoading(false)
 	model.SetTransactions(ptModels)
 }
 
