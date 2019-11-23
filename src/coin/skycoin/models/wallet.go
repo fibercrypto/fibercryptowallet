@@ -1063,6 +1063,10 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		// Readable tranasctions should not need extra API calls
 
 		cTxn, err := rTxn.ToCreatedTransaction()
+		if err != nil {
+			logWallet.WithError(err).Warn("Failed to convert to readable transaction")
+			return nil, err
+		}
 		originalInputs = cTxn.In
 
 		if skyWlt.IsEncrypted() {
@@ -1094,7 +1098,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 			logWallet.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
 			return nil, err
 		}
-		//txnFee = uint64(tmpInt64)
+		txnFee = uint64(tmpInt64)
 		for i, cIn := range cTxn.In {
 			tmpInt64, err = util.GetCoinValue(cIn.Coins, params.SkycoinTicker)
 			if err != nil {
@@ -1226,6 +1230,9 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
 	} else {
 		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return resultTxn, nil

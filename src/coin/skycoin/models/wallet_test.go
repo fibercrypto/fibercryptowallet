@@ -1353,7 +1353,8 @@ func TestSkycoinBlockchainSpend(t *testing.T) {
 
 	uxOuts := make([]coin.UxOut, 2)
 	for i := 0; i < 2; i++ {
-		ux, _, _ := makeUxOutWithSecret(t)
+		ux, _, err := makeUxOutWithSecret(t)
+		require.NoError(t, err)
 		uxOuts[i] = ux
 	}
 
@@ -1517,7 +1518,6 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 	//require.Equal(t, txn.Hash().String(), signedTxn.GetId())
 
 	//SkycoinUninjectedTransaction
-	sigs = txn.Sigs
 	txn.Sigs = []cipher.Sig{}
 	skyUninTxn := SkycoinUninjectedTransaction{
 		txn: &txn,
