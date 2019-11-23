@@ -49,7 +49,7 @@ type WalletManager struct {
 	_ func(id string, password string) int                                                                                             `slot:"decryptWallet"`
 	_ func() []*QWallet                                                                                                                `slot:"getWallets"`
 	_ func(id string) []*QAddress                                                                                                      `slot:"getAddresses"`
-	_ func(wltIds, addresses []string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                  `slot:"signTxn"`
+	_ func(wltIds, addresses []string, source string, password []string, index []int, qTxn *QTransaction) *QTransaction                `slot:"signTxn"`
 	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                       `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                                                  `slot:"editWallet"`
 	_ func(wltId, address string) []*QOutput                                                                                           `slot:"getOutputs"`
@@ -551,7 +551,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(wltIds, address []string, source, password string, index []int, qTxn *QTransaction) *QTransaction {
+func (walletM *WalletManager) signTxn(wltIds, address []string, source, password []string, index []int, qTxn *QTransaction) *QTransaction {
 	logWalletManager.Info("Signig transaction")
 
 	if len(wltIds) != len(address) {
@@ -559,12 +559,20 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source, password
 		return nil
 	}
 
+	if len(wltIds) != len(password) {
+		logWalletManager.Error("Wallets and passwords provided are incorrect")
+		return nil
+	}
+
 	wltCache := make(map[string]core.Wallet)
 	wltByAddr := make(map[string]core.Wallet)
 	wlts := make([]core.Wallet, 0)
-
-	pwd := func(message string) (string, error) {
-		return password, nil
+	passwords := make([]core.PasswordReader, 0)
+	for _, pass := range password {
+		pwd := func(message string) (string, error) {
+			return password, nil
+		}
+		passwords = append(passwords, pwd)
 	}
 
 	for i, wltId := range wltIds {
@@ -594,14 +602,14 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source, password
 			}
 			signDescriptors = append(signDescriptors, sd)
 		}
-		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
+		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, passwords)
 	} else {
 		signer, err := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
 		if err != nil {
 			logWalletManager.WithError(err).Warn("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
-		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
+		txn, err = wlts[0].Sign(qTxn.txn, signer, passwords[0], nil)
 	}
 
 	if err != nil {

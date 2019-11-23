@@ -10,7 +10,7 @@ type SkycoinSignService struct{}
 
 // Sign creates a new transaction by (fully or partially) signing a given transaction
 func (sss *SkycoinSignService) Sign(txn core.Transaction, signSpec []core.InputSignDescriptor, pwds map[string]core.PasswordReader) (core.Transaction, error) {
-	return util.GenericMultiWalletSign(txn, signSpec, pwd)
+	return util.GenericMultiWalletSign(txn, signSpec, pwds)
 }
 
 // Type assertions
