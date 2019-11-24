@@ -15,4 +15,6 @@ func init() {
 	ModelAddresses_QmlRegisterType2("OutputsModels", 1, 0, "QAddresses")
 	ModelOutputs_QmlRegisterType2("OutputsModels", 1, 0, "QOutputs")
 	QTransaction_QmlRegisterType2("Transactions", 1, 0, "QTransaction")
+	QBridge_QmlRegisterType2("Utils", 1, 1, "QBridge")
+
 }

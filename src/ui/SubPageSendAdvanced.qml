@@ -50,7 +50,7 @@ Page {
 		upperAltCointBound = valCH*9/10
 		minFeeAmount = valCH/10
     }
-
+    function geteAddressesWithWallets(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
         addresses.push([])
