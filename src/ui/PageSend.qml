@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import Transactions 1.0
+import Utils 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
@@ -182,8 +183,39 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", dialogSendTransaction.passwordText, [], txn)
-			var injected = walletManager.broadcastTxn(signedTxn)
+			var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
+			//var injected = walletManager.broadcastTxn(signedTxn)
 		}
+    }
+
+    DialogGetPassword{
+        id: getPasswordDialog
+        anchors.centerIn: Overlay.overlay
+        property int nAddress
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        onAccepted:{
+            bridgeForPassword.waiting = false
+        }
+    }
+
+    QBridge{
+        id: bridgeForPassword
+        property bool waiting: false
+        onGetPassword:{
+            waiting = true
+            getPasswordDialog.title = message
+            getPasswordDialog.password = ""
+            
+            getPasswordDialog.open()
+            while(waiting){
+
+            }
+            return getPasswordDialog.password
+
+        }
     }
 }
