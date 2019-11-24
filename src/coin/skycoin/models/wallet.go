@@ -361,7 +361,7 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		logWallet.WithError(err).Warn(err)
 		return nil, errors.ErrInvalidTxn
 	}
-	password, err := pwd(fmt.Sprintf("Enter password to decrypt wallet '%s'", wlt.Id))
+	password, err := pwd(fmt.Sprintf("Introduce the password of %s ", wlt.Label))
 	if err != nil {
 		logWallet.WithError(err).Warn("Error getting password")
 		return nil, err
@@ -1070,7 +1070,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		originalInputs = cTxn.In
 
 		if skyWlt.IsEncrypted() {
-			pass, err := pwd("Type your password")
+			pass, err := pwd(fmt.Sprintf("Introduce the password of %s", skyWlt.Label()))
 			if err != nil {
 				logWallet.WithError(err).Warn("Couldn't get password")
 				return nil, err

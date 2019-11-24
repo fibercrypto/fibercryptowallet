@@ -183,7 +183,8 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-            var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
+            walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
+            //var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
 			//var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }

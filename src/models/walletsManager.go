@@ -49,7 +49,7 @@ type WalletManager struct {
 	_ func(id string, password string) int                                                                                             `slot:"decryptWallet"`
 	_ func() []*QWallet                                                                                                                `slot:"getWallets"`
 	_ func(id string) []*QAddress                                                                                                      `slot:"getAddresses"`
-	_ func(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) *QTransaction       `slot:"signTxn"`
+	_ func(wltIds, addresses []string, source string, pwd core.PasswordReader, index []int, qTxn *QTransaction) *QTransaction          `slot:"signTxn"`
 	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                       `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                                                  `slot:"editWallet"`
 	_ func(wltId, address string) []*QOutput                                                                                           `slot:"getOutputs"`
@@ -58,6 +58,7 @@ type WalletManager struct {
 	_ func(wltIds, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
 	_ func() []*QAddress                                                                                                               `slot:"getAllAddresses"`
 	_ func(wltId string) []*QOutput                                                                                                    `slot:"getOutputsFromWallet"`
+	_ func(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction)                     `slot:"signAndBroadcastTxnAsync"`
 }
 
 func (walletM *WalletManager) init() {
@@ -86,6 +87,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectUpdateWallets(walletM.updateWallets)
 		walletM.ConnectUpdateAddresses(walletM.updateAddresses)
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
+		walletM.ConnectSignAndBroadcastTxnAsync(walletM.signAndBroadcastTxnAsync)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 		walletM.altManager = local.LoadAltcoinManager()
@@ -551,7 +553,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(wltIds, address []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) *QTransaction {
+func (walletM *WalletManager) signTxn(wltIds, address []string, source string, pwd core.PasswordReader, index []int, qTxn *QTransaction) *QTransaction {
 	logWalletManager.Info("Signig transaction")
 
 	if len(wltIds) != len(address) {
@@ -562,11 +564,6 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, b
 	wltCache := make(map[string]core.Wallet)
 	wltByAddr := make(map[string]core.Wallet)
 	wlts := make([]core.Wallet, 0)
-
-	pwd := func(message string) (string, error) {
-		pass := bridgeForPassword.GetPassword(message)
-		return pass, nil
-	}
 
 	for i, wltId := range wltIds {
 		var wlt core.Wallet
@@ -616,6 +613,27 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, b
 	}
 	return qTxn
 
+}
+
+func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) {
+	channel := make(chan *QTransaction)
+	go func() {
+		pwd := func(message string) (string, error) {
+			bridgeForPassword.lock()
+			bridgeForPassword.GetPassword(message)
+			bridgeForPassword.lock()
+			pass := bridgeForPassword.getResult()
+			bridgeForPassword.unlock()
+			return pass, nil
+		}
+
+		channel <- walletM.signTxn(wltIds, addresses, source, pwd, index, qTxn)
+	}()
+
+	go func() {
+		txn := <-channel
+		walletM.broadcastTxn(txn)
+	}()
 }
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
