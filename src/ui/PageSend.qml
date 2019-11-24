@@ -67,7 +67,7 @@ Page {
                     txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
                 console.log("HT "+txn.hoursTraspassed)
-                dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
+                dialogSendTransaction.showPasswordField =  false//isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
                 dialogSendTransaction.previewAmount = txn.amount
@@ -200,7 +200,7 @@ Page {
         modal: true
         onAccepted:{
             
-            console.log("UNLOCKING FROM QML " + getPasswordDialog.password)
+            //console.log("UNLOCKING FROM QML " + getPasswordDialog.password)
             bridgeForPassword.setResult(getPasswordDialog.password)
             bridgeForPassword.unlock()
         }
