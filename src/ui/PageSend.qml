@@ -183,7 +183,7 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
+            var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
 			//var injected = walletManager.broadcastTxn(signedTxn)
 		}
     }
@@ -198,24 +198,20 @@ Page {
         focus: true
         modal: true
         onAccepted:{
-            bridgeForPassword.waiting = false
+            
+            console.log("UNLOCKING FROM QML " + getPasswordDialog.password)
+            bridgeForPassword.setResult(getPasswordDialog.password)
+            bridgeForPassword.unlock()
         }
     }
 
     QBridge{
         id: bridgeForPassword
-        property bool waiting: false
+
         onGetPassword:{
-            waiting = true
             getPasswordDialog.title = message
-            getPasswordDialog.password = ""
-            
+            getPasswordDialog.clear()
             getPasswordDialog.open()
-            while(waiting){
-
-            }
-            return getPasswordDialog.password
-
         }
     }
 }

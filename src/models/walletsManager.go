@@ -554,70 +554,68 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 func (walletM *WalletManager) signTxn(wltIds, address []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) *QTransaction {
 	logWalletManager.Info("Signig transaction")
 
-	bridgeForPassword.GetPassword("GIVE ME THE PASSWORD")
-	fmt.Println("EL PASS ES ", pass)
-	// if len(wltIds) != len(address) {
-	// 	logWalletManager.Error("Wallets and addresses provided are incorrect")
-	// 	return nil
-	// }
+	if len(wltIds) != len(address) {
+		logWalletManager.Error("Wallets and addresses provided are incorrect")
+		return nil
+	}
 
-	// wltCache := make(map[string]core.Wallet)
-	// wltByAddr := make(map[string]core.Wallet)
-	// wlts := make([]core.Wallet, 0)
+	wltCache := make(map[string]core.Wallet)
+	wltByAddr := make(map[string]core.Wallet)
+	wlts := make([]core.Wallet, 0)
 
-	// pwd := func(message string) (string, error) {
-	// 	pass := bridgeForPassword.GetPassword(message)
-	// 	return pass, nil
-	// }
+	pwd := func(message string) (string, error) {
+		pass := bridgeForPassword.GetPassword(message)
+		return pass, nil
+	}
 
-	// for i, wltId := range wltIds {
-	// 	var wlt core.Wallet
-	// 	wlt, exist := wltCache[wltId]
-	// 	if !exist {
-	// 		wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
-	// 		if wlt == nil {
-	// 			logWalletManager.Warn("Couldn't load wallet to Sign transaction")
-	// 			return nil
-	// 		}
-	// 		wltCache[wltId] = wlt
-	// 	}
-	// 	wltByAddr[address[i]] = wlt
-	// 	wlts = append(wlts, wlt)
-	// }
+	for i, wltId := range wltIds {
+		var wlt core.Wallet
+		wlt, exist := wltCache[wltId]
+		if !exist {
+			wlt = walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+			if wlt == nil {
+				logWalletManager.Warn("Couldn't load wallet to Sign transaction")
+				return nil
+			}
+			wltCache[wltId] = wlt
+		}
+		wltByAddr[address[i]] = wlt
+		wlts = append(wlts, wlt)
+	}
 
-	// var txn core.Transaction
-	// var err error
-	// if len(wltCache) > 1 {
-	// 	signDescriptors := make([]core.InputSignDescriptor, 0)
-	// 	for _, in := range qTxn.txn.GetInputs() {
-	// 		sd := core.InputSignDescriptor{
-	// 			InputIndex: in.GetId(),
-	// 			SignerID:   core.UID(source),
-	// 			Wallet:     wltByAddr[in.GetSpentOutput().GetAddress().String()],
-	// 		}
-	// 		signDescriptors = append(signDescriptors, sd)
-	// 	}
-	// 	txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
-	// } else {
-	// 	signer, err := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
-	// 	if err != nil {
-	// 		logWalletManager.WithError(err).Warn("No signer %s for wallet %v", source, wlts[0])
-	// 		return nil
-	// 	}
-	// 	txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
-	// }
+	var txn core.Transaction
+	var err error
+	if len(wltCache) > 1 {
+		signDescriptors := make([]core.InputSignDescriptor, 0)
+		for _, in := range qTxn.txn.GetInputs() {
+			sd := core.InputSignDescriptor{
+				InputIndex: in.GetId(),
+				SignerID:   core.UID(source),
+				Wallet:     wltByAddr[in.GetSpentOutput().GetAddress().String()],
+			}
+			signDescriptors = append(signDescriptors, sd)
+		}
+		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
+	} else {
+		signer, err := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
+		if err != nil {
+			logWalletManager.WithError(err).Warn("No signer %s for wallet %v", source, wlts[0])
+			return nil
+		}
+		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
+	}
 
-	// if err != nil {
-	// 	logWalletManager.WithError(err).Warn("Error signing txn")
-	// 	return nil
-	// }
-	// qTxn, err = NewQTransactionFromTransaction(txn)
-	// if err != nil {
-	// 	logWalletManager.WithError(err).Warn("Error converting transaction")
-	// 	return nil
-	// }
-	// return qTxn
-	return nil
+	if err != nil {
+		logWalletManager.WithError(err).Warn("Error signing txn")
+		return nil
+	}
+	qTxn, err = NewQTransactionFromTransaction(txn)
+	if err != nil {
+		logWalletManager.WithError(err).Warn("Error converting transaction")
+		return nil
+	}
+	return qTxn
+
 }
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
