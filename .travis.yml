@@ -36,6 +36,7 @@ matrix:
     install:
     - make install-docker-deps
     - make install-deps-no-envs
+    - make install-linters
     script:
     - make clean
     - DEFAULT_TARGET=linux make build-docker
