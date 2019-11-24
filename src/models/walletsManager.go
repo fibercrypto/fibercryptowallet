@@ -49,7 +49,7 @@ type WalletManager struct {
 	_ func(id string, password string) int                                                                                             `slot:"decryptWallet"`
 	_ func() []*QWallet                                                                                                                `slot:"getWallets"`
 	_ func(id string) []*QAddress                                                                                                      `slot:"getAddresses"`
-	_ func(wltIds, addresses []string, source string, password string, index []int, qTxn *QTransaction) *QTransaction                  `slot:"signTxn"`
+	_ func(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) *QTransaction       `slot:"signTxn"`
 	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                       `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                                                  `slot:"editWallet"`
 	_ func(wltId, address string) []*QOutput                                                                                           `slot:"getOutputs"`
@@ -551,7 +551,7 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(wltIds, address []string, source, password string, index []int, qTxn *QTransaction) *QTransaction {
+func (walletM *WalletManager) signTxn(wltIds, address []string, source, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) *QTransaction {
 	logWalletManager.Info("Signig transaction")
 
 	if len(wltIds) != len(address) {
@@ -564,7 +564,7 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source, password
 	wlts := make([]core.Wallet, 0)
 
 	pwd := func(message string) (string, error) {
-		return password, nil
+		return bridgeForPassword.GetPassword(message), nil
 	}
 
 	for i, wltId := range wltIds {
