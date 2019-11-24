@@ -205,7 +205,7 @@ test: clean-test test-core test-sky ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
-	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.10.2
+	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.21.0
 
 lint: ## Run linters. Use make install-linters first.
 	# src needs separate linting rules
