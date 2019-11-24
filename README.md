@@ -34,8 +34,10 @@ Project files are organized as follows:
 - `./src/core` : Core go-lang interfaces.
 - `./src/main` : Project specific source code.
 - `./src/util` : Reusable code.
+- `./src/util/logging` : Event logging infrastructure.
 - `./src/models` : QT models linking coin-specific models to application GUI.
 - `./src/coin` : Source code for altcoin integrations.
+- `./src/coin/mocks` : Types implementing `core` interfaces for generic testing scenarios
 - `./src/coin/skycoin` : Skycoin wallet integration
 - `./src/coin/skycoin/models` : Skycoin implementation of golang core interfaces.
 - `./src/coin/skycoin/blockchain` : Skycoin blockchain API.
@@ -87,8 +89,14 @@ install-deps                   Install dependencies
 build-docker                   Build project using docker
 build                          Build FiberCrypto Wallet.
 clean-Windows                  Clean project FiberCrypto Wallet.
-clean                          Clean project FiberCrypto Wallet.
+prepare-release                Change the resources in the app and prepare to release the app
+clean-test                     Remove temporary test files
+clean-build                    Remove temporary files
+clean                          Remove temporary files
+gen-mocks                      Generate mocks for interface types
 test-sky                       Run Skycoin plugin test suite
+test-core                      Run tests for API core and helpers
+test-cover                     Show more details of test coverage
 test                           Run project test suite
 install-linters                Install linters
 lint                           Run linters. Use make install-linters first.
