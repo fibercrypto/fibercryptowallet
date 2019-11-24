@@ -70,6 +70,7 @@ before_deploy:
    - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
    - export ARCH="$(uname -m)"
    - export OS="$(uname -s)"
+   - make prepare-release
    - make build
    - ( cd deploy && tar czf ../fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz ./*  )
    - pwd && ls -l .
