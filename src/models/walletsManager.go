@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/davecgh/go-spew/spew"
-
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -436,8 +434,7 @@ func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, s
 		}
 		wlts = append(wlts, wlt)
 	}
-	spew.Dump(wltCache)
-	fmt.Println(wlts)
+
 	addrsFrom := make([]core.Address, 0)
 	for _, addr := range from {
 
