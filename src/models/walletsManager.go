@@ -486,7 +486,7 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 	return qTxn
 }
 
-func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
+func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, password string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
 	pwd := func(message string) (string, error) {
 		return password, nil
@@ -503,7 +503,7 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 
 }
 
-func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *QWallet {
+func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
 	pwd := func(message string) (string, error) {
 		return "", nil
