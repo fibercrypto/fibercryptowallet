@@ -16,6 +16,7 @@ Dialog {
     property alias mode: createLoadWallet.mode
     property alias name: createLoadWallet.name
     property alias seed: createLoadWallet.seed
+    //property alias type: comboBoxWalletType.model[comboBoxWalletType.currentIndex].value
     property alias encryptionEnabled: checkBoxEncryptWallet.checked
 
     Component.onCompleted: {
@@ -31,7 +32,7 @@ Dialog {
             if (mode === CreateLoadWallet.Load){
                 scanA = 10
             }
-            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text , scanA))
+            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text, comboBoxWalletType.model[comboBoxWalletType.currentIndex].value, scanA))
             
         } else{
             
@@ -39,7 +40,7 @@ Dialog {
                 scanA = 10
             }
             
-            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, scanA))
+            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, comboBoxWalletType.model[comboBoxWalletType.currentIndex].value, scanA))
         }
     }
 
@@ -141,6 +142,19 @@ Dialog {
                 }
             } // ColumnLayoutSeedWarning
 
+            RowLayout{
+                Label{
+                    text:qsTr("Wallet Type: ")
+                }
+                ComboBox{
+                    id: comboBoxWalletType
+                    Layout.fillWidth: true
+                    textRole: "name"
+                    model: [{name:"Bip44-Wallet", value:"bip44"}, {name:"Deterministic-Wallet", value:"deterministic"}    ]
+                
+                }
+            }
+           
             CheckBox {
                 id: checkBoxEncryptWallet
                 text: qsTr("Encrypt wallet")

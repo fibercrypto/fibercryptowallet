@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -307,6 +308,7 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
+	fmt.Println("WALLET TYPE ", wltType)
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, true, pwd, scanN)
 	if err != nil {
 		return nil
@@ -320,9 +322,10 @@ func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType strin
 	pwd := func(message string) (string, error) {
 		return "", nil
 	}
-
+	fmt.Println("WALLET TYPE ", wltType)
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, false, pwd, scanN)
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil
 	}
 	return fromWalletToQWallet(wlt, false)
