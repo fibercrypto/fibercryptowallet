@@ -1,0 +1,36 @@
+#include <windows.h>
+
+IDI_ICON1	ICON	DISCARDABLE	"resources/images/icons/appIcon/appIcon.ico"
+
+VS_VERSION_INFO VERSIONINFO
+    FILEVERSION 0,1,0,0
+    PRODUCTVERSION 0,1,0,0
+	FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+	FILEFLAGS VS_FF_DEBUG
+#else
+	FILEFLAGS 0x0L
+#endif
+	FILEOS VOS__WINDOWS32
+	FILETYPE VFT_APP
+	FILESUBTYPE 0x0L
+	BEGIN
+		BLOCK "StringFileInfo"
+		BEGIN
+			BLOCK "040904b0"
+			BEGIN
+				VALUE "CompanyName", "Simelo\0"
+				VALUE "FileDescription", "Multi-coin cryptocurrency wallet\0"
+                VALUE "FileVersion", "0.1.0.0\0"
+				VALUE "LegalCopyright", "(C) 2019 Simelo Organization. Licensed under GPLv3.\0"
+				VALUE "OriginalFilename", "FibercryptoWallet.exe\0"
+				VALUE "ProductName", "FiberCrypto\0"
+                VALUE "ProductVersion", "0.1.0.0\0"
+			END
+		END
+		BLOCK "VarFileInfo"
+		BEGIN
+			VALUE "Translation", 0x0409, 1200
+		END
+	END
+/* End of Version info */

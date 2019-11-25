@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.12
 // import "qrc:/ui/src/ui"
 // import "qrc:/ui/src/ui/Controls"
 import "../" // For quick UI development, switch back to resources when making a release
-import "../Controls"
+import "../Controls" // For quick UI development, switch back to resources when making a release
 
 
 Dialog {

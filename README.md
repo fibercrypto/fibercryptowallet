@@ -34,15 +34,17 @@ Project files are organized as follows:
 - `./src/core` : Core go-lang interfaces.
 - `./src/main` : Project specific source code.
 - `./src/util` : Reusable code.
+- `./src/util/logging` : Event logging infrastructure.
 - `./src/models` : QT models linking coin-specific models to application GUI.
 - `./src/coin` : Source code for altcoin integrations.
+- `./src/coin/mocks` : Types implementing `core` interfaces for generic testing scenarios
 - `./src/coin/skycoin` : Skycoin wallet integration
 - `./src/coin/skycoin/models` : Skycoin implementation of golang core interfaces.
 - `./src/coin/skycoin/blockchain` : Skycoin blockchain API.
 - `./src/coin/skycoin/sign` : Skycoin sign API.
 - `vendor` : Project dependencies managed by `dep`.
 
-### Anatomy of 
+### Architecture
 
 FiberCrypto wallet supports multiple altcoins. In order to cope with this complexity GUI code and QT models rely on strict interfaces which shall be implemented to add support for a given coin. Each such integration must have two main components:
 
@@ -57,6 +59,8 @@ The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The fro
 
 #### Requirements
 
+Windows requires the command line tool `magick convert`, that comes with the open-source [ImageMagick](https://imagemagick.org) project in order to build the icons (not necessary as default icons are always provided)
+
 ##### Qt version
 
 [Linux/X11 requirements](http://doc.qt.io/qt-5/linux.html)  
@@ -68,6 +72,37 @@ The minimum Qt version required is [Qt 5.12.0 LTS](https://download.qt.io/archiv
 - [QTBUG-72811](https://bugreports.qt.io/browse/QTBUG-72811 "[Reg 5.11 -> 5.12] QQC2 buttons not react to click when holding for about a second")
 
 We always recommend using the latest Qt version. See [Qt Archive](https://download.qt.io/archive/qt/ "Qt Archive").
+
+#### Make targets
+
+Common actions are automated with the help of `make`. The following targets have been implemnented:
+
+```
+deps                           Add dependencies
+run                            Run FiberCrypto Wallet.
+install-deps-no-envs           Install therecipe/qt with -tags=no_env set
+install-docker-deps            Install docker images for project compilation using docker
+install-deps-Linux             Install Linux dependencies
+install-deps-Darwin            Install osx dependencies
+install-deps-Windows           Install Windowns dependencies
+install-deps                   Install dependencies
+build-docker                   Build project using docker
+build                          Build FiberCrypto Wallet.
+clean-Windows                  Clean project FiberCrypto Wallet.
+prepare-release                Change the resources in the app and prepare to release the app
+clean-test                     Remove temporary test files
+clean-build                    Remove temporary files
+clean                          Remove temporary files
+gen-mocks                      Generate mocks for interface types
+test-sky                       Run Skycoin plugin test suite
+test-core                      Run tests for API core and helpers
+test-cover                     Show more details of test coverage
+test                           Run project test suite
+install-linters                Install linters
+lint                           Run linters. Use make install-linters first.
+```
+
+Type `make help` in your console for details.
 
 ## WIP
 This is a Work-In-Progress.

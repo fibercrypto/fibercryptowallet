@@ -1,17 +1,21 @@
 package models
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 )
 
 const (
-	Name              = int(core.Qt__UserRole) + 1
-	EncryptionEnabled = int(core.Qt__UserRole) + 2
-	Sky               = int(core.Qt__UserRole) + 3
-	CoinHours         = int(core.Qt__UserRole) + 4
-	FileName          = int(core.Qt__UserRole) + 5
+	Name = int(core.Qt__UserRole) + iota + 1
+	EncryptionEnabled
+	Sky
+	CoinHours
+	FileName
+	Expand
 )
+
+var logWalletsModel = logging.MustGetLogger("Wallets Model")
 
 type WalletModel struct {
 	core.QAbstractListModel
@@ -22,53 +26,59 @@ type WalletModel struct {
 	_ []*QWallet               `property:"wallets"`
 
 	_ func(*QWallet)                                                                    `slot:"addWallet"`
-	_ func(row int, name string, encryptionEnabled bool, sky float64, coinHours uint64) `slot:"editWallet"`
+	_ func(row int, name string, encryptionEnabled bool, sky string, coinHours string)  `slot:"editWallet"`
 	_ func(row int)                                                                     `slot:"removeWallet"`
 	_ func([]*QWallet)                                                                  `slot:"loadModel"`
+	_ func([]*QWallet)                                                                  `slot:"updateModel"`
 	_ int                                                                               `property:"count"`
 }
 
 type QWallet struct {
 	core.QObject
-
 	_ string  `property:"name"`
 	_ int     `property:"encryptionEnabled"`
-	_ float64 `property:"sky"`
-	_ uint64  `property:"coinHours"`
+	_ string  `property:"sky"`
+	_ string  `property:"coinHours"`
 	_ string  `property:"fileName"`
+	_ bool    `property:"expand"`
 }
 
-func (m *WalletModel) init() {
-	m.SetRoles(map[int]*core.QByteArray{
+func (walletModel *WalletModel) init() {
+	logWalletsModel.Info("Initialize Wallet model")
+	walletModel.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),
 		EncryptionEnabled: core.NewQByteArray2("encryptionEnabled", -1),
 		Sky:               core.NewQByteArray2("sky", -1),
 		CoinHours:         core.NewQByteArray2("coinHours", -1),
 		FileName:          core.NewQByteArray2("fileName", -1),
+		Expand:            core.NewQByteArray2("expand", -1),
 	})
-	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
-	m.ConnectData(m.data)
-	m.ConnectRowCount(m.rowCount)
-	m.ConnectColumnCount(m.columnCount)
-	m.ConnectRoleNames(m.roleNames)
+	qml.QQmlEngine_SetObjectOwnership(walletModel, qml.QQmlEngine__CppOwnership)
+	walletModel.ConnectData(walletModel.data)
+	walletModel.ConnectSetData(walletModel.setData)
+	walletModel.ConnectRowCount(walletModel.rowCount)
+	walletModel.ConnectColumnCount(walletModel.columnCount)
+	walletModel.ConnectRoleNames(walletModel.roleNames)
 
-	m.ConnectAddWallet(m.addWallet)
-	m.ConnectEditWallet(m.editWallet)
-	m.ConnectRemoveWallet(m.removeWallet)
-	m.ConnectLoadModel(m.loadModel)
+	walletModel.ConnectAddWallet(walletModel.addWallet)
+	walletModel.ConnectEditWallet(walletModel.editWallet)
+	walletModel.ConnectRemoveWallet(walletModel.removeWallet)
+	walletModel.ConnectLoadModel(walletModel.loadModel)
+	walletModel.ConnectUpdateModel(walletModel.updateModel)
 
 }
 
-func (m *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
+func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
+	logWalletsModel.Info("Loading data for index")
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Wallets()) {
+	if index.Row() >= len(walletModel.Wallets()) {
 		return core.NewQVariant()
 	}
 
-	var w = m.Wallets()[index.Row()]
+	var w = walletModel.Wallets()[index.Row()]
 
 	switch role {
 	case Name:
@@ -94,7 +104,10 @@ func (m *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
 		{
 			return core.NewQVariant1(w.FileName())
 		}
-
+	case Expand:
+		{
+			return core.NewQVariant1(w.IsExpand())
+		}
 	default:
 		{
 			return core.NewQVariant()
@@ -102,59 +115,111 @@ func (m *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	}
 }
 
-func (m *WalletModel) rowCount(parent *core.QModelIndex) int {
-	return len(m.Wallets())
+func (walletModel *WalletModel) setData(index *core.QModelIndex, value *core.QVariant, role int) bool {
+
+	if !index.IsValid() {
+		return false
+	}
+
+	if index.Row() >= len(walletModel.Wallets()) {
+		return false
+	}
+
+	var w = walletModel.Wallets()[index.Row()]
+
+	switch role {
+	case Name:
+		{
+			w.SetName(value.ToString())
+		}
+	case EncryptionEnabled:
+		{
+			w.SetEncryptionEnabled(value.ToInt(nil))
+		}
+	case Sky:
+		{
+			w.SetSky(value.ToString())
+		}
+	case CoinHours:
+		{
+			w.SetCoinHours(value.ToString())
+		}
+	case FileName:
+		{
+			w.SetFileName(value.ToString())
+		}
+	case Expand:
+		{
+			w.SetExpand(value.ToBool())
+		}
+	default:
+		{
+			return false
+		}
+	}
+
+	walletModel.DataChanged(index, index, []int{role})
+	return true
 }
 
-func (m *WalletModel) columnCount(parent *core.QModelIndex) int {
+func (walletModel *WalletModel) rowCount(parent *core.QModelIndex) int {
+	return len(walletModel.Wallets())
+}
+
+func (walletModel *WalletModel) columnCount(parent *core.QModelIndex) int {
 	return 1
 }
 
-func (m *WalletModel) roleNames() map[int]*core.QByteArray {
-	return m.Roles()
+func (walletModel *WalletModel) roleNames() map[int]*core.QByteArray {
+	return walletModel.Roles()
 }
 
-func (m *WalletModel) addWallet(w *QWallet) {
-	m.BeginInsertRows(core.NewQModelIndex(), len(m.Wallets()), len(m.Wallets()))
+func (walletModel *WalletModel) addWallet(w *QWallet) {
+	logWalletsModel.Info("Add Wallet")
+	walletModel.BeginInsertRows(core.NewQModelIndex(), len(walletModel.Wallets()), len(walletModel.Wallets()))
 	qml.QQmlEngine_SetObjectOwnership(w, qml.QQmlEngine__CppOwnership)
-	m.SetWallets(append(m.Wallets(), w))
-	m.EndInsertRows()
-	m.SetCount(m.Count() + 1)
-
+	walletModel.SetWallets(append(walletModel.Wallets(), w))
+	walletModel.SetCount(walletModel.Count() + 1)
+	walletModel.EndInsertRows()
 }
 
-func (m *WalletModel) editWallet(row int, name string, encrypted bool, sky float64, coinHours uint64) {
-	w := m.Wallets()[row]
-	w.SetName(name)
-	w.SetEncryptionEnabled(0)
+func (walletModel *WalletModel) editWallet(row int, name string, encrypted bool, sky string, coinHours string) {
+	logWalletsModel.Info("Edit Wallet")
+	pIndex := walletModel.Index(row, 0, core.NewQModelIndex())
+
+	walletModel.setData(pIndex, core.NewQVariant1(name), Name)
 	if encrypted {
-		w.SetEncryptionEnabled(1)
+		walletModel.setData(pIndex, core.NewQVariant1(1), EncryptionEnabled)
+	} else {
+		walletModel.setData(pIndex, core.NewQVariant1(0), EncryptionEnabled)
 	}
-
-	w.SetSky(sky)
-	w.SetCoinHours(coinHours)
-	w.SetFileName(w.FileName())
-
-	pIndex := m.Index(row, 0, core.NewQModelIndex())
-	m.DataChanged(pIndex, pIndex, []int{Name, EncryptionEnabled, Sky, CoinHours, FileName})
-
+	walletModel.setData(pIndex, core.NewQVariant1(sky), Sky)
+	walletModel.setData(pIndex, core.NewQVariant1(coinHours), CoinHours)
 }
 
-func (m *WalletModel) removeWallet(row int) {
-	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
-	m.SetWallets(append(m.Wallets()[:row], m.Wallets()[row+1:]...))
-	m.EndRemoveRows()
-	m.SetCount(m.Count() - 1)
-
+func (walletModel *WalletModel) removeWallet(row int) {
+	logWalletsModel.Info("Remove wallets for index")
+	walletModel.BeginRemoveRows(core.NewQModelIndex(), row, row)
+	walletModel.SetWallets(append(walletModel.Wallets()[:row], walletModel.Wallets()[row+1:]...))
+	walletModel.SetCount(walletModel.Count() - 1)
+	walletModel.EndRemoveRows()
 }
 
-func (m *WalletModel) loadModel(wallets []*QWallet) {
+func (walletModel *WalletModel) updateModel(wallets []*QWallet) {
+	for i, wlt := range wallets {
+		walletModel.editWallet(i, wlt.Name(), wlt.EncryptionEnabled() == 1, wlt.Sky(), wlt.CoinHours())
+	}
+}
+
+func (walletModel *WalletModel) loadModel(wallets []*QWallet) {
+	logWalletsModel.Info("Loading wallets")
 	for _, wlt := range wallets {
+		//wallets[i].SetSky(58)
 		qml.QQmlEngine_SetObjectOwnership(wlt, qml.QQmlEngine__CppOwnership)
 	}
-	m.BeginResetModel()
-	m.SetWallets(wallets)
+	walletModel.BeginResetModel()
+	walletModel.SetWallets(wallets)
 
-	m.EndResetModel()
-	m.SetCount(len(m.Wallets()))
+	walletModel.EndResetModel()
+	walletModel.SetCount(len(walletModel.Wallets()))
 }

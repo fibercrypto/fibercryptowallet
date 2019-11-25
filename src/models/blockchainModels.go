@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"strconv"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
@@ -10,6 +11,8 @@ import (
 	qtcore "github.com/therecipe/qt/core"
 )
 
+var logBlockchain = logging.MustGetLogger("modelsBlockchain")
+
 // BlockchainStatusModel Contains info about the blockchain to be show.
 type BlockchainStatusModel struct {
 	qtcore.QObject
@@ -18,6 +21,7 @@ type BlockchainStatusModel struct {
 	infoRequester core.BlockchainStatus
 
 	_ string            `property:"numberOfBlocks"`
+	_ bool              `property:"loading"`
 	_ *qtcore.QDateTime `property:"timestampLastBlock"`
 	_ string            `property:"hashLastBlock"`
 	_ string            `property:"currentSkySupply"`
@@ -28,78 +32,89 @@ type BlockchainStatusModel struct {
 	_ func() `signal:"update,auto"`
 }
 
-func (bs *BlockchainStatusModel) init() {
+func (blockchainStatus *BlockchainStatusModel) init() {
 	// block details
-	bs.SetNumberOfBlocksDefault("0")
-	bs.SetTimestampLastBlockDefault(qtcore.NewQDateTime3(qtcore.NewQDate3(2000, 1, 1), qtcore.NewQTime3(0, 0, 0, 0), qtcore.Qt__LocalTime))
-	bs.SetHashLastBlockDefault("")
+	blockchainStatus.SetNumberOfBlocksDefault("0")
+	blockchainStatus.SetTimestampLastBlockDefault(qtcore.NewQDateTime3(qtcore.NewQDate3(2000, 1, 1), qtcore.NewQTime3(0, 0, 0, 0), qtcore.Qt__LocalTime))
+	blockchainStatus.SetHashLastBlockDefault("")
 	// sky details
-	bs.SetCurrentSkySupplyDefault("0")
-	bs.SetTotalSkySupplyDefault("0")
-	bs.SetCurrentCoinHoursSupplyDefault("0")
-	bs.SetTotalCoinHoursSupplyDefault("0")
-
-	bs.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
+	blockchainStatus.SetCurrentSkySupplyDefault("0")
+	blockchainStatus.SetTotalSkySupplyDefault("0")
+	blockchainStatus.SetCurrentCoinHoursSupplyDefault("0")
+	blockchainStatus.SetTotalCoinHoursSupplyDefault("0")
+	blockchainStatus.SetLoading(true)
+	blockchainStatus.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
 }
 
-func (bs *BlockchainStatusModel) update() {
+func (blockchainStatus *BlockchainStatusModel) update() {
 	// update info
-	if err := bs.updateInfo(); err != nil {
-		println(err.Error())
+	if err := blockchainStatus.updateInfo(); err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't update blockchain Info")
 		return
 	}
 	return
 }
 
 // updateInfo request the needed information
-func (bs *BlockchainStatusModel) updateInfo() error {
+func (blockchainStatus *BlockchainStatusModel) updateInfo() error {
+	logBlockchain.Info("Updating Blockchain Status")
+	blockchainStatus.SetLoading(true)
 
-	block, err := bs.infoRequester.GetLastBlock()
+	block, err := blockchainStatus.infoRequester.GetLastBlock()
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get last block")
 		return err
 	}
 
 	lastBlockHash, err := block.GetHash()
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get the hash of the last block")
 		return err
 	}
-	numberOfBlocks,err := bs.infoRequester.GetNumberOfBlocks()
+	numberOfBlocks, err := blockchainStatus.infoRequester.GetNumberOfBlocks()
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get the number of blocks")
 		return err
 	}
-	tstamp, err := block.GetTime()
+	timestamp, err := block.GetTime()
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get block time")
 		return err
 	}
-	year, month, day, h, m, s := util.ParseDate(int64(tstamp))
+	year, month, day, h, m, s := util.ParseDate(int64(timestamp))
 
-	currentSkySupply, err := bs.infoRequester.GetCoinValue(core.CoinCurrentSupply, skycoin.Sky)
+	currentSkySupply, err := blockchainStatus.infoRequester.GetCoinValue(core.CoinCurrentSupply, skycoin.Sky)
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get current coin supply of Skycoins")
 		return err
 	}
-	totalSkySupply, err := bs.infoRequester.GetCoinValue(core.CoinTotalSupply, skycoin.Sky)
+	totalSkySupply, err := blockchainStatus.infoRequester.GetCoinValue(core.CoinTotalSupply, skycoin.Sky)
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get total coin supply of Skycoins")
 		return err
 	}
-	currentCoinHoursSupply, err := bs.infoRequester.GetCoinValue(core.CoinCurrentSupply, skycoin.CoinHour)
+	currentCoinHoursSupply, err := blockchainStatus.infoRequester.GetCoinValue(core.CoinCurrentSupply, skycoin.CoinHour)
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get current coin supply of Coin Hours")
 		return err
 	}
-	totalCoinHoursSupply, err := bs.infoRequester.GetCoinValue(core.CoinTotalSupply, skycoin.CoinHour)
+	totalCoinHoursSupply, err := blockchainStatus.infoRequester.GetCoinValue(core.CoinTotalSupply, skycoin.CoinHour)
 	if err != nil {
+		logBlockchain.WithError(err).Warn("Couldn't get total coin supply of coin hours")
 		return err
 	}
 
 	// block details
-	bs.SetNumberOfBlocks(strconv.FormatUint(numberOfBlocks, 10))
-	bs.SetTimestampLastBlock(qtcore.NewQDateTime3(qtcore.NewQDate3(year, month, day), qtcore.NewQTime3(h, m, s, 0), qtcore.Qt__LocalTime))
-	bs.SetHashLastBlock(string(lastBlockHash))
+	blockchainStatus.SetNumberOfBlocks(strconv.FormatUint(numberOfBlocks, 10))
+	blockchainStatus.SetTimestampLastBlock(qtcore.NewQDateTime3(qtcore.NewQDate3(year, month, day), qtcore.NewQTime3(h, m, s, 0), qtcore.Qt__LocalTime))
+	blockchainStatus.SetHashLastBlock(string(lastBlockHash))
 
 	// sky details
-	bs.SetCurrentSkySupply(strconv.FormatUint(currentSkySupply, 10))
-	bs.SetTotalSkySupply(strconv.FormatUint(totalSkySupply, 10))
-	bs.SetCurrentCoinHoursSupply(strconv.FormatUint(currentCoinHoursSupply, 10))
-	bs.SetTotalCoinHoursSupply(strconv.FormatUint(totalCoinHoursSupply, 10))
+	blockchainStatus.SetCurrentSkySupply(strconv.FormatUint(currentSkySupply, 10))
+	blockchainStatus.SetTotalSkySupply(strconv.FormatUint(totalSkySupply, 10))
+	blockchainStatus.SetCurrentCoinHoursSupply(strconv.FormatUint(currentCoinHoursSupply, 10))
+	blockchainStatus.SetTotalCoinHoursSupply(strconv.FormatUint(totalCoinHoursSupply, 10))
+	blockchainStatus.SetLoading(false)
 
 	return nil
 }

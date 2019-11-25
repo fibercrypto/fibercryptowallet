@@ -32,7 +32,7 @@ Page {
                 Layout.fillWidth: true
             }
             Label {
-                text: qsTr("Sky")
+                text: qsTr("SKY")
                 font.pointSize: 9
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: internalLabelsWidth
@@ -103,12 +103,21 @@ Page {
             delegate: WalletListDelegate {}
         }
     }
-    
+
     WalletModel {
         id: walletModel
 
         Component.onCompleted: {
             walletModel.loadModel(walletManager.getWallets())
+        }
+        property Timer timer: Timer {
+            id: walletListTimer
+            interval: 5000
+            repeat: true
+            running: true
+            onTriggered: {
+                walletModel.updateModel(walletManager.getWallets())
+            }
         }
     }
 

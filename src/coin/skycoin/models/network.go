@@ -1,12 +1,16 @@
 package skycoin
 
 import (
-	"errors"
-	"fmt"
+	"encoding/hex"
 
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/api"
 )
+
+var logNetwork = logging.MustGetLogger("Skycoin network")
 
 const (
 	PoolSection = "skycoin"
@@ -16,7 +20,7 @@ type SkycoinConnectionFactory struct {
 	url string
 }
 
-func (cf *SkycoinConnectionFactory) Create() (core.PooledObject, error) {
+func (cf *SkycoinConnectionFactory) Create() (interface{}, error) {
 
 	return api.NewClient(cf.url), nil
 }
@@ -28,13 +32,28 @@ func NewSkycoinConnectionFactory(url string) *SkycoinConnectionFactory {
 	}
 }
 
-func NewSkycoinApiClient(section string) (*api.Client, error) {
-	pool := core.GetMultiPool()
-	obj, err := pool.Get(section)
+type SkycoinApiClient struct {
+	skytypes.SkycoinAPI
+	pool core.MultiPoolSection
+}
+
+// nolint megacheck TODO: This functions is not used
+func (sc *SkycoinApiClient) returnToPool() {
+	sc.pool.Put(sc.SkycoinAPI)
+}
+
+func NewSkycoinApiClient(section string) (skytypes.SkycoinAPI, error) {
+	logNetwork.Info("Creating Skycoin api client")
+	mpool := core.GetMultiPool()
+	pool, err := mpool.GetSection(section)
+	if err != nil {
+		return nil, err
+	}
+
+	obj := pool.Get()
 
 	if err != nil {
 		for _, ok := err.(core.NotAvailableObjectsError); ok; _, ok = err.(core.NotAvailableObjectsError) {
-			obj, err = pool.Get(section)
 			if err == nil {
 				break
 			}
@@ -42,18 +61,32 @@ func NewSkycoinApiClient(section string) (*api.Client, error) {
 		return nil, err
 	}
 
-	skyApi, ok := obj.(*api.Client)
+	skyApi, ok := obj.(skytypes.SkycoinAPI)
 	if !ok {
-		return nil, errors.New(fmt.Sprintf("There is not propers client in %s pool", section))
+		logNetwork.Errorf("There is no proper client in %s pool", section)
+		return nil, errors.ErrInvalidPoolObjectType
 	}
-	return skyApi, nil
+	return &SkycoinApiClient{
+		SkycoinAPI: skyApi,
+		pool:       pool,
+	}, nil
+}
+
+func ReturnSkycoinClient(obj skytypes.SkycoinAPI) {
+	poolObj, ok := obj.(*SkycoinApiClient)
+	if !ok {
+		return
+	}
+	poolObj.pool.Put(poolObj.SkycoinAPI)
 }
 
 func NewSkycoinPEX(poolSection string) *SkycoinPEX {
+	logNetwork.Info("Creating new Skycoin PEX")
 	return &SkycoinPEX{poolSection}
 }
 
-type SkycoinPEX struct { //Implements PEX interface
+//Implements PEX interface
+type SkycoinPEX struct {
 	poolSection string
 }
 
@@ -63,17 +96,21 @@ func (spex *SkycoinPEX) GetConnections() (core.PexNodeSet, error) {
 }
 
 func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
-
-	unTxn, ok := txn.(*SkycoinUninjectedTransaction)
+	logNetwork.Info("Broadcasting transaction")
+	unTxn, ok := txn.(skytypes.SkycoinTxn)
 	if !ok {
-		return errors.New("Invalid Transaction")
+		return errors.ErrInvalidTxn
 	}
 	c, err := NewSkycoinApiClient(spex.poolSection)
 	if err != nil {
 		return err
 	}
-	defer core.GetMultiPool().Return(spex.poolSection, c)
-	_, err = c.InjectTransaction(unTxn.txn)
+	defer ReturnSkycoinClient(c)
+	txnBytes, err := unTxn.EncodeSkycoinTransaction()
+	if err != nil {
+		return err
+	}
+	_, err = c.InjectEncodedTransaction(hex.EncodeToString(txnBytes))
 	if err != nil {
 		return err
 	}
@@ -82,11 +119,12 @@ func (spex *SkycoinPEX) BroadcastTxn(txn core.Transaction) error {
 }
 
 func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
-	c, err := NewSkycoinApiClient(spex.poolSection)
+	logNetwork.Info("Getting transaction pool")
+	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		return nil, err
 	}
-	defer core.GetMultiPool().Return(spex.poolSection, c)
+	defer ReturnSkycoinClient(c)
 	txns, err2 := c.PendingTransactionsVerbose()
 	if err2 != nil {
 		return nil, err2
