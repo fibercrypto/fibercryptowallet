@@ -115,7 +115,7 @@ func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectF
 func (mp *MultiConnectionsPool) ListSections() ([]string, error) {
 	logConnectionPool.Info("Listing pool sections")
 	sections := make([]string, 0)
-	for key, _ := range mp.sections {
+	for key := range mp.sections {
 		sections = append(sections, key)
 	}
 	return sections, nil
