@@ -319,6 +319,15 @@ func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 		logWalletManager.WithError(err).Warn("Error loading PEX")
 		return false
 	}
+	isSigned, err := txn.txn.IsFullySigned()
+	if err != nil {
+		logWalletManager.WithError(err).Warn("Error checking if transaction if fully signed")
+		return false
+	}
+	if !isSigned {
+		logWalletManager.Warn("Transaction is not fully signed")
+		return false
+	}
 	err = pex.BroadcastTxn(txn.txn)
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error broadcasting transaction")
@@ -582,6 +591,7 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 
 	var txn core.Transaction
 	var err error
+
 	if len(wltCache) > 1 {
 		signDescriptors := make([]core.InputSignDescriptor, 0)
 		for _, in := range qTxn.txn.GetInputs() {
@@ -594,9 +604,9 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 		}
 		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
 	} else {
-		signer, err := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
-		if err != nil {
-			logWalletManager.WithError(err).Warn("No signer %s for wallet %v", source, wlts[0])
+		signer, err2 := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
+		if err2 != nil {
+			logWalletManager.WithError(err).Warnf("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
 		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
@@ -606,6 +616,7 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 		logWalletManager.WithError(err).Warn("Error signing txn")
 		return nil
 	}
+
 	qTxn, err = NewQTransactionFromTransaction(txn)
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Error converting transaction")
@@ -632,7 +643,10 @@ func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []strin
 
 	go func() {
 		txn := <-channel
-		walletM.broadcastTxn(txn)
+		if txn != nil {
+			walletM.broadcastTxn(txn)
+		}
+
 	}()
 }
 

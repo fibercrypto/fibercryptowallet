@@ -351,6 +351,7 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, signer core.TxnSigner, pwd c
 
 func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	client, err := NewSkycoinApiClient(PoolSection)
+	var password string = ""
 	if err != nil {
 		logWallet.WithError(err).Warn(err)
 		return nil, err
@@ -361,11 +362,14 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		logWallet.WithError(err).Warn(err)
 		return nil, errors.ErrInvalidTxn
 	}
-	password, err := pwd(fmt.Sprintf("Introduce the password of %s ", wlt.Label))
-	if err != nil {
-		logWallet.WithError(err).Warn("Error getting password")
-		return nil, err
+	if wlt.Encrypted {
+		password, err = pwd(fmt.Sprintf("Introduce the password of %s ", wlt.Label))
+		if err != nil {
+			logWallet.WithError(err).Warn("Error getting password")
+			return nil, err
+		}
 	}
+
 	txnBytes, err := skyTxn.EncodeSkycoinTransaction()
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't get Transaction Encoded")

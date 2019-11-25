@@ -198,12 +198,8 @@ Page {
 
         focus: true
         modal: true
-        onAccepted:{
-            
-            bridgeForPassword.setResult(getPasswordDialog.password)
-        }
-
         onClosed:{
+            bridgeForPassword.setResult(getPasswordDialog.password)
             bridgeForPassword.unlock()
         }
     }
