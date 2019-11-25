@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"fmt"
 	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
 	integrationtestutil "github.com/fibercrypto/FiberCryptoWallet/test/integration/util"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
@@ -835,6 +834,7 @@ func testTransactionSignInput(t *testing.T, signer core.TxnSigner) {
 	}
 
 	uiTxn := makeUninjectedTransaction(t, &txn, 1)
+	var signedCoreTxn core.Transaction
 	var isFullySigned bool
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
@@ -848,11 +848,6 @@ func testTransactionSignInput(t *testing.T, signer core.TxnSigner) {
 
 	// Input is already signed
 	_, err = wallets[0].Sign(uiTxn, nil, util.EmptyPassword, []string{"0"})
-	addrIndexes := make([]string, len(keysData))
-	for idx, keyData := range keysData {
-		addrIndexes[idx] = fmt.Sprint(keyData.AddressIndex)
-	}
-	signedCoreTxn, err := wallets[0].Sign(uiTxn, signer, util.EmptyPassword, addrIndexes)
 	testutil.RequireError(t, err, "Transaction is fully signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
