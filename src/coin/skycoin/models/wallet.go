@@ -679,7 +679,7 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, wallet
 			wltType = WalletTypeDeterministic
 		}
 
-	case "bip-44":
+	case "bip44":
 		{
 			wltType = WalletTypeBip44
 		}
