@@ -567,6 +567,11 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 		return nil
 	}
 
+	if len(wltIds) != len(password) {
+		logWalletManager.Error("Wallets and passwords provided are incorrect")
+		return nil
+	}
+
 	wltCache := make(map[string]core.Wallet)
 	wltByAddr := make(map[string]core.Wallet)
 	wlts := make([]core.Wallet, 0)
@@ -599,14 +604,14 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 			}
 			signDescriptors = append(signDescriptors, sd)
 		}
-		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
+		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, passwords)
 	} else {
 		signer, err2 := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
 		if err2 != nil {
 			logWalletManager.WithError(err).Warnf("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
-		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
+		txn, err = wlts[0].Sign(qTxn.txn, signer, passwords[wlts[0].GetId()], nil)
 	}
 
 	if err != nil {

@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func generateRandomKeyData(t *testing.T) (*KeyData, error) {
+func generateRandomKeyData(t *testing.T) *KeyData {
 	entropy, err := bip39.NewEntropy(128)
 	require.NoError(t, err)
 	mnemonic, err := bip39.NewMnemonic(entropy)
@@ -30,50 +30,43 @@ func generateRandomKeyData(t *testing.T) (*KeyData, error) {
 		SecKey:       secKey,
 	}
 
-	return kd, nil
+	return kd
 }
 
-func makeUxBodyWithRandomSecret(t *testing.T) (coin.UxBody, *KeyData, error) {
-	keydata, err := generateRandomKeyData(t)
-	if err != nil {
-		return coin.UxBody{}, nil, err
-	}
+func makeUxBodyWithRandomSecret(t *testing.T) (coin.UxBody, *KeyData) {
+	keydata := generateRandomKeyData(t)
 	return coin.UxBody{
 		SrcTransaction: testutil.RandSHA256(t),
 		Address:        cipher.AddressFromPubKey(keydata.PubKey),
 		Coins:          1e6,
 		Hours:          100,
-	}, keydata, nil
+	}, keydata
 }
 
-func makeUxWithRandomSecret(t *testing.T) (coin.UxOut, *KeyData, error) {
-	body, kd, err := makeUxBodyWithRandomSecret(t)
-	if err != nil {
-		return coin.UxOut{}, nil, err
-	}
+func makeUxWithRandomSecret(t *testing.T) (coin.UxOut, *KeyData) {
+	body, kd := makeUxBodyWithRandomSecret(t)
 	return coin.UxOut{
 		Head: coin.UxHead{
 			Time:  100,
 			BkSeq: 2,
 		},
 		Body: body,
-	}, kd, nil
+	}, kd
 }
 
-func makeTransactionFromMultipleWallets(t *testing.T, n int) (coin.Transaction, []KeyData, []coin.UxOut, error) {
+func makeTransactionFromMultipleWallets(t *testing.T, n int) (coin.Transaction, []KeyData, []coin.UxOut) {
 	uxs := make([]coin.UxOut, n)
 	keysdata := make([]KeyData, n)
 	secs := make([]cipher.SecKey, n)
 
 	for i := 0; i < n; i++ {
-		ux, kd, err := makeUxWithRandomSecret(t)
-		require.NoError(t, err)
+		ux, kd := makeUxWithRandomSecret(t)
 		uxs[i] = ux
 		secs[i] = kd.SecKey
 		keysdata[i] = *kd
 	}
 
-	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, uxs, nil
+	return makeTransactionFromUxOuts(t, uxs, secs), keysdata, uxs
 }
 
 func makeSimpleWalletAddress(wallet core.Wallet, address core.Address) core.WalletAddress {

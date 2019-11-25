@@ -55,7 +55,7 @@ Page {
                         txn = walletManager.sendFromAddresses(addrs[1], addrs[0], destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } 
                     
-                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()[0]
+                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
                 } else{
                     walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
