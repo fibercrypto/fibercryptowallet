@@ -200,8 +200,10 @@ Page {
         modal: true
         onAccepted:{
             
-            //console.log("UNLOCKING FROM QML " + getPasswordDialog.password)
             bridgeForPassword.setResult(getPasswordDialog.password)
+        }
+
+        onClosed:{
             bridgeForPassword.unlock()
         }
     }
