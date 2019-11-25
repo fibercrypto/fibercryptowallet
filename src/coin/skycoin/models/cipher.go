@@ -30,8 +30,21 @@ func NewSkycoinAddressIterator(addresses []core.Address) *SkycoinAddressIterator
 	return &SkycoinAddressIterator{addresses: addresses, current: -1}
 }
 
+func NewSkycoinAddress(addrStr string) (core.Address, error) {
+	var skyAddr cipher.Address
+	if skyAddr, err := cipher.DecodeBase58Address(addrStr); err != nil {
+		return nil, err
+	}
+	return &SkycoinAddress{
+		isBIP32:     false,
+		address:     skyAddr,
+		poolSection: PoolSection,
+	}
+}
+
 type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
-	address     string
+	isBip32     bool
+	address     cipher.Address
 	poolSection string
 }
 
@@ -40,19 +53,118 @@ func (addr *SkycoinAddress) IsBip32() bool {
 }
 
 func (addr *SkycoinAddress) String() string {
-	return addr.address
+	return addr.address.String()
 }
 
 func (addr *SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
 }
 
-func (addr SkycoinAddress) ToSkycoinCipherAddress() (*cipher.Address, error) {
-	pubkey, err := cipher.PubKeyFromHex(addr.String())
-	if err != nil {
-		return nil, err
-	}
-	sAddr := cipher.AddressFromPubKey(pubkey)
-
-	return &sAddr, nil
+func (addr *SkycoinAddress) ToSkycoinCipherAddress() (*cipher.Address, error) {
+	return cipher.AddressFromBytes(addr.Bytes())
 }
+
+// Bytes binary representation for address
+func (addr *SkycoinAddress) Bytes() []byte {
+	return addr.address.Bytes()
+}
+
+// Checksum computes address consistency token
+func (addr *SkycoinAddress) Checksum() Checksum {
+	return addr.address.Checksum()[:]
+}
+
+func toSkycoinPubKey(pk core.PubKey) (cipher.PubKey, error) {
+	if pk1, isSkyPK := pk.(*SkycoinPubKey); isSkyPK {
+		return pk1.pubkey, nil
+	}
+	return cipher.NewPubKey(pk.Bytes())
+}
+
+func toSkycoinSecKey(sk core.SecKey) (cipher.SecKey, error) {
+	if sk1, isSkySK := sk.(*SkycoinSecKey); isSkySK {
+		return sk1.seckey, nil
+	}
+	return cipher.NewSecKey(sk.Bytes())
+}
+
+// Verify checks that the address appears valid for the public key
+func (addr *SkycoinAddress) Verify(pk core.PubKey) error {
+	skyPK, err := toSkycoinPubkey(pk)
+	if err != nil {
+		return err
+	}
+	return addr.address.Verify(skyPK)
+}
+
+// Null returns true if the address is null
+func (addr *SkycoinAddress) Null() bool {
+	return addr.address.Null()
+}
+
+// SkycoinSecKey Skycoin private key wrapper
+type SkycoinSecKey struct {
+	seckey cipher.SecKey
+}
+
+// Verify checks that the private key appears valid
+func (sk *SkycoinSecKey) Verify() error {
+	return sk.seckey.Verify()
+}
+
+// Null returns true if the private key is null
+func (sk *SkycoinSecKey) Null() bool {
+	return sk.seckey.Null()
+}
+
+// Bytes binary representation for private key
+func (sk *SkycoinSecKey) Bytes() []byte {
+	return sk.seckey.Bytes()
+}
+
+func skySecKeyFromBytes(b []byte) (SkycoinPubKey, error) {
+	sk, err := cipher.NewSecKey(b)
+	if err != nil {
+		return err
+	}
+	return &SkycoinSecKey{
+		seckey: sk,
+	}
+}
+
+func skyPubKeyFromBytes(b []byte) (SkycoinSecKey, error) {
+	pk, err := cipher.NewPubKey(b)
+	if err != nil {
+		return err
+	}
+	return &SkycoinPubKey{
+		pubkey: pk,
+	}
+}
+
+// SkycoinPubKey Skycoin public key wrapper
+type SkycoinPubKey struct {
+	pubkey cipher.PubKey
+}
+
+// Verify checks that the public key appears valid
+func (pk *SkycoinPubKey) Verify() error {
+	return pk.pubkey.Verify()
+}
+
+// Null returns true if the public key is null
+func (pk *SkycoinPubKey) Null() bool {
+	return pk.pubkey.Null()
+}
+
+// Bytes binary representation for public key
+func (pk *SkycoinPubKey) Bytes() []byte {
+	return pk.pubkey.Bytes()
+}
+
+// Type assertions
+var (
+	_ core.Address = &SkycoinAddress{}
+	_ core.PubKey  = &SkycoinPubKey{}
+	_ core.SecKey  = &SkycoinSecKey{}
+)
