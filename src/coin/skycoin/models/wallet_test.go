@@ -843,7 +843,8 @@ func testTransactionSignInput(t *testing.T, signer core.TxnSigner) {
 	// Load local wallets
 	wallets := makeLocalWalletsFromKeyData(t, keysData)
 	if signer != nil {
-		util.AttachSignService(signer)
+		err = util.AttachSignService(signer)
+		require.NoError(t, err)
 	}
 
 	// Input is already signed
@@ -869,7 +870,8 @@ func testTransactionSignInput(t *testing.T, signer core.TxnSigner) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
-	_, err = wallets[1].Sign(signedTxn, nil, nil, []string{"1"})
+	_, err = wallets[1].Sign(signedTxn, signer, nil, []string{"1"})
+	// FIXME use a named var from errors
 	testutil.RequireError(t, err, "Transaction is fully signed")
 
 	// Transaction has no sigs; sigs array is initialized
@@ -916,7 +918,7 @@ func TestTransactionSignInputFromDevice(t *testing.T) {
 	callback := func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error) {
 		var msg wire.Message
 		for outsLen > 0 {
-			msg = integrationtestutil.PressAcceptButton(t, dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
+			integrationtestutil.PressAcceptButton(t, dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
 			if outsLen == 1 {
 				msg = integrationtestutil.PressAcceptButton(t, dev, prvMsg, messages.MessageType_MessageType_ResponseTransactionSign)
 			} else {
