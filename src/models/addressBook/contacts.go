@@ -112,7 +112,7 @@ func (abm *AddrsBookModel) columnCount(parent *qtcore.QModelIndex) int {
 }
 
 func (abm *AddrsBookModel) removeContact(row int, id uint64) {
-	logAddressBook.Info("Remove contact")
+	logAddressBook.Infof("Remove contact with id %d", id)
 	if row < 0 || row >= abm.Count() {
 		return
 	}
@@ -212,10 +212,17 @@ func (*AddrsBookModel) close() {
 
 func (abm *AddrsBookModel) openAddrsBook(password string) bool {
 	var err error
+	if !abm.exist() {
+		return false
+	}
+
+	if isOpen {
+		abm.close()
+	}
+	abm.SetContacts([]*QContact{})
 	logAddressBook.Info("Opening address book")
 	if db, err = data.LoadFromFile(getConfigFileDir(), []byte(password)); err != nil {
 		logAddressBook.Error(err)
-
 		return false
 	}
 
@@ -232,6 +239,9 @@ func (abm *AddrsBookModel) openAddrsBook(password string) bool {
 
 func (abm *AddrsBookModel) initAddrsBook(password string) bool {
 	var err error
+	if abm.exist() {
+		return false
+	}
 	logAddressBook.Info("Creating address book")
 
 	if db, err = data.Init([]byte(password), getConfigFileDir()); err != nil {
@@ -259,6 +269,7 @@ func fromContactToQContact(contacts []core.Contact) []*QContact {
 	for _, c := range contacts {
 		qc := NewQContact(nil)
 		qc.SetName(c.GetName())
+		logAddressBook.Info(c.GetID())
 		qc.SetId(c.GetID())
 		qAddressModel := NewAddrsBkAddressModel(nil)
 		qAddressModel.SetAddress(fromAddressToQAddress(c.GetAddresses()))

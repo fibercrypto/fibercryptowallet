@@ -317,6 +317,7 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 			return errBucketEmpty
 		}
 		if cc, ok := newContact.(*Contact); ok {
+			cc.SetID(id)
 			encryptedData, err := ab.encryptAESGCM(cc)
 			if err != nil {
 				return err
