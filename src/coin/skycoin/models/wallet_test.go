@@ -112,12 +112,12 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 		return "pwd", nil
 	}
 
-	wlt1, err := wltSrv.CreateWallet(label, seed, true, pwdReader, scanN)
+	wlt1, err := wltSrv.CreateWallet(label, seed, "deterministic", true, pwdReader, scanN)
 	require.NoError(t, err)
 	require.Equal(t, "walletEncrypted", wlt1.GetLabel())
 	require.Equal(t, "FiberCrypto", wlt1.GetId())
 
-	wlt2, err := wltSrv.CreateWallet(label, seed, false, pwdReader, scanN)
+	wlt2, err := wltSrv.CreateWallet(label, seed, "deterministic", false, pwdReader, scanN)
 	require.NoError(t, err)
 	require.Equal(t, "walletNonEncrypted", wlt2.GetLabel())
 	require.Equal(t, "FiberCrypto", wlt2.GetId())
@@ -800,7 +800,7 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) []core.Wallet
 		var err error
 		if w, isFound = walletsCache[kd.Mnemonic]; !isFound {
 			if w = walletSet.GetWallet(walletID); w == nil {
-				w, err = walletSet.CreateWallet(walletID, kd.Mnemonic, false, func(string) (string, error) { return "", nil }, 0)
+				w, err = walletSet.CreateWallet(walletID, kd.Mnemonic, "deterministic", false, func(string) (string, error) { return "", nil }, 0)
 				require.NoError(t, err)
 			}
 			walletsCache[kd.Mnemonic] = w
