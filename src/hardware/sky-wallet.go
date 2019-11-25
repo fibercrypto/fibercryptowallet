@@ -128,7 +128,7 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		transactionInputs = append(transactionInputs, &transactionInput)
 	}
 	var transactionOutputs []*messages.SkycoinTransactionOutput
-	for i, output := range tr.GetOutputs() {
+	for /*i*/_, output := range tr.GetOutputs() {
 		var transactionOutput messages.SkycoinTransactionOutput
 		transactionOutput.Address = proto.String(output.GetId())
 		coin, err := output.GetCoins(params.SkycoinTicker)
@@ -141,7 +141,17 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 			return nil, err
 		}
 		transactionOutput.Hour = proto.Uint64(uint64(coinHours))
-		transactionOutput.AddressIndex = proto.Uint32(uint32(i))
+        // FIXME: work around the addrIndex field
+		//addrIndex, err := strconv.Atoi(s[i])
+		//if err != nil {
+		//      logrus.WithField("str_addr_index", s[i]).Error("unable to get integer from string")
+		//      return nil, errors.New("error getting address index as integer")
+		//}
+		//if addrIndex < 0 {
+			//      logrus.WithField("addr_index", addrIndex).Error("addrIndex should be greater than 0")
+			//      return nil, errors.New("addrIndex should be greater than 0")
+		// }
+		//transactionOutput.AddressIndex = proto.Uint32(uint32(addrIndex))
 		transactionOutput.Address = proto.String(output.GetAddress().String())
 		println("output.GetAddress()", output.GetAddress().String())
 
