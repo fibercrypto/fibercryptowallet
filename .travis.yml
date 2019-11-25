@@ -1,112 +1,121 @@
 sudo: required
 language: go
 go:
-  - 1.11.1
-
+- 1.12.6
 services:
-  - docker
-
+- docker
 go_import_path: github.com/fibercrypto/FiberCryptoWallet
-
 env:
   global:
     - XARGS="-screen 0 1024x768x24"
 
 matrix:
   include:
-    - stage: "RPI"
-      if: branch = release*$
-      install:
-        - DEFAULT_ARCH=rpi1 make install-docker-deps
-        - DEFAULT_ARCH=rpi2 make install-docker-deps
-        - DEFAULT_ARCH=rpi3 make install-docker-deps
-        - make install-deps-no-envs
+  - stage: RPI
+    if: branch = release*$
+    install:
+    - DEFAULT_ARCH=rpi1 make install-docker-deps
+    - DEFAULT_ARCH=rpi2 make install-docker-deps
+    - DEFAULT_ARCH=rpi3 make install-docker-deps
+    - make install-deps-no-envs
+    script:
+    - make clean
+    - DEFAULT_TARGET=rpi1 make build-docker
+    - DEFAULT_TARGET=rpi2 make build-docker
+    - DEFAULT_TARGET=rpi3 make build-docker
+    - make lint
+    - make test
+  - stage: Android
+    if: branch = release*$
+    install:
+    - DEFAULT_ARCH=android make install-docker-deps
+    - make install-deps-no-envs
+    script:
+    - make clean
+    - DEFAULT_TARGET=android make build-docker
+    - DEFAULT_TARGET=android-emulator make build-docker
+    - make lint
+    - make test
+  - stage: Linux
+    before_install:
+    - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
+    install:
+    - make install-docker-deps
+    - make install-deps-no-envs
+    - make install-linters
+    before_script:
+    # Install hardware wallet for running tests against emulator
+    - mkdir -p tmp/hardware-wallet
+    - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
+    - git -C tmp/hardware-wallet submodule update --init --recursive
+    # Define env vars for Linux builds
+    - export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH"
+    - echo "PATH=$PATH";
+    - echo "PIP=$PIP";
 
-      script:
-        - make clean
-        - DEFAULT_TARGET=rpi1 make build-docker
-        - DEFAULT_TARGET=rpi2 make build-docker
-        - DEFAULT_TARGET=rpi3 make build-docker
-        - make lint
-        - make test
-
-    - stage: "Android"
-      if: branch = release*$
-
-      install:
-        - DEFAULT_ARCH=android make install-docker-deps
-        - make install-deps-no-envs
-
-      script:
-        - make clean
-        - DEFAULT_TARGET=android make build-docker
-        - DEFAULT_TARGET=android-emulator make build-docker
-        - make lint
-        - make test
-
-    - stage: "Linux"
-      before_install:
-        - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
-      install:
-        - make install-deps
-        - make test
-
-      before_script:
-        # Install hardware wallet for running tests against emulator
-        - mkdir -p tmp/hardware-wallet
-        - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
-        - git -C tmp/hardware-wallet submodule update --init --recursive
-        # Define env vars for Linux builds
-        - export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH"
-        - echo "PATH=$PATH";
-        - echo "PIP=$PIP";
-
-      script:
-        - make lint
-        - make clean
-        - make build
-        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
-        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
-        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
-        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
-        # On GNU/Linux wrap emulator in xvfb graphics context
-        - xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true;
-        # Run self-tests
-        - ps aux | grep emulator
-        - make test
-
-    - stage: "Windows"
-      os: windows
-      install:
-        - choco install make -y
-        - travis_wait make install-deps-Windows
-        - make install-linters
-
-      script:
-        - make lint
-        # - make build
-        # - make test
-
-    - stage: "MacOS"
-      os: osx
-      osx_image: xcode10.2
-      before_script:
-        # Start Xvfb on osx
-        - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then    
-          ( sudo Xvfb :99 -ac ${XARGS}; echo "Xvfb ok" )&
-          fi
-        # Install OS-specific test and build dependencies for hardware-wallet
-        - ( cd ./tmp/hardware-wallet && sh "ci-scripts/install-${TRAVIS_OS_NAME}.sh" )
-        # Include paths for brew packages e.g. SDL2
-        - export SDL_INCLUDE="$(brew --prefix sdl2)/include/SDL2";
-      install:
-        - make install-deps
-
-      script:
-        - make lint
-        - make clean
-        - make build
-        - make test
+    script:
+    - make clean
+    - DEFAULT_TARGET=linux make build-docker
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
+    # On GNU/Linux wrap emulator in xvfb graphics context
+    - xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true;
+    # Run self-tests
+    - ps aux | grep emulator
+    - make test
+    - make lint
+  - stage: Windows
+    os: windows
+    install:
+    - choco install make -y
+    - travis_wait make install-deps-Windows
+    - make install-linters
+    script:
+    - make build
+    - make test
+    - make build-icon
+    - make lint
+  - stage: MacOS
+    os: osx
+    osx_image: xcode10.2
+    before_script:
+    # Start Xvfb on osx
+    - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      ( sudo Xvfb :99 -ac ${XARGS}; echo "Xvfb ok" )&
+      fi
+    # Install OS-specific test and build dependencies for hardware-wallet
+    - ( cd ./tmp/hardware-wallet && sh "ci-scripts/install-${TRAVIS_OS_NAME}.sh" )
+    # Include paths for brew packages e.g. SDL2
+    - export SDL_INCLUDE="$(brew --prefix sdl2)/include/SDL2";
+    install:
+    - make install-deps
+    script:
+    - make clean
+    - make build
+    - make test
+    - make build-icon
+    - make lint
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+before_deploy:
+   - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
+   - export ARCH="$(uname -m)"
+   - export OS="$(uname -s)"
+   - make prepare-release
+   - make build
+   - ( cd deploy && tar czf ../fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz ./*  )
+   - pwd && ls -l .
+deploy:
+  provider: releases
+  api_key:
+    secure: DCM8aKdci6IA7dF9a84V6FEK+VkfEGoitre/wdxeZs7z4obKY41MhejHvWe017tuLhWqARwuud4PgEDcypVVDN2zB5d/D94O3JQHIDfL643WWTS7JOd+93vfOVmQ3jcGg5yRwt4T8fH3RUwNgQjagXeWLnoAhgAvUzGeAUN26AUFS4TXMmf0tnfGRGsrd8tMcnmsPxWcmrog1GllJ1m7GQ55ua1FuYV3ldyX6bnxQSx/B73T8pCvmz9OIW14nZVHgPrdOeVgHy2JlA10dKe59i1CTBevbo050CEIAque6RkzW52AQTKksmd/X2GnxODkqaZ8dux5b/uCv8Stht1jebM8AwZID8nmnmlpUHrafuZilu/m3RJ/j7YuF+UsNGOPeLG+z1tb3KcSENihRPsFOh4YHFTPHkDBbMcvg+2EKfbOIOrg/+js7Ycmmjx1NoLZgYpmMuq6mBu/TZDuFmFNVtDwevieG7berfVyvIyr3TJEdW+bm+vHGpdTcZho1cMrSmaB2r9j9UADKrRrRAU7vHCjozufg4+dnGjYHHQNCecpeirsbCymq3d7Wgezkm/LK4c0vDbtHuXo1q5VxrMjizzuBNCmiRyguGt0zSWvemU68x8W+OjmnFNJRyEa/g//2BLBQrn6A3qC+Qv5tn1REClW7xMcZXcDjIjmIW7z2Gw=
+  file: fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz
+  kip_cleanup: true
+  draft: true
+  overwrite: true
+  on: 
+    repo: fibercrypto/FiberCryptoWallet
+    tags: true

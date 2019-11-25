@@ -6,7 +6,26 @@
 # Configuration
 *.vscode
 *.pro.user*
+config.json
 CMake*
+*.cflags
+*.config
+*.creator
+*.creator.user
+*.creator.user.*
+*.cxxflags
+*.files
+*.includes
+
+# Icons
+resources/images/icons/appIcon/build/
+resources/images/icons/appIcon/appIcon.iconset/
+
+# MS Windows RC Object file
+winResources.syso
+
+# Darwin deployment
+darwin/Contents
 
 # Unit test / coverage reports
 htmlcov/
@@ -45,7 +64,7 @@ venv.bak/
 deploy/
 rcc.cpp
 rcc.qrc
-rcc_cgo_linux_linux_amd64.go
+rcc_cgo_*.go
 rcc_*.cpp
 rcc__*
 *moc.*
