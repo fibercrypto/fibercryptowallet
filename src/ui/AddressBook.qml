@@ -5,7 +5,6 @@ import QtQuick.Layouts 1.12
 import AddrsBookManager 1.0
 
 // Resource imports
-// import "qrc:/ui/src/ui/Dialogs"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
@@ -26,9 +25,11 @@ Page{
 
  Component.onCompleted: {
      if(abm.exist()){
-     getpass.open()
+   abm.openAddrsBook("")
+   //  getpass.open()
      }else{
-     setpass.open()
+     abm.initAddrsBook("")
+//     setpass.open()
      }
      }
 
@@ -36,33 +37,33 @@ AddrsBookModel{
     id:abm
 }
 
-DialogSetPassword{
-id:setpass
-anchors.centerIn: Overlay.overlay
-onAccepted:{
-abm.initAddrsBook(setpass.password)
-}
-onRejected:{
-generalStackView.pop()
-console.log("asd")
-}
-}
+//DialogSetPassword{
+//id:setpass
+//anchors.centerIn: Overlay.overlay
+//onAccepted:{
+//abm.initAddrsBook(setpass.password)
+//}
+//onRejected:{
+//generalStackView.pop()
+//console.log("asd")
+//}
+//}
 
-DialogGetPassword{
-id:getpass
-anchors.centerIn: Overlay.overlay
-height:180
-onAccepted:{
- if(!abm.openAddrsBook(getpass.password)){
- getpass.open()
- }
-}
-
-onRejected:{
-generalStackView.pop()
-console.log("asd")
-}
-}
+//DialogGetPassword{
+//id:getpass
+//anchors.centerIn: Overlay.overlay
+//height:180
+//onAccepted:{
+// if(!abm.openAddrsBook(getpass.password)){
+// getpass.open()
+// }
+//}
+//
+//onRejected:{
+//generalStackView.pop()
+//console.log("asd")
+//}
+//}
        ScrollView {
                 anchors.fill: parent
                 clip: true
