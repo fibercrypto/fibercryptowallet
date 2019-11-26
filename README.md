@@ -1,5 +1,9 @@
 # FiberCrypto wallet
 
+[![Build Status](https://travis-ci.org/fibercrypto/FiberCryptoWallet.svg?branch=develop)](https://travis-ci.org/fibercrypto/FiberCryptoWallet)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.GPLv3)
+
 FiberCrypto wallet is a cryptocurrency software wallet aimed at:
 
 - Provide easy-to-use interactions to users
