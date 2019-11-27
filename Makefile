@@ -201,7 +201,7 @@ test-sky-launch-html-cover:
 
 test-cover-travis:
 	go test -covermode=count -coverprofile=coverage.out -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/util
-	$HOME/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $COVERALLS_TOKEN
+	$(HOME)/gopath/bin/goveralls -coverprofile=coverage.out -service=travis-ci -repotoken $(COVERALLS_TOKEN)
 
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
