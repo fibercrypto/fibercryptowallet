@@ -2,7 +2,7 @@ package data
 
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/stretchr/testify/assert"
+	// "github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -83,7 +83,6 @@ func TestContact_UnmarshalBinary(t *testing.T) {
 			if err := c.UnmarshalBinary(tt.args.data); (err != nil) != tt.wantErr {
 				t.Errorf("UnmarshalBinary() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			t.Logf("%s", string(c.Name))
 		})
 	}
 }
@@ -143,8 +142,8 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 		},
 	}
 
-	ab := OpenAddrsBook(t)
-	defer CloseTest(t, &ab)
+	ab := InitAddrsBook(t)
+	defer CloseTest(t, ab)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if _, err := ab.InsertContact(&Contact{
@@ -241,8 +240,8 @@ func Test_addressBook_GetContact(t *testing.T) {
 		},
 	}
 
-	ab := OpenAddrsBook(t)
-	defer CloseTest(t, &ab)
+	ab := InitAddrsBook(t)
+	defer CloseTest(t, ab)
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -254,10 +253,6 @@ func Test_addressBook_GetContact(t *testing.T) {
 				t.Errorf("Error inserting contact: %s", err)
 			}
 
-			c, _ := ab.ListContact()
-			for _, v := range c {
-				t.Logf("%#v", v.GetID())
-			}
 			got, err := ab.GetContact(tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetContact() error = %v, wantErr %v", err, tt.wantErr)
@@ -345,8 +340,8 @@ func Test_addressBook_InsertContact(t *testing.T) {
 			wantErr: true,
 		},
 	}
-	ab := OpenAddrsBook(t)
-	defer CloseTest(t, &ab)
+	ab := InitAddrsBook(t)
+	defer CloseTest(t, ab)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if _, err := ab.InsertContact(tt.args.c); (err != nil) != tt.wantErr {
@@ -577,8 +572,8 @@ func Test_addressBook_ListContact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ab := OpenAddrsBook(t)
-			defer CloseTest(t, &ab)
+			ab := InitAddrsBook(t)
+			defer CloseTest(t, ab)
 			for _, contact := range tt.fields.Contacts {
 				if _, err := ab.InsertContact(&contact); err != nil {
 					t.Error(err)
@@ -762,8 +757,8 @@ func TestDB_UpdateContact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ab := OpenAddrsBook(t)
-			defer CloseTest(t, &ab)
+			ab := InitAddrsBook(t)
+			defer CloseTest(t, ab)
 			for e := range tt.insertArgs.contacts {
 				if _, err := ab.InsertContact(tt.insertArgs.contacts[e]); err != nil {
 					t.Error(err)
@@ -778,76 +773,57 @@ func TestDB_UpdateContact(t *testing.T) {
 	}
 }
 
-func TestLoadFromFile(t *testing.T) {
-
-	initPath := GetFilePath(t)
-	initAddrsBook, err := Init([]byte(defaultPass), initPath)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if err := initAddrsBook.Close(); err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		if err := os.Remove(initPath); err != nil {
-			t.Fatal(err)
-		}
-	}()
+func TestDB_Init(t *testing.T) {
 	type args struct {
-		path     string
-		password []byte
+		secType  int
+		password string
 	}
 	tests := []struct {
-		name    string
+		name string
+		// fields  fields
 		args    args
 		wantErr bool
 	}{
-		{
-			name: "ok",
-			args: args{
-				path:     initPath,
-				password: []byte(defaultPass),
-			},
-			wantErr: false,
-		},
-		{
-			name: "wrong-password",
-			args: args{
-				path:     initPath,
-				password: []byte("defaultPass"),
-			},
-			wantErr: true,
-		}, {
-			name: "wrong-path",
-			args: args{
-				path:     "/home/xxx/asd.dt",
-				password: []byte(defaultPass),
-			},
-			wantErr: true,
-		},
+		{name: "Type 1", args: args{
+			secType:  Type1,
+			password: "",
+		}, wantErr: false},
+		{name: "Type 2", args: args{
+			secType:  Type2,
+			password: "",
+		}, wantErr: false},
+		{name: "Type 3", args: args{
+			secType:  Type3,
+			password: defaultPass,
+		}, wantErr: false},
+		{name: "Type wrong", args: args{
+			secType:  -1,
+			password: "",
+		}, wantErr: true},
+		{name: "Two Init", args: args{
+			secType:  Type3,
+			password: defaultPass,
+		}, wantErr: true},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			loadedAddrsBook, err := LoadFromFile(tt.args.path, tt.args.password)
+			addressBook, err := NewAddressBook(GetFilePath(t))
 			if err != nil {
-				if tt.wantErr {
-					return
-				}
-				t.Fatal(err)
+				t.Error(addressBook)
 			}
-			defer func() {
-				if err := loadedAddrsBook.Close(); err != nil {
-					t.Fatal(err)
-				}
-			}()
-			assert.Equal(t, initAddrsBook.dbPath, loadedAddrsBook.dbPath)
-			assert.Equal(t, initAddrsBook.entropy, loadedAddrsBook.entropy)
-			assert.Equal(t, initAddrsBook.key, loadedAddrsBook.key)
+
+			if tt.name == "Two Init" {
+				_ = addressBook.Init(tt.args.secType, tt.args.password)
+			}
+
+			defer CloseTest(t, addressBook)
+
+			if err := addressBook.Init(tt.args.secType, tt.args.password); (err != nil) != tt.wantErr {
+				t.Errorf("Init() error = %v, wantErr %v", err, tt.wantErr)
+			}
 		})
 	}
-
 }
 
 // Generate a temporal file and return its path.
@@ -866,20 +842,26 @@ func GetFilePath(t *testing.T) string {
 }
 
 // Open a address book using a test file.
-func OpenAddrsBook(t *testing.T) DB {
+func InitAddrsBook(t *testing.T) core.AddressBook {
 	path := GetFilePath(t)
-	AddrsBook, err := Init([]byte(defaultPass), path)
+	AddrsBook, err := NewAddressBook(path)
 	if err != nil {
 		t.Error(err)
 	}
-	return *AddrsBook
+	err = AddrsBook.Init(Type3, defaultPass)
+	if err != nil {
+		t.Error(err)
+	}
+
+	return AddrsBook
 }
 
-func CloseTest(t *testing.T, ab *DB) {
+func CloseTest(t *testing.T, ab core.AddressBook) {
+	path := ab.GetPath()
 	if err := ab.Close(); err != nil {
 		t.Errorf("Error closing db: %s", err)
 	}
-	if err := os.Remove(ab.GetPath()); err != nil {
+	if err := os.Remove(path); err != nil {
 		t.Error(err)
 	}
 }
