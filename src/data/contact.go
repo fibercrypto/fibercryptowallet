@@ -39,8 +39,8 @@ func (c *Contact) SetID(id uint64) {
 }
 
 // GetAddresses get address list of current contact.
-func (c *Contact) GetAddresses() []core.ReadableAddress {
-	var addresses []core.ReadableAddress
+func (c *Contact) GetAddresses() []core.StringAddress {
+	var addresses []core.StringAddress
 	for e := range c.Address {
 		addresses = append(addresses, &c.Address[e])
 	}
@@ -48,7 +48,7 @@ func (c *Contact) GetAddresses() []core.ReadableAddress {
 }
 
 // SetAddresses set an address list to the current contact.
-func (c *Contact) SetAddresses(addrs []core.ReadableAddress) {
+func (c *Contact) SetAddresses(addrs []core.StringAddress) {
 	for e := range addrs {
 		if v, ok := addrs[e].(*Address); ok {
 			c.Address = append(c.Address, *v)
