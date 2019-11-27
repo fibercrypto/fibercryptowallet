@@ -18,9 +18,12 @@ import (
 )
 
 const (
-	Type1 = iota //  No security
-	Type2        //  data obfuscation security
-	Type3        //  password security
+	// Type1  No security
+	Type1 = iota
+	// Type2 data obfuscation security
+	Type2
+	// Type3 password security
+	Type3
 )
 
 var (
@@ -40,7 +43,7 @@ type DB struct {
 	key []byte
 }
 
-// Create a new instance of AddessBook and open the database of the given route.
+// NewAddressBook create a new instance of AddessBook and open the database of the given route.
 // If database is open return bolt.errDatabaseOpen.
 func NewAddressBook(path string) (core.AddressBook, error) {
 	var ab DB
@@ -181,7 +184,7 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 	return c.GetID(), tx.Commit()
 }
 
-// GetContact get a contact by Id.
+// GetContact get a contact by ID.
 func (ab *DB) GetContact(id uint64) (core.Contact, error) {
 	// Start a readable transaction.
 	tx, err := ab.db.Begin(false)
@@ -244,7 +247,7 @@ func (ab *DB) ListContact() ([]core.Contact, error) {
 	return contacts, nil
 }
 
-// DeleteContact delete a contact from the address book by its Id.
+// DeleteContact delete a contact from the address book by its ID.
 func (ab *DB) DeleteContact(id uint64) error {
 	return ab.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
@@ -260,7 +263,7 @@ func (ab *DB) DeleteContact(id uint64) error {
 
 }
 
-// UpdateContact update a contact in the address book by its Id.
+// UpdateContact update a contact in the address book by its ID.
 func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	var contacts []core.Contact
 	var err error
@@ -308,10 +311,12 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	return nil
 }
 
+// GetPath return database path
 func (ab *DB) GetPath() string {
 	return ab.db.Path()
 }
 
+// GetSecType return database SecType
 func (ab *DB) GetSecType() int {
 	if ab.db != nil {
 		secType, _ := ab.getSecTypeFromConfig()
@@ -328,6 +333,7 @@ func (ab *DB) Close() error {
 	return nil
 }
 
+// HasInit verify if database has been initialize
 func (ab *DB) HasInit() bool {
 	tx, _ := ab.db.Begin(false)
 	defer func() {
@@ -341,6 +347,7 @@ func (ab *DB) HasInit() bool {
 	return false
 }
 
+// IsOpen verify if database is open
 func (ab *DB) IsOpen() bool {
 	if ab.db.Path() != "" {
 		return true
@@ -348,6 +355,7 @@ func (ab *DB) IsOpen() bool {
 	return false
 }
 
+// Exist verify if database file exist
 func (ab *DB) Exist(path string) bool {
 	ok, _ := file.Exists(path)
 	return ok
@@ -459,9 +467,10 @@ func (ab *DB) decryptContact(cipherMsg []byte) (core.Contact, error) {
 		c := Contact{}
 		if err := c.UnmarshalBinary(cipherMsg); err != nil {
 			return nil, err
-		} else {
-			return &c, nil
 		}
+
+		return &c, nil
+
 	case Type2:
 		c := Contact{}
 		data, err := fromBase64(cipherMsg)
