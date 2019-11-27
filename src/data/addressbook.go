@@ -16,14 +16,18 @@ import (
 	"time"
 )
 
-//go:generate protoc -I=. -I=$GOPATH/src/github.com/gogo/protobuf/protobuf -I=$GOPATH/src --gogo_out=. internal/contact.proto
-//go:generate protoc -I=. -I=$GOPATH/src/github.com/gogo/protobuf/protobuf -I=$GOPATH/src --gogo_out=. internal/config.proto
+const (
+	Type1 = iota //  No security
+	Type2        //  data obfuscation security
+	Type3        //  password security
+)
 
 var (
 	// Errors
-	errBucketEmpty  = errors.New(" Error: bucket are empty")
-	errValEmpty     = errors.New(" Error: value are empty")
-	errParseContact = errors.New(" The inserted cannot be parse")
+	errBucketEmpty    = errors.New(" Error: bucket are empty")
+	errValEmpty       = errors.New(" Error: value are empty")
+	errParseContact   = errors.New(" The inserted cannot be parse")
+	errInvalidSecType = fmt.Errorf("invalid security type")
 	// Db buckets.
 	dbAddrsBookBkt = []byte("AddressBook")
 	dbConfigBkt    = []byte("Config")
@@ -31,21 +35,8 @@ var (
 
 // DB implement AddressBook interface for boltdb database.
 type DB struct {
-	// db is a point of bolt.DB object. This handle all interaction with the db.
-	db      *bolt.DB
-	dbPath  string
-	key     []byte
-	entropy []byte
-}
-
-//
-func (ab *DB) verifyHash() error {
-	hash, err := ab.GetHashFromConfig()
-	if err != nil {
-		return err
-	}
-	return bcrypt.CompareHashAndPassword(hash, ab.key)
-
+	db  *bolt.DB // db is a point of bolt.DB object. This handle all interaction with the db.
+	key []byte
 }
 
 // Init initialize an address book. Using this before do you use NewAddressBook.
