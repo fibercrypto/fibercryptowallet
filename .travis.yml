@@ -14,6 +14,8 @@ matrix:
     - DEFAULT_ARCH=rpi2 make install-docker-deps
     - DEFAULT_ARCH=rpi3 make install-docker-deps
     - make install-deps-no-envs
+    - go get golang.org/x/tools/cmd/cover
+    - go get github.com/mattn/goveralls
     script:
     - make clean
     - DEFAULT_TARGET=rpi1 make build-docker
@@ -32,6 +34,7 @@ matrix:
     - DEFAULT_TARGET=android-emulator make build-docker
     - make lint
     - make test
+    - make test-cover-travis
   - stage: Linux
     install:
     - make install-docker-deps
@@ -42,6 +45,7 @@ matrix:
     - DEFAULT_TARGET=linux make build-docker
     - make test
     - make lint
+    - make test-cover-travis
   - stage: Windows
     os: windows
     install:
@@ -53,6 +57,7 @@ matrix:
     - make test
     - make build-icon
     - make lint
+    - make test-cover-travis
   - stage: MacOS
     os: osx
     osx_image: xcode10.2
@@ -64,6 +69,7 @@ matrix:
     - make test
     - make build-icon
     - make lint
+    - make test-cover-travis
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
@@ -83,6 +89,9 @@ deploy:
   kip_cleanup: true
   draft: true
   overwrite: true
-  on: 
+  on:
     repo: fibercrypto/FiberCryptoWallet
     tags: true
+env:
+  global:
+    secure: Kgk8K+M8Ean9KjB1Sbke9g3F/5LEDsOHRhuU3KMroOJbXOKVsfICj2Xu3DwBiuFmyBIDnV/DpDNjkZPSQYGDxIXyPDpOLqg549iyyH5Xrc3ecFXIWwk3ztU9HZsXGdy5YOj8LMDuqzq/6NZx5/sW6YMZtCzzXbBXeB6mLYeiaX1lrL4CB9rnDBgEG3gDkoHnI5eS9KTBhSgxIhVDn3/Tas5DWuAjDF+tkmKJGWG8CKN4raja6JsYlloCjzzzoS/EkW/hfEHahadpZIV6znej0KIVR3gQS3bQGp0Eim/9RnWGK273rapsksr16hZkQKCEIQcSahFG0r921Evwlt0kXoEtFIkaKynqt1pGGCD1YiwE/6hK6KB0zmp9rJkESl2z48g7CF87hoCJwTAk+FO853D7152qAAbMd46Fh4kDH5+KIfuuu8ew3WIkp4GNytYadu1yedGTHsESn9FEwJxxYSV0ZiGAbn5SXw8olZE7DbXK/aLghTaXOgBb/aBzbqIZIe4ZPDFm14v8BGU2mqPJdhFRi5QKDMHUBkZ1Uww95QwxTICzztVhlTZny01wiLaCPA1BNjvyWzbP4sHrOKNKCBgmPsBH1jAvINhAkeyNBn8lc8P8S8Va7iEJAGNgM8zarj6Nnt+iPbDi+48hHfcOMUoV+oGqh9t63+DDfCWQSp4=
