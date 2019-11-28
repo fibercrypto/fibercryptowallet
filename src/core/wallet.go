@@ -49,12 +49,12 @@ type Wallet interface {
 	// SetLabel establishes a label for this wallet
 	SetLabel(wltName string)
 	// Transfer instantiates unsigned transaction to send funds from any wallet address to single destination
-	Transfer(to TransactionOutput, options KeyValueStorage) (Transaction, error)
+	Transfer(to TransactionOutput, options KeyValueStore) (Transaction, error)
 	// SendFromAddress instantiates unsigned transaction to send funds from specific source addresses
 	// to multiple destination addresses
-	SendFromAddress(from []Address, to []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
+	SendFromAddress(from []Address, to []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
 	// Spend instantiate unsigned transaction spending specific outputs to send to multiple destination addresses
-	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
+	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
 	// GenAddresses discover new addresses based on default hierarchically deterministic derivation sequences
 	// FIXME: Support account index to be fully compatible with BIP44
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator

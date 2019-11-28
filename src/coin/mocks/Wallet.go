@@ -94,11 +94,11 @@ func (_m *Wallet) GetLoadedAddresses() (core.AddressIterator, error) {
 }
 
 // SendFromAddress provides a mock function with given fields: from, to, change, options
-func (_m *Wallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (_m *Wallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	ret := _m.Called(from, to, change, options)
 
 	var r0 core.Transaction
-	if rf, ok := ret.Get(0).(func([]core.Address, []core.TransactionOutput, core.Address, core.KeyValueStorage) core.Transaction); ok {
+	if rf, ok := ret.Get(0).(func([]core.Address, []core.TransactionOutput, core.Address, core.KeyValueStore) core.Transaction); ok {
 		r0 = rf(from, to, change, options)
 	} else {
 		if ret.Get(0) != nil {
@@ -107,7 +107,7 @@ func (_m *Wallet) SendFromAddress(from []core.Address, to []core.TransactionOutp
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func([]core.Address, []core.TransactionOutput, core.Address, core.KeyValueStorage) error); ok {
+	if rf, ok := ret.Get(1).(func([]core.Address, []core.TransactionOutput, core.Address, core.KeyValueStore) error); ok {
 		r1 = rf(from, to, change, options)
 	} else {
 		r1 = ret.Error(1)
@@ -145,11 +145,11 @@ func (_m *Wallet) Sign(txn core.Transaction, signer core.TxnSigner, pwd core.Pas
 }
 
 // Spend provides a mock function with given fields: unspent, new, change, options
-func (_m *Wallet) Spend(unspent []core.TransactionOutput, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (_m *Wallet) Spend(unspent []core.TransactionOutput, new []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	ret := _m.Called(unspent, new, change, options)
 
 	var r0 core.Transaction
-	if rf, ok := ret.Get(0).(func([]core.TransactionOutput, []core.TransactionOutput, core.Address, core.KeyValueStorage) core.Transaction); ok {
+	if rf, ok := ret.Get(0).(func([]core.TransactionOutput, []core.TransactionOutput, core.Address, core.KeyValueStore) core.Transaction); ok {
 		r0 = rf(unspent, new, change, options)
 	} else {
 		if ret.Get(0) != nil {
@@ -158,7 +158,7 @@ func (_m *Wallet) Spend(unspent []core.TransactionOutput, new []core.Transaction
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func([]core.TransactionOutput, []core.TransactionOutput, core.Address, core.KeyValueStorage) error); ok {
+	if rf, ok := ret.Get(1).(func([]core.TransactionOutput, []core.TransactionOutput, core.Address, core.KeyValueStore) error); ok {
 		r1 = rf(unspent, new, change, options)
 	} else {
 		r1 = ret.Error(1)
@@ -168,11 +168,11 @@ func (_m *Wallet) Spend(unspent []core.TransactionOutput, new []core.Transaction
 }
 
 // Transfer provides a mock function with given fields: to, options
-func (_m *Wallet) Transfer(to core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
+func (_m *Wallet) Transfer(to core.TransactionOutput, options core.KeyValueStore) (core.Transaction, error) {
 	ret := _m.Called(to, options)
 
 	var r0 core.Transaction
-	if rf, ok := ret.Get(0).(func(core.TransactionOutput, core.KeyValueStorage) core.Transaction); ok {
+	if rf, ok := ret.Get(0).(func(core.TransactionOutput, core.KeyValueStore) core.Transaction); ok {
 		r0 = rf(to, options)
 	} else {
 		if ret.Get(0) != nil {
@@ -181,7 +181,7 @@ func (_m *Wallet) Transfer(to core.TransactionOutput, options core.KeyValueStora
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(core.TransactionOutput, core.KeyValueStorage) error); ok {
+	if rf, ok := ret.Get(1).(func(core.TransactionOutput, core.KeyValueStore) error); ok {
 		r1 = rf(to, options)
 	} else {
 		r1 = ret.Error(1)

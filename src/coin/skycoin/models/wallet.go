@@ -416,7 +416,7 @@ func (wlt *RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Transfer from remote wallet")
 	amount, err := destination.GetCoins(SkycoinTicker)
 	if err != nil {
@@ -460,7 +460,7 @@ func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options co
 
 type createTxn func(*api.CreateTransactionRequest) (core.Transaction, error)
 
-func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, options core.KeyValueStorage, createTxnFunc createTxn) (core.Transaction, error) {
+func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, options core.KeyValueStore, createTxnFunc createTxn) (core.Transaction, error) {
 	logWallet.Info("Creating transaction...")
 	var req api.CreateTransactionRequest
 	req.IgnoreUnconfirmed = false
@@ -549,7 +549,7 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 
 }
 
-func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Sending from address of remote wallets")
 	createTxnFunc := func(txnR *api.CreateTransactionRequest) (core.Transaction, error) {
 		logWallet.Info("Creating transaction for remote wallet")
@@ -576,7 +576,7 @@ func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.Transact
 	return createTransaction(from, to, nil, change, options, createTxnFunc)
 }
 
-func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	createTxnFunc := func(txnR *api.CreateTransactionRequest) (core.Transaction, error) {
 		logWallet.Info("Spend using remote wallet")
 		var req api.WalletCreateTransactionRequest
@@ -1290,7 +1290,7 @@ func skyAPICreateTxn(txnReq *api.CreateTransactionRequest) (core.Transaction, er
 	return fromTxnResponse(txnR), nil
 }
 
-func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Sending form local wallet")
 	quotient, err := util.AltcoinQuotient(Sky)
 	if err != nil {
@@ -1321,7 +1321,7 @@ func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValu
 	return createTransaction(addresses, []core.TransactionOutput{&txnOutput}, nil, nil, options, createTxnFunc)
 }
 
-func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Sending from addresses in local wallet")
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)
@@ -1342,7 +1342,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	return createTransaction(from, to, nil, change, options, createTxnFunc)
 
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Spending from local wallet")
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)

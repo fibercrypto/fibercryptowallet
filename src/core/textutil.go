@@ -1,4 +1,4 @@
 package core
 
-// PasswordReadeer secure retrieval of passwords from users
-type PasswordReader func(message string) (string, error)
+// PasswordReader secure retrieval of passwords from users
+type PasswordReader func(string) (string, error)

@@ -25,7 +25,7 @@ type BlockchainStatus interface {
 type BlockchainTransactionAPI interface {
 	// SendFromAddress instantiates a transaction to send funds from specific source addresses
 	// to multiple destination addresses
-	SendFromAddress(from []WalletAddress, to []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
+	SendFromAddress(from []WalletAddress, to []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
 	// Spend instantiate a transaction that spends specific outputs to send to multiple destination addresses
-	Spend(unspent []WalletOutput, new []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
+	Spend(unspent []WalletOutput, new []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
 }

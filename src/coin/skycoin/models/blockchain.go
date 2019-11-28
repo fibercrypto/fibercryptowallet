@@ -241,7 +241,7 @@ func (ss *SkycoinBlockchain) requestStatusInfo() error {
 
 // SendFromAddress instantiates a transaction to send funds from specific source addresses
 // to multiple destination addresses
-func (ss *SkycoinBlockchain) SendFromAddress(from []core.WalletAddress, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (ss *SkycoinBlockchain) SendFromAddress(from []core.WalletAddress, to []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logBlockchain.Info("Sending coins from addresses via blockchain API")
 	addresses := make([]core.Address, len(from))
 	for i, wa := range from {
@@ -252,7 +252,7 @@ func (ss *SkycoinBlockchain) SendFromAddress(from []core.WalletAddress, to []cor
 }
 
 // Spend instantiates a transaction that spends specific outputs to send to multiple destination addresses
-func (ss *SkycoinBlockchain) Spend(unspent []core.WalletOutput, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (ss *SkycoinBlockchain) Spend(unspent []core.WalletOutput, new []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logBlockchain.Info("Spending coins from outputs via blockchain API")
 	uxouts := make([]core.TransactionOutput, len(unspent))
 	for i, wu := range unspent {

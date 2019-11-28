@@ -26,5 +26,5 @@ func NewKeyValueMap() *KeyValueMap {
 
 // Type assertions
 var (
-	_ core.KeyValueStorage = &KeyValueMap{}
+	_ core.KeyValueStore = &KeyValueMap{}
 )
