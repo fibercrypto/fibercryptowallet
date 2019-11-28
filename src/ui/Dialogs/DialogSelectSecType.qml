@@ -38,7 +38,7 @@ Flickable {
                   RadioButton {
                   property int pos:0
                       checked: true
-                      text: qsTr("Low (Nothing)")
+                      text: qsTr("Low (Plain text)")
                   }
                   RadioButton {
                   property int pos:1
