@@ -16,15 +16,12 @@ const (
 	ID
 )
 
-const path = ".fiber/data.dt"
-
-var isOpen = false
-var db *data.DB
+var db core.AddressBook
 var logAddressBook = logging.MustGetLogger("AddressBook")
 
 func init() { AddrsBookModel_QmlRegisterType2("AddrsBookManager", 1, 0, "AddrsBookModel") }
 
-var addresses = make([]core.ReadableAddress, 0)
+var addresses = make([]core.StringAddress, 0)
 
 type AddrsBookModel struct {
 	qtcore.QAbstractListModel
@@ -36,9 +33,11 @@ type AddrsBookModel struct {
 	_ func(row int, id uint64)              `slot:"removeContact,auto"`
 	_ func(row int, id uint64, name string) `slot:"editContact,auto"`
 	_ func(name string)                     `slot:"newContact"`
-	_ func(string) bool                     `slot:"openAddrsBook"`
-	_ func(string) bool                     `slot:"initAddrsBook"`
-	_ func() bool                           `slot:"exist"`
+	_ func()                                `slot:"loadContacts"`
+	_ func(int, string)                     `slot:"initAddrsBook"`
+	_ func() int                            `slot:"getSecType"`
+	_ func(string) bool                     `slot:"authenticate"`
+	_ func() bool                           `slot:"hasInit"`
 	_ func(value, coinType string)          `slot:"addAddress"`
 }
 
@@ -51,6 +50,7 @@ type QContact struct {
 
 func (abm *AddrsBookModel) init() {
 	logAddressBook.Info("Init addressBook model")
+	var err error
 	abm.SetRoles(map[int]*qtcore.QByteArray{
 		Name:    qtcore.NewQByteArray2("name", -1),
 		Address: qtcore.NewQByteArray2("address", -1),
@@ -62,13 +62,20 @@ func (abm *AddrsBookModel) init() {
 	abm.ConnectColumnCount(abm.columnCount)
 	abm.ConnectRoleNames(abm.roleNames)
 	abm.ConnectNewContact(abm.newContact)
-	abm.ConnectDestroyAddrsBookModel(abm.close)
-	abm.ConnectOpenAddrsBook(abm.openAddrsBook)
+	abm.ConnectGetSecType(abm.getSecType)
+	abm.ConnectAuthenticate(abm.authenticate)
+	// abm.ConnectDestroyAddrsBookModel(abm.close)
+	abm.ConnectLoadContacts(abm.loadContacts)
 	abm.ConnectInitAddrsBook(abm.initAddrsBook)
 	// abm.ConnectEditContact(abm.editContact)
 	// abm.ConnectRemoveContact(abm.removeContact)
-	abm.ConnectExist(abm.exist)
+	abm.ConnectHasInit(abm.hasInit)
 	abm.ConnectAddAddress(abm.addAddress)
+	if db == nil {
+		if db, err = data.NewAddressBook(getConfigFileDir()); err != nil {
+			logAddressBook.Error(err)
+		}
+	}
 }
 
 func (abm *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
@@ -164,20 +171,39 @@ func (abm *AddrsBookModel) editContact(row int, id uint64, name string) {
 	abm.EndRemoveRows()
 	abm.SetCount(abm.Count() - 1)
 	abm.addContact(qc)
-	addresses = []core.ReadableAddress{}
+	addresses = []core.StringAddress{}
 }
 
 func getConfigFileDir() string {
 	homeDir := os.Getenv("HOME")
-	fileDir := filepath.Join(homeDir, path)
+	fileDir := filepath.Join(homeDir, ".fiber/data.dt")
 	return fileDir
 }
 
-func (abm *AddrsBookModel) loadContacts(contacts []*QContact) {
+func (abm *AddrsBookModel) loadContacts() {
 	logAddressBook.Info("loading contacts")
-	for _, c := range contacts {
+	abm.SetContacts([]*QContact{})
+	contacts, err := db.ListContact()
+	if err != nil {
+		logAddressBook.Error(err)
+	}
+	qContacts := fromContactToQContact(contacts)
+
+	for _, c := range qContacts {
 		abm.addContact(c)
 	}
+}
+
+func (abm *AddrsBookModel) getSecType() int {
+	return db.GetSecType()
+}
+
+func (abm *AddrsBookModel) authenticate(password string) bool {
+	if err := db.Authenticate(password); err != nil {
+		logAddressBook.Error(err)
+		return false
+	}
+	return true
 }
 
 func (abm *AddrsBookModel) newContact(name string) {
@@ -195,73 +221,32 @@ func (abm *AddrsBookModel) newContact(name string) {
 	} else {
 		qc.SetId(id)
 	}
-	addresses = []core.ReadableAddress{}
+	addresses = []core.StringAddress{}
 	abm.addContact(qc)
 }
 
 func (*AddrsBookModel) close() {
 	logAddressBook.Info("Closing address book")
-	if isOpen {
+	if db.IsOpen() {
 		if err := db.Close(); err != nil {
 			logAddressBook.Error(err)
-		} else {
-			isOpen = false
 		}
 	}
 }
 
-func (abm *AddrsBookModel) openAddrsBook(password string) bool {
+func (abm *AddrsBookModel) initAddrsBook(secType int, password string) {
 	var err error
-	if !abm.exist() {
-		return false
-	}
-
-	if isOpen {
-		abm.close()
-	}
-	abm.SetContacts([]*QContact{})
-	logAddressBook.Info("Opening address book")
-	if db, err = data.LoadFromFile(getConfigFileDir(), []byte(password)); err != nil {
-		logAddressBook.Error(err)
-		return false
-	}
-
-	contacts, err := db.ListContact()
-	if err != nil {
-		logAddressBook.Error(err)
-	}
-	qcontacts := fromContactToQContact(contacts)
-	logAddressBook.Infof("%#v", qcontacts)
-	abm.loadContacts(qcontacts)
-	isOpen = true
-	return true
-}
-
-func (abm *AddrsBookModel) initAddrsBook(password string) bool {
-	var err error
-	if abm.exist() {
-		return false
+	if db.HasInit() {
+		return
 	}
 	logAddressBook.Info("Creating address book")
-
-	if db, err = data.Init([]byte(password), getConfigFileDir()); err != nil {
+	if err = db.Init(secType, password); err != nil {
 		logAddressBook.Error(err)
 	}
-
-	isOpen = true
-	return true
 }
 
-func (*AddrsBookModel) exist() bool {
-	_, err := os.Stat(getConfigFileDir())
-	if os.IsNotExist(err) {
-		return false
-	}
-	if err != nil {
-		logAddressBook.Error(err)
-		return false
-	}
-	return true
+func (*AddrsBookModel) hasInit() bool {
+	return db.HasInit()
 }
 
 func fromContactToQContact(contacts []core.Contact) []*QContact {

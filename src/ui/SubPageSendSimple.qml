@@ -34,7 +34,7 @@ Page {
 function getAddressList(){
 addressList.clear()
 for(var i=0;i<abm.count;i++){
-for(var j=0;j<abm.contacts[i].address.address.length;j++){
+for(var j=0;j<abm.contacts[i].address.rowCount();j++){
 addressList.append({name:abm.contacts[i].name,
 address:abm.contacts[i].address.address[j].value,
 coinType:abm.contacts[i].address.address[j].coinType})
@@ -65,16 +65,27 @@ coinType:abm.contacts[i].address.address[j].coinType})
                             modal: true
 
 onAboutToShow:{
-if(abm.exist()){
-abm.openAddrsBook("")
 getAddressList()
 }
 
-}
-                            onAccepted: {
-                                textFieldWalletsSendTo.text = selectedAddress
-                            }
-                        }
+         onAccepted: {
+                textFieldWalletsSendTo.text = selectedAddress
+                      }
+                }
+
+                 DialogGetPassword{
+                 id:getpass
+                 anchors.centerIn: Overlay.overlay
+                 height:180
+                 onAccepted:{
+                 if(!abm.authenticate(getpass.password)){
+                 getpass.open()
+                 }else{
+                 abm.loadContacts()
+                 dialogSelectAddressByAddressBook.open()
+                 }
+                 }
+                 }
 
     ColumnLayout {
         id: columnLayoutRoot
@@ -136,7 +147,12 @@ getAddressList()
                                 highlighted: true
 
                                 onClicked: {
-                                    dialogSelectAddressByAddressBook.open()
+                                 if(abm.getSecType()!=2){
+                                        abm.loadContacts()
+                                        dialogSelectAddressByAddressBook.open()
+                                     }else{
+                                     getpass.open()
+                                   }
                                 }
                             }
 

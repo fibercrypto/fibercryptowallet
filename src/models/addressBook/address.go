@@ -26,7 +26,6 @@ type AddrsBkAddressModel struct {
 	_ func()                     `constructor:"init"`
 	_ []*QAddress                `property:"address"`
 	_ map[int]*qtcore.QByteArray `property:"roles"`
-	// _ map[int]*qtcore.QByteArray `slot:"addAddress"`
 }
 
 func (m *AddrsBkAddressModel) init() {
@@ -78,7 +77,7 @@ func (m *AddrsBkAddressModel) data(index *qtcore.QModelIndex, role int) *qtcore.
 	}
 }
 
-func fromAddressToQAddress(addresses []core.ReadableAddress) []*QAddress {
+func fromAddressToQAddress(addresses []core.StringAddress) []*QAddress {
 	var qAddresses = make([]*QAddress, 0)
 	sort.Slice(addresses, func(i, j int) bool {
 		return bytes.Compare(addresses[i].GetCoinType(), addresses[j].GetCoinType()) == -1
@@ -89,6 +88,5 @@ func fromAddressToQAddress(addresses []core.ReadableAddress) []*QAddress {
 		qa.SetValue(string(addrs.GetValue()))
 		qAddresses = append(qAddresses, qa)
 	}
-	// logAddressBook.Infof("%#v",qAddresses)
 	return qAddresses
 }

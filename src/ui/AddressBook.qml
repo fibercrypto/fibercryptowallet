@@ -11,8 +11,9 @@ import "Dialogs/" // For quick UI development, switch back to resources when mak
 Page{
     id:addressBook
 
-    property int currentContact: -1
-
+//    property int currentContact: -1
+      property int secType
+      property string password
 
     DialogAddContact{
     id: contactDialog
@@ -24,12 +25,15 @@ Page{
     }
 
  Component.onCompleted: {
-     if(abm.exist()){
-   abm.openAddrsBook("")
-   //  getpass.open()
+     if(abm.hasInit()){
+     if(abm.getSecType()!=2){
+        abm.loadContacts()
      }else{
-     abm.initAddrsBook("")
-//     setpass.open()
+     getpass.open()
+     }
+
+     }else{
+        dialogCreateAddrsBk.open()
      }
      }
 
@@ -37,33 +41,53 @@ AddrsBookModel{
     id:abm
 }
 
-//DialogSetPassword{
-//id:setpass
-//anchors.centerIn: Overlay.overlay
-//onAccepted:{
-//abm.initAddrsBook(setpass.password)
-//}
-//onRejected:{
-//generalStackView.pop()
-//console.log("asd")
-//}
-//}
+DialogSelectSecType{
+id:dialogCreateAddrsBk
+width:300
+height:300
+anchors.centerIn: Overlay.overlay
+onAccepted:{
+secType = select
+if (secType==2){
+setpass.open()
+}else{
+abm.initAddrsBook(secType,"")
+}
+}
+onRejected:{
+ generalStackView.pop()
+}
 
-//DialogGetPassword{
-//id:getpass
-//anchors.centerIn: Overlay.overlay
-//height:180
-//onAccepted:{
-// if(!abm.openAddrsBook(getpass.password)){
-// getpass.open()
-// }
-//}
-//
-//onRejected:{
-//generalStackView.pop()
-//console.log("asd")
-//}
-//}
+}
+
+DialogSetPassword{
+id:setpass
+anchors.centerIn: Overlay.overlay
+onAccepted:{
+abm.initAddrsBook(2,setpass.password)
+}
+onRejected:{
+generalStackView.pop()
+}
+}
+
+DialogGetPassword{
+id:getpass
+anchors.centerIn: Overlay.overlay
+height:180
+onAccepted:{
+if(!abm.authenticate(getpass.password)){
+getpass.open()
+}else{
+abm.loadContacts()
+}
+}
+
+onRejected:{
+generalStackView.pop()
+console.log("asd")
+}
+}
        ScrollView {
                 anchors.fill: parent
                 clip: true

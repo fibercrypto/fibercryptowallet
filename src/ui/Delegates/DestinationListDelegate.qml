@@ -54,9 +54,27 @@ coinType:abm.contacts[i].address.address[j].coinType})
                     highlighted: true
 
                     onClicked: {
-                        dialogSelectAddressByAddressBook.open()
-                    }
+                   if(abm.getSecType()!=2){
+                          abm.loadContacts()
+                            dialogSelectAddressByAddressBook.open()
+                         }else{
+                             getpass.open()
+                        }
                 }
+                }
+                 DialogGetPassword{
+                                 id:getpass
+                                 anchors.centerIn: Overlay.overlay
+                                 height:180
+                                 onAccepted:{
+                                 if(!abm.authenticate(getpass.password)){
+                                 getpass.open()
+                                 }else{
+                                 abm.loadContacts()
+                                 dialogSelectAddressByAddressBook.open()
+                                 }
+                                 }
+                                 }
 
         RowLayout {
             Layout.fillWidth: true
@@ -147,11 +165,7 @@ coinType:abm.contacts[i].address.address[j].coinType})
 
                             listAddrsModel: contactAddrsModel
 onAboutToShow:{
-if(abm.exist()){
-console.log(abm.contacts.length)
-abm.openAddrsBook("")
 getAddressList()
-}
 }
                             focus: true
                             modal: true
@@ -167,6 +181,4 @@ id:contactAddrsModel
  AddrsBookModel{
     id:abm
     }
-
-
 }
