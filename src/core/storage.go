@@ -19,6 +19,7 @@ type AddressBook interface {
 	UpdateContact(id uint64, contact Contact) error
 	GetPath() string
 	HasInit() bool
+	IsOpen() bool
 	GetSecType() int
 	Close() error
 	Exist(path string) bool
