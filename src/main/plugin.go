@@ -1,8 +1,8 @@
 package local
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 )
 
 var logMainPlugin = logging.MustGetLogger("Altcoin plugin entry point")

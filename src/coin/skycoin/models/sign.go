@@ -1,8 +1,8 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 )
 
 // SkycoinSignService implements BlockchainSignService for multi-wallet transaction signing

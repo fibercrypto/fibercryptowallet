@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
 // SimpleWalletOutput put together transacion output with originating wallet

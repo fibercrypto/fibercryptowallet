@@ -1,7 +1,7 @@
 package util
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"strconv"
 )
 

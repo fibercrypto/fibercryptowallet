@@ -1,11 +1,11 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
-	appParams "github.com/fibercrypto/FiberCryptoWallet/src/params"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	appParams "github.com/fibercrypto/fibercryptowallet/src/params"
 )
 
 // SkyFiberPlugin provide support for SkyFiber coins
