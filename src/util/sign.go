@@ -50,7 +50,12 @@ func SignTransaction(signerID core.UID, txn core.Transaction, pwd core.PasswordR
 	if signer == nil {
 		return nil, errors.ErrInvalidID
 	}
-	return signer.SignTransaction(txn, pwd, indices)
+	// Add signer ID in key value store context
+	pwdReader := func(msg string, ctx core.KeyValueStore) (string, error) {
+		newCtx := NewKeyValuesWithDefaults(NewMapWithSingleKey(core.StrSignerID, string(signerID)), ctx)
+		return pwd(msg, newCtx)
+	}
+	return signer.SignTransaction(txn, pwdReader, indices)
 }
 
 // GetSignerDescription human readable caption for signing strategy identified by UID
@@ -79,18 +84,18 @@ func LookupSignServiceForWallet(wlt core.Wallet, signerID core.UID) (core.TxnSig
 }
 
 type signingKeyPair struct {
-	wallet core.Wallet
-	signer core.UID
+	wallet   core.Wallet
+	signerID core.UID
 }
 
-// MultiWalletSign generic strategy for using multiple wallets to sign a transaction
-func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescriptor, pwds map[string]core.PasswordReader) (signedTxn core.Transaction, err error) {
+// GenericMultiWalletSign generic strategy for using multiple wallets to sign a transaction
+func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescriptor, pwd core.PasswordReader) (signedTxn core.Transaction, err error) {
 	groups := make(map[signingKeyPair][]string)
 	// Aggregate inputs by wallet,signer combination
 	for _, descriptor := range signSpec {
 		key := signingKeyPair{
-			wallet: descriptor.Wallet,
-			signer: descriptor.SignerID,
+			wallet:   descriptor.Wallet,
+			signerID: descriptor.SignerID,
 		}
 		inputs, isNotEmpty := groups[key]
 		if !isNotEmpty {
@@ -102,15 +107,14 @@ func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescr
 
 	for signPair, indices := range groups {
 
-		signer, err := LookupSignServiceForWallet(signPair.wallet, signPair.signer)
+		signer, err := LookupSignServiceForWallet(signPair.wallet, signPair.signerID)
 		if err != nil {
-			logUtil.WithError(err).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signer), indices, signPair.wallet)
+			logUtil.WithError(err).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signerID), indices, signPair.wallet)
 			return nil, errors.ErrInvalidID
 		}
-		pwd := pwds[signPair.wallet.GetId()]
 		signedTxn, err = signPair.wallet.Sign(signedTxn, signer, pwd, indices)
 		if err != nil {
-			logUtil.WithError(err).Errorf("Error signing inputs %v of wallet %v with signer %s", indices, signPair.wallet, string(signPair.signer))
+			logUtil.WithError(err).Errorf("Error signing inputs %v of wallet %v with signer %s", indices, signPair.wallet, string(signPair.signerID))
 			return nil, err
 		}
 

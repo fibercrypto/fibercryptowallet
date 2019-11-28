@@ -27,14 +27,15 @@ import (
 var logWallet = logging.MustGetLogger("Skycoin Wallet")
 
 const (
-	Sky                     = params.SkycoinTicker
-	CoinHour                = params.CoinHoursTicker
-	CalculatedHour          = params.CalculatedHoursTicker
+	Sky            = params.SkycoinTicker
+	CoinHour       = params.CoinHoursTicker
+	CalculatedHour = params.CalculatedHoursTicker
+
 	WalletTypeDeterministic = "deterministic"
 	WalletTypeCollection    = "collection"
 	WalletTypeBip44         = "bip44"
+	WalletTypeXPub          = "xpub"
 
-	WalletTypeXPub        = "xpub"
 	walletExt             = ".wlt"
 	WalletTimestampFormat = "2006_01_02"
 
@@ -42,7 +43,7 @@ const (
 	SignerIDRemoteWallet = "sky.remote"
 )
 
-//Implements WalletIterator interface
+// SkycoinWalletIterator implements WalletIterator interface
 type SkycoinWalletIterator struct {
 	current int
 	wallets []core.Wallet
@@ -108,7 +109,11 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 	}
 	defer ReturnSkycoinClient(c)
 	if IsEncrypted {
-		password, err := pwd("Enter your password")
+		pwdCtx := util.NewKeyValueMap()
+		pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletSet)
+		pwdCtx.SetValue(core.StrMethodName, "CreateWallet")
+		pwdCtx.SetValue(core.StrWalletLabel, label)
+		password, err := pwd("Enter password to encrypt wallet", pwdCtx)
 		if err != nil {
 			logWallet.WithError(err).Fatal("Something was wrong entering the password")
 			return nil, err
@@ -156,7 +161,11 @@ func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordR
 		return
 	}
 	defer ReturnSkycoinClient(c)
-	password, err := pwd("Insert password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Encrypt")
+	pwdCtx.SetValue(core.StrWalletName, walletName)
+	password, err := pwd("Enter password to encrypt wallet", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -177,7 +186,11 @@ func (wltSrv *SkycoinRemoteWallet) Decrypt(walletName string, pwd core.PasswordR
 		return
 	}
 	defer ReturnSkycoinClient(c)
-	password, err := pwd("Insert password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Decrypt")
+	pwdCtx.SetValue(core.StrWalletName, walletName)
+	password, err := pwd("Enter password to decrypt wallet", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -363,7 +376,11 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		return nil, errors.ErrInvalidTxn
 	}
 	if wlt.Encrypted {
-		password, err = pwd(fmt.Sprintf("Introduce the password of %s ", wlt.Label))
+		pwdCtx := util.NewKeyValueMap()
+		pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+		pwdCtx.SetValue(core.StrMethodName, "Sign")
+		pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+		password, err = pwd(fmt.Sprintf("Enter password for %s ", wlt.Label), pwdCtx)
 		if err != nil {
 			logWallet.WithError(err).Warn("Error getting password")
 			return nil, err
@@ -610,7 +627,11 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 		return nil
 	}
 	defer ReturnSkycoinClient(c)
-	password, err := pwd("Insert password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+	pwdCtx.SetValue(core.StrMethodName, "GenAddresses")
+	pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+	password, err := pwd("Enter password", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return nil
@@ -843,7 +864,11 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 
 func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	logWallet.Info("Creating Skycoin local wallet")
-	password, err := pwd("Insert Password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletSet)
+	pwdCtx.SetValue(core.StrMethodName, "CreateWallet")
+	pwdCtx.SetValue(core.StrWalletLabel, label)
+	password, err := pwd("Insert Password", pwdCtx)
 
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
@@ -917,7 +942,11 @@ func (wltSrv *SkycoinLocalWallet) Encrypt(walletName string, password core.Passw
 		return
 	}
 
-	pwd, err := password("Insert Password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Encrypt")
+	pwdCtx.SetValue(core.StrWalletName, wltName)
+	pwd, err := password("Enter Password", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -947,7 +976,11 @@ func (wltSrv *SkycoinLocalWallet) Decrypt(walletName string, password core.Passw
 	if !wlt.IsEncrypted() {
 		return
 	}
-	pwd, err := password("Insert Password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Decrypt")
+	pwdCtx.SetValue(core.StrWalletName, wltName)
+	pwd, err := password("Enter Password", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -1074,7 +1107,11 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		originalInputs = cTxn.In
 
 		if skyWlt.IsEncrypted() {
-			pass, err := pwd(fmt.Sprintf("Introduce the password of %s", skyWlt.Label()))
+			pwdCtx := util.NewKeyValueMap()
+			pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+			pwdCtx.SetValue(core.StrMethodName, "Sign")
+			pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+			pass, err := pwd(fmt.Sprintf("Enter password for %s", skyWlt.Label()), pwdCtx)
 			if err != nil {
 				logWallet.WithError(err).Warn("Couldn't get password")
 				return nil, err
@@ -1156,7 +1193,11 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 
 		if skyWlt.IsEncrypted() {
 
-			pass, err := pwd("Type your password")
+			pwdCtx := util.NewKeyValueMap()
+			pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+			pwdCtx.SetValue(core.StrMethodName, "Sign")
+			pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+			pass, err := pwd("Enter password", pwdCtx)
 			if err != nil {
 				logWallet.WithError(err).Warn("Couldn't get password")
 				return nil, err
@@ -1379,7 +1420,11 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 
 		if walletLoaded.IsEncrypted() {
 			genAddressesInFile = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
-				password, err := pwd("Insert Password")
+				pwdCtx := util.NewKeyValueMap()
+				pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+				pwdCtx.SetValue(core.StrMethodName, "GenAddresses")
+				pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+				password, err := pwd("Enter password", pwdCtx)
 				if err != nil {
 					logWallet.WithError(err).Error("Something was wrong entering the password")
 					return nil, nil

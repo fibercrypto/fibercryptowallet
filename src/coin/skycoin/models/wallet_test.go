@@ -111,7 +111,7 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 	mockSkyApiCreateWallet(global_mock, &wltOpt2, "walletNonEncrypted", false)
 
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
-	pwdReader := func(message string) (string, error) {
+	pwdReader := func(message string, _ core.KeyValueStore) (string, error) {
 		return "pwd", nil
 	}
 
@@ -131,7 +131,7 @@ func TestSkycoinRemoteWalletEncrypt(t *testing.T) {
 	global_mock.On("EncryptWallet", "wallet", "pwd").Return(&api.WalletResponse{}, nil)
 
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
-	pwdReader := func(message string) (string, error) {
+	pwdReader := func(message string, _ core.KeyValueStore) (string, error) {
 		return "pwd", nil
 	}
 
@@ -143,7 +143,7 @@ func TestSkycoinRemoteWalletDecrypt(t *testing.T) {
 	global_mock.On("DecryptWallet", "wallet", "pwd").Return(&api.WalletResponse{}, nil)
 
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
-	pwdReader := func(message string) (string, error) {
+	pwdReader := func(message string, _ core.KeyValueStore) (string, error) {
 		return "pwd", nil
 	}
 
@@ -234,9 +234,10 @@ func TestRemoteWalletSignSkycoinTxn(t *testing.T) {
 
 	wlt := &RemoteWallet{
 		Id:          "wallet",
+		Encrypted:   true,
 		poolSection: PoolSection,
 	}
-	pwdReader := func(message string) (string, error) {
+	pwdReader := func(string, core.KeyValueStore) (string, error) {
 		return "password", nil
 	}
 	ret, err := wlt.Sign(&unTxn, nil, pwdReader, nil)
@@ -558,7 +559,7 @@ func TestRemoteWalletGenAddresses(t *testing.T) {
 		Id:          "wallet",
 		poolSection: PoolSection,
 	}
-	pwdReader := func(message string) (string, error) {
+	pwdReader := func(message string, _ core.KeyValueStore) (string, error) {
 		return "pwd", nil
 	}
 	iter := wlt.GenAddresses(0, 0, 2, pwdReader)
@@ -803,7 +804,7 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) []core.Wallet
 		var err error
 		if w, isFound = walletsCache[kd.Mnemonic]; !isFound {
 			if w = walletSet.GetWallet(walletID); w == nil {
-				w, err = walletSet.CreateWallet(walletID, kd.Mnemonic, false, func(string) (string, error) { return "", nil }, 0)
+				w, err = walletSet.CreateWallet(walletID, kd.Mnemonic, false, func(string, core.KeyValueStore) (string, error) { return "", nil }, 0)
 				require.NoError(t, err)
 			}
 			walletsCache[kd.Mnemonic] = w
@@ -1478,7 +1479,7 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 		ins = append(ins, in)
 	}
 
-	pwdReader := func(message string) (string, error) {
+	pwdReader := func(_ string, _ core.KeyValueStore) (string, error) {
 		return "", nil
 	}
 
