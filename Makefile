@@ -62,7 +62,7 @@ deps: ## Add dependencies
 # Targets
 run: build ## Run FiberCrypto Wallet.
 	@echo "Running $(APP_NAME)..."
-	@./deploy/linux/FiberCryptoWallet
+	@./deploy/linux/fibercryptowallet
 
 install-deps-no-envs: ## Install therecipe/qt with -tags=no_env set
 	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
@@ -136,7 +136,7 @@ build-icon-Linux: ## Build the application icon in Linux
 build-icon: build-icon-$(OS) ## Build the application icon (Windows_NT and Darwin systems)
 	@echo "Builded $(OS) icon..."
 
-build-Linux: ## Build FiberCryptoWallet in Windows
+build-Linux: ## Build fibercryptowallet in Windows
 	@echo "Building on Linux"
 
 build-Windows_NT: build-icon ## Build FiberCrypto Wallet in Windows
@@ -185,18 +185,18 @@ clean: clean-test clean-build ## Remove temporary files
 
 gen-mocks: ## Generate mocks for interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
-	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/FiberCryptoWallet/g' PATH
+	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/fibercryptowallet/g' PATH
 
 test-sky: ## Run Skycoin plugin test suite
-	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
-	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
+	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
 
 test-core: ## Run tests for API core and helpers
-	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/util
+	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
 
 test-sky-launch-html-cover:
-	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
-	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
+	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
 	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage

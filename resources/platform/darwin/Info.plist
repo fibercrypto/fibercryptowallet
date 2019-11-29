@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>appIcon.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.simelo.FiberCryptoWallet</string>
+	<string>net.fibercrypto.wallet</string>
 	<key>CFBundleName</key>
 	<string>FiberCrypto Wallet</string>
 	<key>CFBundlePackageType</key>

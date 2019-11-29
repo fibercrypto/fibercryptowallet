@@ -567,11 +567,6 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 		return nil
 	}
 
-	if len(wltIds) != len(password) {
-		logWalletManager.Error("Wallets and passwords provided are incorrect")
-		return nil
-	}
-
 	wltCache := make(map[string]core.Wallet)
 	wltByAddr := make(map[string]core.Wallet)
 	wlts := make([]core.Wallet, 0)
@@ -604,14 +599,14 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 			}
 			signDescriptors = append(signDescriptors, sd)
 		}
-		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, passwords)
+		txn, err = walletM.signer.Sign(qTxn.txn, signDescriptors, pwd)
 	} else {
 		signer, err2 := util.LookupSignServiceForWallet(wlts[0], core.UID(source))
 		if err2 != nil {
 			logWalletManager.WithError(err).Warnf("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
-		txn, err = wlts[0].Sign(qTxn.txn, signer, passwords[wlts[0].GetId()], nil)
+		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
 	}
 
 	if err != nil {
@@ -631,8 +626,9 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, p
 func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) {
 	channel := make(chan *QTransaction)
 	go func() {
-		pwd := func(message string) (string, error) {
+		pwd := func(message string, ctx core.KeyValueStore) (string, error) {
 			bridgeForPassword.lock()
+			// TODO: Get wallet label from context
 			bridgeForPassword.GetPassword(message)
 			bridgeForPassword.lock()
 			pass := bridgeForPassword.getResult()
@@ -654,7 +650,7 @@ func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []strin
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
-	pwd := func(message string) (string, error) {
+	pwd := func(message string, _ core.KeyValueStore) (string, error) {
 		return password, nil
 	}
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, true, pwd, scanN)
@@ -670,7 +666,7 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 
 func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
-	pwd := func(message string) (string, error) {
+	pwd := func(message string, _ core.KeyValueStore) (string, error) {
 		return "", nil
 	}
 
@@ -712,7 +708,7 @@ func (walletM *WalletManager) verifySeed(seed string) int {
 
 func (walletM *WalletManager) encryptWallet(id, password string) int {
 	logWalletManager.Info("Encrypting wallet")
-	pwd := func(message string) (string, error) {
+	pwd := func(message string, _ core.KeyValueStore) (string, error) {
 		return password, nil
 	}
 	walletM.WalletEnv.GetStorage().Encrypt(id, pwd)
@@ -729,7 +725,7 @@ func (walletM *WalletManager) encryptWallet(id, password string) int {
 
 func (walletM *WalletManager) decryptWallet(id, password string) int {
 	logWalletManager.Info("Decrypt wallet")
-	pwd := func(message string) (string, error) {
+	pwd := func(message string, _ core.KeyValueStore) (string, error) {
 		return password, nil
 	}
 	walletM.WalletEnv.GetStorage().Decrypt(id, pwd)
@@ -747,7 +743,7 @@ func (walletM *WalletManager) decryptWallet(id, password string) int {
 func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {
 	logWalletManager.Info("Creating new wallet addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-	pwd := func(message string) (string, error) {
+	pwd := func(message string, _ core.KeyValueStore) (string, error) {
 		return password, nil
 	}
 	wltEntriesLen := 0
