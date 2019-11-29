@@ -659,9 +659,9 @@ func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []strin
 
 func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
-	pwd := func(message string, _ core.KeyValueStore) (string, error) {
-		return password, nil
-	}
+	pwd := util.ConstantPassword(password)
+	// NOTE: No easy way to get plain passwords in memory
+	password = ""
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, true, pwd, scanN)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create encrypted wallet")
@@ -675,9 +675,7 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 
 func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
-	pwd := func(message string, _ core.KeyValueStore) (string, error) {
-		return "", nil
-	}
+	pwd := util.EmptyPassword
 
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, false, pwd, scanN)
 	if err != nil {
@@ -717,9 +715,9 @@ func (walletM *WalletManager) verifySeed(seed string) int {
 
 func (walletM *WalletManager) encryptWallet(id, password string) int {
 	logWalletManager.Info("Encrypting wallet")
-	pwd := func(message string, _ core.KeyValueStore) (string, error) {
-		return password, nil
-	}
+	pwd := util.ConstantPassword(password)
+	// NOTE: No easy way to get plain passwords in memory
+	password = ""
 	walletM.WalletEnv.GetStorage().Encrypt(id, pwd)
 	ret, err := walletM.WalletEnv.GetStorage().IsEncrypted(id)
 	if err != nil {
@@ -734,9 +732,9 @@ func (walletM *WalletManager) encryptWallet(id, password string) int {
 
 func (walletM *WalletManager) decryptWallet(id, password string) int {
 	logWalletManager.Info("Decrypt wallet")
-	pwd := func(message string, _ core.KeyValueStore) (string, error) {
-		return password, nil
-	}
+	pwd := util.ConstantPassword(password)
+	// NOTE: No easy way to get plain passwords in memory
+	password = ""
 	walletM.WalletEnv.GetStorage().Decrypt(id, pwd)
 	ret, err := walletM.WalletEnv.GetStorage().IsEncrypted(id)
 	if err != nil {
@@ -752,9 +750,9 @@ func (walletM *WalletManager) decryptWallet(id, password string) int {
 func (walletM *WalletManager) newWalletAddress(id string, n int, password string) {
 	logWalletManager.Info("Creating new wallet addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(id)
-	pwd := func(message string, _ core.KeyValueStore) (string, error) {
-		return password, nil
-	}
+	pwd := util.ConstantPassword(password)
+	// NOTE: No easy way to get plain passwords in memory
+	password = ""
 	wltEntriesLen := 0
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
