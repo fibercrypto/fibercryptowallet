@@ -628,8 +628,17 @@ func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []strin
 	go func() {
 		pwd := func(message string, ctx core.KeyValueStore) (string, error) {
 			bridgeForPassword.lock()
-			// TODO: Get wallet label from context
-			bridgeForPassword.GetPassword(message)
+			suffix := ""
+			v := ctx.GetValue(core.StrWalletLabel)
+			if v == nil {
+				v = ctx.GetValue(core.StrWalletName)
+			}
+			if v != nil {
+				if str, isStr := v.(string); isStr {
+					suffix = " for " + str
+				}
+			}
+			bridgeForPassword.GetPassword(message + suffix)
 			bridgeForPassword.lock()
 			pass := bridgeForPassword.getResult()
 			bridgeForPassword.unlock()
