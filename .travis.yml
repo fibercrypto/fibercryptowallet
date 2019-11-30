@@ -35,7 +35,8 @@ matrix:
     - stage: Linux
       install:
         #- make install-docker-deps
-        - make install-deps-no-envs
+        #- make install-deps-no-envs
+        - make install-deps
         - make install-linters
       script:
         - make clean
