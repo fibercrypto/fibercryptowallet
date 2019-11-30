@@ -34,14 +34,12 @@ matrix:
         - make test
     - stage: Linux
       install:
-        #- make install-docker-deps
-        #- make install-deps-no-envs
-        - make install-deps
+        - make install-docker-deps
+        - make install-deps-no-envs
         - make install-linters
       script:
         - make clean
-        #- DEFAULT_TARGET=linux make build-docker
-        - make build
+        - DEFAULT_TARGET=linux make build-docker
         - make test
         - make lint
     - stage: Windows
