@@ -1016,11 +1016,11 @@ func copyTransaction(txn *coin.Transaction) *coin.Transaction {
 	txnInnerHash := txn.HashInner()
 
 	txn2 := *txn
-	txn2.Sigs = make([]cipher.Sig, len(txn.Sigs))
+	txn2.Sigs = make([]cipher.Sig, len(txn.Sigs), cap(txn.Sigs))
 	copy(txn2.Sigs, txn.Sigs)
-	txn2.In = make([]cipher.SHA256, len(txn.In))
+	txn2.In = make([]cipher.SHA256, len(txn.In), cap(txn.In))
 	copy(txn2.In, txn.In)
-	txn2.Out = make([]coin.TransactionOutput, len(txn.Out))
+	txn2.Out = make([]coin.TransactionOutput, len(txn.Out), cap(txn.Out))
 	copy(txn2.Out, txn.Out)
 
 	if txnInnerHash != txn2.HashInner() {
