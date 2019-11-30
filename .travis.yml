@@ -14,8 +14,7 @@ matrix:
     - DEFAULT_ARCH=rpi2 make install-docker-deps
     - DEFAULT_ARCH=rpi3 make install-docker-deps
     - make install-deps-no-envs
-    - go get golang.org/x/tools/cmd/cover
-    - go get github.com/mattn/goveralls
+    - make install-coveralls
     script:
     - make clean
     - DEFAULT_TARGET=rpi1 make build-docker
@@ -28,8 +27,7 @@ matrix:
     install:
     - DEFAULT_ARCH=android make install-docker-deps
     - make install-deps-no-envs
-    - go get golang.org/x/tools/cmd/cover
-    - go get github.com/mattn/goveralls
+    - make install-coveralls
     script:
     - make clean
     - DEFAULT_TARGET=android make build-docker
@@ -42,8 +40,7 @@ matrix:
     - make install-docker-deps
     - make install-deps-no-envs
     - make install-linters
-    - go get golang.org/x/tools/cmd/cover
-    - go get github.com/mattn/goveralls
+    - make install-coveralls
     script:
     - make clean
     - DEFAULT_TARGET=linux make build-docker
@@ -56,8 +53,7 @@ matrix:
     - choco install make -y
     - travis_wait make install-deps-Windows
     - make install-linters
-    - go get golang.org/x/tools/cmd/cover
-    - go get github.com/mattn/goveralls
+    - make install-coveralls
     script:
     - make build
     - make test
@@ -69,8 +65,7 @@ matrix:
     osx_image: xcode10.2
     install:
     - make install-deps
-    - go get golang.org/x/tools/cmd/cover
-    - go get github.com/mattn/goveralls
+    - make install-coveralls
     script:
     - make clean
     - make build
