@@ -10,6 +10,20 @@ type Transaction struct {
 	mock.Mock
 }
 
+// AddSignature provides a mock function with given fields: index, signature
+func (_m *Transaction) AddSignature(index uint64, signature []byte) error {
+	ret := _m.Called(index, signature)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(uint64, []byte) error); ok {
+		r0 = rf(index, signature)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // ComputeFee provides a mock function with given fields: ticker
 func (_m *Transaction) ComputeFee(ticker string) (uint64, error) {
 	ret := _m.Called(ticker)

@@ -37,6 +37,8 @@ type Transaction interface {
 	VerifySigned() error
 	// IsFullySigned deermine whether all transaction elements have been signed
 	IsFullySigned() (bool, error)
+	// AddSignature assign signature to the transactions in the specified index
+	AddSignature(index uint64, signature []byte) error
 }
 
 // TransactionIterator iterates over a sequence of transactions

@@ -2,8 +2,10 @@ package skycoin
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
+	stdErr "errors"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -75,6 +77,15 @@ func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) (uint64, error) 
 	}
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
+}
+
+func (txn *SkycoinPendingTransaction) AddSignature(index uint64, signature []byte) error {
+	if txn.Transaction.Transaction.Sigs == nil {
+		// FIXME i18n
+		return stdErr.New("signatures buffer should not be null")
+	}
+	txn.Transaction.Transaction.Sigs[index] = string(signature)
+	return nil
 }
 
 func newCreatedTransactionOutput(uxID, address, coins, hours string) api.CreatedTransactionOutput {
@@ -373,6 +384,21 @@ func (txn *SkycoinUninjectedTransaction) EncodeSkycoinTransaction() ([]byte, err
 	return txn.txn.Serialize()
 }
 
+func (txn *SkycoinUninjectedTransaction) AddSignature(index uint64, signature []byte) error {
+	if txn.txn.Sigs == nil {
+		// FIXME i18n
+		return stdErr.New("signatures buffer should not be null")
+	}
+	sgn, err := cipher.NewSig(signature)
+	if err != nil {
+		// FIXME i18n
+		logrus.WithError(err).Errorln("unable to get Skycoin address from buffer")
+		return stdErr.New("unable to get Skycoin address from buffer")
+	}
+	txn.txn.Sigs[index] = sgn
+	return nil
+}
+
 /*
 SkycoinTransaction
 */
@@ -485,6 +511,15 @@ func (txn *SkycoinTransaction) VerifySigned() error {
 // IsFullySigned deermine whether all transaction elements have been signed
 func (txn *SkycoinTransaction) IsFullySigned() (bool, error) {
 	return checkFullySigned(txn)
+}
+
+func (txn *SkycoinTransaction) AddSignature(index uint64, signature []byte) error {
+	if txn.skyTxn.Sigs == nil {
+		// FIXME i18n
+		return stdErr.New("signatures buffer should not be null")
+	}
+	txn.skyTxn.Sigs[index] = string(signature)
+	return nil
 }
 
 func getSkycoinTransactionInputsFromTxnHash(hash string) ([]core.TransactionInput, error) {
@@ -983,6 +1018,15 @@ func (txn *SkycoinCreatedTransaction) VerifySigned() error {
 // IsFullySigned deermine whether all transaction elements have been signed
 func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
 	return checkFullySigned(txn)
+}
+
+func (txn *SkycoinCreatedTransaction) AddSignature(index uint64, signature []byte) error {
+	if txn.skyTxn.Sigs == nil {
+		// FIXME i18n
+		return stdErr.New("signatures buffer should not be null")
+	}
+	txn.skyTxn.Sigs[index] = string(signature)
+	return nil
 }
 
 // Type assertions to abort compilation if contracts not satisfied
