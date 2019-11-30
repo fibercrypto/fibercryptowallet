@@ -25,7 +25,7 @@ type PubKey interface {
 
 // Address identifier for sending and receiving transactions
 type Address interface {
-	// IsBip32 flaqg shall be set if adddress generation complies to BIP 32
+	// IsBip32 flag shall be set if address generation complies to BIP 32
 	IsBip32() bool
 	// String return human-readable representation of this address
 	String() string

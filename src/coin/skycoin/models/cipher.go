@@ -5,7 +5,7 @@ import (
 	"github.com/skycoin/skycoin/src/cipher"
 )
 
-type SkycoinAddressIterator struct { //Implements AddressIterator interfaces
+type SkycoinAddressIterator struct { // Implements AddressIterator interfaces
 	current   int
 	addresses []core.Address
 }
@@ -32,17 +32,18 @@ func NewSkycoinAddressIterator(addresses []core.Address) *SkycoinAddressIterator
 
 func NewSkycoinAddress(addrStr string) (core.Address, error) {
 	var skyAddr cipher.Address
-	if skyAddr, err := cipher.DecodeBase58Address(addrStr); err != nil {
+	var err error
+	if skyAddr, err = cipher.DecodeBase58Address(addrStr); err != nil {
 		return nil, err
 	}
 	return &SkycoinAddress{
-		isBIP32:     false,
+		isBip32:     false,
 		address:     skyAddr,
 		poolSection: PoolSection,
-	}
+	}, nil
 }
 
-type SkycoinAddress struct { //Implements Address and CryptoAccount interfaces
+type SkycoinAddress struct { // Implements Address and CryptoAccount interfaces
 	isBip32     bool
 	address     cipher.Address
 	poolSection string
@@ -60,7 +61,7 @@ func (addr *SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
 }
 
-func (addr *SkycoinAddress) ToSkycoinCipherAddress() (*cipher.Address, error) {
+func (addr *SkycoinAddress) ToSkycoinCipherAddress() (cipher.Address, error) {
 	return cipher.AddressFromBytes(addr.Bytes())
 }
 
@@ -70,8 +71,9 @@ func (addr *SkycoinAddress) Bytes() []byte {
 }
 
 // Checksum computes address consistency token
-func (addr *SkycoinAddress) Checksum() Checksum {
-	return addr.address.Checksum()[:]
+func (addr *SkycoinAddress) Checksum() core.Checksum {
+	checksum := addr.address.Checksum()
+	return checksum[:]
 }
 
 func toSkycoinPubKey(pk core.PubKey) (cipher.PubKey, error) {
@@ -90,7 +92,8 @@ func toSkycoinSecKey(sk core.SecKey) (cipher.SecKey, error) {
 
 // Verify checks that the address appears valid for the public key
 func (addr *SkycoinAddress) Verify(pk core.PubKey) error {
-	skyPK, err := toSkycoinPubkey(pk)
+
+	skyPK, err := toSkycoinPubKey(pk)
 	if err != nil {
 		return err
 	}
@@ -119,27 +122,27 @@ func (sk *SkycoinSecKey) Null() bool {
 
 // Bytes binary representation for private key
 func (sk *SkycoinSecKey) Bytes() []byte {
-	return sk.seckey.Bytes()
+	return sk.seckey[:]
 }
 
-func skySecKeyFromBytes(b []byte) (SkycoinPubKey, error) {
+func skySecKeyFromBytes(b []byte) (*SkycoinSecKey, error) {
 	sk, err := cipher.NewSecKey(b)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return &SkycoinSecKey{
 		seckey: sk,
-	}
+	}, nil
 }
 
-func skyPubKeyFromBytes(b []byte) (SkycoinSecKey, error) {
+func skyPubKeyFromBytes(b []byte) (*SkycoinPubKey, error) {
 	pk, err := cipher.NewPubKey(b)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return &SkycoinPubKey{
 		pubkey: pk,
-	}
+	}, nil
 }
 
 // SkycoinPubKey Skycoin public key wrapper
@@ -159,7 +162,7 @@ func (pk *SkycoinPubKey) Null() bool {
 
 // Bytes binary representation for public key
 func (pk *SkycoinPubKey) Bytes() []byte {
-	return pk.pubkey.Bytes()
+	return pk.pubkey[:]
 }
 
 // Type assertions

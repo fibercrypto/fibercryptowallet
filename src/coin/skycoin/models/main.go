@@ -87,17 +87,17 @@ func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
 
 }
 
-// AddressFromString retrieves address correspoding to readable representation
+// AddressFromString retrieves address corresponding to readable representation
 func (p *SkyFiberPlugin) AddressFromString(addrStr string) (core.Address, error) {
 	return NewSkycoinAddress(addrStr)
 }
 
-// PubKeyFromBytes retrieves address correspoding to readable representation
+// PubKeyFromBytes retrieves address corresponding to readable representation
 func (p *SkyFiberPlugin) PubKeyFromBytes(b []byte) (core.PubKey, error) {
 	return skyPubKeyFromBytes(b)
 }
 
-// SecKeyFromBytes retrieves address correspoding to readable representation
+// SecKeyFromBytes retrieves address corresponding to readable representation
 func (p *SkyFiberPlugin) SecKeyFromBytes(b []byte) (core.SecKey, error) {
 	return skySecKeyFromBytes(b)
 }
