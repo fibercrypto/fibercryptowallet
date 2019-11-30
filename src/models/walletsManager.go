@@ -47,7 +47,7 @@ type WalletManager struct {
 	_ func(id string, password string) int                                                                                             `slot:"decryptWallet"`
 	_ func() []*QWallet                                                                                                                `slot:"getWallets"`
 	_ func(id string) []*QAddress                                                                                                      `slot:"getAddresses"`
-	_ func(wltIds, addresses []string, source string, pwd core.PasswordReader, index []int, qTxn *QTransaction) *QTransaction          `slot:"signTxn"`
+	_ func(wltIds, addresses []string, source string, pwd interface{}, index []int, qTxn *QTransaction) *QTransaction                  `slot:"signTxn"`
 	_ func(wltId string, destinationAddress string, amount string) *QTransaction                                                       `slot:"sendTo"`
 	_ func(id, label string) *QWallet                                                                                                  `slot:"editWallet"`
 	_ func(wltId, address string) []*QOutput                                                                                           `slot:"getOutputs"`
@@ -559,7 +559,11 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 
 }
 
-func (walletM *WalletManager) signTxn(wltIds, address []string, source string, pwd core.PasswordReader, index []int, qTxn *QTransaction) *QTransaction {
+func (walletM *WalletManager) signTxn(wltIds, address []string, source string, tmpPwd interface{}, index []int, qTxn *QTransaction) *QTransaction {
+	pwd, isPwdReader := tmpPwd.(core.PasswordReader)
+	if !isPwdReader {
+		return nil
+	}
 	logWalletManager.Info("Signig transaction")
 
 	if len(wltIds) != len(address) {
