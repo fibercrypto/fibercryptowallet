@@ -49,11 +49,15 @@ Item {
             TextField {
                 id: tfAddr
                 font.family: "Code New Roman"
-                placeholderText: qsTr("Address")
+                placeholderText: qsTr("Address #"+(index+1))
                 text: value
                 selectByMouse: true
                 Layout.fillWidth: true
-                onTextChanged: value = text
+                Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
+                onTextChanged:{
+                value = text
+                enableOkBtn()
+                }
             }
         } // RowLayout
 
@@ -67,16 +71,6 @@ onCurrentTextChanged:{
 coinType=cbCoinTypes.currentText
 }
 }
-// TextField {
-//                id: textFieldDestinationAmount
-//                font.family: "Code New Roman"
-//                placeholderText: qsTr("Type")
-//                text: coinType
-//                selectByMouse: true
-//                Layout.fillWidth: true
-//                onTextChanged: coinType = text
-//            }
-
         }
 
         ToolButton {
@@ -90,9 +84,11 @@ coinType=cbCoinTypes.currentText
 
             onClicked: {
                 if (index === 0) {
+                standardButton(Dialog.Ok).enabled=false
                     listModelAddresses.append( { "address": "", "coinType": "" } )
                 } else {
                     listModelAddresses.remove(index)
+                        enableOkBtn()
                 }
             }
         } // ToolButton
@@ -103,9 +99,9 @@ coinType=cbCoinTypes.currentText
     ListElement{
     type:"SKY"
     }
-    ListElement{
-    type:"BTC"
-    }
+//    ListElement{
+//    type:"BTC"
+//    }
     }
 
     function getIndexForCoinType(coinType){
