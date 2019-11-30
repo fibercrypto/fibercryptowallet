@@ -27,6 +27,13 @@ func (ga *GenericAddress) GetCryptoAccount() core.CryptoAccount {
 	return nil
 }
 
+func (ga *GenericAddress) Clone() (interface{}, error) {
+	newGa := &GenericAddress{
+		Address: ga.Address,
+	}
+	return newGa, nil
+}
+
 // Type assertions
 var (
 	_ core.Address = &GenericAddress{}

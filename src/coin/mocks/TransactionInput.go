@@ -10,6 +10,29 @@ type TransactionInput struct {
 	mock.Mock
 }
 
+// Clone provides a mock function with given fields:
+func (_m *TransactionInput) Clone() (interface{}, error) {
+	ret := _m.Called()
+
+	var r0 interface{}
+	if rf, ok := ret.Get(0).(func() interface{}); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(interface{})
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetCoins provides a mock function with given fields: ticker
 func (_m *TransactionInput) GetCoins(ticker string) (uint64, error) {
 	ret := _m.Called(ticker)

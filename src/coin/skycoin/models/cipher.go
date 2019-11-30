@@ -47,6 +47,14 @@ func (addr *SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 	return addr
 }
 
+func (addr *SkycoinAddress) Clone() (interface{}, error) {
+	newAddr := &SkycoinAddress{
+		address:     addr.address,
+		poolSection: addr.poolSection,
+	}
+	return newAddr, nil
+}
+
 func (addr SkycoinAddress) ToSkycoinCipherAddress() (*cipher.Address, error) {
 	pubkey, err := cipher.PubKeyFromHex(addr.String())
 	if err != nil {

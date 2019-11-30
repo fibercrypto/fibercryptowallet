@@ -3,6 +3,8 @@ package util
 import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/sirupsen/logrus"
+	stdErr "errors"
 )
 
 func NewGenericOutput(addr core.Address) GenericOutput {
@@ -62,6 +64,31 @@ func (gOut *GenericOutput) SupportedAssets() (tickers []string) {
 		tickers = append(tickers, t)
 	}
 	return
+}
+
+func (gOut *GenericOutput) Clone() (interface{}, error) {
+	addr, err := gOut.Address.Clone()
+	if err != nil {
+		// TODO i18n
+		logrus.WithError(err).Errorln("unable to clone Address")
+		return nil, errors.ErrDeepCopyFailed
+	}
+	addrTyped, ok := addr.(core.Address)
+	if !ok {
+		// TODO i18n
+		err = stdErr.New("can not get address from cloned object")
+		logrus.Errorln(err.Error())
+		return nil, err
+	}
+	balance := make(map[string]uint64, len(gOut.Balance))
+	for k, v := range gOut.Balance {
+		balance[k] = v
+	}
+	newOut := &GenericOutput{
+		Address: addrTyped,
+		Balance: balance,
+	}
+	return newOut, nil
 }
 
 // Type assertions

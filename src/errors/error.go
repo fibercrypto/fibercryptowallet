@@ -49,6 +49,10 @@ var (
 	ErrInvalidWalletEntropy = errors.New("Entropy must be 128 or 256")
 	// ErrInvalidValue invalid value was supplied in to function
 	ErrInvalidValue = errors.New("Value errors")
+	// ErrInvalidTypeAssertion the current value have not the expected type
+	ErrInvalidTypeAssertion = errors.New("invalid type assertion")
+	// ErrDeepCopyFailed the deep copy operation failed for the object
+	ErrDeepCopyFailed = errors.New("deep copy failed")
 	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
 	// wallet not found
 	ErrWltFromAddrNotFound = errors.New("error getting wallet from addr, no wallet found")

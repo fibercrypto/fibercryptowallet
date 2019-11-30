@@ -15,8 +15,15 @@ const (
 	TXN_STATUS_CONFIRMED
 )
 
+// Define a type that can perform a deep copy from the original object
+type Clonable interface {
+	// Clone return a deep copy of the instance object
+	Clone() (interface{}, error)
+}
+
 // Transaction encapsulates the contract for atomic transfers of coins
 type Transaction interface {
+	Clonable
 	// Crypto assets involved in or supported by this transaction
 	SupportedAssets() []string
 	// GetTimestamp at the moment of creation
@@ -53,6 +60,7 @@ type TransactionIterator interface {
 
 // TransactionInput provides cryptographic proof of spending funds
 type TransactionInput interface {
+	Clonable
 	// GetId provides transaction input ID
 	GetId() string
 	// GetSpentOutput looks up the output spent by this input
@@ -76,6 +84,7 @@ type TransactionInputIterator interface {
 
 // TransactionOutput provides cryptographic proof of funds transfer
 type TransactionOutput interface {
+	Clonable
 	// GetId provides transaction output ID
 	GetId() string
 	// IsSpent determines whether there exists a confirmed transaction with an input spending this output

@@ -1,6 +1,12 @@
 package util
 
 import (
+	"bytes"
+	"encoding/gob"
+	stdErr "errors"
+	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -86,4 +92,82 @@ func StringInList(s string, list []string) bool {
 		}
 	}
 	return false
+}
+
+// DeepCopy create a deep copy of the src
+func DeepCopy(src interface{}, dst interface{}) error {
+	// FIXME performance issue, a reflection alternative could be 10X more faster
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	if err := enc.Encode(src); err != nil {
+		// FIXME i18n
+		logrus.WithError(err).Error("error encoding source")
+		return stdErr.New("error cloning source")
+	}
+	dec := gob.NewDecoder(&buf)
+	if err := dec.Decode(dst); err != nil {
+		// FIXME i18n
+		logrus.WithError(err).Error("error decoding source")
+		return stdErr.New("error filling destination")
+	}
+	return nil
+}
+
+// CloneTransactionInputs create a deep copy of the src
+func CloneTransactionInputs(src []core.TransactionInput) ([]core.TransactionInput, error) {
+	newSrc := make([]core.Clonable, len(src), cap(src))
+	for idx, s := range src {
+		newSrc[idx] = s
+	}
+	newDst, err := CloneSlice(newSrc)
+	if err != nil {
+		return nil, err
+	}
+	dst := make([]core.TransactionInput, len(newDst), cap(newDst))
+	for idx, d := range newDst {
+		var ok bool
+		if dst[idx], ok = d.(core.TransactionInput); !ok {
+			return nil, stdErr.New("unable to get d as a core.TransactionInput")
+		}
+	}
+	return dst, nil
+}
+
+// CloneTransactionOutputs create a deep copy of the src
+func CloneTransactionOutputs(src []core.TransactionOutput) ([]core.TransactionOutput, error) {
+	newSrc := make([]core.Clonable, len(src), cap(src))
+	for idx, s := range src {
+		newSrc[idx] = s
+	}
+	newDst, err := CloneSlice(newSrc)
+	if err != nil {
+		return nil, err
+	}
+	dst := make([]core.TransactionOutput, len(newDst), cap(newDst))
+	for idx, d := range newDst {
+		var ok bool
+		if dst[idx], ok = d.(core.TransactionOutput); !ok {
+			return nil, stdErr.New("unable to get d as a core.TransactionOutput")
+		}
+	}
+	return dst, nil
+}
+
+// CloneSlice create a deep copy of the src slice
+func CloneSlice(src []core.Clonable) (dst []core.Clonable, err error) {
+	dst = make([]core.Clonable, len(src), cap(src))
+	for idx, s := range src {
+		o, err := s.Clone()
+		if err != nil  {
+			logrus.WithError(err).Errorln("unable to clone object")
+			return nil, errors.ErrDeepCopyFailed
+		}
+		oTyped, ok := o.(core.Clonable)
+		if !ok {
+			logrus.Errorln("unable to get o as a core.Clonable object")
+			return nil, errors.ErrInvalidTypeAssertion
+		}
+		dst[idx] = oTyped
+	}
+	return
 }
