@@ -12,6 +12,7 @@ import "../Delegates"
 Dialog{
   id: dialogAddContact
   property bool isEdit:false
+
   title: Qt.application.name
   standardButtons: Dialog.Ok | Dialog.Cancel
     Component.onCompleted: {
@@ -42,7 +43,17 @@ updateAcceptButtonStatus()
 //    listModelAddresses.append( { value: "", coinType: "" } )
     }
 
-
+function enableOkBtn(){
+for(var i=0;i<listModelAddresses.count;i++){
+if (!(abm.addressIsValid(listModelAddresses.get(i).value))||
+     name.text==""|| abm.nameExist(menu.index,name.text)||
+     abm.addressExist(menu.index,listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)){
+standardButton(Dialog.Ok).enabled=false
+return
+}
+}
+standardButton(Dialog.Ok).enabled=true
+}
 
     function updateAcceptButtonStatus() {
     for(var i=0;i<listModelAddresses.count;i++){
@@ -75,7 +86,7 @@ Flickable{
                         Layout.fillWidth: true
                         text: menu.name
                         onTextChanged:{
-                        standardButton(Dialog.Ok).enabled=(name.text!="")
+                        enableOkBtn()
                         }
 
                     }

@@ -97,6 +97,7 @@ coinType:abm.contacts[i].address.address[j].coinType})
                 text: address
                 selectByMouse: true
                 Layout.fillWidth: true
+                Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
                 onTextChanged: address = text
             }
 

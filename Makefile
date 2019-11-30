@@ -103,7 +103,8 @@ gen-mocks: ## Generate mocks for interface types
 
 test-data: ##Run Data pakage test
 	if [ ! -d $(HOME)/temp/ ] ; then mkdir $(HOME)/temp/ ; fi
-	make -C src/data/ run_test
+	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/data/
+
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
@@ -119,7 +120,7 @@ test-sky-launch-html-cover:
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test: clean-test test-core test-sky ## Run project test suite
+test: clean-test test-core test-sky test-data ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck

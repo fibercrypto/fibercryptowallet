@@ -1,6 +1,7 @@
 package addressBook
 
 import (
+	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"github.com/fibercrypto/FiberCryptoWallet/src/data"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
@@ -26,19 +27,22 @@ var addresses = make([]core.StringAddress, 0)
 type AddrsBookModel struct {
 	qtcore.QAbstractListModel
 
-	_ map[int]*qtcore.QByteArray            `property:"roles"`
-	_ []*QContact                           `property:"contacts"`
-	_ int                                   `property:"count"`
-	_ func()                                `constructor:"init"`
-	_ func(row int, id uint64)              `slot:"removeContact,auto"`
-	_ func(row int, id uint64, name string) `slot:"editContact,auto"`
-	_ func(name string)                     `slot:"newContact"`
-	_ func()                                `slot:"loadContacts"`
-	_ func(int, string)                     `slot:"initAddrsBook"`
-	_ func() int                            `slot:"getSecType"`
-	_ func(string) bool                     `slot:"authenticate"`
-	_ func() bool                           `slot:"hasInit"`
-	_ func(value, coinType string)          `slot:"addAddress"`
+	_ map[int]*qtcore.QByteArray                          `property:"roles"`
+	_ []*QContact                                         `property:"contacts"`
+	_ int                                                 `property:"count"`
+	_ func()                                              `constructor:"init"`
+	_ func(row int, id uint64)                            `slot:"removeContact,auto"`
+	_ func(row int, id uint64, name string)               `slot:"editContact,auto"`
+	_ func(name string)                                   `slot:"newContact"`
+	_ func()                                              `slot:"loadContacts"`
+	_ func(int, string)                                   `slot:"initAddrsBook"`
+	_ func() int                                          `slot:"getSecType"`
+	_ func(string) bool                                   `slot:"authenticate"`
+	_ func() bool                                         `slot:"hasInit"`
+	_ func(value, coinType string)                        `slot:"addAddress"`
+	_ func(value string) bool                             `slot:"addressIsValid"`
+	_ func(row int, name string) bool                     `slot:"nameExist"`
+	_ func(row int, address string, coinType string) bool `slot:"addressExist"`
 }
 
 type QContact struct {
@@ -64,6 +68,9 @@ func (abm *AddrsBookModel) init() {
 	abm.ConnectNewContact(abm.newContact)
 	abm.ConnectGetSecType(abm.getSecType)
 	abm.ConnectAuthenticate(abm.authenticate)
+	abm.ConnectAddressIsValid(abm.addressIsValid)
+	abm.ConnectAddressExist(abm.addressExist)
+	abm.ConnectNameExist(abm.nameExist)
 	// abm.ConnectDestroyAddrsBookModel(abm.close)
 	abm.ConnectLoadContacts(abm.loadContacts)
 	abm.ConnectInitAddrsBook(abm.initAddrsBook)
@@ -267,5 +274,38 @@ func fromContactToQContact(contacts []core.Contact) []*QContact {
 func (*AddrsBookModel) addAddress(value, coinType string) {
 	logAddressBook.Infof("%#v", addresses)
 	logAddressBook.Infof("value: %#v, type: %#v", value, coinType)
+	for e := range addresses {
+		if string(addresses[e].GetValue()) == value && string(addresses[e].GetCoinType()) == coinType {
+			return
+		}
+	}
 	addresses = append(addresses, &data.Address{Value: []byte(value), Coin: []byte(coinType)})
+}
+
+func (*AddrsBookModel) addressIsValid(value string) bool {
+	if _, err := skycoin.NewSkycoinAddress(value); err != nil {
+		return false
+	}
+	return true
+}
+
+func (abm *AddrsBookModel) nameExist(row int, name string) bool {
+	for e := range abm.Contacts() {
+		if row != e && abm.Contacts()[e].Name() == name {
+			return true
+		}
+	}
+	return false
+}
+
+func (abm *AddrsBookModel) addressExist(row int, address string, coinType string) bool {
+	for e := range abm.Contacts() {
+		for f := range abm.Contacts()[e].Address().Address() {
+			if row != e && abm.Contacts()[e].Address().Address()[f].Value() == address &&
+				abm.Contacts()[e].Address().Address()[f].CoinType() == coinType {
+				return true
+			}
+		}
+	}
+	return false
 }

@@ -176,8 +176,10 @@ getAddressList()
                     selectByMouse: true
                     Layout.fillWidth: true
                     Layout.topMargin: -5
+                    Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
                     onTextChanged:{
                         root.destinationAddress = text
+
                     }
                 }
             } // RowLayout
