@@ -26,14 +26,10 @@ import (
 var logWallet = logging.MustGetLogger("Skycoin Wallet")
 
 const (
-	Sky                     = params.SkycoinTicker
-	CoinHour                = params.CoinHoursTicker
-	CalculatedHour          = params.CalculatedHoursTicker
-	WalletTypeDeterministic = "deterministic"
-	WalletTypeCollection    = "collection"
-	WalletTypeBip44         = "bip44"
+	Sky            = params.SkycoinTicker
+	CoinHour       = params.CoinHoursTicker
+	CalculatedHour = params.CalculatedHoursTicker
 
-	WalletTypeXPub        = "xpub"
 	walletExt             = ".wlt"
 	WalletTimestampFormat = "2006_01_02"
 
