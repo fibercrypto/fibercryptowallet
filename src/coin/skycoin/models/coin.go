@@ -346,7 +346,7 @@ func (skyTxn *SkycoinUninjectedTransaction) GetInputs() []core.TransactionInput 
 
 func (skyTxn *SkycoinUninjectedTransaction) GetOutputs() []core.TransactionOutput {
 	logCoin.Info("Getting outputs from un injected transactions")
-	if skyTxn.outputs == nil {
+	if skyTxn.outputs == nil || len(skyTxn.outputs) == 0 {
 		outputs := make([]core.TransactionOutput, 0)
 		for _, out := range skyTxn.txn.Out {
 			rOut, err := readable.NewTransactionOutput(&out, skyTxn.txn.Hash())
