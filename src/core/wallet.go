@@ -18,6 +18,10 @@ type WalletSet interface {
 	GetWallet(id string) Wallet
 	// CreateWallet instantiates a new wallet given account seed
 	CreateWallet(name string, seed string, walletType string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int) (Wallet, error)
+	// DefaultWalletType default wallet type
+	DefaultWalletType() string
+	// SupportedWalletTypes list supported wallet type names
+	SupportedWalletTypes() []string
 }
 
 // WalletStorage provides access to the underlying wallets data store

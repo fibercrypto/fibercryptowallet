@@ -90,7 +90,7 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 	seed, label, pwd, scanN := "seed", "label", "pwd", 666
 
 	wltOpt1 := api.CreateWalletOptions{
-		Type:     WalletTypeDeterministic,
+		Type:     wallet.WalletTypeDeterministic,
 		Seed:     seed,
 		Label:    label,
 		Password: pwd,
@@ -98,7 +98,7 @@ func TestSkycoinRemoteWalletCreateWallet(t *testing.T) {
 		Encrypt:  true,
 	}
 	wltOpt2 := api.CreateWalletOptions{
-		Type:    WalletTypeDeterministic,
+		Type:    wallet.WalletTypeDeterministic,
 		Seed:    seed,
 		Label:   label,
 		ScanN:   scanN,
