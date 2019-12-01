@@ -14,28 +14,28 @@ import (
 func TestWalletListPendingTransactions(t *testing.T) {
 	response := &api.UnconfirmedTxnsVerboseResponse{
 		Transactions: []readable.UnconfirmedTransactionVerbose{
-			readable.UnconfirmedTransactionVerbose{
+			{
 				Transaction: readable.BlockTransactionVerbose{
 					Out: []readable.TransactionOutput{
-						readable.TransactionOutput{
+						{
 							Coins: "1",
 							Hours: 2000,
 						},
-						readable.TransactionOutput{
+						{
 							Coins: "1",
 							Hours: 2000,
 						},
 					},
 				},
 			},
-			readable.UnconfirmedTransactionVerbose{
+			{
 				Transaction: readable.BlockTransactionVerbose{
 					Out: []readable.TransactionOutput{
-						readable.TransactionOutput{
+						{
 							Coins: "1",
 							Hours: 2000,
 						},
-						readable.TransactionOutput{
+						{
 							Coins: "1",
 							Hours: 2000,
 						},
@@ -75,6 +75,7 @@ func TestWalletListPendingTransactions(t *testing.T) {
 func TestSkycoinAddressGetBalance(t *testing.T) {
 	response := new(api.BalanceResponse)
 	addr, err := NewSkycoinAddress("2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt")
+	assert.NoError(t, err)
 	response.Confirmed = readable.Balance{Coins: uint64(42000000), Hours: uint64(200)}
 	global_mock.On("Balance", []string{addr.String()}).Return(response, nil)
 	skyAddrs := addr.GetCryptoAccount()
@@ -131,7 +132,7 @@ func TestSkycoinAddressListTransactions(t *testing.T) {
 	response.Transaction.Hash = "hash1"
 	global_mock.On("TransactionsVerbose", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(
 		[]readable.TransactionWithStatusVerbose{
-			readable.TransactionWithStatusVerbose{
+			{
 				Status: readable.TransactionStatus{
 					Confirmed: true,
 				},
@@ -223,7 +224,7 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				readable.WalletEntry{Address: "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt"},
+				{Address: "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt"},
 			},
 		},
 		nil)
@@ -309,7 +310,7 @@ func TestRemoteWalletListTransactions(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				readable.WalletEntry{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
 			},
 		},
 		nil)
@@ -340,7 +341,7 @@ func TestLocalWalletScanUnspentOutputs(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				readable.WalletEntry{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
 			},
 		},
 		nil)
@@ -378,7 +379,7 @@ func TestLocalWalletListTransactions(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				readable.WalletEntry{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
 			},
 		},
 		nil)
