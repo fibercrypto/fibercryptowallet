@@ -97,7 +97,7 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	return NewSkycoinWalletIterator(wallets)
 }
 
-func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, wltType string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	logWallet.Info("Creating wallet")
 	wlt := &RemoteWallet{} //nolint megacheck False negative
 	c, err := NewSkycoinApiClient(wltSrv.poolSection)
@@ -113,7 +113,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 			return nil, err
 		}
 		wltOpt := api.CreateWalletOptions{}
-		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Type = wltType
 		wltOpt.Seed = seed
 		wltOpt.Password = password
 		wltOpt.Encrypt = true
@@ -129,7 +129,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		wlt = walletResponseToWallet(*wltR)
 	} else {
 		wltOpt := api.CreateWalletOptions{}
-		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Type = wltType
 		wltOpt.Seed = seed
 		wltOpt.Encrypt = false
 		wltOpt.Label = label
@@ -802,7 +802,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 	}
 }
 
-func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, wltType string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	logWallet.Info("Creating Skycoin local wallet")
 	password, err := pwd("Insert Password")
 
@@ -812,11 +812,12 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 	}
 
 	passwordByte := []byte(password)
+
 	opts := wallet.Options{
 		Label:    label,
 		Seed:     seed,
 		Encrypt:  IsEncrypted,
-		Type:     WalletTypeDeterministic,
+		Type:     wltType,
 		Password: passwordByte,
 	}
 	wltName := wltSrv.newUnicWalletFilename()
@@ -1290,7 +1291,13 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 }
+
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+
+	if addrType != core.AccountAddress && addrType != core.ChangeAddress {
+		logWallet.Error("Incorret address type")
+		return nil
+	}
 	logWallet.Info("Generating addresses in local wallet")
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
@@ -1298,11 +1305,62 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		logWallet.WithError(err).WithField("filename", walletName).Error("Call to wallet.Load(filename) inside GenAddresses failed.")
 		return nil
 	}
+
+	if addrType == core.ChangeAddress && walletLoaded.Type() != WalletTypeBip44 {
+		logWallet.Error("Incorrect address type")
+		return nil
+	}
+
+	genAddr := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+		return w.GenerateAddresses(n)
+	}
+
 	addressCount := walletLoaded.EntriesLen()
+
+	getAddrs := func(w wallet.Wallet) []cipher.Addresser {
+		return w.GetAddresses()[startIndex : startIndex+count]
+	}
+
+	if walletLoaded.Type() == WalletTypeBip44 {
+		addressCount = len((*(walletLoaded.(*wallet.Bip44Wallet))).ExternalEntries)
+
+		getAddrs = func(w wallet.Wallet) []cipher.Addresser {
+			addresser := make([]cipher.Addresser, 0)
+			for _, entry := range (*(walletLoaded.(*wallet.Bip44Wallet))).ExternalEntries[startIndex : startIndex+count] {
+				addresser = append(addresser, entry.Address)
+			}
+			return addresser
+		}
+
+	}
+	if addrType == core.ChangeAddress {
+		addressCount = len((*(walletLoaded.(*wallet.Bip44Wallet))).ChangeEntries)
+
+		genAddr = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+			addresser := make([]cipher.Addresser, 0)
+			for i := uint64(0); i < n; i++ {
+				addrs, err := w.(*wallet.Bip44Wallet).GenerateChangeEntry()
+				if err != nil {
+					return nil, err
+				}
+				addresser = append(addresser, addrs.Address)
+			}
+			return addresser, nil
+		}
+
+		getAddrs = func(w wallet.Wallet) []cipher.Addresser {
+			addresser := make([]cipher.Addresser, 0)
+			for _, entry := range (*(walletLoaded.(*wallet.Bip44Wallet))).ChangeEntries[startIndex : startIndex+count] {
+				addresser = append(addresser, entry.Address)
+			}
+			return addresser
+		}
+	}
+
 	if uint32(addressCount) < (startIndex + count) {
 		diff := (startIndex + count) - uint32(addressCount)
 		genAddressesInFile := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
-			return w.GenerateAddresses(n)
+			return genAddr(w, n)
 		}
 
 		if walletLoaded.IsEncrypted() {
@@ -1316,8 +1374,11 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 				var addrs []cipher.Addresser
 				if err := wallet.GuardUpdate(w, passwordBytes, func(wlt wallet.Wallet) error {
 					var err error
-					addrs, err = wlt.GenerateAddresses(n)
+
+					addrs, err = genAddr(wlt, n)
+
 					logWallet.WithError(err).WithField("num", n).Error("Call to wlt.GenerateAddresses(num) inside wallet.GuardUpdate failed")
+
 					return err
 				}); err != nil {
 					logWallet.WithError(err).Error("Call to wallet.GuardUpdate inside genAddressesInFile failed")
@@ -1346,7 +1407,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		return nil
 	}
 
-	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
+	addrs := getAddrs(walletLoaded)
 	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
 		skyAddrs = append(skyAddrs, &SkycoinAddress{address: addr.String()})
@@ -1354,6 +1415,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	return NewSkycoinAddressIterator(skyAddrs)
 
 }
+
 func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
 	logWallet.Info("Getting CryptoAccount from local wallet")
 	return wlt

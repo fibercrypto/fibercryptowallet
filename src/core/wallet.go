@@ -17,7 +17,7 @@ type WalletSet interface {
 	// GetWallet to lookup wallet by ID
 	GetWallet(id string) Wallet
 	// CreateWallet instantiates a new wallet given account seed
-	CreateWallet(name string, seed string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int) (Wallet, error)
+	CreateWallet(name string, seed string, walletType string, isEncryptrd bool, pwd PasswordReader, scanAddressesN int) (Wallet, error)
 }
 
 // WalletStorage provides access to the underlying wallets data store

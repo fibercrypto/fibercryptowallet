@@ -52,7 +52,7 @@ Item {
                 dataModified()
             }
         }
-
+        
         ControlGenerateSeed {
             id: walletSeed
             width: parent.width
