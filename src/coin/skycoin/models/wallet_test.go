@@ -1191,3 +1191,13 @@ func TestLocalWalletSpend(t *testing.T) {
 	require.Equal(t, uint64(sky), val)
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
+
+func TestSkycoinWalletTypes(t *testing.T) {
+	var wltSet core.WalletSet = &SkycoinRemoteWallet{}
+	require.Equal(t, wallet.WalletTypeBip44, wltSet.DefaultWalletType())
+	require.Equal(t, []string{wallet.WalletTypeDeterministic, wallet.WalletTypeBip44}, wltSet.SupportedWalletTypes())
+
+	wltSet = &SkycoinLocalWallet{}
+	require.Equal(t, wallet.WalletTypeBip44, wltSet.DefaultWalletType())
+	require.Equal(t, []string{wallet.WalletTypeDeterministic, wallet.WalletTypeBip44}, wltSet.SupportedWalletTypes())
+}
