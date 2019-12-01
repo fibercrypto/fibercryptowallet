@@ -16,7 +16,6 @@ Dialog {
     property alias mode: createLoadWallet.mode
     property alias name: createLoadWallet.name
     property alias seed: createLoadWallet.seed
-    //property alias type: comboBoxWalletType.model[comboBoxWalletType.currentIndex].value
     property alias encryptionEnabled: checkBoxEncryptWallet.checked
 
     Component.onCompleted: {
@@ -72,7 +71,7 @@ Dialog {
         var isSeedValid = walletManager.verifySeed(createLoadWallet.seed)
         
         okButton.enabled = walletName && walletSeed && seedMatchConfirmation && ((passwordSet && passwordMatchConfirmation) || !passwordNeeded) && (!unconventionalSeed || continueWithUnconventionalSeed) && isSeedValid
-    } // function updateAcceptButtonStatus()
+    }
 
     title: Qt.application.name
     standardButtons: Dialog.Ok | Dialog.Cancel
