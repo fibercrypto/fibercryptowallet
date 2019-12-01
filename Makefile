@@ -199,6 +199,15 @@ test-sky-launch-html-cover:
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
 
+test-cover-travis:
+	go test -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/util
+	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
+	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
+	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+
+
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
 test: clean-test test-core test-sky ## Run project test suite
@@ -206,6 +215,10 @@ test: clean-test test-core test-sky ## Run project test suite
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
 	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.21.0
+
+install-coveralls: ## Install coveralls
+	go get golang.org/x/tools/cmd/cover
+	go get github.com/mattn/goveralls
 
 lint: ## Run linters. Use make install-linters first.
 	# src needs separate linting rules
