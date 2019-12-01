@@ -53,6 +53,8 @@ type WalletManager struct {
 	_                   func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
 	_                   func() []*QAddress                                                                                                                     `slot:"getAllAddresses"`
 	_                   func(wltId string) []*QOutput                                                                                                          `slot:"getOutputsFromWallet"`
+	_                   func() string                                                                                                                          `slot:"getDefaultWalletType"`
+	_                   func() []string                                                                                                                        `slot:"getAvailableWalletTypes"`
 }
 
 func (walletM *WalletManager) init() {
@@ -81,6 +83,8 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectUpdateWallets(walletM.updateWallets)
 		walletM.ConnectUpdateAddresses(walletM.updateAddresses)
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
+		walletM.ConnectGetDefaultWalletType(walletM.getDefaultWalletType)
+		walletM.ConnectGetAvailableWalletTypes(walletM.ConnectGetAvailableWalletTypes)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 		walletM.altManager = local.LoadAltcoinManager()
@@ -107,6 +111,15 @@ func GetWalletEnv() core.WalletEnv {
 func GetWalletManager() *WalletManager {
 	return walletManager
 }
+
+func (walletM *WalletManager) getDefaultWalletType() string {
+	return walletM.WalletEnv.GetWalletSet().DefaultWalletType()
+}
+
+func (walletM *WalletManager) getAvailableWalletTypes() []string {
+	return walletM.WalletEnv.GetWalletSet().SupportedWalletTypes
+}
+
 func (walletM *WalletManager) updateWalletEnvs() {
 	logWalletManager.Info("Updating WalletEnvs")
 	walletsEnvs := make([]core.WalletEnv, 0)
