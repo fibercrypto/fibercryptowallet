@@ -150,8 +150,21 @@ Dialog {
                     id: comboBoxWalletType
                     Layout.fillWidth: true
                     textRole: "name"
-                    model: [{name:"Bip44-Wallet", value:"bip44"}, {name:"Deterministic-Wallet", value:"deterministic"}    ]
-                
+                    Component.onCompleted:{
+                        var availables = walletManager.getAvailableWalletTypes()
+                        var mod = []
+                        var defaultWalletType = walletManager.getDefaultWalletType()
+                        mod.push({name:defaultWalletType})
+                        for (var i = 0; i < availables.length; i++){
+                            var a = {name: availables[i]}
+                            if (availables[i] == defaultWalletType){
+                                continue
+                            }
+                            mod.push(a)
+                        }
+                        model = mod
+                    }
+                                    
                 }
             }
            

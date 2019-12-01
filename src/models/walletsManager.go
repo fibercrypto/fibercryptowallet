@@ -84,7 +84,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectUpdateAddresses(walletM.updateAddresses)
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
 		walletM.ConnectGetDefaultWalletType(walletM.getDefaultWalletType)
-		walletM.ConnectGetAvailableWalletTypes(walletM.ConnectGetAvailableWalletTypes)
+		walletM.ConnectGetAvailableWalletTypes(walletM.getAvailableWalletTypes)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 		walletM.altManager = local.LoadAltcoinManager()
@@ -117,7 +117,7 @@ func (walletM *WalletManager) getDefaultWalletType() string {
 }
 
 func (walletM *WalletManager) getAvailableWalletTypes() []string {
-	return walletM.WalletEnv.GetWalletSet().SupportedWalletTypes
+	return walletM.WalletEnv.GetWalletSet().SupportedWalletTypes()
 }
 
 func (walletM *WalletManager) updateWalletEnvs() {
