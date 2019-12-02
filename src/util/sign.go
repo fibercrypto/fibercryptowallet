@@ -59,5 +59,5 @@ func GetSignerDescription(signerID core.UID) (string, error) {
 	if signer == nil {
 		return "", errors.ErrInvalidID
 	}
-	return signer.GetSignerDescription(), nil
+	return signer.GetSignerDescription()
 }

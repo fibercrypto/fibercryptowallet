@@ -13,18 +13,22 @@ import (
 func TestSignerMethods(t *testing.T) {
 	signerID1 := core.UID("TestAddLookupSigner#1")
 	signer1 := new(mocks.TxnSigner)
-	signer1.On("GetSignerUID").Return(signerID1)
-	signer1.On("GetSignerDescription").Return(string(signerID1))
-	require.Equal(t, signer1.GetSignerUID(), signerID1)
-	require.Equal(t, signer1.GetSignerDescription(), string(signerID1))
-	err := AttachSignService(signer1)
+	signer1.On("GetSignerUID").Return(signerID1, nil)
+	signer1.On("GetSignerDescription").Return(string(signerID1), nil)
+	uid, err := signer1.GetSignerUID()
+	require.NoError(t, err)
+	require.Equal(t, uid, signerID1)
+	desc, err := signer1.GetSignerDescription()
+	require.NoError(t, err)
+	require.Equal(t, desc, string(signerID1))
+	err = AttachSignService(signer1)
 	require.NoError(t, err)
 	defer RemoveSignService(signerID1) // nolint gosec
 
 	signer := LookupSignService(signerID1)
 	require.NotNil(t, signer)
 	require.Equal(t, signer, signer1)
-	desc, err := GetSignerDescription(signerID1)
+	desc, err = GetSignerDescription(signerID1)
 	require.NoError(t, err)
 	require.Equal(t, string(signerID1), desc)
 
@@ -46,9 +50,11 @@ func TestSignersEnum(t *testing.T) {
 	// Install global signers
 	for i, uid := range signerIDs {
 		signer := new(mocks.TxnSigner)
-		signer.On("GetSignerUID").Return(uid)
-		require.Equal(t, signer.GetSignerUID(), uid)
-		err := AttachSignService(signer)
+		signer.On("GetSignerUID").Return(uid, nil)
+		uid, err := signer.GetSignerUID()
+		require.NoError(t, err)
+		require.Equal(t, uid, uid)
+		err = AttachSignService(signer)
 		require.NoError(t, err)
 		signers[i] = signer
 	}
@@ -59,7 +65,9 @@ func TestSignersEnum(t *testing.T) {
 	allSigners := EnumerateSignServices()
 	signersFound := make(map[core.UID]struct{})
 	for allSigners.Next() {
-		signerID := allSigners.Value().GetSignerUID()
+		uid, err := allSigners.Value().GetSignerUID()
+		require.NoError(t, err)
+		signerID := uid
 		_, wasFound := signersFound[signerID]
 		require.False(t, wasFound)
 		signersFound[signerID] = struct{}{}
@@ -85,9 +93,11 @@ func TestSignersReadyForTxn(t *testing.T) {
 	// Install global signers
 	for i, uid := range signerIDs {
 		signer := new(mocks.TxnSigner)
-		signer.On("GetSignerUID").Return(uid)
-		require.Equal(t, signer.GetSignerUID(), uid)
-		err := AttachSignService(signer)
+		signer.On("GetSignerUID").Return(uid, nil)
+		dUid, err := signer.GetSignerUID()
+		require.NoError(t, err)
+		require.Equal(t, dUid, uid)
+		err = AttachSignService(signer)
 		require.NoError(t, err)
 		signers[i] = signer
 	}
@@ -110,7 +120,8 @@ func TestSignersReadyForTxn(t *testing.T) {
 	supportedSigners := SignServicesForTxn(wlt, txn)
 	signersFound := make(map[core.UID]struct{})
 	for supportedSigners.Next() {
-		signerID := supportedSigners.Value().GetSignerUID()
+		signerID, err := supportedSigners.Value().GetSignerUID()
+		require.NoError(t, err)
 		_, wasFound := signersFound[signerID]
 		require.False(t, wasFound)
 		signersFound[signerID] = struct{}{}

@@ -28,9 +28,9 @@ type TxnSigner interface {
 	// SignTransaction partially or in full
 	SignTransaction(Transaction, PasswordReader, []string) (Transaction, error)
 	// GetSignerUID provides the key identifying this signer among peer strategies supported by an object
-	GetSignerUID() UID
+	GetSignerUID() (UID, error)
 	// GetSignerDescription facilitates a human readable caption identifying this signing strategy
-	GetSignerDescription() string
+	GetSignerDescription() (string, error)
 }
 
 // TxnSignerIterator enumerates a set if TxSigner strategies

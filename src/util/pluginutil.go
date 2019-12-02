@@ -2,6 +2,7 @@ package util
 
 import (
 	"errors"
+	"github.com/sirupsen/logrus"
 	"math"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -37,7 +38,12 @@ func LookupSignerByUID(wlt core.Wallet, id core.UID) core.TxnSigner {
 		return nil
 	}
 	// Wallet matches ID
-	if isSigner && wltSigner.GetSignerUID() == id {
+	uid, err := wltSigner.GetSignerUID()
+	if err != nil {
+		logrus.WithError(err).Errorln("unable to get signer uid")
+		return nil
+	}
+	if isSigner && uid == id {
 		return wltSigner
 	}
 	// Lookup global signers

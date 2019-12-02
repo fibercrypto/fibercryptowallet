@@ -312,24 +312,24 @@ func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
 }
 
 // GetSignerUID this signer uid using the hardware wallet label
-func (sw SkyWallet) GetSignerUID() core.UID {
+func (sw SkyWallet) GetSignerUID() (core.UID, error) {
 	features, err := sw.getDeviceFeatures()
 	if err != nil {
 		// TODO i18n
 		logrus.WithError(err).Error("unable to get device features")
-		return "undefined"
+		return "", fce.ErrHwUnexpected
 	}
-	return core.UID(*features.DeviceId)
+	return core.UID(*features.DeviceId), nil
 }
 
 // GetSignerDescription facilitates a human readable caption identifying this signing strategy
 // in urn(https://en.wikipedia.org/wiki/Uniform_Resource_Name) format.
-func (sw SkyWallet) GetSignerDescription() string {
+func (sw SkyWallet) GetSignerDescription() (string, error) {
 	features, err := sw.getDeviceFeatures()
 	if err != nil {
 		// TODO i18n
 		logrus.WithError(err).Error("unable to get device features")
-		return "undefined"
+		return "", fce.ErrHwUnexpected
 	}
-	return urnPrefix+*features.Label
+	return urnPrefix+*features.Label, nil
 }

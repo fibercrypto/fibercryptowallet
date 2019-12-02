@@ -3,6 +3,7 @@ package hardware
 import (
 	"errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
 	"github.com/fibercrypto/FiberCryptoWallet/src/hardware/mocks"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
@@ -32,21 +33,24 @@ func TestGetSignerUIDShouldBeOk(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devId := sw.GetSignerUID()
+	devId, err := sw.GetSignerUID()
 
 	// Then
+	require.NoError(t, err)
 	require.Equal(t, core.UID(expectedDevId), devId)
 }
 
 func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
 	// Giving
-	sw := SkyWallet{}
+	sw := NewSkyWallet(nil, callback)
 
 	// When
-	devId := sw.GetSignerUID()
+	devId, err := sw.GetSignerUID()
 
 	// Then
-	require.Equal(t, core.UID("undefined"), devId)
+	require.Error(t, err)
+	require.Equal(t, err, fce.ErrHwUnexpected)
+	require.Equal(t, core.UID(""), devId)
 }
 
 func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
@@ -56,10 +60,11 @@ func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devId := sw.GetSignerUID()
+	devId, err := sw.GetSignerUID()
 
 	// Then
-	require.Equal(t, core.UID("undefined"), devId)
+	require.Error(t, err)
+	require.Equal(t, core.UID(""), devId)
 }
 
 func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
@@ -76,10 +81,11 @@ func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devId := sw.GetSignerUID()
+	devId, err := sw.GetSignerUID()
 
 	// Then
-	require.Equal(t, core.UID("undefined"), devId)
+	require.Error(t, err)
+	require.Equal(t, core.UID(""), devId)
 }
 
 func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
@@ -92,10 +98,11 @@ func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devId := sw.GetSignerUID()
+	devId, err := sw.GetSignerUID()
 
 	// Then
-	require.Equal(t, core.UID("undefined"), devId)
+	require.Error(t, err)
+	require.Equal(t, core.UID(""), devId)
 }
 
 func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
@@ -115,9 +122,10 @@ func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devDescription := sw.GetSignerDescription()
+	devDescription, err := sw.GetSignerDescription()
 
 	// Then
+	require.NoError(t, err)
 	require.Equal(t, expectedDevDescription, devDescription)
 }
 
@@ -126,10 +134,11 @@ func TestGetSignerDescriptionShouldFailForUninitializedDevice(t *testing.T) {
 	sw := SkyWallet{}
 
 	// When
-	devId := sw.GetSignerDescription()
+	devId, err := sw.GetSignerDescription()
 
 	// Then
-	require.Equal(t, "undefined", devId)
+	require.Error(t, err)
+	require.Equal(t, "", devId)
 }
 
 func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
@@ -139,10 +148,11 @@ func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devId := sw.GetSignerDescription()
+	devId, err := sw.GetSignerDescription()
 
 	// Then
-	require.Equal(t, "undefined", devId)
+	require.Error(t, err)
+	require.Equal(t, "", devId)
 }
 
 func TestGetSignerDescriptionShouldFailForFailResponse(t *testing.T) {
@@ -159,10 +169,11 @@ func TestGetSignerDescriptionShouldFailForFailResponse(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devId := sw.GetSignerDescription()
+	devId, err := sw.GetSignerDescription()
 
 	// Then
-	require.Equal(t, "undefined", devId)
+	require.Error(t, err)
+	require.Equal(t, "", devId)
 }
 
 func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
@@ -175,8 +186,9 @@ func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
 	sw := NewSkyWallet(&dev, callback)
 
 	// When
-	devId := sw.GetSignerDescription()
+	devId, err := sw.GetSignerDescription()
 
 	// Then
-	require.Equal(t, "undefined", devId)
+	require.Error(t, err)
+	require.Equal(t, "", devId)
 }

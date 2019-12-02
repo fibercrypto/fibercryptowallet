@@ -696,12 +696,12 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 	return
 }
 
-func (wlt *RemoteWallet) GetSignerUID() core.UID {
-	return SignerIDRemoteWallet
+func (wlt *RemoteWallet) GetSignerUID() (core.UID, error) {
+	return SignerIDRemoteWallet, nil
 }
 
-func (wlt *RemoteWallet) GetSignerDescription() string {
-	return "Remote Skycoin wallet " + wlt.Id
+func (wlt *RemoteWallet) GetSignerDescription() (string, error) {
+	return "Remote Skycoin wallet " + wlt.Id, nil
 }
 
 func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
@@ -1472,12 +1472,12 @@ func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 	return
 }
 
-func (wlt *LocalWallet) GetSignerUID() core.UID {
-	return SignerIDLocalWallet
+func (wlt *LocalWallet) GetSignerUID() (core.UID, error) {
+	return SignerIDLocalWallet, nil
 }
 
-func (wlt *LocalWallet) GetSignerDescription() string {
-	return "Remote Skycoin wallet " + wlt.Id
+func (wlt *LocalWallet) GetSignerDescription() (string, error) {
+	return "Remote Skycoin wallet " + wlt.Id, nil
 }
 
 // Typoe assertions
