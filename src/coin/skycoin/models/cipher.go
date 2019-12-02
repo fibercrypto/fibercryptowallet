@@ -48,6 +48,9 @@ func (addr *SkycoinAddress) GetCryptoAccount() core.CryptoAccount {
 }
 
 func (addr *SkycoinAddress) Clone() (interface{}, error) {
+	if addr == nil {
+		return addr, nil
+	}
 	newAddr := &SkycoinAddress{
 		address:     addr.address,
 		poolSection: addr.poolSection,

@@ -67,6 +67,9 @@ func (gOut *GenericOutput) SupportedAssets() (tickers []string) {
 }
 
 func (gOut *GenericOutput) Clone() (interface{}, error) {
+	if gOut == nil {
+		return gOut, nil
+	}
 	addr, err := gOut.Address.Clone()
 	if err != nil {
 		// TODO i18n

@@ -1,11 +1,11 @@
 package skycoin
 
 import (
+	stdErr "errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
-	stdErr "errors"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
@@ -89,6 +89,9 @@ func (txn *SkycoinPendingTransaction) AddSignature(index uint64, signature []byt
 }
 
 func (txn *SkycoinPendingTransaction) Clone() (interface{}, error) {
+	if txn == nil {
+		return txn, nil
+	}
 	transaction := readable.UnconfirmedTransactionVerbose{}
 	err := util.DeepCopy(txn.Transaction, &transaction)
 	if err != nil {
@@ -411,6 +414,9 @@ func (txn *SkycoinUninjectedTransaction) AddSignature(index uint64, signature []
 }
 
 func (txn *SkycoinUninjectedTransaction) Clone() (interface{}, error) {
+	if txn == nil {
+		return txn, nil
+	}
 	nTxn := copyTransaction(txn.txn)
 	inputs, err := util.CloneTransactionInputs(txn.inputs)
 	if err != nil  {
@@ -555,6 +561,9 @@ func (txn *SkycoinTransaction) AddSignature(index uint64, signature []byte) erro
 }
 
 func (txn *SkycoinTransaction) Clone() (interface{}, error) {
+	if txn == nil {
+		return txn, nil
+	}
 	skyTxn := readable.TransactionVerbose{}
 	err := util.DeepCopy(txn.skyTxn, skyTxn)
 	if err != nil {
@@ -729,6 +738,9 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 }
 
 func (in *SkycoinTransactionInput) Clone() (interface{}, error) {
+	if in == nil {
+		return in, nil
+	}
 	skyIn := readable.TransactionInput{}
 	err := util.DeepCopy(in.skyIn, &skyIn)
 	if err != nil {
@@ -852,6 +864,9 @@ func (out *SkycoinTransactionOutput) IsSpent() bool {
 }
 
 func (out *SkycoinTransactionOutput) Clone() (interface{}, error) {
+	if out == nil {
+		return out, nil
+	}
 	skyOut := readable.TransactionOutput{}
 	err := util.DeepCopy(out.skyOut, &skyOut)
 	if err != nil {
@@ -948,6 +963,9 @@ func (in *SkycoinCreatedTransactionInput) GetCoins(ticker string) (uint64, error
 }
 
 func (in *SkycoinCreatedTransactionInput) Clone() (interface{}, error) {
+	if in == nil {
+		return in, nil
+	}
 	skyIn := api.CreatedTransactionInput{}
 	err := util.DeepCopy(in.skyIn, &skyIn)
 	if err != nil {
@@ -1055,9 +1073,12 @@ func (out *SkycoinCreatedTransactionOutput) IsSpent() bool {
 	return false
 }
 
-func (in *SkycoinCreatedTransactionOutput) Clone() (interface{}, error) {
+func (out *SkycoinCreatedTransactionOutput) Clone() (interface{}, error) {
+	if out == nil {
+		return out, nil
+	}
 	skyOut := api.CreatedTransactionOutput{}
-	err := util.DeepCopy(in.skyOut, &skyOut)
+	err := util.DeepCopy(out.skyOut, &skyOut)
 	if err != nil {
 		// FIXME i18n
 		logrus.WithError(err).Errorln("unable to clone skyOut")
@@ -1065,8 +1086,8 @@ func (in *SkycoinCreatedTransactionOutput) Clone() (interface{}, error) {
 	}
 	newIn := &SkycoinCreatedTransactionOutput{
 		skyOut:          skyOut,
-		spent:           in.spent,
-		calculatedHours: in.calculatedHours,
+		spent:           out.spent,
+		calculatedHours: out.calculatedHours,
 	}
 	return newIn, nil
 }
@@ -1171,6 +1192,9 @@ func (txn *SkycoinCreatedTransaction) AddSignature(index uint64, signature []byt
 }
 
 func (txn *SkycoinCreatedTransaction) Clone() (interface{}, error) {
+	if txn == nil {
+		return txn, nil
+	}
 	skyTxn := api.CreatedTransaction{}
 	err := util.DeepCopy(txn.skyTxn, &skyTxn)
 	if err != nil {

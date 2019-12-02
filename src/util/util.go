@@ -119,7 +119,7 @@ func CloneTransactionInputs(src []core.TransactionInput) ([]core.TransactionInpu
 	for idx, s := range src {
 		newSrc[idx] = s
 	}
-	newDst, err := CloneSlice(newSrc)
+	newDst, err := cloneSlice(newSrc)
 	if err != nil {
 		return nil, err
 	}
@@ -139,7 +139,7 @@ func CloneTransactionOutputs(src []core.TransactionOutput) ([]core.TransactionOu
 	for idx, s := range src {
 		newSrc[idx] = s
 	}
-	newDst, err := CloneSlice(newSrc)
+	newDst, err := cloneSlice(newSrc)
 	if err != nil {
 		return nil, err
 	}
@@ -153,8 +153,8 @@ func CloneTransactionOutputs(src []core.TransactionOutput) ([]core.TransactionOu
 	return dst, nil
 }
 
-// CloneSlice create a deep copy of the src slice
-func CloneSlice(src []core.Clonable) (dst []core.Clonable, err error) {
+// cloneSlice create a deep copy of the src slice
+func cloneSlice(src []core.Clonable) (dst []core.Clonable, err error) {
 	dst = make([]core.Clonable, len(src), cap(src))
 	for idx, s := range src {
 		o, err := s.Clone()
