@@ -56,8 +56,10 @@ var (
 	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
 	// wallet not found
 	ErrWltFromAddrNotFound = errors.New("error getting wallet from addr, no wallet found")
-	// ErrHwSignTransactionFailed sign transaction with hw failed
-	ErrHwSignTransactionFailed = errors.New("sign transaction with hardware wallet failed")
+	// ErrInvalidIndex invalid index detected
+	ErrInvalidIndex = errors.New("invalid index")
+	// ErrHwUnexpected sign transaction with hw failed
+	ErrHwUnexpected = errors.New("unexpected error with device")
 	// ErrHwSignTransactionFailed sign transaction with hw canceled
 	ErrHwSignTransactionCanceled = errors.New("sign transaction with hardware wallet has been canceled")
 )

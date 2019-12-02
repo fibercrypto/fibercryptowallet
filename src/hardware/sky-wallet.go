@@ -31,41 +31,36 @@ func HwFirstAddr(dev skyWallet.Devicer) (string, error) {
 	msg, err := dev.AddressGen(1, 0, false, skyWallet.WalletTypeDeterministic)
 	if err != nil {
 		// TODO i18n
-		return "", errors.New("error getting address from device. " + err.Error())
+		logrus.WithError(err).Errorln("error getting address from device")
+		return "", fce.ErrHwUnexpected
 	}
 	switch msg.Kind {
 	case uint16(messages.MessageType_MessageType_ResponseSkycoinAddress):
-		addr := &messages.ResponseSkycoinAddress{}
-		err = proto.Unmarshal(msg.Data, addr)
+		addrs, err := skywallet.DecodeResponseSkycoinAddress(msg)
 		if err != nil {
 			// TODO i18n
-			strErr := "error decoding device response"
-			logrus.WithError(err).Error(strErr)
-			return "", errors.New(strErr)
+			logrus.WithError(err).Error("error decoding device response")
+			return "", fce.ErrHwUnexpected
 		}
-		if len(addr.Addresses) != 1 {
+		if len(addrs) != 1 {
 			// TODO i18n
-			strErr := "unexpected address count in response"
-			logrus.WithField("addr_len", len(addr.Addresses)).Error(strErr)
-			return "", errors.New(strErr)
+			logrus.WithField("addr_len", len(addrs)).Error("unexpected address count in response")
+			return "", fce.ErrHwUnexpected
 		}
-		return addr.Addresses[0], nil
+		return addrs[0], nil
 	case uint16(messages.MessageType_MessageType_Failure):
 		msgData, err := skyWallet.DecodeFailMsg(msg)
 		if err != nil {
 			// TODO i18n
-			strErr := "error decoding device response"
-			logrus.WithError(err).Error(strErr)
-			return "", errors.New(strErr)
+			logrus.WithError(err).Error("error decoding device response")
+			return "", fce.ErrHwUnexpected
 		}
-		// TODO i18n
-		strErr := "device response error"
-		logrus.Error(msgData, strErr)
-		return "", errors.New(strErr)
+		logrus.Error(msgData)
+		return "", fce.ErrHwUnexpected
 	default:
 		// TODO i18n
 		logrus.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
-		return "", errors.New("unexpected device response")
+		return "", fce.ErrHwUnexpected
 	}
 }
 
@@ -74,6 +69,7 @@ func hwMatchWallet(hw SkyWallet, wlt core.Wallet) bool {
 	if err != nil {
 		// TODO i18n
 		logrus.WithError(err).Errorln("unable to get first address from hw")
+		return false
 	}
 	addrs := wlt.GenAddresses(core.AccountAddress, 0, 1, nil)
 	if addrs.Next() {
@@ -92,6 +88,7 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 	}
 	_, isSkycoinWlt := wlt.(skytypes.SkycoinWallet)
 	if !isSkycoinWlt {
+		// FIXME i18n
 		return false, errors.New("a non Skycoin wallet received in ReadyForTxn")
 	}
 	return hwMatchWallet(sw, wlt), nil
@@ -108,8 +105,7 @@ func NewSkyWallet(dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Dev
 func getInputs(txn core.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionInput, err error) {
 	for _, i := range indexes {
 		if i >= len(txn.GetInputs()) {
-			// FIXME report error
-			continue
+			return nil, fce.ErrInvalidIndex
 		}
 		input := txn.GetInputs()[i]
 		var transactionInput messages.SkycoinTransactionInput
@@ -123,8 +119,7 @@ func getInputs(txn core.Transaction, indexes []int) (inputs []*messages.SkycoinT
 func getOutputs(tr core.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionOutput, err error) {
 	for _, i := range indexes {
 		if i >= len(tr.GetOutputs()) {
-			// FIXME report error
-			continue
+			return nil, fce.ErrInvalidIndex
 		}
 		output := tr.GetOutputs()[i]
 		var transactionOutput messages.SkycoinTransactionOutput
@@ -139,6 +134,10 @@ func getOutputs(tr core.Transaction, indexes []int) (inputs []*messages.SkycoinT
 			return nil, err
 		}
 		transactionOutput.Hour = proto.Uint64(uint64(coinHours))
+		// FIXME: should be possible to send the address index
+		// find index to check if it is determined as a owned address
+		//	transactionOutput.AddressIndex = proto.Uint32(uint32(addressIndex[i]))
+		// check out hw implementation
 		//addrIndex, err := strconv.Atoi(s[i])
 		//if err != nil {
 		//      logrus.WithField("str_addr_index", s[i]).Error("unable to get integer from string")
@@ -150,10 +149,6 @@ func getOutputs(tr core.Transaction, indexes []int) (inputs []*messages.SkycoinT
 		// }
 		//transactionOutput.AddressIndex = proto.Uint32(uint32(addrIndex))
 		transactionOutput.Address = proto.String(output.GetAddress().String())
-		println("output.GetAddress()", output.GetAddress().String())
-
-		// TODO find index to check if it is determined as a owned address
-		//	transactionOutput.AddressIndex = proto.Uint32(uint32(addressIndex[i]))
 		inputs = append(inputs, &transactionOutput)
 	}
 	return
@@ -164,99 +159,101 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 	cloned, err := tr.Clone()
 	if err != nil {
 		logrus.WithError(err).Errorln("error cloning transaction")
-		return nil, fce.ErrHwSignTransactionFailed
+		return nil, fce.ErrTxnSignFailure
 	}
 	tr2Sign, ok := cloned.(core.Transaction)
 	if !ok {
 		// FIXME i18n
 		logrus.Errorln("unable to get cloned object as a core.Transaction")
-		return nil, fce.ErrHwSignTransactionFailed
+		return nil, fce.ErrTxnSignFailure
 	}
 	device := sw.dev
 	if device == nil {
 		// TODO i18n
 		logrus.Errorln("error creating hardware wallet device handler")
-		return nil, fce.ErrHwSignTransactionFailed
+		return nil, fce.ErrTxnSignFailure
 	}
 	//defer device.Close()
-	signed, err := tr2Sign.IsFullySigned()
+	isFullySigned, err := tr2Sign.IsFullySigned()
 	if err != nil {
 		return tr2Sign, err
 	}
-	if signed {
-		// FIXME i18n or named var, this may be used in tests as is
+	if isFullySigned {
+		// FIXME i18n or named var, this should be used in tests assertions too
 		return nil, errors.New("Transaction is fully signed")
 	}
 	idxs, err := util.StrSlice2IntSlice(indexes)
 	if err != nil {
 		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to get indexes slice as int values")
-		return nil, err
+		logrus.WithError(err).Errorln("unable to get indexes slice as int slice")
+		return nil, fce.ErrTxnSignFailure
 	}
 	transactionInputs, err := getInputs(tr2Sign, idxs)
 	if err != nil {
 		// FIXME i18n
 		logrus.WithError(err).Errorln("unable to get inputs")
-		return nil, errors.New("can not sign transaction")
+		return nil, fce.ErrTxnSignFailure
 	}
 	transactionOutputs, err := getOutputs(tr2Sign, idxs)
 	if err != nil {
 		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to get inputs")
-		return nil, errors.New("can not sign transaction")
+		logrus.WithError(err).Errorln("unable to get outputs")
+		return nil, fce.ErrTxnSignFailure
 	}
 	msg, err := device.TransactionSign(transactionInputs, transactionOutputs, skyWallet.WalletTypeDeterministic)
 	if err != nil {
 		logrus.WithError(err).Error("error signing transaction")
-		return nil, errors.New("unable to sign transaction")
+		return nil, fce.ErrTxnSignFailure
 	}
 	if msg.Kind != uint16(messages.MessageType_MessageType_ButtonRequest) {
 		if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
-			s, e := skyWallet.DecodeResponseTransactionSign(msg)
-			print("aaa", s, e)
+			return nil, fce.ErrTxnSignFailure
 		}
 		if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
 			msgStr, err := skyWallet.DecodeFailMsg(msg)
 			if err != nil {
 				// FIXME i18n
 				logrus.WithError(err).Errorln("error decoding failed response")
-				return nil, errors.New("error signing transaction with hardware wallet")
+				return nil, fce.ErrTxnSignFailure
 			}
 			logrus.Errorln(msgStr)
 			// FIXME i18n
-			return nil, errors.New("error signing transaction with hardware wallet")
+			return nil, fce.ErrTxnSignFailure
 		}
 		// FIXME i18n
 		logrus.WithField("msgResponse", msg).Errorln("error signing transaction with hardware wallet")
-		return nil, errors.New("error signing transaction with hardware wallet")
+		return nil, fce.ErrTxnSignFailure
 	}
 	msg, err = sw.handleButtonAckSequence(sw.dev, msg, len(transactionOutputs))
 	if err != nil {
-		if err == fce.ErrHwSignTransactionFailed {
+		if err == fce.ErrTxnSignFailure {
 			logrus.WithError(err).Errorln("failed to sign transaction")
 		} else if err == fce.ErrHwSignTransactionCanceled {
 			logrus.WithError(err).Warnln("action canceled from device")
+		} else {
+			logrus.WithError(err).Errorln("unable to sign transaction with device")
+			return nil, fce.ErrTxnSignFailure
 		}
-		return tr2Sign, err
+		return nil, err
 	}
 	if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
 		signatures, err := skyWallet.DecodeResponseTransactionSign(msg)
 		if err != nil {
 			// TODO i18n
 			logrus.WithError(err).Error("error decoding device response")
-			return tr2Sign, err
+			return nil, fce.ErrTxnSignFailure
 		}
 		for idx, idxSign := range idxs {
 			sign := signatures[idx]
 			b, err := hex.DecodeString(sign)
 			if err != nil {
 				logrus.WithError(err).Errorln("error decoding signature")
-				return nil, errors.New("error decoding signature")
+				return nil, fce.ErrTxnSignFailure
 			}
 			err = tr2Sign.AddSignature(uint64(idxSign), b)
 			if err != nil {
 				logrus.WithError(err).Errorln("error setting signature to transaction")
-				return nil, errors.New("error setting signature to transaction")
+				return nil, fce.ErrTxnSignFailure
 			}
 		}
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
@@ -264,28 +261,27 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		if err != nil {
 			// TODO i18n
 			logrus.WithError(err).Error("error decoding device response")
-			return nil, err
+			return nil, fce.ErrTxnSignFailure
 		}
 		logrus.Errorln(msgStr)
 		return nil, fce.ErrTxnSignFailure
 	} else {
 		logrus.WithField("msg", msg).Errorln("unexpected error signing transaction with hw")
-		return nil, errors.New("unexpected error signing transaction with hw")
+		return nil, fce.ErrTxnSignFailure
 	}
 	return tr2Sign, nil
 }
 
 // GetSignerUID this signer uid using the hardware wallet label
 func (sw SkyWallet) GetSignerUID() core.UID {
-	device := sw.dev
-	if device == nil {
+	if sw.dev == nil {
 		// TODO i18n
 		logrus.Error("error, nil hardware wallet device handler")
 		return "undefined"
 	}
-	// FIXME: This should not be closed, it's a lower level detail.
-	// defer device.Close()
-	msg, err := device.GetFeatures()
+	// FIXME: This should not be closed, it's a lower level detail (check out in cli tool too).
+	// defer sw.dev.Close()
+	msg, err := sw.dev.GetFeatures()
 	if err != nil {
 		// TODO i18n
 		logrus.WithError(err).Error("error getting device features")
@@ -318,15 +314,14 @@ func (sw SkyWallet) GetSignerUID() core.UID {
 // GetSignerDescription facilitates a human readable caption identifying this signing strategy
 // in urn(https://en.wikipedia.org/wiki/Uniform_Resource_Name) format.
 func (sw SkyWallet) GetSignerDescription() string {
-	device := sw.dev
-	if device == nil {
+	if sw.dev == nil {
 		// TODO i18n
-		logrus.Error("error creating hardware wallet deice handler")
+		logrus.Error("error, nil hardware wallet device handler")
 		return "undefined"
 	}
 	// FIXME this should be solved in the hw-go cli too
 	// defer device.Close()
-	msg, err := device.GetFeatures()
+	msg, err := sw.dev.GetFeatures()
 	if err != nil {
 		// TODO i18n
 		logrus.WithError(err).Error("error getting device features")

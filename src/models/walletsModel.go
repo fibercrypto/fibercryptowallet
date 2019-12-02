@@ -110,6 +110,7 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 					"actual": msg.Kind}).Errorln("unexpected msg type")
 			return msg, fce.ErrHwSignTransactionFailed
 		}
+		// FIXME maybe only a MessageType_MessageType_TransactionSign
 		if msg.Kind == uint16(messages.MessageType_MessageType_Success) {
 			successMsg, err := skyWallet.DecodeSuccessMsg(msg)
 			if err != nil {
@@ -119,7 +120,7 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 			}
 			// TODO i18n
 			logrus.Debugln("signing transaction with hw", successMsg)
-			return msg, err
+			return msg, err// FIXME bug in err value
 		}
 		return msg, nil
 	}
