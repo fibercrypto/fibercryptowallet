@@ -82,8 +82,7 @@ func (walletModel *WalletModel) init() {
 }
 
 // attachHwAsSigner add a hw as signer
-func attachHwAsSigner() error {
-	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+func attachHwAsSigner(dev skyWallet.Devicer) error {
 	pb := func(dev skyWallet.Devicer, prvMsg wire.Message, nextMsg messages.MessageType) (wire.Message, error) {
 		msg, err := dev.ButtonAck()
 		if err != nil {
@@ -155,7 +154,8 @@ func attachHwAsSigner() error {
 
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
-	addr, err := hardware.HwFirstAddr()
+	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+	addr, err := hardware.HwFirstAddr(dev)
 	if err == nil {
 		wlt, err := walletManager.WalletEnv.GetWallet(addr)
 		if err != nil {
@@ -164,7 +164,7 @@ func (walletModel *WalletModel) sniffHw() {
 			// FIXME handle this scenario with a wallet registration.
 			return
 		}
-		err = attachHwAsSigner()
+		err = attachHwAsSigner(dev)
 		if err != nil {
 			logrus.WithError(err).Errorln("unable to attach signer")
 			return

@@ -18,7 +18,7 @@ import (
 
 type SkyWallet struct {
 	dev skyWallet.Devicer
-	callback func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
+	handleButtonAckSequence func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
 }
 
 const (
@@ -27,8 +27,7 @@ const (
 
 // HwFirstAddr return the first address in the deterministic sequence if there is a configured
 // device connected, error if not device found or some thing fail.
-func HwFirstAddr() (string, error) {
-	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+func HwFirstAddr(dev skyWallet.Devicer) (string, error) {
 	msg, err := dev.AddressGen(1, 0, false, skyWallet.WalletTypeDeterministic)
 	if err != nil {
 		// TODO i18n
@@ -71,7 +70,7 @@ func HwFirstAddr() (string, error) {
 }
 
 func hwMatchWallet(hw SkyWallet, wlt core.Wallet) bool {
-	firstAddr, err := HwFirstAddr()
+	firstAddr, err := HwFirstAddr(hw.dev)
 	if err != nil {
 		// TODO i18n
 		logrus.WithError(err).Errorln("unable to get first address from hw")
@@ -98,11 +97,11 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 	return hwMatchWallet(sw, wlt), nil
 }
 
-// skyWallet.NewDevice(skyWallet.DeviceTypeUSB),
-func NewSkyWallet(dev skyWallet.Devicer, callback func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)) *SkyWallet {
+// NewSkyWallet create a new sky wallet instance
+func NewSkyWallet(dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)) *SkyWallet {
 	return &SkyWallet{
 		dev: dev,
-		callback: callback,
+		handleButtonAckSequence: buttonAckHandler,
 	}
 }
 
@@ -231,7 +230,7 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		logrus.WithField("msgResponse", msg).Errorln("error signing transaction with hardware wallet")
 		return nil, errors.New("error signing transaction with hardware wallet")
 	}
-	msg, err = sw.callback(sw.dev, msg, len(transactionOutputs))
+	msg, err = sw.handleButtonAckSequence(sw.dev, msg, len(transactionOutputs))
 	if err != nil {
 		if err == fce.ErrHwSignTransactionFailed {
 			logrus.WithError(err).Errorln("failed to sign transaction")
