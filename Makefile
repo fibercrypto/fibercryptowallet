@@ -192,11 +192,11 @@ gen-mocks: ## Generate mocks for interface types
 test-hw: gen-mocks ## Run Hardware wallet tests
 	go test github.com/fibercrypto/FiberCryptoWallet/src/hardware
 
-test-sky: ## Run Skycoin plugin test suite
+test-sky: gen-mocks ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models
 
-test-core: ## Run tests for API core and helpers
+test-core: gen-mocks ## Run tests for API core and helpers
 	go test -cover -timeout 30s github.com/fibercrypto/FiberCryptoWallet/src/util
 
 test-sky-launch-html-cover:
