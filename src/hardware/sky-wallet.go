@@ -272,12 +272,11 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 	return tr2Sign, nil
 }
 
-// GetSignerUID this signer uid using the hardware wallet label
-func (sw SkyWallet) GetSignerUID() core.UID {
+func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
 	if sw.dev == nil {
 		// TODO i18n
 		logrus.Error("error, nil hardware wallet device handler")
-		return "undefined"
+		return messages.Features{}, fce.ErrHwUnexpected
 	}
 	// FIXME: This should not be closed, it's a lower level detail (check out in cli tool too).
 	// defer sw.dev.Close()
@@ -285,67 +284,52 @@ func (sw SkyWallet) GetSignerUID() core.UID {
 	if err != nil {
 		// TODO i18n
 		logrus.WithError(err).Error("error getting device features")
-		return "undefined"
+		return messages.Features{}, fce.ErrHwUnexpected
 	}
 	switch msg.Kind {
 	case uint16(messages.MessageType_MessageType_Features):
-		features := &messages.Features{}
-		err = proto.Unmarshal(msg.Data, features)
+		features := messages.Features{}
+		err = proto.Unmarshal(msg.Data, &features)
 		if err != nil {
 			// TODO i18n
 			logrus.WithError(err).Error("error decoding device response")
-			return "undefined"
+			return messages.Features{}, fce.ErrHwUnexpected
 		}
-		return core.UID(*features.DeviceId)
+		return features, nil
 	case uint16(messages.MessageType_MessageType_Failure), uint16(messages.MessageType_MessageType_Success):
 		msgData, err := skyWallet.DecodeSuccessOrFailMsg(msg)
 		if err != nil {
-			logrus.WithError(err).Error(msgData)
+			logrus.WithError(err).Errorln("error decoding device response")
+		} else {
+			logrus.Errorln(msgData)
 		}
-		// TODO i18n
-		return "undefined"
+		return messages.Features{}, fce.ErrHwUnexpected
 	default:
 		// TODO i18n
 		logrus.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
+		return messages.Features{}, fce.ErrHwUnexpected
+	}
+}
+
+// GetSignerUID this signer uid using the hardware wallet label
+func (sw SkyWallet) GetSignerUID() core.UID {
+	features, err := sw.getDeviceFeatures()
+	if err != nil {
+		// TODO i18n
+		logrus.WithError(err).Error("unable to get device features")
 		return "undefined"
 	}
+	return core.UID(*features.DeviceId)
 }
 
 // GetSignerDescription facilitates a human readable caption identifying this signing strategy
 // in urn(https://en.wikipedia.org/wiki/Uniform_Resource_Name) format.
 func (sw SkyWallet) GetSignerDescription() string {
-	if sw.dev == nil {
-		// TODO i18n
-		logrus.Error("error, nil hardware wallet device handler")
-		return "undefined"
-	}
-	// FIXME this should be solved in the hw-go cli too
-	// defer device.Close()
-	msg, err := sw.dev.GetFeatures()
+	features, err := sw.getDeviceFeatures()
 	if err != nil {
 		// TODO i18n
-		logrus.WithError(err).Error("error getting device features")
+		logrus.WithError(err).Error("unable to get device features")
 		return "undefined"
 	}
-	switch msg.Kind {
-	case uint16(messages.MessageType_MessageType_Features):
-		features := &messages.Features{}
-		err = proto.Unmarshal(msg.Data, features)
-		if err != nil {
-			// TODO i18n
-			logrus.WithError(err).Error("error decoding device response")
-			return "undefined"
-		}
-		return urnPrefix+*features.Label
-	case uint16(messages.MessageType_MessageType_Failure), uint16(messages.MessageType_MessageType_Success):
-		msgData, err := skyWallet.DecodeSuccessOrFailMsg(msg)
-		if err != nil {
-			logrus.WithError(err).Error(msgData)
-		}
-		return "undefined"
-	default:
-		// TODO i18n
-		logrus.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
-		return "undefined"
-	}
+	return urnPrefix+*features.Label
 }
