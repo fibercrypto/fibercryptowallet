@@ -171,3 +171,22 @@ func cloneSlice(src []core.Clonable) (dst []core.Clonable, err error) {
 	}
 	return
 }
+
+// StrSlice2IntSlice transform a numbers slices from string type to
+// a numbers slice expressed as int data type
+func StrSlice2IntSlice(ss []string) ([]int, error) {
+	if len(ss) > 0 {
+		is := make([]int, len(ss))
+		for i, strIdx := range ss {
+			var err error
+			is[i], err = strconv.Atoi(strIdx)
+			if err != nil {
+				// FIXME named error var
+				return nil, stdErr.New("errors.ErrIntegerInputsRequired")
+			}
+		}
+		return is, nil
+	}
+	// FIXME i18n
+	return nil, stdErr.New("input indexes is empty")
+}
