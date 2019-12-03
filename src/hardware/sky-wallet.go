@@ -31,7 +31,7 @@ func HwFirstAddr(dev skyWallet.Devicer) (string, error) {
 	msg, err := dev.AddressGen(1, 0, false, skyWallet.WalletTypeDeterministic)
 	if err != nil {
 		// TODO i18n
-		logrus.WithError(err).Errorln("error getting address from device")
+		logrus.WithError(err).Debugln("error getting address from device")
 		return "", fce.ErrHwUnexpected
 	}
 	switch msg.Kind {
