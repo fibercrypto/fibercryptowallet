@@ -5,9 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/readable"
 )
 
 func TestSkycoinBlockchainStatusGetCoinValue(t *testing.T) {
@@ -22,7 +22,7 @@ func TestSkycoinBlockchainStatusGetCoinValue(t *testing.T) {
 	)
 	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, nil)
 
-	block := &SkycoinBlockchainStatus{CacheTime: 20}
+	block := &SkycoinBlockchain{CacheTime: 20}
 	val, err := block.GetCoinValue(core.CoinCurrentSupply, Sky)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(200111111))
@@ -56,7 +56,7 @@ func TestSkycoinBlockchainStatusGetNumberOfBlocks(t *testing.T) {
 		nil,
 	)
 
-	block := &SkycoinBlockchainStatus{CacheTime: 20}
+	block := &SkycoinBlockchain{CacheTime: 20}
 	val, err := block.GetNumberOfBlocks()
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(20))
@@ -76,7 +76,7 @@ func TestSkycoinBlockchainStatusGetLastBlock(t *testing.T) {
 	)
 	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, nil)
 
-	status := &SkycoinBlockchainStatus{CacheTime: 20}
+	status := &SkycoinBlockchain{CacheTime: 20}
 	block, err := status.GetLastBlock()
 	require.NoError(t, err)
 	val, err2 := block.GetVersion()

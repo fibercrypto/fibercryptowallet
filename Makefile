@@ -234,7 +234,6 @@ gen-mocks: ## Generate mocks for interface types
 	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
 	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
-	find src/coin/mocks/ -name '*.go' -type f -print0
 
 test-skyhw: ## Run Hardware wallet tests
 	go test github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet

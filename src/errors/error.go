@@ -31,8 +31,12 @@ var (
 	ErrInvalidNetworkType = errors.New("Invalid netType")
 	// ErrInvalidID invalid ID
 	ErrInvalidID = errors.New("Invalid Id")
+	// ErrNotFound target item not found in collection
+	ErrNotFound = errors.New("Item not found in collection")
 	// ErrParseTxID invalid string value for transaction hash ID
 	ErrParseTxID = errors.New("Error parsing transaction hash")
+	// ErrParseSHA256 invalid SHA256 hash
+	ErrParseSHA256 = errors.New("Error parsing SHA256 hash")
 	// ErrParseTxnFee invalid string value for transaction fee
 	ErrParseTxnFee = errors.New("Error parsing transaction fee")
 	// ErrParseTxnCoins transaction coins can not be parsed
@@ -53,6 +57,8 @@ var (
 	ErrInvalidValue = errors.New("Value errors")
 	// ErrInvalidTypeAssertion the current value have not the expected type
 	ErrInvalidTypeAssertion = errors.New("Invalid type assertion")
+	// ErrWalletCantSign wallet can not sign transactions
+	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
 	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
 	// wallet not found
 	ErrWltFromAddrNotFound = errors.New("Error getting wallet from addr, no wallet found")

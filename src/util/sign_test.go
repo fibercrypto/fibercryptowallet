@@ -3,10 +3,10 @@ package util
 import (
 	"testing"
 
+	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/skycoin/skycoin/src/testutil"
 	"github.com/stretchr/testify/require"
 )
 

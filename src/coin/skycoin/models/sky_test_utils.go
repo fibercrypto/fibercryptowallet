@@ -2,18 +2,25 @@
 
 package skycoin
 
+/**
+ * This file contains test code copied from github.com/SkycoinProject/skycoin codebase
+ * for it is needed by test suite and functions not exported in upstream package.
+ *
+ * Please only add in here code copied from Skycoin codebase. Make sure it's strictly necessary.
+ */
+
 import (
 	"crypto/rand"
 	"path/filepath"
 	"testing"
 
+	"github.com/SkycoinProject/skycoin/src/cipher"
+	skytestsuite "github.com/SkycoinProject/skycoin/src/cipher/testsuite"
+	"github.com/SkycoinProject/skycoin/src/coin"
+	"github.com/SkycoinProject/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/testutil"
+	"github.com/SkycoinProject/skycoin/src/util/file"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/testsuite"
-	"github.com/skycoin/skycoin/src/cipher"
-	skytestsuite "github.com/skycoin/skycoin/src/cipher/testsuite"
-	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/readable"
-	"github.com/skycoin/skycoin/src/testutil"
-	"github.com/skycoin/skycoin/src/util/file"
 	"github.com/stretchr/testify/require"
 )
 

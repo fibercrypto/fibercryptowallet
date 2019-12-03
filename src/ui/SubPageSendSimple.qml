@@ -11,6 +11,7 @@ import "Controls" // For quick UI development, switch back to resources when mak
 Page {
     id: root
     property string walletSelected
+    property string walletSelectedName
     property string signerSelected
     property bool walletEncrypted: false
     property string amount
@@ -29,7 +30,7 @@ Page {
         return destinationAddress
     }
     function walletIsEncrypted(){
-        return walletEncrypted
+        return [walletSelected, walletSelectedName, walletEncrypted]
     }
     signal qrCodeRequested(var data)
 
@@ -79,6 +80,7 @@ Page {
                     
                     onActivated: {
                         root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
+                    root.walletSelectedName = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name
                         root.walletEncrypted = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
                         signerSelector.reset(root.walletSelected);
                     }

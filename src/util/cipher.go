@@ -15,22 +15,6 @@ type GenericAddress struct {
 	Address string
 }
 
-func (ga *GenericAddress) Bytes() []byte {
-	return []byte(ga.Address)
-}
-
-func (ga *GenericAddress) Checksum() core.Checksum {
-	return []byte{}
-}
-
-func (ga *GenericAddress) Verify(core.PubKey) error {
-	return nil
-}
-
-func (ga *GenericAddress) Null() bool {
-	return true
-}
-
 func (ga *GenericAddress) IsBip32() bool {
 	return false
 }

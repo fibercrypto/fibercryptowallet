@@ -1,41 +1,40 @@
 package skycoin
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/readable"
 )
 
 func TestWalletListPendingTransactions(t *testing.T) {
 	response := &api.UnconfirmedTxnsVerboseResponse{
 		Transactions: []readable.UnconfirmedTransactionVerbose{
-			{
+			readable.UnconfirmedTransactionVerbose{
 				Transaction: readable.BlockTransactionVerbose{
 					Out: []readable.TransactionOutput{
-						{
+						readable.TransactionOutput{
 							Coins: "1",
 							Hours: 2000,
 						},
-						{
+						readable.TransactionOutput{
 							Coins: "1",
 							Hours: 2000,
 						},
 					},
 				},
 			},
-			{
+			readable.UnconfirmedTransactionVerbose{
 				Transaction: readable.BlockTransactionVerbose{
 					Out: []readable.TransactionOutput{
-						{
+						readable.TransactionOutput{
 							Coins: "1",
 							Hours: 2000,
 						},
-						{
+						readable.TransactionOutput{
 							Coins: "1",
 							Hours: 2000,
 						},
@@ -74,18 +73,17 @@ func TestWalletListPendingTransactions(t *testing.T) {
 
 func TestSkycoinAddressGetBalance(t *testing.T) {
 	response := new(api.BalanceResponse)
-	addr, err := NewSkycoinAddress("2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt")
-	assert.NoError(t, err)
 	response.Confirmed = readable.Balance{Coins: uint64(42000000), Hours: uint64(200)}
-	global_mock.On("Balance", []string{addr.String()}).Return(response, nil)
-	skyAddrs := addr.GetCryptoAccount()
-	val, err := skyAddrs.GetBalance(Sky)
+	global_mock.On("Balance", []string{"addr1"}).Return(response, nil)
+
+	addr := &SkycoinAddress{address: "addr1"}
+	val, err := addr.GetBalance(Sky)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(42000000))
-	val, err = skyAddrs.GetBalance(CoinHour)
+	val, err = addr.GetBalance(CoinHour)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(200))
-	val, err = skyAddrs.GetBalance("INVALID_TICKER")
+	val, err = addr.GetBalance("INVALID_TICKER")
 	require.Error(t, err)
 	require.Equal(t, val, uint64(0))
 }
@@ -96,23 +94,21 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 		Coins:           "42",
 		Hours:           uint64(42),
 		CalculatedHours: uint64(42),
-		Address:         "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8",
+		Address:         "addr1",
 	}
 	response := &readable.UnspentOutputsSummary{
 		HeadOutputs: readable.UnspentOutputs{usOut, usOut},
 	}
 
-	global_mock.On("OutputsForAddresses", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(response, nil)
+	global_mock.On("OutputsForAddresses", []string{"addr1"}).Return(response, nil)
 
-	addrs, err := NewSkycoinAddress("2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
-	assert.NoError(t, err)
-	skyAddrs := addrs.GetCryptoAccount()
-	it := skyAddrs.ScanUnspentOutputs()
+	addr := &SkycoinAddress{address: "addr1"}
+	it := addr.ScanUnspentOutputs()
 
 	for it.Next() {
 		output := it.Value()
 		require.Equal(t, output.GetId(), "hash1")
-		require.Equal(t, output.GetAddress().String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
+		require.Equal(t, output.GetAddress().String(), "addr1")
 		val, err := output.GetCoins(Sky)
 		require.NoError(t, err)
 		require.Equal(t, val, uint64(42000000))
@@ -130,9 +126,9 @@ func TestSkycoinAddressListTransactions(t *testing.T) {
 		},
 	}
 	response.Transaction.Hash = "hash1"
-	global_mock.On("TransactionsVerbose", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(
+	global_mock.On("TransactionsVerbose", []string{"addr1"}).Return(
 		[]readable.TransactionWithStatusVerbose{
-			{
+			readable.TransactionWithStatusVerbose{
 				Status: readable.TransactionStatus{
 					Confirmed: true,
 				},
@@ -145,10 +141,8 @@ func TestSkycoinAddressListTransactions(t *testing.T) {
 		&readable.TransactionWithStatus{Status: response.Status},
 		nil,
 	)
-	addr, err := NewSkycoinAddress("2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
-	assert.NoError(t, err)
-	skyAddr := addr.GetCryptoAccount()
-	it := skyAddr.ListTransactions()
+	addr := &SkycoinAddress{address: "addr1"}
+	it := addr.ListTransactions()
 	it.Next()
 	thx := it.Value()
 	require.Equal(t, thx.GetStatus(), core.TXN_STATUS_CONFIRMED)
@@ -215,6 +209,7 @@ func TestRemoteWalletGetBalance(t *testing.T) {
 
 func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 	CleanGlobalMock()
+
 	global_mock.On("Wallet", "wallet").Return(
 		&api.WalletResponse{
 			Meta: readable.WalletMeta{
@@ -224,7 +219,7 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				{Address: "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt"},
+				readable.WalletEntry{Address: "addr"},
 			},
 		},
 		nil)
@@ -245,16 +240,15 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 		Coins:           "42",
 		Hours:           uint64(42),
 		CalculatedHours: uint64(42),
-		Address:         "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt",
+		Address:         "addr",
 	}
 	response := &readable.UnspentOutputsSummary{
 		HeadOutputs: readable.UnspentOutputs{usOut},
 	}
 
-	// addrs
-	global_mock.On("OutputsForAddresses", []string{"2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt"}).Return(response, nil)
-	// no_output
-	global_mock.On("OutputsForAddresses", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(&readable.UnspentOutputsSummary{}, nil)
+	global_mock.On("OutputsForAddresses", []string{"addr"}).Return(response, nil)
+
+	global_mock.On("OutputsForAddresses", []string{"no_outputs"}).Return(&readable.UnspentOutputsSummary{}, nil)
 
 	wlt := &RemoteWallet{
 		Id:          "wallet",
@@ -265,11 +259,11 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 	for iter.Next() {
 		to := iter.Value()
 		items++
-		require.Equal(t, "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", to.GetAddress().String())
+		require.Equal(t, "addr", to.GetAddress().String())
 	}
 	require.Equal(t, 1, items)
 
-	// No outputs
+	//No outputs
 	wlt = &RemoteWallet{
 		Id:          "wallet_no_outputs",
 		poolSection: PoolSection,
@@ -294,7 +288,7 @@ func TestRemoteWalletListTransactions(t *testing.T) {
 	}
 	response.Transaction.Hash = "hash1"
 
-	global_mock.On("TransactionsVerbose", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(
+	global_mock.On("TransactionsVerbose", []string{"addr"}).Return(
 		[]readable.TransactionWithStatusVerbose{
 			response,
 		},
@@ -310,7 +304,7 @@ func TestRemoteWalletListTransactions(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+				readable.WalletEntry{Address: "addr"},
 			},
 		},
 		nil)
@@ -341,7 +335,7 @@ func TestLocalWalletScanUnspentOutputs(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+				readable.WalletEntry{Address: "addr"},
 			},
 		},
 		nil)
@@ -379,7 +373,7 @@ func TestLocalWalletListTransactions(t *testing.T) {
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
-				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+				readable.WalletEntry{Address: "addr"},
 			},
 		},
 		nil)

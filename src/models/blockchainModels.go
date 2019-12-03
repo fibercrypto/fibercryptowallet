@@ -6,6 +6,7 @@ import (
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models" //callable as skycoin
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/params"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 
 	qtcore "github.com/therecipe/qt/core"
@@ -43,7 +44,7 @@ func (blockchainStatus *BlockchainStatusModel) init() {
 	blockchainStatus.SetCurrentCoinHoursSupplyDefault("0")
 	blockchainStatus.SetTotalCoinHoursSupplyDefault("0")
 	blockchainStatus.SetLoading(true)
-	blockchainStatus.infoRequester = skycoin.NewSkycoinBlockchainStatus(1000000) //FIXME: set correct value
+	blockchainStatus.infoRequester = skycoin.NewSkycoinBlockchain(params.DataRefreshTimeout)
 }
 
 func (blockchainStatus *BlockchainStatusModel) update() {

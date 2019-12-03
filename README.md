@@ -47,7 +47,7 @@ Project files are organized as follows:
 - `./src/coin/skycoin/models` : Skycoin implementation of golang core interfaces.
 - `./src/coin/skycoin/blockchain` : Skycoin blockchain API.
 - `./src/coin/skycoin/sign` : Skycoin sign API.
-- `vendor` : Project dependencies managed by `dep`.
+- `./vendor` : Project dependencies managed by `dep`.
 
 ### Architecture
 

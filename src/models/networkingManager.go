@@ -1,9 +1,9 @@
 package models
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/SkycoinProject/skycoin/src/util/logging"
+	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/skycoin/skycoin/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
 

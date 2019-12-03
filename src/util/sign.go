@@ -50,7 +50,12 @@ func SignTransaction(signerID core.UID, txn core.Transaction, pwd core.PasswordR
 	if signer == nil {
 		return nil, errors.ErrInvalidID
 	}
-	return signer.SignTransaction(txn, pwd, indices)
+	// Add signer ID in key value store context
+	pwdReader := func(msg string, ctx core.KeyValueStore) (string, error) {
+		newCtx := NewKeyValuesWithDefaults(NewMapWithSingleKey(core.StrSignerID, string(signerID)), ctx)
+		return pwd(msg, newCtx)
+	}
+	return signer.SignTransaction(txn, pwdReader, indices)
 }
 
 // GetSignerDescription human readable caption for signing strategy identified by UID
@@ -60,4 +65,59 @@ func GetSignerDescription(signerID core.UID) (string, error) {
 		return "", errors.ErrInvalidID
 	}
 	return signer.GetSignerDescription()
+}
+
+// LookupSignServiceForWallet instantiate signing straegy identified by UID. Fall back to wallet if empty
+func LookupSignServiceForWallet(wlt core.Wallet, signerID core.UID) (core.TxnSigner, error) {
+	if signerID == "" {
+		wltSigner, isTxnSigner := wlt.(core.TxnSigner)
+		if !isTxnSigner {
+			logUtil.WithError(errors.ErrInvalidID).Errorf("Wallet %v can not sign transactions", wlt)
+			return nil, errors.ErrWalletCantSign
+		}
+		return wltSigner, nil
+	}
+	if signer := LookupSignService(signerID); signer != nil {
+		return signer, nil
+	}
+	return nil, errors.ErrInvalidID
+}
+
+type signingKeyPair struct {
+	wallet   core.Wallet
+	signerID core.UID
+}
+
+// GenericMultiWalletSign generic strategy for using multiple wallets to sign a transaction
+func GenericMultiWalletSign(txn core.Transaction, signSpec []core.InputSignDescriptor, pwd core.PasswordReader) (signedTxn core.Transaction, err error) {
+	groups := make(map[signingKeyPair][]string)
+	// Aggregate inputs by wallet,signer combination
+	for _, descriptor := range signSpec {
+		key := signingKeyPair{
+			wallet:   descriptor.Wallet,
+			signerID: descriptor.SignerID,
+		}
+		inputs, isNotEmpty := groups[key]
+		if !isNotEmpty {
+			inputs = []string{}
+		}
+		groups[key] = append(inputs, descriptor.InputIndex)
+	}
+	signedTxn = txn
+
+	for signPair, indices := range groups {
+
+		signer, err := LookupSignServiceForWallet(signPair.wallet, signPair.signerID)
+		if err != nil {
+			logUtil.WithError(err).Errorf("Unknown signer %s specified for signing inputs %v of wallet %v", string(signPair.signerID), indices, signPair.wallet)
+			return nil, errors.ErrInvalidID
+		}
+		signedTxn, err = signPair.wallet.Sign(signedTxn, signer, pwd, indices)
+		if err != nil {
+			logUtil.WithError(err).Errorf("Error signing inputs %v of wallet %v with signer %s", indices, signPair.wallet, string(signPair.signerID))
+			return nil, err
+		}
+
+	}
+	return signedTxn, nil
 }

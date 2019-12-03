@@ -1,9 +1,9 @@
 sudo: required
 language: go
 go:
-- 1.12.6
+  - 1.12.6
 services:
-- docker
+  - docker
 - xvfb
 go_import_path: github.com/fibercrypto/fibercryptowallet
 env:
@@ -12,42 +12,42 @@ env:
 
 matrix:
   include:
-  - stage: RPI
-    if: branch = release*$
-    install:
-    - DEFAULT_ARCH=rpi1 make install-docker-deps
-    - DEFAULT_ARCH=rpi2 make install-docker-deps
-    - DEFAULT_ARCH=rpi3 make install-docker-deps
-    - make install-deps-no-envs
-    - make install-coveralls
-    script:
-    - make clean
-    - DEFAULT_TARGET=rpi1 make build-docker
-    - DEFAULT_TARGET=rpi2 make build-docker
-    - DEFAULT_TARGET=rpi3 make build-docker
-    - make lint
-    - make test
-  - stage: Android
-    if: branch = release*$
-    install:
-    - DEFAULT_ARCH=android make install-docker-deps
-    - make install-deps-no-envs
-    - make install-coveralls
-    script:
-    - make clean
-    - DEFAULT_TARGET=android make build-docker
-    - DEFAULT_TARGET=android-emulator make build-docker
-    - make lint
-    - make test
+    - stage: RPI
+      if: branch = release*$
+      install:
+        - DEFAULT_ARCH=rpi1 make install-docker-deps
+        - DEFAULT_ARCH=rpi2 make install-docker-deps
+        - DEFAULT_ARCH=rpi3 make install-docker-deps
+        - make install-deps-no-envs
+        - make install-coveralls
+      script:
+        - make clean
+        - DEFAULT_TARGET=rpi1 make build-docker
+        - DEFAULT_TARGET=rpi2 make build-docker
+        - DEFAULT_TARGET=rpi3 make build-docker
+        - make lint
+        - make test
+    - stage: Android
+      if: branch = release*$
+      install:
+        - DEFAULT_ARCH=android make install-docker-deps
+        - make install-deps-no-envs
+        - make install-coveralls
+      script:
+        - make clean
+        - DEFAULT_TARGET=android make build-docker
+        - DEFAULT_TARGET=android-emulator make build-docker
+        - make lint
+        - make test
     - make test-cover-travis
-  - stage: Linux
+    - stage: Linux
     before_install:
     - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
-    install:
-    - make install-docker-deps
-    - make install-deps-no-envs
-    - make install-linters
-    - make install-coveralls
+      install:
+        - make install-docker-deps
+        - make install-deps-no-envs
+        - make install-linters
+        - make install-coveralls
     before_script:
     - echo "PATH=$PATH";
     - echo "PIP=$PIP";
@@ -59,34 +59,34 @@ matrix:
     # Run self-tests
     - ps aux | grep emulator
 
-    script:
-    - make clean
-    - DEFAULT_TARGET=linux make build-docker
-    - make test
+      script:
+        - make clean
+        - DEFAULT_TARGET=linux make build-docker
+        - make test
     - make test-skyhw
-    - make lint
-    - make test-cover-travis
-  - stage: Windows
-    os: windows
-    install:
-    - choco install make -y
-    - travis_wait make install-deps-Windows
-    - make install-linters
-    - make install-coveralls
-    script:
-    - make build
-    - make test
-    - make build-icon
-    - make lint
-    - make test-cover-travis
-  - stage: MacOS
-    os: osx
-    osx_image: xcode10.2
+        - make lint
+        - make test-cover-travis
+    - stage: Windows
+      os: windows
+      install:
+        - choco install make -y
+        - travis_wait make install-deps-Windows
+        - make install-linters
+        - make install-coveralls
+      script:
+        - make build
+        - make test
+        - make build-icon
+        - make lint
+        - make test-cover-travis
+    - stage: MacOS
+      os: osx
+      osx_image: xcode10.2
     before_install:
     - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
-    install:
-    - make install-deps
-    - make install-coveralls
+      install:
+        - make install-deps
+        - make install-coveralls
     before_script:
     - echo "PATH=$PATH";
     - echo "PIP=$PIP";
@@ -99,25 +99,25 @@ matrix:
     - make -C ./tmp/hardware-wallet run-emulator & true;
     # Run self-tests
     - ps aux | grep emulator
-    script:
-    - make clean
-    - make build
-    - make test
+      script:
+        - make clean
+        - make build
+        - make test
     - make test-skyhw
-    - make build-icon
-    - make lint
-    - make test-cover-travis
+        - make build-icon
+        - make lint
+        - make test-cover-travis
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
 before_deploy:
-   - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
-   - export ARCH="$(uname -m)"
-   - export OS="$(uname -s)"
-   - make prepare-release
-   - make build
-   - ( cd deploy && tar czf ../fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz ./*  )
-   - pwd && ls -l .
+  - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
+  - export ARCH="$(uname -m)"
+  - export OS="$(uname -s)"
+  - make prepare-release
+  - make build
+  - ( cd deploy && tar czf ../fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz ./*  )
+  - pwd && ls -l .
 deploy:
   provider: releases
   api_key:

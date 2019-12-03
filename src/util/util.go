@@ -1,15 +1,12 @@
 package util
 
 import (
-	stdErr "errors"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/fibercrypto/fibercryptowallet/src/core"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"strconv"
 )
 
-var logUtil = logging.MustGetLogger("Utils")
+var logUtil = logging.MustGetLogger("FiberCrypto util")
 
 func Min(a, b int) int {
 	if a <= b {
@@ -111,14 +108,4 @@ func StrSlice2IntSlice(ss []string) ([]int, error) {
 		return is, nil
 	}
 	return nil, nil
-}
-
-// AddressFromString returns a core.Address if match with string address.
-// If the coinTicket parameter not match with any address type returns 'coinTicket not match' error.
-func AddressFromString(addrs, coinTicket string) (core.Address, error) {
-	altPlugin, ok := local.LoadAltcoinManager().LookupAltcoinPlugin(coinTicket)
-	if !ok {
-		return nil, stdErr.New("coinTicket not match")
-	}
-	return altPlugin.AddressFromString(addrs)
 }

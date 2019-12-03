@@ -1,28 +1,5 @@
 package core
 
-// Checksum used to validate information consistency
-type Checksum []byte
-
-// SecKey cryptographic private key
-type SecKey interface {
-	// Verify checks that the private key appears valid
-	Verify() error
-	// Null returns true if the private key is null
-	Null() bool
-	// Bytes binary representation for private key
-	Bytes() []byte
-}
-
-// PubKey cryptographic public key
-type PubKey interface {
-	// Verify checks that the public key appears valid
-	Verify() error
-	// Null returns true if the public key is null
-	Null() bool
-	// Bytes binary representation for public key
-	Bytes() []byte
-}
-
 // Address identifier for sending and receiving transactions
 type Address interface {
 	// IsBip32 flag shall be set if address generation complies to BIP 32
@@ -31,14 +8,6 @@ type Address interface {
 	String() string
 	// GetCryptoAccount provides access to address transaction history
 	GetCryptoAccount() CryptoAccount
-	// Bytes binary representation for address
-	Bytes() []byte
-	// Checksum computes address consistency token
-	Checksum() Checksum
-	// Verify checks that the address appears valid for the public key
-	Verify(PubKey) error
-	// Null returns true if the address is null
-	Null() bool
 }
 
 // AddressIterator iterate over addresses in a container

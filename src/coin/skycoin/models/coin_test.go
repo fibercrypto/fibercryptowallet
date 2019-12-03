@@ -6,10 +6,10 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/cipher"
+	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/cipher"
-	"github.com/skycoin/skycoin/src/readable"
 )
 
 func TestSkycoinTransactionGetStatus(t *testing.T) {
@@ -80,7 +80,7 @@ func TestSkycoinTransactionGetInputs(t *testing.T) {
 func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 	global_mock.On("UxOut", "in1").Return(
 		&readable.SpentOutput{
-			OwnerAddress: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8",
+			OwnerAddress: "dir",
 			Coins:        uint64(1000000),
 			Hours:        uint64(20),
 			Uxid:         "out1",
@@ -91,9 +91,8 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
 	output := input.GetSpentOutput()
 
-	t.Logf("%#v",output)
 	require.Equal(t, output.GetId(), "out1")
-	require.Equal(t, output.GetAddress().String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
+	require.Equal(t, output.GetAddress().String(), "dir")
 	sky, err := output.GetCoins(Sky)
 	require.NoError(t, err)
 	require.Equal(t, sky, uint64(1000000))

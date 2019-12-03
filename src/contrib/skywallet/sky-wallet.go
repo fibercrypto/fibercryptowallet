@@ -3,12 +3,13 @@ package hardware
 import (
 	"encoding/hex"
 	"errors"
+	"github.com/SkycoinProject/skycoin/src/cipher"
+	"github.com/SkycoinProject/skycoin/src/coin"
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
@@ -16,8 +17,6 @@ import (
 	"github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
-	"github.com/skycoin/skycoin/src/cipher"
-	"github.com/skycoin/skycoin/src/coin"
 )
 
 var logSkyWallet = logging.MustGetLogger("Skycoin hardware wallet")
@@ -445,3 +444,8 @@ func (sw SkyWallet) GetSignerDescription() (string, error) {
 	}
 	return urnPrefix+*features.Label, nil
 }
+
+// Type assertions
+var (
+	_ core.TxnSigner = &SkyWallet{}
+)
