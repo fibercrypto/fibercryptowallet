@@ -15,16 +15,16 @@ Page {
 
     // These are defaults. Will be restored when the "DEFAULT" button is clicked
     // TODO: How to get the defaults from the config manager
-    readonly property string defaultWalletPath: configManager.getSourceString()
-    readonly property string defaultNodeUrl: configManager.getNodeString()
-    readonly property bool defaultIsRemoteWalletEnv: configManager.getTypeSource()
+    readonly property string defaultWalletPath: "/home/hsequeda/.skycoin/wallets"
+    readonly property string defaultNodeUrl: "https://staging.node.skycoin.net"
+    readonly property bool defaultIsRemoteWalletEnv: true
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
     // TODO: This should be binded to backend properties
-    property string savedWalletPath: configManager.getSourceString()
-    property url savedNodeUrl: configManager.getNodeString()
-    property bool savedIsRemoteWalletEnv: configManager.getTypeSource()
+    property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
+    property url savedNodeUrl: configManager.getValue("skycoin/node/address")
+    property bool savedIsRemoteWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType")=="local"
 
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
@@ -42,7 +42,9 @@ Page {
         standardButtons: Dialog.Apply | Dialog.Discard | Dialog.RestoreDefaults
 
         onApplied: {
-            configManager.edit(nodeUrl, walletPath, isRemoteWalletEnv)
+        configManager.setValue("skycoin/node/address",nodeUrl)
+        configManager.setValue("skycoin/walletSource/1/SourceType",isRemoteWalletEnv?"local":"remote")
+        configManager.setValue("skycoin/walletSource/1/Source",walletPath)
         }
 
         onDiscarded: {
@@ -74,7 +76,7 @@ Page {
                     Label { text: qsTr("Wallet path:"); font.bold: true }
                     TextField {
                         id: textFieldWalletPath
-
+                        enabled:isRemoteWalletEnv
                         selectByMouse: true
                         MouseArea {
                             anchors.fill: parent

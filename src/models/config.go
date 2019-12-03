@@ -67,7 +67,7 @@ type ConfigSection struct {
 	qtcore.QObject
 	sm *local.SectionManager
 	_  func() [][]string                 `slot:"getPaths"`
-	_  func([]string) []*KeyValueStorage `slot:getOptions"`
+	_  func([]string) []*KeyValueStorage `slot:"getOptions"`
 }
 
 func (cs *ConfigSection) init() {
