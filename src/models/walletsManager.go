@@ -35,8 +35,8 @@ type WalletManager struct {
 	_                   func(string)                                                                                                                           `slot:"updateAddresses"`
 	_                   func()                                                                                                                                 `slot:"updateWallets"`
 	_                   func()                                                                                                                                 `constructor:"init"`
-	_                   func(seed string, label string, password string, scanN int) *QWallet                                                                   `slot:"createEncryptedWallet"`
-	_                   func(seed string, label string, scanN int) *QWallet                                                                                    `slot:"createUnencryptedWallet"`
+	_                   func(seed string, label string, walletType string, password string, scanN int) *QWallet                                                `slot:"createEncryptedWallet"`
+	_                   func(seed string, label string, walletType string, scanN int) *QWallet                                                                 `slot:"createUnencryptedWallet"`
 	_                   func(entropy int) string                                                                                                               `slot:"getNewSeed"`
 	_                   func(seed string) int                                                                                                                  `slot:"verifySeed"`
 	_                   func(id string, n int, password string)                                                                                                `slot:"newWalletAddress"`
@@ -53,6 +53,8 @@ type WalletManager struct {
 	_                   func(wltId string, outs, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction `slot:"sendFromOutputs"`
 	_                   func() []*QAddress                                                                                                                     `slot:"getAllAddresses"`
 	_                   func(wltId string) []*QOutput                                                                                                          `slot:"getOutputsFromWallet"`
+	_                   func() string                                                                                                                          `slot:"getDefaultWalletType"`
+	_                   func() []string                                                                                                                        `slot:"getAvailableWalletTypes"`
 }
 
 func (walletM *WalletManager) init() {
@@ -81,6 +83,8 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectUpdateWallets(walletM.updateWallets)
 		walletM.ConnectUpdateAddresses(walletM.updateAddresses)
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
+		walletM.ConnectGetDefaultWalletType(walletM.getDefaultWalletType)
+		walletM.ConnectGetAvailableWalletTypes(walletM.getAvailableWalletTypes)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 		walletM.altManager = local.LoadAltcoinManager()
@@ -107,6 +111,15 @@ func GetWalletEnv() core.WalletEnv {
 func GetWalletManager() *WalletManager {
 	return walletManager
 }
+
+func (walletM *WalletManager) getDefaultWalletType() string {
+	return walletM.WalletEnv.GetWalletSet().DefaultWalletType()
+}
+
+func (walletM *WalletManager) getAvailableWalletTypes() []string {
+	return walletM.WalletEnv.GetWalletSet().SupportedWalletTypes()
+}
+
 func (walletM *WalletManager) updateWalletEnvs() {
 	logWalletManager.Info("Updating WalletEnvs")
 	walletsEnvs := make([]core.WalletEnv, 0)
@@ -486,12 +499,13 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 	return qTxn
 }
 
-func (walletM *WalletManager) createEncryptedWallet(seed, label, password string, scanN int) *QWallet {
+func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, password string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
 	pwd := func(message string) (string, error) {
 		return password, nil
 	}
-	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, true, pwd, scanN)
+	fmt.Println("WALLET TYPE ", wltType)
+	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, true, pwd, scanN)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create encrypted wallet")
 		return nil
@@ -502,13 +516,13 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, password string
 
 }
 
-func (walletM *WalletManager) createUnencryptedWallet(seed, label string, scanN int) *QWallet {
+func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
 	pwd := func(message string) (string, error) {
 		return "", nil
 	}
 
-	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, false, pwd, scanN)
+	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, false, pwd, scanN)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create unencrypted wallet")
 		return nil
