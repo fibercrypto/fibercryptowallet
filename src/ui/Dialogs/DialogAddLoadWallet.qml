@@ -31,7 +31,7 @@ Dialog {
             if (mode === CreateLoadWallet.Load){
                 scanA = 10
             }
-            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text , scanA))
+            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text, comboBoxWalletType.model[comboBoxWalletType.currentIndex].value, scanA))
             
         } else{
             
@@ -39,7 +39,7 @@ Dialog {
                 scanA = 10
             }
             
-            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, scanA))
+            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, comboBoxWalletType.model[comboBoxWalletType.currentIndex].value, scanA))
         }
     }
 
@@ -71,7 +71,7 @@ Dialog {
         var isSeedValid = walletManager.verifySeed(createLoadWallet.seed)
         
         okButton.enabled = walletName && walletSeed && seedMatchConfirmation && ((passwordSet && passwordMatchConfirmation) || !passwordNeeded) && (!unconventionalSeed || continueWithUnconventionalSeed) && isSeedValid
-    } // function updateAcceptButtonStatus()
+    }
 
     title: Qt.application.name
     standardButtons: Dialog.Ok | Dialog.Cancel
@@ -141,6 +141,32 @@ Dialog {
                 }
             } // ColumnLayoutSeedWarning
 
+            RowLayout{
+                Label{
+                    text:qsTr("Wallet Type: ")
+                }
+                ComboBox{
+                    id: comboBoxWalletType
+                    Layout.fillWidth: true
+                    textRole: "name"
+                    Component.onCompleted:{
+                        var availables = walletManager.getAvailableWalletTypes()
+                        var mod = []
+                        var defaultWalletType = walletManager.getDefaultWalletType()
+                        mod.push({name:defaultWalletType})
+                        for (var i = 0; i < availables.length; i++){
+                            var a = {name: availables[i]}
+                            if (availables[i] == defaultWalletType){
+                                continue
+                            }
+                            mod.push(a)
+                        }
+                        model = mod
+                    }
+                                    
+                }
+            }
+           
             CheckBox {
                 id: checkBoxEncryptWallet
                 text: qsTr("Encrypt wallet")
