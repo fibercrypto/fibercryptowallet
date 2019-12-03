@@ -187,6 +187,5 @@ func StrSlice2IntSlice(ss []string) ([]int, error) {
 		}
 		return is, nil
 	}
-	// FIXME i18n
-	return nil, stdErr.New("input indexes is empty")
+	return nil, nil
 }

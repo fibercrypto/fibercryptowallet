@@ -102,6 +102,15 @@ func NewSkyWallet(dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Dev
 	}
 }
 
+func getAllIndexesFromTxn(txn core.Transaction) []int {
+	inputs := txn.GetInputs()
+	indexes := make([]int, len(inputs), cap(inputs))
+	for i := 0; i < len(inputs); i++ {
+		indexes[i] = i
+	}
+	return indexes
+}
+
 func getInputs(txn core.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionInput, err error) {
 	for _, i := range indexes {
 		if i >= len(txn.GetInputs()) {
@@ -155,8 +164,8 @@ func getOutputs(tr core.Transaction, indexes []int) (inputs []*messages.SkycoinT
 }
 
 // SignTransaction using hardware wallet
-func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
-	cloned, err := tr.Clone()
+func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
+	cloned, err := txn.Clone()
 	if err != nil {
 		logrus.WithError(err).Errorln("error cloning transaction")
 		return nil, fce.ErrTxnSignFailure
@@ -167,8 +176,7 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		logrus.Errorln("unable to get cloned object as a core.Transaction")
 		return nil, fce.ErrTxnSignFailure
 	}
-	device := sw.dev
-	if device == nil {
+	if sw.dev == nil {
 		// TODO i18n
 		logrus.Errorln("error creating hardware wallet device handler")
 		return nil, fce.ErrTxnSignFailure
@@ -188,6 +196,9 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		logrus.WithError(err).Errorln("unable to get indexes slice as int slice")
 		return nil, fce.ErrTxnSignFailure
 	}
+	if len(idxs) == 0 {
+		idxs = getAllIndexesFromTxn(txn)
+	}
 	transactionInputs, err := getInputs(tr2Sign, idxs)
 	if err != nil {
 		// FIXME i18n
@@ -200,7 +211,7 @@ func (sw SkyWallet) SignTransaction(tr core.Transaction, pr core.PasswordReader,
 		logrus.WithError(err).Errorln("unable to get outputs")
 		return nil, fce.ErrTxnSignFailure
 	}
-	msg, err := device.TransactionSign(transactionInputs, transactionOutputs, skyWallet.WalletTypeDeterministic)
+	msg, err := sw.dev.TransactionSign(transactionInputs, transactionOutputs, skyWallet.WalletTypeDeterministic)
 	if err != nil {
 		logrus.WithError(err).Error("error signing transaction")
 		return nil, fce.ErrTxnSignFailure
