@@ -15,6 +15,7 @@ Item {
     property alias name: createLoadWallet.name
     property alias seed: createLoadWallet.seed
     property alias confirmedSeed: createLoadWallet.seedConfirm
+    
     Column {
         anchors.fill: parent
         spacing: 30
