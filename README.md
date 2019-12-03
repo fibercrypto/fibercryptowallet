@@ -1,5 +1,10 @@
 # FiberCrypto wallet
 
+[![Build Status](https://travis-ci.org/fibercrypto/FiberCryptoWallet.svg?branch=develop)](https://travis-ci.org/fibercrypto/FiberCryptoWallet)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.GPLv3)
+[![Coverage Status](https://coveralls.io/repos/github/fibercrypto/FiberCryptoWallet/badge.svg?branch=develop)](https://coveralls.io/github/fibercrypto/FiberCryptoWallet?branch=develop)
+
 FiberCrypto wallet is a cryptocurrency software wallet aimed at:
 
 - Provide easy-to-use interactions to users
@@ -58,6 +63,8 @@ FiberCrypto wallet supports multiple altcoins. In order to cope with this comple
 The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The front-end is programmed in [QML](http://doc.qt.io/qt-5/qmlapplications.html "QML Applications"), and the back-end in [Go](https://golang.org/ "The Go Programming Language"), using [therecipe/qt](https://github.com/therecipe/qt/ "therecipe/qt").
 
 #### Requirements
+
+Windows requires the command line tool `magick convert`, that comes with the open-source [ImageMagick](https://imagemagick.org) project in order to build the icons (not necessary as default icons are always provided)
 
 ##### Qt version
 
