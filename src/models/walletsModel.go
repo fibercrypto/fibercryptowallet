@@ -96,7 +96,7 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 				if err != nil {
 					// TODO i18n
 					logrus.WithField("msg", msg).Errorln("error decoding msg")
-					return msg, fce.ErrHwSignTransactionFailed
+					return msg, fce.ErrTxnSignFailure
 				}
 				// FIXME: this can become broken with device internationalization
 				if str == "Action cancelled by user" {
@@ -108,7 +108,7 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 				logrus.Fields{
 					"expected": nextMsg,
 					"actual": msg.Kind}).Errorln("unexpected msg type")
-			return msg, fce.ErrHwSignTransactionFailed
+			return msg, fce.ErrTxnSignFailure
 		}
 		// FIXME maybe only a MessageType_MessageType_TransactionSign
 		if msg.Kind == uint16(messages.MessageType_MessageType_Success) {
