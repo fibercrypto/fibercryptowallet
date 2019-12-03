@@ -109,8 +109,18 @@ func (signerModel *SignerModel) loadModel(wltId string) {
 		if !sameSeedAsWlt {
 			continue
 		}
-		qSigner.SetId(string(signer.GetSignerUID()))
-		qSigner.SetDescription(signer.GetSignerDescription())
+		uid, err := signer.GetSignerUID()
+		if err != nil {
+			logrus.WithError(err).Error("unable to get signer uid")
+			return
+		}
+		qSigner.SetId(string(uid))
+		desc, err := signer.GetSignerDescription()
+		if err != nil {
+			logrus.WithError(err).Error("unable to get signer description")
+			return
+		}
+		qSigner.SetDescription(desc)
 		qSigners = append(qSigners, qSigner)
 	}
 	signerModel.BeginResetModel()
