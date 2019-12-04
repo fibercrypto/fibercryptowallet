@@ -202,7 +202,11 @@ func (abm *AddrsBookModel) loadContacts() {
 }
 
 func (abm *AddrsBookModel) getSecType() int {
-	return db.GetSecType()
+	secType, err := db.GetSecType()
+	if err != nil {
+		logAddressBook.Error(err)
+	}
+	return secType
 }
 
 func (abm *AddrsBookModel) authenticate(password string) bool {

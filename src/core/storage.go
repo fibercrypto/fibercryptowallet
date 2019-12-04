@@ -20,7 +20,7 @@ type AddressBook interface {
 	GetPath() string
 	HasInit() bool
 	IsOpen() bool
-	GetSecType() int
+	GetSecType() (int, error)
 	Close() error
 	Exist(path string) bool
 }

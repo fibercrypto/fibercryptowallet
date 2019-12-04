@@ -112,7 +112,7 @@ func (ab *DB) Authenticate(password string) error {
 		return errorWrapper(fmt.Errorf("address book not has init"))
 	}
 
-	secType, err := ab.getSecTypeFromConfig()
+	secType, err := ab.GetSecType()
 	if err != nil {
 		return errorWrapper(err)
 	}
@@ -164,8 +164,11 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 
 	// The sequence is an auto-incrementing integer that is transactionally safe.
 	seq, err := bkt.NextSequence()
-	c.SetID(seq)
+	if err != nil {
+		return 0, err
+	}
 
+	c.SetID(seq)
 	if cc, ok := c.(*Contact); ok {
 		encryptedData, err := ab.encryptContact(cc)
 		if err != nil {
@@ -316,15 +319,6 @@ func (ab *DB) GetPath() string {
 	return ab.db.Path()
 }
 
-// GetSecType return database SecType
-func (ab *DB) GetSecType() int {
-	if ab.db != nil {
-		secType, _ := ab.getSecTypeFromConfig()
-		return secType
-	}
-	return -1
-}
-
 // Close shuts down the database.
 func (ab *DB) Close() error {
 	if err := ab.db.Close(); err != nil {
@@ -335,7 +329,11 @@ func (ab *DB) Close() error {
 
 // HasInit verify if database has been initialize
 func (ab *DB) HasInit() bool {
-	tx, _ := ab.db.Begin(false)
+	tx, err := ab.db.Begin(false)
+	if err != nil {
+		logrus.Error(err)
+		return false
+	}
 	defer func() {
 		if err := tx.Rollback(); err != nil {
 			logrus.Fatal(err)
@@ -357,11 +355,15 @@ func (ab *DB) IsOpen() bool {
 
 // Exist verify if database file exist
 func (ab *DB) Exist(path string) bool {
-	ok, _ := file.Exists(path)
+	ok, err := file.Exists(path)
+	if err != nil {
+		logrus.Error(err)
+		return false
+	}
 	return ok
 }
 
-func (ab *DB) getSecTypeFromConfig() (int, error) {
+func (ab *DB) GetSecType() (int, error) {
 	tx, err := ab.db.Begin(false)
 	if err != nil {
 		return -1, err
@@ -436,7 +438,7 @@ func (ab *DB) getHashFromConfig() ([]byte, error) {
 
 // encryptContact encrypt a contact using a password with AES-GCM.
 func (ab *DB) encryptContact(c *Contact) ([]byte, error) {
-	secType, err := ab.getSecTypeFromConfig()
+	secType, err := ab.GetSecType()
 	if err != nil {
 		return nil, err
 	}
@@ -458,7 +460,7 @@ func (ab *DB) encryptContact(c *Contact) ([]byte, error) {
 
 // Decrypt a cipher message using a password with AES-GCM and return a Contact.
 func (ab *DB) decryptContact(cipherMsg []byte) (core.Contact, error) {
-	secType, err := ab.getSecTypeFromConfig()
+	secType, err := ab.GetSecType()
 	if err != nil {
 		return nil, err
 	}

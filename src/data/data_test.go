@@ -814,7 +814,10 @@ func TestDB_Init(t *testing.T) {
 			}
 
 			if tt.name == "Two Init" {
-				_ = addressBook.Init(tt.args.secType, tt.args.password)
+				err = addressBook.Init(tt.args.secType, tt.args.password)
+				if err != nil {
+					t.Error(err)
+				}
 			}
 
 			defer CloseTest(t, addressBook)
