@@ -164,7 +164,7 @@ RowLayout {
 
             CustomMenuItem {
                 text: qsTr("&About FiberCrypto")
-                iconSource: "qrc:/images/resources/images/icons/appIcon.png"
+                iconSource: "qrc:/images/resources/images/icons/appIcon/appIcon.png"
 
                 onClicked: aboutRequested()
             }
