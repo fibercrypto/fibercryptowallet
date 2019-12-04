@@ -1,8 +1,8 @@
 package models
 
 import (
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 
 	"github.com/therecipe/qt/qml"
 

@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/testsuite"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/testsuite"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
