@@ -1,9 +1,10 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	"os"
 	"testing"
+
+	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
@@ -13,6 +14,7 @@ import (
 var global_mock *SkycoinApiMock
 
 var logModelTest = logging.MustGetLogger("Skycoin Model Test")
+
 // CleanGlobalMock util when is needed to change the values of an
 
 // API method used in other test with different values.

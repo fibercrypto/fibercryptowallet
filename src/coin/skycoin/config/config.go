@@ -1,4 +1,4 @@
-package skycoin
+package config
 
 import (
 	"encoding/json"
@@ -11,8 +11,8 @@ import (
 )
 
 const (
-	LocalWallet = iota
-	RemoteWallet
+	LocalWallet               = "local"
+	RemoteWallet              = "remote"
 	SectionName               = "skycoin"
 	SettingPathToNode         = "node"
 	SettingPathToWalletSource = "walletSource"
@@ -31,9 +31,9 @@ func getMultiPlatformUserDirectory() string {
 	return filepath.Join(usr.HomeDir, string(os.PathSeparator), ".skycoin", string(os.PathSeparator), "wallets")
 }
 
-func registerConfig() error {
+func RegisterConfig() error {
 	cm := local.GetConfigManager()
-	node := map[string]string{"node": "https://staging.node.skycoin.net"}
+	node := map[string]string{"address": "https://staging.node.skycoin.net"}
 	nodeBytes, err := json.Marshal(node)
 	if err != nil {
 		return err
@@ -41,7 +41,7 @@ func registerConfig() error {
 	nodeOpt := local.NewOption(SettingPathToNode, []string{}, false, string(nodeBytes))
 	walletsDefaultDirectory := getMultiPlatformUserDirectory()
 	wltSrc := &walletSource{
-		id:     1,
+		id:     "1",
 		Tp:     string(LocalWallet),
 		Source: walletsDefaultDirectory,
 	}
@@ -56,7 +56,7 @@ func registerConfig() error {
 	return nil
 }
 
-func getOption(path string) (string, error) {
+func GetOption(path string) (string, error) {
 	stringList := strings.Split(path, "/")
 	return sectionManager.GetValue(stringList[len(stringList)-1], stringList[:len(stringList)-1])
 }
@@ -65,7 +65,7 @@ func getValues(prefix string) ([]string, error) {
 	return sectionManager.GetValues(strings.Split(prefix, "/"))
 }
 
-func getWalletSources() ([]*walletSource, error) {
+func GetWalletSources() ([]*walletSource, error) {
 	wltsString, err := getValues(SettingPathToWalletSource)
 	if err != nil {
 		return nil, err
@@ -82,7 +82,7 @@ func getWalletSources() ([]*walletSource, error) {
 }
 
 type walletSource struct {
-	id     int
+	id     string
 	Tp     string `json:"SourceType"`
 	Source string `json:"Source"`
 }

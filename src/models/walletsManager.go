@@ -12,6 +12,7 @@ import (
 
 	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
@@ -82,7 +83,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
-		walletM.altManager = core.LoadAltcoinManager()
+		walletM.altManager = local.LoadAltcoinManager()
 
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
@@ -112,6 +113,9 @@ func (walletM *WalletManager) updateWalletEnvs() {
 
 	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
+	if walletsEnvs == nil {
+		logWalletManager.Error("Error loading wallet envs")
 	}
 	walletM.WalletEnv = walletsEnvs[0]
 }
@@ -273,7 +277,7 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 }
 func (walletM *WalletManager) broadcastTxn(txn *QTransaction) bool {
 	logWalletManager.Info("Broadcasting transaction")
-	altManager := core.LoadAltcoinManager()
+	altManager := local.LoadAltcoinManager()
 	plug, _ := altManager.LookupAltcoinPlugin(params.SkycoinTicker)
 	pex, err := plug.LoadPEX("MainNet")
 	if err != nil {
@@ -469,7 +473,8 @@ func (walletM *WalletManager) signTxn(id, source, password string, index []int, 
 		logWalletManager.Warn("Couldn't load wallet to Sign transaction")
 		return nil
 	}
-	txn, err := wlt.Sign(qTxn.txn, core.UID(source), func(message string) (string, error) {
+	signer := util.LookupSignerByUID(wlt, core.UID(source))
+	txn, err := wlt.Sign(qTxn.txn, signer, func(message string) (string, error) {
 		return password, nil
 	}, nil) // TODO Get index for sign specific txn indexes
 	if err != nil {

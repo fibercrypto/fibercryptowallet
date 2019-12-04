@@ -45,7 +45,8 @@
         <file>resources/images/icons/license.svg</file>
         <file>resources/images/icons/qt_logo_green_rgb.svg</file>
         <file>resources/images/icons/qt_logo_green_rgb_256x256.png</file>
-        <file>resources/images/icons/appIcon.png</file>
+        <file>resources/images/icons/appIcon/splash.png</file>
+        <file>resources/images/icons/appIcon/appIcon.png</file>
         <file>resources/images/icons/system-language.svg</file>
         <file>resources/images/icons/country-flags/abkhazia.svg</file>
         <file>resources/images/icons/country-flags/afghanistan.svg</file>

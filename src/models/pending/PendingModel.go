@@ -1,13 +1,13 @@
 package pending
 
 import (
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util"
 	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
 )
-
 
 var logPendingTxn = logging.MustGetLogger("modelsPendingTransaction")
 
@@ -43,7 +43,7 @@ func (model *PendingTransactionList) init() {
 	model.SetLoading(true)
 	model.ConnectCleanPendingTxns(model.cleanPendingTxns)
 
-	altManager := core.LoadAltcoinManager()
+	altManager := local.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
