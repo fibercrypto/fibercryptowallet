@@ -17,6 +17,7 @@ LICENSE			:= GPLv3
 COPYRIGHT		:= Copyright © 2019 $(ORG_NAME)
 
 UNAME_S = $(shell uname -s)
+OSNAME = $(shell echo $(UNAME_S) | tr A-Z a-z)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
 ## In future use as a parameter tu make command.
@@ -55,14 +56,47 @@ else
 	endif
 endif
 
+# Files
+GIT := $(shell which git)
+ifeq ($(GIT),)
+  ALLFILES    := $(shell find . type f | grep -v .git | grep -v vendor)
+else
+	GIT_BRANCH  := $(shell git rev-parse --abbrev-ref HEAD)
+	ALLFILES    := $(shell git ls-tree -r $(GIT_BRANCH) --name-only | grep -v vendor)
+endif
+
+GOFILES    := $(shell echo "$(ALLFILES)" | grep  '.go$$')
+QRCFILES   := $(shell echo "$(ALLFILES)" | grep  '.qrc$$')
+QMLFILES   := $(shell echo "$(ALLFILES)" | grep  '.qml$$')
+TSFILES    := $(shell echo "$(ALLFILES)" | grep  '.ts$$')
+SVGFILES   := $(shell echo "$(ALLFILES)" | grep  '.svg$$')
+JSFILES    := $(shell echo "$(ALLFILES)" | grep  '.js$$')
+PNGFILES   := $(shell echo "$(ALLFILES)" | grep  '.png$$')
+OTFFILES   := $(shell echo "$(ALLFILES)" | grep  '.otf$$')
+ICNSFILES  := $(shell echo "$(ALLFILES)" | grep  '.icns$$')
+ICOFILES   := $(shell echo "$(ALLFILES)" | grep  '.ico$$')
+RCFILES    := $(shell echo "$(ALLFILES)" | grep  '.rc$$')
+PLISTFILES := $(shell echo "$(ALLFILES)" | grep  'Info.plist$$')
+QTCONFFILES := $(shell echo "$(ALLFILES)" | grep  'qtquickcontrols2.conf$$')
+
+QMLFILES      := $(shell echo "$(QMLFILES) $(JSFILES)")
+QTFILES       := $(shell echo "$(QRCFILES) $(TSFILES) $(PLISTFILES) $(QTCONFFILES)")
+RESOURCEFILES := $(shell echo "$(SVGFILES) $(PNGFILES) $(OTFFILES) $(ICNSFILES) $(ICOFILES) $(RCFILES)")
+SRCFILES      := $(shell echo "$(QTFILES) $(RESOURCEFILES) $(GOFILES)")
+
+BINPATH_Linux      := deploy/linux/FiberCryptoWallet
+BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
+BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
+BINPATH            := $(BINPATH_$(UNAME_S))
+
 deps: ## Add dependencies
 	dep ensure
 	rm -rf rm -rf vendor/github.com/therecipe
 
 # Targets
-run: build ## Run FiberCrypto Wallet.
+run: $(BINPATH) ## Run FiberCrypto Wallet.
 	@echo "Running $(APP_NAME)..."
-	@./deploy/linux/FiberCryptoWallet
+	@$(BINPATH)
 
 install-deps-no-envs: ## Install therecipe/qt with -tags=no_env set
 	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
@@ -136,25 +170,38 @@ build-icon-Linux: ## Build the application icon in Linux
 build-icon: build-icon-$(OS) ## Build the application icon (Windows_NT and Darwin systems)
 	@echo "Builded $(OS) icon..."
 
-build-Linux: ## Build FiberCryptoWallet in Windows
-	@echo "Building on Linux"
+build-qt:
+	@echo "Building on $(UNAME_S)"
+	@echo "Building $(APP_NAME)..."
+# Add the flag `-quickcompiler` when making a release
+	qtdeploy build $(DEFAULT_TARGET)
+	@echo "Done."
 
-build-Windows_NT: build-icon ## Build FiberCrypto Wallet in Windows
+$(BINPATH_Linux): $(SRCFILES)
+	make build-qt
+
+build-res-Windows_NT: $(RC_FILE)
 	@echo "Building on windows"
 	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
 
+$(BINPATH_Windows_NT): $(SRCFILES)
+	make build-icon
+	make build-res-Windows_NT
+	make build-qt
 
-build-Darwin: build-icon ## Build FiberCrypto Wallet in Darwin
+build-res-Darwin: $(PLIST) $(APP_ICON_PATH)/appIcon.icns
 	@echo "Building on Darwin"
 	mkdir -p "$(DARWIN_RES)/Content/Resources"
 	cp "$(PLIST)" "$(DARWIN_RES)/Content/"
 	cp "$(APP_ICON_PATH)/appIcon.icns" "$(DARWIN_RES)/Content/"
 
-build: build-$(OS)  ## Build FiberCrypto Wallet
-	@echo "Building $(APP_NAME)..."
-# 	Add the flag `-quickcompiler` when making a release
-	qtdeploy build $(DEFAULT_TARGET)
-	@echo "Done."
+$(BINPATH_Darwin): $(SRCFILES)
+	make build-icon
+	make build-res-Darwin
+	make build-qt
+
+build: $(BINPATH)  ## Build FiberCrypto Wallet
+	@echo "Output => $(BINPATH)"
 
 prepare-release: ## Change the resources in the app and prepare to release the app
 	./.travis/setup_release.sh
