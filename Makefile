@@ -10,7 +10,7 @@
 # Application info (for dumping)
 ORG_DOMAIN		:= simelo.tech.org
 ORG_NAME		:= Simelo.Tech
-APP_NAME		:= FiberCrypto Wallet
+APP_NAME		:= FiberCryptoWallet
 APP_DESCRIPTION	:= Multi-coin cryptocurrency wallet
 APP_VERSION		:= 0.27.0
 LICENSE			:= GPLv3
@@ -132,7 +132,7 @@ install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
 
 build-docker: ## Build project using docker
-	@echo "Building FiberCrypto Wallet..."
+	@echo "Building $(APP_NAME)..."
 	qtdeploy -docker build $(DEFAULT_TARGET)
 	@echo "Done."
 

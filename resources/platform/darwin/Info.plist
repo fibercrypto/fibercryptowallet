@@ -11,7 +11,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.simelo.FiberCryptoWallet</string>
 	<key>CFBundleName</key>
-	<string>FiberCrypto Wallet</string>
+	<string>FiberCryptoWallet</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
