@@ -2,7 +2,7 @@ package util
 
 import (
 	"errors"
-	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"strconv"
 )
