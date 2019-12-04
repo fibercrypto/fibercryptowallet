@@ -1,9 +1,6 @@
 package util
 
 import (
-	"errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 	"strconv"
 )
 
@@ -12,17 +9,6 @@ func Min(a, b int) int {
 		return a
 	}
 	return b
-}
-
-// CoreAddressFromString returns a core.Address if match with string address.
-// If the poolSection parameter not match with any address type returns 'poolSection not match' error.
-func CoreAddressFromString(addrs, poolSection string) (core.Address, error) {
-	switch poolSection {
-	case "skycoin":
-		return skycoin.NewSkycoinAddress(addrs)
-	default:
-		return nil, errors.New("poolSection not match")
-	}
 }
 
 func GetCoinValue(value string, ticker string) (uint64, error) {
