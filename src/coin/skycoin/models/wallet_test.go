@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"math"

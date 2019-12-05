@@ -2,8 +2,8 @@ package parseutil
 
 import (
 	"errors"
-	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
 // AddressFromString returns a core.Address if match with string address.

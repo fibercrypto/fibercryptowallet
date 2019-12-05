@@ -2,7 +2,7 @@ package skycoin
 
 import (
 	"encoding/hex"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/base58"
 	"github.com/stretchr/testify/assert"
