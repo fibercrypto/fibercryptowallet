@@ -30,14 +30,15 @@ func NewSkycoinAddressIterator(addresses []core.Address) *SkycoinAddressIterator
 	return &SkycoinAddressIterator{addresses: addresses, current: -1}
 }
 
-func NewSkycoinAddress(addrStr string) (core.Address, error) {
+func NewSkycoinAddress(addrStr string, isBip32 bool) (core.Address, error) {
 	var skyAddr cipher.Address
 	var err error
 	if skyAddr, err = cipher.DecodeBase58Address(addrStr); err != nil {
 		return nil, err
 	}
+
 	return &SkycoinAddress{
-		isBip32:     false,
+		isBip32:     isBip32,
 		address:     skyAddr,
 		poolSection: PoolSection,
 	}, nil
@@ -50,7 +51,7 @@ type SkycoinAddress struct { // Implements Address and CryptoAccount interfaces
 }
 
 func (addr *SkycoinAddress) IsBip32() bool {
-	return false
+	return addr.isBip32
 }
 
 func (addr *SkycoinAddress) String() string {

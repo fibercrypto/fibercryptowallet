@@ -66,7 +66,7 @@ func TestNewSkycoinAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewSkycoinAddress(tt.args.addrStr)
+			got, err := NewSkycoinAddress(tt.args.addrStr, false)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewSkycoinAddress() error = %v, wantErr %v", err, tt.wantErr)
@@ -103,13 +103,13 @@ func TestNewSkycoinAddressIterator(t *testing.T) {
 	}{
 		{name: "empty", args: args{
 			addresses: []string{},
-		},},
+		}},
 		{name: "one-address", args: args{
 			addresses: []string{"2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt"},
-		},},
+		}},
 		{name: "two-address", args: args{
 			addresses: []string{"2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
-		},},
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -119,7 +119,7 @@ func TestNewSkycoinAddressIterator(t *testing.T) {
 			} else {
 				var args []core.Address
 				for e := range tt.args.addresses {
-					addrs, err := NewSkycoinAddress(tt.args.addresses[e])
+					addrs, err := NewSkycoinAddress(tt.args.addresses[e], false)
 					assert.NoError(t, err)
 					args = append(args, addrs)
 				}
@@ -143,7 +143,7 @@ func TestSkycoinAddress_Bytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			addr, err := NewSkycoinAddress(tt.address)
+			addr, err := NewSkycoinAddress(tt.address, false)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.address, addr.String())
 		})
@@ -152,7 +152,7 @@ func TestSkycoinAddress_Bytes(t *testing.T) {
 
 func TestSkycoinAddress_Verify(t *testing.T) {
 	addrsFromString := func(s string) core.Address {
-		skyAddrs, err := NewSkycoinAddress(s)
+		skyAddrs, err := NewSkycoinAddress(s, false)
 		assert.NoError(t, err)
 		return skyAddrs
 	}

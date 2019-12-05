@@ -11,7 +11,7 @@ import (
 func CoreAddressFromString(addrs, poolSection string) (core.Address, error) {
 	switch poolSection {
 	case "skycoin":
-		return skycoin.NewSkycoinAddress(addrs)
+		return skycoin.NewSkycoinAddress(addrs, false)
 	default:
 		return nil, errors.New("poolSection not match")
 	}
