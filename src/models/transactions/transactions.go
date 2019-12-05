@@ -1,7 +1,7 @@
 package transactions
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
+	"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	qtcore "github.com/therecipe/qt/core"
 )
 
