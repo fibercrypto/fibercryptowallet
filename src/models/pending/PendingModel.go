@@ -1,11 +1,11 @@
 package pending
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models" //callable as skycoin
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models" //callable as skycoin
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
 )
 

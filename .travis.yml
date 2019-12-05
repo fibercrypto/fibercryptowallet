@@ -4,7 +4,7 @@ go:
 - 1.12.6
 services:
 - docker
-go_import_path: github.com/fibercrypto/FiberCryptoWallet
+go_import_path: github.com/fibercrypto/fibercryptowallet
 matrix:
   include:
   - stage: RPI

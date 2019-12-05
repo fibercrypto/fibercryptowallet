@@ -3,9 +3,9 @@ package skycoin //nolint goimports
 import (
 	"testing"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 
-	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
+	util "github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/stretchr/testify/require"
 )
 

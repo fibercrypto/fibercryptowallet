@@ -1,7 +1,7 @@
 package history
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
+	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
 	"github.com/therecipe/qt/core"
 )
 
