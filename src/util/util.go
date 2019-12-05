@@ -181,8 +181,8 @@ func StrSlice2IntSlice(ss []string) ([]int, error) {
 			var err error
 			is[i], err = strconv.Atoi(strIdx)
 			if err != nil {
-				// FIXME named error var
-				return nil, stdErr.New("errors.ErrIntegerInputsRequired")
+				logrus.WithError(err).Errorf("unable to get %s as integer\n", strIdx)
+				return nil, errors.ErrIntegerInputsRequired
 			}
 		}
 		return is, nil

@@ -3,6 +3,9 @@ package hardware
 import (
 	"encoding/hex"
 	"errors"
+	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/skycoin/skycoin/src/cipher"
+	"github.com/skycoin/skycoin/src/coin"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
@@ -111,38 +114,33 @@ func getAllIndexesFromTxn(txn core.Transaction) []int {
 	return indexes
 }
 
-func getInputs(txn core.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionInput, err error) {
-	for _, i := range indexes {
-		if i >= len(txn.GetInputs()) {
-			return nil, fce.ErrInvalidIndex
+func findValInSlice(val int, arr []int) bool {
+	for i := 0; i < len(arr); i++ {
+		if arr[i] == val {
+			return true
 		}
-		input := txn.GetInputs()[i]
+	}
+	return false
+}
+
+func getInputs(txn coin.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionInput, err error) {
+	for idx, input := range txn.In {
 		var transactionInput messages.SkycoinTransactionInput
-		transactionInput.HashIn = proto.String(input.GetId())
-		transactionInput.Index = proto.Uint32(uint32(i))
+		transactionInput.HashIn = proto.String(input.String())
+		if findValInSlice(idx, indexes) {
+			transactionInput.Index = proto.Uint32(uint32(idx))
+		}
 		inputs = append(inputs, &transactionInput)
 	}
 	return inputs, nil
 }
 
-func getOutputs(tr core.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionOutput, err error) {
-	for _, i := range indexes {
-		if i >= len(tr.GetOutputs()) {
-			return nil, fce.ErrInvalidIndex
-		}
-		output := tr.GetOutputs()[i]
+func getOutputs(tr coin.Transaction) (inputs []*messages.SkycoinTransactionOutput, err error) {
+	for _, output := range tr.Out {
 		var transactionOutput messages.SkycoinTransactionOutput
-		transactionOutput.Address = proto.String(output.GetId())
-		coin, err := output.GetCoins(params.SkycoinTicker)
-		if err != nil {
-			return nil, err
-		}
-		transactionOutput.Coin = proto.Uint64(uint64(coin))
-		coinHours, err := output.GetCoins(params.CoinHoursTicker)
-		if err != nil {
-			return nil, err
-		}
-		transactionOutput.Hour = proto.Uint64(uint64(coinHours))
+		transactionOutput.Address = proto.String(output.Address.String())
+		transactionOutput.Coin = proto.Uint64(output.Coins)
+		transactionOutput.Hour = proto.Uint64(output.Hours)
 		// FIXME: should be possible to send the address index
 		// find index to check if it is determined as a owned address
 		//	transactionOutput.AddressIndex = proto.Uint32(uint32(addressIndex[i]))
@@ -157,55 +155,77 @@ func getOutputs(tr core.Transaction, indexes []int) (inputs []*messages.SkycoinT
 		//      return nil, errors.New("addrIndex should be greater than 0")
 		// }
 		//transactionOutput.AddressIndex = proto.Uint32(uint32(addrIndex))
-		transactionOutput.Address = proto.String(output.GetAddress().String())
 		inputs = append(inputs, &transactionOutput)
 	}
 	return
 }
 
-// SignTransaction using hardware wallet
-func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
-	cloned, err := txn.Clone()
+func readableTxn2Transaction(txn skytypes.ReadableTxn) (*coin.Transaction, error) {
+	cTxn, err := txn.ToCreatedTransaction()
 	if err != nil {
-		logrus.WithError(err).Errorln("error cloning transaction")
-		return nil, fce.ErrTxnSignFailure
+		return nil, err
 	}
-	tr2Sign, ok := cloned.(core.Transaction)
-	if !ok {
-		// FIXME i18n
-		logrus.Errorln("unable to get cloned object as a core.Transaction")
-		return nil, fce.ErrTxnSignFailure
-	}
-	if sw.dev == nil {
-		// TODO i18n
-		logrus.Errorln("error creating hardware wallet device handler")
-		return nil, fce.ErrTxnSignFailure
-	}
-	//defer device.Close()
-	isFullySigned, err := tr2Sign.IsFullySigned()
+	skyTxn, err := cTxn.ToTransaction()
 	if err != nil {
-		return tr2Sign, err
+		return nil, err
 	}
-	if isFullySigned {
-		// FIXME i18n or named var, this should be used in tests assertions too
-		return nil, errors.New("Transaction is fully signed")
-	}
-	idxs, err := util.StrSlice2IntSlice(indexes)
+	return skyTxn, nil
+}
+
+func rawTxn2Transaction (txn *skycoin.SkycoinUninjectedTransaction) (*coin.Transaction, error) {
+	buf, err := txn.EncodeSkycoinTransaction()
 	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to get indexes slice as int slice")
+
+	}
+	skyTxn, err := coin.DeserializeTransaction(buf)
+	if err != nil {
+
+	}
+	return &skyTxn, nil
+}
+
+func toTransaction(txn core.Transaction) (*coin.Transaction, error) {
+	if rTxn, isReadableTxn := txn.(skytypes.ReadableTxn); isReadableTxn {
+		t, err := readableTxn2Transaction(rTxn)
+		if err != nil {
+			logrus.WithError(err).Errorln("error transforming core.Transaction to coin.Transaction")
+			return nil, fce.ErrInvalidTypeAssertion
+		}
+		return t, nil
+	} else {
+		// Raw transaction
+		unTxn, ok := txn.(*skycoin.SkycoinUninjectedTransaction)
+		if !ok {
+			// FIXME what error?
+			logrus.Errorln("error transforming core.Transaction to coin.Transaction")
+			return nil, fce.ErrInvalidTypeAssertion
+		}
+		t, err := rawTxn2Transaction(unTxn)
+		if err != nil {
+			logrus.WithError(err).Errorln("error transforming core.Transaction to coin.Transaction")
+			return nil, fce.ErrInvalidTypeAssertion
+		}
+		return t, nil
+	}
+}
+
+func coin2Core(txn *coin.Transaction, fee uint64) (core.Transaction, error) {
+	unTxn, err := skycoin.NewUninjectedTransaction(txn, fee)
+	if err != nil {
+		logrus.WithError(err).Errorln("unable to create uninjected transaction")
 		return nil, fce.ErrTxnSignFailure
 	}
-	if len(idxs) == 0 {
-		idxs = getAllIndexesFromTxn(txn)
-	}
-	transactionInputs, err := getInputs(tr2Sign, idxs)
+	return unTxn, nil
+}
+
+func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int) (*coin.Transaction, error) {
+	transactionInputs, err := getInputs(*txn, idxs)
 	if err != nil {
 		// FIXME i18n
 		logrus.WithError(err).Errorln("unable to get inputs")
 		return nil, fce.ErrTxnSignFailure
 	}
-	transactionOutputs, err := getOutputs(tr2Sign, idxs)
+	transactionOutputs, err := getOutputs(*txn)
 	if err != nil {
 		// FIXME i18n
 		logrus.WithError(err).Errorln("unable to get outputs")
@@ -254,18 +274,34 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 			logrus.WithError(err).Error("error decoding device response")
 			return nil, fce.ErrTxnSignFailure
 		}
-		for idx, idxSign := range idxs {
-			sign := signatures[idx]
-			b, err := hex.DecodeString(sign)
+		if txn.Sigs == nil {
+			logrus.Warnln("nil slice in transaction signatures detected, creating a new one")
+			txn.Sigs = make([]cipher.Sig, len(transactionInputs))
+		}
+		if len(signatures) != len(transactionInputs) {
+			logrus.WithFields(
+				logrus.Fields{
+					"signatures_len": len(signatures),
+					"transactionInputs_len": len(transactionInputs)}).Errorln("signatures response len should match inputs one")
+			return nil, fce.ErrTxnSignFailure
+		}
+		for idx, sign := range signatures {
+			if !findValInSlice(idx, idxs) {
+				// NOTE only sign required inputs
+				continue
+			}
+			buf, err := hex.DecodeString(sign)
 			if err != nil {
-				logrus.WithError(err).Errorln("error decoding signature")
+				logrus.WithError(err).Error("unable to decode signature")
 				return nil, fce.ErrTxnSignFailure
 			}
-			err = tr2Sign.AddSignature(uint64(idxSign), b)
+			sgn, err := cipher.NewSig(buf)
 			if err != nil {
-				logrus.WithError(err).Errorln("error setting signature to transaction")
-				return nil, fce.ErrTxnSignFailure
+				// FIXME i18n
+				logrus.WithError(err).Errorln("unable to get Skycoin address from buffer")
+				return nil, errors.New("unable to get Skycoin address from buffer")
 			}
+			txn.Sigs[idx] = sgn
 		}
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
 		msgStr, err := skyWallet.DecodeFailMsg(msg)
@@ -280,7 +316,71 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 		logrus.WithField("msg", msg).Errorln("unexpected error signing transaction with hw")
 		return nil, fce.ErrTxnSignFailure
 	}
-	return tr2Sign, nil
+	return txn, nil
+}
+
+func (sw SkyWallet) signTransaction(txn core.Transaction, idxs []int) (core.Transaction, error) {
+	fee, err := txn.ComputeFee(params.CoinHoursTicker)
+	if err != nil {
+		logrus.WithError(err).Errorln("unable to get fee")
+		return nil, fce.ErrTxnSignFailure
+	}
+	t, err := toTransaction(txn)
+	if err != nil {
+		logrus.WithError(err).Errorln("unable to get txn as coin.Transaction")
+		return nil, fce.ErrTxnSignFailure
+	}
+	signed, err := sw.signTxn(t, idxs)
+	if err != nil {
+		logrus.WithError(err).Errorln("unable to sign transaction")
+		return nil, fce.ErrTxnSignFailure
+	}
+	return coin2Core(signed, fee)
+}
+
+// SignTransaction using hardware wallet
+func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
+	cloned, err := txn.Clone()
+	if err != nil {
+		logrus.WithError(err).Errorln("error cloning transaction")
+		return nil, fce.ErrTxnSignFailure
+	}
+	tr2Sign, ok := cloned.(core.Transaction)
+	if !ok {
+		// FIXME i18n
+		logrus.Errorln("unable to get cloned object as a core.Transaction")
+		return nil, fce.ErrTxnSignFailure
+	}
+	if sw.dev == nil {
+		// TODO i18n
+		logrus.Errorln("error creating hardware wallet device handler")
+		return nil, fce.ErrTxnSignFailure
+	}
+	//defer device.Close()
+	isFullySigned, err := tr2Sign.IsFullySigned()
+	if err != nil {
+		return tr2Sign, err
+	}
+	if isFullySigned {
+		// FIXME i18n or named var, this should be used in tests assertions too
+		return nil, errors.New("Transaction is fully signed")
+	}
+	idxs, err := util.StrSlice2IntSlice(indexes)
+	if err != nil {
+		// FIXME i18n
+		logrus.WithError(err).Errorln("unable to get indexes slice as int slice")
+		return nil, fce.ErrTxnSignFailure
+	}
+	if len(idxs) == 0 {
+		logrus.Debugln("not inputs to sign specified, assuming all")
+		idxs = getAllIndexesFromTxn(txn)
+	}
+	signedTxn, err := sw.signTransaction(tr2Sign, idxs)
+	if err != nil {
+		logrus.WithError(err).Errorln("error signing transaction with device")
+		return nil, fce.ErrTxnSignFailure
+	}
+	return signedTxn, nil
 }
 
 func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
