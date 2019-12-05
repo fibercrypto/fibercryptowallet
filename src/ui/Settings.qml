@@ -95,7 +95,7 @@ Page {
                     selectByMouse: true
                     placeholderText: qsTr("Local wallet path")
                 }
-                
+
                 RowLayout {
                     Layout.fillWidth: true
 
@@ -123,22 +123,12 @@ Page {
             ColumnLayout {
                 anchors.fill: parent
 
-                RowLayout {
+                TextField {
+                    id: textFieldNodeUrl
+
+                    selectByMouse: true
                     Layout.fillWidth: true
-
-                    Label { text: qsTr("Node URL:"); font.bold: true }
-                    TextField {
-                        id: textFieldNodeUrl
-
-                        selectByMouse: true
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.IBeamCursor
-                            acceptedButtons: Qt.NoButton
-                        }
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Default to ") + savedNodeUrl.toString()
-                    }
+                    placeholderText: qsTr("Node URL")
                 }
             } // ColumnLayout
         } // GroupBox (network settings)
