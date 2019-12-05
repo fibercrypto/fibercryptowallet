@@ -6,13 +6,13 @@ import (
 	"github.com/fibercrypto/FiberCryptoWallet/src/core"
 )
 
-// CoreAddressFromString returns a core.Address if match with string address.
-// If the poolSection parameter not match with any address type returns 'poolSection not match' error.
-func CoreAddressFromString(addrs, poolSection string) (core.Address, error) {
-	switch poolSection {
+// AddressFromString returns a core.Address if match with string address.
+// If the coinTicket parameter not match with any address type returns 'coinTicket not match' error.
+func AddressFromString(addrs, coinTicket string) (core.Address, error) {
+	switch coinTicket {
 	case "skycoin":
 		return skycoin.NewSkycoinAddress(addrs, false)
 	default:
-		return nil, errors.New("poolSection not match")
+		return nil, errors.New("coinTicket not match")
 	}
 }
