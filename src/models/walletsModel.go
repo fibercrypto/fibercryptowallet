@@ -1,15 +1,15 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
+	"github.com/fibercrypto/fibercryptowallet/src/hardware"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
-	fce "github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/sirupsen/logrus"
-	wlcore "github.com/fibercrypto/FiberCryptoWallet/src/main"
+	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 )
 

@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"os"
 	"testing"
 

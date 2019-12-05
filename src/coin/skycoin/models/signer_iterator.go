@@ -1,6 +1,6 @@
 package skycoin
 
-import "github.com/fibercrypto/FiberCryptoWallet/src/core"
+import "github.com/fibercrypto/fibercryptowallet/src/core"
 
 type SignerIterator struct { //Implements TxnSignerIterator interfaces
 	current   int

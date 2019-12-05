@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/gob"
 	stdErr "errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/sirupsen/logrus"
 	"strconv"
 )

@@ -1,10 +1,10 @@
 # Contributing to FiberCrypto projects
 We love your input! We want to make contributing to this project as easy and transparent as possible, whether it's:
 
-- Submitting a [bug report](https://github.com/fibercrypto/FiberCryptoWallet/issues/new?labels=bug&template=bug_report.md)
+- Submitting a [bug report](https://github.com/fibercrypto/fibercryptowallet/issues/new?labels=bug&template=bug_report.md)
 - Discussing the current state of the code on [Blockchain Cuba channel](https://t.me/BlockchainCuba)
-- Submitting a [new Github pull request](https://github.com/fibercrypto/FiberCryptoWallet/pull/new) with a fix
-- Proposing new [features requests](https://github.com/fibercrypto/FiberCryptoWallet/issues/new?labels=feature&template=feature_request.md)
+- Submitting a [new Github pull request](https://github.com/fibercrypto/fibercryptowallet/pull/new) with a fix
+- Proposing new [features requests](https://github.com/fibercrypto/fibercryptowallet/issues/new?labels=feature&template=feature_request.md)
 - Becoming a maintainer
 
 ## We Develop with Github
@@ -26,8 +26,8 @@ Pull requests are the best way to propose changes to the codebase (we use [Githu
 ## Any contributions you make will be under the GPLv3 Software License
 In short, when you submit code changes, your submissions are understood to be under the same [GPLv3 License](https://choosealicense.com/licenses/gpl-3.0/) that covers the project. Feel free to contact the maintainers if that's a concern.
 
-## Report bugs using Github's [issues](https://github.com/fibercrypto/FiberCryptoWallet/issues)
-We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/fibercrypto/FiberCryptoWallet/issues/new/choose); it's that easy!
+## Report bugs using Github's [issues](https://github.com/fibercrypto/fibercryptowallet/issues)
+We use GitHub issues to track public bugs. Report a bug by [opening a new issue](https://github.com/fibercrypto/fibercryptowallet/issues/new/choose); it's that easy!
 
 ## Write bug reports with detail, background, and sample code
 [This is an example](http://stackoverflow.com/q/12488905/180626) of a bug report that we think it's not a bad model. Here's [another example from Craig Hockenberry](http://www.openradar.me/11905408), an app developer whom we greatly respect.

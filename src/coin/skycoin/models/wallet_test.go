@@ -1,8 +1,8 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/hardware"
-	integrationtestutil "github.com/fibercrypto/FiberCryptoWallet/test/integration/util"
+	"github.com/fibercrypto/fibercryptowallet/src/hardware"
+	integrationtestutil "github.com/fibercrypto/fibercryptowallet/test/integration/util"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	messages "github.com/fibercrypto/skywallet-protob/go"

@@ -1,11 +1,11 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/sirupsen/logrus"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
-	wlcore "github.com/fibercrypto/FiberCryptoWallet/src/main"
+	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
 const (
