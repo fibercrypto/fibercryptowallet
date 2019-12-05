@@ -35,12 +35,7 @@ Page {
     property alias nodeUrl: textFieldNodeUrl.text
 
     Component.onCompleted: {
-        walletPath = savedWalletPath
-        nodeUrl = savedNodeUrl
-        isLocalWalletEnv = savedIsLocalWalletEnv
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        console.log("DEFAULT: " + defaultWalletPath + '\n' + defaultIsLocalWalletEnv + '\n' + defaultNodeUrl)
-        console.log("SAVED: " + savedWalletPath + '\n' + savedIsLocalWalletEnv + '\n' + savedNodeUrl)
+        loadSavedSettings()
     }
 
     function saveCurrentSettings() {
@@ -48,13 +43,23 @@ Page {
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
 
-        getCurrentSettings()
+        loadSavedSettings()
     }
 
-    function getCurrentSettings() {
+    function loadSavedSettings() {
         walletPath = savedWalletPath = configManager.getValue("skycoin/walletSource/1/Source")
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
-        nodeUrl = configManager.getValue("skycoin/node/address")
+        nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
+
+        updateFooterButtonsStatus()
+    }
+
+    function updateFooterButtonsStatus() {
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl)
+        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl)
+        footer.standardButton(Dialog.Apply).enabled = configChanged
+        footer.standardButton(Dialog.Discard).enabled = configChanged
+        footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
     }
 
     footer: DialogButtonBox {
@@ -83,64 +88,69 @@ Page {
         GroupBox {
             Layout.fillWidth: true
             title: qsTr("Wallet environment settings")
-
-            ColumnLayout {
+            
+            RowLayout {
                 anchors.fill: parent
+                
+                Label {
+                    text: qsTr("Remote")
+                    font.bold: true
+                    color: Material.hintTextColor
+                }
+                Switch {
+                    id: switchLocalWalletEnv
 
-                RowLayout {
-                    Label {
-                        text: qsTr("Remote")
-                        font.bold: true
-                        color: Material.hintTextColor
-                    }
-                    Switch {
-                        id: switchLocalWalletEnv
+                    checked: savedIsLocalWalletEnv
+                    font.bold: true
 
-                        checked: savedIsLocalWalletEnv
-                        font.bold: true
-                        Material.foreground: textColor
+                    onToggled: {
+                        updateFooterButtonsStatus();
                     }
-                    Label {
-                        text: qsTr("Local")
-                        font.bold: true
-                        color: Material.accent
-                    }
+                }
+                Label {
+                    text: qsTr("Local")
+                    font.bold: true
+                    color: Material.accent
+                }
 
-                    Rectangle {
-                        Layout.fillHeight: true
-                        Layout.leftMargin: 10
-                        Layout.rightMargin: 10
-                        width: 1
-                        color: Material.hintTextColor
-                    }
+                Rectangle {
+                    Layout.fillHeight: true
+                    Layout.leftMargin: 10
+                    Layout.rightMargin: 10
+                    width: 1
+                    color: Material.hintTextColor
+                }
 
-                    TextField {
-                        id: textFieldWalletPath
+                TextField {
+                    id: textFieldWalletPath
 
-                        Layout.fillWidth: true
-                        enabled: isLocalWalletEnv
-                        selectByMouse: true
-                        placeholderText: qsTr("Local wallet path")
+                    Layout.fillWidth: true
+                    enabled: isLocalWalletEnv
+                    selectByMouse: true
+                    placeholderText: qsTr("Local wallet path")
+
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
                     }
-                } // RowLayout
-            } // ColumnLayout
+                }
+            } // RowLayout
         } // GroupBox (wallet settings)
 
         GroupBox {
             Layout.fillWidth: true
             title: qsTr("Network settings")
 
-            ColumnLayout {
+            TextField {
+                id: textFieldNodeUrl
+
                 anchors.fill: parent
+                selectByMouse: true
+                placeholderText: qsTr("Node URL")
 
-                TextField {
-                    id: textFieldNodeUrl
-
-                    selectByMouse: true
-                    Layout.fillWidth: true
-                    placeholderText: qsTr("Node URL")
+                onTextChanged: {
+                    updateFooterButtonsStatus();
                 }
-            } // ColumnLayout
+            }
         } // GroupBox (network settings)
     } // ColumnLayout
 
@@ -180,9 +190,9 @@ Page {
 
         onAccepted: {
             if (onlyDiscard) {
-                getCurrentSettings()
+                loadSavedSettings()
             } else {
-                getCurrentSettings() // getDefaultSettings()
+                loadSavedSettings() // loadDefaultSettings()
             }
             saveCurrentSettings()
         }
