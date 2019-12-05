@@ -6,18 +6,7 @@ import (
 
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	util "github.com/fibercrypto/fibercryptowallet/src/util"
-	"github.com/stretchr/testify/mock"
 )
-
-var global_mock *SkycoinApiMock
-
-var logModelTest = logging.MustGetLogger("Skycoin Model Test")
-// CleanGlobalMock util when is needed to change the values of an
-
-// API method used in other test with different values.
-func CleanGlobalMock() {
-	global_mock.ExpectedCalls = []*mock.Call{}
-}
 
 //Prepare the mock API for all test
 func TestMain(m *testing.M) {
