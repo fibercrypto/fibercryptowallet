@@ -74,7 +74,7 @@ func TestWalletListPendingTransactions(t *testing.T) {
 
 func TestSkycoinAddressGetBalance(t *testing.T) {
 	response := new(api.BalanceResponse)
-	addr, err := NewSkycoinAddress("2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt")
+	addr, err := NewSkycoinAddress("2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", false)
 	assert.NoError(t, err)
 	response.Confirmed = readable.Balance{Coins: uint64(42000000), Hours: uint64(200)}
 	global_mock.On("Balance", []string{addr.String()}).Return(response, nil)
@@ -104,7 +104,7 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 
 	global_mock.On("OutputsForAddresses", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(response, nil)
 
-	addrs, err := NewSkycoinAddress("2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
+	addrs, err := NewSkycoinAddress("2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8", false)
 	assert.NoError(t, err)
 	skyAddrs := addrs.GetCryptoAccount()
 	it := skyAddrs.ScanUnspentOutputs()
@@ -145,7 +145,7 @@ func TestSkycoinAddressListTransactions(t *testing.T) {
 		&readable.TransactionWithStatus{Status: response.Status},
 		nil,
 	)
-	addr, err := NewSkycoinAddress("2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
+	addr, err := NewSkycoinAddress("2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8", false)
 	assert.NoError(t, err)
 	skyAddr := addr.GetCryptoAccount()
 	it := skyAddr.ListTransactions()

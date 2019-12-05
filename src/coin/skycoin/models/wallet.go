@@ -643,7 +643,11 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 			return nil
 		}
 		for _, addr := range newAddrs {
-			skyAddrs, err := NewSkycoinAddress(addr)
+			bip32 := false
+			if wlt.GetSkycoinWalletType() == "bip44" {
+				bip32 = true
+			}
+			skyAddrs, err := NewSkycoinAddress(addr, bip32)
 			if err != nil {
 				logWallet.Error(err)
 			}
@@ -729,7 +733,8 @@ func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
 }
 
 func walletEntryToAddress(wltE readable.WalletEntry) *SkycoinAddress {
-	skyAddrs, err := NewSkycoinAddress(wltE.Address)
+
+	skyAddrs, err := NewSkycoinAddress(wltE.Address, false)
 	if err != nil {
 		logWallet.Error(err)
 		return nil
@@ -1446,7 +1451,11 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	addrs := getAddrs(walletLoaded)
 	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
-		newSkyAddrs, err := NewSkycoinAddress(addr.String())
+		bip32 := false
+		if wlt.GetSkycoinWalletType() == "bip44" {
+			bip32 = true
+		}
+		newSkyAddrs, err := NewSkycoinAddress(addr.String(), bip32)
 		if err != nil {
 			logWallet.Error(err)
 		}
@@ -1471,7 +1480,11 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	addrs := make([]core.Address, 0)
 	addresses := walletLoaded.GetAddresses()
 	for _, addr := range addresses {
-		newSkyAddrs, err := NewSkycoinAddress(addr.String())
+		bip32 := false
+		if wlt.GetSkycoinWalletType() == "bip44" {
+			bip32 = true
+		}
+		newSkyAddrs, err := NewSkycoinAddress(addr.String(), bip32)
 		if err != nil {
 			logWallet.Error(err)
 		}
