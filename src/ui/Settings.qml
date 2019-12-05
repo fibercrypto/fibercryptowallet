@@ -87,23 +87,15 @@ Page {
             ColumnLayout {
                 anchors.fill: parent
 
-                RowLayout {
-                    Layout.fillWidth: true
+                TextField {
+                    id: textFieldWalletPath
 
-                    Label { text: qsTr("Local wallet path:"); font.bold: true }
-                    TextField {
-                        id: textFieldWalletPath
-                        enabled:isRemoteWalletEnv
-                        selectByMouse: true
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.IBeamCursor
-                            acceptedButtons: Qt.NoButton
-                        }
-                        Layout.fillWidth: true
-                        placeholderText: qsTr("Default to ") + savedWalletPath
-                    }
+                    Layout.fillWidth: true
+                    enabled: !isRemoteWalletEnv
+                    selectByMouse: true
+                    placeholderText: qsTr("Local wallet path")
                 }
+                
                 RowLayout {
                     Layout.fillWidth: true
 
