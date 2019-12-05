@@ -139,10 +139,6 @@ Page {
 
         width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 640 ? 640 - 40 : applicationWindow.height - 40
-
-        onAccepted: {
-            console.log("Add wallet")
-        }
     }
 
 

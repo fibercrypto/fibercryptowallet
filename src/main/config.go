@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 )
 
 var logConfigManager = logging.MustGetLogger("ConfigManager")

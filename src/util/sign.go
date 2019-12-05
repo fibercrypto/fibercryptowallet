@@ -1,9 +1,9 @@
 package util
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
 // AttachSignService registers a signing strategy for use by wallets

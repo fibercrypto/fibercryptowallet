@@ -5,8 +5,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"math"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
 func AltcoinCaption(ticker string) string {

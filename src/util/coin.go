@@ -1,8 +1,8 @@
 package util
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/sirupsen/logrus"
 	stdErr "errors"
 )

@@ -1,10 +1,10 @@
 package models
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/models/address"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 	qtcore "github.com/therecipe/qt/core"
 )
 

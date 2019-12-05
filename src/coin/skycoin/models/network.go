@@ -3,10 +3,10 @@ package skycoin
 import (
 	"encoding/hex"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/api"
 )
 

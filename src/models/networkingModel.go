@@ -3,7 +3,7 @@ package models
 import (
 	"time"
 
-	coin "github.com/fibercrypto/FiberCryptoWallet/src/core"
+	coin "github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/therecipe/qt/core"
 )
 
