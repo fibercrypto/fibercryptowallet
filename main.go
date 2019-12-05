@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin"
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/models"
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/history"
-	_ "github.com/fibercrypto/FiberCryptoWallet/src/models/pending"
+	_ "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models/history"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models/pending"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
@@ -32,7 +32,7 @@ func main() {
 	// Set the application information
 	app.SetOrganizationName("Simelo.Tech")
 	app.SetOrganizationDomain("simelo.tech")
-	app.SetApplicationName("FiberCrypto Wallet")
+	app.SetApplicationName("FiberCryptoWallet")
 	app.SetApplicationVersion("0.27.0")
 	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon/appIcon.png"))
 

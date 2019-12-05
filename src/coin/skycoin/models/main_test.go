@@ -1,13 +1,12 @@
 package skycoin
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"os"
 	"testing"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
-
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	util "github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/stretchr/testify/mock"
 )
 

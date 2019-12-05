@@ -3,8 +3,18 @@ package local
 import (
 	"errors"
 	"sync"
-
 	qtcore "github.com/therecipe/qt/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+)
+
+var logConfigManager = logging.MustGetLogger("ConfigManager")
+
+const (
+	pathToConfigFromHome         = ".fiber/config.json"
+	pathToDefaultWalletsFromHome = ".skycoin/wallets"
+	LocalWallet                  = iota
+	RemoteWallet
 )
 
 var (

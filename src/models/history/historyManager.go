@@ -5,15 +5,15 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 
-	coin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/models"
-	"github.com/fibercrypto/FiberCryptoWallet/src/models/address"
-	"github.com/fibercrypto/FiberCryptoWallet/src/models/transactions"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/models/address"
+	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 	qtCore "github.com/therecipe/qt/core"
 )
 

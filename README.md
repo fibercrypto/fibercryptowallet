@@ -1,5 +1,10 @@
 # FiberCrypto wallet
 
+[![Build Status](https://travis-ci.org/fibercrypto/FiberCryptoWallet.svg?branch=develop)](https://travis-ci.org/fibercrypto/FiberCryptoWallet)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.GPLv3)
+[![Coverage Status](https://coveralls.io/repos/github/fibercrypto/FiberCryptoWallet/badge.svg?branch=develop)](https://coveralls.io/github/fibercrypto/FiberCryptoWallet?branch=develop)
+
 FiberCrypto wallet is a cryptocurrency software wallet aimed at:
 
 - Provide easy-to-use interactions to users
@@ -87,8 +92,11 @@ install-deps-Darwin            Install osx dependencies
 install-deps-Windows           Install Windowns dependencies
 install-deps                   Install dependencies
 build-docker                   Build project using docker
-build                          Build FiberCrypto Wallet.
-clean-Windows                  Clean project FiberCrypto Wallet.
+build-icon-Windows_NT          Build the application icon in Windows
+build-icon-Darwin              Build the application icon in Darwin
+build-icon-Linux               Build the application icon in Linux
+build-icon                     Build the application icon (Windows_NT and Darwin systems)
+build                          Build FiberCrypto Wallet
 prepare-release                Change the resources in the app and prepare to release the app
 clean-test                     Remove temporary test files
 clean-build                    Remove temporary files
@@ -99,6 +107,7 @@ test-core                      Run tests for API core and helpers
 test-cover                     Show more details of test coverage
 test                           Run project test suite
 install-linters                Install linters
+install-coveralls              Install coveralls
 lint                           Run linters. Use make install-linters first.
 ```
 

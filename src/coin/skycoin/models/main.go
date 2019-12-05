@@ -3,10 +3,11 @@ package skycoin
 import (
 	"fmt"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/config"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
 type SkyFiberPlugin struct {

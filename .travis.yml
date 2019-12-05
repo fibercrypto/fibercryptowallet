@@ -4,7 +4,7 @@ go:
 - 1.12.6
 services:
 - docker
-go_import_path: github.com/fibercrypto/FiberCryptoWallet
+go_import_path: github.com/fibercrypto/fibercryptowallet
 matrix:
   include:
   - stage: RPI
@@ -14,6 +14,7 @@ matrix:
     - DEFAULT_ARCH=rpi2 make install-docker-deps
     - DEFAULT_ARCH=rpi3 make install-docker-deps
     - make install-deps-no-envs
+    - make install-coveralls
     script:
     - make clean
     - DEFAULT_TARGET=rpi1 make build-docker
@@ -26,44 +27,52 @@ matrix:
     install:
     - DEFAULT_ARCH=android make install-docker-deps
     - make install-deps-no-envs
+    - make install-coveralls
     script:
     - make clean
     - DEFAULT_TARGET=android make build-docker
     - DEFAULT_TARGET=android-emulator make build-docker
     - make lint
     - make test
+    - make test-cover-travis
   - stage: Linux
     install:
     - make install-docker-deps
     - make install-deps-no-envs
     - make install-linters
+    - make install-coveralls
     script:
     - make clean
     - DEFAULT_TARGET=linux make build-docker
     - make test
     - make lint
+    - make test-cover-travis
   - stage: Windows
     os: windows
     install:
     - choco install make -y
     - travis_wait make install-deps-Windows
     - make install-linters
+    - make install-coveralls
     script:
     - make build
     - make test
     - make build-icon
     - make lint
+    - make test-cover-travis
   - stage: MacOS
     os: osx
     osx_image: xcode10.2
     install:
     - make install-deps
+    - make install-coveralls
     script:
     - make clean
     - make build
     - make test
     - make build-icon
     - make lint
+    - make test-cover-travis
 notifications:
   email: false
   webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
@@ -83,6 +92,7 @@ deploy:
   kip_cleanup: true
   draft: true
   overwrite: true
-  on: 
+  on:
     repo: fibercrypto/FiberCryptoWallet
     tags: true
+

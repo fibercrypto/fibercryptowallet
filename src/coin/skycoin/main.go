@@ -3,10 +3,12 @@ package skycoin //nolint goimports
 import (
 	"encoding/json"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/config"
-	sky "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
+	sky "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
+
+	util "github.com/fibercrypto/fibercryptowallet/src/util"
 )
 
 func init() {

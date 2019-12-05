@@ -3,8 +3,8 @@ package models
 import (
 	"encoding/json"
 	"strings"
-
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 
 	"github.com/therecipe/qt/qml"
 

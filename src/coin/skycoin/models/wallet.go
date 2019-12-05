@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -26,14 +26,10 @@ import (
 var logWallet = logging.MustGetLogger("Skycoin Wallet")
 
 const (
-	Sky                     = params.SkycoinTicker
-	CoinHour                = params.CoinHoursTicker
-	CalculatedHour          = params.CalculatedHoursTicker
-	WalletTypeDeterministic = "deterministic"
-	WalletTypeCollection    = "collection"
-	WalletTypeBip44         = "bip44"
+	Sky            = params.SkycoinTicker
+	CoinHour       = params.CoinHoursTicker
+	CalculatedHour = params.CalculatedHoursTicker
 
-	WalletTypeXPub        = "xpub"
 	walletExt             = ".wlt"
 	WalletTimestampFormat = "2006_01_02"
 
@@ -72,6 +68,7 @@ type SkycoinRemoteWallet struct {
 	poolSection string
 }
 
+// ListWallets returns an iterator over wallets in the set
 func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	logWallet.Info("Listing wallets")
 	c, err := NewSkycoinApiClient(wltSrv.poolSection)
@@ -97,7 +94,8 @@ func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
 	return NewSkycoinWalletIterator(wallets)
 }
 
-func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+// CreateWallet instantiates a new wallet given account seed
+func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, wltType string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	logWallet.Info("Creating wallet")
 	wlt := &RemoteWallet{} //nolint megacheck False negative
 	c, err := NewSkycoinApiClient(wltSrv.poolSection)
@@ -113,7 +111,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 			return nil, err
 		}
 		wltOpt := api.CreateWalletOptions{}
-		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Type = wltType
 		wltOpt.Seed = seed
 		wltOpt.Password = password
 		wltOpt.Encrypt = true
@@ -129,7 +127,7 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 		wlt = walletResponseToWallet(*wltR)
 	} else {
 		wltOpt := api.CreateWalletOptions{}
-		wltOpt.Type = WalletTypeDeterministic
+		wltOpt.Type = wltType
 		wltOpt.Seed = seed
 		wltOpt.Encrypt = false
 		wltOpt.Label = label
@@ -145,6 +143,19 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, IsEnc
 	}
 	wlt.poolSection = wltSrv.poolSection
 	return wlt, nil
+}
+
+// DefaultWalletType default wallet type
+func (wltSrv *SkycoinRemoteWallet) DefaultWalletType() string {
+	return wallet.WalletTypeBip44
+}
+
+// SupportedWalletTypes list supported wallet type names
+func (wltSrv *SkycoinRemoteWallet) SupportedWalletTypes() []string {
+	return []string{
+		wallet.WalletTypeDeterministic,
+		wallet.WalletTypeBip44,
+	}
 }
 
 func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordReader) {
@@ -205,6 +216,8 @@ func (wltSrv *SkycoinRemoteWallet) IsEncrypted(walletName string) (bool, error) 
 	}
 	return wlt.Meta.Encrypted, nil
 }
+
+// GetWallet to lookup wallet by ID
 func (wltSrv *SkycoinRemoteWallet) GetWallet(id string) core.Wallet {
 	logWallet.Info("Getting remote wallet")
 	c, err := NewSkycoinApiClient(wltSrv.poolSection)
@@ -802,7 +815,7 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 	}
 }
 
-func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
+func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, wltType string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	logWallet.Info("Creating Skycoin local wallet")
 	password, err := pwd("Insert Password")
 
@@ -812,11 +825,12 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 	}
 
 	passwordByte := []byte(password)
+
 	opts := wallet.Options{
 		Label:    label,
 		Seed:     seed,
 		Encrypt:  IsEncrypted,
-		Type:     WalletTypeDeterministic,
+		Type:     wltType,
 		Password: passwordByte,
 	}
 	wltName := wltSrv.newUnicWalletFilename()
@@ -849,6 +863,19 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, IsEncr
 		CoinType:  string(wlt.Coin()),
 		WalletDir: wltSrv.walletDir,
 	}, nil
+}
+
+// DefaultWalletType default wallet type
+func (wltSrv *SkycoinLocalWallet) DefaultWalletType() string {
+	return wallet.WalletTypeBip44
+}
+
+// SupportedWalletTypes list supported wallet type names
+func (wltSrv *SkycoinLocalWallet) SupportedWalletTypes() []string {
+	return []string{
+		wallet.WalletTypeDeterministic,
+		wallet.WalletTypeBip44,
+	}
 }
 
 func (wltSrv *SkycoinLocalWallet) newUnicWalletFilename() string {
@@ -1290,7 +1317,13 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 }
+
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+
+	if addrType != core.AccountAddress && addrType != core.ChangeAddress {
+		logWallet.Error("Incorret address type")
+		return nil
+	}
 	logWallet.Info("Generating addresses in local wallet")
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
@@ -1298,11 +1331,62 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		logWallet.WithError(err).WithField("filename", walletName).Error("Call to wallet.Load(filename) inside GenAddresses failed.")
 		return nil
 	}
+
+	if addrType == core.ChangeAddress && walletLoaded.Type() != wallet.WalletTypeBip44 {
+		logWallet.Error("Incorrect address type")
+		return nil
+	}
+
+	genAddr := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+		return w.GenerateAddresses(n)
+	}
+
 	addressCount := walletLoaded.EntriesLen()
+
+	getAddrs := func(w wallet.Wallet) []cipher.Addresser {
+		return w.GetAddresses()[startIndex : startIndex+count]
+	}
+
+	if walletLoaded.Type() == wallet.WalletTypeBip44 {
+		addressCount = len((*(walletLoaded.(*wallet.Bip44Wallet))).ExternalEntries)
+
+		getAddrs = func(w wallet.Wallet) []cipher.Addresser {
+			addresser := make([]cipher.Addresser, 0)
+			for _, entry := range (*(walletLoaded.(*wallet.Bip44Wallet))).ExternalEntries[startIndex : startIndex+count] {
+				addresser = append(addresser, entry.Address)
+			}
+			return addresser
+		}
+
+	}
+	if addrType == core.ChangeAddress {
+		addressCount = len((*(walletLoaded.(*wallet.Bip44Wallet))).ChangeEntries)
+
+		genAddr = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
+			addresser := make([]cipher.Addresser, 0)
+			for i := uint64(0); i < n; i++ {
+				addrs, err := w.(*wallet.Bip44Wallet).GenerateChangeEntry()
+				if err != nil {
+					return nil, err
+				}
+				addresser = append(addresser, addrs.Address)
+			}
+			return addresser, nil
+		}
+
+		getAddrs = func(w wallet.Wallet) []cipher.Addresser {
+			addresser := make([]cipher.Addresser, 0)
+			for _, entry := range (*(walletLoaded.(*wallet.Bip44Wallet))).ChangeEntries[startIndex : startIndex+count] {
+				addresser = append(addresser, entry.Address)
+			}
+			return addresser
+		}
+	}
+
 	if uint32(addressCount) < (startIndex + count) {
 		diff := (startIndex + count) - uint32(addressCount)
 		genAddressesInFile := func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
-			return w.GenerateAddresses(n)
+			return genAddr(w, n)
 		}
 
 		if walletLoaded.IsEncrypted() {
@@ -1316,8 +1400,11 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 				var addrs []cipher.Addresser
 				if err := wallet.GuardUpdate(w, passwordBytes, func(wlt wallet.Wallet) error {
 					var err error
-					addrs, err = wlt.GenerateAddresses(n)
+
+					addrs, err = genAddr(wlt, n)
+
 					logWallet.WithError(err).WithField("num", n).Error("Call to wlt.GenerateAddresses(num) inside wallet.GuardUpdate failed")
+
 					return err
 				}); err != nil {
 					logWallet.WithError(err).Error("Call to wallet.GuardUpdate inside genAddressesInFile failed")
@@ -1346,7 +1433,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		return nil
 	}
 
-	addrs := walletLoaded.GetAddresses()[startIndex : startIndex+count]
+	addrs := getAddrs(walletLoaded)
 	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
 		skyAddrs = append(skyAddrs, &SkycoinAddress{address: addr.String()})
@@ -1354,6 +1441,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	return NewSkycoinAddressIterator(skyAddrs)
 
 }
+
 func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
 	logWallet.Info("Getting CryptoAccount from local wallet")
 	return wlt
@@ -1461,4 +1549,10 @@ var (
 	_ core.Wallet            = &RemoteWallet{}
 	_ skytypes.SkycoinWallet = &LocalWallet{}
 	_ skytypes.SkycoinWallet = &RemoteWallet{}
+	_ core.WalletEnv         = &WalletNode{}
+	_ core.WalletEnv         = &WalletDirectory{}
+	_ core.WalletSet         = &SkycoinRemoteWallet{}
+	_ core.WalletStorage     = &SkycoinRemoteWallet{}
+	_ core.WalletSet         = &SkycoinLocalWallet{}
+	_ core.WalletStorage     = &SkycoinLocalWallet{}
 )
