@@ -5,7 +5,9 @@ import QtQuick.Layouts 1.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
+// import "qrc:/ui/src/ui/Controls"
 import "Dialogs/" // For quick UI development, switch back to resources when making a release
+import "Controls/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: settings
@@ -88,7 +90,7 @@ Page {
                 RowLayout {
                     Layout.fillWidth: true
 
-                    Label { text: qsTr("Wallet path:"); font.bold: true }
+                    Label { text: qsTr("Local wallet path:"); font.bold: true }
                     TextField {
                         id: textFieldWalletPath
                         enabled:isRemoteWalletEnv
