@@ -18,34 +18,34 @@ Page {
     // These are defaults. Will be restored when the "DEFAULT" button is clicked
     // TODO: How to get the defaults from the config manager
     readonly property string defaultWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
-    readonly property bool defaultIsRemoteWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "remote"
+    readonly property bool defaultIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getValue("skycoin/node/address")
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
     // TODO: This should be binded to backend properties
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
-    property bool savedIsRemoteWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "remote"
+    property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
 
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
     property alias walletPath: textFieldWalletPath.text
-    property alias isRemoteWalletEnv: switchRemoteWalletEnv.checked
+    property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
 
     Component.onCompleted: {
         walletPath = savedWalletPath
         nodeUrl = savedNodeUrl
-        isRemoteWalletEnv = savedIsRemoteWalletEnv
+        isLocalWalletEnv = savedIsLocalWalletEnv
         console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        console.log("DEFAULT: " + defaultWalletPath + '\n' + defaultIsRemoteWalletEnv + '\n' + defaultNodeUrl)
-        console.log("SAVED: " + savedWalletPath + '\n' + savedIsRemoteWalletEnv + '\n' + savedNodeUrl)
+        console.log("DEFAULT: " + defaultWalletPath + '\n' + defaultIsLocalWalletEnv + '\n' + defaultNodeUrl)
+        console.log("SAVED: " + savedWalletPath + '\n' + savedIsLocalWalletEnv + '\n' + savedNodeUrl)
     }
 
     function saveCurrentSettings() {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
-        configManager.setValue("skycoin/walletSource/1/SourceType", isRemoteWalletEnv ? "remote" : "local")
+        configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
 
         getCurrentSettings()
@@ -53,7 +53,7 @@ Page {
 
     function getCurrentSettings() {
         walletPath = savedWalletPath = configManager.getValue("skycoin/walletSource/1/Source")
-        isRemoteWalletEnv = savedIsRemoteWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "remote"
+        isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = configManager.getValue("skycoin/node/address")
     }
 
@@ -82,37 +82,47 @@ Page {
 
         GroupBox {
             Layout.fillWidth: true
-            title: qsTr("Wallet settings")
+            title: qsTr("Wallet environment settings")
 
             ColumnLayout {
                 anchors.fill: parent
 
-                TextField {
-                    id: textFieldWalletPath
-
-                    Layout.fillWidth: true
-                    enabled: !isRemoteWalletEnv
-                    selectByMouse: true
-                    placeholderText: qsTr("Local wallet path")
-                }
-
                 RowLayout {
-                    Layout.fillWidth: true
+                    Label {
+                        text: qsTr("Remote")
+                        font.bold: true
+                        color: Material.hintTextColor
+                    }
+                    Switch {
+                        id: switchLocalWalletEnv
 
-                    SwitchDelegate {
-                        id: switchRemoteWalletEnv
-
-                        property color textColor: checked ? Material.accent : Material.primaryTextColor
-                        Behavior on textColor { ColorAnimation {} }
-
-                        Layout.fillWidth: true
-
-                        text: qsTr("Local/Remote wallet environment")
-                        checked: savedIsRemoteWalletEnv
+                        checked: savedIsLocalWalletEnv
                         font.bold: true
                         Material.foreground: textColor
                     }
-                }
+                    Label {
+                        text: qsTr("Local")
+                        font.bold: true
+                        color: Material.accent
+                    }
+
+                    Rectangle {
+                        Layout.fillHeight: true
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        width: 1
+                        color: Material.hintTextColor
+                    }
+
+                    TextField {
+                        id: textFieldWalletPath
+
+                        Layout.fillWidth: true
+                        enabled: isLocalWalletEnv
+                        selectByMouse: true
+                        placeholderText: qsTr("Local wallet path")
+                    }
+                } // RowLayout
             } // ColumnLayout
         } // GroupBox (wallet settings)
 
