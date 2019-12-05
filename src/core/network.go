@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 )
 
 var logConnectionPool = logging.MustGetLogger("Connection Pool")
