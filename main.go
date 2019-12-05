@@ -31,7 +31,7 @@ func main() {
 
 	// Set the application information
 	app.SetOrganizationName("Simelo.Tech")
-	app.SetOrganizationDomain("simelo.tech.org")
+	app.SetOrganizationDomain("simelo.tech")
 	app.SetApplicationName("FiberCrypto Wallet")
 	app.SetApplicationVersion("0.27.0")
 	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon/appIcon.png"))
