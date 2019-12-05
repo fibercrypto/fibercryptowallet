@@ -82,6 +82,7 @@ RowLayout {
         property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : Material.background
 
         Layout.fillWidth: true
+        topInset: -1
         leftInset:  -(toolButtonBack.width + toolButtonBack.padding)
         rightInset: -(toolButtonTheme.width + toolButtonTheme.padding)
         Material.foreground: menuTextColor
