@@ -49,12 +49,6 @@ matrix:
     - make install-linters
     - make install-coveralls
     before_script:
-    # Install hardware wallet for running tests against emulator
-    - mkdir -p tmp/hardware-wallet
-    - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
-    - git -C tmp/hardware-wallet submodule update --init --recursive
-    # Define env vars for Linux builds
-    - export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH"
     - echo "PATH=$PATH";
     - echo "PIP=$PIP";
 
@@ -88,11 +82,8 @@ matrix:
   - stage: MacOS
     os: osx
     osx_image: xcode10.2
-    before_script:
-    # Install OS-specific test and build dependencies for hardware-wallet
-    - ( cd ./tmp/hardware-wallet && sh "ci-scripts/install-${TRAVIS_OS_NAME}.sh" )
-    # Include paths for brew packages e.g. SDL2
-    - export SDL_INCLUDE="$(brew --prefix sdl2)/include/SDL2";
+    before_install:
+    - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
     install:
     - make install-deps
     - make install-coveralls
