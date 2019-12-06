@@ -69,6 +69,7 @@ matrix:
     # Run self-tests
     - ps aux | grep emulator
     - make test
+    - make test-hw
     - make lint
     - make test-cover-travis
   - stage: Windows
@@ -99,6 +100,7 @@ matrix:
     - make clean
     - make build
     - make test
+    - make test-hw
     - make build-icon
     - make lint
     - make test-cover-travis

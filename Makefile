@@ -262,7 +262,7 @@ test-cover-travis:
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test: clean-test test-core test-sky test-hw ## Run project test suite
+test: clean-test test-core test-sky ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
