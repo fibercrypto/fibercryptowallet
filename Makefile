@@ -240,6 +240,10 @@ test-sky: ## Run Skycoin plugin test suite
 test-core: ## Run tests for API core and helpers
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
 
+test-data: ## Run tests for data package
+	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
+
+
 test-sky-launch-html-cover:
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
@@ -256,7 +260,7 @@ test-cover-travis:
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test: clean-test test-core test-sky ## Run project test suite
+test: clean-test test-core test-sky test-data ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck

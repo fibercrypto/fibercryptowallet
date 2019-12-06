@@ -810,6 +810,7 @@ func TestDB_Init(t *testing.T) {
 			addressBook, err := NewAddressBook(GetFilePath(t))
 			if err != nil {
 				t.Error(addressBook)
+				return
 			}
 
 			if tt.name == "Two Init" {
