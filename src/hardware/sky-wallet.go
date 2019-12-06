@@ -28,7 +28,7 @@ type SkyWallet struct {
 }
 
 const (
-	urnPrefix = "Hardware:SkyWallet:"
+	urnPrefix = "signer:skywallet:"
 )
 
 // HwFirstAddr return the first address in the deterministic sequence if there is a configured

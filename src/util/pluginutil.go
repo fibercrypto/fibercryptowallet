@@ -2,7 +2,6 @@ package util
 
 import (
 	"errors"
-	"github.com/sirupsen/logrus"
 	"math"
 
 	"github.com/fibercrypto/fibercryptowallet/src/core"
