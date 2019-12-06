@@ -1,7 +1,7 @@
 package signutil
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
 // NewTxnSignerIteratorFromMap allocate transaction signer iterator out of standard signers map

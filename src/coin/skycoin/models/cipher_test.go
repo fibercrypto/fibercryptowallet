@@ -2,7 +2,7 @@ package skycoin
 
 import (
 	"encoding/hex"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/base58"
 	"github.com/stretchr/testify/assert"
@@ -84,7 +84,9 @@ func TestNewSkycoinAddress(t *testing.T) {
 			assert.False(t, got.Null())
 			assert.NotNil(t, got.Checksum())
 			assert.Implements(t, new(core.CryptoAccount), got.GetCryptoAccount())
-
+			got.(*SkycoinAddress).isBip32 = true
+			assert.True(t, got.IsBip32())
+			got.(*SkycoinAddress).isBip32 = false
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewSkycoinAddress() got = %v, want %v", got, tt.want)
 			}
@@ -103,13 +105,13 @@ func TestNewSkycoinAddressIterator(t *testing.T) {
 	}{
 		{name: "empty", args: args{
 			addresses: []string{},
-		},},
+		}},
 		{name: "one-address", args: args{
 			addresses: []string{"2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt"},
-		},},
+		}},
 		{name: "two-address", args: args{
 			addresses: []string{"2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
-		},},
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

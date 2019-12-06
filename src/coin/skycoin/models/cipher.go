@@ -1,7 +1,7 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/skycoin/skycoin/src/cipher"
 )
 
@@ -36,6 +36,7 @@ func NewSkycoinAddress(addrStr string) (core.Address, error) {
 	if skyAddr, err = cipher.DecodeBase58Address(addrStr); err != nil {
 		return nil, err
 	}
+
 	return &SkycoinAddress{
 		isBip32:     false,
 		address:     skyAddr,
@@ -50,7 +51,7 @@ type SkycoinAddress struct { // Implements Address and CryptoAccount interfaces
 }
 
 func (addr *SkycoinAddress) IsBip32() bool {
-	return false
+	return addr.isBip32
 }
 
 func (addr *SkycoinAddress) String() string {

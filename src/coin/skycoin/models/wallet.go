@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/skytypes"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -644,6 +644,9 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 		}
 		for _, addr := range newAddrs {
 			skyAddrs, err := NewSkycoinAddress(addr)
+			if wlt.GetSkycoinWalletType() == "bip44" {
+				skyAddrs.(*SkycoinAddress).isBip32 = true
+			}
 			if err != nil {
 				logWallet.Error(err)
 			}
@@ -729,6 +732,7 @@ func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
 }
 
 func walletEntryToAddress(wltE readable.WalletEntry) *SkycoinAddress {
+
 	skyAddrs, err := NewSkycoinAddress(wltE.Address)
 	if err != nil {
 		logWallet.Error(err)
@@ -1446,6 +1450,10 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	addrs := getAddrs(walletLoaded)
 	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
+		// bip32 := false
+		if wlt.GetSkycoinWalletType() == "bip44" {
+			// bip32 = true
+		}
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
 			logWallet.Error(err)
@@ -1471,6 +1479,10 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	addrs := make([]core.Address, 0)
 	addresses := walletLoaded.GetAddresses()
 	for _, addr := range addresses {
+		// bip32 := false
+		if wlt.GetSkycoinWalletType() == "bip44" {
+			// bip32 = true
+		}
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
 			logWallet.Error(err)

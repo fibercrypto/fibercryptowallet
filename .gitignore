@@ -74,6 +74,10 @@ rcc__*
 .DS_Store
 *.orig
 *.bak
+darwin
+linux
+windows
+android
 
 # Temporary build files
 rcc_cgo_*.go
