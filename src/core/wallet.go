@@ -85,7 +85,7 @@ type WalletEnv interface {
 	GetStorage() WalletStorage
 	// GetWalletSet loads wallets in this environment
 	GetWalletSet() WalletSet
-	// GetWallet allow you to get a wallet from the first address in the
+	// LookupWallet allow you to get a wallet from the first address in the
 	// deterministic sequence, error if not found or some thing was happen
-	GetWallet(firstAddr string) (Wallet, error)
+	LookupWallet(firstAddr string) (Wallet, error)
 }

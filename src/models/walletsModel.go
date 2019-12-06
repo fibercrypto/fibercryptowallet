@@ -158,7 +158,7 @@ func (walletModel *WalletModel) sniffHw() {
 	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
 	addr, err := hardware.HwFirstAddr(dev)
 	if err == nil {
-		wlt, err := walletManager.WalletEnv.GetWallet(addr)
+		wlt, err := walletManager.WalletEnv.LookupWallet(addr)
 		if err != nil {
 			// TODO i18n
 			logrus.Warnln("can not find a wallet matching the hardware one")

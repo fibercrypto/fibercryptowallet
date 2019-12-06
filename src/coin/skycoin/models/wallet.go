@@ -279,8 +279,8 @@ type WalletNode struct {
 	poolSection string
 }
 
-func (wltEnv *WalletNode) GetWallet(firstAddr string) (core.Wallet, error) {
-	return getWallet(wltEnv, firstAddr)
+func (wltEnv *WalletNode) LookupWallet(firstAddr string) (core.Wallet, error) {
+	return lookupWallet(wltEnv, firstAddr)
 }
 
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
@@ -744,7 +744,7 @@ type WalletDirectory struct {
 	wltService *SkycoinLocalWallet
 }
 
-func getWallet(env core.WalletEnv, firstAddr string) (core.Wallet, error) {
+func lookupWallet(env core.WalletEnv, firstAddr string) (core.Wallet, error) {
 	ws := env.GetWalletSet()
 	wls := ws.ListWallets()
 	for wls.Next() {
@@ -760,8 +760,8 @@ func getWallet(env core.WalletEnv, firstAddr string) (core.Wallet, error) {
 	return nil, errors.ErrWltFromAddrNotFound
 }
 
-func (wltDir *WalletDirectory) GetWallet(firstAddr string) (core.Wallet, error) {
-	return getWallet(wltDir, firstAddr)
+func (wltDir *WalletDirectory) LookupWallet(firstAddr string) (core.Wallet, error) {
+	return lookupWallet(wltDir, firstAddr)
 }
 
 func (wltDir *WalletDirectory) GetStorage() core.WalletStorage {

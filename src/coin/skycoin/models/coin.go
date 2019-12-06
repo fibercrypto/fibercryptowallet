@@ -327,7 +327,7 @@ func (skyTxn *SkycoinUninjectedTransaction) GetStatus() core.TransactionStatus {
 
 func (skyTxn *SkycoinUninjectedTransaction) GetInputs() []core.TransactionInput {
 	logCoin.Info("Getting inputs from un injected transactions")
-	if skyTxn.inputs == nil || len(skyTxn.inputs) == 0 {
+	if len(skyTxn.inputs) == 0 {
 		inputs, err := getSkycoinTransactionInputsFromInputsHashes(skyTxn.txn.In)
 		if err != nil {
 			//TODO: This method should also returns error
@@ -340,7 +340,7 @@ func (skyTxn *SkycoinUninjectedTransaction) GetInputs() []core.TransactionInput 
 
 func (skyTxn *SkycoinUninjectedTransaction) GetOutputs() []core.TransactionOutput {
 	logCoin.Info("Getting outputs from un injected transactions")
-	if skyTxn.outputs == nil || len(skyTxn.outputs) == 0 {
+	if len(skyTxn.outputs) == 0 {
 		outputs := make([]core.TransactionOutput, 0)
 		for _, out := range skyTxn.txn.Out {
 			rOut, err := readable.NewTransactionOutput(&out, skyTxn.txn.Hash())
