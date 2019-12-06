@@ -2,7 +2,7 @@ package addressBook
 
 import (
 	"bytes"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	"sort"

@@ -1,8 +1,7 @@
 package data
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	// "github.com/stretchr/testify/assert"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"io/ioutil"
 	"os"
 	"reflect"
