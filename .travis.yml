@@ -4,6 +4,7 @@ go:
 - 1.12.6
 services:
 - docker
+- xvfb
 go_import_path: github.com/fibercrypto/fibercryptowallet
 env:
   global:
@@ -64,8 +65,7 @@ matrix:
     - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
     - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
     - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
-    # On GNU/Linux wrap emulator in xvfb graphics context
-    - xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true;
+    - make -C ./tmp/hardware-wallet run-emulator & true;
     # Run self-tests
     - ps aux | grep emulator
     - make test
@@ -88,10 +88,6 @@ matrix:
     os: osx
     osx_image: xcode10.2
     before_script:
-    # Start Xvfb on osx
-    - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
-      ( sudo Xvfb :99 -ac ${XARGS}; echo "Xvfb ok" )&
-      fi
     # Install OS-specific test and build dependencies for hardware-wallet
     - ( cd ./tmp/hardware-wallet && sh "ci-scripts/install-${TRAVIS_OS_NAME}.sh" )
     # Include paths for brew packages e.g. SDL2
@@ -126,6 +122,6 @@ deploy:
   draft: true
   overwrite: true
   on:
-    repo: fibercrypto/FiberCryptoWallet
+    repo: fibercrypto/fibercryptowallet
     tags: true
 
