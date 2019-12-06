@@ -51,10 +51,6 @@ matrix:
     before_script:
     - echo "PATH=$PATH";
     - echo "PIP=$PIP";
-
-    script:
-    - make clean
-    - DEFAULT_TARGET=linux make build-docker
     - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
     - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
     - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
@@ -62,6 +58,10 @@ matrix:
     - make -C ./tmp/hardware-wallet run-emulator & true;
     # Run self-tests
     - ps aux | grep emulator
+
+    script:
+    - make clean
+    - DEFAULT_TARGET=linux make build-docker
     - make test
     - make test-skyhw
     - make lint
@@ -87,6 +87,18 @@ matrix:
     install:
     - make install-deps
     - make install-coveralls
+    before_script:
+    - echo "PATH=$PATH";
+    - echo "PIP=$PIP";
+    # Start Xvfb on osx
+    - ( sudo Xvfb :99 -ac ${XARGS}; echo "Xvfb ok" )& export DISPLAY=:99
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+    - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
+    - make -C ./tmp/hardware-wallet run-emulator & true;
+    # Run self-tests
+    - ps aux | grep emulator
     script:
     - make clean
     - make build
