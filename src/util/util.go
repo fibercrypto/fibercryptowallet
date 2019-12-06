@@ -2,9 +2,11 @@ package util
 
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/sirupsen/logrus"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"strconv"
 )
+
+var logUtil = logging.MustGetLogger("Utils")
 
 func Min(a, b int) int {
 	if a <= b {
@@ -99,7 +101,7 @@ func StrSlice2IntSlice(ss []string) ([]int, error) {
 			var err error
 			is[i], err = strconv.Atoi(strIdx)
 			if err != nil {
-				logrus.WithError(err).Errorf("unable to get %s as integer\n", strIdx)
+				logUtil.WithError(err).Errorf("unable to get %s as integer\n", strIdx)
 				return nil, errors.ErrIntegerInputsRequired
 			}
 		}

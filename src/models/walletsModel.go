@@ -86,16 +86,14 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 	pb := func(dev skyWallet.Devicer, prvMsg wire.Message, nextMsg messages.MessageType) (wire.Message, error) {
 		msg, err := dev.ButtonAck()
 		if err != nil {
-			// TODO i18n
-			logrus.WithError(err).Errorln("unexpected error")
+			logSignersModel.WithError(err).Errorln("unexpected error")
 			return msg, err
 		}
 		if msg.Kind != uint16(nextMsg) {
 			if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
 				str, err := skyWallet.DecodeFailMsg(msg)
 				if err != nil {
-					// TODO i18n
-					logrus.WithField("msg", msg).Errorln("error decoding msg")
+					logSignersModel.WithField("msg", msg).Errorln("error decoding msg")
 					return msg, fce.ErrTxnSignFailure
 				}
 				// FIXME: this can become broken with device internationalization
@@ -103,8 +101,7 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 					return msg, fce.ErrHwSignTransactionCanceled
 				}
 			}
-			// TODO i18n
-			logrus.WithFields(
+			logSignersModel.WithFields(
 				logrus.Fields{
 					"expected": nextMsg,
 					"actual": msg.Kind}).Errorln("unexpected msg type")
@@ -114,12 +111,10 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 		if msg.Kind == uint16(messages.MessageType_MessageType_Success) {
 			successMsg, err := skyWallet.DecodeSuccessMsg(msg)
 			if err != nil {
-				// TODO i18n
-				logrus.WithError(err).Errorln("error decoding msg")
+				logSignersModel.WithError(err).Errorln("error decoding msg")
 				return wire.Message{}, err
 			}
-			// TODO i18n
-			logrus.Debugln("signing transaction with hw", successMsg)
+			logSignersModel.Debugln("signing transaction with hw", successMsg)
 			return msg, err// FIXME bug in err value
 		}
 		return msg, nil
@@ -147,7 +142,7 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 	hw := hardware.NewSkyWallet(dev, cb)
 	am := wlcore.LoadAltcoinManager()
 	if err := am.AttachSignService(hw); err != nil {
-		logrus.Errorln("error registering hardware wallet as signer")
+		logSignersModel.Errorln("error registering hardware wallet as signer")
 		return err
 	}
 	return nil
@@ -160,14 +155,13 @@ func (walletModel *WalletModel) sniffHw() {
 	if err == nil {
 		wlt, err := walletManager.WalletEnv.LookupWallet(addr)
 		if err != nil {
-			// TODO i18n
-			logrus.Warnln("can not find a wallet matching the hardware one")
+			logSignersModel.Warnln("can not find a wallet matching the hardware one")
 			// FIXME handle this scenario with a wallet registration.
 			return
 		}
 		err = attachHwAsSigner(dev)
 		if err != nil {
-			logrus.WithError(err).Errorln("unable to attach signer")
+			logSignersModel.WithError(err).Errorln("unable to attach signer")
 			return
 		}
 		hadHwConnected = true
@@ -178,7 +172,7 @@ func (walletModel *WalletModel) sniffHw() {
 			beginIndex := walletModel.Index(0, 0, core.NewQModelIndex())
 			endIndex := walletModel.Index(walletModel.rowCount(core.NewQModelIndex()) - 1, 0, core.NewQModelIndex())
 			walletModel.DataChanged(beginIndex, endIndex, []int{HasHardwareWallet})
-			logrus.WithError(err).Info("connection to hardware wallet was lose")
+			logSignersModel.WithError(err).Info("connection to hardware wallet was lose")
 		}
 	}
 }

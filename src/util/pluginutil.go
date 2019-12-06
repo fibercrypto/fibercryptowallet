@@ -40,7 +40,7 @@ func LookupSignerByUID(wlt core.Wallet, id core.UID) core.TxnSigner {
 	// Wallet matches ID
 	uid, err := wltSigner.GetSignerUID()
 	if err != nil {
-		logrus.WithError(err).Errorln("unable to get signer uid")
+		logUtil.WithError(err).Errorln("unable to get signer uid")
 		return nil
 	}
 	if isSigner && uid == id {

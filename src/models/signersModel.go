@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/sirupsen/logrus"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
@@ -103,7 +102,7 @@ func (signerModel *SignerModel) loadModel(wltId string) {
 		signer := signers.Value()
 		sameSeedAsWlt, err := signer.ReadyForTxn(wlt, nil)
 		if err != nil {
-			logrus.WithError(err).Errorln("unable to check wallet and signer compatibility")
+			logSignersModel.WithError(err).Errorln("unable to check wallet and signer compatibility")
 			return
 		}
 		if !sameSeedAsWlt {
@@ -111,13 +110,13 @@ func (signerModel *SignerModel) loadModel(wltId string) {
 		}
 		uid, err := signer.GetSignerUID()
 		if err != nil {
-			logrus.WithError(err).Error("unable to get signer uid")
+			logSignersModel.WithError(err).Error("unable to get signer uid")
 			return
 		}
 		qSigner.SetId(string(uid))
 		desc, err := signer.GetSignerDescription()
 		if err != nil {
-			logrus.WithError(err).Error("unable to get signer description")
+			logSignersModel.WithError(err).Error("unable to get signer description")
 			return
 		}
 		qSigner.SetDescription(desc)
