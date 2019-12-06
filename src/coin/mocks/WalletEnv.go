@@ -26,8 +26,24 @@ func (_m *WalletEnv) GetStorage() core.WalletStorage {
 	return r0
 }
 
-// GetWallet provides a mock function with given fields: firstAddr
-func (_m *WalletEnv) GetWallet(firstAddr string) (core.Wallet, error) {
+// GetWalletSet provides a mock function with given fields:
+func (_m *WalletEnv) GetWalletSet() core.WalletSet {
+	ret := _m.Called()
+
+	var r0 core.WalletSet
+	if rf, ok := ret.Get(0).(func() core.WalletSet); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(core.WalletSet)
+		}
+	}
+
+	return r0
+}
+
+// LookupWallet provides a mock function with given fields: firstAddr
+func (_m *WalletEnv) LookupWallet(firstAddr string) (core.Wallet, error) {
 	ret := _m.Called(firstAddr)
 
 	var r0 core.Wallet
@@ -47,20 +63,4 @@ func (_m *WalletEnv) GetWallet(firstAddr string) (core.Wallet, error) {
 	}
 
 	return r0, r1
-}
-
-// GetWalletSet provides a mock function with given fields:
-func (_m *WalletEnv) GetWalletSet() core.WalletSet {
-	ret := _m.Called()
-
-	var r0 core.WalletSet
-	if rf, ok := ret.Get(0).(func() core.WalletSet); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(core.WalletSet)
-		}
-	}
-
-	return r0
 }

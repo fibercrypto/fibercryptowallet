@@ -196,7 +196,6 @@ func toTransaction(txn core.Transaction) (*coin.Transaction, error) {
 		// Raw transaction
 		unTxn, ok := txn.(*skycoin.SkycoinUninjectedTransaction)
 		if !ok {
-			// FIXME what error?
 			logrus.Errorln("error transforming core.Transaction to coin.Transaction")
 			return nil, fce.ErrInvalidTypeAssertion
 		}
@@ -340,26 +339,15 @@ func (sw SkyWallet) signTransaction(txn core.Transaction, idxs []int) (core.Tran
 
 // SignTransaction using hardware wallet
 func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
-	cloned, err := txn.Clone()
-	if err != nil {
-		logrus.WithError(err).Errorln("error cloning transaction")
-		return nil, fce.ErrTxnSignFailure
-	}
-	tr2Sign, ok := cloned.(core.Transaction)
-	if !ok {
-		// FIXME i18n
-		logrus.Errorln("unable to get cloned object as a core.Transaction")
-		return nil, fce.ErrTxnSignFailure
-	}
 	if sw.dev == nil {
 		// TODO i18n
 		logrus.Errorln("error creating hardware wallet device handler")
 		return nil, fce.ErrTxnSignFailure
 	}
 	//defer device.Close()
-	isFullySigned, err := tr2Sign.IsFullySigned()
+	isFullySigned, err := txn.IsFullySigned()
 	if err != nil {
-		return tr2Sign, err
+		return txn, err
 	}
 	if isFullySigned {
 		// FIXME i18n or named var, this should be used in tests assertions too
@@ -375,7 +363,7 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 		logrus.Debugln("not inputs to sign specified, assuming all")
 		idxs = getAllIndexesFromTxn(txn)
 	}
-	signedTxn, err := sw.signTransaction(tr2Sign, idxs)
+	signedTxn, err := sw.signTransaction(txn, idxs)
 	if err != nil {
 		logrus.WithError(err).Errorln("error signing transaction with device")
 		return nil, fce.ErrTxnSignFailure

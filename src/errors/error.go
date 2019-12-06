@@ -50,16 +50,14 @@ var (
 	// ErrInvalidValue invalid value was supplied in to function
 	ErrInvalidValue = errors.New("Value errors")
 	// ErrInvalidTypeAssertion the current value have not the expected type
-	ErrInvalidTypeAssertion = errors.New("invalid type assertion")
-	// ErrDeepCopyFailed the deep copy operation failed for the object
-	ErrDeepCopyFailed = errors.New("deep copy failed")
+	ErrInvalidTypeAssertion = errors.New("Invalid type assertion")
 	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
 	// wallet not found
-	ErrWltFromAddrNotFound = errors.New("error getting wallet from addr, no wallet found")
+	ErrWltFromAddrNotFound = errors.New("Error getting wallet from addr, no wallet found")
 	// ErrInvalidIndex invalid index detected
-	ErrInvalidIndex = errors.New("invalid index")
-	// ErrHwUnexpected sign transaction with hw failed
-	ErrHwUnexpected = errors.New("unexpected error with device")
-	// ErrHwSignTransactionFailed sign transaction with hw canceled
-	ErrHwSignTransactionCanceled = errors.New("sign transaction with hardware wallet has been canceled")
+	ErrInvalidIndex = errors.New("Invalid index")
+	// ErrHwUnexpected unexpected error with sky-hw
+	ErrHwUnexpected = errors.New("Unexpected error with device")
+	// ErrHwSignTransactionCanceled cancelled by user in the physical device
+	ErrHwSignTransactionCanceled = errors.New("Sign transaction with hardware wallet has been canceled")
 )

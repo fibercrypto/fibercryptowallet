@@ -1,9 +1,7 @@
 package skycoin
 
 import (
-	stdErr "errors"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"strconv"
 	"time"
 
@@ -77,20 +75,6 @@ func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) (uint64, error) 
 	}
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
-}
-
-func (txn *SkycoinPendingTransaction) Clone() (interface{}, error) {
-	if txn == nil {
-		return txn, nil
-	}
-	transaction := readable.UnconfirmedTransactionVerbose{}
-	err := util.DeepCopy(txn.Transaction, &transaction)
-	if err != nil {
-		logrus.WithError(err).Errorln("unable to clone transaction")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	newTxn := &SkycoinPendingTransaction{Transaction: transaction}
-	return newTxn, nil
 }
 
 func newCreatedTransactionOutput(uxID, address, coins, hours string) api.CreatedTransactionOutput {
@@ -389,30 +373,6 @@ func (txn *SkycoinUninjectedTransaction) EncodeSkycoinTransaction() ([]byte, err
 	return txn.txn.Serialize()
 }
 
-func (txn *SkycoinUninjectedTransaction) Clone() (interface{}, error) {
-	if txn == nil {
-		return txn, nil
-	}
-	nTxn := copyTransaction(txn.txn)
-	inputs, err := util.CloneTransactionInputs(txn.inputs)
-	if err != nil  {
-		logrus.WithError(err).Errorln("unable to clone inputs")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	outputs, err := util.CloneTransactionOutputs(txn.outputs)
-	if err != nil  {
-		logrus.WithError(err).Errorln("unable to clone outputs")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	newTxn := &SkycoinUninjectedTransaction{
-		txn:     nTxn,
-		inputs:  inputs,
-		outputs: outputs,
-		fee:     txn.fee,
-	}
-	return newTxn, nil
-}
-
 /*
 SkycoinTransaction
 */
@@ -525,35 +485,6 @@ func (txn *SkycoinTransaction) VerifySigned() error {
 // IsFullySigned deermine whether all transaction elements have been signed
 func (txn *SkycoinTransaction) IsFullySigned() (bool, error) {
 	return checkFullySigned(txn)
-}
-
-func (txn *SkycoinTransaction) Clone() (interface{}, error) {
-	if txn == nil {
-		return txn, nil
-	}
-	skyTxn := readable.TransactionVerbose{}
-	err := util.DeepCopy(txn.skyTxn, skyTxn)
-	if err != nil {
-		logrus.WithError(err).Errorln("unable to clone skyTxn")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	inputs, err := util.CloneTransactionInputs(txn.inputs)
-	if err != nil {
-		logrus.WithError(err).Errorln("unable to clone inputs")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	outputs, err := util.CloneTransactionOutputs(txn.outputs)
-	if err != nil {
-		logrus.WithError(err).Errorln("unable to clone outputs")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	newTxn := &SkycoinTransaction{
-		skyTxn:  skyTxn,
-		status:  txn.status,
-		inputs:  inputs,
-		outputs: outputs,
-	}
-	return newTxn, nil
 }
 
 func getSkycoinTransactionInputsFromTxnHash(hash string) ([]core.TransactionInput, error) {
@@ -704,34 +635,6 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 	return uint64(0), errors.ErrInvalidAltcoinTicker 
 }
 
-func (in *SkycoinTransactionInput) Clone() (interface{}, error) {
-	if in == nil {
-		return in, nil
-	}
-	skyIn := readable.TransactionInput{}
-	err := util.DeepCopy(in.skyIn, &skyIn)
-	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("error cloning skyIn")
-		return nil, stdErr.New("error cloning skyIn")
-	}
-	spentOutput, err := in.spentOutput.Clone()
-	if err != nil {
-		logrus.WithError(err).Errorln("unable to clone spentOutput")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	spentOutputTyped, ok := spentOutput.(*SkycoinTransactionOutput)
-	if !ok {
-		logrus.Errorln("can not get spentOutput as type SkycoinTransactionOutput")
-		return nil, errors.ErrInvalidTypeAssertion
-	}
-	newIn := &SkycoinTransactionInput{
-		skyIn:       skyIn,
-		spentOutput: spentOutputTyped,
-	}
-	return newIn, nil
-}
-
 /**
  * SkycoinTransactionInputIterator
  */
@@ -830,25 +733,6 @@ func (out *SkycoinTransactionOutput) IsSpent() bool {
 	return false
 }
 
-func (out *SkycoinTransactionOutput) Clone() (interface{}, error) {
-	if out == nil {
-		return out, nil
-	}
-	skyOut := readable.TransactionOutput{}
-	err := util.DeepCopy(out.skyOut, &skyOut)
-	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to clone skyOut")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	newOut := &SkycoinTransactionOutput{
-		skyOut:          skyOut,
-		spent:           out.spent,
-		calculatedHours: out.calculatedHours,
-	}
-	return newOut, nil
-}
-
 func newCreatedTransactionInputs(rIns []api.CreatedTransactionInput) []core.TransactionInput {
 	ins := make([]core.TransactionInput, len(rIns))
 	for i, rIn := range rIns {
@@ -927,35 +811,6 @@ func (in *SkycoinCreatedTransactionInput) GetCoins(ticker string) (uint64, error
 		return 0, err
 	}
 	return result, nil
-}
-
-func (in *SkycoinCreatedTransactionInput) Clone() (interface{}, error) {
-	if in == nil {
-		return in, nil
-	}
-	skyIn := api.CreatedTransactionInput{}
-	err := util.DeepCopy(in.skyIn, &skyIn)
-	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to clone skyIn")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	spentOutput, err := in.spentOutput.Clone()
-	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to clone spentOutput")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	spentOutputTyped, ok := spentOutput.(*SkycoinCreatedTransactionOutput)
-	if !ok {
-		logrus.Errorln("unable to get spentOutput as *SkycoinCreatedTransactionOutput")
-		return nil, stdErr.New("unable to get spentOutput as *SkycoinCreatedTransactionOutput")
-	}
-	newIn := &SkycoinCreatedTransactionInput{
-		skyIn:       skyIn,
-		spentOutput: spentOutputTyped,
-	}
-	return newIn, nil
 }
 
 func newCreatedTransactionOutputs(rOuts []api.CreatedTransactionOutput) []core.TransactionOutput {
@@ -1038,25 +893,6 @@ func (out *SkycoinCreatedTransactionOutput) IsSpent() bool {
 		return true
 	}
 	return false
-}
-
-func (out *SkycoinCreatedTransactionOutput) Clone() (interface{}, error) {
-	if out == nil {
-		return out, nil
-	}
-	skyOut := api.CreatedTransactionOutput{}
-	err := util.DeepCopy(out.skyOut, &skyOut)
-	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to clone skyOut")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	newIn := &SkycoinCreatedTransactionOutput{
-		skyOut:          skyOut,
-		spent:           out.spent,
-		calculatedHours: out.calculatedHours,
-	}
-	return newIn, nil
 }
 
 // NewSkycoinCreatedTransaction return readable created transaction wrapper
@@ -1147,36 +983,6 @@ func (txn *SkycoinCreatedTransaction) VerifySigned() error {
 // IsFullySigned deermine whether all transaction elements have been signed
 func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
 	return checkFullySigned(txn)
-}
-
-func (txn *SkycoinCreatedTransaction) Clone() (interface{}, error) {
-	if txn == nil {
-		return txn, nil
-	}
-	skyTxn := api.CreatedTransaction{}
-	err := util.DeepCopy(txn.skyTxn, &skyTxn)
-	if err != nil {
-		logrus.WithError(err).Errorln("unable to clone skyTxn")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	inputs, err := util.CloneTransactionInputs(txn.inputs)
-	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to clone inputs")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	outputs, err := util.CloneTransactionOutputs(txn.outputs)
-	if err != nil {
-		// FIXME i18n
-		logrus.WithError(err).Errorln("unable to clone outputs")
-		return nil, errors.ErrDeepCopyFailed
-	}
-	newTxn := &SkycoinCreatedTransaction{
-		skyTxn:  skyTxn,
-		inputs:  inputs,
-		outputs: outputs,
-	}
-	return newTxn, nil
 }
 
 // Type assertions to abort compilation if contracts not satisfied

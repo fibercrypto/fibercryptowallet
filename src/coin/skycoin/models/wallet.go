@@ -1145,7 +1145,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		// Raw transaction
 		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 		if !ok {
-			// FIXME what error?
 			logWallet.WithError(err).Warn("Couldn't load transaction un injected")
 			return nil, errors.ErrInvalidTxn
 		}
