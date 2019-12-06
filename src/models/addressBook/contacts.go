@@ -1,10 +1,10 @@
 package addressBook
 
 import (
-	skycoin "github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/models"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/data"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/data"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	"os"

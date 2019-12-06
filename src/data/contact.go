@@ -2,7 +2,7 @@ package data
 
 import (
 	"encoding/json"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
 // Contact is a contact of the DB
