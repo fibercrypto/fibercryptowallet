@@ -1,7 +1,10 @@
 package skycoin
 
 import (
+	mocks2 "github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"math"
+	"os"
 	"strconv"
 	"testing"
 
@@ -1042,4 +1045,49 @@ func TestSkycoinWalletTypes(t *testing.T) {
 	wltSet = &SkycoinLocalWallet{}
 	require.Equal(t, wallet.WalletTypeBip44, wltSet.DefaultWalletType())
 	require.Equal(t, []string{wallet.WalletTypeDeterministic, wallet.WalletTypeBip44}, wltSet.SupportedWalletTypes())
+}
+
+func TestLookupWalletOk(t *testing.T) {
+	// Giving
+	ws := &mocks2.PersistibleSet{}
+	_, kd, err := makeUxOutWithSecret(t)
+	require.NoError(t, err)
+	wallets := makeLocalWalletsFromKeyData(t, []KeyData{*kd})
+	ws.On("ListWallets").Return(NewSkycoinWalletIterator(wallets))
+	we := NewWalletDirectory(os.TempDir())
+	we.SetWltService(ws)
+	addrs := wallets[0].GenAddresses(core.AccountAddress, 0, 1, nil)
+	require.True(t, addrs.Next())
+	addr1 := addrs.Value()
+
+	// When
+	wltFound, err := we.LookupWallet(addr1.String())
+
+	// Then
+	require.NoError(t, err)
+	require.Equal(t, wallets[0], wltFound)
+}
+
+func TestLookupWalletFailAsExpected(t *testing.T) {
+	// Giving
+	ws := &mocks2.PersistibleSet{}
+	_, kd, err := makeUxOutWithSecret(t)
+	require.NoError(t, err)
+	wallets := makeLocalWalletsFromKeyData(t, []KeyData{*kd})
+	ws.On("ListWallets").Return(NewSkycoinWalletIterator(wallets))
+	we := NewWalletDirectory(os.TempDir())
+	we.SetWltService(ws)
+	addrs := wallets[0].GenAddresses(core.AccountAddress, 0, 1, nil)
+	require.True(t, addrs.Next())
+	addr1 := addrs.Value()
+	strAddr := addr1.String()
+	strAddr = strAddr[len(strAddr)/2:] + strAddr[:len(strAddr)/2]
+
+	// When
+	wltFound, err := we.LookupWallet(strAddr)
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, errors.ErrWltFromAddrNotFound, err)
+	require.Equal(t, nil, wltFound)
 }
