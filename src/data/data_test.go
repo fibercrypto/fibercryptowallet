@@ -2,6 +2,7 @@ package data
 
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/skycoin/skycoin/src/util/file"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -829,7 +830,15 @@ func TestDB_Init(t *testing.T) {
 // Generate a temporal file and return its path.
 func GetFilePath(t *testing.T) string {
 	home := os.Getenv("HOME")
-
+	ok, err := file.Exists(home + "/temp")
+	if err != nil {
+		t.Error(err)
+	}
+	if !ok {
+		if err := os.Mkdir(home+"/temp", 0777); err != nil {
+			t.Error(err)
+		}
+	}
 	f, err := ioutil.TempFile(home+"/temp", "testaddressbook-")
 	if err != nil {
 		t.Error(err)
