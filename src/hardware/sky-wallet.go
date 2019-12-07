@@ -169,7 +169,7 @@ func readableTxn2Transaction(txn skytypes.ReadableTxn) (*coin.Transaction, error
 	return skyTxn, nil
 }
 
-func rawTxn2Transaction (txn *skycoin.SkycoinUninjectedTransaction) (*coin.Transaction, error) {
+func rawTxn2Transaction (txn skytypes.SkycoinTxn) (*coin.Transaction, error) {
 	buf, err := txn.EncodeSkycoinTransaction()
 	if err != nil {
 
