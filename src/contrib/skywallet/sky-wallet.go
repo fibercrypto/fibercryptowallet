@@ -213,7 +213,7 @@ func coin2Core(txn *coin.Transaction, fee uint64) (core.Transaction, error) {
 	return unTxn, nil
 }
 
-func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int) (*coin.Transaction, error) {
+func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coin.Transaction, error) {
 	transactionInputs, err := getInputs(*txn, idxs)
 	if err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to get inputs")
@@ -224,7 +224,7 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int) (*coin.Transacti
 		logSkyWallet.WithError(err).Errorln("unable to get outputs")
 		return nil, fce.ErrTxnSignFailure
 	}
-	msg, err := sw.dev.TransactionSign(transactionInputs, transactionOutputs, skyWallet.WalletTypeDeterministic)
+	msg, err := sw.dev.TransactionSign(transactionInputs, transactionOutputs, dt)
 	if err != nil {
 		logSkyWallet.WithError(err).Error("error signing transaction")
 		return nil, fce.ErrTxnSignFailure
@@ -317,12 +317,36 @@ func (sw SkyWallet) signTransaction(txn core.Transaction, idxs []int) (core.Tran
 		logSkyWallet.WithError(err).Errorln("unable to get txn as coin.Transaction")
 		return nil, fce.ErrTxnSignFailure
 	}
-	signed, err := sw.signTxn(t, idxs)
+	dt := derivationType(txn)
+	signed, err := sw.signTxn(t, idxs, dt)
 	if err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to sign transaction")
 		return nil, fce.ErrTxnSignFailure
 	}
 	return coin2Core(signed, fee)
+}
+
+func derivationType(txn core.Transaction) string {
+	wt := skyWallet.WalletTypeDeterministic
+	inputs := txn.GetInputs()
+	if len(inputs) > 0 {
+		addr := inputs[0].GetSpentOutput().GetAddress()
+		if addr.IsBip32() {
+			wt = skyWallet.WalletTypeBip44
+		}
+	}
+	return wt
+}
+
+func verifyInputsGrouping(txn core.Transaction) error {
+	areBip32 := derivationType(txn) == skyWallet.WalletTypeBip44
+	for _, in := range txn.GetInputs() {
+		addr := in.GetSpentOutput().GetAddress()
+		if addr.IsBip32() != areBip32 {
+			return errors.New("all inputs should be grouped by derivation type")
+		}
+	}
+	return nil
 }
 
 // SignTransaction using hardware wallet
@@ -332,6 +356,10 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 		return nil, fce.ErrTxnSignFailure
 	}
 	//defer device.Close()
+	if err := verifyInputsGrouping(txn); err != nil {
+		logSkyWallet.WithError(err).Errorln("unable to sign transaction using skycoin hardware wallet")
+		return nil, fce.ErrTxnSignFailure
+	}
 	isFullySigned, err := txn.IsFullySigned()
 	if err != nil {
 		return txn, err
