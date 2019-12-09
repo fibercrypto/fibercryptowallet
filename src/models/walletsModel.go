@@ -1,7 +1,7 @@
 package models
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/hardware"
+	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	"github.com/therecipe/qt/core"

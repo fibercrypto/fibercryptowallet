@@ -4,7 +4,7 @@ import (
 	"errors"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/fibercrypto/fibercryptowallet/src/hardware/mocks"
+	"github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet/mocks"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	"github.com/gogo/protobuf/proto"

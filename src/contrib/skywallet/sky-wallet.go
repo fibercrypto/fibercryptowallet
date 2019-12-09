@@ -88,7 +88,6 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 	}
 	_, isSkycoinWlt := wlt.(skytypes.SkycoinWallet)
 	if !isSkycoinWlt {
-		// FIXME i18n
 		return false, errors.New("a non Skycoin wallet received in ReadyForTxn")
 	}
 	return hwMatchWallet(sw, wlt), nil
@@ -217,13 +216,11 @@ func coin2Core(txn *coin.Transaction, fee uint64) (core.Transaction, error) {
 func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int) (*coin.Transaction, error) {
 	transactionInputs, err := getInputs(*txn, idxs)
 	if err != nil {
-		// FIXME i18n
 		logSkyWallet.WithError(err).Errorln("unable to get inputs")
 		return nil, fce.ErrTxnSignFailure
 	}
 	transactionOutputs, err := getOutputs(*txn)
 	if err != nil {
-		// FIXME i18n
 		logSkyWallet.WithError(err).Errorln("unable to get outputs")
 		return nil, fce.ErrTxnSignFailure
 	}
@@ -239,15 +236,12 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int) (*coin.Transacti
 		if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
 			msgStr, err := skyWallet.DecodeFailMsg(msg)
 			if err != nil {
-				// FIXME i18n
 				logSkyWallet.WithError(err).Errorln("error decoding failed response")
 				return nil, fce.ErrTxnSignFailure
 			}
 			logSkyWallet.Errorln(msgStr)
-			// FIXME i18n
 			return nil, fce.ErrTxnSignFailure
 		}
-		// FIXME i18n
 		logSkyWallet.WithField("msgResponse", msg).Errorln("error signing transaction with hardware wallet")
 		return nil, fce.ErrTxnSignFailure
 	}
@@ -292,7 +286,6 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int) (*coin.Transacti
 			}
 			sgn, err := cipher.NewSig(buf)
 			if err != nil {
-				// FIXME i18n
 				logSkyWallet.WithError(err).Errorln("unable to get Skycoin address from buffer")
 				return nil, errors.New("unable to get Skycoin address from buffer")
 			}
@@ -344,12 +337,11 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 		return txn, err
 	}
 	if isFullySigned {
-		// FIXME i18n or named var, this should be used in tests assertions too
+		// TODO named var, this should be used in tests assertions too
 		return nil, errors.New("Transaction is fully signed")
 	}
 	idxs, err := util.StrSlice2IntSlice(indexes)
 	if err != nil {
-		// FIXME i18n
 		logSkyWallet.WithError(err).Errorln("unable to get indexes slice as int slice")
 		return nil, fce.ErrTxnSignFailure
 	}

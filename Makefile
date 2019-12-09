@@ -237,7 +237,7 @@ gen-mocks: ## Generate mocks for interface types
 	find src/coin/mocks/ -name '*.go' -type f -print0
 
 test-skyhw: ## Run Hardware wallet tests
-	go test github.com/fibercrypto/fibercryptowallet/src/hardware
+	go test github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
