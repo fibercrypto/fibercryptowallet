@@ -1455,7 +1455,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		if err != nil {
 			logWallet.Error(err)
 		}
-		if wlt.GetSkycoinWalletType() == "bip44" {
+		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 			newSkyAddrs.(*SkycoinAddress).isBip32 = true
 		}
 
