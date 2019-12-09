@@ -225,7 +225,7 @@ func (txn *SkycoinPendingTransaction) IsFullySigned() (bool, error) {
 /**
  * SkycoinTransactionIterator
  */
-type SkycoinTransactionIterator struct { //Implements TransactionIterator interface
+type SkycoinTransactionIterator struct { // Implements TransactionIterator interface
 	Current      int
 	Transactions []core.Transaction
 }
@@ -253,7 +253,7 @@ func NewSkycoinTransactionIterator(transactions []core.Transaction) *SkycoinTran
 /**
  * SkycoinTransactionOutputIterator
  */
-type SkycoinTransactionOutputIterator struct { //Implements TransactionOutputIterator interface
+type SkycoinTransactionOutputIterator struct { // Implements TransactionOutputIterator interface
 	Current int
 	Outputs []core.TransactionOutput
 }
@@ -314,7 +314,7 @@ func (skyTxn *SkycoinUninjectedTransaction) GetInputs() []core.TransactionInput 
 	if len(skyTxn.inputs) == 0 {
 		inputs, err := getSkycoinTransactionInputsFromInputsHashes(skyTxn.txn.In)
 		if err != nil {
-			//TODO: This method should also returns error
+			// TODO: This method should also returns error
 			return nil
 		}
 		skyTxn.inputs = inputs
@@ -630,9 +630,9 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return in.skyIn.CalculatedHours * accuracy, nil
 	}
-	//TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied 
+	// TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
-	return uint64(0), errors.ErrInvalidAltcoinTicker 
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 /**
@@ -680,7 +680,11 @@ func (out *SkycoinTransactionOutput) GetId() string {
 
 func (out *SkycoinTransactionOutput) GetAddress() core.Address {
 	logCoin.Info("Getting address for transaction output")
-	return &SkycoinAddress{address: out.skyOut.Address}
+	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address)
+	if err != nil {
+		logCoin.Error(err)
+	}
+	return skyAddrs
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output
@@ -706,7 +710,7 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return out.calculatedHours * accuracy, nil
 	}
-	//TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied
+	// TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
@@ -837,7 +841,11 @@ func (out *SkycoinCreatedTransactionOutput) GetId() string {
 }
 
 func (out *SkycoinCreatedTransactionOutput) GetAddress() core.Address {
-	return &SkycoinAddress{address: out.skyOut.Address}
+	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address)
+	if err != nil {
+		logCoin.Error(err)
+	}
+	return skyAddrs
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output
