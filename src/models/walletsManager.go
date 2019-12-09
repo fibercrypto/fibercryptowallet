@@ -60,7 +60,7 @@ type WalletManager struct {
 	_ func(wltId string) []*QOutput                                                                                                    `slot:"getOutputsFromWallet"`
 	_ func() string                                                                                                                    `slot:"getDefaultWalletType"`
 	_ func(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction)                     `slot:"signAndBroadcastTxnAsync"`
-	_                   func() []string                                                                                                                        `slot:"getAvailableWalletTypes"`
+	_ func() []string                                                                                                                  `slot:"getAvailableWalletTypes"`
 }
 
 func (walletM *WalletManager) init() {
@@ -645,6 +645,8 @@ func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []strin
 	channel := make(chan *QTransaction)
 	go func() {
 		pwd := func(message string, ctx core.KeyValueStore) (string, error) {
+			bridgeForPassword.BeginUse()
+			defer bridgeForPassword.EndUse()
 			bridgeForPassword.lock()
 			suffix := ""
 			v := ctx.GetValue(core.StrWalletLabel)

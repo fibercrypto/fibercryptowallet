@@ -16,6 +16,7 @@ type QBridge struct {
 	_      func() string        `slot:"getResult"`
 	result string
 	sem    sync.Mutex
+	use    sync.Mutex
 }
 
 func (b *QBridge) init() {
@@ -24,6 +25,14 @@ func (b *QBridge) init() {
 	b.ConnectUnlock(b.unlock)
 	b.ConnectSetResult(b.setResult)
 	b.ConnectGetResult(b.getResult)
+}
+
+func (b *QBridge) BeginUse() {
+	b.use.Lock()
+}
+
+func (b *QBridge) EndUse() {
+	b.use.Unlock()
 }
 
 func (b *QBridge) lock() {
