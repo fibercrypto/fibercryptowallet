@@ -31,6 +31,13 @@ func init() {
 		sections: make(map[string]*SectionManager, 0),
 	}
 
+	//Fix change constant to params.value
+	cache := map[string]string{"LifeTime": 1000}
+
+	cacheBytes, _ := json.Marshal(cache)
+	cacheOpt := NewOption("Cache", []string{}, false, string(cacheBytes))
+
+	_ = confManager.RegisterSection("global", []*Option{cacheOpt})
 }
 
 type ConfigManager struct {
