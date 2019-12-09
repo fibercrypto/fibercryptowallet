@@ -40,8 +40,6 @@ type WalletManager struct {
 	_ func()                                                                                                                           `constructor:"init"`
 	_ func(seed string, label string, walletType string, password string, scanN int) *QWallet                                          `slot:"createEncryptedWallet"`
 	_ func(seed string, label string, walletType string, scanN int) *QWallet                                                           `slot:"createUnencryptedWallet"`
-	_ func(seed string, label string, password string, scanN int) *QWallet                                                             `slot:"createEncryptedWallet"`
-	_ func(seed string, label string, scanN int) *QWallet                                                                              `slot:"createUnencryptedWallet"`
 	_ func(entropy int) string                                                                                                         `slot:"getNewSeed"`
 	_ func(seed string) int                                                                                                            `slot:"verifySeed"`
 	_ func(id string, n int, password string)                                                                                          `slot:"newWalletAddress"`

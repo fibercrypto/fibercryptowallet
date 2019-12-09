@@ -50,10 +50,7 @@ Page {
 		upperAltCointBound = valCH*9/10
 		minFeeAmount = valCH/10
     }
-<<<<<<< HEAD
-=======
 
->>>>>>> 361d7f76c5f2348ed6ab09bde7934bc05aade9e4
     function getSelectedAddressesWithWallets(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
@@ -94,7 +91,7 @@ Page {
         var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
         var enc = []
         for (var i = 0; i < indexs.length; i++){
-            walletEncrypted = []
+            var walletEncrypted = []
             walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
             walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].name)
             walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
