@@ -1,18 +1,15 @@
 package skycoin
 
 import (
-	"crypto/rand"
 	"github.com/davecgh/go-spew/spew"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
-	"github.com/skycoin/skycoin/src/api"
 	"github.com/skycoin/skycoin/src/cipher"
 	skytestsuite "github.com/skycoin/skycoin/src/cipher/testsuite"
 	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/readable"
 	"github.com/skycoin/skycoin/src/testutil"
 	"github.com/skycoin/skycoin/src/util/file"
 	"github.com/stretchr/testify/mock"
@@ -21,14 +18,6 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
-	//"crypto/rand"
-	//"testing"
-
-	//"github.com/skycoin/skycoin/src/cipher"
-	//"github.com/skycoin/skycoin/src/coin"
-	//"github.com/skycoin/skycoin/src/readable"
-	//"github.com/skycoin/skycoin/src/testutil"
-	//"github.com/stretchr/testify/require"
 )
 
 func makeUninjectedTransaction(t *testing.T, txn *coin.Transaction, fee uint64) *SkycoinUninjectedTransaction {
