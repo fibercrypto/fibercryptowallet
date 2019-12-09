@@ -84,9 +84,9 @@ func TestNewSkycoinAddress(t *testing.T) {
 			assert.False(t, got.Null())
 			assert.NotNil(t, got.Checksum())
 			assert.Implements(t, new(core.CryptoAccount), got.GetCryptoAccount())
-			got.(*SkycoinAddress).isBip32 = true
+			got.isBip32 = true
 			assert.True(t, got.IsBip32())
-			got.(*SkycoinAddress).isBip32 = false
+			got.isBip32 = false
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewSkycoinAddress() got = %v, want %v", got, tt.want)
 			}
@@ -123,7 +123,7 @@ func TestNewSkycoinAddressIterator(t *testing.T) {
 				for e := range tt.args.addresses {
 					addrs, err := NewSkycoinAddress(tt.args.addresses[e])
 					assert.NoError(t, err)
-					args = append(args, addrs)
+					args = append(args, &addrs)
 				}
 				got = NewSkycoinAddressIterator(args)
 			}
@@ -156,7 +156,7 @@ func TestSkycoinAddress_Verify(t *testing.T) {
 	addrsFromString := func(s string) core.Address {
 		skyAddrs, err := NewSkycoinAddress(s)
 		assert.NoError(t, err)
-		return skyAddrs
+		return &skyAddrs
 	}
 	pubkeyFromString := func(s string) core.PubKey {
 		b, err := hex.DecodeString(s)
