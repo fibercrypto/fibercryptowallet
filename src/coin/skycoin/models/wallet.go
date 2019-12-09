@@ -1469,6 +1469,7 @@ func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
 	logWallet.Info("Getting CryptoAccount from local wallet")
 	return wlt
 }
+
 func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	logWallet.Info("Getting loaded addresses from local wallet")
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
@@ -1485,7 +1486,7 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 			logWallet.Error(err)
 		}
 
-		if wlt.GetSkycoinWalletType() == "bip44" {
+		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 			newSkyAddrs.(*SkycoinAddress).isBip32 = true
 		}
 		addrs = append(addrs, newSkyAddrs)
