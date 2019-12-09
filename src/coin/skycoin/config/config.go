@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	local "github.com/fibercrypto/FiberCryptoWallet/src/main"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
 const (

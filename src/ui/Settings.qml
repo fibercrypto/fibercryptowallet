@@ -42,7 +42,6 @@ Page {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
-
         loadSavedSettings()
     }
 

@@ -6,7 +6,8 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	sky "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
+
+	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 
 	util "github.com/fibercrypto/fibercryptowallet/src/util"
 )

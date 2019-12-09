@@ -10,7 +10,9 @@ import (
 
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
+
+	//local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/models"
 	"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
@@ -46,6 +48,7 @@ func (hm *HistoryManager) init() {
 	hm.ConnectAddFilter(hm.addFilter)
 	hm.ConnectRemoveFilter(hm.removeFilter)
 	hm.walletEnv = models.GetWalletEnv()
+
 }
 
 type ByDate []*transactions.TransactionDetails

@@ -1,11 +1,12 @@
 package local
 
 import (
-	"errors"
+	"encoding/json"
 	"sync"
-	qtcore "github.com/therecipe/qt/core"
+
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	qtcore "github.com/therecipe/qt/core"
 )
 
 var logConfigManager = logging.MustGetLogger("ConfigManager")
@@ -20,18 +21,21 @@ const (
 var (
 	confManager         *ConfigManager
 	once                sync.Once
-	OptionNotFoundError error = errors.New("Option not found")
+	OptionNotFoundError = errors.ErrInvalidOptions
 )
 
 func init() {
 	qs := qtcore.NewQSettings("Simelo", "FiberCrypto Wallet", nil)
 	confManager = &ConfigManager{
-		setting: qs,
+		setting:  qs,
+		sections: make(map[string]*SectionManager, 0),
 	}
+
 }
 
 type ConfigManager struct {
-	setting *qtcore.QSettings
+	setting  *qtcore.QSettings
+	sections map[string]*SectionManager
 }
 
 func (cm *ConfigManager) GetSections() []string {
@@ -39,13 +43,21 @@ func (cm *ConfigManager) GetSections() []string {
 }
 
 func (cm *ConfigManager) GetSectionManager(section string) *SectionManager {
-	return &SectionManager{
-		name:     section,
-		settings: cm.setting,
+	sectionM, ok := cm.sections[section]
+	if !ok {
+		return nil
 	}
+	return sectionM
 }
 
 func (cm *ConfigManager) RegisterSection(name string, options []*Option) *SectionManager {
+
+	cm.sections[name] = &SectionManager{
+		name:     name,
+		settings: cm.setting,
+		options:  options,
+	}
+
 	cm.setting.BeginGroup(name)
 	defer cm.setting.EndGroup()
 	defer cm.setting.Sync()
@@ -61,15 +73,13 @@ func (cm *ConfigManager) RegisterSection(name string, options []*Option) *Sectio
 		}
 	}
 
-	return &SectionManager{
-		name:     name,
-		settings: cm.setting,
-	}
+	return cm.sections[name]
 }
 
 type SectionManager struct {
 	name     string
 	settings *qtcore.QSettings
+	options  []*Option
 }
 
 func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, error) {
@@ -95,6 +105,24 @@ func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, e
 		return "", OptionNotFoundError
 	}
 	return val.ToString(), nil
+}
+
+func (sm *SectionManager) GetDefaultValue(option string, sectionPath []string, name string) (string, error) {
+	for _, opt := range sm.options {
+		if compareStringSlices(sectionPath, opt.sectionPath) && option == opt.name {
+			store := make(map[string]string, 0)
+			err := json.Unmarshal([]byte(opt._default), &store)
+			if err != nil {
+				return "", err
+			}
+			val, ok := store[name]
+			if !ok {
+				return "", errors.ErrInvalidOptions
+			}
+			return val, nil
+		}
+	}
+	return "", OptionNotFoundError
 }
 
 func (sm *SectionManager) Save(name string, sectionPath []string, value string) error {
@@ -196,4 +224,16 @@ func NewOption(name string, sectionPath []string, optional bool, _default string
 
 func GetConfigManager() *ConfigManager {
 	return confManager
+}
+
+func compareStringSlices(a []string, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, val := range a {
+		if val != b[i] {
+			return false
+		}
+	}
+	return true
 }

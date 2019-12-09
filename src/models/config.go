@@ -3,8 +3,8 @@ package models
 import (
 	"encoding/json"
 	"strings"
+
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 
 	"github.com/therecipe/qt/qml"
 
@@ -19,6 +19,7 @@ type ConfigManager struct {
 	_             func(string) string         `slot:"getValue"`
 	_             func() []string             `slot:"getSections"`
 	_             func(string) *ConfigSection `slot:"getSection"`
+	_             func(string) string         `slot:"getDefaultValue"`
 }
 
 func (cm *ConfigManager) init() {
@@ -28,6 +29,7 @@ func (cm *ConfigManager) init() {
 	cm.ConnectGetSections(cm.getSections)
 	cm.ConnectGetSection(cm.getSection)
 	cm.ConnectGetValue(cm.getValue)
+	cm.ConnectGetDefaultValue(cm.getDefaultValue)
 
 }
 
@@ -61,6 +63,16 @@ func (cm *ConfigManager) getValue(path string) string {
 	optName := optPath[len(optPath)-1]
 	optPath = optPath[:len(optPath)-1]
 	return cm.GetSection(section).getValue(optName, optPath, name)
+}
+
+func (cm *ConfigManager) getDefaultValue(path string) string {
+	splitedPath := strings.Split(path, "/")
+	section := splitedPath[0]
+	optPath := splitedPath[1 : len(splitedPath)-1]
+	name := splitedPath[len(splitedPath)-1]
+	optName := optPath[len(optPath)-1]
+	optPath = optPath[:len(optPath)-1]
+	return cm.GetSection(section).getDefaultValue(optName, optPath, name)
 }
 
 type ConfigSection struct {
@@ -139,6 +151,14 @@ func (cs *ConfigSection) getValue(opt string, path []string, name string) string
 	}
 	return optV.getValue(name)
 
+}
+
+func (cs *ConfigSection) getDefaultValue(opt string, path []string, name string) string {
+	val, err := cs.sm.GetDefaultValue(opt, path, name)
+	if err != nil {
+		return ""
+	}
+	return val
 }
 
 type KeyValueStorage struct {

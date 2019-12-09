@@ -1,13 +1,11 @@
 package skycoin
 
 import (
-	"fmt"
-
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
 type SkyFiberPlugin struct {
@@ -62,7 +60,6 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 
 	wltSources, err := config.GetWalletSources()
 	if err != nil {
-		fmt.Println(err.Error(), " ES AQUIIIII")
 		return nil
 	}
 	wltEnvs := make([]core.WalletEnv, 0)
