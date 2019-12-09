@@ -2,7 +2,7 @@ package skycoin
 
 import (
 	"encoding/hex"
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/base58"
 	"github.com/stretchr/testify/assert"
@@ -66,7 +66,7 @@ func TestNewSkycoinAddress(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewSkycoinAddress(tt.args.addrStr, false)
+			got, err := NewSkycoinAddress(tt.args.addrStr)
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("NewSkycoinAddress() error = %v, wantErr %v", err, tt.wantErr)
@@ -84,7 +84,9 @@ func TestNewSkycoinAddress(t *testing.T) {
 			assert.False(t, got.Null())
 			assert.NotNil(t, got.Checksum())
 			assert.Implements(t, new(core.CryptoAccount), got.GetCryptoAccount())
-
+			got.(*SkycoinAddress).isBip32 = true
+			assert.True(t, got.IsBip32())
+			got.(*SkycoinAddress).isBip32 = false
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewSkycoinAddress() got = %v, want %v", got, tt.want)
 			}
@@ -119,7 +121,7 @@ func TestNewSkycoinAddressIterator(t *testing.T) {
 			} else {
 				var args []core.Address
 				for e := range tt.args.addresses {
-					addrs, err := NewSkycoinAddress(tt.args.addresses[e], false)
+					addrs, err := NewSkycoinAddress(tt.args.addresses[e])
 					assert.NoError(t, err)
 					args = append(args, addrs)
 				}
@@ -143,7 +145,7 @@ func TestSkycoinAddress_Bytes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			addr, err := NewSkycoinAddress(tt.address, false)
+			addr, err := NewSkycoinAddress(tt.address)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.address, addr.String())
 		})
@@ -152,7 +154,7 @@ func TestSkycoinAddress_Bytes(t *testing.T) {
 
 func TestSkycoinAddress_Verify(t *testing.T) {
 	addrsFromString := func(s string) core.Address {
-		skyAddrs, err := NewSkycoinAddress(s, false)
+		skyAddrs, err := NewSkycoinAddress(s)
 		assert.NoError(t, err)
 		return skyAddrs
 	}

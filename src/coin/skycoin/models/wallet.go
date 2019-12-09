@@ -643,13 +643,13 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 			return nil
 		}
 		for _, addr := range newAddrs {
-			bip32 := false
-			if wlt.GetSkycoinWalletType() == "bip44" {
-				bip32 = true
-			}
-			skyAddrs, err := NewSkycoinAddress(addr, bip32)
+			skyAddrs, err := NewSkycoinAddress(addr)
 			if err != nil {
 				logWallet.Error(err)
+			}
+
+			if wlt.GetSkycoinWalletType() == "bip44" {
+				skyAddrs.(*SkycoinAddress).isBip32 = true
 			}
 			addresses = append(addresses, skyAddrs)
 		}
@@ -734,7 +734,7 @@ func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
 
 func walletEntryToAddress(wltE readable.WalletEntry) *SkycoinAddress {
 
-	skyAddrs, err := NewSkycoinAddress(wltE.Address, false)
+	skyAddrs, err := NewSkycoinAddress(wltE.Address)
 	if err != nil {
 		logWallet.Error(err)
 		return nil
@@ -1451,14 +1451,14 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	addrs := getAddrs(walletLoaded)
 	skyAddrs := make([]core.Address, 0)
 	for _, addr := range addrs {
-		bip32 := false
-		if wlt.GetSkycoinWalletType() == "bip44" {
-			bip32 = true
-		}
-		newSkyAddrs, err := NewSkycoinAddress(addr.String(), bip32)
+		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
 			logWallet.Error(err)
 		}
+		if wlt.GetSkycoinWalletType() == "bip44" {
+			newSkyAddrs.(*SkycoinAddress).isBip32 = true
+		}
+
 		skyAddrs = append(skyAddrs, newSkyAddrs)
 	}
 	return NewSkycoinAddressIterator(skyAddrs)
@@ -1480,13 +1480,13 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	addrs := make([]core.Address, 0)
 	addresses := walletLoaded.GetAddresses()
 	for _, addr := range addresses {
-		bip32 := false
-		if wlt.GetSkycoinWalletType() == "bip44" {
-			bip32 = true
-		}
-		newSkyAddrs, err := NewSkycoinAddress(addr.String(), bip32)
+		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
 			logWallet.Error(err)
+		}
+
+		if wlt.GetSkycoinWalletType() == "bip44" {
+			newSkyAddrs.(*SkycoinAddress).isBip32 = true
 		}
 		addrs = append(addrs, newSkyAddrs)
 	}

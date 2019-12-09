@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/coin/skycoin/params"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"math"
@@ -284,7 +283,7 @@ func TestRemoteWalletTransfer(t *testing.T) {
 	sky := 500
 	hash := testutil.RandSHA256(t)
 
-	addr, err := NewSkycoinAddress(destinationAddress.String(), false)
+	addr, err := NewSkycoinAddress(destinationAddress.String())
 	assert.NoError(t, err)
 	opt := NewTransferOptions()
 	opt.SetValue("BurnFactor", "0.5")
@@ -360,9 +359,9 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 			Hours:   uint64(250),
 		},
 	}
-	fromAddr, err := NewSkycoinAddress(startAddress.String(), false)
+	fromAddr, err := NewSkycoinAddress(startAddress.String())
 	assert.NoError(t, err)
-	chgAddr, err := NewSkycoinAddress(changeAddress, false)
+	chgAddr, err := NewSkycoinAddress(changeAddress)
 	assert.NoError(t, err)
 
 	opt1 := NewTransferOptions()
@@ -473,7 +472,7 @@ func TestRemoteWalletSpend(t *testing.T) {
 			Hours:   uint64(250),
 		},
 	}
-	chgAddr, err := NewSkycoinAddress(changeAddress, false)
+	chgAddr, err := NewSkycoinAddress(changeAddress)
 	assert.NoError(t, err)
 	opt := NewTransferOptions()
 	opt.SetValue("BurnFactor", "0.5")
@@ -973,7 +972,7 @@ func TestLocalWalletTransfer(t *testing.T) {
 	sky := 500
 	wlt := makeLocalWallet(t)
 
-	addr, err := NewSkycoinAddress(destinationAddress.String(), false)
+	addr, err := NewSkycoinAddress(destinationAddress.String())
 	assert.NoError(t, err)
 	loadedAddrs, err := wlt.GetLoadedAddresses()
 	require.NoError(t, err)
@@ -1047,9 +1046,9 @@ func TestLocalWalletSendFromAddress(t *testing.T) {
 			Hours:   uint64(250),
 		},
 	}
-	fromAddr, err := NewSkycoinAddress(startAddress.String(), false)
+	fromAddr, err := NewSkycoinAddress(startAddress.String())
 	assert.NoError(t, err)
-	chgAddr, err := NewSkycoinAddress(changeAddress, false)
+	chgAddr, err := NewSkycoinAddress(changeAddress)
 	assert.NoError(t, err)
 
 	opt1 := NewTransferOptions()
@@ -1139,7 +1138,7 @@ func TestLocalWalletSpend(t *testing.T) {
 			Hours:   uint64(250),
 		},
 	}
-	chgAddr, err := NewSkycoinAddress(changeAddress, false)
+	chgAddr, err := NewSkycoinAddress(changeAddress)
 	assert.NoError(t, err)
 	opt := NewTransferOptions()
 	opt.SetValue("BurnFactor", "0.5")

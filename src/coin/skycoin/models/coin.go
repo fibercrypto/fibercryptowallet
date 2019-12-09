@@ -680,7 +680,7 @@ func (out *SkycoinTransactionOutput) GetId() string {
 
 func (out *SkycoinTransactionOutput) GetAddress() core.Address {
 	logCoin.Info("Getting address for transaction output")
-	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address, false)
+	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address)
 	if err != nil {
 		logCoin.Error(err)
 	}
@@ -841,7 +841,7 @@ func (out *SkycoinCreatedTransactionOutput) GetId() string {
 }
 
 func (out *SkycoinCreatedTransactionOutput) GetAddress() core.Address {
-	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address, false)
+	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address)
 	if err != nil {
 		logCoin.Error(err)
 	}
