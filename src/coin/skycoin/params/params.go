@@ -25,13 +25,13 @@ const (
 	// SkycoinDescription verbose explanaitiion of Skycoin
 	SkycoinDescription = "Skycoin is an entire cryptocurrency ecosystem aimed at eliminating mining rewards, developing energy-efficient custom hardware, speeding up transaction confirmation times, and the advancement of a more secure and private Internet"
 	// CoinHoursTicker internal identifier to refer to Skycoin coin hours
-	CoinHoursTicker = "SKY#CH"
+	CoinHoursTicker            = "SCH"
 	// CoinHoursName is the readable name for coin hours
 	CoinHoursName = "Coin Hours"
 	// CoinHoursDescription verbose explanaitiion of coin hours
 	CoinHoursDescription = "Coin Hours is the parallel asset used for transaction fee, for creating scarcity, and to increase transaction privacy"
 	// CoinHoursTicker internal identifier to refer to accumulated coin hours
-	CalculatedHoursTicker = "SKY#CHC"
+	CalculatedHoursTicker      = "SCH#ACC"
 	// CoinHoursName is the readable name for accumulated coin hours
 	CalculatedHoursName = "Calculated Hours"
 	// CalculatedHoursDescription verbose explanaitiion of accumulated coin hours
