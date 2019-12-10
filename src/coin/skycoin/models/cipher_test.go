@@ -2,10 +2,13 @@ package skycoin
 
 import (
 	"encoding/hex"
+	"errors"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/skycoin/skycoin/src/cipher"
 	"github.com/skycoin/skycoin/src/cipher/base58"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
 )
@@ -78,7 +81,7 @@ func TestNewSkycoinAddress(t *testing.T) {
 				return
 			}
 			cAddrs, err := cipher.AddressFromBytes(got.Bytes())
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, got.String(), cAddrs.String())
 			assert.False(t, got.IsBip32())
 			assert.False(t, got.Null())
@@ -122,7 +125,7 @@ func TestNewSkycoinAddressIterator(t *testing.T) {
 				var args []core.Address
 				for e := range tt.args.addresses {
 					addrs, err := NewSkycoinAddress(tt.args.addresses[e])
-					assert.NoError(t, err)
+					require.NoError(t, err)
 					args = append(args, &addrs)
 				}
 				got = NewSkycoinAddressIterator(args)
@@ -146,7 +149,7 @@ func TestSkycoinAddress_Bytes(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			addr, err := NewSkycoinAddress(tt.address)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, tt.address, addr.String())
 		})
 	}
@@ -155,14 +158,14 @@ func TestSkycoinAddress_Bytes(t *testing.T) {
 func TestSkycoinAddress_Verify(t *testing.T) {
 	addrsFromString := func(s string) core.Address {
 		skyAddrs, err := NewSkycoinAddress(s)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		return &skyAddrs
 	}
 	pubkeyFromString := func(s string) core.PubKey {
 		b, err := hex.DecodeString(s)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		spk, err := skyPubKeyFromBytes(b)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		return spk
 	}
 	tests := []struct {
@@ -188,10 +191,10 @@ func TestSkycoinAddress_Verify(t *testing.T) {
 			addrs := addrsFromString(tt.addrsString)
 			pk := pubkeyFromString(tt.pkHex)
 			if tt.wantErr {
-				assert.Error(t, addrs.Verify(pk))
+				require.Error(t, addrs.Verify(pk))
 				return
 			}
-			assert.NoError(t, addrs.Verify(pk))
+			require.NoError(t, addrs.Verify(pk))
 		})
 	}
 }
@@ -199,7 +202,7 @@ func TestSkycoinAddress_Verify(t *testing.T) {
 func Test_skyPubKeyFromBytes(t *testing.T) {
 	pubkeyFromHex := func(s string) []byte {
 		b, err := hex.DecodeString(s)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		return b
 	}
 	tests := []struct {
@@ -215,18 +218,18 @@ func Test_skyPubKeyFromBytes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := skyPubKeyFromBytes(pubkeyFromHex(tt.pubkHex))
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, pubkeyFromHex(tt.pubkHex), got.Bytes())
 			assert.Equal(t, tt.pubkHex, got.pubkey.Hex())
-			assert.NoError(t, got.Verify())
+			require.NoError(t, got.Verify())
 			assert.False(t, got.Null())
 			spk, err := toSkycoinPubKey(got)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, spk.Hex(), tt.pubkHex)
-			assert.NoError(t, spk.Verify())
+			require.NoError(t, spk.Verify())
 			assert.False(t, spk.Null())
 		})
 	}
@@ -235,7 +238,7 @@ func Test_skyPubKeyFromBytes(t *testing.T) {
 func Test_skySecKeyFromBytes(t *testing.T) {
 	pubkeyFromHex := func(s string) []byte {
 		b, err := hex.DecodeString(s)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		return b
 	}
 	tests := []struct {
@@ -251,19 +254,64 @@ func Test_skySecKeyFromBytes(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := skySecKeyFromBytes(pubkeyFromHex(tt.pubkHex))
 			if tt.wantErr {
-				assert.Error(t, err)
+				require.Error(t, err)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, pubkeyFromHex(tt.pubkHex), got.Bytes())
 			assert.Equal(t, tt.pubkHex, got.seckey.Hex())
-			assert.NoError(t, got.Verify())
+			require.NoError(t, got.Verify())
 			assert.False(t, got.Null())
 			spk, err := toSkycoinSecKey(got)
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			assert.Equal(t, spk.Hex(), tt.pubkHex)
-			assert.NoError(t, spk.Verify())
+			require.NoError(t, spk.Verify())
 			assert.False(t, spk.Null())
+		})
+	}
+}
+
+func TestAddressFromString(t *testing.T) {
+	type args struct {
+		addrs      string
+		coinTicket string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{name: "valid1", args: args{
+			addrs:      "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt",
+			coinTicket: "SKY",
+		}, want: "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", wantErr: false},
+		{name: "invalid_ticket", args: args{
+			addrs:      "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt",
+			coinTicket: "",
+		}, want: "", wantErr: true},
+		{name: "invalid_address", args: args{
+			addrs:      "2LEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt",
+			coinTicket: "SKY",
+		}, want: "", wantErr: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := util.AddressFromString(tt.args.addrs, tt.args.coinTicket)
+			if tt.wantErr {
+				require.Error(t, err)
+				switch tt.name {
+				case "invalid_ticket":
+					assert.Equal(t, err, errors.New("coinTicket not match"))
+				case "invalid_address":
+					assert.Equal(t, err, cipher.ErrAddressInvalidLength)
+				}
+
+			} else {
+				assert.NotNil(t, got)
+				assert.Equal(t, tt.want, got.String())
+			}
+
 		})
 	}
 }

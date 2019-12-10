@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"strconv"
 )
 
