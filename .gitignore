@@ -81,4 +81,5 @@ android
 
 # Temporary build files
 rcc_cgo_*.go
+darwin
 

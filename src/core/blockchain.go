@@ -19,3 +19,13 @@ type BlockchainStatus interface {
 	// GetNumberOfBlocks determine number of blocks in the blockchain
 	GetNumberOfBlocks() (uint64, error)
 }
+
+// BlockchainAPI abstract interface for transactions management and utility functions for specific blockchain.
+// The service should use the blockchain node to implement given interface.
+type BlockchainTransactionAPI interface {
+	// SendFromAddress instantiates a transaction to send funds from specific source addresses
+	// to multiple destination addresses
+	SendFromAddress(from []WalletAddress, to []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
+	// Spend instantiate a transaction that spends specific outputs to send to multiple destination addresses
+	Spend(unspent []WalletOutput, new []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
+}
