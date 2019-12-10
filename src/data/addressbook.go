@@ -5,6 +5,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/sha512"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"github.com/boltdb/bolt"
@@ -12,25 +14,33 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/util/file"
+	"github.com/skycoin/skycoin/src/visor/dbutil"
 	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/crypto/pbkdf2"
 	"io"
 	"time"
 )
 
 const (
-	// Type1  No security
-	Type1 = iota
-	// Type2 data obfuscation security
-	Type2
-	// Type3 password security
-	Type3
+	// NoSecurity  No security
+	NoSecurity = iota
+	// ObfuscationSecurity data obfuscation security
+	ObfuscationSecurity
+	// PasswordSecurity password security
+	PasswordSecurity
+)
+
+const (
+	Hash         = "hash"
+	Entropy      = "entropy"
+	SecurityType = "secType"
 )
 
 var (
 	// Errors
 	errBucketEmpty    = errors.New(" Error: bucket are empty")
 	errValEmpty       = errors.New(" Error: value are empty")
-	errParseContact   = errors.New(" The inserted cannot be parse")
+	errParseContact   = errors.New(" The inserted contact cannot be parse")
 	errInvalidSecType = fmt.Errorf("invalid security type")
 	// Db buckets.
 	dbAddrsBookBkt = []byte("AddressBook")
@@ -55,75 +65,75 @@ func NewAddressBook(path string) (core.AddressBook, error) {
 			Timeout: 1 * time.Second,
 		})
 	if err != nil {
-		return nil, errorWrapper(fmt.Errorf(" error opening data base: %s", err))
+		return nil, fmt.Errorf(" error opening data base: %s", err)
 	}
 	ab.db = db
 	return &ab, nil
 }
 
-// Init initialize an address book. Pass secType(security type) and password if is Type3.
+// Init initialize an address book. Pass secType(security type) and password if is PasswordSecurity.
 func (ab *DB) Init(secType int, password string) error {
 	if !ab.IsOpen() {
-		return errorWrapper(bolt.ErrDatabaseNotOpen)
+		return bolt.ErrDatabaseNotOpen
 	}
 
 	if ab.HasInit() {
-		return errorWrapper(fmt.Errorf("address book has init"))
+		return fmt.Errorf("address book has init")
 	}
 
 	var hash, entropy []byte
 	var err error
 
 	switch secType {
-	case Type1, Type2:
+	case NoSecurity, ObfuscationSecurity:
 		if err := ab.insertConfig(secType, hash, entropy); err != nil {
-			return errorWrapper(err)
+			return err
 		}
 		break
-	case Type3:
+	case PasswordSecurity:
 		ab.key = []byte(password)
 		if entropy, err = ab.genEntropy(); err != nil {
-			return errorWrapper(err)
+			return err
 		}
 
 		hash, err = bcrypt.GenerateFromPassword([]byte(password), 12)
 		if err != nil {
-			return errorWrapper(err)
+			return err
 		}
 
 		if err := ab.insertConfig(secType, hash, entropy); err != nil {
-			return errorWrapper(err)
+			return err
 		}
 		break
 	default:
-		return errorWrapper(errInvalidSecType)
+		return errInvalidSecType
 	}
 
 	return nil
 }
 
-// Authenticate authentic a user in the Address Book. ( Only SecType : Type3 )
+// Authenticate authentic a user in the Address Book. ( Only SecType : PasswordSecurity )
 func (ab *DB) Authenticate(password string) error {
 	if !ab.IsOpen() {
-		return errorWrapper(bolt.ErrDatabaseNotOpen)
+		return bolt.ErrDatabaseNotOpen
 	}
 
 	if !ab.HasInit() {
-		return errorWrapper(fmt.Errorf("address book not has init"))
+		return fmt.Errorf("address book not has init")
 	}
 
 	secType, err := ab.getSecTypeFromConfig()
 	if err != nil {
-		return errorWrapper(err)
+		return err
 	}
 
-	if secType != Type3 {
+	if secType != PasswordSecurity {
 		return nil
 	}
 
 	ab.key = []byte(password)
 	if err := ab.verifyHash(); err != nil {
-		return errorWrapper(err)
+		return err
 	}
 
 	return nil
@@ -135,7 +145,7 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 	// Start a writeable transaction.
 	tx, err := ab.db.Begin(true)
 	if err != nil {
-		return 0, errorWrapper(err)
+		return 0, err
 	}
 
 	defer func() {
@@ -150,11 +160,11 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 	}
 	for _, v := range c.GetAddresses() {
 		if err := ab.addressExists(v, contacts); err != nil {
-			return 0, errorWrapper(err)
+			return 0, err
 		}
 	}
 	if err := ab.nameExists(c, contacts); err != nil {
-		return 0, errorWrapper(err)
+		return 0, err
 	}
 
 	bkt := tx.Bucket(dbAddrsBookBkt)
@@ -169,12 +179,12 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 	if cc, ok := c.(*Contact); ok {
 		encryptedData, err := ab.encryptContact(cc)
 		if err != nil {
-			return 0, errorWrapper(err)
+			return 0, err
 		}
 
 		// Save contact to the bucket.
-		if err := bkt.Put(itob(c.GetID()), encryptedData); err != nil {
-			return 0, errorWrapper(err)
+		if err := bkt.Put(dbutil.Itob(c.GetID()), encryptedData); err != nil {
+			return 0, err
 		}
 	} else {
 		return 0, errParseContact
@@ -189,7 +199,7 @@ func (ab *DB) GetContact(id uint64) (core.Contact, error) {
 	// Start a readable transaction.
 	tx, err := ab.db.Begin(false)
 	if err != nil {
-		return nil, errorWrapper(err)
+		return nil, err
 	}
 
 	defer func() {
@@ -200,17 +210,17 @@ func (ab *DB) GetContact(id uint64) (core.Contact, error) {
 
 	bkt := tx.Bucket(dbAddrsBookBkt)
 	if bkt == nil {
-		return nil, errorWrapper(errBucketEmpty)
+		return nil, errBucketEmpty
 	}
 
 	// Read encoded contact bytes.
-	encryptData := bkt.Get(itob(id))
+	encryptData := bkt.Get(dbutil.Itob(id))
 	if encryptData == nil {
-		return nil, errorWrapper(errValEmpty)
+		return nil, errValEmpty
 	}
 	c, err := ab.decryptContact(encryptData)
 	if err != nil {
-		return nil, errorWrapper(err)
+		return nil, err
 	}
 	return c, nil
 }
@@ -220,7 +230,7 @@ func (ab *DB) ListContact() ([]core.Contact, error) {
 	// Start a redeable transaction.
 	tx, err := ab.db.Begin(false)
 	if err != nil {
-		return nil, errorWrapper(err)
+		return nil, err
 	}
 	defer func() {
 		if err := tx.Rollback(); err != nil {
@@ -230,19 +240,19 @@ func (ab *DB) ListContact() ([]core.Contact, error) {
 
 	bkt := tx.Bucket(dbAddrsBookBkt)
 	if bkt == nil {
-		return nil, errorWrapper(errBucketEmpty)
+		return nil, errBucketEmpty
 	}
 	var contacts []core.Contact
 	if err := bkt.ForEach(func(k, v []byte) error {
 		c, err := ab.decryptContact(v)
 		if err != nil {
-			return errorWrapper(err)
+			return err
 		}
 
 		contacts = append(contacts, c)
 		return nil
 	}); err != nil {
-		return nil, errorWrapper(err)
+		return nil, err
 	}
 	return contacts, nil
 }
@@ -252,13 +262,13 @@ func (ab *DB) DeleteContact(id uint64) error {
 	return ab.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
 		if bkt == nil {
-			return errorWrapper(errBucketEmpty)
+			return errBucketEmpty
 		}
-		if val := bkt.Get(itob(id)); val == nil {
-			return errorWrapper(errValEmpty)
+		if val := bkt.Get(dbutil.Itob(id)); val == nil {
+			return errValEmpty
 		}
 
-		return bkt.Delete(itob(id))
+		return bkt.Delete(dbutil.Itob(id))
 	})
 
 }
@@ -268,7 +278,7 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	var contacts []core.Contact
 	var err error
 	if contacts, err = ab.ListContact(); err != nil {
-		return errorWrapper(err)
+		return err
 	}
 	for e := range contacts {
 		if contacts[e].GetID() == id {
@@ -279,34 +289,34 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 
 	for _, ncAddrs := range newContact.GetAddresses() {
 		if err := ab.addressExists(ncAddrs, contacts); err != nil {
-			return errorWrapper(err)
+			return err
 		}
 	}
 	if err := ab.nameExists(newContact, contacts); err != nil {
-		return errorWrapper(err)
+		return err
 	}
 
 	if err := ab.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
 		if bkt == nil {
-			return errorWrapper(errBucketEmpty)
+			return errBucketEmpty
 		}
 		if cc, ok := newContact.(*Contact); ok {
 			cc.SetID(id)
 			encryptedData, err := ab.encryptContact(cc)
 			if err != nil {
-				return errorWrapper(err)
+				return err
 			}
-			if err := bkt.Put(itob(id), encryptedData); err != nil {
-				return errorWrapper(err)
+			if err := bkt.Put(dbutil.Itob(id), encryptedData); err != nil {
+				return err
 			}
 		} else {
-			return errorWrapper(errParseContact)
+			return errParseContact
 		}
 
 		return nil
 	}); err != nil {
-		return errorWrapper(err)
+		return err
 	}
 	return nil
 }
@@ -328,7 +338,7 @@ func (ab *DB) GetSecType() int {
 // Close shuts down the database.
 func (ab *DB) Close() error {
 	if err := ab.db.Close(); err != nil {
-		return errorWrapper(err)
+		return err
 	}
 	return nil
 }
@@ -375,7 +385,8 @@ func (ab *DB) getSecTypeFromConfig() (int, error) {
 	if buck == nil {
 		return -1, errBucketEmpty
 	}
-	return int(btoi(buck.Get([]byte("secType")))), nil
+
+	return int(dbutil.Btoi(buck.Get([]byte(SecurityType)))), nil
 }
 
 // genEntropy generate annil Entropy by a mnemonic. If mnemonic is nil,
@@ -406,7 +417,7 @@ func (ab *DB) getEntropyFromConfig() ([]byte, error) {
 	if buck == nil {
 		return nil, errBucketEmpty
 	}
-	return buck.Get([]byte("entropy")), nil
+	return buck.Get([]byte(Entropy)), nil
 }
 
 // getHashFromConfig get hash from config bucket.
@@ -426,7 +437,7 @@ func (ab *DB) getHashFromConfig() ([]byte, error) {
 		return nil, errBucketEmpty
 	}
 
-	hash := buck.Get([]byte("hash"))
+	hash := buck.Get([]byte(Hash))
 	if hash == nil {
 		return nil, errValEmpty
 	}
@@ -441,15 +452,15 @@ func (ab *DB) encryptContact(c *Contact) ([]byte, error) {
 		return nil, err
 	}
 	switch secType {
-	case Type1:
+	case NoSecurity:
 		return c.MarshalBinary()
-	case Type2:
+	case ObfuscationSecurity:
 		data, err := c.MarshalBinary()
 		if err != nil {
 			return nil, err
 		}
-		return toBase64(data), nil
-	case Type3:
+		return []byte(base64.StdEncoding.EncodeToString(data)), nil
+	case PasswordSecurity:
 		return ab.encryptAESGCM(c)
 	}
 
@@ -463,7 +474,7 @@ func (ab *DB) decryptContact(cipherMsg []byte) (core.Contact, error) {
 		return nil, err
 	}
 	switch secType {
-	case Type1:
+	case NoSecurity:
 		c := Contact{}
 		if err := c.UnmarshalBinary(cipherMsg); err != nil {
 			return nil, err
@@ -471,9 +482,9 @@ func (ab *DB) decryptContact(cipherMsg []byte) (core.Contact, error) {
 
 		return &c, nil
 
-	case Type2:
+	case ObfuscationSecurity:
 		c := Contact{}
-		data, err := fromBase64(cipherMsg)
+		data, err := base64.StdEncoding.DecodeString(string(cipherMsg))
 		if err != nil {
 			return nil, err
 		}
@@ -481,7 +492,7 @@ func (ab *DB) decryptContact(cipherMsg []byte) (core.Contact, error) {
 			return nil, err
 		}
 		return &c, nil
-	case Type3:
+	case PasswordSecurity:
 		return ab.decryptAESGCM(cipherMsg)
 	}
 
@@ -552,13 +563,13 @@ func (ab *DB) insertConfig(secType int, hash, entropy []byte) error {
 	}
 
 	bConf := tx.Bucket(dbConfigBkt)
-	if err := bConf.Put([]byte("hash"), hash); err != nil {
+	if err := bConf.Put([]byte(Hash), hash); err != nil {
 		return err
 	}
-	if err := bConf.Put([]byte("entropy"), entropy); err != nil {
+	if err := bConf.Put([]byte(Entropy), entropy); err != nil {
 		return err
 	}
-	if err := bConf.Put([]byte("secType"), itob(uint64(secType))); err != nil {
+	if err := bConf.Put([]byte(SecurityType), dbutil.Itob(uint64(secType))); err != nil {
 		return err
 	}
 
@@ -570,7 +581,7 @@ func (ab *DB) encryptAESGCM(c *Contact) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	block, err := aes.NewCipher(derivePassphrase(e, ab.key))
+	block, err := aes.NewCipher(pbkdf2.Key(e, ab.key, 4096, 32, sha512.New))
 	if err != nil {
 		return nil, err
 	}
@@ -598,7 +609,7 @@ func (ab *DB) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
 		return nil, err
 	}
 
-	block, err := aes.NewCipher(derivePassphrase(e, ab.key))
+	block, err := aes.NewCipher(pbkdf2.Key(e, ab.key, 4096, 32, sha512.New))
 	if err != nil {
 		return nil, err
 	}

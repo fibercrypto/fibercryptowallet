@@ -786,15 +786,15 @@ func TestDB_Init(t *testing.T) {
 		wantErr bool
 	}{
 		{name: "Type 1", args: args{
-			secType:  Type1,
+			secType:  NoSecurity,
 			password: "",
 		}, wantErr: false},
 		{name: "Type 2", args: args{
-			secType:  Type2,
+			secType:  ObfuscationSecurity,
 			password: "",
 		}, wantErr: false},
 		{name: "Type 3", args: args{
-			secType:  Type3,
+			secType:  PasswordSecurity,
 			password: defaultPass,
 		}, wantErr: false},
 		{name: "Type wrong", args: args{
@@ -802,7 +802,7 @@ func TestDB_Init(t *testing.T) {
 			password: "",
 		}, wantErr: true},
 		{name: "Two Init", args: args{
-			secType:  Type3,
+			secType:  PasswordSecurity,
 			password: defaultPass,
 		}, wantErr: true},
 	}
@@ -873,7 +873,7 @@ func InitAddrsBook(t *testing.T) core.AddressBook {
 	if err != nil {
 		t.Error(err)
 	}
-	err = AddrsBook.Init(Type3, defaultPass)
+	err = AddrsBook.Init(PasswordSecurity, defaultPass)
 	if err != nil {
 		t.Error(err)
 	}
