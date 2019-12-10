@@ -1482,9 +1482,7 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
 			logWallet.WithError(err).Warningf("GetLoadedAddresses: Unable to parse Skycoin address %s", addr.String())
-		}
-
-		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
+		} else if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 			newSkyAddrs.isBip32 = true
 		}
 		addrs = append(addrs, &newSkyAddrs)
