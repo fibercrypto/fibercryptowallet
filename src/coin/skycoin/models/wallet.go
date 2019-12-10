@@ -646,7 +646,7 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 		for _, addr := range newAddrs {
 			skyAddrs, err := NewSkycoinAddress(addr)
 			if err != nil {
-				logWallet.Error(err)
+				logWallet.WithError(err).Warningf("GenAddresses: Unable to parse address %s", skyAddrs.String())
 			}
 
 			if wlt.GetSkycoinWalletType() == "bip44" {
@@ -737,7 +737,7 @@ func walletEntryToAddress(wltE readable.WalletEntry) *SkycoinAddress {
 
 	skyAddrs, err := NewSkycoinAddress(wltE.Address)
 	if err != nil {
-		logWallet.Error(err)
+		logWallet.WithError(err).Error("Invalid address in wallet entry")
 		return nil
 	}
 
@@ -1092,31 +1092,31 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		uxouts = make([]coin.UxOut, len(cTxn.In))
 		txnHash, err := cipher.SHA256FromHex(cTxn.TxID)
 		if err != nil {
-			logWallet.Errorf("Error parsing transaction hash %s", cTxn.TxID)
+			logWallet.WithError(err).Errorf("Error parsing transaction hash %s", cTxn.TxID)
 			return nil, err
 		}
 		tmpInt64, err := util.GetCoinValue(cTxn.Fee, params.CoinHoursTicker)
 		if err != nil {
-			logWallet.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
+			logWallet.WithError(err).Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
 			return nil, err
 		}
 		txnFee = uint64(tmpInt64)
 		for i, cIn := range cTxn.In {
 			tmpInt64, err = util.GetCoinValue(cIn.Coins, params.SkycoinTicker)
 			if err != nil {
-				logWallet.Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
+				logWallet.WithError(err).Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
 				return nil, err
 			}
 			cInCoins := uint64(tmpInt64)
 			tmpInt64, err = util.GetCoinValue(cIn.Hours, params.CoinHoursTicker)
 			if err != nil {
-				logWallet.Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
+				logWallet.WithError(err).Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
 				return nil, err
 			}
 			cInHours := uint64(tmpInt64)
 			cInAddr, err := cipher.DecodeBase58Address(cIn.Address)
 			if err != nil {
-				logWallet.Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
+				logWallet.WithError(err).Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
 				return nil, err
 			}
 
@@ -1337,7 +1337,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 
 	if addrType != core.AccountAddress && addrType != core.ChangeAddress {
-		logWallet.Error("Incorret address type")
+		logWallet.Errorf("Incorret address type %d", addrType)
 		return nil
 	}
 	logWallet.Info("Generating addresses in local wallet")
@@ -1349,7 +1349,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	}
 
 	if addrType == core.ChangeAddress && walletLoaded.Type() != wallet.WalletTypeBip44 {
-		logWallet.Error("Incorrect address type")
+		logWallet.Error("Change addresses may be used with Skycoin BIP44 HD wallets only")
 		return nil
 	}
 
@@ -1454,7 +1454,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	for _, addr := range addrs {
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
-			logWallet.Error(err)
+			logWallet.WithError(err).Warningf("GenAddresses: Unable to parse Skycoin address %s", addr.String())
 		}
 		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 			newSkyAddrs.isBip32 = true
@@ -1484,7 +1484,7 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	for _, addr := range addresses {
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
-			logWallet.Error(err)
+			logWallet.WithError(err).Warningf("GetLoadedAddresses: Unable to parse Skycoin address %s", addr.String())
 		}
 
 		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
