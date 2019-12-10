@@ -1453,8 +1453,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
 			logWallet.WithError(err).Warningf("GenAddresses: Unable to parse Skycoin address %s", addr.String())
-		}
-		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
+		} else if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 			newSkyAddrs.isBip32 = true
 		}
 
