@@ -16,6 +16,7 @@ RowLayout {
     property alias enableBlockchain: menuItemBlockchain.enabled
     property alias enableNetworking: menuItemNetworking.enabled
     property alias enableSettings: menuItemSettings.enabled
+    property alias enableAddrsBook: menuItemAddressBook.enabled
 
     // Signals
     signal outputsRequested()
@@ -73,6 +74,7 @@ RowLayout {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
+            enableAddrsBook = true
         }
     }
 

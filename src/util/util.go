@@ -1,7 +1,6 @@
 package util
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"errors"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
