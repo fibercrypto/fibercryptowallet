@@ -93,6 +93,52 @@ func (_m *AltcoinPlugin) LoadPEX(netType string) (core.PEX, error) {
 	return r0, r1
 }
 
+// LoadSignService provides a mock function with given fields:
+func (_m *AltcoinPlugin) LoadSignService() (core.BlockchainSignService, error) {
+	ret := _m.Called()
+
+	var r0 core.BlockchainSignService
+	if rf, ok := ret.Get(0).(func() core.BlockchainSignService); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(core.BlockchainSignService)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// LoadTransactionAPI provides a mock function with given fields: netType
+func (_m *AltcoinPlugin) LoadTransactionAPI(netType string) (core.BlockchainTransactionAPI, error) {
+	ret := _m.Called(netType)
+
+	var r0 core.BlockchainTransactionAPI
+	if rf, ok := ret.Get(0).(func(string) core.BlockchainTransactionAPI); ok {
+		r0 = rf(netType)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(core.BlockchainTransactionAPI)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(netType)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // LoadWalletEnvs provides a mock function with given fields:
 func (_m *AltcoinPlugin) LoadWalletEnvs() []core.WalletEnv {
 	ret := _m.Called()

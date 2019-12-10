@@ -1,8 +1,11 @@
 package util
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"strconv"
 )
+
+var logUtil = logging.MustGetLogger("FiberCrypto util")
 
 func Min(a, b int) int {
 	if a <= b {

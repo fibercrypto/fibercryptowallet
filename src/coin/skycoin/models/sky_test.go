@@ -1,5 +1,12 @@
 package skycoin
 
+/**
+ * This file contains test code copied from github.com/skycoin/skycoin codebase
+ * for it is needed by test suite and functions not exported in upstream package.
+ *
+ * Please only add in here code copied from Skycoin codebase. Make sure it's strictly necessary.
+ */
+
 import (
 	"crypto/rand"
 	"path/filepath"

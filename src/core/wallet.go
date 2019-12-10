@@ -53,12 +53,12 @@ type Wallet interface {
 	// SetLabel establishes a label for this wallet
 	SetLabel(wltName string)
 	// Transfer instantiates unsigned transaction to send funds from any wallet address to single destination
-	Transfer(to TransactionOutput, options KeyValueStorage) (Transaction, error)
+	Transfer(to TransactionOutput, options KeyValueStore) (Transaction, error)
 	// SendFromAddress instantiates unsigned transaction to send funds from specific source addresses
 	// to multiple destination addresses
-	SendFromAddress(from []Address, to []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
+	SendFromAddress(from []Address, to []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
 	// Spend instantiate unsigned transaction spending specific outputs to send to multiple destination addresses
-	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStorage) (Transaction, error)
+	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
 	// GenAddresses discover new addresses based on default hierarchically deterministic derivation sequences
 	// FIXME: Support account index to be fully compatible with BIP44
 	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
@@ -66,9 +66,25 @@ type Wallet interface {
 	GetCryptoAccount() CryptoAccount
 	// GetLoadedAddresses iterates over wallet addresses discovered and known to have previous history and coins
 	GetLoadedAddresses() (AddressIterator, error)
-	// Sign creates a new transaction by (fully or partially) choosing a strategy to sign another transaction
+	// Sign creates a new transaction by (fully or partially) choosing a strategy to sign given transaction
 	// If signer instance is nil then default wallet strategy should be used for signing
 	Sign(txn Transaction, signer TxnSigner, pwd PasswordReader, index []string) (Transaction, error)
+}
+
+// WalletOutput binds transaction output to originating wallet
+type WalletOutput interface {
+	// GetWallet return wallet
+	GetWallet() Wallet
+	// GetOutput return transaction output.
+	GetOutput() TransactionOutput
+}
+
+// WalletAddress aggregates address with originating wallet
+type WalletAddress interface {
+	// GetWallet return wallet
+	GetWallet() Wallet
+	// GetOutput return transaction output.
+	GetAddress() Address
 }
 
 // SeedGenerator establishes the contract for generating BIP39-compatible mnemonics
@@ -79,7 +95,7 @@ type SeedGenerator interface {
 	VerifyMnemonic(seed string) (bool, error)
 }
 
-// WalletEnvironment is the entry point to manage wallets
+// WalletEnv is the entry point to manage wallets
 type WalletEnv interface {
 	// GetStorage provides access to wallet data store
 	GetStorage() WalletStorage

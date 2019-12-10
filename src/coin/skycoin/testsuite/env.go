@@ -8,6 +8,7 @@ import (
 const (
 	TestIDToken           = "fibercryptotest"
 	ManyAddressesFilename = "many-addresses.golden"
+	Seed0000Filename      = "seed-0000.golden"
 )
 
 func GetSkycoinCipherTestDataDir() string {

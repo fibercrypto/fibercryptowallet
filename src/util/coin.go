@@ -5,9 +5,10 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 )
 
-func NewGenericOutput(addr core.Address) GenericOutput {
+func NewGenericOutput(addr core.Address, id string) GenericOutput {
 	return GenericOutput{
 		Address: addr,
+		id:      id,
 		Balance: make(map[string]uint64),
 	}
 }
@@ -16,11 +17,12 @@ func NewGenericOutput(addr core.Address) GenericOutput {
 type GenericOutput struct {
 	Address core.Address
 	Balance map[string]uint64
+	id      string
 }
 
 // GetId provides transaction output ID
 func (gOut *GenericOutput) GetId() string {
-	return ""
+	return gOut.id
 }
 
 // IsSpent determines whether there exists a confirmed transaction with an input spending this output
