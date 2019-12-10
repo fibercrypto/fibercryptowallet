@@ -830,12 +830,15 @@ func TestDB_Init(t *testing.T) {
 
 func TestDB_Authenticate(t *testing.T) {
 	ab := InitAddrsBook(t)
+	path := ab.GetPath()
+	assert.True(t, ab.Exist(path))
 	assert.NoError(t, ab.Authenticate(defaultPass))
 	// address book error: crypto/bcrypt: hashedPassword is not the hash of the given password
 	assert.Error(t, ab.Authenticate(""))
 
 	CloseTest(t, ab)
 	// error database not open
+	assert.False(t, ab.Exist(path))
 	assert.Error(t, ab.Authenticate(defaultPass))
 
 }
