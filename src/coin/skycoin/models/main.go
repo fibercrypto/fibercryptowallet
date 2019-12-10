@@ -5,12 +5,15 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	appParams "github.com/fibercrypto/fibercryptowallet/src/params"
 )
 
+// SkyFiberPlugin provide support for SkyFiber coins
 type SkyFiberPlugin struct {
 	Params params.SkyFiberParams
 }
 
+// ListSupportedAltcoins to enumerate supported assets and related metadata
 func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 	return []core.AltcoinMetadata{
 		core.AltcoinMetadata{
@@ -23,38 +26,43 @@ func (p *SkyFiberPlugin) ListSupportedAltcoins() []core.AltcoinMetadata {
 		core.AltcoinMetadata{
 			Name:     CoinHoursName,
 			Ticker:   CoinHoursTicker,
-			Family:   CoinHoursFamily,
+			Family:   SkycoinFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
 		core.AltcoinMetadata{
 			Name:     CalculatedHoursName,
 			Ticker:   CalculatedHoursTicker,
-			Family:   CalculatedHoursFamily,
+			Family:   SkycoinFamily,
 			HasBip44: false,
 			Accuracy: 0,
 		},
 	}
 }
 
+// ListSupportedFamilies classifies similar cryptocurrencies into a family
 func (p *SkyFiberPlugin) ListSupportedFamilies() []string {
 	return []string{SkycoinFamily}
 }
 
+// RegisterTo boilerplate to register this plugin against an altcoin manager and enable it
 func (p *SkyFiberPlugin) RegisterTo(manager core.AltcoinManager) {
 	for _, info := range p.ListSupportedAltcoins() {
 		manager.RegisterAltcoin(info, p)
 	}
 }
 
+// GetName provides concise human-readable caption o identify this plugin
 func (p *SkyFiberPlugin) GetName() string {
 	return "SkyFiber"
 }
 
+// GetDescription describes plugin and its features
 func (p *SkyFiberPlugin) GetDescription() string {
 	return "FiberCrypto wallet connector for Skycoin and SkyFiber altcoins"
 }
 
+// LoadWalletEnvs loads wallet environments to lookup and create wallets
 func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 
 	config := local.GetConfigManager()
@@ -76,15 +84,25 @@ func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 	return wltEnvs
 }
 
+// LoadPEX instantiates proxy object to interact with nodes nodes of the P2P network
 func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
-	var poolSection string
-	if netType == "MainNet" {
-		poolSection = PoolSection
-	} else {
+	if netType != "MainNet" {
 		return nil, errors.ErrInvalidNetworkType
 	}
-	return NewSkycoinPEX(poolSection), nil
+	return NewSkycoinPEX(PoolSection), nil
+}
 
+// LoadTransactionAPI blockchain transaction API entry poiny
+func (p *SkyFiberPlugin) LoadTransactionAPI(netType string) (core.BlockchainTransactionAPI, error) {
+	if netType != "MainNet" {
+		return nil, errors.ErrInvalidNetworkType
+	}
+	return NewSkycoinBlockchain(appParams.DataRefreshTimeout), nil
+}
+
+// LoadSignService sign service entry point
+func (p *SkyFiberPlugin) LoadSignService() (core.BlockchainSignService, error) {
+	return &SkycoinSignService{}, nil
 }
 
 func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
@@ -92,3 +110,8 @@ func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 		Params: params,
 	}
 }
+
+// Type assertions
+var (
+	_ core.AltcoinPlugin = &SkyFiberPlugin{}
+)
