@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import Transactions 1.0
+import Utils 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
@@ -35,33 +36,38 @@ Page {
 
                 var isEncrypted
                 var walletSelected
+                var walletSelecteds
                 if (advancedMode){
-                    var outs = stackView.currentItem.advancedPage.getSelectedOutputs()
-                    var addrs = stackView.currentItem.advancedPage.getSelectedAddresses()
-                    walletSelected = stackView.currentItem.advancedPage.getSelectedWallet()[0]
+                    var outs = stackView.currentItem.advancedPage.getSelectedOutputsWithWallets()
+                    var addrs = stackView.currentItem.advancedPage.getSelectedAddressesWithWallets()
+                    //walletSelecteds = stackView.currentItem.advancedPage.getSelectedWallet()
                     var destinationSummary = stackView.currentItem.advancedPage.getDestinationsSummary()
                     var changeAddress = stackView.currentItem.advancedPage.getChangeAddress()
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
-                    if (outs.length > 0){
+                    if (outs[0].length > 0){
                         console.log(outs)
-                        txn = walletManager.sendFromOutputs(walletSelected, outs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                        txn = walletManager.sendFromOutputs(outs[1], outs[0], destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } else {
-                        if (addrs.length == 0){
-                            addrs = stackView.currentItem.advancedPage.getAllAddresses()
-                            
+                        if (addrs[0].length == 0){
+                            addrs = stackView.currentItem.advancedPage.getAllAddressesWithWallets()                            
                         }
-                        txn = walletManager.sendFromAddresses(walletSelected, addrs, destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
+                        txn = walletManager.sendFromAddresses(addrs[1], addrs[0], destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } 
                     
-                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()[0]
+                    isEncrypted = stackView.currentItem.advancedPage.walletIsEncrypted()
                 } else{
                     walletSelected = stackView.currentItem.simplePage.getSelectedWallet()
                     isEncrypted = stackView.currentItem.simplePage.walletIsEncrypted()
+                    var addrs = []
+                    addrs.push([])
+                    addrs.push([])
+                    addrs[0].push(stackView.currentItem.simplePage.getDestinationAddress())
+                    addrs[1].push(walletSelected)
                     txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
                 console.log("HT "+txn.hoursTraspassed)
-                dialogSendTransaction.showPasswordField =  isEncrypted// get if the current wallet is encrypted
+                dialogSendTransaction.showPasswordField =  false//isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
                 dialogSendTransaction.previewAmount = txn.amount
@@ -70,7 +76,7 @@ Page {
                 dialogSendTransaction.previewtransactionID = txn.transactionId
                 dialogSendTransaction.inputs = txn.inputs
                 dialogSendTransaction.outputs = txn.outputs
-                dialogSendTransaction.wallet = walletSelected
+                dialogSendTransaction.walletsAddresses = addrs
                 dialogSendTransaction.open()
                 
                 
@@ -168,7 +174,7 @@ Page {
     DialogSendTransaction {
         id: dialogSendTransaction
         anchors.centerIn: Overlay.overlay
-        property string wallet
+        property var walletsAddresses
         readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
@@ -177,8 +183,34 @@ Page {
         modal: true
         focus: true
 		onAccepted: {
-			var signedTxn = walletManager.signTxn(wallet,"", dialogSendTransaction.passwordText, [], txn)
-			var injected = walletManager.broadcastTxn(signedTxn)
+            walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
+            //var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
+			//var injected = walletManager.broadcastTxn(signedTxn)
 		}
+    }
+
+    DialogGetPassword{
+        id: getPasswordDialog
+        anchors.centerIn: Overlay.overlay
+        property int nAddress
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        onClosed:{
+            bridgeForPassword.setResult(getPasswordDialog.password)
+            bridgeForPassword.unlock()
+        }
+    }
+
+    QBridge{
+        id: bridgeForPassword
+
+        onGetPassword:{
+            getPasswordDialog.title = message
+            getPasswordDialog.clear()
+            getPasswordDialog.open()
+        }
     }
 }

@@ -18,10 +18,8 @@ const (
 	SkycoinDescription         = params.SkycoinDescription
 	CoinHoursTicker            = params.CoinHoursTicker
 	CoinHoursName              = params.CoinHoursName
-	CoinHoursFamily            = params.CoinHoursFamily
 	CoinHoursDescription       = params.CoinHoursDescription
 	CalculatedHoursTicker      = params.CalculatedHoursTicker
 	CalculatedHoursName        = params.CalculatedHoursName
-	CalculatedHoursFamily      = params.CalculatedHoursFamily
 	CalculatedHoursDescription = params.CalculatedHoursDescription
 )

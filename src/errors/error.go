@@ -31,8 +31,12 @@ var (
 	ErrInvalidNetworkType = errors.New("Invalid netType")
 	// ErrInvalidID invalid ID
 	ErrInvalidID = errors.New("Invalid Id")
+	// ErrNotFound target item not found in collection
+	ErrNotFound = errors.New("Item not found in collection")
 	// ErrParseTxID invalid string value for transaction hash ID
 	ErrParseTxID = errors.New("Error parsing transaction hash")
+	// ErrParseSHA256 invalid SHA256 hash
+	ErrParseSHA256 = errors.New("Error parsing SHA256 hash")
 	// ErrParseTxnFee invalid string value for transaction fee
 	ErrParseTxnFee = errors.New("Error parsing transaction fee")
 	// ErrParseTxnCoins transaction coins can not be parsed
@@ -49,4 +53,6 @@ var (
 	ErrInvalidWalletEntropy = errors.New("Entropy must be 128 or 256")
 	// ErrInvalidValue invalid value was supplied in to function
 	ErrInvalidValue = errors.New("Value errors")
+	// ErrWalletCantSign wallet can not sign transactions
+	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
 )
