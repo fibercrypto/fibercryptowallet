@@ -3,6 +3,7 @@ package data
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/skycoin/skycoin/src/util/file"
+	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -825,6 +826,18 @@ func TestDB_Init(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDB_Authenticate(t *testing.T) {
+	ab := InitAddrsBook(t)
+	assert.NoError(t, ab.Authenticate(defaultPass))
+	// address book error: crypto/bcrypt: hashedPassword is not the hash of the given password
+	assert.Error(t, ab.Authenticate(""))
+
+	CloseTest(t, ab)
+	// error database not open
+	assert.Error(t, ab.Authenticate(defaultPass))
+
 }
 
 // Generate a temporal file and return its path.
