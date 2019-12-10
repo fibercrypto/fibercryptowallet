@@ -51,20 +51,28 @@ Page {
 		minFeeAmount = valCH/10
     }
 
-    function getSelectedAddresses(){
+    function getSelectedAddressesWithWallets(){
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
+        addresses.push([])
+        addresses.push([])
         for (var i =0;i< indexs.length; i++){
-            addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
+            addresses[0].push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
+            addresses[1].push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].walletId)
+            //addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
         }
         return addresses
 	}
 
-    function getSelectedOutputs(){
+    function getSelectedOutputsWithWallets(){
         var indexs =  comboBoxWalletsUnspentOutputsSendFrom.getCheckedDelegates()
         var outputs = []
+        outputs.push([])
+        outputs.push([])
         for (var i =0;i< indexs.length; i++){
-            outputs.push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
+            outputs[0].push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
+            outputs[1].push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].walletOwner)
+            //outputs.push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
         }
         return outputs
     }
@@ -83,7 +91,11 @@ Page {
         var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
         var enc = []
         for (var i = 0; i < indexs.length; i++){
-            enc.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
+            var walletEncrypted = []
+            walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
+            walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].name)
+            walletEncrypted.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].encryptionEnabled)
+            enc.push(walletEncrypted)
         }
         return enc
     }
@@ -111,10 +123,14 @@ Page {
         return sliderCoinHoursShareFactor.value
     }
 
-    function getAllAddresses(){
+    function getAllAddressesWithWallets(){
         var addrs = []
+        addrs.push([])
+        addrs.push([])
         for (var i = 0; i < listAddresses.count; i++){
-            addrs.push(listAddresses.addresses[i].address)
+            addrs[0].push(listAddresses.addresses[i].address)
+            addrs[1].push(listAddresses.addresses[i].walletId)
+            //addrs.push(listAddresses.addresses[i].address)
         }
         return addrs
     }

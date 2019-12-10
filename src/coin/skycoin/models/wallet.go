@@ -20,6 +20,7 @@ import (
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/coin"
 	"github.com/skycoin/skycoin/src/readable"
+	"github.com/skycoin/skycoin/src/visor"
 	"github.com/skycoin/skycoin/src/wallet"
 )
 
@@ -30,6 +31,7 @@ const (
 	CoinHour       = params.CoinHoursTicker
 	CalculatedHour = params.CalculatedHoursTicker
 
+
 	walletExt             = ".wlt"
 	WalletTimestampFormat = "2006_01_02"
 
@@ -37,7 +39,7 @@ const (
 	SignerIDRemoteWallet = "sky.remote"
 )
 
-// Implements WalletIterator interface
+// SkycoinWalletIterator implements WalletIterator interface
 type SkycoinWalletIterator struct {
 	current int
 	wallets []core.Wallet
@@ -105,7 +107,11 @@ func (wltSrv *SkycoinRemoteWallet) CreateWallet(label string, seed string, wltTy
 	}
 	defer ReturnSkycoinClient(c)
 	if IsEncrypted {
-		password, err := pwd("Enter your password")
+		pwdCtx := util.NewKeyValueMap()
+		pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletSet)
+		pwdCtx.SetValue(core.StrMethodName, "CreateWallet")
+		pwdCtx.SetValue(core.StrWalletLabel, label)
+		password, err := pwd("Enter password to encrypt wallet", pwdCtx)
 		if err != nil {
 			logWallet.WithError(err).Fatal("Something was wrong entering the password")
 			return nil, err
@@ -166,7 +172,11 @@ func (wltSrv *SkycoinRemoteWallet) Encrypt(walletName string, pwd core.PasswordR
 		return
 	}
 	defer ReturnSkycoinClient(c)
-	password, err := pwd("Insert password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Encrypt")
+	pwdCtx.SetValue(core.StrWalletName, walletName)
+	password, err := pwd("Enter password to encrypt wallet", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -187,7 +197,11 @@ func (wltSrv *SkycoinRemoteWallet) Decrypt(walletName string, pwd core.PasswordR
 		return
 	}
 	defer ReturnSkycoinClient(c)
-	password, err := pwd("Insert password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Decrypt")
+	pwdCtx.SetValue(core.StrWalletName, walletName)
+	password, err := pwd("Enter password to decrypt wallet", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -363,6 +377,7 @@ func (wlt *RemoteWallet) Sign(txn core.Transaction, signer core.TxnSigner, pwd c
 
 func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordReader, index []int) (core.Transaction, error) {
 	client, err := NewSkycoinApiClient(PoolSection)
+	var password string = ""
 	if err != nil {
 		logWallet.WithError(err).Warn(err)
 		return nil, err
@@ -373,11 +388,19 @@ func (wlt *RemoteWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordR
 		logWallet.WithError(err).Warn(err)
 		return nil, errors.ErrInvalidTxn
 	}
-	password, err := pwd(fmt.Sprintf("Enter password to decrypt wallet '%s'", wlt.Id))
-	if err != nil {
-		logWallet.WithError(err).Warn("Error getting password")
-		return nil, err
+	if wlt.Encrypted {
+		pwdCtx := util.NewKeyValueMap()
+		pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+		pwdCtx.SetValue(core.StrMethodName, "Sign")
+		pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+		pwdCtx.SetValue(core.StrWalletLabel, wlt.Label)
+		password, err = pwd("Enter password", pwdCtx)
+		if err != nil {
+			logWallet.WithError(err).Warn("Error getting password")
+			return nil, err
+		}
 	}
+
 	txnBytes, err := skyTxn.EncodeSkycoinTransaction()
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't get Transaction Encoded")
@@ -424,7 +447,7 @@ func (wlt *RemoteWallet) GetId() string {
 	return wlt.Id
 }
 
-func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Transfer from remote wallet")
 	amount, err := destination.GetCoins(SkycoinTicker)
 	if err != nil {
@@ -468,7 +491,7 @@ func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options co
 
 type createTxn func(*api.CreateTransactionRequest) (core.Transaction, error)
 
-func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, options core.KeyValueStorage, createTxnFunc createTxn) (core.Transaction, error) {
+func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, change core.Address, options core.KeyValueStore, createTxnFunc createTxn) (core.Transaction, error) {
 	logWallet.Info("Creating transaction...")
 	var req api.CreateTransactionRequest
 	req.IgnoreUnconfirmed = false
@@ -484,7 +507,7 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 	if uxOut != nil {
 		uxOuts := make([]string, 0)
 		for _, out := range uxOut {
-			uxOuts = append(uxOuts, out.GetAddress().String())
+			uxOuts = append(uxOuts, out.GetId())
 		}
 		req.UxOuts = uxOuts
 	}
@@ -557,7 +580,7 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 
 }
 
-func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Sending from address of remote wallets")
 	createTxnFunc := func(txnR *api.CreateTransactionRequest) (core.Transaction, error) {
 		logWallet.Info("Creating transaction for remote wallet")
@@ -584,7 +607,7 @@ func (wlt *RemoteWallet) SendFromAddress(from []core.Address, to []core.Transact
 	return createTransaction(from, to, nil, change, options, createTxnFunc)
 }
 
-func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	createTxnFunc := func(txnR *api.CreateTransactionRequest) (core.Transaction, error) {
 		logWallet.Info("Spend using remote wallet")
 		var req api.WalletCreateTransactionRequest
@@ -618,7 +641,12 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 		return nil
 	}
 	defer ReturnSkycoinClient(c)
-	password, err := pwd("Insert password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+	pwdCtx.SetValue(core.StrMethodName, "GenAddresses")
+	pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+	pwdCtx.SetValue(core.StrWalletLabel, wlt.Label)
+	password, err := pwd("Enter password", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return nil
@@ -646,11 +674,8 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 		for _, addr := range newAddrs {
 			skyAddrs, err := NewSkycoinAddress(addr)
 			if err != nil {
-				logWallet.Error(err)
-				return nil
-			}
-
-			if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
+				logWallet.WithError(err).Warningf("GenAddresses: Unable to parse address %s", skyAddrs.String())
+			} else if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 				skyAddrs.isBip32 = true
 			}
 			addresses = append(addresses, &skyAddrs)
@@ -703,16 +728,50 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices = make([]int, len(strIdxs))
-		for i, strIdx := range strIdxs {
-			indices[i], err = strconv.Atoi(strIdx)
-			if err != nil {
-				return nil, errors.ErrIntegerInputsRequired
-			}
+		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		if err != nil {
+			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
+			return nil, err
 		}
 	}
 	signedTxn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)
 	return
+}
+
+func getHashIndices(ins []core.TransactionInput, strIdxs []string) (indices []int, err error) {
+	cache := make(map[string]int, len(ins))
+	indices = make([]int, len(strIdxs))
+	scanIdx := 0
+	for i, strIdx := range strIdxs {
+		if strIdx[0] == '#' {
+			// Parse index
+			index, err := strconv.Atoi(strIdx[1:])
+			if err != nil {
+				return nil, errors.ErrIntegerInputsRequired
+			}
+			indices[i] = index
+		} else if index, isCached := cache[strIdx]; isCached {
+			// Found in previous scan
+			indices[i] = index
+		} else {
+			logWallet.Infof("Scanning inputs array looking for %s", strIdx)
+			// Continue scanning for UXID position in slice
+			notfound := true
+			for ; scanIdx < len(ins) && notfound; scanIdx++ {
+				uxID := ins[scanIdx].GetId()
+				logWallet.Infof("Scanning inputs array found %s", uxID)
+				cache[uxID] = scanIdx
+				if uxID == strIdx {
+					indices[i] = scanIdx
+					notfound = false
+				}
+			}
+			if notfound {
+				return nil, errors.ErrNotFound
+			}
+		}
+	}
+	return indices, nil
 }
 
 func (wlt *RemoteWallet) GetSignerUID() core.UID {
@@ -738,7 +797,7 @@ func walletEntryToAddress(wltE readable.WalletEntry) *SkycoinAddress {
 
 	skyAddrs, err := NewSkycoinAddress(wltE.Address)
 	if err != nil {
-		logWallet.Error(err)
+		logWallet.WithError(err).Error("Invalid address in wallet entry")
 		return nil
 	}
 
@@ -834,7 +893,11 @@ func (wltSrv *SkycoinLocalWallet) GetWallet(id string) core.Wallet {
 
 func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, wltType string, IsEncrypted bool, pwd core.PasswordReader, scanAddressesN int) (core.Wallet, error) {
 	logWallet.Info("Creating Skycoin local wallet")
-	password, err := pwd("Insert Password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletSet)
+	pwdCtx.SetValue(core.StrMethodName, "CreateWallet")
+	pwdCtx.SetValue(core.StrWalletLabel, label)
+	password, err := pwd("Insert Password", pwdCtx)
 
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
@@ -918,11 +981,17 @@ func (wltSrv *SkycoinLocalWallet) Encrypt(walletName string, password core.Passw
 		return
 	}
 
+	wltLabel := wlt.Label()
 	if wlt.IsEncrypted() {
 		return
 	}
 
-	pwd, err := password("Insert Password")
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Encrypt")
+	pwdCtx.SetValue(core.StrWalletName, wltName)
+	pwdCtx.SetValue(core.StrWalletLabel, wltLabel)
+	pwd, err := password("Enter Password", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -952,7 +1021,13 @@ func (wltSrv *SkycoinLocalWallet) Decrypt(walletName string, password core.Passw
 	if !wlt.IsEncrypted() {
 		return
 	}
-	pwd, err := password("Insert Password")
+	wltLabel := wlt.Label()
+	pwdCtx := util.NewKeyValueMap()
+	pwdCtx.SetValue(core.StrTypeName, core.TypeNameWalletStorage)
+	pwdCtx.SetValue(core.StrMethodName, "Decrypt")
+	pwdCtx.SetValue(core.StrWalletName, wltName)
+	pwdCtx.SetValue(core.StrWalletLabel, wltLabel)
+	pwd, err := password("Enter Password", pwdCtx)
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return
@@ -1058,22 +1133,33 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	var err error
 	var uxouts []coin.UxOut
 	var txnFee uint64
-
+	var resultTxn core.Transaction
 	walletDir := filepath.Join(wlt.WalletDir, wlt.Id)
 	skyWlt, err := wallet.Load(walletDir)
+	var originalInputs []api.CreatedTransactionInput
+
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
-	if rTxn, isReadableTxn := txn.(skytypes.ReadableTxn); isReadableTxn {
+	rTxn, isReadableTxn := txn.(skytypes.ReadableTxn)
+	if isReadableTxn {
 		// Readable tranasctions should not need extra API calls
+
 		cTxn, err := rTxn.ToCreatedTransaction()
 		if err != nil {
+			logWallet.WithError(err).Warn("Failed to convert to readable transaction")
 			return nil, err
 		}
+		originalInputs = cTxn.In
 
 		if skyWlt.IsEncrypted() {
-			pass, err := pwd("Type your password")
+			pwdCtx := util.NewKeyValueMap()
+			pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+			pwdCtx.SetValue(core.StrMethodName, "Sign")
+			pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+			pwdCtx.SetValue(core.StrWalletLabel, wlt.Label)
+			pass, err := pwd("Enter password", pwdCtx)
 			if err != nil {
 				logWallet.WithError(err).Warn("Couldn't get password")
 				return nil, err
@@ -1093,31 +1179,31 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		uxouts = make([]coin.UxOut, len(cTxn.In))
 		txnHash, err := cipher.SHA256FromHex(cTxn.TxID)
 		if err != nil {
-			logWallet.Errorf("Error parsing transaction hash %s", cTxn.TxID)
+			logWallet.WithError(err).Errorf("Error parsing transaction hash %s", cTxn.TxID)
 			return nil, err
 		}
 		tmpInt64, err := util.GetCoinValue(cTxn.Fee, params.CoinHoursTicker)
 		if err != nil {
-			logWallet.Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
+			logWallet.WithError(err).Errorf("Error parsing fee of TxID %s : %s", cTxn.TxID, cTxn.Fee)
 			return nil, err
 		}
 		txnFee = uint64(tmpInt64)
 		for i, cIn := range cTxn.In {
 			tmpInt64, err = util.GetCoinValue(cIn.Coins, params.SkycoinTicker)
 			if err != nil {
-				logWallet.Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
+				logWallet.WithError(err).Errorf("Error parsing coins of uxto %s : %s", cIn.UxID, cIn.Coins)
 				return nil, err
 			}
 			cInCoins := uint64(tmpInt64)
 			tmpInt64, err = util.GetCoinValue(cIn.Hours, params.CoinHoursTicker)
 			if err != nil {
-				logWallet.Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
+				logWallet.WithError(err).Errorf("Error parsing hours of uxto %s : %s", cIn.UxID, cIn.Hours)
 				return nil, err
 			}
 			cInHours := uint64(tmpInt64)
 			cInAddr, err := cipher.DecodeBase58Address(cIn.Address)
 			if err != nil {
-				logWallet.Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
+				logWallet.WithError(err).Errorf("Error decoding base58 address for uxto %s : %s", cIn.UxID, cIn.Address)
 				return nil, err
 			}
 
@@ -1136,6 +1222,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 	} else {
 		// Raw transaction
+
 		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 		if !ok {
 			logWallet.WithError(err).Warn("Couldn't load transaction un injected")
@@ -1154,7 +1241,11 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 
 		if skyWlt.IsEncrypted() {
 
-			pass, err := pwd("Type your password")
+			pwdCtx := util.NewKeyValueMap()
+			pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+			pwdCtx.SetValue(core.StrMethodName, "Sign")
+			pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+			pass, err := pwd("Enter password", pwdCtx)
 			if err != nil {
 				logWallet.WithError(err).Warn("Couldn't get password")
 				return nil, err
@@ -1170,9 +1261,11 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		uxouts = make([]coin.UxOut, 0)
 		for _, in := range unTxn.txn.In {
 			ux, err := clt.UxOut(in.String())
+
 			if err != nil {
 				return nil, err
 			}
+
 			addr, err := cipher.DecodeBase58Address(ux.OwnerAddress)
 			if err != nil {
 				return nil, err
@@ -1200,17 +1293,41 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	if len(skyTxn.Sigs) == 0 {
 		skyTxn.Sigs = make([]cipher.Sig, len(skyTxn.In))
 	}
+
 	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
+
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't sign transaction using local wallet")
 		return nil, err
 	}
-	// FIXME: Return readable SkycoinCreatedTransaction since UX data is available
-	resultTxn, err := NewUninjectedTransaction(signedTxn, txnFee)
-	if err != nil {
-		logWallet.WithError(err).Warn("Couldn't create an un injected transaction")
-		return nil, err
+
+	if isReadableTxn {
+		vins := make([]visor.TransactionInput, 0)
+		for _, ux := range uxouts {
+			vin, err := visor.NewTransactionInput(ux, 0)
+			if err != nil {
+				logWallet.WithError(err).Warn("Couldn't create a transaction input")
+				return nil, err
+			}
+			vins = append(vins, vin)
+		}
+
+		crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
+		crtTxn.In = originalInputs
+
+		if err != nil {
+			logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
+			return nil, err
+		}
+
+		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
+	} else {
+		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	return resultTxn, nil
 
 }
@@ -1247,24 +1364,37 @@ func fromTxnResponse(txnResponse *api.CreateTransactionResponse) *SkycoinCreated
 	return NewSkycoinCreatedTransaction(txnResponse.Transaction)
 }
 
-func (wlt *LocalWallet) Transfer(destination core.TransactionOutput, options core.KeyValueStorage) (core.Transaction, error) {
-	logWallet.Info("Transfer from local wallet")
-	amount, err := destination.GetCoins(SkycoinTicker)
+func skyAPICreateTxn(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
+	client, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
-		logWallet.WithError(err).Warnf("Couldn't retrieve %s to transfer", params.SkycoinTicker)
+		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
-	to := destination.GetAddress()
+	defer ReturnSkycoinClient(client)
+	txnR, err := client.CreateTransaction(*txnReq)
+	if err != nil {
+		logWallet.WithError(err).Warn("Couldn't create transaction")
+		return nil, err
+	}
+	return fromTxnResponse(txnR), nil
+}
 
+func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValueStore) (core.Transaction, error) {
+	logWallet.Info("Sending form local wallet")
 	quotient, err := util.AltcoinQuotient(Sky)
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't get skycoin quotient")
 		return nil, err
 	}
+	amount, err := to.GetCoins(params.SkycoinTicker)
+	if err != nil {
+		logWallet.WithError(err).Warnf("Couldn't get ticker %s from TransactionOutput", params.SkycoinTicker)
+		return nil, err
+	}
 	strAmount := util.FormatCoins(amount, quotient)
 
 	var txnOutput SkycoinTransactionOutput
-	txnOutput.skyOut.Address = to.String()
+	txnOutput.skyOut.Address = to.GetAddress().String()
 	txnOutput.skyOut.Coins = strAmount
 	addresses := make([]core.Address, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()
@@ -1276,24 +1406,11 @@ func (wlt *LocalWallet) Transfer(destination core.TransactionOutput, options cor
 		addresses = append(addresses, iterAddr.Value())
 	}
 
-	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
-		client, err := NewSkycoinApiClient(PoolSection)
-		if err != nil {
-			logWallet.WithError(err).Warn("Couldn't load api client")
-			return nil, err
-		}
-		defer ReturnSkycoinClient(client)
-		txnR, err := client.CreateTransaction(*txnReq)
-		if err != nil {
-			logWallet.WithError(err).Warn("Couldn't create transaction")
-			return nil, err
-		}
-		return fromTxnResponse(txnR), nil
-	}
+	createTxnFunc := skyAPICreateTxn
 	return createTransaction(addresses, []core.TransactionOutput{&txnOutput}, nil, nil, options, createTxnFunc)
-
 }
-func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+
+func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Sending from addresses in local wallet")
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)
@@ -1314,7 +1431,7 @@ func (wlt LocalWallet) SendFromAddress(from []core.Address, to []core.Transactio
 	return createTransaction(from, to, nil, change, options, createTxnFunc)
 
 }
-func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStorage) (core.Transaction, error) {
+func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
 	logWallet.Info("Spending from local wallet")
 	createTxnFunc := func(txnReq *api.CreateTransactionRequest) (core.Transaction, error) {
 		client, err := NewSkycoinApiClient(PoolSection)
@@ -1338,7 +1455,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
 
 	if addrType != core.AccountAddress && addrType != core.ChangeAddress {
-		logWallet.Error("Incorret address type")
+		logWallet.Errorf("Incorret address type %d", addrType)
 		return nil
 	}
 	logWallet.Info("Generating addresses in local wallet")
@@ -1350,7 +1467,7 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	}
 
 	if addrType == core.ChangeAddress && walletLoaded.Type() != wallet.WalletTypeBip44 {
-		logWallet.Error("Incorrect address type")
+		logWallet.Error("Change addresses may be used with Skycoin BIP44 HD wallets only")
 		return nil
 	}
 
@@ -1408,7 +1525,12 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 
 		if walletLoaded.IsEncrypted() {
 			genAddressesInFile = func(w wallet.Wallet, n uint64) ([]cipher.Addresser, error) {
-				password, err := pwd("Insert Password")
+				pwdCtx := util.NewKeyValueMap()
+				pwdCtx.SetValue(core.StrTypeName, core.TypeNameWallet)
+				pwdCtx.SetValue(core.StrMethodName, "GenAddresses")
+				pwdCtx.SetValue(core.StrWalletName, wlt.Id)
+				pwdCtx.SetValue(core.StrWalletLabel, wlt.Label)
+				password, err := pwd("Enter password", pwdCtx)
 				if err != nil {
 					logWallet.WithError(err).Error("Something was wrong entering the password")
 					return nil, nil
@@ -1455,10 +1577,8 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 	for _, addr := range addrs {
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
-			logWallet.Error(err)
-			return nil
-		}
-		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
+			logWallet.WithError(err).Warningf("GenAddresses: Unable to parse Skycoin address %s", addr.String())
+		} else if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 			newSkyAddrs.isBip32 = true
 		}
 
@@ -1486,11 +1606,8 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	for _, addr := range addresses {
 		newSkyAddrs, err := NewSkycoinAddress(addr.String())
 		if err != nil {
-			logWallet.Error(err)
-			return nil, err
-		}
-
-		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
+			logWallet.WithError(err).Warningf("GetLoadedAddresses: Unable to parse Skycoin address %s", addr.String())
+		} else if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 			newSkyAddrs.isBip32 = true
 		}
 		addrs = append(addrs, &newSkyAddrs)
@@ -1559,12 +1676,10 @@ func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices = make([]int, len(strIdxs))
-		for i, strIdx := range strIdxs {
-			indices[i], err = strconv.Atoi(strIdx)
-			if err != nil {
-				return nil, errors.ErrIntegerInputsRequired
-			}
+		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		if err != nil {
+			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
+			return nil, err
 		}
 	}
 	signedTxn, err = wlt.signSkycoinTxn(txn, pwdReader, indices)

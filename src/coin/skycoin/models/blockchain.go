@@ -84,17 +84,17 @@ type SkycoinBlockchainInfo struct {
 	NumberOfBlocks        *readable.BlockchainProgress
 }
 
-type SkycoinBlockchainStatus struct { //Implements BlockchainStatus interface
+type SkycoinBlockchain struct { //Implements BlockchainStatus interface
 	lastTimeStatusRequested uint64 //nolint structcheck TODO: Not used
 	lastTimeSupplyRequested uint64
 	CacheTime               uint64
 	cachedStatus            *SkycoinBlockchainInfo
 }
 
-func NewSkycoinBlockchainStatus(invalidCacheTime uint64) *SkycoinBlockchainStatus {
-	return &SkycoinBlockchainStatus{CacheTime: invalidCacheTime}
+func NewSkycoinBlockchain(invalidCacheTime uint64) *SkycoinBlockchain {
+	return &SkycoinBlockchain{CacheTime: invalidCacheTime}
 }
-func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueMetric, ticker string) (uint64, error) {
+func (ss *SkycoinBlockchain) GetCoinValue(coinvalue core.CoinValueMetric, ticker string) (uint64, error) {
 	logBlockchain.Info("Getting Coin value")
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
@@ -122,7 +122,7 @@ func (ss *SkycoinBlockchainStatus) GetCoinValue(coinvalue core.CoinValueMetric, 
 	}
 }
 
-func (ss *SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
+func (ss *SkycoinBlockchain) GetLastBlock() (core.Block, error) {
 	logBlockchain.Info("Getting last block")
 	elapsed := uint64(time.Now().UTC().UnixNano()) - ss.lastTimeSupplyRequested
 	if elapsed > ss.CacheTime || ss.cachedStatus == nil {
@@ -136,7 +136,7 @@ func (ss *SkycoinBlockchainStatus) GetLastBlock() (core.Block, error) {
 	return ss.cachedStatus.LastBlockInfo, nil
 }
 
-func (ss *SkycoinBlockchainStatus) GetNumberOfBlocks() (uint64, error) {
+func (ss *SkycoinBlockchain) GetNumberOfBlocks() (uint64, error) {
 	logBlockchain.Info("Getting number of blocks")
 	if ss.cachedStatus == nil {
 		if ss.cachedStatus == nil {
@@ -151,12 +151,12 @@ func (ss *SkycoinBlockchainStatus) GetNumberOfBlocks() (uint64, error) {
 	return ss.cachedStatus.NumberOfBlocks.Current, nil
 }
 
-func (ss *SkycoinBlockchainStatus) SetCacheTime(time uint64) {
+func (ss *SkycoinBlockchain) SetCacheTime(time uint64) {
 	logBlockchain.Info("Setting cache time")
 	ss.CacheTime = time
 }
 
-func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
+func (ss *SkycoinBlockchain) requestSupplyInfo() error {
 	logBlockchain.Info("Requesting supply info")
 
 	c, err := NewSkycoinApiClient(PoolSection)
@@ -207,7 +207,7 @@ func (ss *SkycoinBlockchainStatus) requestSupplyInfo() error {
 	return nil
 }
 
-func (ss *SkycoinBlockchainStatus) requestStatusInfo() error {
+func (ss *SkycoinBlockchain) requestStatusInfo() error {
 	logBlockchain.Info("Requesting status information")
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -237,4 +237,27 @@ func (ss *SkycoinBlockchainStatus) requestStatusInfo() error {
 	}
 
 	return nil
+}
+
+// SendFromAddress instantiates a transaction to send funds from specific source addresses
+// to multiple destination addresses
+func (ss *SkycoinBlockchain) SendFromAddress(from []core.WalletAddress, to []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
+	logBlockchain.Info("Sending coins from addresses via blockchain API")
+	addresses := make([]core.Address, len(from))
+	for i, wa := range from {
+		addresses[i] = wa.GetAddress()
+	}
+	createTxnFunc := skyAPICreateTxn
+	return createTransaction(addresses, to, nil, change, options, createTxnFunc)
+}
+
+// Spend instantiates a transaction that spends specific outputs to send to multiple destination addresses
+func (ss *SkycoinBlockchain) Spend(unspent []core.WalletOutput, new []core.TransactionOutput, change core.Address, options core.KeyValueStore) (core.Transaction, error) {
+	logBlockchain.Info("Spending coins from outputs via blockchain API")
+	uxouts := make([]core.TransactionOutput, len(unspent))
+	for i, wu := range unspent {
+		uxouts[i] = wu.GetOutput()
+	}
+	createTxnFunc := skyAPICreateTxn
+	return createTransaction(nil, new, uxouts, change, options, createTxnFunc)
 }
