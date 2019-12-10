@@ -1,8 +1,8 @@
 package skycoin
 
 import (
+	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/skycoin/skycoin/src/cipher"
 )
 
 type SkycoinAddressIterator struct { //Implements AddressIterator interfaces

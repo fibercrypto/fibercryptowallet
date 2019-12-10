@@ -33,7 +33,7 @@ ignored = [
   version = "1.4.2"
 
 [[constraint]]
-  name = "github.com/skycoin/skycoin"
+  name = "github.com/SkycoinProject/skycoin"
   branch = "develop"
 
 [prune]

@@ -1,8 +1,8 @@
 package skycoin
 
 import (
+	skyparams "github.com/SkycoinProject/skycoin/src/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
-	skyparams "github.com/skycoin/skycoin/src/params"
 )
 
 var (

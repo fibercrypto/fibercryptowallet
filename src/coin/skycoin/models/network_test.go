@@ -4,11 +4,11 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/skycoin/skycoin/src/visor"
+	"github.com/SkycoinProject/skycoin/src/visor"
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/skycoin/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/readable"
 )
 
 func TestSkycoinPEXGetTxnPool(t *testing.T) {

@@ -1,10 +1,11 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"time"
 
-	"github.com/skycoin/skycoin/src/readable"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+
+	"github.com/SkycoinProject/skycoin/src/readable"
 
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
