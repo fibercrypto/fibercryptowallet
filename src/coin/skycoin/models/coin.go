@@ -844,6 +844,7 @@ func (out *SkycoinCreatedTransactionOutput) GetAddress() core.Address {
 	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address)
 	if err != nil {
 		logCoin.Error(err)
+		return nil
 	}
 	return &skyAddrs
 }
