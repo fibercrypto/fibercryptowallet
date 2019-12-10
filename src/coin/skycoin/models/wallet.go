@@ -629,6 +629,7 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 		logWallet.WithError(err).WithField("id", wlt.Id).Error("Couldn't GET /api/v1/wallet")
 		return nil
 	}
+	// FIXME: Lazy iterator wrapping wallet entries instead of copying to addresses slice
 	addresses := make([]core.Address, 0)
 	for _, entry := range wltR.Entries[startIndex:int(util.Min(len(wltR.Entries), int(startIndex+count)))] {
 		addresses = append(addresses, walletEntryToAddress(entry))
@@ -649,9 +650,9 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 			}
 
 			if wlt.GetSkycoinWalletType() == "bip44" {
-				skyAddrs.(*SkycoinAddress).isBip32 = true
+				skyAddrs.isBip32 = true
 			}
-			addresses = append(addresses, skyAddrs)
+			addresses = append(addresses, &skyAddrs)
 		}
 	}
 
@@ -740,7 +741,7 @@ func walletEntryToAddress(wltE readable.WalletEntry) *SkycoinAddress {
 		return nil
 	}
 
-	return skyAddrs.(*SkycoinAddress)
+	return &skyAddrs
 }
 
 func NewWalletDirectory(dirPath string) *WalletDirectory {
@@ -1455,11 +1456,11 @@ func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, coun
 		if err != nil {
 			logWallet.Error(err)
 		}
-		if wlt.GetSkycoinWalletType() == "bip44" {
-			newSkyAddrs.(*SkycoinAddress).isBip32 = true
+		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
+			newSkyAddrs.isBip32 = true
 		}
 
-		skyAddrs = append(skyAddrs, newSkyAddrs)
+		skyAddrs = append(skyAddrs, &newSkyAddrs)
 	}
 	return NewSkycoinAddressIterator(skyAddrs)
 
@@ -1469,6 +1470,7 @@ func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
 	logWallet.Info("Getting CryptoAccount from local wallet")
 	return wlt
 }
+
 func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 	logWallet.Info("Getting loaded addresses from local wallet")
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
@@ -1485,10 +1487,10 @@ func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
 			logWallet.Error(err)
 		}
 
-		if wlt.GetSkycoinWalletType() == "bip44" {
-			newSkyAddrs.(*SkycoinAddress).isBip32 = true
+		if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
+			newSkyAddrs.isBip32 = true
 		}
-		addrs = append(addrs, newSkyAddrs)
+		addrs = append(addrs, &newSkyAddrs)
 	}
 
 	return NewSkycoinAddressIterator(addrs), nil

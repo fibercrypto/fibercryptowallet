@@ -89,7 +89,11 @@ func (p *SkyFiberPlugin) LoadPEX(netType string) (core.PEX, error) {
 
 // AddressFromString retrieves address corresponding to readable representation
 func (p *SkyFiberPlugin) AddressFromString(addrStr string) (core.Address, error) {
-	return NewSkycoinAddress(addrStr)
+	addr, err := NewSkycoinAddress(addrStr)
+	if err != nil {
+		return nil, err
+	}
+	return &addr, nil
 }
 
 // PubKeyFromBytes retrieves address corresponding to readable representation

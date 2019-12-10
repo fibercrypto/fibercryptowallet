@@ -435,7 +435,7 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		poolSection: PoolSection,
 	}
 
-	ret, err := wlt1.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
+	ret, err := wlt1.SendFromAddress([]core.Address{&fromAddr}, []core.TransactionOutput{toAddr}, &chgAddr, opt1)
 	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)
@@ -449,7 +449,7 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		poolSection: PoolSection,
 	}
 
-	ret, err = wlt2.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
+	ret, err = wlt2.SendFromAddress([]core.Address{&fromAddr}, []core.TransactionOutput{toAddr}, &chgAddr, opt2)
 	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err = ret.ComputeFee(CoinHour)
@@ -516,7 +516,7 @@ func TestRemoteWalletSpend(t *testing.T) {
 		poolSection: PoolSection,
 	}
 
-	ret, err := wlt.Spend(nil, []core.TransactionOutput{toAddr}, chgAddr, opt)
+	ret, err := wlt.Spend(nil, []core.TransactionOutput{toAddr}, &chgAddr, opt)
 	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)
@@ -1106,7 +1106,7 @@ func TestLocalWalletSendFromAddress(t *testing.T) {
 	mockSkyApiCreateTransaction(global_mock, &req2, crtTxn)
 
 	// Testing HoursSelection to auto
-	ret, err := wlt.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt1)
+	ret, err := wlt.SendFromAddress([]core.Address{&fromAddr}, []core.TransactionOutput{toAddr}, &chgAddr, opt1)
 	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)
@@ -1115,7 +1115,7 @@ func TestLocalWalletSendFromAddress(t *testing.T) {
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 
 	// Testing HoursSelection to manual
-	ret, err = wlt.SendFromAddress([]core.Address{fromAddr}, []core.TransactionOutput{toAddr}, chgAddr, opt2)
+	ret, err = wlt.SendFromAddress([]core.Address{&fromAddr}, []core.TransactionOutput{toAddr}, &chgAddr, opt2)
 	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err = ret.ComputeFee(CoinHour)
@@ -1172,7 +1172,7 @@ func TestLocalWalletSpend(t *testing.T) {
 
 	mockSkyApiCreateTransaction(global_mock, &req, crtTxn)
 
-	ret, err := wlt.Spend(nil, []core.TransactionOutput{toAddr}, chgAddr, opt)
+	ret, err := wlt.Spend(nil, []core.TransactionOutput{toAddr}, &chgAddr, opt)
 	require.NoError(t, err)
 	require.NotNil(t, ret)
 	val, err := ret.ComputeFee(CoinHour)

@@ -28,7 +28,7 @@ func (ga *GenericAddress) Verify(core.PubKey) error {
 }
 
 func (ga *GenericAddress) Null() bool {
-	return true
+	return ga.Address == ""
 }
 
 func (ga *GenericAddress) IsBip32() bool {

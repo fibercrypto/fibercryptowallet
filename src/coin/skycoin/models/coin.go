@@ -684,7 +684,7 @@ func (out *SkycoinTransactionOutput) GetAddress() core.Address {
 	if err != nil {
 		logCoin.Error(err)
 	}
-	return skyAddrs
+	return &skyAddrs
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output
@@ -845,7 +845,7 @@ func (out *SkycoinCreatedTransactionOutput) GetAddress() core.Address {
 	if err != nil {
 		logCoin.Error(err)
 	}
-	return skyAddrs
+	return &skyAddrs
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output
