@@ -110,7 +110,7 @@ console.log("asd")
                 }
        }// ScrollView
   RoundButton {
-          text: qsTr("Add Contact")
+          text: qsTr("+")
           highlighted: true
           anchors.margins: 10
           anchors.right: parent.right
