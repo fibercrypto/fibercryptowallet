@@ -25,22 +25,22 @@ type WalletModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QWallet               `property:"wallets"`
 
-	_ func(*QWallet)                                                                    `slot:"addWallet"`
-	_ func(row int, name string, encryptionEnabled bool, sky string, coinHours string)  `slot:"editWallet"`
-	_ func(row int)                                                                     `slot:"removeWallet"`
-	_ func([]*QWallet)                                                                  `slot:"loadModel"`
-	_ func([]*QWallet)                                                                  `slot:"updateModel"`
-	_ int                                                                               `property:"count"`
+	_ func(*QWallet)                                                                   `slot:"addWallet"`
+	_ func(row int, name string, encryptionEnabled bool, sky string, coinHours string) `slot:"editWallet"`
+	_ func(row int)                                                                    `slot:"removeWallet"`
+	_ func([]*QWallet)                                                                 `slot:"loadModel"`
+	_ func([]*QWallet)                                                                 `slot:"updateModel"`
+	_ int                                                                              `property:"count"`
 }
 
 type QWallet struct {
 	core.QObject
-	_ string  `property:"name"`
-	_ int     `property:"encryptionEnabled"`
-	_ string  `property:"sky"`
-	_ string  `property:"coinHours"`
-	_ string  `property:"fileName"`
-	_ bool    `property:"expand"`
+	_ string `property:"name"`
+	_ int    `property:"encryptionEnabled"`
+	_ string `property:"sky"`
+	_ string `property:"coinHours"`
+	_ string `property:"fileName"`
+	_ bool   `property:"expand"`
 }
 
 func (walletModel *WalletModel) init() {
