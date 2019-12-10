@@ -176,6 +176,9 @@ func (walletModel *WalletModel) roleNames() map[int]*core.QByteArray {
 
 func (walletModel *WalletModel) addWallet(w *QWallet) {
 	logWalletsModel.Info("Add Wallet")
+	if w.Pointer() == nil {
+		return
+	}
 	walletModel.BeginInsertRows(core.NewQModelIndex(), len(walletModel.Wallets()), len(walletModel.Wallets()))
 	qml.QQmlEngine_SetObjectOwnership(w, qml.QQmlEngine__CppOwnership)
 	walletModel.SetWallets(append(walletModel.Wallets(), w))
