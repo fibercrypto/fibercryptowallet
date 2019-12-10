@@ -647,9 +647,7 @@ func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, cou
 			skyAddrs, err := NewSkycoinAddress(addr)
 			if err != nil {
 				logWallet.WithError(err).Warningf("GenAddresses: Unable to parse address %s", skyAddrs.String())
-			}
-
-			if wlt.GetSkycoinWalletType() == "bip44" {
+			} else if wlt.GetSkycoinWalletType() == wallet.WalletTypeBip44 {
 				skyAddrs.isBip32 = true
 			}
 			addresses = append(addresses, &skyAddrs)
