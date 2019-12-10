@@ -3,11 +3,11 @@ package skycoin
 import (
 	"encoding/hex"
 
+	"github.com/SkycoinProject/skycoin/src/api"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/skycoin/skycoin/src/api"
 )
 
 var logNetwork = logging.MustGetLogger("Skycoin network")

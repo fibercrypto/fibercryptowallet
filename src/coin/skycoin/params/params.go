@@ -1,7 +1,7 @@
 package params
 
 import (
-	skyparams "github.com/skycoin/skycoin/src/params"
+	skyparams "github.com/SkycoinProject/skycoin/src/params"
 )
 
 type SkyFiberParams struct {

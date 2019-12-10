@@ -183,7 +183,7 @@
 [[projects]]
   branch = "develop"
   digest = "1:5ede931cf0314ea9ac6628f65e0926cbf92754c105a0883475a6aaa3fc68c757"
-  name = "github.com/skycoin/skycoin"
+  name = "github.com/SkycoinProject/skycoin"
   packages = [
     "src/api",
     "src/cipher",
@@ -314,19 +314,19 @@
   analyzer-version = 1
   input-imports = [
     "github.com/sirupsen/logrus",
-    "github.com/skycoin/skycoin/src/api",
-    "github.com/skycoin/skycoin/src/cipher",
-    "github.com/skycoin/skycoin/src/cipher/bip39",
-    "github.com/skycoin/skycoin/src/cipher/testsuite",
-    "github.com/skycoin/skycoin/src/cli",
-    "github.com/skycoin/skycoin/src/coin",
-    "github.com/skycoin/skycoin/src/params",
-    "github.com/skycoin/skycoin/src/readable",
-    "github.com/skycoin/skycoin/src/testutil",
-    "github.com/skycoin/skycoin/src/util/droplet",
-    "github.com/skycoin/skycoin/src/util/file",
-    "github.com/skycoin/skycoin/src/visor",
-    "github.com/skycoin/skycoin/src/wallet",
+    "github.com/SkycoinProject/skycoin/src/api",
+    "github.com/SkycoinProject/skycoin/src/cipher",
+    "github.com/SkycoinProject/skycoin/src/cipher/bip39",
+    "github.com/SkycoinProject/skycoin/src/cipher/testsuite",
+    "github.com/SkycoinProject/skycoin/src/cli",
+    "github.com/SkycoinProject/skycoin/src/coin",
+    "github.com/SkycoinProject/skycoin/src/params",
+    "github.com/SkycoinProject/skycoin/src/readable",
+    "github.com/SkycoinProject/skycoin/src/testutil",
+    "github.com/SkycoinProject/skycoin/src/util/droplet",
+    "github.com/SkycoinProject/skycoin/src/util/file",
+    "github.com/SkycoinProject/skycoin/src/visor",
+    "github.com/SkycoinProject/skycoin/src/wallet",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
