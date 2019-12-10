@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
 	"github.com/skycoin/skycoin/src/util/file"
@@ -47,16 +48,18 @@ var (
 	dbConfigBkt    = []byte("Config")
 )
 
-// DB implement AddressBook interface for boltdb database.
-type DB struct {
-	db  *bolt.DB // db is a point of bolt.DB object. This handle all interaction with the db.
+// dataBase implement AddressBook interface for boltdb database.
+type dataBase struct {
+	db  *bolt.DB // db is a point of bolt.dataBase object. This handle all interaction with the db.
 	key []byte
 }
+
+var logDb = logging.MustGetLogger("AddressBook Data")
 
 // NewAddressBook create a new instance of AddessBook and open the database of the given route.
 // If database is open return bolt.errDatabaseOpen.
 func NewAddressBook(path string) (core.AddressBook, error) {
-	var ab DB
+	var addrBook dataBase
 	var err error
 	// Open database.
 	db, err := bolt.Open(path,
@@ -67,17 +70,18 @@ func NewAddressBook(path string) (core.AddressBook, error) {
 	if err != nil {
 		return nil, fmt.Errorf(" error opening data base: %s", err)
 	}
-	ab.db = db
-	return &ab, nil
+	addrBook.db = db
+	return &addrBook, nil
 }
 
 // Init initialize an address book. Pass secType(security type) and password if is PasswordSecurity.
-func (ab *DB) Init(secType int, password string) error {
-	if !ab.IsOpen() {
+func (addrsBook *dataBase) Init(secType int, password string) error {
+	logDb.Info("initialize AddressBook")
+	if !addrsBook.IsOpen() {
 		return bolt.ErrDatabaseNotOpen
 	}
 
-	if ab.HasInit() {
+	if addrsBook.HasInit() {
 		return fmt.Errorf("address book has init")
 	}
 
@@ -86,13 +90,13 @@ func (ab *DB) Init(secType int, password string) error {
 
 	switch secType {
 	case NoSecurity, ObfuscationSecurity:
-		if err := ab.insertConfig(secType, hash, entropy); err != nil {
+		if err := addrsBook.insertConfig(secType, hash, entropy); err != nil {
 			return err
 		}
 		break
 	case PasswordSecurity:
-		ab.key = []byte(password)
-		if entropy, err = ab.genEntropy(); err != nil {
+		addrsBook.key = []byte(password)
+		if entropy, err = addrsBook.genEntropy(); err != nil {
 			return err
 		}
 
@@ -101,7 +105,7 @@ func (ab *DB) Init(secType int, password string) error {
 			return err
 		}
 
-		if err := ab.insertConfig(secType, hash, entropy); err != nil {
+		if err := addrsBook.insertConfig(secType, hash, entropy); err != nil {
 			return err
 		}
 		break
@@ -113,16 +117,16 @@ func (ab *DB) Init(secType int, password string) error {
 }
 
 // Authenticate authentic a user in the Address Book. ( Only SecType : PasswordSecurity )
-func (ab *DB) Authenticate(password string) error {
-	if !ab.IsOpen() {
+func (addrsBook *dataBase) Authenticate(password string) error {
+	if !addrsBook.IsOpen() {
 		return bolt.ErrDatabaseNotOpen
 	}
 
-	if !ab.HasInit() {
+	if !addrsBook.HasInit() {
 		return fmt.Errorf("address book not has init")
 	}
 
-	secType, err := ab.GetSecType()
+	secType, err := addrsBook.GetSecType()
 	if err != nil {
 		return err
 	}
@@ -131,8 +135,8 @@ func (ab *DB) Authenticate(password string) error {
 		return nil
 	}
 
-	ab.key = []byte(password)
-	if err := ab.verifyHash(); err != nil {
+	addrsBook.key = []byte(password)
+	if err := addrsBook.verifyHash(); err != nil {
 		return err
 	}
 
@@ -141,9 +145,9 @@ func (ab *DB) Authenticate(password string) error {
 
 // InsertContact insert a contact into the address book.
 // If any of its address exist return error.
-func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
+func (addrsBook *dataBase) InsertContact(c core.Contact) (uint64, error) {
 	// Start a writeable transaction.
-	tx, err := ab.db.Begin(true)
+	tx, err := addrsBook.db.Begin(true)
 	if err != nil {
 		return 0, err
 	}
@@ -154,16 +158,16 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 		}
 	}()
 
-	contacts, err := ab.ListContact()
+	contacts, err := addrsBook.ListContact()
 	if err != nil {
 		return 0, err
 	}
 	for _, v := range c.GetAddresses() {
-		if err := ab.addressExists(v, contacts); err != nil {
+		if err := addrsBook.addressExists(v, contacts); err != nil {
 			return 0, err
 		}
 	}
-	if err := ab.nameExists(c, contacts); err != nil {
+	if err := addrsBook.nameExists(c, contacts); err != nil {
 		return 0, err
 	}
 
@@ -180,7 +184,7 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 
 	c.SetID(seq)
 	if cc, ok := c.(*Contact); ok {
-		encryptedData, err := ab.encryptContact(cc)
+		encryptedData, err := addrsBook.encryptContact(cc)
 		if err != nil {
 			return 0, err
 		}
@@ -198,9 +202,9 @@ func (ab *DB) InsertContact(c core.Contact) (uint64, error) {
 }
 
 // GetContact get a contact by ID.
-func (ab *DB) GetContact(id uint64) (core.Contact, error) {
+func (addrsBook *dataBase) GetContact(id uint64) (core.Contact, error) {
 	// Start a readable transaction.
-	tx, err := ab.db.Begin(false)
+	tx, err := addrsBook.db.Begin(false)
 	if err != nil {
 		return nil, err
 	}
@@ -221,7 +225,7 @@ func (ab *DB) GetContact(id uint64) (core.Contact, error) {
 	if encryptData == nil {
 		return nil, errValEmpty
 	}
-	c, err := ab.decryptContact(encryptData)
+	c, err := addrsBook.decryptContact(encryptData)
 	if err != nil {
 		return nil, err
 	}
@@ -229,9 +233,9 @@ func (ab *DB) GetContact(id uint64) (core.Contact, error) {
 }
 
 // ListContact list all contact in the address book.
-func (ab *DB) ListContact() ([]core.Contact, error) {
+func (addrsBook *dataBase) ListContact() ([]core.Contact, error) {
 	// Start a redeable transaction.
-	tx, err := ab.db.Begin(false)
+	tx, err := addrsBook.db.Begin(false)
 	if err != nil {
 		return nil, err
 	}
@@ -247,7 +251,7 @@ func (ab *DB) ListContact() ([]core.Contact, error) {
 	}
 	var contacts []core.Contact
 	if err := bkt.ForEach(func(k, v []byte) error {
-		c, err := ab.decryptContact(v)
+		c, err := addrsBook.decryptContact(v)
 		if err != nil {
 			return err
 		}
@@ -261,8 +265,8 @@ func (ab *DB) ListContact() ([]core.Contact, error) {
 }
 
 // DeleteContact delete a contact from the address book by its ID.
-func (ab *DB) DeleteContact(id uint64) error {
-	return ab.db.Update(func(tx *bolt.Tx) error {
+func (addrsBook *dataBase) DeleteContact(id uint64) error {
+	return addrsBook.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
 		if bkt == nil {
 			return errBucketEmpty
@@ -277,10 +281,10 @@ func (ab *DB) DeleteContact(id uint64) error {
 }
 
 // UpdateContact update a contact in the address book by its ID.
-func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
+func (addrsBook *dataBase) UpdateContact(id uint64, newContact core.Contact) error {
 	var contacts []core.Contact
 	var err error
-	if contacts, err = ab.ListContact(); err != nil {
+	if contacts, err = addrsBook.ListContact(); err != nil {
 		return err
 	}
 	for e := range contacts {
@@ -291,22 +295,22 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 	}
 
 	for _, ncAddrs := range newContact.GetAddresses() {
-		if err := ab.addressExists(ncAddrs, contacts); err != nil {
+		if err := addrsBook.addressExists(ncAddrs, contacts); err != nil {
 			return err
 		}
 	}
-	if err := ab.nameExists(newContact, contacts); err != nil {
+	if err := addrsBook.nameExists(newContact, contacts); err != nil {
 		return err
 	}
 
-	if err := ab.db.Update(func(tx *bolt.Tx) error {
+	if err := addrsBook.db.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket(dbAddrsBookBkt)
 		if bkt == nil {
 			return errBucketEmpty
 		}
 		if cc, ok := newContact.(*Contact); ok {
 			cc.SetID(id)
-			encryptedData, err := ab.encryptContact(cc)
+			encryptedData, err := addrsBook.encryptContact(cc)
 			if err != nil {
 				return err
 			}
@@ -325,21 +329,21 @@ func (ab *DB) UpdateContact(id uint64, newContact core.Contact) error {
 }
 
 // GetPath return database path
-func (ab *DB) GetPath() string {
-	return ab.db.Path()
+func (addrsBook *dataBase) GetPath() string {
+	return addrsBook.db.Path()
 }
 
 // Close shuts down the database.
-func (ab *DB) Close() error {
-	if err := ab.db.Close(); err != nil {
+func (addrsBook *dataBase) Close() error {
+	if err := addrsBook.db.Close(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // HasInit verify if database has been initialize
-func (ab *DB) HasInit() bool {
-	tx, err := ab.db.Begin(false)
+func (addrsBook *dataBase) HasInit() bool {
+	tx, err := addrsBook.db.Begin(false)
 	if err != nil {
 		logrus.Error(err)
 		return false
@@ -356,15 +360,15 @@ func (ab *DB) HasInit() bool {
 }
 
 // IsOpen verify if database is open
-func (ab *DB) IsOpen() bool {
-	if ab.db.Path() != "" {
+func (addrsBook *dataBase) IsOpen() bool {
+	if addrsBook.db.Path() != "" {
 		return true
 	}
 	return false
 }
 
 // Exist verify if database file exist
-func (ab *DB) Exist(path string) bool {
+func (addrsBook *dataBase) Exist(path string) bool {
 	ok, err := file.Exists(path)
 	if err != nil {
 		logrus.Error(err)
@@ -373,8 +377,8 @@ func (ab *DB) Exist(path string) bool {
 	return ok
 }
 
-func (ab *DB) GetSecType() (int, error) {
-	tx, err := ab.db.Begin(false)
+func (addrsBook *dataBase) GetSecType() (int, error) {
+	tx, err := addrsBook.db.Begin(false)
 	if err != nil {
 		return -1, err
 	}
@@ -393,7 +397,7 @@ func (ab *DB) GetSecType() (int, error) {
 
 // genEntropy generate annil Entropy by a mnemonic. If mnemonic is nil,
 // it generate a random.
-func (ab *DB) genEntropy() ([]byte, error) {
+func (addrsBook *dataBase) genEntropy() ([]byte, error) {
 	mn, err := bip39.NewDefaultMnemonic()
 	if err != nil {
 		return nil, err
@@ -402,11 +406,11 @@ func (ab *DB) genEntropy() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return e, err
+	return e, nil
 }
 
-func (ab *DB) getEntropyFromConfig() ([]byte, error) {
-	tx, err := ab.db.Begin(false)
+func (addrsBook *dataBase) getEntropyFromConfig() ([]byte, error) {
+	tx, err := addrsBook.db.Begin(false)
 	if err != nil {
 		return nil, err
 	}
@@ -423,8 +427,8 @@ func (ab *DB) getEntropyFromConfig() ([]byte, error) {
 }
 
 // getHashFromConfig get hash from config bucket.
-func (ab *DB) getHashFromConfig() ([]byte, error) {
-	tx, err := ab.db.Begin(false)
+func (addrsBook *dataBase) getHashFromConfig() ([]byte, error) {
+	tx, err := addrsBook.db.Begin(false)
 	if err != nil {
 		return nil, err
 	}
@@ -448,8 +452,8 @@ func (ab *DB) getHashFromConfig() ([]byte, error) {
 }
 
 // encryptContact encrypt a contact using a password with AES-GCM.
-func (ab *DB) encryptContact(c *Contact) ([]byte, error) {
-	secType, err := ab.GetSecType()
+func (addrsBook *dataBase) encryptContact(c *Contact) ([]byte, error) {
+	secType, err := addrsBook.GetSecType()
 	if err != nil {
 		return nil, err
 	}
@@ -463,15 +467,15 @@ func (ab *DB) encryptContact(c *Contact) ([]byte, error) {
 		}
 		return []byte(base64.StdEncoding.EncodeToString(data)), nil
 	case PasswordSecurity:
-		return ab.encryptAESGCM(c)
+		return addrsBook.encryptAESGCM(c)
 	}
 
 	return nil, fmt.Errorf("invalid security type")
 }
 
 // Decrypt a cipher message using a password with AES-GCM and return a Contact.
-func (ab *DB) decryptContact(cipherMsg []byte) (core.Contact, error) {
-	secType, err := ab.GetSecType()
+func (addrsBook *dataBase) decryptContact(cipherMsg []byte) (core.Contact, error) {
+	secType, err := addrsBook.GetSecType()
 	if err != nil {
 		return nil, err
 	}
@@ -495,24 +499,24 @@ func (ab *DB) decryptContact(cipherMsg []byte) (core.Contact, error) {
 		}
 		return &c, nil
 	case PasswordSecurity:
-		return ab.decryptAESGCM(cipherMsg)
+		return addrsBook.decryptAESGCM(cipherMsg)
 	}
 
 	return nil, errInvalidSecType
 }
 
 //
-func (ab *DB) verifyHash() error {
-	hash, err := ab.getHashFromConfig()
+func (addrsBook *dataBase) verifyHash() error {
+	hash, err := addrsBook.getHashFromConfig()
 	if err != nil {
 		return err
 	}
-	return bcrypt.CompareHashAndPassword(hash, ab.key)
+	return bcrypt.CompareHashAndPassword(hash, addrsBook.key)
 }
 
 // addressExists search an address in the list of contacts into the AddressBook.
 // If find the address return error, else return nil.
-func (ab *DB) addressExists(address core.StringAddress, contacts []core.Contact) error {
+func (addrsBook *dataBase) addressExists(address core.StringAddress, contacts []core.Contact) error {
 	for _, v := range contacts {
 		c, ok := v.(*Contact)
 		if ok {
@@ -531,7 +535,7 @@ func (ab *DB) addressExists(address core.StringAddress, contacts []core.Contact)
 
 // nameExists search an name in the list of contacts into the AddressBook.
 // If find the address return error, else return nil.
-func (ab *DB) nameExists(contact core.Contact, contacts []core.Contact) error {
+func (addrsBook *dataBase) nameExists(contact core.Contact, contacts []core.Contact) error {
 	for _, c := range contacts {
 		if dataContact, ok := c.(*Contact); ok {
 			if bytes.Compare(contact.(*Contact).Name, dataContact.Name) == 0 {
@@ -543,8 +547,8 @@ func (ab *DB) nameExists(contact core.Contact, contacts []core.Contact) error {
 	return nil
 }
 
-func (ab *DB) insertConfig(secType int, hash, entropy []byte) error {
-	tx, err := ab.db.Begin(true)
+func (addrsBook *dataBase) insertConfig(secType int, hash, entropy []byte) error {
+	tx, err := addrsBook.db.Begin(true)
 	if err != nil {
 		return err
 	}
@@ -578,12 +582,12 @@ func (ab *DB) insertConfig(secType int, hash, entropy []byte) error {
 	return tx.Commit()
 }
 
-func (ab *DB) encryptAESGCM(c *Contact) ([]byte, error) {
-	e, err := ab.getEntropyFromConfig()
+func (addrsBook *dataBase) encryptAESGCM(c *Contact) ([]byte, error) {
+	e, err := addrsBook.getEntropyFromConfig()
 	if err != nil {
 		return nil, err
 	}
-	block, err := aes.NewCipher(pbkdf2.Key(e, ab.key, 4096, 32, sha512.New))
+	block, err := aes.NewCipher(pbkdf2.Key(e, addrsBook.key, 4096, 32, sha512.New))
 	if err != nil {
 		return nil, err
 	}
@@ -605,13 +609,13 @@ func (ab *DB) encryptAESGCM(c *Contact) ([]byte, error) {
 	return cipherText, nil
 }
 
-func (ab *DB) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
-	e, err := ab.getEntropyFromConfig()
+func (addrsBook *dataBase) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
+	e, err := addrsBook.getEntropyFromConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	block, err := aes.NewCipher(pbkdf2.Key(e, ab.key, 4096, 32, sha512.New))
+	block, err := aes.NewCipher(pbkdf2.Key(e, addrsBook.key, 4096, 32, sha512.New))
 	if err != nil {
 		return nil, err
 	}

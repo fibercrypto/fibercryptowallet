@@ -5,7 +5,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
-// Contact is a contact of the DB
+// Contact is a contact of the dataBase
 type Contact struct {
 	ID      uint64
 	Address []Address

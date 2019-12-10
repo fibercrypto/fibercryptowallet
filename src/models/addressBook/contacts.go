@@ -18,7 +18,7 @@ const (
 )
 
 var db core.AddressBook
-var logAddressBook = logging.MustGetLogger("AddressBook")
+var logAddressBook = logging.MustGetLogger("Address Book Model")
 
 func init() { AddrsBookModel_QmlRegisterType2("AddrsBookManager", 1, 0, "AddrsBookModel") }
 
