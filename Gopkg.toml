@@ -34,7 +34,7 @@ ignored = [
 
 [[constraint]]
   name = "github.com/SkycoinProject/skycoin"
-  branch = "v0.27.0"
+  version = "0.27.0"
 
 [prune]
   go-tests = true
