@@ -31,15 +31,15 @@ Dialog {
             if (mode === CreateLoadWallet.Load){
                 scanA = 10
             }
-            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text, comboBoxWalletType.model[comboBoxWalletType.currentIndex].value, scanA))
+            
+            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text, comboBoxWalletType.model[comboBoxWalletType.currentIndex].name, scanA))
             
         } else{
             
             if (mode === CreateLoadWallet.Load){
                 scanA = 10
             }
-            
-            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, comboBoxWalletType.model[comboBoxWalletType.currentIndex].value, scanA))
+            walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, comboBoxWalletType.model[comboBoxWalletType.currentIndex].name, scanA))
         }
     }
 

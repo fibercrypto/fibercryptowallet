@@ -9,19 +9,19 @@ import (
 	"strings"
 	"time"
 
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/cipher"
+	"github.com/SkycoinProject/skycoin/src/cipher/bip39"
+	"github.com/SkycoinProject/skycoin/src/coin"
+	"github.com/SkycoinProject/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/visor"
+	"github.com/SkycoinProject/skycoin/src/wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/cipher"
-	"github.com/skycoin/skycoin/src/cipher/bip39"
-	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/readable"
-	"github.com/skycoin/skycoin/src/visor"
-	"github.com/skycoin/skycoin/src/wallet"
 )
 
 var logWallet = logging.MustGetLogger("Skycoin Wallet")
@@ -30,7 +30,6 @@ const (
 	Sky            = params.SkycoinTicker
 	CoinHour       = params.CoinHoursTicker
 	CalculatedHour = params.CalculatedHoursTicker
-
 
 	walletExt             = ".wlt"
 	WalletTimestampFormat = "2006_01_02"
@@ -898,7 +897,6 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, wltTyp
 	pwdCtx.SetValue(core.StrMethodName, "CreateWallet")
 	pwdCtx.SetValue(core.StrWalletLabel, label)
 	password, err := pwd("Insert Password", pwdCtx)
-
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return nil, err
