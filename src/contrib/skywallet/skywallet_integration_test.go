@@ -2,6 +2,7 @@ package hardware
 
 import (
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	integrationtestutil "github.com/fibercrypto/fibercryptowallet/test/integration/util"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
@@ -36,6 +37,17 @@ func TestTransactionSignInputFromDevice(t *testing.T) {
 		return msg, nil
 	}
 	dev := skywallet.NewDevice(skywallet.DeviceTypeEmulator)
-	hs := NewSkyWallet(dev, callback)
-	skycoin.TransactionSignInputTestImpl(t, hs)
+	hs1 := NewSkyWallet(nil, dev, callback)
+	hs2 := NewSkyWallet(nil, dev, callback)
+	hs3 := NewSkyWallet(nil, dev, callback)
+	setWallet := func(t *testing.T, signer core.TxnSigner, wlt core.Wallet) {
+		hs, ok := signer.(*SkyWallet)
+		require.True(t, ok)
+		hs.wlt = wlt
+	}
+	signers := make([]core.TxnSigner, 3)
+	signers[0] = hs1
+	signers[1] = hs2
+	signers[2] = hs3
+	skycoin.TransactionSignInputTestSkyHwImpl(t, signers, setWallet)
 }

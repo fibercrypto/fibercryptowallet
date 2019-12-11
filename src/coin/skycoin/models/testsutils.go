@@ -1,7 +1,6 @@
 package skycoin
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
@@ -101,7 +100,7 @@ func (tOpt *TransferOptions) SetValue(key string, value interface{}) {
 }
 
 // GenerateTestKeyPair provides deterministic sequence of test keys
-//// that can be recovered later inside a wallet
+// that can be recovered later inside a wallet
 func GenerateTestKeyPair(t *testing.T) (*KeyData, error) {
 	var err error
 	if seedEntropy == nil {
@@ -143,9 +142,9 @@ func GenerateTestKeyPair(t *testing.T) (*KeyData, error) {
 var global_mock *SkycoinApiMock
 
 var logModelTest = logging.MustGetLogger("Skycoin Model Test")
-// CleanGlobalMock util when is needed to change the values of an
-
 // API method used in other test with different values.
+
+// CleanGlobalMock util when is needed to change the values of an
 func CleanGlobalMock() {
 	if global_mock == nil {
 		global_mock = new(SkycoinApiMock)
@@ -154,7 +153,18 @@ func CleanGlobalMock() {
 	}
 }
 
-func TransactionSignInputTestImpl(t *testing.T, signer core.TxnSigner) {
+func TransactionSignInputTestSkyHwImpl(t *testing.T, signers []core.TxnSigner, setWallet func(*testing.T, core.TxnSigner, core.Wallet)) {
+	_, keysData, _, err := makeTransactionMultipleInputs(t, 3)
+	require.NoError(t, err)
+	// Load local wallets
+	wallets := makeLocalWalletsFromKeyData(t, keysData)
+	for idx := range signers {
+		setWallet(t, signers[idx], wallets[idx])
+	}
+	TransactionSignInputTestImpl(t, signers)
+}
+
+func TransactionSignInputTestImpl(t *testing.T, signers []core.TxnSigner) {
 	txn, keysData, uxspent, err := makeTransactionMultipleInputs(t, 3)
 	require.NoError(t, err)
 	// Mock UxOut API calls
@@ -171,12 +181,16 @@ func TransactionSignInputTestImpl(t *testing.T, signer core.TxnSigner) {
 
 	// Load local wallets
 	wallets := makeLocalWalletsFromKeyData(t, keysData)
-	if signer != nil {
+	for _, signer := range signers {
 		err = util.AttachSignService(signer)
 		require.NoError(t, err)
 	}
 
 	// Input is already signed
+	var signer core.TxnSigner
+	if len(signers) > 0 {
+		signer = signers[0]
+	}
 	_, err = wallets[0].Sign(uiTxn, signer, util.EmptyPassword, []string{"0"})
 	testutil.RequireError(t, err, "Transaction is fully signed")
 	isFullySigned, err = uiTxn.IsFullySigned()
@@ -188,6 +202,9 @@ func TransactionSignInputTestImpl(t *testing.T, signer core.TxnSigner) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
+	if len(signers) > 1 {
+		signer = signers[1]
+	}
 	signedCoreTxn, err = wallets[1].Sign(uiTxn, signer, nil, []string{"1"})
 	require.NoError(t, err)
 	signedTxn, isUninjected := signedCoreTxn.(*SkycoinUninjectedTransaction)
@@ -199,6 +216,9 @@ func TransactionSignInputTestImpl(t *testing.T, signer core.TxnSigner) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
+	if len(signers) > 2 {
+		signer = signers[2]
+	}
 	_, err = wallets[1].Sign(signedTxn, signer, nil, []string{"1"})
 	// FIXME use a named var from errors
 	testutil.RequireError(t, err, "Transaction is fully signed")
@@ -208,7 +228,6 @@ func TransactionSignInputTestImpl(t *testing.T, signer core.TxnSigner) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
-	spew.Dump("{{{{{uiTxn", uiTxn)
 	signedCoreTxn, err = wallets[2].Sign(uiTxn, signer, nil, []string{"2"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)

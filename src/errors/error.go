@@ -41,6 +41,8 @@ var (
 	ErrInvalidAddressString = errors.New("Error decoding base58 address")
 	// ErrTxnSignFailure signing strategy reported an error whie signing transaction
 	ErrTxnSignFailure = errors.New("Transaction signing failed for txn")
+	// ErrNoMoreElements no more elements in a sequence or succession
+	ErrNoMoreElements = errors.New("No more elements in the sequence")
 	// ErrUnexpectedUxOutAddress unexpected address
 	ErrUnexpectedUxOutAddress = errors.New("Unexpected address")
 	// ErrInvalidPoolObjectType clients in the pool do not match expected type

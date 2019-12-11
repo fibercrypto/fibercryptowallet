@@ -23,6 +23,7 @@ import (
 var logSkyWallet = logging.MustGetLogger("Skycoin hardware wallet")
 
 type SkyWallet struct {
+	wlt core.Wallet
 	dev skyWallet.Devicer
 	handleButtonAckSequence func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
 }
@@ -94,8 +95,9 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 }
 
 // NewSkyWallet create a new sky wallet instance
-func NewSkyWallet(dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)) *SkyWallet {
+func NewSkyWallet(wlt core.Wallet, dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)) *SkyWallet {
 	return &SkyWallet{
+		wlt: wlt,
 		dev: dev,
 		handleButtonAckSequence: buttonAckHandler,
 	}
@@ -131,26 +133,29 @@ func getInputs(txn coin.Transaction, indexes []int) (inputs []*messages.SkycoinT
 	return inputs, nil
 }
 
-func getOutputs(tr coin.Transaction) (inputs []*messages.SkycoinTransactionOutput, err error) {
+func getAddrIndex(wlt core.Wallet, addr string) (uint32, error) {
+	addrs, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		return 0, err
+	}
+	for i := uint32(0); addrs.Next(); i++ {
+		if addrs.Value().String() == addr {
+			return i, nil
+		}
+	}
+	return 0, errors.New("unable to find a matching address from wallet")
+}
+
+func getOutputs(wlt core.Wallet, tr coin.Transaction) (inputs []*messages.SkycoinTransactionOutput, err error) {
 	for _, output := range tr.Out {
 		var transactionOutput messages.SkycoinTransactionOutput
 		transactionOutput.Address = proto.String(output.Address.String())
 		transactionOutput.Coin = proto.Uint64(output.Coins)
 		transactionOutput.Hour = proto.Uint64(output.Hours)
-		// FIXME: should be possible to send the address index
-		// find index to check if it is determined as a owned address
-		//	transactionOutput.AddressIndex = proto.Uint32(uint32(addressIndex[i]))
-		// check out hw implementation
-		//addrIndex, err := strconv.Atoi(s[i])
-		//if err != nil {
-		//      logSkyWallet.WithField("str_addr_index", s[i]).Error("unable to get integer from string")
-		//      return nil, errors.New("error getting address index as integer")
-		//}
-		//if addrIndex < 0 {
-		//      logSkyWallet.WithField("addr_index", addrIndex).Error("addrIndex should be greater than 0")
-		//      return nil, errors.New("addrIndex should be greater than 0")
-		// }
-		//transactionOutput.AddressIndex = proto.Uint32(uint32(addrIndex))
+		index, err := getAddrIndex(wlt, output.Address.String())
+		if err == nil {
+			transactionOutput.AddressIndex = proto.Uint32(index)
+		}
 		inputs = append(inputs, &transactionOutput)
 	}
 	return
@@ -219,7 +224,7 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coi
 		logSkyWallet.WithError(err).Errorln("unable to get inputs")
 		return nil, fce.ErrTxnSignFailure
 	}
-	transactionOutputs, err := getOutputs(*txn)
+	transactionOutputs, err := getOutputs(sw.wlt, *txn)
 	if err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to get outputs")
 		return nil, fce.ErrTxnSignFailure

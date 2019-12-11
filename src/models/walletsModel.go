@@ -11,6 +11,7 @@ import (
 	"github.com/sirupsen/logrus"
 	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	messages "github.com/fibercrypto/skywallet-protob/go"
+	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
 const (
@@ -82,7 +83,7 @@ func (walletModel *WalletModel) init() {
 }
 
 // attachHwAsSigner add a hw as signer
-func attachHwAsSigner(dev skyWallet.Devicer) error {
+func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
 	pb := func(dev skyWallet.Devicer, prvMsg wire.Message, nextMsg messages.MessageType) (wire.Message, error) {
 		msg, err := dev.ButtonAck()
 		if err != nil {
@@ -100,6 +101,9 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 				if str == "Action cancelled by user" {
 					return msg, fce.ErrHwSignTransactionCanceled
 				}
+			} else if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
+				logSignersModel.Warningln("some addresses was not confirmed in the device because are owned for this wallet")
+				return msg, fce.ErrNoMoreElements
 			}
 			logSignersModel.WithFields(
 				logrus.Fields{
@@ -133,13 +137,16 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 				msg, err = pb(dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
 			}
 			if err != nil {
+				if err == fce.ErrNoMoreElements {
+					return msg, nil
+				}
 				return wire.Message{}, err
 			}
 			outsLen--
 		}
 		return msg, nil
 	}
-	hw := hardware.NewSkyWallet(dev, cb)
+	hw := hardware.NewSkyWallet(wlt, dev, cb)
 	am := wlcore.LoadAltcoinManager()
 	if err := am.AttachSignService(hw); err != nil {
 		logSignersModel.Errorln("error registering hardware wallet as signer")
@@ -150,7 +157,7 @@ func attachHwAsSigner(dev skyWallet.Devicer) error {
 
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
-	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
+	dev := skyWallet.NewDevice(skyWallet.DeviceTypeEmulator)
 	addr, err := hardware.HwFirstAddr(dev)
 	if err == nil {
 		wlt, err := walletManager.WalletEnv.LookupWallet(addr)
@@ -159,7 +166,7 @@ func (walletModel *WalletModel) sniffHw() {
 			// FIXME handle this scenario with a wallet registration.
 			return
 		}
-		err = attachHwAsSigner(dev)
+		err = attachHwAsSigner(wlt, dev)
 		if err != nil {
 			logSignersModel.WithError(err).Errorln("unable to attach signer")
 			return

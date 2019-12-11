@@ -30,7 +30,7 @@ func TestGetSignerUIDShouldBeOk(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devId, err := sw.GetSignerUID()
@@ -42,7 +42,7 @@ func TestGetSignerUIDShouldBeOk(t *testing.T) {
 
 func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
 	// Giving
-	sw := NewSkyWallet(nil, callback)
+	sw := NewSkyWallet(nil, nil, callback)
 
 	// When
 	devId, err := sw.GetSignerUID()
@@ -57,7 +57,7 @@ func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
 	// Giving
 	dev := mocks.Devicer{}
 	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devId, err := sw.GetSignerUID()
@@ -78,7 +78,7 @@ func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devId, err := sw.GetSignerUID()
@@ -95,7 +95,7 @@ func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devId, err := sw.GetSignerUID()
@@ -119,7 +119,7 @@ func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devDescription, err := sw.GetSignerDescription()
@@ -145,7 +145,7 @@ func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 	// Giving
 	dev := mocks.Devicer{}
 	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devId, err := sw.GetSignerDescription()
@@ -166,7 +166,7 @@ func TestGetSignerDescriptionShouldFailForFailResponse(t *testing.T) {
 		Data: fb,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devId, err := sw.GetSignerDescription()
@@ -183,7 +183,7 @@ func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(&dev, callback)
+	sw := NewSkyWallet(nil, &dev, callback)
 
 	// When
 	devId, err := sw.GetSignerDescription()
