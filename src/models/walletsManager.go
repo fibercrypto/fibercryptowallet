@@ -680,7 +680,6 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 	pwd := util.ConstantPassword(password)
 	// NOTE: No easy way to get plain passwords in memory
 	password = ""
-	fmt.Println("WALLET TYPE ", wltType)
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, true, pwd, scanN)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create encrypted wallet")
@@ -695,13 +694,13 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
 	pwd := util.EmptyPassword
-
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, false, pwd, scanN)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create unencrypted wallet")
 		return nil
 	}
-	logWalletManager.Info("Created encrypted wallet")
+	logWalletManager.Info("Created unencrypted wallet")
+
 	return fromWalletToQWallet(wlt, false)
 
 }

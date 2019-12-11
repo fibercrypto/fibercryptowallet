@@ -883,7 +883,6 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, wltTyp
 	pwdCtx.SetValue(core.StrMethodName, "CreateWallet")
 	pwdCtx.SetValue(core.StrWalletLabel, label)
 	password, err := pwd("Insert Password", pwdCtx)
-
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return nil, err
