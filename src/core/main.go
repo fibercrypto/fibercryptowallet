@@ -46,6 +46,12 @@ type AltcoinPlugin interface {
 	LoadTransactionAPI(netType string) (BlockchainTransactionAPI, error)
 	// LoadSignService sign service entry point
 	LoadSignService() (BlockchainSignService, error)
+	// AddressFromString retrieves address correspoding to readable representation
+	AddressFromString(string) (Address, error)
+	// PubKeyFromBytes retrieves address correspoding to readable representation
+	PubKeyFromBytes([]byte) (PubKey, error)
+	// SecKeyFromBytes retrieves address correspoding to readable representation
+	SecKeyFromBytes([]byte) (SecKey, error)
 }
 
 // AltcoinManager defines the contract for altcoin repositories
