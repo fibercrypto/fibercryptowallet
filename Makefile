@@ -231,8 +231,8 @@ clean-build: ## Remove temporary files
 clean: clean-test clean-build ## Remove temporary files
 
 gen-mocks: ## Generate mocks for interface types
-	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
-	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/hardware/mocks -case underscore
+	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
+	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 
 test-skyhw: ## Run Hardware wallet tests
