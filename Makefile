@@ -84,8 +84,8 @@ QTFILES       := $(shell echo "$(QRCFILES) $(TSFILES) $(PLISTFILES) $(QTCONFFILE
 RESOURCEFILES := $(shell echo "$(SVGFILES) $(PNGFILES) $(OTFFILES) $(ICNSFILES) $(ICOFILES) $(RCFILES)")
 SRCFILES      := $(shell echo "$(QTFILES) $(RESOURCEFILES) $(GOFILES)")
 
-BINPATH_Linux      := deploy/linux/FiberCryptoWallet
-BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
+BINPATH_Linux      := deploy/linux/fibercryptowallet
+BINPATH_Windows_NT := deploy/windows/fibercryptowallet.exe
 BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
 BINPATH            := $(BINPATH_$(UNAME_S))
 
