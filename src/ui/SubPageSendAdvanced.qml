@@ -141,7 +141,6 @@ Page {
 				walletManager.updateAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
 				var addresses = walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
 				for(var j = 0; j < addresses.length; j++) {
-					console.log(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
 					walletManager.updateOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName, addresses[j].address)
 					listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName, addresses[j].address))
 				}
