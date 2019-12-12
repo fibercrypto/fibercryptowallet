@@ -226,9 +226,11 @@ func TransactionSignInputTestImpl(t *testing.T, signers []core.TxnSigner) {
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
 	uxId := txn.In[1].Hex()
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, nil, nil, []string{uxId})
+	if len(signers) > 1 {
+		signer = signers[1]
+	}
+	signedCoreTxn, err = wallets[1].Sign(uiTxn, signer, nil, []string{uxId})
 	require.NoError(t, err)
-	require.Error(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
 	require.True(t, isUninjected)
 	require.NotEqual(t, uiTxn.txn, signedTxn.txn)
@@ -238,7 +240,10 @@ func TransactionSignInputTestImpl(t *testing.T, signers []core.TxnSigner) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.True(t, isFullySigned)
-	_, err = wallets[1].Sign(signedTxn, nil, nil, []string{"#1"})
+	if len(signers) > 1 {
+		signer = signers[1]
+	}
+	_, err = wallets[1].Sign(signedTxn, signer, nil, []string{"#1"})
 	testutil.RequireError(t, err, "Transaction is fully signed")
 
 	// Transaction has no sigs; sigs array is initialized
@@ -246,6 +251,9 @@ func TransactionSignInputTestImpl(t *testing.T, signers []core.TxnSigner) {
 	isFullySigned, err = uiTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
+	if len(signers) > 2 {
+		signer = signers[2]
+	}
 	signedCoreTxn, err = wallets[2].Sign(uiTxn, signer, nil, []string{"#2"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
@@ -260,6 +268,9 @@ func TransactionSignInputTestImpl(t *testing.T, signers []core.TxnSigner) {
 	require.False(t, signedTxn.txn.Sigs[2].Null())
 
 	// Signing the rest of the inputs individually works
+	if len(signers) > 1 {
+		signer = signers[1]
+	}
 	signedCoreTxn, err = wallets[1].Sign(signedTxn, signer, nil, []string{"#1"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
@@ -267,6 +278,9 @@ func TransactionSignInputTestImpl(t *testing.T, signers []core.TxnSigner) {
 	isFullySigned, err = signedTxn.IsFullySigned()
 	require.NoError(t, err)
 	require.False(t, isFullySigned)
+	if len(signers) > 0 {
+		signer = signers[0]
+	}
 	signedCoreTxn, err = wallets[0].Sign(signedTxn, signer, nil, []string{"#0"})
 	require.NoError(t, err)
 	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)

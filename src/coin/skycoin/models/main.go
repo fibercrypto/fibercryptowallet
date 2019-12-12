@@ -105,6 +105,25 @@ func (p *SkyFiberPlugin) LoadSignService() (core.BlockchainSignService, error) {
 	return &SkycoinSignService{}, nil
 }
 
+// AddressFromString retrieves address corresponding to readable representation
+func (p *SkyFiberPlugin) AddressFromString(addrStr string) (core.Address, error) {
+	addr, err := NewSkycoinAddress(addrStr)
+	if err != nil {
+		return nil, err
+	}
+	return &addr, nil
+}
+
+// PubKeyFromBytes retrieves address corresponding to readable representation
+func (p *SkyFiberPlugin) PubKeyFromBytes(b []byte) (core.PubKey, error) {
+	return skyPubKeyFromBytes(b)
+}
+
+// SecKeyFromBytes retrieves address corresponding to readable representation
+func (p *SkyFiberPlugin) SecKeyFromBytes(b []byte) (core.SecKey, error) {
+	return skySecKeyFromBytes(b)
+}
+
 // NewSkyFiberPlugin instantiate SkyFiber plugin entry point
 func NewSkyFiberPlugin(params params.SkyFiberParams) core.AltcoinPlugin {
 	return &SkyFiberPlugin{

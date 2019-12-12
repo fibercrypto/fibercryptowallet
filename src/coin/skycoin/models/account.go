@@ -25,7 +25,7 @@ func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	}
 	defer ReturnSkycoinClient(c)
 	log.Info("POST /api/v1/balance?addrs=xxx")
-	bl, err := c.Balance([]string{addr.address})
+	bl, err := c.Balance([]string{addr.address.String()})
 	if err != nil {
 		log.WithError(err).WithField("addrs", "addr.address").Error("Couldn't POST /api/v1/balance?addrs=xxx")
 		return 0, err

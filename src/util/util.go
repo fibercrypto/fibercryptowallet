@@ -1,7 +1,10 @@
 package util
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"errors"
+	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"strconv"
 )
@@ -102,10 +105,20 @@ func StrSlice2IntSlice(ss []string) ([]int, error) {
 			is[i], err = strconv.Atoi(strIdx)
 			if err != nil {
 				logUtil.WithError(err).Errorf("unable to get %s as integer\n", strIdx)
-				return nil, errors.ErrIntegerInputsRequired
+				return nil, fce.ErrIntegerInputsRequired
 			}
 		}
 		return is, nil
 	}
 	return nil, nil
+}
+
+// AddressFromString returns a core.Address if match with string address.
+// If the coinTicket parameter not match with any address type returns 'coinTicket not match' error.
+func AddressFromString(addrs, coinTicket string) (core.Address, error) {
+	altPlugin, ok := local.LoadAltcoinManager().LookupAltcoinPlugin(coinTicket)
+	if !ok {
+		return nil, errors.New("coinTicket not match")
+	}
+	return altPlugin.AddressFromString(addrs)
 }

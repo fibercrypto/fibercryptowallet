@@ -39,7 +39,7 @@ matrix:
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
         - make test
-    - make test-cover-travis
+        - make test-cover-travis
     - stage: Linux
     before_install:
     - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
@@ -63,7 +63,7 @@ matrix:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
         - make test
-    - make test-skyhw
+        - make test-skyhw
         - make lint
         - make test-cover-travis
     - stage: Windows
@@ -103,7 +103,7 @@ matrix:
         - make clean
         - make build
         - make test
-    - make test-skyhw
+        - make test-skyhw
         - make build-icon
         - make lint
         - make test-cover-travis

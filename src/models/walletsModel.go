@@ -157,7 +157,7 @@ func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
 
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
-	dev := skyWallet.NewDevice(skyWallet.DeviceTypeEmulator)
+	dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
 	addr, err := hardware.HwFirstAddr(dev)
 	if err == nil {
 		wlt, err := walletManager.WalletEnv.LookupWallet(addr)
