@@ -12,14 +12,11 @@ import (
 	"github.com/boltdb/bolt"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/sirupsen/logrus"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
-	"github.com/skycoin/skycoin/src/util/file"
-	"github.com/skycoin/skycoin/src/visor/dbutil"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/crypto/pbkdf2"
 	"io"
-	"time"
+	"strconv"
 )
 
 const (
@@ -39,43 +36,31 @@ const (
 
 var (
 	// Errors
-	errBucketEmpty    = errors.New(" Error: bucket are empty")
-	errValEmpty       = errors.New(" Error: value are empty")
-	errParseContact   = errors.New(" The inserted contact cannot be parse")
-	errInvalidSecType = fmt.Errorf("invalid security type")
-	// Db buckets.
-	dbAddrsBookBkt = []byte("AddressBook")
-	dbConfigBkt    = []byte("Config")
+	errParseContact        = errors.New("inserted contact cannot be parse")
+	errInvalidContact      = errors.New("you try to inserted a invalid contact")
+	errInvalidSecType      = errors.New("invalid security type")
+	errAddrsBookHasNotInit = errors.New("address book not has init")
 )
 
-// dataBase implement AddressBook interface for boltdb database.
-type dataBase struct {
-	db  *bolt.DB // db is a point of bolt.dataBase object. This handle all interaction with the db.
-	key []byte
+// addrsBook implement AddressBook interface for boltdb database.
+type addrsBook struct {
+	storage core.Storage
+	key     []byte
 }
 
 var logDb = logging.MustGetLogger("AddressBook Data")
 
 // NewAddressBook create a new instance of AddessBook and open the database of the given route.
 // If database is open return bolt.errDatabaseOpen.
-func NewAddressBook(path string) (core.AddressBook, error) {
-	var addrBook dataBase
-	var err error
-	// Open database.
-	db, err := bolt.Open(path,
-		0600,
-		&bolt.Options{
-			Timeout: 1 * time.Second,
-		})
-	if err != nil {
-		return nil, fmt.Errorf(" error opening data base: %s", err)
+func NewAddressBook(storage core.Storage) core.AddressBook {
+	return &addrsBook{
+		storage: storage,
+		key:     nil,
 	}
-	addrBook.db = db
-	return &addrBook, nil
 }
 
 // Init initialize an address book. Pass secType(security type) and password if is PasswordSecurity.
-func (addrsBook *dataBase) Init(secType int, password string) error {
+func (addrsBook *addrsBook) Init(secType int, password string) error {
 	logDb.Info("initialize AddressBook")
 	if !addrsBook.IsOpen() {
 		return bolt.ErrDatabaseNotOpen
@@ -117,17 +102,21 @@ func (addrsBook *dataBase) Init(secType int, password string) error {
 }
 
 // Authenticate authentic a user in the Address Book. ( Only SecType : PasswordSecurity )
-func (addrsBook *dataBase) Authenticate(password string) error {
+func (addrsBook *addrsBook) Authenticate(password string) error {
+	logDb.Info("authenticate AddressBook")
 	if !addrsBook.IsOpen() {
+		logDb.Error(bolt.ErrDatabaseNotOpen)
 		return bolt.ErrDatabaseNotOpen
 	}
 
 	if !addrsBook.HasInit() {
-		return fmt.Errorf("address book not has init")
+		logDb.Error(bolt.ErrDatabaseNotOpen)
+		return errAddrsBookHasNotInit
 	}
 
 	secType, err := addrsBook.GetSecType()
 	if err != nil {
+		logDb.Error(err)
 		return err
 	}
 
@@ -137,6 +126,7 @@ func (addrsBook *dataBase) Authenticate(password string) error {
 
 	addrsBook.key = []byte(password)
 	if err := addrsBook.verifyHash(); err != nil {
+		logDb.Error(err)
 		return err
 	}
 
@@ -145,259 +135,161 @@ func (addrsBook *dataBase) Authenticate(password string) error {
 
 // InsertContact insert a contact into the address book.
 // If any of its address exist return error.
-func (addrsBook *dataBase) InsertContact(c core.Contact) (uint64, error) {
-	// Start a writeable transaction.
-	tx, err := addrsBook.db.Begin(true)
-	if err != nil {
-		return 0, err
+func (addrsBook *addrsBook) InsertContact(contact core.Contact) (uint64, error) {
+	if !contact.IsValid() {
+		return 0, errInvalidContact
 	}
 
-	defer func() {
-		if err := tx.Rollback(); err != nil && err != bolt.ErrTxClosed {
-			logrus.Fatal(err)
-		}
-	}()
-
-	contacts, err := addrsBook.ListContact()
-	if err != nil {
+	contactsList, err := addrsBook.ListContact()
+	if err != nil && err != errBucketEmpty {
 		return 0, err
 	}
-	for _, v := range c.GetAddresses() {
-		if err := addrsBook.addressExists(v, contacts); err != nil {
+	for _, v := range contact.GetAddresses() {
+		if err := addrsBook.addressExists(v, contactsList); err != nil {
 			return 0, err
 		}
 	}
-	if err := addrsBook.nameExists(c, contacts); err != nil {
+	if err := addrsBook.nameExists(contact, contactsList); err != nil {
 		return 0, err
 	}
 
-	bkt := tx.Bucket(dbAddrsBookBkt)
-	if bkt == nil {
-		return 0, errBucketEmpty
-	}
-
-	// The sequence is an auto-incrementing integer that is transactionally safe.
-	seq, err := bkt.NextSequence()
+	encryptedData, err := addrsBook.encryptContact(contact.(*Contact))
 	if err != nil {
 		return 0, err
-	}
-
-	c.SetID(seq)
-	if cc, ok := c.(*Contact); ok {
-		encryptedData, err := addrsBook.encryptContact(cc)
-		if err != nil {
-			return 0, err
-		}
-
-		// Save contact to the bucket.
-		if err := bkt.Put(dbutil.Itob(c.GetID()), encryptedData); err != nil {
-			return 0, err
-		}
-	} else {
-		return 0, errParseContact
 	}
 
 	// Commit transaction before exit.
-	return c.GetID(), tx.Commit()
+	return addrsBook.GetStorage().InsertValue(encryptedData)
 }
 
 // GetContact get a contact by ID.
-func (addrsBook *dataBase) GetContact(id uint64) (core.Contact, error) {
-	// Start a readable transaction.
-	tx, err := addrsBook.db.Begin(false)
+func (addrsBook *addrsBook) GetContact(id uint64) (core.Contact, error) {
+	encryptData, err := addrsBook.GetStorage().GetValue(id)
+	if err != nil {
+		logDb.Error(err)
+		return nil, err
+	}
+	if _, ok := encryptData.([]byte); !ok {
+		logDb.Error(errValueNoMatch(encryptData.([]byte), []byte{}))
+		return nil, errValueNoMatch(encryptData.([]byte), []byte{})
+	}
+	contact, err := addrsBook.decryptContact(encryptData.([]byte))
 	if err != nil {
 		return nil, err
 	}
-
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			logrus.Fatal(err)
-		}
-	}()
-
-	bkt := tx.Bucket(dbAddrsBookBkt)
-	if bkt == nil {
-		return nil, errBucketEmpty
-	}
-
-	// Read encoded contact bytes.
-	encryptData := bkt.Get(dbutil.Itob(id))
-	if encryptData == nil {
-		return nil, errValEmpty
-	}
-	c, err := addrsBook.decryptContact(encryptData)
-	if err != nil {
-		return nil, err
-	}
-	return c, nil
+	contact.SetID(id)
+	return contact, nil
 }
 
 // ListContact list all contact in the address book.
-func (addrsBook *dataBase) ListContact() ([]core.Contact, error) {
-	// Start a redeable transaction.
-	tx, err := addrsBook.db.Begin(false)
+func (addrsBook *addrsBook) ListContact() ([]core.Contact, error) {
+	var contactsList []core.Contact
+	encryptContactList, err := addrsBook.GetStorage().ListValues()
 	if err != nil {
+		logDb.Error(err)
 		return nil, err
 	}
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			logrus.Fatal(err)
+	for id, encryptContact := range encryptContactList {
+		if _, ok := encryptContact.([]byte); !ok {
+			return nil, errValueNoMatch(encryptContact, []byte{})
 		}
-	}()
-
-	bkt := tx.Bucket(dbAddrsBookBkt)
-	if bkt == nil {
-		return nil, errBucketEmpty
-	}
-	var contacts []core.Contact
-	if err := bkt.ForEach(func(k, v []byte) error {
-		c, err := addrsBook.decryptContact(v)
+		contact, err := addrsBook.decryptContact(encryptContact.([]byte))
 		if err != nil {
-			return err
+			logDb.Error(err)
+			return nil, err
 		}
-
-		contacts = append(contacts, c)
-		return nil
-	}); err != nil {
-		return nil, err
+		contact.SetID(id)
+		contactsList = append(contactsList, contact)
 	}
-	return contacts, nil
+	return contactsList, nil
 }
 
 // DeleteContact delete a contact from the address book by its ID.
-func (addrsBook *dataBase) DeleteContact(id uint64) error {
-	return addrsBook.db.Update(func(tx *bolt.Tx) error {
-		bkt := tx.Bucket(dbAddrsBookBkt)
-		if bkt == nil {
-			return errBucketEmpty
-		}
-		if val := bkt.Get(dbutil.Itob(id)); val == nil {
-			return errValEmpty
-		}
-
-		return bkt.Delete(dbutil.Itob(id))
-	})
-
+func (addrsBook *addrsBook) DeleteContact(id uint64) error {
+	logDb.Info("Removing a contact from AddressBook")
+	return addrsBook.GetStorage().DeleteValue(id)
 }
 
 // UpdateContact update a contact in the address book by its ID.
-func (addrsBook *dataBase) UpdateContact(id uint64, newContact core.Contact) error {
-	var contacts []core.Contact
+func (addrsBook *addrsBook) UpdateContact(id uint64, newContact core.Contact) error {
+	logDb.Infof("Updating contact with id:%d", id)
+	if !newContact.IsValid() {
+		return errInvalidContact
+	}
+
+	var contactsList []core.Contact
 	var err error
-	if contacts, err = addrsBook.ListContact(); err != nil {
+	if contactsList, err = addrsBook.ListContact(); err != nil {
 		return err
 	}
-	for e := range contacts {
-		if contacts[e].GetID() == id {
-			contacts[e] = nil
+	for e := range contactsList {
+		if contactsList[e].GetID() == id {
+			contactsList[e] = nil
 			break
 		}
 	}
 
 	for _, ncAddrs := range newContact.GetAddresses() {
-		if err := addrsBook.addressExists(ncAddrs, contacts); err != nil {
+		if err := addrsBook.addressExists(ncAddrs, contactsList); err != nil {
 			return err
 		}
 	}
-	if err := addrsBook.nameExists(newContact, contacts); err != nil {
+	if err := addrsBook.nameExists(newContact, contactsList); err != nil {
 		return err
 	}
 
-	if err := addrsBook.db.Update(func(tx *bolt.Tx) error {
-		bkt := tx.Bucket(dbAddrsBookBkt)
-		if bkt == nil {
-			return errBucketEmpty
-		}
-		if cc, ok := newContact.(*Contact); ok {
-			cc.SetID(id)
-			encryptedData, err := addrsBook.encryptContact(cc)
-			if err != nil {
-				return err
-			}
-			if err := bkt.Put(dbutil.Itob(id), encryptedData); err != nil {
-				return err
-			}
-		} else {
-			return errParseContact
-		}
+	if _, ok := newContact.(*Contact); !ok {
+		return errParseContact
+	}
 
-		return nil
-	}); err != nil {
+	encryptedData, err := addrsBook.encryptContact(newContact.(*Contact))
+	if err != nil {
 		return err
 	}
-	return nil
+	return addrsBook.GetStorage().UpdateValue(id, encryptedData)
 }
 
 // GetPath return database path
-func (addrsBook *dataBase) GetPath() string {
-	return addrsBook.db.Path()
+func (addrsBook *addrsBook) GetPath() string {
+	return addrsBook.GetStorage().Path()
 }
 
 // Close shuts down the database.
-func (addrsBook *dataBase) Close() error {
-	if err := addrsBook.db.Close(); err != nil {
+func (addrsBook *addrsBook) Close() error {
+	if err := addrsBook.GetStorage().Close(); err != nil {
 		return err
 	}
 	return nil
 }
 
 // HasInit verify if database has been initialize
-func (addrsBook *dataBase) HasInit() bool {
-	tx, err := addrsBook.db.Begin(false)
-	if err != nil {
-		logrus.Error(err)
-		return false
-	}
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			logrus.Fatal(err)
-		}
-	}()
-	if tx.Bucket(dbConfigBkt) != nil {
+func (addrsBook *addrsBook) HasInit() bool {
+	if addrsBook.storage.GetConfig() != nil {
 		return true
 	}
 	return false
 }
 
 // IsOpen verify if database is open
-func (addrsBook *dataBase) IsOpen() bool {
-	if addrsBook.db.Path() != "" {
+func (addrsBook *addrsBook) IsOpen() bool {
+	if addrsBook.storage.Path() != "" {
 		return true
 	}
 	return false
 }
 
-// Exist verify if database file exist
-func (addrsBook *dataBase) Exist(path string) bool {
-	ok, err := file.Exists(path)
-	if err != nil {
-		logrus.Error(err)
-		return false
-	}
-	return ok
+func (addrsBook *addrsBook) GetStorage() core.Storage {
+	return addrsBook.storage
 }
 
-func (addrsBook *dataBase) GetSecType() (int, error) {
-	tx, err := addrsBook.db.Begin(false)
-	if err != nil {
-		return -1, err
-	}
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			logrus.Fatal(err)
-		}
-	}()
-	buck := tx.Bucket(dbConfigBkt)
-	if buck == nil {
-		return -1, errBucketEmpty
-	}
-
-	return int(dbutil.Btoi(buck.Get([]byte(SecurityType)))), nil
+func (addrsBook *addrsBook) GetSecType() (int, error) {
+	logDb.Info("Getting security type.")
+	return strconv.Atoi(addrsBook.GetStorage().GetConfig()[SecurityType])
 }
 
 // genEntropy generate annil Entropy by a mnemonic. If mnemonic is nil,
 // it generate a random.
-func (addrsBook *dataBase) genEntropy() ([]byte, error) {
+func (addrsBook *addrsBook) genEntropy() ([]byte, error) {
 	mn, err := bip39.NewDefaultMnemonic()
 	if err != nil {
 		return nil, err
@@ -409,50 +301,20 @@ func (addrsBook *dataBase) genEntropy() ([]byte, error) {
 	return e, nil
 }
 
-func (addrsBook *dataBase) getEntropyFromConfig() ([]byte, error) {
-	tx, err := addrsBook.db.Begin(false)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			logrus.Fatal(err)
-		}
-	}()
-	buck := tx.Bucket(dbConfigBkt)
-	if buck == nil {
-		return nil, errBucketEmpty
-	}
-	return buck.Get([]byte(Entropy)), nil
+func (addrsBook *addrsBook) getEntropyFromConfig() []byte {
+	logDb.Info("Getting entropy.")
+	return []byte(addrsBook.GetStorage().GetConfig()[Entropy])
+
 }
 
 // getHashFromConfig get hash from config bucket.
-func (addrsBook *dataBase) getHashFromConfig() ([]byte, error) {
-	tx, err := addrsBook.db.Begin(false)
-	if err != nil {
-		return nil, err
-	}
-
-	defer func() {
-		if err := tx.Rollback(); err != nil {
-			logrus.Fatal(err)
-		}
-	}()
-	buck := tx.Bucket(dbConfigBkt)
-	if buck == nil {
-		return nil, errBucketEmpty
-	}
-
-	hash := buck.Get([]byte(Hash))
-	if hash == nil {
-		return nil, errValEmpty
-	}
-
-	return hash, nil
+func (addrsBook *addrsBook) getHashFromConfig() []byte {
+	logDb.Info("Getting hash.")
+	return []byte(addrsBook.GetStorage().GetConfig()[Hash])
 }
 
 // encryptContact encrypt a contact using a password with AES-GCM.
-func (addrsBook *dataBase) encryptContact(c *Contact) ([]byte, error) {
+func (addrsBook *addrsBook) encryptContact(c *Contact) ([]byte, error) {
 	secType, err := addrsBook.GetSecType()
 	if err != nil {
 		return nil, err
@@ -474,7 +336,7 @@ func (addrsBook *dataBase) encryptContact(c *Contact) ([]byte, error) {
 }
 
 // Decrypt a cipher message using a password with AES-GCM and return a Contact.
-func (addrsBook *dataBase) decryptContact(cipherMsg []byte) (core.Contact, error) {
+func (addrsBook *addrsBook) decryptContact(cipherMsg []byte) (core.Contact, error) {
 	secType, err := addrsBook.GetSecType()
 	if err != nil {
 		return nil, err
@@ -506,17 +368,14 @@ func (addrsBook *dataBase) decryptContact(cipherMsg []byte) (core.Contact, error
 }
 
 //
-func (addrsBook *dataBase) verifyHash() error {
-	hash, err := addrsBook.getHashFromConfig()
-	if err != nil {
-		return err
-	}
+func (addrsBook *addrsBook) verifyHash() error {
+	hash := addrsBook.getHashFromConfig()
 	return bcrypt.CompareHashAndPassword(hash, addrsBook.key)
 }
 
 // addressExists search an address in the list of contacts into the AddressBook.
 // If find the address return error, else return nil.
-func (addrsBook *dataBase) addressExists(address core.StringAddress, contacts []core.Contact) error {
+func (addrsBook *addrsBook) addressExists(address core.StringAddress, contacts []core.Contact) error {
 	for _, v := range contacts {
 		c, ok := v.(*Contact)
 		if ok {
@@ -535,7 +394,7 @@ func (addrsBook *dataBase) addressExists(address core.StringAddress, contacts []
 
 // nameExists search an name in the list of contacts into the AddressBook.
 // If find the address return error, else return nil.
-func (addrsBook *dataBase) nameExists(contact core.Contact, contacts []core.Contact) error {
+func (addrsBook *addrsBook) nameExists(contact core.Contact, contacts []core.Contact) error {
 	for _, c := range contacts {
 		if dataContact, ok := c.(*Contact); ok {
 			if bytes.Compare(contact.(*Contact).Name, dataContact.Name) == 0 {
@@ -547,47 +406,21 @@ func (addrsBook *dataBase) nameExists(contact core.Contact, contacts []core.Cont
 	return nil
 }
 
-func (addrsBook *dataBase) insertConfig(secType int, hash, entropy []byte) error {
-	tx, err := addrsBook.db.Begin(true)
-	if err != nil {
+func (addrsBook *addrsBook) insertConfig(secType int, hash, entropy []byte) error {
+	if err := addrsBook.GetStorage().InsertConfig(
+		map[string]string{
+			SecurityType: strconv.Itoa(secType),
+			Hash:         string(hash),
+			Entropy:      string(entropy)}); err != nil {
+		logDb.Error(err)
 		return err
 	}
-
-	defer func() {
-		if err := tx.Rollback(); err != nil && err != bolt.ErrTxClosed {
-			logrus.Fatal(err)
-		}
-	}()
-
-	_, err = tx.CreateBucketIfNotExists(dbAddrsBookBkt)
-	if err != nil {
-		return err
-	}
-	_, err = tx.CreateBucketIfNotExists(dbConfigBkt)
-	if err != nil {
-		return err
-	}
-
-	bConf := tx.Bucket(dbConfigBkt)
-	if err := bConf.Put([]byte(Hash), hash); err != nil {
-		return err
-	}
-	if err := bConf.Put([]byte(Entropy), entropy); err != nil {
-		return err
-	}
-	if err := bConf.Put([]byte(SecurityType), dbutil.Itob(uint64(secType))); err != nil {
-		return err
-	}
-
-	return tx.Commit()
+	return nil
 }
 
-func (addrsBook *dataBase) encryptAESGCM(c *Contact) ([]byte, error) {
-	e, err := addrsBook.getEntropyFromConfig()
-	if err != nil {
-		return nil, err
-	}
-	block, err := aes.NewCipher(pbkdf2.Key(e, addrsBook.key, 4096, 32, sha512.New))
+func (addrsBook *addrsBook) encryptAESGCM(c *Contact) ([]byte, error) {
+	block, err := aes.NewCipher(
+		pbkdf2.Key(addrsBook.getEntropyFromConfig(), addrsBook.key, 4096, 32, sha512.New))
 	if err != nil {
 		return nil, err
 	}
@@ -609,13 +442,9 @@ func (addrsBook *dataBase) encryptAESGCM(c *Contact) ([]byte, error) {
 	return cipherText, nil
 }
 
-func (addrsBook *dataBase) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
-	e, err := addrsBook.getEntropyFromConfig()
-	if err != nil {
-		return nil, err
-	}
-
-	block, err := aes.NewCipher(pbkdf2.Key(e, addrsBook.key, 4096, 32, sha512.New))
+func (addrsBook *addrsBook) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
+	block, err := aes.NewCipher(pbkdf2.Key(
+		addrsBook.getEntropyFromConfig(), addrsBook.key, 4096, 32, sha512.New))
 	if err != nil {
 		return nil, err
 	}

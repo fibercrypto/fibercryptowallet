@@ -3,9 +3,11 @@ package data
 import (
 	"encoding/json"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
+	"strings"
 )
 
-// Contact is a contact of the dataBase
+// Contact is a contact of the addrsBook
 type Contact struct {
 	ID      uint64
 	Address []Address
@@ -69,6 +71,19 @@ func (c *Contact) SetName(newName string) {
 	c.Name = []byte(newName)
 }
 
+func (c *Contact) IsValid() bool {
+	if strings.ReplaceAll(c.GetName(), " ", "") == "" {
+		return false
+	}
+
+	for e := range c.GetAddresses() {
+		if !c.GetAddresses()[e].IsValid() {
+			return false
+		}
+	}
+	return true
+}
+
 // .....Address
 
 // GetValue get address string.
@@ -89,4 +104,12 @@ func (ad *Address) GetCoinType() []byte {
 // SetCoinType set the coin type to current address.
 func (ad *Address) SetCoinType(coinType []byte) {
 	ad.Coin = coinType
+}
+
+func (ad *Address) IsValid() bool {
+	if _, err := util.AddressFromString(string(ad.GetValue()),
+		string(ad.GetCoinType())); err != nil {
+		return false
+	}
+	return true
 }

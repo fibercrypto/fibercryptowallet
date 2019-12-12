@@ -1,7 +1,9 @@
 package data
 
 import (
+	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/skycoin/skycoin/src/util/file"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
@@ -89,6 +91,7 @@ func TestContact_UnmarshalBinary(t *testing.T) {
 }
 
 func Test_addressBook_DeleteContact(t *testing.T) {
+	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
 	type args struct {
 		id uint64
 	}
@@ -107,36 +110,41 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 			args: args{
 				id: 1,
 			},
-			wantErr: false,
+			wantErr: true,
 		},
 		{name: "one-contact",
 			field: fields{
 				Address: []Address{{
-					Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+					Coin:  []byte("SKY"),
 				}},
 				Name: []byte("Contact1"),
 			}, args: args{
-				id: 2},
+				id: 1},
 			wantErr: false,
 		},
 		{name: "two-address",
 			field: fields{
 				Address: []Address{{
 					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-					Coin:  []byte("skycoin"),
+					Coin:  []byte("SKY"),
 				}, {
 					Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
-					Coin:  []byte("BTC"),
+					Coin:  []byte("SKY"),
 				}},
 				Name: []byte("Contact2"),
 			}, args: args{
-				id: 3},
+				id: 2},
 			wantErr: false,
 		},
 		{name: "bad-ID",
 			field: fields{
 				Name: []byte("Contact3"),
+				Address: []Address{
+					{
+						Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
+						Coin:  []byte("SKY"),
+					}},
 			}, args: args{
 				id: 6},
 			wantErr: true,
@@ -147,12 +155,10 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 	defer CloseTest(t, ab)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if _, err := ab.InsertContact(&Contact{
+			_, _ = ab.InsertContact(&Contact{
 				Address: tt.field.Address,
 				Name:    tt.field.Name,
-			}); err != nil {
-				t.Errorf("Error inserting contact: %s", err)
-			}
+			})
 			if err := ab.DeleteContact(tt.args.id); (err != nil) != tt.wantErr {
 				t.Errorf("DeleteContact() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -161,6 +167,7 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 }
 
 func Test_addressBook_GetContact(t *testing.T) {
+	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
 	type fields struct {
 		Address []Address
 		Name    []byte
@@ -180,25 +187,23 @@ func Test_addressBook_GetContact(t *testing.T) {
 			args: args{
 				id: 1,
 			},
-			want: &Contact{
-				ID: 1,
-			},
-			wantErr: false},
+			want:    nil,
+			wantErr: true},
 		{name: "one-address",
 			fields: fields{
 				Address: []Address{{
-					Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+					Coin:  []byte("SKY"),
 				}},
 				Name: []byte("Contact1"),
 			}, args: args{
-				id: 2,
+				id: 1,
 			},
 			want: &Contact{
-				ID: 2,
+				ID: 1,
 				Address: []Address{{
-					Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+					Coin:  []byte("SKY"),
 				}},
 				Name: []byte("Contact1"),
 			},
@@ -207,23 +212,23 @@ func Test_addressBook_GetContact(t *testing.T) {
 		{name: "two-address", fields: fields{
 			Address: []Address{{
 				Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-				Coin:  []byte("skycoin"),
+				Coin:  []byte("SKY"),
 			}, {
 				Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
-				Coin:  []byte("BTC"),
+				Coin:  []byte("SKY"),
 			}},
 			Name: []byte("Contact2"),
 		}, args: args{
-			id: 3,
+			id: 2,
 		},
 			want: &Contact{
-				ID: 3,
+				ID: 2,
 				Address: []Address{{
 					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-					Coin:  []byte("skycoin"),
+					Coin:  []byte("SKY"),
 				}, {
 					Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
-					Coin:  []byte("BTC"),
+					Coin:  []byte("SKY"),
 				}},
 				Name: []byte("Contact2"),
 			},
@@ -250,8 +255,8 @@ func Test_addressBook_GetContact(t *testing.T) {
 			if _, err := ab.InsertContact(&Contact{
 				Address: tt.fields.Address,
 				Name:    tt.fields.Name,
-			}); err != nil {
-				t.Errorf("Error inserting contact: %s", err)
+			}); (err != nil) == tt.wantErr {
+				return
 			}
 
 			got, err := ab.GetContact(tt.args.id)
@@ -267,6 +272,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 }
 
 func Test_addressBook_InsertContact(t *testing.T) {
+	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
 	type args struct {
 		c core.Contact
 	}
@@ -279,13 +285,13 @@ func Test_addressBook_InsertContact(t *testing.T) {
 			args: args{
 				c: &Contact{},
 			},
-			wantErr: false,
+			wantErr: true,
 		}, {name: "one-address",
 			args: args{
 				c: &Contact{
 					Address: []Address{{
-						Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"),
-						Coin:  []byte("skycoin"),
+						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
@@ -296,32 +302,32 @@ func Test_addressBook_InsertContact(t *testing.T) {
 				c: &Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}, {
 						Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
-						Coin:  []byte("BTC"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact2"),
 				},
 			},
-			wantErr: false,
-		}, {name: "repeat-address-diff-type",
+			wantErr: false},
+		// }, {name: "repeat-address-diff-type",
+		// 	args: args{
+		// 		c: &Contact{
+		// 			Address: []Address{{
+		// 				Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
+		// 				Coin:  []byte("SKY"),
+		// 			}},
+		// 			Name: []byte("Contact3"),
+		// 		},
+		// 	},
+		// 	wantErr: false},
+		{name: "repeat-address-same-type",
 			args: args{
 				c: &Contact{
 					Address: []Address{{
 						Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
-						Coin:  []byte("skycoin"),
-					}},
-					Name: []byte("Contact3"),
-				},
-			},
-			wantErr: false,
-		}, {name: "repeat-address-same-type",
-			args: args{
-				c: &Contact{
-					Address: []Address{{
-						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact4"),
 				},
@@ -332,10 +338,10 @@ func Test_addressBook_InsertContact(t *testing.T) {
 			args: args{
 				c: &Contact{
 					Address: []Address{{
-						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Value: []byte("2LRUs2MFEhCpDfSHaNjCtzjz8TJjuTK98s5"),
+						Coin:  []byte("SKY"),
 					}},
-					Name: []byte("Contact4"),
+					Name: []byte("Contact2"),
 				},
 			},
 			wantErr: true,
@@ -353,6 +359,7 @@ func Test_addressBook_InsertContact(t *testing.T) {
 }
 
 func Test_addressBook_ListContact(t *testing.T) {
+	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
 	type fields struct {
 		Contacts []Contact
 	}
@@ -368,12 +375,12 @@ func Test_addressBook_ListContact(t *testing.T) {
 		{name: "empty",
 			fields:  fields{Contacts: []Contact(nil)},
 			want:    []core.Contact(nil),
-			wantErr: false},
+			wantErr: true},
 		{name: "one-contact",
 			fields: fields{Contacts: []Contact{
 				{Address: []Address{{
-					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+					Coin:  []byte("SKY"),
 				}},
 					Name: []byte("contact1"),
 				},
@@ -381,8 +388,8 @@ func Test_addressBook_ListContact(t *testing.T) {
 			want: []core.Contact{&Contact{
 				ID: 1,
 				Address: []Address{{
-					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
+					Coin:  []byte("SKY"),
 				}},
 				Name: []byte("contact1"),
 			}},
@@ -390,91 +397,68 @@ func Test_addressBook_ListContact(t *testing.T) {
 		{name: "multiple-contacts",
 			fields: fields{Contacts: []Contact{
 				{Address: []Address{{
-					Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("mGeG2PDoU4nc9qE1FSSreAjFeKG12zDvur"),
+					Coin:  []byte("SKY"),
 				}},
 					Name: []byte("contact1"),
 				},
 				{Address: []Address{{
 					Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
-					Coin:  []byte("skycoin"),
+					Coin:  []byte("SKY"),
 				}, {
 					Value: []byte("29cnQPHuWHCRF26LEAb2gR83ywnF3F9HduW"),
-					Coin:  []byte("skycoin")}},
+					Coin:  []byte("SKY")}},
 					Name: []byte("contact2"),
 				},
 				{Address: []Address{{
 					Value: []byte("2ymjULRdbiFoUNJKNhWbQ3JqdE8TXnZkyU"),
-					Coin:  []byte("BTC"),
+					Coin:  []byte("SKY"),
 				}},
 					Name: []byte("contact3"),
 				}, {
 					Address: []Address{{
 						Value: []byte("oHvj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}, {
 						Value: []byte("2SGMfTFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
-						Coin:  []byte("skycoin")}},
+						Coin:  []byte("SKY")}},
 					Name: []byte("contact4"),
 				}, {
 					Address: []Address{{
-						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
-						Coin:  []byte("skycoin"),
-					}, {
 						Value: []byte("2EVNa4CK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}, {
 						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("contact5"),
 				}, {Address: []Address{{
-					Value: []byte("25MP2EHddPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("rhbE3thvA747E81KfaYCujur7GKXjdhvS4"),
+					Coin:  []byte("SKY"),
 				}},
 					Name: []byte("contact6"),
 				},
 				{Address: []Address{{
-					Value: []byte("9BSEAEEr3XddGtQ2X43BCT2XCYgheGLQQigEG"),
-					Coin:  []byte("skycoin"),
+					Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+					Coin:  []byte("SKY"),
 				}, {
-					Value: []byte("29cnQPHuweWHCRF26LEAb2gR83ywnF3F9HduW"),
-					Coin:  []byte("skycoin")}},
+					Value: []byte("LxcitUpWQZbPjgEPs6R1i3G4Xa31nPMoSG"),
+					Coin:  []byte("SKY")}},
 					Name: []byte("contact7"),
 				},
 				{Address: []Address{{
-					Value: []byte("2ymjULRdbiasdFoUNJKNhWbQ3JqdE8TXnZkyU"),
-					Coin:  []byte("BTC"),
+					Value: []byte("2EJMjg7nV4DMrkshnvwg7tLdibeuu7DKvZh"),
+					Coin:  []byte("SKY"),
 				}},
 					Name: []byte("contact8"),
-				}, {
-					Address: []Address{{
-						Value: []byte("oHvrwfj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
-						Coin:  []byte("skycoin"),
-					}, {
-						Value: []byte("2SGMfTsaazFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
-						Coin:  []byte("skycoin")}},
-					Name: []byte("contact9"),
-				}, {
-					Address: []Address{{
-						Value: []byte("2DprrreofcsamDfanrRz34qjYvskRzKqzNKMcj"),
-						Coin:  []byte("skycoin"),
-					}, {
-						Value: []byte("2EVNa4esdfsCK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
-						Coin:  []byte("skycoin"),
-					}, {
-						Value: []byte("n5SteDkkYdRfsf3VJtMnVYcQ45L16rDDrseG8"),
-						Coin:  []byte("skycoin"),
-					}},
-					Name: []byte("contact10"),
 				},
 			}},
 			want: []core.Contact{
 				&Contact{
 					ID: 1,
 					Address: []Address{{
-						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Value: []byte("mGeG2PDoU4nc9qE1FSSreAjFeKG12zDvur"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("contact1"),
 				},
@@ -482,17 +466,17 @@ func Test_addressBook_ListContact(t *testing.T) {
 					ID: 2,
 					Address: []Address{{
 						Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}, {
 						Value: []byte("29cnQPHuWHCRF26LEAb2gR83ywnF3F9HduW"),
-						Coin:  []byte("skycoin")}},
+						Coin:  []byte("SKY")}},
 					Name: []byte("contact2"),
 				},
 				&Contact{
 					ID: 3,
 					Address: []Address{{
 						Value: []byte("2ymjULRdbiFoUNJKNhWbQ3JqdE8TXnZkyU"),
-						Coin:  []byte("BTC"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("contact3"),
 				},
@@ -500,72 +484,47 @@ func Test_addressBook_ListContact(t *testing.T) {
 					ID: 4,
 					Address: []Address{{
 						Value: []byte("oHvj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}, {
 						Value: []byte("2SGMfTFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
-						Coin:  []byte("skycoin")}},
+						Coin:  []byte("SKY")}},
 					Name: []byte("contact4"),
 				},
 				&Contact{
 					ID: 5,
 					Address: []Address{{
-						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
-						Coin:  []byte("skycoin"),
-					}, {
 						Value: []byte("2EVNa4CK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}, {
 						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("contact5"),
 				}, &Contact{
 					ID: 6,
 					Address: []Address{{
-						Value: []byte("25MP2EHddPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Value: []byte("rhbE3thvA747E81KfaYCujur7GKXjdhvS4"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("contact6"),
 				},
 				&Contact{
 					ID: 7,
 					Address: []Address{{
-						Value: []byte("9BSEAEEr3XddGtQ2X43BCT2XCYgheGLQQigEG"),
-						Coin:  []byte("skycoin"),
+						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
+						Coin:  []byte("SKY"),
 					}, {
-						Value: []byte("29cnQPHuweWHCRF26LEAb2gR83ywnF3F9HduW"),
-						Coin:  []byte("skycoin")}},
+						Value: []byte("LxcitUpWQZbPjgEPs6R1i3G4Xa31nPMoSG"),
+						Coin:  []byte("SKY")}},
 					Name: []byte("contact7"),
 				},
 				&Contact{
 					ID: 8,
 					Address: []Address{{
-						Value: []byte("2ymjULRdbiasdFoUNJKNhWbQ3JqdE8TXnZkyU"),
-						Coin:  []byte("BTC"),
+						Value: []byte("2EJMjg7nV4DMrkshnvwg7tLdibeuu7DKvZh"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("contact8"),
-				}, &Contact{
-					ID: 9,
-					Address: []Address{{
-						Value: []byte("oHvrwfj7oy8maES9HJiQHJTp4GvcUcpz3voDq"),
-						Coin:  []byte("skycoin"),
-					}, {
-						Value: []byte("2SGMfTsaazFV2zbQzGw7aJm1D5EeEPgych5ixuC"),
-						Coin:  []byte("skycoin")}},
-					Name: []byte("contact9"),
-				}, &Contact{
-					ID: 10,
-					Address: []Address{{
-						Value: []byte("2DprrreofcsamDfanrRz34qjYvskRzKqzNKMcj"),
-						Coin:  []byte("skycoin"),
-					}, {
-						Value: []byte("2EVNa4esdfsCK9SKosT4j1GEn8SuuUUEAXaHAMbM"),
-						Coin:  []byte("skycoin"),
-					}, {
-						Value: []byte("n5SteDkkYdRfsf3VJtMnVYcQ45L16rDDrseG8"),
-						Coin:  []byte("skycoin"),
-					}},
-					Name: []byte("contact10"),
 				},
 			},
 			wantErr: false},
@@ -576,6 +535,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 			ab := InitAddrsBook(t)
 			defer CloseTest(t, ab)
 			for _, contact := range tt.fields.Contacts {
+
 				if _, err := ab.InsertContact(&contact); err != nil {
 					t.Error(err)
 					return
@@ -586,14 +546,16 @@ func Test_addressBook_ListContact(t *testing.T) {
 				t.Errorf("ListContact() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ListContact() got = %#v, want %#v", got, tt.want)
+			for e := range got {
+				assert.Contains(t, tt.want, got[e])
 			}
+
 		})
 	}
 }
 
 func TestDB_UpdateContact(t *testing.T) {
+	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
 	type args struct {
 		id         uint64
 		newContact core.Contact
@@ -613,13 +575,13 @@ func TestDB_UpdateContact(t *testing.T) {
 				newContact: &Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
 			},
 			insertArgs: insertArgs{contacts: []core.Contact{&Contact{}}},
-			wantErr:    false,
+			wantErr:    true,
 		},
 		{name: "empty-update",
 			args: args{
@@ -630,11 +592,11 @@ func TestDB_UpdateContact(t *testing.T) {
 				contacts: []core.Contact{&Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				}}},
-			wantErr: false,
+			wantErr: true,
 		},
 		{name: "update-coinType",
 			args: args{
@@ -642,7 +604,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				newContact: &Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("BTC"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
@@ -651,7 +613,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				contacts: []core.Contact{&Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				}}},
@@ -663,7 +625,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				newContact: &Contact{
 					Address: []Address{{
 						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
@@ -672,7 +634,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				contacts: []core.Contact{&Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				}}},
@@ -684,7 +646,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				newContact: &Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
@@ -693,7 +655,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				contacts: []core.Contact{&Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				}}},
@@ -704,7 +666,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				newContact: &Contact{
 					Address: []Address{{
 						Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
@@ -713,14 +675,14 @@ func TestDB_UpdateContact(t *testing.T) {
 				contacts: []core.Contact{&Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
 					&Contact{
 						Address: []Address{{
 							Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
-							Coin:  []byte("skycoin"),
+							Coin:  []byte("SKY"),
 						}},
 						Name: []byte("Contact2"),
 					}}},
@@ -732,7 +694,7 @@ func TestDB_UpdateContact(t *testing.T) {
 				newContact: &Contact{
 					Address: []Address{{
 						Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact2"),
 				},
@@ -741,14 +703,14 @@ func TestDB_UpdateContact(t *testing.T) {
 				contacts: []core.Contact{&Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("skycoin"),
+						Coin:  []byte("SKY"),
 					}},
 					Name: []byte("Contact1"),
 				},
 					&Contact{
 						Address: []Address{{
 							Value: []byte("n5SteDkkYdR3VJtMnVYcQ45L16rDDrseG8"),
-							Coin:  []byte("skycoin"),
+							Coin:  []byte("SKY"),
 						}},
 						Name: []byte("Contact2"),
 					}}},
@@ -761,10 +723,7 @@ func TestDB_UpdateContact(t *testing.T) {
 			ab := InitAddrsBook(t)
 			defer CloseTest(t, ab)
 			for e := range tt.insertArgs.contacts {
-				if _, err := ab.InsertContact(tt.insertArgs.contacts[e]); err != nil {
-					t.Error(err)
-					return
-				}
+				_, _ = ab.InsertContact(tt.insertArgs.contacts[e])
 			}
 
 			if err := ab.UpdateContact(tt.args.id, tt.args.newContact); (err != nil) != tt.wantErr {
@@ -809,11 +768,12 @@ func TestDB_Init(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			addressBook, err := NewAddressBook(GetFilePath(t))
+			db, err := GetBoltStorage(GetFilePath(t))
 			if err != nil {
-				t.Error(addressBook)
+				t.Error(err)
 				return
 			}
+			addressBook := NewAddressBook(db)
 
 			if tt.name == "Two Init" {
 				_ = addressBook.Init(tt.args.secType, tt.args.password)
@@ -830,15 +790,12 @@ func TestDB_Init(t *testing.T) {
 
 func TestDB_Authenticate(t *testing.T) {
 	ab := InitAddrsBook(t)
-	path := ab.GetPath()
-	assert.True(t, ab.Exist(path))
 	assert.NoError(t, ab.Authenticate(defaultPass))
 	// address book error: crypto/bcrypt: hashedPassword is not the hash of the given password
 	assert.Error(t, ab.Authenticate(""))
 
 	CloseTest(t, ab)
 	// error database not open
-	assert.False(t, ab.Exist(path))
 	assert.Error(t, ab.Authenticate(defaultPass))
 
 }
@@ -869,10 +826,11 @@ func GetFilePath(t *testing.T) string {
 // Open a address book using a test file.
 func InitAddrsBook(t *testing.T) core.AddressBook {
 	path := GetFilePath(t)
-	AddrsBook, err := NewAddressBook(path)
+	db, err := GetBoltStorage(path)
 	if err != nil {
 		t.Error(err)
 	}
+	AddrsBook := NewAddressBook(db)
 	err = AddrsBook.Init(PasswordSecurity, defaultPass)
 	if err != nil {
 		t.Error(err)
@@ -882,7 +840,7 @@ func InitAddrsBook(t *testing.T) core.AddressBook {
 }
 
 func CloseTest(t *testing.T, ab core.AddressBook) {
-	path := ab.GetPath()
+	path := ab.GetStorage().Path()
 	if err := ab.Close(); err != nil {
 		t.Errorf("Error closing db: %s", err)
 	}
