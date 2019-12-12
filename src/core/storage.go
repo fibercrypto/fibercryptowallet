@@ -101,12 +101,23 @@ type AddressBook interface {
 	InsertContact(contact Contact) (uint64, error)
 	DeleteContact(id uint64) error
 	UpdateContact(id uint64, contact Contact) error
-	GetPath() string
+	GetStorage() Storage
 	HasInit() bool
 	IsOpen() bool
 	GetSecType() (int, error)
 	Close() error
-	Exist(path string) bool
+}
+
+type Storage interface {
+	InsertValue(value interface{}) (uint64, error)
+	GetValue(key uint64) (interface{}, error)
+	ListValues() (map[uint64]interface{}, error)
+	DeleteValue(key uint64) error
+	UpdateValue(key uint64, newValue interface{}) error
+	Path() string
+	GetConfig() map[string]string
+	InsertConfig(map[string]string) error
+	Close() error
 }
 
 // Contact provides encrypt / decrypt data.
@@ -117,10 +128,12 @@ type Contact interface {
 	SetAddresses([]StringAddress)
 	GetName() string
 	SetName(string)
+	IsValid() bool
 }
 type StringAddress interface {
 	GetValue() []byte
 	SetValue(val []byte)
 	GetCoinType() []byte
 	SetCoinType(val []byte)
+	IsValid() bool
 }
