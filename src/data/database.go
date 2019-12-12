@@ -24,8 +24,8 @@ var (
 	errValEmpty    = errors.New(" database: result are empty")
 )
 
+// GetBoltStorage generate a new instance of boltStorage.
 func GetBoltStorage(path string) (*boltStorage, error) {
-
 	db, err := bolt.Open(path, 0600,
 		&bolt.Options{
 			Timeout: 1 * time.Second,
@@ -39,6 +39,7 @@ func GetBoltStorage(path string) (*boltStorage, error) {
 	return &boltStorage{db}, nil
 }
 
+// GetConfig Returns the config bucket content.
 func (b *boltStorage) GetConfig() map[string]string {
 	tx, err := b.Begin(false)
 	if err != nil {
@@ -65,6 +66,7 @@ func (b *boltStorage) GetConfig() map[string]string {
 	return nil
 }
 
+// InsertConfig set into config bucket the config parameters (securityType, hash, entropy)
 func (b *boltStorage) InsertConfig(options map[string]string) error {
 	// Start a writeable transaction.
 	tx, err := b.Begin(true)
@@ -94,6 +96,7 @@ func (b *boltStorage) InsertConfig(options map[string]string) error {
 	return tx.Commit()
 }
 
+// InsertValue insert a value in AddressBook bucket.
 func (b *boltStorage) InsertValue(value interface{}) (uint64, error) {
 	// Start a writeable transaction.
 	tx, err := b.Begin(true)
@@ -133,6 +136,7 @@ func (b *boltStorage) InsertValue(value interface{}) (uint64, error) {
 	return id, tx.Commit()
 }
 
+// GetValue get a value from the AddressBook bucket.
 func (b *boltStorage) GetValue(key uint64) (interface{}, error) {
 	tx, err := b.Begin(false)
 	if err != nil {
@@ -155,6 +159,7 @@ func (b *boltStorage) GetValue(key uint64) (interface{}, error) {
 	return nil, errBucketEmpty
 }
 
+// ListValues returns all values from AddressBook bucket.
 func (b *boltStorage) ListValues() (map[uint64]interface{}, error) {
 	tx, err := b.Begin(false)
 	if err != nil {
@@ -181,6 +186,7 @@ func (b *boltStorage) ListValues() (map[uint64]interface{}, error) {
 	return nil, errBucketEmpty
 }
 
+// DeleteValue remove a value from the AddressBook bucket by its id.
 func (b *boltStorage) DeleteValue(key uint64) error {
 	return b.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket([]byte(dbAddrsBookBkt))
@@ -197,6 +203,7 @@ func (b *boltStorage) DeleteValue(key uint64) error {
 
 }
 
+// UpdateValue update a element into the AddressBook bucket by its id.
 func (b *boltStorage) UpdateValue(key uint64, newVal interface{}) error {
 	return b.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket([]byte(dbAddrsBookBkt))

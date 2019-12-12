@@ -136,6 +136,7 @@ func (addrsBook *addrsBook) Authenticate(password string) error {
 // InsertContact insert a contact into the address book.
 // If any of its address exist return error.
 func (addrsBook *addrsBook) InsertContact(contact core.Contact) (uint64, error) {
+	logDb.Info("Inserting a contact into the Address Book.")
 	if !contact.IsValid() {
 		return 0, errInvalidContact
 	}
@@ -164,6 +165,7 @@ func (addrsBook *addrsBook) InsertContact(contact core.Contact) (uint64, error) 
 
 // GetContact get a contact by ID.
 func (addrsBook *addrsBook) GetContact(id uint64) (core.Contact, error) {
+	logDb.Info("Getting a contact from the Address Book")
 	encryptData, err := addrsBook.GetStorage().GetValue(id)
 	if err != nil {
 		logDb.Error(err)
@@ -183,6 +185,7 @@ func (addrsBook *addrsBook) GetContact(id uint64) (core.Contact, error) {
 
 // ListContact list all contact in the address book.
 func (addrsBook *addrsBook) ListContact() ([]core.Contact, error) {
+	logDb.Info("Getting all contact in the Address Book.")
 	var contactsList []core.Contact
 	encryptContactList, err := addrsBook.GetStorage().ListValues()
 	if err != nil {
@@ -256,6 +259,7 @@ func (addrsBook *addrsBook) GetPath() string {
 
 // Close shuts down the database.
 func (addrsBook *addrsBook) Close() error {
+	logDb.Info("Closing the AddressBook")
 	if err := addrsBook.GetStorage().Close(); err != nil {
 		return err
 	}
@@ -278,10 +282,13 @@ func (addrsBook *addrsBook) IsOpen() bool {
 	return false
 }
 
+// GetStorage return the Storage parameter. This is in charge of manager the database interaction
 func (addrsBook *addrsBook) GetStorage() core.Storage {
+	logDb.Info("Getting  Storage.")
 	return addrsBook.storage
 }
 
+// GetSecType return the Security Type of the Address Book.
 func (addrsBook *addrsBook) GetSecType() (int, error) {
 	logDb.Info("Getting security type.")
 	return strconv.Atoi(addrsBook.GetStorage().GetConfig()[SecurityType])
@@ -301,13 +308,14 @@ func (addrsBook *addrsBook) genEntropy() ([]byte, error) {
 	return e, nil
 }
 
+// getEntropyFromConfig retrieve the Entropy parameter from the database.
 func (addrsBook *addrsBook) getEntropyFromConfig() []byte {
 	logDb.Info("Getting entropy.")
 	return []byte(addrsBook.GetStorage().GetConfig()[Entropy])
 
 }
 
-// getHashFromConfig get hash from config bucket.
+// getHashFromConfig get hash from config bucket in the database..
 func (addrsBook *addrsBook) getHashFromConfig() []byte {
 	logDb.Info("Getting hash.")
 	return []byte(addrsBook.GetStorage().GetConfig()[Hash])
@@ -343,23 +351,23 @@ func (addrsBook *addrsBook) decryptContact(cipherMsg []byte) (core.Contact, erro
 	}
 	switch secType {
 	case NoSecurity:
-		c := Contact{}
-		if err := c.UnmarshalBinary(cipherMsg); err != nil {
+		contact := Contact{}
+		if err := contact.UnmarshalBinary(cipherMsg); err != nil {
 			return nil, err
 		}
 
-		return &c, nil
+		return &contact, nil
 
 	case ObfuscationSecurity:
-		c := Contact{}
+		contact := Contact{}
 		data, err := base64.StdEncoding.DecodeString(string(cipherMsg))
 		if err != nil {
 			return nil, err
 		}
-		if err := c.UnmarshalBinary(data); err != nil {
+		if err := contact.UnmarshalBinary(data); err != nil {
 			return nil, err
 		}
-		return &c, nil
+		return &contact, nil
 	case PasswordSecurity:
 		return addrsBook.decryptAESGCM(cipherMsg)
 	}
@@ -367,7 +375,7 @@ func (addrsBook *addrsBook) decryptContact(cipherMsg []byte) (core.Contact, erro
 	return nil, errInvalidSecType
 }
 
-//
+// verifyHash verify if a password match with the current AddressBook hash.
 func (addrsBook *addrsBook) verifyHash() error {
 	hash := addrsBook.getHashFromConfig()
 	return bcrypt.CompareHashAndPassword(hash, addrsBook.key)
@@ -376,29 +384,28 @@ func (addrsBook *addrsBook) verifyHash() error {
 // addressExists search an address in the list of contacts into the AddressBook.
 // If find the address return error, else return nil.
 func (addrsBook *addrsBook) addressExists(address core.StringAddress, contacts []core.Contact) error {
-	for _, v := range contacts {
-		c, ok := v.(*Contact)
-		if ok {
-			for _, addrs := range c.Address {
-				if bytes.Compare(addrs.GetValue(), address.GetValue()) == 0 &&
-					bytes.Compare(addrs.GetCoinType(), address.GetCoinType()) == 0 {
-					return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist",
-						address.GetValue(), address.GetCoinType())
-				}
+	for _, contact := range contacts {
+		if _, ok := contact.(*Contact); ok {
+			return errValueNoMatch(contact, &Contact{})
+		}
+		for _, addrs := range contact.(*Contact).Address {
+			if bytes.Compare(addrs.GetValue(), address.GetValue()) == 0 &&
+				bytes.Compare(addrs.GetCoinType(), address.GetCoinType()) == 0 {
+				return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist",
+					address.GetValue(), address.GetCoinType())
 			}
 		}
 	}
-
 	return nil
 }
 
 // nameExists search an name in the list of contacts into the AddressBook.
 // If find the address return error, else return nil.
-func (addrsBook *addrsBook) nameExists(contact core.Contact, contacts []core.Contact) error {
-	for _, c := range contacts {
-		if dataContact, ok := c.(*Contact); ok {
-			if bytes.Compare(contact.(*Contact).Name, dataContact.Name) == 0 {
-				return fmt.Errorf(" Contact with name: %s alredy exist", contact.(*Contact).Name)
+func (addrsBook *addrsBook) nameExists(newContact core.Contact, contactsList []core.Contact) error {
+	for _, contact := range contactsList {
+		if dataContact, ok := contact.(*Contact); ok {
+			if bytes.Compare(newContact.(*Contact).Name, dataContact.Name) == 0 {
+				return fmt.Errorf(" Contact with name: %s alredy exist", newContact.(*Contact).Name)
 			}
 		}
 	}
@@ -406,6 +413,7 @@ func (addrsBook *addrsBook) nameExists(contact core.Contact, contacts []core.Con
 	return nil
 }
 
+// insertConfig insert the configuration parameter into Config block in the database.
 func (addrsBook *addrsBook) insertConfig(secType int, hash, entropy []byte) error {
 	if err := addrsBook.GetStorage().InsertConfig(
 		map[string]string{
@@ -418,7 +426,8 @@ func (addrsBook *addrsBook) insertConfig(secType int, hash, entropy []byte) erro
 	return nil
 }
 
-func (addrsBook *addrsBook) encryptAESGCM(c *Contact) ([]byte, error) {
+// decryptAESGCM encrypt a data with AESGCM algorithm. http://golang.org/crypto/
+func (addrsBook *addrsBook) encryptAESGCM(contact *Contact) ([]byte, error) {
 	block, err := aes.NewCipher(
 		pbkdf2.Key(addrsBook.getEntropyFromConfig(), addrsBook.key, 4096, 32, sha512.New))
 	if err != nil {
@@ -433,7 +442,7 @@ func (addrsBook *addrsBook) encryptAESGCM(c *Contact) ([]byte, error) {
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
 		return nil, err
 	}
-	bc, err := c.MarshalBinary()
+	bc, err := contact.MarshalBinary()
 	if err != nil {
 		return nil, err
 	}
@@ -442,6 +451,7 @@ func (addrsBook *addrsBook) encryptAESGCM(c *Contact) ([]byte, error) {
 	return cipherText, nil
 }
 
+// decryptAESGCM decrypt a data with AESGCM algorithm. http://golang.org/crypto/
 func (addrsBook *addrsBook) decryptAESGCM(cipherMsg []byte) (core.Contact, error) {
 	block, err := aes.NewCipher(pbkdf2.Key(
 		addrsBook.getEntropyFromConfig(), addrsBook.key, 4096, 32, sha512.New))
@@ -452,7 +462,7 @@ func (addrsBook *addrsBook) decryptAESGCM(cipherMsg []byte) (core.Contact, error
 	if err != nil {
 		return nil, err
 	}
-	var c Contact
+	var contact Contact
 	nonceSize := aesGCM.NonceSize()
 	nonce, cipherText := cipherMsg[:nonceSize], cipherMsg[nonceSize:]
 
@@ -460,8 +470,8 @@ func (addrsBook *addrsBook) decryptAESGCM(cipherMsg []byte) (core.Contact, error
 	if err != nil {
 		return nil, err
 	}
-	if err := c.UnmarshalBinary(data); err != nil {
+	if err := contact.UnmarshalBinary(data); err != nil {
 		return nil, err
 	}
-	return &c, nil
+	return &contact, nil
 }
