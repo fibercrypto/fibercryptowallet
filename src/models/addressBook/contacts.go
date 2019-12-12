@@ -17,7 +17,7 @@ const (
 	ID
 )
 
-var db core.AddressBook
+var addrsBook core.AddressBook
 var logAddressBook = logging.MustGetLogger("Address Book Model")
 
 func init() { AddrsBookModel_QmlRegisterType2("AddrsBookManager", 1, 0, "AddrsBookModel") }
@@ -54,7 +54,6 @@ type QContact struct {
 
 func (abm *AddrsBookModel) init() {
 	logAddressBook.Info("Init addressBook model")
-	var err error
 	abm.SetRoles(map[int]*qtcore.QByteArray{
 		Name:    qtcore.NewQByteArray2("name", -1),
 		Address: qtcore.NewQByteArray2("address", -1),
@@ -78,11 +77,14 @@ func (abm *AddrsBookModel) init() {
 	// abm.ConnectRemoveContact(abm.removeContact)
 	abm.ConnectHasInit(abm.hasInit)
 	abm.ConnectAddAddress(abm.addAddress)
-	if db == nil {
-		if db, err = data.NewAddressBook(getConfigFileDir()); err != nil {
+	if addrsBook == nil {
+		db, err := data.GetBoltStorage(getConfigFileDir())
+		if err != nil {
 			logAddressBook.Error(err)
 		}
+		addrsBook = data.NewAddressBook(db)
 	}
+
 }
 
 func (abm *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
@@ -130,7 +132,7 @@ func (abm *AddrsBookModel) removeContact(row int, id uint64) {
 	if row < 0 || row >= abm.Count() {
 		return
 	}
-	if err := db.DeleteContact(id); err != nil {
+	if err := addrsBook.DeleteContact(id); err != nil {
 		logAddressBook.Error(err)
 		return
 	}
@@ -169,7 +171,7 @@ func (abm *AddrsBookModel) editContact(row int, id uint64, name string) {
 	var c = data.Contact{}
 	c.SetAddresses(addresses)
 	c.SetName(name)
-	if err := db.UpdateContact(id, &c); err != nil {
+	if err := addrsBook.UpdateContact(id, &c); err != nil {
 		logAddressBook.Error(err)
 		return
 	}
@@ -190,7 +192,7 @@ func getConfigFileDir() string {
 func (abm *AddrsBookModel) loadContacts() {
 	logAddressBook.Info("loading contacts")
 	abm.SetContacts([]*QContact{})
-	contacts, err := db.ListContact()
+	contacts, err := addrsBook.ListContact()
 	if err != nil {
 		logAddressBook.Error(err)
 	}
@@ -202,7 +204,7 @@ func (abm *AddrsBookModel) loadContacts() {
 }
 
 func (abm *AddrsBookModel) getSecType() int {
-	secType, err := db.GetSecType()
+	secType, err := addrsBook.GetSecType()
 	if err != nil {
 		logAddressBook.Error(err)
 	}
@@ -210,7 +212,7 @@ func (abm *AddrsBookModel) getSecType() int {
 }
 
 func (abm *AddrsBookModel) authenticate(password string) bool {
-	if err := db.Authenticate(password); err != nil {
+	if err := addrsBook.Authenticate(password); err != nil {
 		logAddressBook.Error(err)
 		return false
 	}
@@ -227,7 +229,7 @@ func (abm *AddrsBookModel) newContact(name string) {
 	var contact data.Contact
 	contact.SetName(name)
 	contact.SetAddresses(addresses)
-	if id, err := db.InsertContact(&contact); err != nil {
+	if id, err := addrsBook.InsertContact(&contact); err != nil {
 		logAddressBook.Error(err)
 	} else {
 		qc.SetId(id)
@@ -238,8 +240,8 @@ func (abm *AddrsBookModel) newContact(name string) {
 
 func (*AddrsBookModel) close() {
 	logAddressBook.Info("Closing address book")
-	if db.IsOpen() {
-		if err := db.Close(); err != nil {
+	if addrsBook.IsOpen() {
+		if err := addrsBook.Close(); err != nil {
 			logAddressBook.Error(err)
 		}
 	}
@@ -247,17 +249,17 @@ func (*AddrsBookModel) close() {
 
 func (abm *AddrsBookModel) initAddrsBook(secType int, password string) {
 	var err error
-	if db.HasInit() {
+	if addrsBook.HasInit() {
 		return
 	}
 	logAddressBook.Info("Creating address book")
-	if err = db.Init(secType, password); err != nil {
+	if err = addrsBook.Init(secType, password); err != nil {
 		logAddressBook.Error(err)
 	}
 }
 
 func (*AddrsBookModel) hasInit() bool {
-	return db.HasInit()
+	return addrsBook.HasInit()
 }
 
 func fromContactToQContact(contacts []core.Contact) []*QContact {
