@@ -46,8 +46,7 @@ Page {
         anchors.rightMargin: 10
         spacing: 20
 
-        Row {
-            Layout.fillWidth: true
+        RowLayout {
             spacing: 20
             ColumnLayout {
                 id: columnLayoutSendFrom
@@ -57,10 +56,10 @@ Page {
                 Label { text: qsTr("Send from") }
                 
                 ComboBox {
+                    Layout.fillWidth: true
                     id: comboBoxWalletsSendFrom
                     textRole: "name"
-                displayText: comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky ? comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name + " - " + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky + " SKY (" + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].coinHours + " CoinHours)": "Select a wallet"
-                    
+                    displayText: comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky ? comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name + " - " + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky + " SKY (" + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].coinHours + " CoinHours)": "Select a wallet"
                     model: WalletModel {
                         Component.onCompleted: {
                             loadModel(walletManager.getWallets())
@@ -80,7 +79,7 @@ Page {
                     
                     onActivated: {
                         root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
-                    root.walletSelectedName = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name
+                        root.walletSelectedName = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name
                         root.walletEncrypted = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].encryptionEnabled
                         signerSelector.reset(root.walletSelected);
                     }
@@ -93,6 +92,7 @@ Page {
 
                 Label { text: qsTr("Change signer") }
                 ComboBox {
+                    Layout.fillWidth: true
                     // property string signerId: selectedSignerDelegateId.model[signerSelector.textRole]
                     property string slectedSignerRR: ""
                     id: signerSelector
