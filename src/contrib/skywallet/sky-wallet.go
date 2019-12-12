@@ -10,7 +10,6 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
@@ -373,7 +372,7 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 		// TODO named var, this should be used in tests assertions too
 		return nil, errors.New("Transaction is fully signed")
 	}
-	idxs, err := util.StrSlice2IntSlice(indexes)
+	idxs, err := skycoin.GetHashIndices(txn.GetInputs(), indexes)
 	if err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to get indexes slice as int slice")
 		return nil, fce.ErrTxnSignFailure

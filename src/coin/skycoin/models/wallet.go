@@ -731,7 +731,7 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		indices, err = GetHashIndices(txn.GetInputs(), strIdxs)
 		if err != nil {
 			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
 			return nil, err
@@ -741,7 +741,7 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 	return
 }
 
-func getHashIndices(ins []core.TransactionInput, strIdxs []string) (indices []int, err error) {
+func GetHashIndices(ins []core.TransactionInput, strIdxs []string) (indices []int, err error) {
 	cache := make(map[string]int, len(ins))
 	indices = make([]int, len(strIdxs))
 	scanIdx := 0
@@ -1702,7 +1702,7 @@ func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		indices, err = GetHashIndices(txn.GetInputs(), strIdxs)
 		if err != nil {
 			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
 			return nil, err

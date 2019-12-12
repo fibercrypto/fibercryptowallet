@@ -2,7 +2,6 @@ package util
 
 import (
 	"errors"
-	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
@@ -93,24 +92,6 @@ func StringInList(s string, list []string) bool {
 		}
 	}
 	return false
-}
-
-// StrSlice2IntSlice transform a numbers slices from string type to
-// a numbers slice expressed as int data type
-func StrSlice2IntSlice(ss []string) ([]int, error) {
-	if len(ss) > 0 {
-		is := make([]int, len(ss))
-		for i, strIdx := range ss {
-			var err error
-			is[i], err = strconv.Atoi(strIdx)
-			if err != nil {
-				logUtil.WithError(err).Errorf("unable to get %s as integer\n", strIdx)
-				return nil, fce.ErrIntegerInputsRequired
-			}
-		}
-		return is, nil
-	}
-	return nil, nil
 }
 
 // AddressFromString returns a core.Address if match with string address.
