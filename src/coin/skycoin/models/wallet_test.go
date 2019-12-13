@@ -1215,7 +1215,8 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	CleanGlobalMock()
 
 	//Test skycoinCreatedTransaction
-	txn, keyData, uxs, _ := makeTransactionMultipleInputs(t, 1)
+	txn, keyData, uxs, err := makeTransactionMultipleInputs(t, 1)
+	require.Nil(t, err)
 	require.Equal(t, txn.In[0], uxs[0].Hash())
 	vins := make([]visor.TransactionInput, 0)
 	for _, un := range uxs {
@@ -1246,7 +1247,8 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 
 	//Test that calculated hours were calculated ok
 	txn.Out[0].Hours = 1000
-	txn.UpdateHeader()
+	err = txn.UpdateHeader()
+	require.Nil(t, err)
 	crtTxn, err = api.NewCreatedTransaction(&txn, vins)
 	require.Nil(t, err)
 	require.NotNil(t, crtTxn)
