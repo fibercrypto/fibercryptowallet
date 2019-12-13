@@ -98,7 +98,7 @@ Page {
         ListView {
             Timer {
                 interval: 4000
-                repeat: true
+                repeat: false
                 running: true
                 onTriggered: {
                     walletModel.sniffHw()

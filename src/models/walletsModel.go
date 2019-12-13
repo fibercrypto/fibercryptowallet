@@ -12,6 +12,7 @@ import (
 	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
+	"time"
 )
 
 const (
@@ -185,9 +186,14 @@ func (walletModel *WalletModel) sniffHw() {
 			}
 		}
 	}
-	hwConnectedOn = []int{}
-	checkForDerivationType(skyWallet.WalletTypeDeterministic)
-	checkForDerivationType(skyWallet.WalletTypeBip44)
+	go func() {
+		for {
+			hwConnectedOn = []int{}
+			checkForDerivationType(skyWallet.WalletTypeDeterministic)
+			checkForDerivationType(skyWallet.WalletTypeBip44)
+			time.Sleep(time.Second * 4)
+		}
+	}()
 }
 
 func (walletModel *WalletModel) updateWallet(fn string) {

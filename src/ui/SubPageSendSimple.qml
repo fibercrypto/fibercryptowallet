@@ -93,8 +93,6 @@ Page {
                 Label { text: qsTr("Change signer") }
                 ComboBox {
                     Layout.fillWidth: true
-                    // property string signerId: selectedSignerDelegateId.model[signerSelector.textRole]
-                    property string slectedSignerRR: ""
                     id: signerSelector
                     textRole: "description"
                     model: SignerModel {
