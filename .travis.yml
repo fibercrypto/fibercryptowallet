@@ -34,7 +34,7 @@ matrix:
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
         - make test
-    - make test-cover-travis
+        - make test-cover-travis
     - stage: Linux
       install:
         - make install-docker-deps
