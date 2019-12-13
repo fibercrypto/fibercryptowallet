@@ -33,8 +33,8 @@ const (
 
 // HwFirstAddr return the first address in the deterministic sequence if there is a configured
 // device connected, error if not device found or some thing fail.
-func HwFirstAddr(dev skyWallet.Devicer) (string, error) {
-	msg, err := dev.AddressGen(1, 0, false, skyWallet.WalletTypeDeterministic)
+func HwFirstAddr(dev skyWallet.Devicer, derivationType string) (string, error) {
+	msg, err := dev.AddressGen(1, 0, false, derivationType)
 	if err != nil {
 		logSkyWallet.WithError(err).Debugln("error getting address from device")
 		return "", fce.ErrHwUnexpected
@@ -66,17 +66,23 @@ func HwFirstAddr(dev skyWallet.Devicer) (string, error) {
 }
 
 func hwMatchWallet(hw SkyWallet, wlt core.Wallet) bool {
-	firstAddr, err := HwFirstAddr(hw.dev)
-	if err != nil {
-		logSkyWallet.WithError(err).Errorln("unable to get first address from hw")
+	checkForDerivation := func(dt string) bool {
+		firstAddr, err := HwFirstAddr(hw.dev, dt)
+		if err != nil {
+			logSkyWallet.WithError(err).Errorln("unable to get first address from hw")
+			return false
+		}
+		addrs := wlt.GenAddresses(core.AccountAddress, 0, 1, nil)
+		if addrs.Next() {
+			addr := addrs.Value()
+			return addr.String() == firstAddr
+		}
 		return false
 	}
-	addrs := wlt.GenAddresses(core.AccountAddress, 0, 1, nil)
-	if addrs.Next() {
-		addr := addrs.Value()
-		return addr.String() == firstAddr
+	if checkForDerivation(skyWallet.WalletTypeDeterministic) {
+		return true
 	}
-	return false
+	return checkForDerivation(skyWallet.WalletTypeBip44)
 }
 
 func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, error) {
