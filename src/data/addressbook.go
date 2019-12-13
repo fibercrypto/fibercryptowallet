@@ -9,7 +9,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"github.com/boltdb/bolt"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/skycoin/skycoin/src/cipher/bip39"
@@ -50,8 +49,7 @@ type addrsBook struct {
 
 var logDb = logging.MustGetLogger("AddressBook Data")
 
-// NewAddressBook create a new instance of AddessBook and open the database of the given route.
-// If database is open return bolt.errDatabaseOpen.
+// NewAddressBook create a new instance of AddessBook.
 func NewAddressBook(storage core.Storage) core.AddressBook {
 	return &addrsBook{
 		storage: storage,
@@ -75,7 +73,6 @@ func (addrsBook *addrsBook) ChangeSecurity(NewSecType int, oldPassword, newPassw
 		if err := addrsBook.DeleteContact(contactsList[e].GetID()); err != nil {
 			return err
 		}
-
 	}
 
 	var hash, entropy []byte
@@ -122,7 +119,7 @@ func (addrsBook *addrsBook) ChangeSecurity(NewSecType int, oldPassword, newPassw
 func (addrsBook *addrsBook) Init(secType int, password string) error {
 	logDb.Info("initialize AddressBook")
 	if !addrsBook.IsOpen() {
-		return bolt.ErrDatabaseNotOpen
+		return errDatabaseNotOpen
 	}
 
 	if addrsBook.HasInit() {
@@ -169,12 +166,12 @@ func (addrsBook *addrsBook) Init(secType int, password string) error {
 func (addrsBook *addrsBook) Authenticate(password string) error {
 	logDb.Info("authenticate AddressBook")
 	if !addrsBook.IsOpen() {
-		logDb.Error(bolt.ErrDatabaseNotOpen)
-		return bolt.ErrDatabaseNotOpen
+		logDb.Error(errDatabaseNotOpen)
+		return errDatabaseNotOpen
 	}
 
 	if !addrsBook.HasInit() {
-		logDb.Error(bolt.ErrDatabaseNotOpen)
+		logDb.Error(errAddrsBookHasNotInit)
 		return errAddrsBookHasNotInit
 	}
 
@@ -303,6 +300,7 @@ func (addrsBook *addrsBook) UpdateContact(id uint64, newContact core.Contact) er
 			return err
 		}
 	}
+
 	if err := addrsBook.nameExists(newContact, contactsList); err != nil {
 		return err
 	}
@@ -332,7 +330,7 @@ func (addrsBook *addrsBook) Close() error {
 	return nil
 }
 
-// HasInit verify if database has been initialize
+// HasInit verify if database has been initialize.
 func (addrsBook *addrsBook) HasInit() bool {
 	if addrsBook.storage.GetConfig() != nil {
 		return true
@@ -340,7 +338,7 @@ func (addrsBook *addrsBook) HasInit() bool {
 	return false
 }
 
-// IsOpen verify if database is open
+// IsOpen verify if database is open.
 func (addrsBook *addrsBook) IsOpen() bool {
 	if addrsBook.storage.Path() != "" {
 		return true
@@ -348,7 +346,7 @@ func (addrsBook *addrsBook) IsOpen() bool {
 	return false
 }
 
-// GetStorage return the Storage parameter. This is in charge of manager the database interaction
+// GetStorage return the Storage parameter. This is in charge of manager the database interaction.
 func (addrsBook *addrsBook) GetStorage() core.Storage {
 	logDb.Info("Getting  Storage.")
 	return addrsBook.storage
@@ -387,7 +385,7 @@ func (addrsBook *addrsBook) getHashFromConfig() []byte {
 	return []byte(addrsBook.GetStorage().GetConfig()[Hash])
 }
 
-// encryptContact encrypt a contact using a password with AES-GCM.
+// encryptContact encrypt a contact by the security Type.
 func (addrsBook *addrsBook) encryptContact(c *Contact) ([]byte, error) {
 	secType, err := addrsBook.GetSecType()
 	if err != nil {
@@ -409,7 +407,7 @@ func (addrsBook *addrsBook) encryptContact(c *Contact) ([]byte, error) {
 	return nil, fmt.Errorf("invalid security type")
 }
 
-// Decrypt a cipher message using a password with AES-GCM and return a Contact.
+// Decrypt a cipher message by the Security Type and return a Contact.
 func (addrsBook *addrsBook) decryptContact(cipherMsg []byte) (core.Contact, error) {
 	secType, err := addrsBook.GetSecType()
 	if err != nil {
