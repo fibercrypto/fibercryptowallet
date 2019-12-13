@@ -1237,8 +1237,12 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	skyTxn := NewSkycoinCreatedTransaction(*crtTxn)
 	sig, err := util.LookupSignServiceForWallet(wlt, core.UID(""))
 	require.Nil(t, err)
-	_, err = wlt.Sign(skyTxn, sig, pwd, nil)
+	signed, err := wlt.Sign(skyTxn, sig, pwd, nil)
 	require.Nil(t, err)
+
+	ok, err := signed.IsFullySigned()
+	require.Nil(t, err)
+	require.True(t, ok)
 
 	//Test that calculated hours were calculated ok
 	txn.Out[0].Hours = 1000
@@ -1249,8 +1253,12 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	skyTxn = NewSkycoinCreatedTransaction(*crtTxn)
 	sig, err = util.LookupSignServiceForWallet(wlt, core.UID(""))
 	require.Nil(t, err)
-	_, err = wlt.Sign(skyTxn, sig, pwd, nil)
+	signed, err = wlt.Sign(skyTxn, sig, pwd, nil)
 	require.Nil(t, err)
+
+	ok, err = signed.IsFullySigned()
+	require.Nil(t, err)
+	require.True(t, ok)
 
 }
 
