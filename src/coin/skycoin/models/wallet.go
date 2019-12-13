@@ -1307,9 +1307,10 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 
 		crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
-
+		if err != nil {
+			return nil, err
+		}
 		crtTxn.In = originalInputs
-		fmt.Println(4)
 		if err != nil {
 			logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
 			return nil, err
@@ -1321,7 +1322,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 			return nil, err
 		}
 	}
-	fmt.Println(5)
 	return resultTxn, nil
 
 }

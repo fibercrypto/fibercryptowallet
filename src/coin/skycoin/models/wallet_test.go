@@ -1214,6 +1214,7 @@ func TestLocalWalletSpend(t *testing.T) {
 func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	CleanGlobalMock()
 
+	//Test skycoinCreatedTransaction
 	txn, keyData, uxs, _ := makeTransactionMultipleInputs(t, 1)
 	require.Equal(t, txn.In[0], uxs[0].Hash())
 	vins := make([]visor.TransactionInput, 0)
@@ -1222,8 +1223,6 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 		require.Nil(t, err)
 		vins = append(vins, vin)
 	}
-	txn.Out[0].Hours = 1000
-	txn.UpdateHeader()
 	txn.Sigs = []cipher.Sig{}
 	crtTxn, err := api.NewCreatedTransaction(&txn, vins)
 	require.Nil(t, err)
@@ -1240,6 +1239,19 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	require.Nil(t, err)
 	_, err = wlt.Sign(skyTxn, sig, pwd, nil)
 	require.Nil(t, err)
+
+	//More coinHours in outputs that in inputs
+	// txn.Out[0].Hours = 1000
+	// txn.UpdateHeader()
+	// crtTxn, err = api.NewCreatedTransaction(&txn, vins)
+	// require.Nil(t, err)
+	// require.NotNil(t, crtTxn)
+
+	// skyTxn = NewSkycoinCreatedTransaction(*crtTxn)
+	// sig, err = util.LookupSignServiceForWallet(wlt, core.UID(""))
+	// require.Nil(t, err)
+	// _, err = wlt.Sign(skyTxn, sig, pwd, nil)
+	// require.EqualError(t, err, "morefe")
 }
 
 func TestSkycoinWalletTypes(t *testing.T) {
