@@ -637,7 +637,6 @@ func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []strin
 	channel := make(chan *QTransaction)
 	go func() {
 		var pwd core.PasswordReader = func(message string, ctx core.KeyValueStore) (string, error) {
-		pwd = func(message string, ctx core.KeyValueStore) (string, error) {
 			bridgeForPassword.BeginUse()
 			defer bridgeForPassword.EndUse()
 			bridgeForPassword.lock()
