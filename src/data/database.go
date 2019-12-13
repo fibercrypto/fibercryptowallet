@@ -20,11 +20,12 @@ const (
 
 var (
 	// Errors
-	errBucketEmpty = errors.New("database: bucket are empty")
-	errValEmpty    = errors.New(" database: result are empty")
+	errDatabaseNotOpen = errors.New("database not open")
+	errBucketEmpty     = errors.New("database: bucket are empty")
+	errValEmpty        = errors.New(" database: result are empty")
 )
 
-// GetBoltStorage generate a new instance of boltStorage.
+// GetBoltStorage generate a new instance of boltStorage by path.
 func GetBoltStorage(path string) (*boltStorage, error) {
 	db, err := bolt.Open(path, 0600,
 		&bolt.Options{
