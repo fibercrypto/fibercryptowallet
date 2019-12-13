@@ -91,7 +91,7 @@ BINPATH            := $(BINPATH_$(UNAME_S))
 
 PWD := $(shell pwd)
 
-GOPATH_SRC := $$GOPATH/github.com/fibercrypto/fibercryptowallet
+GOPATH_SRC := $$GOPATH/src/github.com/fibercrypto/fibercryptowallet
 
 DOCKER_QT = therecipe/qt
 
