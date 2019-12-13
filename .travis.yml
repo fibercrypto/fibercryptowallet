@@ -44,6 +44,7 @@ matrix:
       script:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
+        - make clean
         - make test
         - make lint
         - make test-cover-travis
