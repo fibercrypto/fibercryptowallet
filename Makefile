@@ -93,6 +93,8 @@ PWD := $(shell pwd)
 
 GOPATH_SRC := $$GOPATH/github.com/fibercrypto/fibercryptowallet
 
+DOCKER_QT = therecipe/qt
+
 deps: ## Add dependencies
 	dep ensure
 	rm -rf rm -rf vendor/github.com/therecipe
@@ -263,7 +265,7 @@ test-cover: clean-test test-sky-launch-html-cover ## Show more details of test c
 test: clean-test test-core test-sky ## Run project test suite
 
 test-docker: install-docker-deps ## Run tests inside Docker container
-	docker run --rm -v $(PWD):$(GOPATH_SRC) bash -c 'make -C $(GOPATH_SRC) test'
+	docker run --rm -v $(PWD):$(GOPATH_SRC) $(DOCKER_QT) bash -c 'make -C $(GOPATH_SRC) test'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
