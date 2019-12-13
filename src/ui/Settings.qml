@@ -97,10 +97,10 @@ Page {
         GroupBox {
             Layout.fillWidth: true
             title: qsTr("Wallet environment settings")
-            
+
             RowLayout {
                 anchors.fill: parent
-                
+
                 Label {
                     text: qsTr("Remote")
                     font.bold: true
