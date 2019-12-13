@@ -59,6 +59,65 @@ func NewAddressBook(storage core.Storage) core.AddressBook {
 	}
 }
 
+// ChangeSecurity change the security type of the Address Book, this method work to change the password too.
+func (addrsBook *addrsBook) ChangeSecurity(NewSecType int, oldPassword, newPassword string) error {
+	logDb.Info("changing Address Book security")
+
+	if err := addrsBook.Authenticate(oldPassword); err != nil {
+		return err
+	}
+
+	contactsList, err := addrsBook.ListContact()
+	if err != nil {
+		return err
+	}
+	for e := range contactsList {
+		if err := addrsBook.DeleteContact(contactsList[e].GetID()); err != nil {
+			return err
+		}
+
+	}
+
+	var hash, entropy []byte
+
+	switch NewSecType {
+	case NoSecurity, ObfuscationSecurity:
+		if err := addrsBook.insertConfig(NewSecType, hash, entropy); err != nil {
+			logDb.Error(err)
+			return err
+		}
+		break
+	case PasswordSecurity:
+		addrsBook.key = []byte(newPassword)
+		if entropy, err = addrsBook.genEntropy(); err != nil {
+			logDb.Error(err)
+			return err
+		}
+
+		hash, err = bcrypt.GenerateFromPassword([]byte(newPassword), 12)
+		if err != nil {
+			logDb.Error(err)
+			return err
+		}
+
+		if err := addrsBook.insertConfig(NewSecType, hash, entropy); err != nil {
+			logDb.Error(err)
+			return err
+		}
+		break
+	default:
+		logDb.Error(errInvalidSecType)
+		return errInvalidSecType
+	}
+	for e := range contactsList {
+		if _, err := addrsBook.InsertContact(contactsList[e]); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // Init initialize an address book. Pass secType(security type) and password if is PasswordSecurity.
 func (addrsBook *addrsBook) Init(secType int, password string) error {
 	logDb.Info("initialize AddressBook")
@@ -76,25 +135,30 @@ func (addrsBook *addrsBook) Init(secType int, password string) error {
 	switch secType {
 	case NoSecurity, ObfuscationSecurity:
 		if err := addrsBook.insertConfig(secType, hash, entropy); err != nil {
+			logDb.Error(err)
 			return err
 		}
 		break
 	case PasswordSecurity:
 		addrsBook.key = []byte(password)
 		if entropy, err = addrsBook.genEntropy(); err != nil {
+			logDb.Error(err)
 			return err
 		}
 
 		hash, err = bcrypt.GenerateFromPassword([]byte(password), 12)
 		if err != nil {
+			logDb.Error(err)
 			return err
 		}
 
 		if err := addrsBook.insertConfig(secType, hash, entropy); err != nil {
+			logDb.Error(err)
 			return err
 		}
 		break
 	default:
+		logDb.Error(errInvalidSecType)
 		return errInvalidSecType
 	}
 
@@ -225,15 +289,17 @@ func (addrsBook *addrsBook) UpdateContact(id uint64, newContact core.Contact) er
 	if contactsList, err = addrsBook.ListContact(); err != nil {
 		return err
 	}
+	var pos int
 	for e := range contactsList {
 		if contactsList[e].GetID() == id {
 			contactsList[e] = nil
+			pos = e
 			break
 		}
 	}
 
 	for _, ncAddrs := range newContact.GetAddresses() {
-		if err := addrsBook.addressExists(ncAddrs, contactsList); err != nil {
+		if err := addrsBook.addressExists(ncAddrs, append(contactsList[:pos], contactsList[pos+1:]...)); err != nil {
 			return err
 		}
 	}
@@ -385,10 +451,7 @@ func (addrsBook *addrsBook) verifyHash() error {
 // If find the address return error, else return nil.
 func (addrsBook *addrsBook) addressExists(address core.StringAddress, contacts []core.Contact) error {
 	for _, contact := range contacts {
-		if _, ok := contact.(*Contact); ok {
-			return errValueNoMatch(contact, &Contact{})
-		}
-		for _, addrs := range contact.(*Contact).Address {
+		for _, addrs := range contact.GetAddresses() {
 			if bytes.Compare(addrs.GetValue(), address.GetValue()) == 0 &&
 				bytes.Compare(addrs.GetCoinType(), address.GetCoinType()) == 0 {
 				return fmt.Errorf("Address with value: %s  and Cointype: %s alredy exist",

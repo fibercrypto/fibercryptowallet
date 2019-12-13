@@ -6,6 +6,7 @@ import (
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/skycoin/skycoin/src/util/file"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -569,20 +570,6 @@ func TestDB_UpdateContact(t *testing.T) {
 		insertArgs insertArgs
 		wantErr    bool
 	}{
-		{name: "empty-insert",
-			args: args{
-				id: 1,
-				newContact: &Contact{
-					Address: []Address{{
-						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
-						Coin:  []byte("SKY"),
-					}},
-					Name: []byte("Contact1"),
-				},
-			},
-			insertArgs: insertArgs{contacts: []core.Contact{&Contact{}}},
-			wantErr:    true,
-		},
 		{name: "empty-update",
 			args: args{
 				id:         1,
@@ -723,7 +710,11 @@ func TestDB_UpdateContact(t *testing.T) {
 			ab := InitAddrsBook(t)
 			defer CloseTest(t, ab)
 			for e := range tt.insertArgs.contacts {
-				_, _ = ab.InsertContact(tt.insertArgs.contacts[e])
+				_, err := ab.InsertContact(tt.insertArgs.contacts[e])
+				if err != nil && tt.wantErr {
+					require.Error(t, err)
+				}
+				require.NoError(t, err)
 			}
 
 			if err := ab.UpdateContact(tt.args.id, tt.args.newContact); (err != nil) != tt.wantErr {
@@ -798,6 +789,102 @@ func TestDB_Authenticate(t *testing.T) {
 	// error database not open
 	assert.Error(t, ab.Authenticate(defaultPass))
 
+}
+
+func Test_addrsBook_ChangeSecurity(t *testing.T) {
+	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
+	type firstSecTypeParam struct {
+		secType  int
+		password string
+	}
+	type secondSecTypeParam struct {
+		NewSecType  int
+		NewPassword string
+	}
+	tests := []struct {
+		name               string
+		firstSecTypeParam  firstSecTypeParam
+		secondSecTypeParam secondSecTypeParam
+		ContactsList       []core.Contact
+		wantErr            bool
+	}{
+		{name: "from NoSecurity to ObfuscationSecurity",
+			firstSecTypeParam: firstSecTypeParam{
+				secType:  0,
+				password: "",
+			}, secondSecTypeParam: secondSecTypeParam{
+				NewSecType:  1,
+				NewPassword: "",
+			}, ContactsList: []core.Contact{
+				&Contact{
+					Address: []Address{{
+						Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+						Coin:  []byte("SKY"),
+					}},
+					Name: []byte("contact_test1"),
+				}}, wantErr: false},
+		{name: "from NoSecurity to PasswordSecurity",
+			firstSecTypeParam: firstSecTypeParam{
+				secType:  0,
+				password: "",
+			}, secondSecTypeParam: secondSecTypeParam{
+				NewSecType:  2,
+				NewPassword: "Maria",
+			}, ContactsList: []core.Contact{
+				&Contact{
+					Address: []Address{{
+						Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+						Coin:  []byte("SKY"),
+					}},
+					Name: []byte("contact_test1"),
+				}}, wantErr: false},
+		{name: "invalid Security Type",
+			firstSecTypeParam: firstSecTypeParam{
+				secType:  0,
+				password: "",
+			}, secondSecTypeParam: secondSecTypeParam{
+				NewSecType:  3,
+				NewPassword: "Maria",
+			}, ContactsList: []core.Contact{
+				&Contact{
+					Address: []Address{{
+						Value: []byte("9BSEAEE3XGtQ2X43BCT2XCYgheGLQQigEG"),
+						Coin:  []byte("SKY"),
+					}},
+					Name: []byte("contact_test1"),
+				}}, wantErr: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			db, err := GetBoltStorage(GetFilePath(t))
+			require.NoError(t, err)
+			addrsBook := NewAddressBook(db)
+
+			defer CloseTest(t, addrsBook)
+
+			err = addrsBook.Init(tt.firstSecTypeParam.secType, tt.firstSecTypeParam.password)
+			require.NoError(t, err)
+			for e := range tt.ContactsList {
+				_, err := addrsBook.InsertContact(tt.ContactsList[e])
+				require.NoError(t, err)
+			}
+			if err := addrsBook.ChangeSecurity(tt.secondSecTypeParam.NewSecType,
+				tt.firstSecTypeParam.password, tt.secondSecTypeParam.NewPassword); err != nil {
+				if tt.wantErr {
+					require.Error(t, err)
+					return
+				}
+				require.NoError(t, err)
+			}
+			listContacts, err := addrsBook.ListContact()
+			require.NoError(t, err)
+			for e := range listContacts {
+				listContacts[e].SetID(0)
+				assert.Contains(t, tt.ContactsList, listContacts[e])
+			}
+		})
+	}
 }
 
 // Generate a temporal file and return its path.

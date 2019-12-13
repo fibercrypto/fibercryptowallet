@@ -27,22 +27,23 @@ var addresses = make([]core.StringAddress, 0)
 type AddrsBookModel struct {
 	qtcore.QAbstractListModel
 
-	_ map[int]*qtcore.QByteArray                          `property:"roles"`
-	_ []*QContact                                         `property:"contacts"`
-	_ int                                                 `property:"count"`
-	_ func()                                              `constructor:"init"`
-	_ func(row int, id uint64)                            `slot:"removeContact,auto"`
-	_ func(row int, id uint64, name string)               `slot:"editContact,auto"`
-	_ func(name string)                                   `slot:"newContact"`
-	_ func()                                              `slot:"loadContacts"`
-	_ func(int, string)                                   `slot:"initAddrsBook"`
-	_ func() int                                          `slot:"getSecType"`
-	_ func(string) bool                                   `slot:"authenticate"`
-	_ func() bool                                         `slot:"hasInit"`
-	_ func(value, coinType string)                        `slot:"addAddress"`
-	_ func(value string) bool                             `slot:"addressIsValid"`
-	_ func(row int, name string) bool                     `slot:"nameExist"`
-	_ func(row int, address string, coinType string) bool `slot:"addressExist"`
+	_ map[int]*qtcore.QByteArray                                 `property:"roles"`
+	_ []*QContact                                                `property:"contacts"`
+	_ int                                                        `property:"count"`
+	_ func()                                                     `constructor:"init"`
+	_ func(row int, id uint64)                                   `slot:"removeContact,auto"`
+	_ func(row int, id uint64, name string)                      `slot:"editContact,auto"`
+	_ func(name string)                                          `slot:"newContact"`
+	_ func()                                                     `slot:"loadContacts"`
+	_ func(int, string)                                          `slot:"initAddrsBook"`
+	_ func() int                                                 `slot:"getSecType"`
+	_ func(password string) bool                                 `slot:"authenticate"`
+	_ func() bool                                                `slot:"hasInit"`
+	_ func(value, coinType string)                               `slot:"addAddress"`
+	_ func(newSecType int, oldPassword, newPassword string) bool `slot:"changeSecType"`
+	_ func(value string) bool                                    `slot:"addressIsValid"`
+	_ func(row int, name string) bool                            `slot:"nameExist"`
+	_ func(row int, address string, coinType string) bool        `slot:"addressExist"`
 }
 
 type QContact struct {
@@ -70,12 +71,12 @@ func (abm *AddrsBookModel) init() {
 	abm.ConnectAddressIsValid(abm.addressIsValid)
 	abm.ConnectAddressExist(abm.addressExist)
 	abm.ConnectNameExist(abm.nameExist)
-	// abm.ConnectDestroyAddrsBookModel(abm.close)
 	abm.ConnectLoadContacts(abm.loadContacts)
 	abm.ConnectInitAddrsBook(abm.initAddrsBook)
 	// abm.ConnectEditContact(abm.editContact)
 	// abm.ConnectRemoveContact(abm.removeContact)
 	abm.ConnectHasInit(abm.hasInit)
+	abm.ConnectChangeSecType(abm.changeSecType)
 	abm.ConnectAddAddress(abm.addAddress)
 	if addrsBook == nil {
 		db, err := data.GetBoltStorage(getConfigFileDir())
@@ -212,6 +213,7 @@ func (abm *AddrsBookModel) getSecType() int {
 }
 
 func (abm *AddrsBookModel) authenticate(password string) bool {
+
 	if err := addrsBook.Authenticate(password); err != nil {
 		logAddressBook.Error(err)
 		return false
@@ -314,4 +316,12 @@ func (abm *AddrsBookModel) addressExist(row int, address string, coinType string
 		}
 	}
 	return false
+}
+
+func (abm *AddrsBookModel) changeSecType(secType int, oldPassword string, newPassword string) bool {
+	if err := addrsBook.ChangeSecurity(secType, oldPassword, newPassword); err != nil {
+		logAddressBook.Error(err)
+		return false
+	}
+	return true
 }
