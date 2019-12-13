@@ -1241,17 +1241,17 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	require.Nil(t, err)
 
 	//More coinHours in outputs that in inputs
-	// txn.Out[0].Hours = 1000
-	// txn.UpdateHeader()
-	// crtTxn, err = api.NewCreatedTransaction(&txn, vins)
-	// require.Nil(t, err)
-	// require.NotNil(t, crtTxn)
+	txn.Out[0].Hours = 1000
+	txn.UpdateHeader()
+	crtTxn, err = api.NewCreatedTransaction(&txn, vins)
+	require.Nil(t, err)
+	require.NotNil(t, crtTxn)
+	skyTxn = NewSkycoinCreatedTransaction(*crtTxn)
+	sig, err = util.LookupSignServiceForWallet(wlt, core.UID(""))
+	require.Nil(t, err)
+	_, err = wlt.Sign(skyTxn, sig, pwd, nil)
+	require.Nil(t, err)
 
-	// skyTxn = NewSkycoinCreatedTransaction(*crtTxn)
-	// sig, err = util.LookupSignServiceForWallet(wlt, core.UID(""))
-	// require.Nil(t, err)
-	// _, err = wlt.Sign(skyTxn, sig, pwd, nil)
-	// require.EqualError(t, err, "morefe")
 }
 
 func TestSkycoinWalletTypes(t *testing.T) {
