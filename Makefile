@@ -89,6 +89,10 @@ BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
 BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
 BINPATH            := $(BINPATH_$(UNAME_S))
 
+PWD := $(shell pwd)
+
+GOPATH_SRC := $$GOPATH/github.com/fibercrypto/fibercryptowallet
+
 deps: ## Add dependencies
 	dep ensure
 	rm -rf rm -rf vendor/github.com/therecipe
@@ -131,7 +135,7 @@ install-deps-Windows: ## Install Windowns dependencies
 install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
 
-build-docker: ## Build project using docker
+build-docker: install-docker-deps ## Build project using docker
 	@echo "Building $(APP_NAME)..."
 	qtdeploy -docker build $(DEFAULT_TARGET)
 	@echo "Done."
@@ -257,6 +261,9 @@ test-cover-travis:
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
 test: clean-test test-core test-sky ## Run project test suite
+
+test-docker: install-docker-deps ## Run tests inside Docker container
+	docker run --rm -v $(PWD):$(GOPATH_SRC) bash -c 'make -C $(GOPATH_SRC) test'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck

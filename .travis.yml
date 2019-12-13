@@ -21,7 +21,7 @@ matrix:
         - DEFAULT_TARGET=rpi2 make build-docker
         - DEFAULT_TARGET=rpi3 make build-docker
         - make lint
-        - make test
+        - make test-docker
     - stage: Android
       if: branch = release*$
       install:
@@ -33,7 +33,7 @@ matrix:
         - DEFAULT_TARGET=android make build-docker
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
-        - make test
+        - make test-docker
         - make test-cover-travis
     - stage: Linux
       install:
@@ -45,7 +45,7 @@ matrix:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
         - make clean
-        - make test
+        - make test-docker
         - make lint
         - make test-cover-travis
     - stage: Windows
