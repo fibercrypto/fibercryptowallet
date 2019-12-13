@@ -209,9 +209,11 @@ func (walletModel *WalletModel) removeWallet(row int) {
 }
 
 func (walletModel *WalletModel) updateModel(wallets []*QWallet) {
-	for i, wlt := range wallets {
-		walletModel.editWallet(i, wlt.Name(), wlt.EncryptionEnabled() == 1, wlt.Sky(), wlt.CoinHours())
-	}
+	go func() {
+		for i, wlt := range wallets {
+			walletModel.editWallet(i, wlt.Name(), wlt.EncryptionEnabled() == 1, wlt.Sky(), wlt.CoinHours())
+		}
+	}()
 }
 
 func (walletModel *WalletModel) loadModel(wallets []*QWallet) {
