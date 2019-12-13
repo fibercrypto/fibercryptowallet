@@ -96,6 +96,7 @@ const (
 type AddressBook interface {
 	Init(secType int, password string) error
 	Authenticate(password string) error
+	ChangeSecurity(NewSecType int, oldPassword, newPassword string) error
 	GetContact(id uint64) (Contact, error)
 	ListContact() ([]Contact, error)
 	InsertContact(contact Contact) (uint64, error)
