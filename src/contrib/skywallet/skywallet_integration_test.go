@@ -4,11 +4,13 @@ import (
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	integrationtestutil "github.com/fibercrypto/fibercryptowallet/test/integration/util"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/stretchr/testify/require"
+	"os"
 	"testing"
 )
 
@@ -18,6 +20,21 @@ func setUpHardwareWallet(t *testing.T) {
 	keyTestData, err := skycoin.GenerateTestKeyPair(t)
 	require.NoError(t, err)
 	integrationtestutil.ForceSetMnemonic(t, dev, keyTestData.Mnemonic)
+}
+
+var logModelTest = logging.MustGetLogger("Skycoin Hardware Wallet Test")
+
+//Prepare the mock API for all test
+func TestMain(m *testing.M) {
+	mock := new(skycoin.SkycoinApiMock)
+	skycoin.SetGlobalMock(mock)
+	err := core.GetMultiPool().CreateSection(skycoin.PoolSection, mock)
+	if err != nil {
+		logModelTest.WithError(err).Warn("Error creating pool section")
+		return
+	}
+	util.RegisterAltcoin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
+	os.Exit(m.Run())
 }
 
 func TestTransactionSignInputFromDevice(t *testing.T) {
