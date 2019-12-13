@@ -1240,7 +1240,7 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	_, err = wlt.Sign(skyTxn, sig, pwd, nil)
 	require.Nil(t, err)
 
-	//More coinHours in outputs that in inputs
+	//Test that calculated hours were calculated ok
 	txn.Out[0].Hours = 1000
 	txn.UpdateHeader()
 	crtTxn, err = api.NewCreatedTransaction(&txn, vins)
