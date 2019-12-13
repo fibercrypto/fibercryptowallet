@@ -1135,7 +1135,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	walletDir := filepath.Join(wlt.WalletDir, wlt.Id)
 	skyWlt, err := wallet.Load(walletDir)
 	var originalInputs []api.CreatedTransactionInput
-
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
@@ -1143,7 +1142,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	rTxn, isReadableTxn := txn.(skytypes.ReadableTxn)
 	if isReadableTxn {
 		// Readable tranasctions should not need extra API calls
-
 		cTxn, err := rTxn.ToCreatedTransaction()
 		if err != nil {
 			logWallet.WithError(err).Warn("Failed to convert to readable transaction")
@@ -1220,7 +1218,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 	} else {
 		// Raw transaction
-
 		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 		if !ok {
 			logWallet.WithError(err).Warn("Couldn't load transaction un injected")
@@ -1298,7 +1295,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		logWallet.WithError(err).Warn("Couldn't sign transaction using local wallet")
 		return nil, err
 	}
-
 	if isReadableTxn {
 		vins := make([]visor.TransactionInput, 0)
 		for _, ux := range uxouts {
@@ -1311,13 +1307,13 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 
 		crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
-		crtTxn.In = originalInputs
 
+		crtTxn.In = originalInputs
+		fmt.Println(4)
 		if err != nil {
 			logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
 			return nil, err
 		}
-
 		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
 	} else {
 		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
@@ -1325,7 +1321,7 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 			return nil, err
 		}
 	}
-
+	fmt.Println(5)
 	return resultTxn, nil
 
 }
