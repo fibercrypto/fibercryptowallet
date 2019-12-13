@@ -111,7 +111,7 @@ install-deps-no-envs: ## Install therecipe/qt with -tags=no_env set
 
 install-docker-deps: ## Install docker images for project compilation using docker
 	@echo "Downloading images..."
-	docker pull therecipe/qt:$(DEFAULT_ARCH)
+	docker pull $(DOCKER_QT):$(DEFAULT_ARCH)
 	@echo "Download finished."
 
 install-deps-Linux: ## Install Linux dependencies
@@ -265,7 +265,7 @@ test-cover: clean-test test-sky-launch-html-cover ## Show more details of test c
 test: clean-test test-core test-sky ## Run project test suite
 
 test-docker: install-docker-deps ## Run tests inside Docker container
-	docker run --rm -v $(PWD):$(GOPATH_SRC) $(DOCKER_QT) bash -c 'make -C $(GOPATH_SRC) test'
+	docker run --rm -v $(PWD):$(GOPATH_SRC) $(DOCKER_QT):$(DEFAULT_ARCH) bash -c 'make -C $(GOPATH_SRC) test'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
