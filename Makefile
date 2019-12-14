@@ -91,7 +91,7 @@ BINPATH            := $(BINPATH_$(UNAME_S))
 
 PWD := $(shell pwd)
 
-GOPATH_SRC := $$GOPATH/src/github.com/fibercrypto/fibercryptowallet
+GOPATH_SRC := src/github.com/fibercrypto/fibercryptowallet
 
 DOCKER_QT = therecipe/qt
 
@@ -264,10 +264,10 @@ test-cover: clean-test test-sky-launch-html-cover ## Show more details of test c
 
 test: clean-test test-core test-sky ## Run project test suite
 
-run-docker: DOCKER_GOPATH_SRC=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
+run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
-	@echo "Docker container GOPATH found at $(DOCKER_GOPATH_SRC)"
-	docker run --rm -v $(PWD):$(DOCKER_GOPATH_SRC) $(DOCKER_QT):$(DEFAULT_ARCH) bash -c '$(CMD)'
+	@echo "Docker container GOPATH found at $(DOCKER_GOPATH)"
+	docker run --rm -v $(PWD):$(DOCKER_GOPATH_SRC)/$(GOPATH_SRC) $(DOCKER_QT):$(DEFAULT_ARCH) bash -c '$(CMD)'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
