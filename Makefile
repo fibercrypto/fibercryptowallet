@@ -265,8 +265,8 @@ test-cover: clean-test test-sky-launch-html-cover ## Show more details of test c
 test: clean-test test-core test-sky ## Run project test suite
 
 run-docker: install-docker-deps ## Run CMD inside Docker container
-	@export DOCKER_GOPATH_SRC=$(shell docker run -t --rm $(DOCKER_QT):$(DEFAULT_ARCH) echo $$GOPATH)
-	docker run --rm -v $(PWD):$(DOCKER_GOPATH_SRC) $(DOCKER_QT):$(DEFAULT_ARCH) bash -c 'i$(CMD)'
+	@export DOCKER_GOPATH_SRC=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
+	docker run --rm -v $(PWD):${DOCKER_GOPATH_SRC} $(DOCKER_QT):$(DEFAULT_ARCH) bash -c '$(CMD)'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
