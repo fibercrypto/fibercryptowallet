@@ -21,7 +21,7 @@ matrix:
         - DEFAULT_TARGET=rpi2 make build-docker
         - DEFAULT_TARGET=rpi3 make build-docker
         - make lint
-        - make test-docker
+        - make run-docker CMD='make -C $GOPATH/src/github.com/fibercrypto/fibercryptowallet test'
     - stage: Android
       if: branch = release*$
       install:
@@ -33,8 +33,8 @@ matrix:
         - DEFAULT_TARGET=android make build-docker
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
-        - make test-docker
-        - make test-cover-travis
+        - make run-docker CMD='make -C $GOPATH/src/github.com/fibercrypto/fibercryptowallet test'
+        - make run-docker CMD='make -C $GOPATH/src/github.com/fibercrypto/fibercryptowallet test-cover-travis'
     - stage: Linux
       install:
         - make install-docker-deps
@@ -45,9 +45,9 @@ matrix:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
         - make clean
-        - make test-docker
+        - make run-docker CMD='make -C $GOPATH/src/github.com/fibercrypto/fibercryptowallet test'
         - make lint
-        - make test-cover-travis
+        - make run-docker CMD='make -C $GOPATH/src/github.com/fibercrypto/fibercryptowallet test-cover-travis'
     - stage: Windows
       os: windows
       install:
