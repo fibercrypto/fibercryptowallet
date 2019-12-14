@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/SkycoinProject/skycoin/src/visor"
 
@@ -1210,6 +1211,59 @@ func TestLocalWalletSpend(t *testing.T) {
 	require.Equal(t, crtTxn.Transaction.TxID, ret.GetId())
 }
 
+func TestLocalWalletSignSkycoinTxn(t *testing.T) {
+	CleanGlobalMock()
+
+	//Test skycoinCreatedTransaction
+	txn, keyData, uxs, err := makeTransactionMultipleInputs(t, 1)
+	require.Nil(t, err)
+	require.Equal(t, txn.In[0], uxs[0].Hash())
+	vins := make([]visor.TransactionInput, 0)
+	for _, un := range uxs {
+		vin, err := visor.NewTransactionInput(un, uint64(time.Now().Unix()))
+		require.Nil(t, err)
+		vins = append(vins, vin)
+	}
+	txn.Sigs = []cipher.Sig{}
+	crtTxn, err := api.NewCreatedTransaction(&txn, vins)
+	require.Nil(t, err)
+	require.NotNil(t, crtTxn)
+
+	wlts := makeLocalWalletsFromKeyData(t, keyData)
+	wlt := wlts[0]
+	pwd := func(string, core.KeyValueStore) (string, error) {
+		return "", nil
+	}
+
+	skyTxn := NewSkycoinCreatedTransaction(*crtTxn)
+	sig, err := util.LookupSignServiceForWallet(wlt, core.UID(""))
+	require.Nil(t, err)
+	signed, err := wlt.Sign(skyTxn, sig, pwd, nil)
+	require.Nil(t, err)
+
+	ok, err := signed.IsFullySigned()
+	require.Nil(t, err)
+	require.True(t, ok)
+
+	//Test that calculated hours were calculated ok
+	txn.Out[0].Hours = 1000
+	err = txn.UpdateHeader()
+	require.Nil(t, err)
+	crtTxn, err = api.NewCreatedTransaction(&txn, vins)
+	require.Nil(t, err)
+	require.NotNil(t, crtTxn)
+	skyTxn = NewSkycoinCreatedTransaction(*crtTxn)
+	sig, err = util.LookupSignServiceForWallet(wlt, core.UID(""))
+	require.Nil(t, err)
+	signed, err = wlt.Sign(skyTxn, sig, pwd, nil)
+	require.Nil(t, err)
+
+	ok, err = signed.IsFullySigned()
+	require.Nil(t, err)
+	require.True(t, ok)
+
+}
+
 func TestSkycoinWalletTypes(t *testing.T) {
 	var wltSet core.WalletSet = &SkycoinRemoteWallet{}
 	require.Equal(t, wallet.WalletTypeBip44, wltSet.DefaultWalletType())
@@ -1509,13 +1563,11 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 	require.NotNil(t, apiCreTxn)
 	require.Equal(t, apiCreTxn.InnerHash, txn.HashInner().Hex())
 	skyCreTxn := NewSkycoinCreatedTransaction(*apiCreTxn)
-
 	signedTxn, err := signer.Sign(skyCreTxn, isds, pwdReader)
 	require.NoError(t, err)
 	require.NotNil(t, signedTxn)
 	err = signedTxn.VerifySigned()
 	require.NoError(t, err)
-	// require.Equal(t, txn.Hash().String(), signedTxn.GetId())
 
 	// SkycoinUninjectedTransaction
 	txn.Sigs = []cipher.Sig{}
