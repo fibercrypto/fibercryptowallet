@@ -193,7 +193,13 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 }
 
 func (m *AddressesModel) updateModel(fileName string) {
-	m.LoadModel(walletManager.getAddresses(fileName))
+	wait := make(chan bool)
+	go func() {
+		walletManager.updateAddresses(fileName)
+		wait <- true
+	}()
+	<- wait
+	go m.LoadModel(walletManager.getAddresses(fileName))
 }
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
