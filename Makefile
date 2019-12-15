@@ -21,7 +21,7 @@ OSNAME = $(shell echo $(UNAME_S) | tr A-Z a-z)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
 ## In future use as a parameter tu make command.
-COIN = skycoin
+COIN ?= skycoin
 COVERAGEPATH = src/coin/$(COIN)
 COVERAGEFILE = $(COVERAGEPATH)/coverage.out
 COVERAGEHTML = $(COVERAGEPATH)/coverage.html
@@ -33,9 +33,6 @@ ICONSET			:= resources/images/icons/appIcon/appIcon.iconset
 CONVERT			:= convert
 SIPS			:= sips
 ICONUTIL		:= iconutil
-UNAME_S         = $(shell uname -s)
-DEFAULT_TARGET  ?= desktop
-DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
@@ -91,6 +88,7 @@ BINPATH            := $(BINPATH_$(UNAME_S))
 
 PWD := $(shell pwd)
 
+GOPATH ?= $(shell echo "$${GOPATH}")
 GOPATH_SRC := src/github.com/fibercrypto/fibercryptowallet
 
 DOCKER_QT = therecipe/qt
@@ -253,11 +251,11 @@ test-sky-launch-html-cover:
 
 test-cover-travis:
 	go test -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
-	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
-	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
-	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
