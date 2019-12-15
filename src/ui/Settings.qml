@@ -17,9 +17,9 @@ Page {
 
     // These are defaults. Will be restored when the "DEFAULT" button is clicked
     // TODO: How to get the defaults from the config manager
-    readonly property string defaultWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
-    readonly property bool defaultIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
-    readonly property string defaultNodeUrl: configManager.getValue("skycoin/node/address")
+    readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
+    readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
+    readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
@@ -51,6 +51,14 @@ Page {
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
 
         updateFooterButtonsStatus()
+    }
+
+    function restoreDefaultSettings() {
+        walletPath = defaultWalletPath
+        isLocalWalletEnv = defaultIsLocalWalletEnv
+        nodeUrl = defaultNodeUrl
+
+        saveCurrentSettings()
     }
 
     function updateFooterButtonsStatus() {
@@ -165,7 +173,7 @@ Page {
         standardButtons: Dialog.Yes | Dialog.No
         title: qsTr("Confirm action")
         modal: true
-        focus: true
+        focus: visible
 
         ColumnLayout {
             width: parent.width
@@ -191,9 +199,8 @@ Page {
             if (onlyDiscard) {
                 loadSavedSettings()
             } else {
-                loadSavedSettings() // loadDefaultSettings()
+                restoreDefaultSettings()
             }
-            saveCurrentSettings()
         }
     } // Dialog
 }
