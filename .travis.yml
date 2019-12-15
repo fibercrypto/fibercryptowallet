@@ -27,27 +27,25 @@ matrix:
       install:
         - DEFAULT_ARCH=android make install-docker-deps
         - make install-deps-no-envs
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=android make build-docker
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
         - make run-docker CMD='make test'
-        - make run-docker CMD='make test-cover-travis'
+        - make run-docker CMD='make install coveralls ; make test-cover-travis'
     - stage: Linux
       install:
         - make install-docker-deps
         - make install-deps-no-envs
         - make install-linters
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
         - make clean
         - make run-docker CMD='make test'
         - make lint
-        - make run-docker CMD='make test-cover-travis'
+        - make run-docker CMD='make install-coveralls ; make test-cover-travis'
     - stage: Windows
       os: windows
       install:
