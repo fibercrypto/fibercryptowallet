@@ -14,39 +14,39 @@ matrix:
         - DEFAULT_ARCH=rpi2 make install-docker-deps
         - DEFAULT_ARCH=rpi3 make install-docker-deps
         - make install-deps-no-envs
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=rpi1 make build-docker
         - DEFAULT_TARGET=rpi2 make build-docker
         - DEFAULT_TARGET=rpi3 make build-docker
         - make lint
-        - make test
+        - make run-docker CMD='make test'
     - stage: Android
       if: branch = release*$
       install:
         - DEFAULT_ARCH=android make install-docker-deps
         - make install-deps-no-envs
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=android make build-docker
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
-        - make test
-    - make test-cover-travis
+        - make run-docker CMD='make test'
+        # TODO: Restore this. See https://github.com/fibercrypto/fibercryptowallet/issues/284
+        # - make run-docker CMD='make install coveralls ; make test-cover-travis'
     - stage: Linux
       install:
         - make install-docker-deps
         - make install-deps-no-envs
         - make install-linters
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
-        - make test
+        - make clean
+        - make run-docker CMD='make test'
         - make lint
-        - make test-cover-travis
+        # TODO: Restore this. See https://github.com/fibercrypto/fibercryptowallet/issues/284
+        # - make run-docker CMD='make install-coveralls ; make test-cover-travis'
     - stage: Windows
       os: windows
       install:

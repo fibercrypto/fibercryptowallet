@@ -6,6 +6,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 
+	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 	appParams "github.com/fibercrypto/fibercryptowallet/src/params"
 )
 

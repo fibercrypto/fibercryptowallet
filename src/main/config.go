@@ -25,7 +25,7 @@ var (
 )
 
 func init() {
-	qs := qtcore.NewQSettings("Simelo", "FiberCrypto Wallet", nil)
+	qs := qtcore.NewQSettings(qtcore.QCoreApplication_OrganizationName(), qtcore.QCoreApplication_ApplicationName(), nil)
 	confManager = &ConfigManager{
 		setting:  qs,
 		sections: make(map[string]*SectionManager, 0),

@@ -21,7 +21,7 @@ OSNAME = $(shell echo $(UNAME_S) | tr A-Z a-z)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
 ## In future use as a parameter tu make command.
-COIN = skycoin
+COIN ?= skycoin
 COVERAGEPATH = src/coin/$(COIN)
 COVERAGEFILE = $(COVERAGEPATH)/coverage.out
 COVERAGEHTML = $(COVERAGEPATH)/coverage.html
@@ -33,9 +33,6 @@ ICONSET			:= resources/images/icons/appIcon/appIcon.iconset
 CONVERT			:= convert
 SIPS			:= sips
 ICONUTIL		:= iconutil
-UNAME_S         = $(shell uname -s)
-DEFAULT_TARGET  ?= desktop
-DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
@@ -89,6 +86,13 @@ BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
 BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
 BINPATH            := $(BINPATH_$(UNAME_S))
 
+PWD := $(shell pwd)
+
+GOPATH ?= $(shell echo "$${GOPATH}")
+GOPATH_SRC := src/github.com/fibercrypto/fibercryptowallet
+
+DOCKER_QT = therecipe/qt
+
 deps: ## Add dependencies
 	dep ensure
 	rm -rf rm -rf vendor/github.com/therecipe
@@ -105,7 +109,7 @@ install-deps-no-envs: ## Install therecipe/qt with -tags=no_env set
 
 install-docker-deps: ## Install docker images for project compilation using docker
 	@echo "Downloading images..."
-	docker pull therecipe/qt:$(DEFAULT_ARCH)
+	docker pull $(DOCKER_QT):$(DEFAULT_ARCH)
 	@echo "Download finished."
 
 install-deps-Linux: ## Install Linux dependencies
@@ -131,7 +135,7 @@ install-deps-Windows: ## Install Windowns dependencies
 install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
 
-build-docker: ## Build project using docker
+build-docker: install-docker-deps ## Build project using docker
 	@echo "Building $(APP_NAME)..."
 	qtdeploy -docker build $(DEFAULT_TARGET)
 	@echo "Done."
@@ -247,16 +251,21 @@ test-sky-launch-html-cover:
 
 test-cover-travis:
 	go test -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
-	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
-	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
-	$(HOME)/gopath/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
 test: clean-test test-core test-sky ## Run project test suite
+
+run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
+run-docker: install-docker-deps ## Run CMD inside Docker container
+	@echo "Docker container GOPATH found at $(DOCKER_GOPATH)"
+	docker run --rm -v $(PWD):$(DOCKER_GOPATH)/$(GOPATH_SRC) $(DOCKER_QT):$(DEFAULT_ARCH) bash -c 'cd $(DOCKER_GOPATH)/$(GOPATH_SRC) ; $(CMD)'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
