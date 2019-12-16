@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
@@ -63,6 +64,30 @@ func GetOption(path string) (string, error) {
 
 func getValues(prefix string) ([]string, error) {
 	return sectionManager.GetValues(strings.Split(prefix, "/"))
+}
+
+func GetDataRefreshTimeout() uint64 {
+	cm := local.GetConfigManager()
+	sm := cm.GetSectionManager("global")
+	value, err := sm.GetValue("Cache", nil)
+	if err != nil {
+		return 0
+	}
+
+	keyValue := make(map[string]string, 0)
+	err = json.Unmarshal([]byte(value), keyValue)
+	if err != nil {
+		return 0
+	}
+	strVal, ok := keyValue["LifeTime"]
+	if !ok {
+		return 0
+	}
+	val, err := strconv.ParseUint(strVal, 10, 64)
+	if err != nil {
+		return 0
+	}
+	return val
 }
 
 func GetWalletSources() ([]*walletSource, error) {

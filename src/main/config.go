@@ -2,9 +2,11 @@ package local
 
 import (
 	"encoding/json"
+	"strconv"
 	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/params"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 )
@@ -31,8 +33,9 @@ func init() {
 		sections: make(map[string]*SectionManager, 0),
 	}
 
-	//Fix change constant to params.value
-	cache := map[string]string{"LifeTime": 1000}
+	valueLifeTime := strconv.FormatUint(params.DataRefreshTimeout, 10)
+
+	cache := map[string]string{"LifeTime": valueLifeTime}
 
 	cacheBytes, _ := json.Marshal(cache)
 	cacheOpt := NewOption("Cache", []string{}, false, string(cacheBytes))
