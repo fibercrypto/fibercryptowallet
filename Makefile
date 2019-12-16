@@ -91,7 +91,8 @@ PWD := $(shell pwd)
 GOPATH ?= $(shell echo "$${GOPATH}")
 GOPATH_SRC := src/github.com/fibercrypto/fibercryptowallet
 
-DOCKER_QT = therecipe/qt
+DOCKER_QT       ?= therecipe/qt
+DOCKER_QT_TEST  ?= simelotech/qt-test
 
 deps: ## Add dependencies
 	dep ensure
@@ -110,6 +111,7 @@ install-deps-no-envs: ## Install therecipe/qt with -tags=no_env set
 install-docker-deps: ## Install docker images for project compilation using docker
 	@echo "Downloading images..."
 	docker pull $(DOCKER_QT):$(DEFAULT_ARCH)
+	docker pull $(DOCKER_QT_TEST):$(DEFAULT_ARCH)
 	@echo "Download finished."
 
 install-deps-Linux: ## Install Linux dependencies
@@ -265,7 +267,7 @@ test: clean-test test-core test-sky ## Run project test suite
 run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
 	@echo "Docker container GOPATH found at $(DOCKER_GOPATH)"
-	docker run --rm -v $(PWD):$(DOCKER_GOPATH)/$(GOPATH_SRC) $(DOCKER_QT):$(DEFAULT_ARCH) bash -c 'cd $(DOCKER_GOPATH)/$(GOPATH_SRC) ; $(CMD)'
+	docker run --rm -v $(PWD):$(DOCKER_GOPATH)/$(GOPATH_SRC) $(DOCKER_QT_TEST):$(DEFAULT_ARCH) bash -c 'cd $(DOCKER_GOPATH)/$(GOPATH_SRC) ; $(CMD)'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
