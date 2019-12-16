@@ -1,9 +1,9 @@
 package skytypes
 
 import (
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/coin"
+	"github.com/SkycoinProject/skycoin/src/readable"
 )
 
 // SkycoinAPI contract for Skycoin REST API clients

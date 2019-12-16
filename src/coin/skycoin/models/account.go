@@ -4,14 +4,14 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/SkycoinProject/skycoin/src/cli"
+	"github.com/SkycoinProject/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/util/droplet"
+	"github.com/SkycoinProject/skycoin/src/wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/skycoin/skycoin/src/cli"
-	"github.com/skycoin/skycoin/src/readable"
-	"github.com/skycoin/skycoin/src/util/droplet"
-	"github.com/skycoin/skycoin/src/wallet"
 )
 
 var log = logging.MustGetLogger("Skycoin Account")
@@ -25,7 +25,7 @@ func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 	}
 	defer ReturnSkycoinClient(c)
 	log.Info("POST /api/v1/balance?addrs=xxx")
-	bl, err := c.Balance([]string{addr.address})
+	bl, err := c.Balance([]string{addr.address.String()})
 	if err != nil {
 		log.WithError(err).WithField("addrs", "addr.address").Error("Couldn't POST /api/v1/balance?addrs=xxx")
 		return 0, err

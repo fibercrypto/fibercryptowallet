@@ -25,22 +25,22 @@ type WalletModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QWallet               `property:"wallets"`
 
-	_ func(*QWallet)                                                                    `slot:"addWallet"`
-	_ func(row int, name string, encryptionEnabled bool, sky string, coinHours string)  `slot:"editWallet"`
-	_ func(row int)                                                                     `slot:"removeWallet"`
-	_ func([]*QWallet)                                                                  `slot:"loadModel"`
-	_ func([]*QWallet)                                                                  `slot:"updateModel"`
-	_ int                                                                               `property:"count"`
+	_ func(*QWallet)                                                                   `slot:"addWallet"`
+	_ func(row int, name string, encryptionEnabled bool, sky string, coinHours string) `slot:"editWallet"`
+	_ func(row int)                                                                    `slot:"removeWallet"`
+	_ func([]*QWallet)                                                                 `slot:"loadModel"`
+	_ func([]*QWallet)                                                                 `slot:"updateModel"`
+	_ int                                                                              `property:"count"`
 }
 
 type QWallet struct {
 	core.QObject
-	_ string  `property:"name"`
-	_ int     `property:"encryptionEnabled"`
-	_ string  `property:"sky"`
-	_ string  `property:"coinHours"`
-	_ string  `property:"fileName"`
-	_ bool    `property:"expand"`
+	_ string `property:"name"`
+	_ int    `property:"encryptionEnabled"`
+	_ string `property:"sky"`
+	_ string `property:"coinHours"`
+	_ string `property:"fileName"`
+	_ bool   `property:"expand"`
 }
 
 func (walletModel *WalletModel) init() {
@@ -176,6 +176,9 @@ func (walletModel *WalletModel) roleNames() map[int]*core.QByteArray {
 
 func (walletModel *WalletModel) addWallet(w *QWallet) {
 	logWalletsModel.Info("Add Wallet")
+	if w.Pointer() == nil {
+		return
+	}
 	walletModel.BeginInsertRows(core.NewQModelIndex(), len(walletModel.Wallets()), len(walletModel.Wallets()))
 	qml.QQmlEngine_SetObjectOwnership(w, qml.QQmlEngine__CppOwnership)
 	walletModel.SetWallets(append(walletModel.Wallets(), w))
@@ -206,9 +209,11 @@ func (walletModel *WalletModel) removeWallet(row int) {
 }
 
 func (walletModel *WalletModel) updateModel(wallets []*QWallet) {
-	for i, wlt := range wallets {
-		walletModel.editWallet(i, wlt.Name(), wlt.EncryptionEnabled() == 1, wlt.Sky(), wlt.CoinHours())
-	}
+	go func() {
+		for i, wlt := range wallets {
+			walletModel.editWallet(i, wlt.Name(), wlt.EncryptionEnabled() == 1, wlt.Sky(), wlt.CoinHours())
+		}
+	}()
 }
 
 func (walletModel *WalletModel) loadModel(wallets []*QWallet) {

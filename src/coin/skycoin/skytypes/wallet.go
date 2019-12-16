@@ -1,7 +1,7 @@
 package skytypes
 
 import (
-	"github.com/skycoin/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/api"
 )
 
 // SkycoinTxn represents the common internal operations that should be applied upon Skycoin transaction wrapper types
