@@ -12,6 +12,7 @@ import (
 	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
+	"sync"
 	"time"
 )
 
@@ -28,6 +29,10 @@ const (
 var logWalletsModel = logging.MustGetLogger("Wallets Model")
 var hadHwConnected = false
 var hwConnectedOn []int
+
+// FIXME: remove this and use a better approach instead
+// https://github.com/fibercrypto/skywallet-go/issues/163
+var sequencer = &sync.Mutex{}
 
 type WalletModel struct {
 	core.QAbstractListModel
@@ -147,7 +152,7 @@ func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
 		}
 		return msg, nil
 	}
-	hw := hardware.NewSkyWallet(wlt, dev, cb)
+	hw := hardware.NewSkyWallet(wlt, dev, cb, sequencer)
 	am := wlcore.LoadAltcoinManager()
 	if err := am.AttachSignService(hw); err != nil {
 		logSignersModel.Errorln("error registering hardware wallet as signer")
@@ -160,7 +165,11 @@ func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
 func (walletModel *WalletModel) sniffHw() {
 	checkForDerivationType := func(dt string) {
 		dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
-		addr, err := hardware.HwFirstAddr(dev, dt)
+		addr, err := func(dev skyWallet.Devicer, derivationType string) (string, error) {
+			sequencer.Lock()
+			defer sequencer.Unlock()
+			return hardware.HwFirstAddr(dev, derivationType)
+		}(dev, dt)
 		if err == nil {
 			wlt, err := walletManager.WalletEnv.LookupWallet(addr)
 			if err != nil {
@@ -191,7 +200,7 @@ func (walletModel *WalletModel) sniffHw() {
 			hwConnectedOn = []int{}
 			checkForDerivationType(skyWallet.WalletTypeDeterministic)
 			checkForDerivationType(skyWallet.WalletTypeBip44)
-			time.Sleep(time.Second * 4)
+			time.Sleep(time.Second)
 		}
 	}()
 }

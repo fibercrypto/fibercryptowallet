@@ -17,6 +17,7 @@ import (
 	"github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
+	"sync"
 )
 
 var logSkyWallet = logging.MustGetLogger("Skycoin hardware wallet")
@@ -25,6 +26,7 @@ type SkyWallet struct {
 	wlt core.Wallet
 	dev skyWallet.Devicer
 	handleButtonAckSequence func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
+	sequencer *sync.Mutex
 }
 
 const (
@@ -86,6 +88,8 @@ func hwMatchWallet(hw SkyWallet, wlt core.Wallet) bool {
 }
 
 func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, error) {
+	sw.sequencer.Lock()
+	defer sw.sequencer.Unlock()
 	if txn != nil {
 		_, isSkycoinTxn := txn.(skytypes.SkycoinTxn)
 		if !isSkycoinTxn {
@@ -100,11 +104,12 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 }
 
 // NewSkyWallet create a new sky wallet instance
-func NewSkyWallet(wlt core.Wallet, dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)) *SkyWallet {
+func NewSkyWallet(wlt core.Wallet, dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error), seq *sync.Mutex) *SkyWallet {
 	return &SkyWallet{
 		wlt: wlt,
 		dev: dev,
 		handleButtonAckSequence: buttonAckHandler,
+		sequencer: seq,
 	}
 }
 
@@ -361,6 +366,8 @@ func verifyInputsGrouping(txn core.Transaction) error {
 
 // SignTransaction using hardware wallet
 func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
+	sw.sequencer.Lock()
+	defer sw.sequencer.Unlock()
 	if sw.dev == nil {
 		logSkyWallet.Errorln("error creating hardware wallet device handler")
 		return nil, fce.ErrTxnSignFailure
@@ -432,6 +439,8 @@ func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
 
 // GetSignerUID this signer uid using the hardware wallet label
 func (sw SkyWallet) GetSignerUID() (core.UID, error) {
+	sw.sequencer.Lock()
+	defer sw.sequencer.Unlock()
 	features, err := sw.getDeviceFeatures()
 	if err != nil {
 		logSkyWallet.WithError(err).Error("unable to get device features")
@@ -443,6 +452,8 @@ func (sw SkyWallet) GetSignerUID() (core.UID, error) {
 // GetSignerDescription facilitates a human readable caption identifying this signing strategy
 // in urn(https://en.wikipedia.org/wiki/Uniform_Resource_Name) format.
 func (sw SkyWallet) GetSignerDescription() (string, error) {
+	sw.sequencer.Lock()
+	defer sw.sequencer.Unlock()
 	features, err := sw.getDeviceFeatures()
 	if err != nil {
 		logSkyWallet.WithError(err).Error("unable to get device features")
