@@ -20,6 +20,7 @@ Page {
     readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
+    readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
@@ -27,12 +28,14 @@ Page {
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
+    property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
     property alias walletPath: textFieldWalletPath.text
     property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
+    property alias cacheLifeTime: textFieldCacheLifeTime.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -42,6 +45,7 @@ Page {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
+        configManager.setValue("global/cache/lifeTime", cacheLifeTime)
         loadSavedSettings()
     }
 
@@ -49,6 +53,7 @@ Page {
         walletPath = savedWalletPath = configManager.getValue("skycoin/walletSource/1/Source")
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
+        cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
 
         updateFooterButtonsStatus()
     }
@@ -57,13 +62,14 @@ Page {
         walletPath = defaultWalletPath
         isLocalWalletEnv = defaultIsLocalWalletEnv
         nodeUrl = defaultNodeUrl
+        cacheLifeTime = defaultCacheLifeTime
 
         saveCurrentSettings()
     }
 
     function updateFooterButtonsStatus() {
-        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl)
-        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl)
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime)
+        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime || defaultCacheLifeTime)
         footer.standardButton(Dialog.Apply).enabled = configChanged
         footer.standardButton(Dialog.Discard).enabled = configChanged
         footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
@@ -159,6 +165,23 @@ Page {
                 }
             }
         } // GroupBox (network settings)
+
+        GroupBox {
+            Layout.fillWidth: true
+            title: qsTr("Global settings")
+
+            TextField {
+                id: textFieldCacheLifeTime
+
+                anchors.fill: parent
+                selectByMouse: true
+                placeholderText: qsTr("Cache life time")
+
+                onTextChanged: {
+                    updateFooterButtonsStatus();
+                }
+            }
+        } // GroupBox (global settings)
     } // ColumnLayout
 
     // Confirm the discard or reset action:

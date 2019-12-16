@@ -69,17 +69,17 @@ func getValues(prefix string) ([]string, error) {
 func GetDataRefreshTimeout() uint64 {
 	cm := local.GetConfigManager()
 	sm := cm.GetSectionManager("global")
-	value, err := sm.GetValue("Cache", nil)
+	value, err := sm.GetValue("cache", nil)
 	if err != nil {
 		return 0
 	}
 
 	keyValue := make(map[string]string, 0)
-	err = json.Unmarshal([]byte(value), keyValue)
+	err = json.Unmarshal([]byte(value), &keyValue)
 	if err != nil {
 		return 0
 	}
-	strVal, ok := keyValue["LifeTime"]
+	strVal, ok := keyValue["lifeTime"]
 	if !ok {
 		return 0
 	}

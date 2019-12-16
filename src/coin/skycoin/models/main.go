@@ -5,9 +5,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-
 	//local "github.com/fibercrypto/fibercryptowallet/src/main"
-	appParams "github.com/fibercrypto/fibercryptowallet/src/params"
 )
 
 // SkyFiberPlugin provide support for SkyFiber coins
@@ -101,7 +99,7 @@ func (p *SkyFiberPlugin) LoadTransactionAPI(netType string) (core.BlockchainTran
 	if netType != "MainNet" {
 		return nil, errors.ErrInvalidNetworkType
 	}
-	return NewSkycoinBlockchain(appParams.DataRefreshTimeout), nil
+	return NewSkycoinBlockchain(config.GetDataRefreshTimeout()), nil
 }
 
 // LoadSignService sign service entry point

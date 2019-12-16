@@ -35,10 +35,10 @@ func init() {
 
 	valueLifeTime := strconv.FormatUint(params.DataRefreshTimeout, 10)
 
-	cache := map[string]string{"LifeTime": valueLifeTime}
+	cache := map[string]string{"lifeTime": valueLifeTime}
 
 	cacheBytes, _ := json.Marshal(cache)
-	cacheOpt := NewOption("Cache", []string{}, false, string(cacheBytes))
+	cacheOpt := NewOption("cache", []string{}, false, string(cacheBytes))
 
 	_ = confManager.RegisterSection("global", []*Option{cacheOpt})
 }
