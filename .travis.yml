@@ -55,6 +55,7 @@ matrix:
         - make install-coveralls
       script:
         - make build
+        - qtmoc desktop
         - make test
         - make build-icon
         - make lint
