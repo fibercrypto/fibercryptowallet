@@ -2,25 +2,18 @@ package local
 
 import (
 	"encoding/json"
-	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 )
 
-var logConfigManager = logging.MustGetLogger("ConfigManager")
-
 const (
-	pathToConfigFromHome         = ".fiber/config.json"
-	pathToDefaultWalletsFromHome = ".skycoin/wallets"
-	LocalWallet                  = iota
+	LocalWallet = iota
 	RemoteWallet
 )
 
 var (
 	confManager         *ConfigManager
-	once                sync.Once
 	OptionNotFoundError = errors.ErrInvalidOptions
 )
 
@@ -28,7 +21,7 @@ func init() {
 	qs := qtcore.NewQSettings("Simelo", "FiberCrypto Wallet", nil)
 	confManager = &ConfigManager{
 		setting:  qs,
-		sections: make(map[string]*SectionManager, 0),
+		sections: make(map[string]*SectionManager),
 	}
 
 }
@@ -110,7 +103,7 @@ func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, e
 func (sm *SectionManager) GetDefaultValue(option string, sectionPath []string, name string) (string, error) {
 	for _, opt := range sm.options {
 		if compareStringSlices(sectionPath, opt.sectionPath) && option == opt.name {
-			store := make(map[string]string, 0)
+			store := make(map[string]string)
 			err := json.Unmarshal([]byte(opt._default), &store)
 			if err != nil {
 				return "", err
