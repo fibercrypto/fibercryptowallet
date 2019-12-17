@@ -46,7 +46,6 @@ Page {
                     var automaticCoinHours = stackView.currentItem.advancedPage.getAutomaticCoinHours()
                     var burnFactor = stackView.currentItem.advancedPage.getBurnFactor()
                     if (outs[0].length > 0){
-                        console.log(outs)
                         txn = walletManager.sendFromOutputs(outs[1], outs[0], destinationSummary[0], destinationSummary[1], destinationSummary[2], changeAddress, automaticCoinHours, burnFactor)
                     } else {
                         if (addrs[0].length == 0){
@@ -66,7 +65,6 @@ Page {
                     addrs[1].push(walletSelected)
                     txn = walletManager.sendTo(walletSelected, stackView.currentItem.simplePage.getDestinationAddress(), stackView.currentItem.simplePage.getAmount())
                 }
-                console.log("HT "+txn.hoursTraspassed)
                 dialogSendTransaction.showPasswordField =  false//isEncrypted// get if the current wallet is encrypted
                 //dialogSendTransaction.previewDate = "2019-02-26 15:27"               
                 dialogSendTransaction.previewType = TransactionDetails.Type.Send
@@ -184,9 +182,7 @@ Page {
         focus: true
 		onAccepted: {
             walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
-            //var signedTxn = walletManager.signTxn(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
-			//var injected = walletManager.broadcastTxn(signedTxn)
-		}
+        }
     }
 
     DialogGetPassword{

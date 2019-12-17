@@ -9,19 +9,19 @@ import (
 	"strings"
 	"time"
 
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/cipher"
+	"github.com/SkycoinProject/skycoin/src/cipher/bip39"
+	"github.com/SkycoinProject/skycoin/src/coin"
+	"github.com/SkycoinProject/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/visor"
+	"github.com/SkycoinProject/skycoin/src/wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/cipher"
-	"github.com/skycoin/skycoin/src/cipher/bip39"
-	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/readable"
-	"github.com/skycoin/skycoin/src/visor"
-	"github.com/skycoin/skycoin/src/wallet"
 )
 
 var logWallet = logging.MustGetLogger("Skycoin Wallet")
@@ -30,7 +30,6 @@ const (
 	Sky            = params.SkycoinTicker
 	CoinHour       = params.CoinHoursTicker
 	CalculatedHour = params.CalculatedHoursTicker
-
 
 	walletExt             = ".wlt"
 	WalletTimestampFormat = "2006_01_02"
@@ -898,7 +897,6 @@ func (wltSrv *SkycoinLocalWallet) CreateWallet(label string, seed string, wltTyp
 	pwdCtx.SetValue(core.StrMethodName, "CreateWallet")
 	pwdCtx.SetValue(core.StrWalletLabel, label)
 	password, err := pwd("Insert Password", pwdCtx)
-
 	if err != nil {
 		logWallet.WithError(err).Fatal("Something was wrong entering the password")
 		return nil, err
@@ -1137,7 +1135,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	walletDir := filepath.Join(wlt.WalletDir, wlt.Id)
 	skyWlt, err := wallet.Load(walletDir)
 	var originalInputs []api.CreatedTransactionInput
-
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
@@ -1145,7 +1142,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	rTxn, isReadableTxn := txn.(skytypes.ReadableTxn)
 	if isReadableTxn {
 		// Readable tranasctions should not need extra API calls
-
 		cTxn, err := rTxn.ToCreatedTransaction()
 		if err != nil {
 			logWallet.WithError(err).Warn("Failed to convert to readable transaction")
@@ -1222,7 +1218,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		}
 	} else {
 		// Raw transaction
-
 		unTxn, ok := txn.(*SkycoinUninjectedTransaction)
 		if !ok {
 			logWallet.WithError(err).Warn("Couldn't load transaction un injected")
@@ -1293,33 +1288,38 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	if len(skyTxn.Sigs) == 0 {
 		skyTxn.Sigs = make([]cipher.Sig, len(skyTxn.In))
 	}
-
 	signedTxn, err := wallet.SignTransaction(skyWlt, skyTxn, index, uxouts)
 
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't sign transaction using local wallet")
 		return nil, err
 	}
-
 	if isReadableTxn {
 		vins := make([]visor.TransactionInput, 0)
-		for _, ux := range uxouts {
-			vin, err := visor.NewTransactionInput(ux, 0)
+		for i, ux := range uxouts {
+			calCh, err := util.GetCoinValue(originalInputs[i].CalculatedHours, CoinHour)
+			if err != nil {
+				return nil, err
+			}
+			vin := visor.TransactionInput{
+				UxOut:           ux,
+				CalculatedHours: calCh,
+			}
 			if err != nil {
 				logWallet.WithError(err).Warn("Couldn't create a transaction input")
 				return nil, err
 			}
 			vins = append(vins, vin)
 		}
-
 		crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
+		if err != nil {
+			return nil, err
+		}
 		crtTxn.In = originalInputs
-
 		if err != nil {
 			logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
 			return nil, err
 		}
-
 		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
 	} else {
 		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
@@ -1327,7 +1327,6 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 			return nil, err
 		}
 	}
-
 	return resultTxn, nil
 
 }

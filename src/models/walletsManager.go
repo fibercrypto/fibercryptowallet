@@ -403,7 +403,6 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 	var txn core.Transaction
 	var err error
 	if len(wltCache) > 1 {
-		fmt.Println("MULTI TXN")
 		walletsOutputs := make([]core.WalletOutput, 0)
 		for i, wlt := range wlts {
 			walletsOutputs = append(walletsOutputs, &util.SimpleWalletOutput{
@@ -413,7 +412,6 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 		}
 		txn, err = walletM.transactionAPI.Spend(walletsOutputs, outputsTo, &changeAddr, opt)
 	} else {
-		fmt.Println("SIMPLE TXN")
 		txn, err = wlts[0].Spend(outputsFrom, outputsTo, &changeAddr, opt)
 	}
 
@@ -430,7 +428,6 @@ func (walletM *WalletManager) sendFromOutputs(wltIds []string, from, addrTo, sky
 	return qTransaction
 }
 func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, skyTo, coinHoursTo []string, change string, automaticCoinHours bool, burnFactor string) *QTransaction {
-	fmt.Printf("WLTS %v\n", wltIds)
 	wltCache := make(map[string]core.Wallet, 0)
 	wlts := make([]core.Wallet, 0)
 	for _, wltId := range wltIds {
@@ -493,10 +490,8 @@ func (walletM *WalletManager) sendFromAddresses(wltIds []string, from, addrTo, s
 				UxOut:  addrsFrom[i],
 			})
 		}
-		fmt.Println("MULTIPLE TRANSACTION")
 		txn, err = walletM.transactionAPI.SendFromAddress(walletsAddresses, outputsTo, changeAddr, opt)
 	} else {
-		fmt.Println("SINGLE TRANSACTION")
 		txn, err = wlts[0].SendFromAddress(addrsFrom, outputsTo, changeAddr, opt)
 	}
 
@@ -582,7 +577,6 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 		logWalletManager.Error("Wallets and addresses provided are incorrect")
 		return nil
 	}
-
 	wltCache := make(map[string]core.Wallet)
 	wltByAddr := make(map[string]core.Wallet)
 	wlts := make([]core.Wallet, 0)
@@ -635,14 +629,14 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 		logWalletManager.WithError(err).Warn("Error converting transaction")
 		return nil
 	}
+
 	return qTxn
 
 }
-
 func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) {
 	channel := make(chan *QTransaction)
 	go func() {
-		pwd := func(message string, ctx core.KeyValueStore) (string, error) {
+		var pwd core.PasswordReader = func(message string, ctx core.KeyValueStore) (string, error) {
 			bridgeForPassword.BeginUse()
 			defer bridgeForPassword.EndUse()
 			bridgeForPassword.lock()
@@ -671,7 +665,6 @@ func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []strin
 		if txn != nil {
 			walletM.broadcastTxn(txn)
 		}
-
 	}()
 }
 
@@ -680,7 +673,6 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 	pwd := util.ConstantPassword(password)
 	// NOTE: No easy way to get plain passwords in memory
 	password = ""
-	fmt.Println("WALLET TYPE ", wltType)
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, true, pwd, scanN)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create encrypted wallet")
@@ -695,13 +687,13 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType string, scanN int) *QWallet {
 	logWalletManager.Info("Creating encrypted wallet")
 	pwd := util.EmptyPassword
-
 	wlt, err := walletM.WalletEnv.GetWalletSet().CreateWallet(label, seed, wltType, false, pwd, scanN)
 	if err != nil {
 		logWalletManager.WithError(err).Error("Couldn't create unencrypted wallet")
 		return nil
 	}
-	logWalletManager.Info("Created encrypted wallet")
+	logWalletManager.Info("Created unencrypted wallet")
+
 	return fromWalletToQWallet(wlt, false)
 
 }

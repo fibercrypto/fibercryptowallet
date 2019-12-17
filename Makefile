@@ -84,7 +84,7 @@ RESOURCEFILES := $(shell echo "$(SVGFILES) $(PNGFILES) $(OTFFILES) $(ICNSFILES) 
 SRCFILES      := $(shell echo "$(QTFILES) $(RESOURCEFILES) $(GOFILES)")
 
 BINPATH_Linux      := deploy/linux/fibercryptowallet
-BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
+BINPATH_Windows_NT := deploy/windows/fibercryptowallet.exe
 BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
 BINPATH            := $(BINPATH_$(UNAME_S))
 
@@ -131,7 +131,7 @@ install-deps: install-deps-$(UNAME_S) install-linters ## Install dependencies
 	@echo "Dependencies installed"
 
 build-docker: ## Build project using docker
-	@echo "Building FiberCrypto Wallet..."
+	@echo "Building $(APP_NAME)..."
 	qtdeploy -docker build $(DEFAULT_TARGET)
 	@echo "Done."
 
