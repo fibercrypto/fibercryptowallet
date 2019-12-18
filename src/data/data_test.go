@@ -637,8 +637,10 @@ func TestDB_UpdateContact(t *testing.T) {
 				}
 				require.NoError(t, err)
 			}
-
-			if err := ab.UpdateContact(tt.args.id, tt.args.newContact); (err != nil) != tt.wantErr {
+			var newContact Contact
+			newContact.SetAddresses(tt.args.newContact.GetAddresses())
+			newContact.SetName(tt.args.newContact.GetName())
+			if err := ab.UpdateContact(tt.args.id, &newContact); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateContact() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
