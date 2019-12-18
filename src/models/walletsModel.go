@@ -3,16 +3,12 @@ package models
 import (
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
+	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
-	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/sirupsen/logrus"
 	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
-	messages "github.com/fibercrypto/skywallet-protob/go"
 	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
-	"sync"
 	"time"
 )
 
@@ -27,12 +23,9 @@ const (
 )
 
 var logWalletsModel = logging.MustGetLogger("Wallets Model")
+var dev skyWallet.Devicer
 var hadHwConnected = false
 var hwConnectedOn []int
-
-// FIXME: remove this and use a better approach instead
-// https://github.com/fibercrypto/skywallet-go/issues/163
-var sequencer = &sync.Mutex{}
 
 type WalletModel struct {
 	core.QAbstractListModel
@@ -64,6 +57,7 @@ type QWallet struct {
 
 func (walletModel *WalletModel) init() {
 	logWalletsModel.Info("Initialize Wallet model")
+	dev = proxy.NewSequencer(skyWallet.NewDevice(skyWallet.DeviceTypeUSB))
 	walletModel.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),
 		EncryptionEnabled: core.NewQByteArray2("encryptionEnabled", -1),
@@ -90,69 +84,7 @@ func (walletModel *WalletModel) init() {
 
 // attachHwAsSigner add a hw as signer
 func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
-	pb := func(dev skyWallet.Devicer, prvMsg wire.Message, nextMsg messages.MessageType) (wire.Message, error) {
-		msg, err := dev.ButtonAck()
-		if err != nil {
-			logSignersModel.WithError(err).Errorln("unexpected error")
-			return msg, err
-		}
-		if msg.Kind != uint16(nextMsg) {
-			if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
-				str, err := skyWallet.DecodeFailMsg(msg)
-				if err != nil {
-					logSignersModel.WithField("msg", msg).Errorln("error decoding msg")
-					return msg, fce.ErrTxnSignFailure
-				}
-				// FIXME: this can become broken with device internationalization
-				if str == "Action cancelled by user" {
-					return msg, fce.ErrHwSignTransactionCanceled
-				}
-			} else if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
-				logSignersModel.Warningln("some addresses was not confirmed in the device because are owned for this wallet")
-				return msg, fce.ErrNoMoreElements
-			}
-			logSignersModel.WithFields(
-				logrus.Fields{
-					"expected": nextMsg,
-					"actual": msg.Kind}).Errorln("unexpected msg type")
-			return msg, fce.ErrTxnSignFailure
-		}
-		// FIXME maybe only a MessageType_MessageType_TransactionSign
-		if msg.Kind == uint16(messages.MessageType_MessageType_Success) {
-			successMsg, err := skyWallet.DecodeSuccessMsg(msg)
-			if err != nil {
-				logSignersModel.WithError(err).Errorln("error decoding msg")
-				return wire.Message{}, err
-			}
-			logSignersModel.Debugln("signing transaction with hw", successMsg)
-			return msg, err// FIXME bug in err value
-		}
-		return msg, nil
-	}
-	cb := func(dev skyWallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error) {
-		var msg wire.Message
-		for outsLen > 0 {
-			var err error
-			msg, err = pb(dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
-			if err != nil {
-				return wire.Message{}, err
-			}
-			if outsLen == 1 {
-				msg, err = pb(dev, prvMsg, messages.MessageType_MessageType_ResponseTransactionSign)
-			} else {
-				msg, err = pb(dev, prvMsg, messages.MessageType_MessageType_ButtonRequest)
-			}
-			if err != nil {
-				if err == fce.ErrNoMoreElements {
-					return msg, nil
-				}
-				return wire.Message{}, err
-			}
-			outsLen--
-		}
-		return msg, nil
-	}
-	hw := hardware.NewSkyWallet(wlt, dev, cb, sequencer)
+	hw := hardware.NewSkyWallet(wlt, dev)
 	am := wlcore.LoadAltcoinManager()
 	if err := am.AttachSignService(hw); err != nil {
 		logSignersModel.Errorln("error registering hardware wallet as signer")
@@ -164,12 +96,7 @@ func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
 	checkForDerivationType := func(dt string) {
-		dev := skyWallet.NewDevice(skyWallet.DeviceTypeUSB)
-		addr, err := func(dev skyWallet.Devicer, derivationType string) (string, error) {
-			sequencer.Lock()
-			defer sequencer.Unlock()
-			return hardware.HwFirstAddr(dev, derivationType)
-		}(dev, dt)
+		addr, err := hardware.HwFirstAddr(dev, dt)
 		if err == nil {
 			wlt, err := walletManager.WalletEnv.LookupWallet(addr)
 			if err != nil {
@@ -200,7 +127,7 @@ func (walletModel *WalletModel) sniffHw() {
 			hwConnectedOn = []int{}
 			checkForDerivationType(skyWallet.WalletTypeDeterministic)
 			checkForDerivationType(skyWallet.WalletTypeBip44)
-			time.Sleep(time.Second)
+			time.Sleep(time.Millisecond * 500)
 		}
 	}()
 }

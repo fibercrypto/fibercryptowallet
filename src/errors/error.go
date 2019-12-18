@@ -68,4 +68,6 @@ var (
 	ErrHwUnexpected = errors.New("Unexpected error with device")
 	// ErrHwSignTransactionCanceled cancelled by user in the physical device
 	ErrHwSignTransactionCanceled = errors.New("Sign transaction with hardware wallet has been canceled")
+	// ErrNilValue object should not be null
+	ErrNilValue = errors.New("Object should not be null")
 )

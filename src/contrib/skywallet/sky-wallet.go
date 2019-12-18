@@ -13,11 +13,9 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
-	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	"github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
-	"sync"
 )
 
 var logSkyWallet = logging.MustGetLogger("Skycoin hardware wallet")
@@ -25,8 +23,6 @@ var logSkyWallet = logging.MustGetLogger("Skycoin hardware wallet")
 type SkyWallet struct {
 	wlt core.Wallet
 	dev skyWallet.Devicer
-	handleButtonAckSequence func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error)
-	sequencer *sync.Mutex
 }
 
 const (
@@ -41,30 +37,16 @@ func HwFirstAddr(dev skyWallet.Devicer, derivationType string) (string, error) {
 		logSkyWallet.WithError(err).Debugln("error getting address from device")
 		return "", fce.ErrHwUnexpected
 	}
-	switch msg.Kind {
-	case uint16(messages.MessageType_MessageType_ResponseSkycoinAddress):
-		addrs, err := skywallet.DecodeResponseSkycoinAddress(msg)
-		if err != nil {
-			logSkyWallet.WithError(err).Error("error decoding device response")
-			return "", fce.ErrHwUnexpected
-		}
-		if len(addrs) != 1 {
-			logSkyWallet.WithField("addr_len", len(addrs)).Error("unexpected address count in response")
-			return "", fce.ErrHwUnexpected
-		}
-		return addrs[0], nil
-	case uint16(messages.MessageType_MessageType_Failure):
-		msgData, err := skyWallet.DecodeFailMsg(msg)
-		if err != nil {
-			logSkyWallet.WithError(err).Error("error decoding device response")
-			return "", fce.ErrHwUnexpected
-		}
-		logSkyWallet.Error(msgData)
-		return "", fce.ErrHwUnexpected
-	default:
-		logSkyWallet.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
+	addrs, err := skywallet.DecodeResponseSkycoinAddress(msg)
+	if err != nil {
+		logSkyWallet.WithError(err).Error("error decoding device response")
 		return "", fce.ErrHwUnexpected
 	}
+	if len(addrs) != 1 {
+		logSkyWallet.WithField("addr_len", len(addrs)).Error("unexpected address count in response")
+		return "", fce.ErrHwUnexpected
+	}
+	return addrs[0], nil
 }
 
 func hwMatchWallet(hw SkyWallet, wlt core.Wallet) bool {
@@ -88,8 +70,6 @@ func hwMatchWallet(hw SkyWallet, wlt core.Wallet) bool {
 }
 
 func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, error) {
-	sw.sequencer.Lock()
-	defer sw.sequencer.Unlock()
 	if txn != nil {
 		_, isSkycoinTxn := txn.(skytypes.SkycoinTxn)
 		if !isSkycoinTxn {
@@ -104,12 +84,10 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 }
 
 // NewSkyWallet create a new sky wallet instance
-func NewSkyWallet(wlt core.Wallet, dev skyWallet.Devicer, buttonAckHandler func(dev skywallet.Devicer, prvMsg wire.Message, outsLen int) (wire.Message, error), seq *sync.Mutex) *SkyWallet {
+func NewSkyWallet(wlt core.Wallet, dev skyWallet.Devicer) *SkyWallet {
 	return &SkyWallet{
 		wlt: wlt,
 		dev: dev,
-		handleButtonAckSequence: buttonAckHandler,
-		sequencer: seq,
 	}
 }
 
@@ -244,79 +222,38 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coi
 		logSkyWallet.WithError(err).Error("error signing transaction")
 		return nil, fce.ErrTxnSignFailure
 	}
-	if msg.Kind != uint16(messages.MessageType_MessageType_ButtonRequest) {
-		if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
-			return nil, fce.ErrTxnSignFailure
-		}
-		if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
-			msgStr, err := skyWallet.DecodeFailMsg(msg)
-			if err != nil {
-				logSkyWallet.WithError(err).Errorln("error decoding failed response")
-				return nil, fce.ErrTxnSignFailure
-			}
-			logSkyWallet.Errorln(msgStr)
-			return nil, fce.ErrTxnSignFailure
-		}
-		logSkyWallet.WithField("msgResponse", msg).Errorln("error signing transaction with hardware wallet")
-		return nil, fce.ErrTxnSignFailure
-	}
-	msg, err = sw.handleButtonAckSequence(sw.dev, msg, len(transactionOutputs))
+	signatures, err := skyWallet.DecodeResponseTransactionSign(msg)
 	if err != nil {
-		if err == fce.ErrTxnSignFailure {
-			logSkyWallet.WithError(err).Errorln("failed to sign transaction")
-		} else if err == fce.ErrHwSignTransactionCanceled {
-			logSkyWallet.WithError(err).Warnln("action canceled from device")
-		} else {
-			logSkyWallet.WithError(err).Errorln("unable to sign transaction with device")
-			return nil, fce.ErrTxnSignFailure
-		}
-		return nil, err
+		logSkyWallet.WithError(err).Error("error decoding device response")
+		return nil, fce.ErrTxnSignFailure
 	}
-	if msg.Kind == uint16(messages.MessageType_MessageType_ResponseTransactionSign) {
-		signatures, err := skyWallet.DecodeResponseTransactionSign(msg)
-		if err != nil {
-			logSkyWallet.WithError(err).Error("error decoding device response")
-			return nil, fce.ErrTxnSignFailure
-		}
-		if txn.Sigs == nil {
-			logSkyWallet.Warnln("nil slice in transaction signatures detected, creating a new one")
-			txn.Sigs = make([]cipher.Sig, len(transactionInputs))
-		}
-		if len(signatures) != len(transactionInputs) {
-			logSkyWallet.WithFields(
-				logrus.Fields{
-					"signatures_len": len(signatures),
-					"transactionInputs_len": len(transactionInputs)}).Errorln("signatures response len should match inputs one")
-			return nil, fce.ErrTxnSignFailure
-		}
-		for idx, sign := range signatures {
-			if !findValInSlice(idx, idxs) {
-				// NOTE only sign required inputs
-				continue
-			}
-			buf, err := hex.DecodeString(sign)
-			if err != nil {
-				logSkyWallet.WithError(err).Error("unable to decode signature")
-				return nil, fce.ErrTxnSignFailure
-			}
-			sgn, err := cipher.NewSig(buf)
-			if err != nil {
-				logSkyWallet.WithError(err).Errorln("unable to get Skycoin address from buffer")
-				return nil, errors.New("unable to get Skycoin address from buffer")
-			}
-			txn.Sigs[idx] = sgn
-		}
-	} else if msg.Kind == uint16(messages.MessageType_MessageType_Failure) {
-		msgStr, err := skyWallet.DecodeFailMsg(msg)
-		if err != nil {
-			logSkyWallet.WithError(err).Error("error decoding device response")
-			return nil, fce.ErrTxnSignFailure
-		}
-		logSkyWallet.Errorln(msgStr)
+	if txn.Sigs == nil {
+		logSkyWallet.Warnln("nil slice in transaction signatures detected, creating a new one")
+		txn.Sigs = make([]cipher.Sig, len(transactionInputs))
+	}
+	if len(signatures) != len(transactionInputs) {
+		logSkyWallet.WithFields(
+			logrus.Fields{
+				"signatures_len": len(signatures),
+				"transactionInputs_len": len(transactionInputs)}).Errorln("signatures response len should match inputs one")
 		return nil, fce.ErrTxnSignFailure
-	} else {
-		logSkyWallet.WithField("msg", msg).Errorln("unexpected error signing transaction with hw")
-		return nil, fce.ErrTxnSignFailure
+	}
+	for idx, sign := range signatures {
+		if !findValInSlice(idx, idxs) {
+			// NOTE only sign required inputs
+			continue
+		}
+		buf, err := hex.DecodeString(sign)
+		if err != nil {
+			logSkyWallet.WithError(err).Error("unable to decode signature")
+			return nil, fce.ErrTxnSignFailure
+		}
+		sgn, err := cipher.NewSig(buf)
+		if err != nil {
+			logSkyWallet.WithError(err).Errorln("unable to get Skycoin address from buffer")
+			return nil, errors.New("unable to get Skycoin address from buffer")
+		}
+		txn.Sigs[idx] = sgn
 	}
 	return txn, nil
 }
@@ -366,8 +303,6 @@ func verifyInputsGrouping(txn core.Transaction) error {
 
 // SignTransaction using hardware wallet
 func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
-	sw.sequencer.Lock()
-	defer sw.sequencer.Unlock()
 	if sw.dev == nil {
 		logSkyWallet.Errorln("error creating hardware wallet device handler")
 		return nil, fce.ErrTxnSignFailure
@@ -414,37 +349,25 @@ func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
 		logSkyWallet.WithError(err).Error("error getting device features")
 		return messages.Features{}, fce.ErrHwUnexpected
 	}
-	switch msg.Kind {
-	case uint16(messages.MessageType_MessageType_Features):
-		features := messages.Features{}
-		err = proto.Unmarshal(msg.Data, &features)
-		if err != nil {
-			logSkyWallet.WithError(err).Error("error decoding device response")
-			return messages.Features{}, fce.ErrHwUnexpected
-		}
-		return features, nil
-	case uint16(messages.MessageType_MessageType_Failure), uint16(messages.MessageType_MessageType_Success):
-		msgData, err := skyWallet.DecodeSuccessOrFailMsg(msg)
-		if err != nil {
-			logSkyWallet.WithError(err).Errorln("error decoding device response")
-		} else {
-			logSkyWallet.Errorln(msgData)
-		}
-		return messages.Features{}, fce.ErrHwUnexpected
-	default:
-		logSkyWallet.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
+	features := messages.Features{}
+	err = proto.Unmarshal(msg.Data, &features)
+	if err != nil {
+		logSkyWallet.WithError(err).Error("error decoding device response")
 		return messages.Features{}, fce.ErrHwUnexpected
 	}
+	return features, nil
 }
 
 // GetSignerUID this signer uid using the hardware wallet label
 func (sw SkyWallet) GetSignerUID() (core.UID, error) {
-	sw.sequencer.Lock()
-	defer sw.sequencer.Unlock()
 	features, err := sw.getDeviceFeatures()
 	if err != nil {
 		logSkyWallet.WithError(err).Error("unable to get device features")
 		return "", fce.ErrHwUnexpected
+	}
+	if features.DeviceId == nil {
+		logSkyWallet.WithField("devId", features.DeviceId).Errorln("unable to get device id")
+		return core.UID(""), fce.ErrNilValue
 	}
 	return core.UID(*features.DeviceId), nil
 }
@@ -452,12 +375,14 @@ func (sw SkyWallet) GetSignerUID() (core.UID, error) {
 // GetSignerDescription facilitates a human readable caption identifying this signing strategy
 // in urn(https://en.wikipedia.org/wiki/Uniform_Resource_Name) format.
 func (sw SkyWallet) GetSignerDescription() (string, error) {
-	sw.sequencer.Lock()
-	defer sw.sequencer.Unlock()
 	features, err := sw.getDeviceFeatures()
 	if err != nil {
 		logSkyWallet.WithError(err).Error("unable to get device features")
 		return "", fce.ErrHwUnexpected
+	}
+	if features.Label == nil {
+		logSkyWallet.WithField("devLabel", features.Label).Errorln("unable to get device label")
+		return "", fce.ErrNilValue
 	}
 	return urnPrefix+*features.Label, nil
 }
