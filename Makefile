@@ -241,7 +241,7 @@ test-core: ## Run tests for API core and helpers
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
 
 test-data: ## Run tests for data package
-	go test -coverprofile=src/data/coverage.out -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
+	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
 
 
 test-sky-launch-html-cover:

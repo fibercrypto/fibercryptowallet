@@ -33,11 +33,11 @@ Page {
 
 function getAddressList(){
 addressList.clear()
-for(var i=0;i<abm.count;i++){
-for(var j=0;j<abm.contacts[i].address.rowCount();j++){
-addressList.append({name:abm.contacts[i].name,
-address:abm.contacts[i].address.address[j].value,
-coinType:abm.contacts[i].address.address[j].coinType})
+for(var i=0;i<addrsBkModel.count;i++){
+for(var j=0;j<addrsBkModel.contacts[i].address.rowCount();j++){
+addressList.append({name:addrsBkModel.contacts[i].name,
+address:addrsBkModel.contacts[i].address.address[j].value,
+coinType:addrsBkModel.contacts[i].address.address[j].coinType})
 }
 }
 }
@@ -49,7 +49,7 @@ coinType:abm.contacts[i].address.address[j].coinType})
     }
 
  AddrsBookModel{
-    id:abm
+    id:addrsBkModel
     }
 
  DialogSelectAddressByAddressBook{
@@ -78,10 +78,10 @@ getAddressList()
                  anchors.centerIn: Overlay.overlay
                  height:180
                  onAccepted:{
-                 if(!abm.authenticate(getpass.password)){
+                 if(!addrsBkModel.authenticate(getpass.password)){
                  getpass.open()
                  }else{
-                 abm.loadContacts()
+                 addrsBkModel.loadContacts()
                  dialogSelectAddressByAddressBook.open()
                  }
                  }
@@ -147,8 +147,8 @@ getAddressList()
                                 highlighted: true
 
                                 onClicked: {
-                                 if(abm.getSecType()!=2){
-                                        abm.loadContacts()
+                                 if(addrsBkModel.getSecType()!=2){
+                                        addrsBkModel.loadContacts()
                                         dialogSelectAddressByAddressBook.open()
                                      }else{
                                      getpass.open()
@@ -178,7 +178,7 @@ getAddressList()
                     selectByMouse: true
                     Layout.fillWidth: true
                     Layout.topMargin: -5
-                    Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
+                    Material.accent: addrsBkModel.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
                     onTextChanged:{
                         root.destinationAddress = text
 

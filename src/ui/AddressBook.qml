@@ -25,9 +25,9 @@ Page{
     }
 
  Component.onCompleted: {
-     if(abm.hasInit()){
-     if(abm.getSecType()!=2){
-        abm.loadContacts()
+     if(addrsBkModel.hasInit()){
+     if(addrsBkModel.getSecType()!=2){
+        addrsBkModel.loadContacts()
      }else{
      getpass.open()
      }
@@ -38,7 +38,7 @@ Page{
      }
 
 AddrsBookModel{
-    id:abm
+    id:addrsBkModel
 }
 
 DialogSelectSecType{
@@ -51,7 +51,7 @@ secType = select
 if (secType==2){
 setpass.open()
 }else{
-abm.initAddrsBook(secType,"")
+addrsBkModel.initAddrsBook(secType,"")
 }
 }
 onRejected:{
@@ -64,7 +64,7 @@ DialogSetPassword{
 id:setpass
 anchors.centerIn: Overlay.overlay
 onAccepted:{
-abm.initAddrsBook(2,setpass.password)
+addrsBkModel.initAddrsBook(2,setpass.password)
 }
 onRejected:{
 generalStackView.pop()
@@ -76,10 +76,10 @@ id:getpass
 anchors.centerIn: Overlay.overlay
 height:180
 onAccepted:{
-if(!abm.authenticate(getpass.password)){
+if(!addrsBkModel.authenticate(getpass.password)){
 getpass.open()
 }else{
-abm.loadContacts()
+addrsBkModel.loadContacts()
 }
 }
 
@@ -96,7 +96,7 @@ console.log("asd")
                     id: addrsBook
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    model: abm
+                    model: addrsBkModel
                     section.property: "name"
                     section.criteria: ViewSection.FirstCharacter
                     section.delegate: SectionDelegate {
@@ -149,7 +149,7 @@ Menu{
             MenuItem{
                 text: "&Remove"
                 onTriggered: {
-            abm.removeContact(menu.index,menu.cId)
+            addrsBkModel.removeContact(menu.index,menu.cId)
                 }
             }
         }//Menu

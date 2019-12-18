@@ -45,9 +45,9 @@ updateAcceptButtonStatus()
 
 function enableOkBtn(){
 for(var i=0;i<listModelAddresses.count;i++){
-if (!(abm.addressIsValid(listModelAddresses.get(i).value))||
-     name.text==""|| abm.nameExist(menu.index,name.text)||
-     abm.addressExist(menu.index,listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)){
+if (!(addrsBkModel.addressIsValid(listModelAddresses.get(i).value))||
+     name.text==""|| addrsBkModel.nameExist(menu.index,name.text)||
+     addrsBkModel.addressExist(menu.index,listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)){
 standardButton(Dialog.Ok).enabled=false
 return
 }
@@ -57,13 +57,13 @@ standardButton(Dialog.Ok).enabled=true
 
     function updateAcceptButtonStatus() {
     for(var i=0;i<listModelAddresses.count;i++){
-    abm.addAddress(listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)
+    addrsBkModel.addAddress(listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)
     }
 
     if (isEdit){
-abm.editContact(menu.index, menu.cId, name.text)
+addrsBkModel.editContact(menu.index, menu.cId, name.text)
     }else{
-    abm.newContact(name.text)
+    addrsBkModel.newContact(name.text)
     }
     } // function updateAcceptButtonStatus()
 

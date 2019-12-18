@@ -24,12 +24,12 @@ Item {
 
 function getAddressList(){
 contactAddrsModel.clear()
-console.log(abm.count)
-for(var i=0;i<abm.count;i++){
-for(var j=0;j<abm.contacts[i].address.address.length;j++){
-contactAddrsModel.append({name:abm.contacts[i].name,
-address:abm.contacts[i].address.address[j].value,
-coinType:abm.contacts[i].address.address[j].coinType})
+console.log(addrsBkModel.count)
+for(var i=0;i<addrsBkModel.count;i++){
+for(var j=0;j<addrsBkModel.contacts[i].address.address.length;j++){
+contactAddrsModel.append({name:addrsBkModel.contacts[i].name,
+address:addrsBkModel.contacts[i].address.address[j].value,
+coinType:addrsBkModel.contacts[i].address.address[j].coinType})
 }
 }
 }
@@ -54,8 +54,8 @@ coinType:abm.contacts[i].address.address[j].coinType})
                     highlighted: true
 
                     onClicked: {
-                   if(abm.getSecType()!=2){
-                          abm.loadContacts()
+                   if(addrsBkModel.getSecType()!=2){
+                          addrsBkModel.loadContacts()
                             dialogSelectAddressByAddressBook.open()
                          }else{
                              getpass.open()
@@ -67,10 +67,10 @@ coinType:abm.contacts[i].address.address[j].coinType})
                                  anchors.centerIn: Overlay.overlay
                                  height:180
                                  onAccepted:{
-                                 if(!abm.authenticate(getpass.password)){
+                                 if(!addrsBkModel.authenticate(getpass.password)){
                                  getpass.open()
                                  }else{
-                                 abm.loadContacts()
+                                 addrsBkModel.loadContacts()
                                  dialogSelectAddressByAddressBook.open()
                                  }
                                  }
@@ -97,7 +97,7 @@ coinType:abm.contacts[i].address.address[j].coinType})
                 text: address
                 selectByMouse: true
                 Layout.fillWidth: true
-                Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
+                Material.accent: addrsBkModel.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
                 onTextChanged: address = text
             }
 
@@ -180,6 +180,6 @@ ListModel{
 id:contactAddrsModel
 }
  AddrsBookModel{
-    id:abm
+    id:addrsBkModel
     }
 }

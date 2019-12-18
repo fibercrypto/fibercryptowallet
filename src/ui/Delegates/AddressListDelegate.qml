@@ -53,7 +53,7 @@ Item {
                 text: value
                 selectByMouse: true
                 Layout.fillWidth: true
-                Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
+                Material.accent: addrsBkModel.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
                 onTextChanged:{
                 value = text
                 enableOkBtn()

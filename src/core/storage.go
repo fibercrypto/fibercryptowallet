@@ -105,7 +105,7 @@ type AddressBook interface {
 	GetStorage() Storage
 	HasInit() bool
 	IsOpen() bool
-	GetSecType() (int, error)
+	GetSecType() int
 	Close() error
 }
 
@@ -125,6 +125,8 @@ type Storage interface {
 type Contact interface {
 	GetID() uint64
 	SetID(id uint64)
+	Encrypt(secType int, key []byte) ([]byte, error)
+	Decrypt(secType int, data, key []byte) error
 	GetAddresses() []StringAddress
 	SetAddresses([]StringAddress)
 	GetName() string

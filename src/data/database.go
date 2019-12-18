@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-type boltStorage struct {
+// BoltStorage implement the Storage interface for boltDb.
+type BoltStorage struct {
 	*bolt.DB
 }
 
@@ -25,8 +26,8 @@ var (
 	errValEmpty        = errors.New(" database: result are empty")
 )
 
-// GetBoltStorage generate a new instance of boltStorage by path.
-func GetBoltStorage(path string) (*boltStorage, error) {
+// GetBoltStorage generate a new instance of BoltStorage by path.
+func GetBoltStorage(path string) (*BoltStorage, error) {
 	db, err := bolt.Open(path, 0600,
 		&bolt.Options{
 			Timeout: 1 * time.Second,
@@ -37,11 +38,11 @@ func GetBoltStorage(path string) (*boltStorage, error) {
 		return nil, err
 	}
 
-	return &boltStorage{db}, nil
+	return &BoltStorage{db}, nil
 }
 
 // GetConfig Returns the config bucket content.
-func (b *boltStorage) GetConfig() map[string]string {
+func (b *BoltStorage) GetConfig() map[string]string {
 	tx, err := b.Begin(false)
 	if err != nil {
 		logDb.Error(err)
@@ -68,7 +69,7 @@ func (b *boltStorage) GetConfig() map[string]string {
 }
 
 // InsertConfig set into config bucket the config parameters (securityType, hash, entropy)
-func (b *boltStorage) InsertConfig(options map[string]string) error {
+func (b *BoltStorage) InsertConfig(options map[string]string) error {
 	// Start a writeable transaction.
 	tx, err := b.Begin(true)
 	if err != nil {
@@ -98,7 +99,7 @@ func (b *boltStorage) InsertConfig(options map[string]string) error {
 }
 
 // InsertValue insert a value in AddressBook bucket.
-func (b *boltStorage) InsertValue(value interface{}) (uint64, error) {
+func (b *BoltStorage) InsertValue(value interface{}) (uint64, error) {
 	// Start a writeable transaction.
 	tx, err := b.Begin(true)
 	if err != nil {
@@ -138,7 +139,7 @@ func (b *boltStorage) InsertValue(value interface{}) (uint64, error) {
 }
 
 // GetValue get a value from the AddressBook bucket.
-func (b *boltStorage) GetValue(key uint64) (interface{}, error) {
+func (b *BoltStorage) GetValue(key uint64) (interface{}, error) {
 	tx, err := b.Begin(false)
 	if err != nil {
 		logDb.Error(err)
@@ -161,7 +162,7 @@ func (b *boltStorage) GetValue(key uint64) (interface{}, error) {
 }
 
 // ListValues returns all values from AddressBook bucket.
-func (b *boltStorage) ListValues() (map[uint64]interface{}, error) {
+func (b *BoltStorage) ListValues() (map[uint64]interface{}, error) {
 	tx, err := b.Begin(false)
 	if err != nil {
 		logDb.Error(err)
@@ -188,7 +189,7 @@ func (b *boltStorage) ListValues() (map[uint64]interface{}, error) {
 }
 
 // DeleteValue remove a value from the AddressBook bucket by its id.
-func (b *boltStorage) DeleteValue(key uint64) error {
+func (b *BoltStorage) DeleteValue(key uint64) error {
 	return b.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket([]byte(dbAddrsBookBkt))
 		if bkt == nil {
@@ -205,7 +206,7 @@ func (b *boltStorage) DeleteValue(key uint64) error {
 }
 
 // UpdateValue update a element into the AddressBook bucket by its id.
-func (b *boltStorage) UpdateValue(key uint64, newVal interface{}) error {
+func (b *BoltStorage) UpdateValue(key uint64, newVal interface{}) error {
 	return b.Update(func(tx *bolt.Tx) error {
 		bkt := tx.Bucket([]byte(dbAddrsBookBkt))
 		if bkt == nil {
@@ -214,11 +215,11 @@ func (b *boltStorage) UpdateValue(key uint64, newVal interface{}) error {
 		}
 		element, ok := newVal.([]byte)
 		if !ok {
-			err := errValueNoMatch(element, []byte{})
+			err := errValueNoMatch(newVal, []byte{})
 			logDb.Error(err)
 			return err
 		}
-		return bkt.Put(dbutil.Itob(key), newVal.([]byte))
+		return bkt.Put(dbutil.Itob(key), element)
 	})
 }
 

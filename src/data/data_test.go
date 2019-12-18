@@ -5,7 +5,6 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/skycoin/skycoin/src/util/file"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
@@ -14,82 +13,6 @@ import (
 )
 
 const defaultPass = "Qwerty12345678"
-
-func TestContact_MarshalBinary(t *testing.T) {
-	type fields struct {
-		ID      uint64
-		Address []Address
-		Name    []byte
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		want    []byte
-		wantErr bool
-	}{
-		{name: "empty-Contact", fields: fields{}, want: []byte(`{"ID":0,"Address":null,"Name":null}`), wantErr: false},
-		{name: "not-empty-Contact", fields: fields{
-			ID:      1,
-			Address: []Address{{Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"), Coin: []byte("skycoin")}},
-			Name:    []byte("Foo"),
-		}, want: []byte(`{"ID":1,"Address":[{"Value":"SlVkUnVUaXFEMW1HY3czczU4dHdNZzNWUHBYcHpia2RSdko=",` +
-			`"Coin":"c2t5Y29pbg=="}],"Name":"Rm9v"}`), wantErr: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &Contact{
-				ID:      tt.fields.ID,
-				Address: tt.fields.Address,
-				Name:    tt.fields.Name,
-			}
-			got, err := c.MarshalBinary()
-			if (err != nil) != tt.wantErr {
-				t.Errorf("MarshalBinary() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MarshalBinary() got = %v, want %v", string(got), string(tt.want))
-			}
-		})
-	}
-}
-
-func TestContact_UnmarshalBinary(t *testing.T) {
-	type fields struct {
-		ID      uint64
-		Address []Address
-		Name    []byte
-	}
-	type args struct {
-		data []byte
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		wantErr bool
-	}{
-		{name: "empty", fields: fields{}, args: args{data: []byte{}}, wantErr: true},
-		{name: "not-empty", fields: fields{
-			ID:      1,
-			Address: []Address{{Value: []byte("JUdRuTiqD1mGcw3s58twMg3VPpXpzbkdRvJ"), Coin: []byte("skycoin")}},
-			Name:    []byte("Foo"),
-		}, args: args{data: []byte(`{"Address":[{"Value":null}]}`)}, wantErr: false},
-		{name: "EOF", fields: fields{ID: 2}, args: args{data: []byte(`{"ID":2,"Address":null,"Name":null}`)}, wantErr: false},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &Contact{
-				ID:      tt.fields.ID,
-				Address: tt.fields.Address,
-				Name:    tt.fields.Name,
-			}
-			if err := c.UnmarshalBinary(tt.args.data); (err != nil) != tt.wantErr {
-				t.Errorf("UnmarshalBinary() error = %v, wantErr %v", err, tt.wantErr)
-			}
-		})
-	}
-}
 
 func Test_addressBook_DeleteContact(t *testing.T) {
 	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
@@ -548,7 +471,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 				return
 			}
 			for e := range got {
-				assert.Contains(t, tt.want, got[e])
+				require.Contains(t, tt.want, got[e])
 			}
 
 		})
@@ -784,13 +707,13 @@ func TestDB_Init(t *testing.T) {
 
 func TestDB_Authenticate(t *testing.T) {
 	ab := InitAddrsBook(t)
-	assert.NoError(t, ab.Authenticate(defaultPass))
+	require.NoError(t, ab.Authenticate(defaultPass))
 	// address book error: crypto/bcrypt: hashedPassword is not the hash of the given password
-	assert.Error(t, ab.Authenticate(""))
+	require.Error(t, ab.Authenticate(""))
 
 	CloseTest(t, ab)
 	// error database not open
-	assert.Error(t, ab.Authenticate(defaultPass))
+	require.Error(t, ab.Authenticate(defaultPass))
 
 }
 
@@ -884,7 +807,7 @@ func Test_addrsBook_ChangeSecurity(t *testing.T) {
 			require.NoError(t, err)
 			for e := range listContacts {
 				listContacts[e].SetID(0)
-				assert.Contains(t, tt.ContactsList, listContacts[e])
+				require.Contains(t, tt.ContactsList, listContacts[e])
 			}
 		})
 	}

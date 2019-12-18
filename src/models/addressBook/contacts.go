@@ -53,31 +53,31 @@ type QContact struct {
 	_ AddrsBkAddressModel `property:"address"`
 }
 
-func (abm *AddrsBookModel) init() {
+func (addrBookModel *AddrsBookModel) init() {
 	logAddressBook.Info("Init addressBook model")
-	abm.SetRoles(map[int]*qtcore.QByteArray{
+	addrBookModel.SetRoles(map[int]*qtcore.QByteArray{
 		Name:    qtcore.NewQByteArray2("name", -1),
 		Address: qtcore.NewQByteArray2("address", -1),
 		ID:      qtcore.NewQByteArray2("id", -1),
 	})
-	qml.QQmlEngine_SetObjectOwnership(abm, qml.QQmlEngine__CppOwnership)
-	abm.ConnectRowCount(abm.rowCount)
-	abm.ConnectData(abm.data)
-	abm.ConnectColumnCount(abm.columnCount)
-	abm.ConnectRoleNames(abm.roleNames)
-	abm.ConnectNewContact(abm.newContact)
-	abm.ConnectGetSecType(abm.getSecType)
-	abm.ConnectAuthenticate(abm.authenticate)
-	abm.ConnectAddressIsValid(abm.addressIsValid)
-	abm.ConnectAddressExist(abm.addressExist)
-	abm.ConnectNameExist(abm.nameExist)
-	abm.ConnectLoadContacts(abm.loadContacts)
-	abm.ConnectInitAddrsBook(abm.initAddrsBook)
-	// abm.ConnectEditContact(abm.editContact)
-	// abm.ConnectRemoveContact(abm.removeContact)
-	abm.ConnectHasInit(abm.hasInit)
-	abm.ConnectChangeSecType(abm.changeSecType)
-	abm.ConnectAddAddress(abm.addAddress)
+	qml.QQmlEngine_SetObjectOwnership(addrBookModel, qml.QQmlEngine__CppOwnership)
+	addrBookModel.ConnectRowCount(addrBookModel.rowCount)
+	addrBookModel.ConnectData(addrBookModel.data)
+	addrBookModel.ConnectColumnCount(addrBookModel.columnCount)
+	addrBookModel.ConnectRoleNames(addrBookModel.roleNames)
+	addrBookModel.ConnectNewContact(addrBookModel.newContact)
+	addrBookModel.ConnectGetSecType(addrBookModel.getSecType)
+	addrBookModel.ConnectAuthenticate(addrBookModel.authenticate)
+	addrBookModel.ConnectAddressIsValid(addrBookModel.addressIsValid)
+	addrBookModel.ConnectAddressExist(addrBookModel.addressExist)
+	addrBookModel.ConnectNameExist(addrBookModel.nameExist)
+	addrBookModel.ConnectLoadContacts(addrBookModel.loadContacts)
+	addrBookModel.ConnectInitAddrsBook(addrBookModel.initAddrsBook)
+	// addrBookModel.ConnectEditContact(addrBookModel.editContact)
+	// addrBookModel.ConnectRemoveContact(addrBookModel.removeContact)
+	addrBookModel.ConnectHasInit(addrBookModel.hasInit)
+	addrBookModel.ConnectChangeSecType(addrBookModel.changeSecType)
+	addrBookModel.ConnectAddAddress(addrBookModel.addAddress)
 	if addrsBook == nil {
 		db, err := data.GetBoltStorage(getConfigFileDir())
 		if err != nil {
@@ -88,19 +88,19 @@ func (abm *AddrsBookModel) init() {
 
 }
 
-func (abm *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
-	return len(abm.Contacts())
+func (addrBookModel *AddrsBookModel) rowCount(*qtcore.QModelIndex) int {
+	return len(addrBookModel.Contacts())
 }
 
-func (abm *AddrsBookModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
+func (addrBookModel *AddrsBookModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
 	logAddressBook.Info("Loading data for index")
 	if !index.IsValid() {
 		return qtcore.NewQVariant()
 	}
-	if index.Row() >= len(abm.Contacts()) {
+	if index.Row() >= len(addrBookModel.Contacts()) {
 		return qtcore.NewQVariant()
 	}
-	contact := abm.Contacts()[index.Row()]
+	contact := addrBookModel.Contacts()[index.Row()]
 
 	switch role {
 	case Name:
@@ -120,67 +120,67 @@ func (abm *AddrsBookModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVa
 	}
 }
 
-func (abm *AddrsBookModel) roleNames() map[int]*qtcore.QByteArray {
-	return abm.Roles()
+func (addrBookModel *AddrsBookModel) roleNames() map[int]*qtcore.QByteArray {
+	return addrBookModel.Roles()
 }
 
-func (abm *AddrsBookModel) columnCount(parent *qtcore.QModelIndex) int {
+func (addrBookModel *AddrsBookModel) columnCount(parent *qtcore.QModelIndex) int {
 	return 1
 }
 
-func (abm *AddrsBookModel) removeContact(row int, id uint64) {
+func (addrBookModel *AddrsBookModel) removeContact(row int, id uint64) {
 	logAddressBook.Infof("Remove contact with id %d", id)
-	if row < 0 || row >= abm.Count() {
+	if row < 0 || row >= addrBookModel.Count() {
 		return
 	}
 	if err := addrsBook.DeleteContact(id); err != nil {
 		logAddressBook.Error(err)
 		return
 	}
-	abm.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
-	abm.SetContacts(append(abm.Contacts()[:row], abm.Contacts()[row+1:]...))
-	abm.EndRemoveRows()
-	abm.SetCount(abm.Count() - 1)
+	addrBookModel.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
+	addrBookModel.SetContacts(append(addrBookModel.Contacts()[:row], addrBookModel.Contacts()[row+1:]...))
+	addrBookModel.EndRemoveRows()
+	addrBookModel.SetCount(addrBookModel.Count() - 1)
 
 }
 
-func (abm *AddrsBookModel) addContact(c *QContact) {
+func (addrBookModel *AddrsBookModel) addContact(c *QContact) {
 	logAddressBook.Info("Add Contact")
 	var row = 0
-	for row < len(abm.Contacts()) && c.Name() > abm.Contacts()[row].Name() {
+	for row < len(addrBookModel.Contacts()) && c.Name() > addrBookModel.Contacts()[row].Name() {
 		row++
 	}
-	abm.BeginInsertColumns(qtcore.NewQModelIndex(), row, row)
+	addrBookModel.BeginInsertColumns(qtcore.NewQModelIndex(), row, row)
 	qml.QQmlEngine_SetObjectOwnership(c, qml.QQmlEngine__CppOwnership)
-	abm.SetContacts(append(append(abm.Contacts()[:row], c), abm.Contacts()[row:]...))
-	abm.EndInsertRows()
-	abm.SetCount(abm.Count() + 1)
+	addrBookModel.SetContacts(append(append(addrBookModel.Contacts()[:row], c), addrBookModel.Contacts()[row:]...))
+	addrBookModel.EndInsertRows()
+	addrBookModel.SetCount(addrBookModel.Count() + 1)
 }
 
-func (abm *AddrsBookModel) editContact(row int, id uint64, name string) {
+func (addrBookModel *AddrsBookModel) editContact(row int, id uint64, name string) {
 	logAddressBook.Info("Edit contact")
-	if row < 0 || row >= abm.Count() {
+	if row < 0 || row >= addrBookModel.Count() {
 		return
 	}
-	qc := NewQContact(nil)
-	qc.SetName(name)
-	qa := fromAddressToQAddress(addresses)
-	am := NewAddrsBkAddressModel(nil)
-	am.SetAddress(qa)
-	qc.SetAddress(am)
-	qc.SetId(id)
-	var c = data.Contact{}
-	c.SetAddresses(addresses)
-	c.SetName(name)
-	if err := addrsBook.UpdateContact(id, &c); err != nil {
+	qContact := NewQContact(nil)
+	qContact.SetName(name)
+	qAddresses := fromAddressToQAddress(addresses)
+	addrsBkAddressModel := NewAddrsBkAddressModel(nil)
+	addrsBkAddressModel.SetAddress(qAddresses)
+	qContact.SetAddress(addrsBkAddressModel)
+	qContact.SetId(id)
+	var contact = data.Contact{}
+	contact.SetAddresses(addresses)
+	contact.SetName(name)
+	if err := addrsBook.UpdateContact(id, &contact); err != nil {
 		logAddressBook.Error(err)
 		return
 	}
-	abm.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
-	abm.SetContacts(append(abm.Contacts()[:row], abm.Contacts()[row+1:]...))
-	abm.EndRemoveRows()
-	abm.SetCount(abm.Count() - 1)
-	abm.addContact(qc)
+	addrBookModel.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
+	addrBookModel.SetContacts(append(addrBookModel.Contacts()[:row], addrBookModel.Contacts()[row+1:]...))
+	addrBookModel.EndRemoveRows()
+	addrBookModel.SetCount(addrBookModel.Count() - 1)
+	addrBookModel.addContact(qContact)
 	addresses = []core.StringAddress{}
 }
 
@@ -190,29 +190,25 @@ func getConfigFileDir() string {
 	return fileDir
 }
 
-func (abm *AddrsBookModel) loadContacts() {
-	logAddressBook.Info("loading contacts")
-	abm.SetContacts([]*QContact{})
-	contacts, err := addrsBook.ListContact()
+func (addrBookModel *AddrsBookModel) loadContacts() {
+	logAddressBook.Info("loading contactsList")
+	addrBookModel.SetContacts([]*QContact{})
+	contactsList, err := addrsBook.ListContact()
 	if err != nil {
 		logAddressBook.Error(err)
 	}
-	qContacts := fromContactToQContact(contacts)
+	qContactsList := fromContactToQContact(contactsList)
 
-	for _, c := range qContacts {
-		abm.addContact(c)
+	for _, qContact := range qContactsList {
+		addrBookModel.addContact(qContact)
 	}
 }
 
-func (abm *AddrsBookModel) getSecType() int {
-	secType, err := addrsBook.GetSecType()
-	if err != nil {
-		logAddressBook.Error(err)
-	}
-	return secType
+func (addrBookModel *AddrsBookModel) getSecType() int {
+	return addrsBook.GetSecType()
 }
 
-func (abm *AddrsBookModel) authenticate(password string) bool {
+func (addrBookModel *AddrsBookModel) authenticate(password string) bool {
 
 	if err := addrsBook.Authenticate(password); err != nil {
 		logAddressBook.Error(err)
@@ -221,23 +217,23 @@ func (abm *AddrsBookModel) authenticate(password string) bool {
 	return true
 }
 
-func (abm *AddrsBookModel) newContact(name string) {
-	qc := NewQContact(nil)
-	qc.SetName(name)
-	qa := fromAddressToQAddress(addresses)
-	am := NewAddrsBkAddressModel(nil)
-	am.SetAddress(qa)
-	qc.SetAddress(am)
+func (addrBookModel *AddrsBookModel) newContact(name string) {
+	qContact := NewQContact(nil)
+	qContact.SetName(name)
+	qAddresses := fromAddressToQAddress(addresses)
+	addrsBkAddressModel := NewAddrsBkAddressModel(nil)
+	addrsBkAddressModel.SetAddress(qAddresses)
+	qContact.SetAddress(addrsBkAddressModel)
 	var contact data.Contact
 	contact.SetName(name)
 	contact.SetAddresses(addresses)
 	if id, err := addrsBook.InsertContact(&contact); err != nil {
 		logAddressBook.Error(err)
 	} else {
-		qc.SetId(id)
+		qContact.SetId(id)
 	}
 	addresses = []core.StringAddress{}
-	abm.addContact(qc)
+	addrBookModel.addContact(qContact)
 }
 
 func (*AddrsBookModel) close() {
@@ -249,7 +245,7 @@ func (*AddrsBookModel) close() {
 	}
 }
 
-func (abm *AddrsBookModel) initAddrsBook(secType int, password string) {
+func (addrBookModel *AddrsBookModel) initAddrsBook(secType int, password string) {
 	var err error
 	if addrsBook.HasInit() {
 		return
@@ -264,19 +260,19 @@ func (*AddrsBookModel) hasInit() bool {
 	return addrsBook.HasInit()
 }
 
-func fromContactToQContact(contacts []core.Contact) []*QContact {
-	var qContacts = make([]*QContact, 0)
-	for _, c := range contacts {
-		qc := NewQContact(nil)
-		qc.SetName(c.GetName())
-		logAddressBook.Info(c.GetID())
-		qc.SetId(c.GetID())
+func fromContactToQContact(contactsList []core.Contact) []*QContact {
+	var qContactsList = make([]*QContact, 0)
+	for _, contact := range contactsList {
+		qContact := NewQContact(nil)
+		qContact.SetName(contact.GetName())
+		logAddressBook.Info(contact.GetID())
+		qContact.SetId(contact.GetID())
 		qAddressModel := NewAddrsBkAddressModel(nil)
-		qAddressModel.SetAddress(fromAddressToQAddress(c.GetAddresses()))
-		qc.SetAddress(qAddressModel)
-		qContacts = append(qContacts, qc)
+		qAddressModel.SetAddress(fromAddressToQAddress(contact.GetAddresses()))
+		qContact.SetAddress(qAddressModel)
+		qContactsList = append(qContactsList, qContact)
 	}
-	return qContacts
+	return qContactsList
 }
 
 func (*AddrsBookModel) addAddress(value, coinType string) {
@@ -297,20 +293,20 @@ func (*AddrsBookModel) addressIsValid(value string) bool {
 	return true
 }
 
-func (abm *AddrsBookModel) nameExist(row int, name string) bool {
-	for e := range abm.Contacts() {
-		if row != e && abm.Contacts()[e].Name() == name {
+func (addrBookModel *AddrsBookModel) nameExist(row int, name string) bool {
+	for e := range addrBookModel.Contacts() {
+		if row != e && addrBookModel.Contacts()[e].Name() == name {
 			return true
 		}
 	}
 	return false
 }
 
-func (abm *AddrsBookModel) addressExist(row int, address string, coinType string) bool {
-	for e := range abm.Contacts() {
-		for f := range abm.Contacts()[e].Address().Address() {
-			if row != e && abm.Contacts()[e].Address().Address()[f].Value() == address &&
-				abm.Contacts()[e].Address().Address()[f].CoinType() == coinType {
+func (addrBookModel *AddrsBookModel) addressExist(row int, address string, coinType string) bool {
+	for e := range addrBookModel.Contacts() {
+		for i := range addrBookModel.Contacts()[e].Address().Address() {
+			if row != e && addrBookModel.Contacts()[e].Address().Address()[i].Value() == address &&
+				addrBookModel.Contacts()[e].Address().Address()[i].CoinType() == coinType {
 				return true
 			}
 		}
@@ -318,7 +314,7 @@ func (abm *AddrsBookModel) addressExist(row int, address string, coinType string
 	return false
 }
 
-func (abm *AddrsBookModel) changeSecType(secType int, oldPassword string, newPassword string) bool {
+func (addrBookModel *AddrsBookModel) changeSecType(secType int, oldPassword string, newPassword string) bool {
 	if err := addrsBook.ChangeSecurity(secType, oldPassword, newPassword); err != nil {
 		logAddressBook.Error(err)
 		return false

@@ -28,38 +28,39 @@ type AddrsBkAddressModel struct {
 	_ map[int]*qtcore.QByteArray `property:"roles"`
 }
 
-func (m *AddrsBkAddressModel) init() {
-	m.SetRoles(map[int]*qtcore.QByteArray{
+func (addrsBookAddressModel *AddrsBkAddressModel) init() {
+	addrsBookAddressModel.SetRoles(map[int]*qtcore.QByteArray{
 		Value:    qtcore.NewQByteArray2("value", -1),
 		CoinType: qtcore.NewQByteArray2("coinType", -1),
 	})
-	qml.QQmlEngine_SetObjectOwnership(m, qml.QQmlEngine__CppOwnership)
-	m.ConnectRowCount(m.rowCount)
-	m.ConnectData(m.data)
-	// m.ConnectColumnCount(m.columnCount)
-	m.ConnectRoleNames(m.roleNames)
+	qml.QQmlEngine_SetObjectOwnership(addrsBookAddressModel, qml.QQmlEngine__CppOwnership)
+	addrsBookAddressModel.ConnectRowCount(addrsBookAddressModel.rowCount)
+	addrsBookAddressModel.ConnectData(addrsBookAddressModel.data)
+	// addrsBookAddressModel.ConnectColumnCount(addrsBookAddressModel.columnCount)
+	addrsBookAddressModel.ConnectRoleNames(addrsBookAddressModel.roleNames)
 
 }
 
-func (m *AddrsBkAddressModel) rowCount(*qtcore.QModelIndex) int {
-	return len(m.Address())
+func (addrsBookAddressModel *AddrsBkAddressModel) rowCount(*qtcore.QModelIndex) int {
+	return len(addrsBookAddressModel.Address())
 }
 
-func (m *AddrsBkAddressModel) roleNames() map[int]*qtcore.QByteArray {
-	return m.Roles()
+func (addrsBookAddressModel *AddrsBkAddressModel) roleNames() map[int]*qtcore.QByteArray {
+	return addrsBookAddressModel.Roles()
 }
 
-func (m *AddrsBkAddressModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
+func (addrsBookAddressModel *AddrsBkAddressModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
+
 	logAddressBook.Info("Loading address data")
 	if !index.IsValid() {
 		return qtcore.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Address()) {
+	if index.Row() >= len(addrsBookAddressModel.Address()) {
 		return qtcore.NewQVariant()
 	}
 
-	address := m.Address()[index.Row()]
+	address := addrsBookAddressModel.Address()[index.Row()]
 
 	switch role {
 	case Value:
@@ -78,15 +79,15 @@ func (m *AddrsBkAddressModel) data(index *qtcore.QModelIndex, role int) *qtcore.
 }
 
 func fromAddressToQAddress(addresses []core.StringAddress) []*QAddress {
-	var qAddresses = make([]*QAddress, 0)
+	var qAddressesList = make([]*QAddress, 0)
 	sort.Slice(addresses, func(i, j int) bool {
 		return bytes.Compare(addresses[i].GetCoinType(), addresses[j].GetCoinType()) == -1
 	})
 	for _, addrs := range addresses {
-		qa := NewQAddress(nil)
-		qa.SetCoinType(string(addrs.GetCoinType()))
-		qa.SetValue(string(addrs.GetValue()))
-		qAddresses = append(qAddresses, qa)
+		qAddress := NewQAddress(nil)
+		qAddress.SetCoinType(string(addrs.GetCoinType()))
+		qAddress.SetValue(string(addrs.GetValue()))
+		qAddressesList = append(qAddressesList, qAddress)
 	}
-	return qAddresses
+	return qAddressesList
 }
