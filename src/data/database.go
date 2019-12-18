@@ -2,7 +2,6 @@ package data
 
 import (
 	"errors"
-	"fmt"
 	"github.com/boltdb/bolt"
 	"github.com/skycoin/skycoin/src/visor/dbutil"
 	"time"
@@ -79,7 +78,6 @@ func (b *BoltStorage) InsertConfig(options map[string]string) error {
 
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != bolt.ErrTxClosed {
-			// Start a writeable transaction.
 			logDb.Fatal(err)
 		}
 	}()
@@ -106,17 +104,19 @@ func (b *BoltStorage) InsertValue(value interface{}) (uint64, error) {
 		logDb.Error(err)
 		return 0, err
 	}
-	element, ok := value.([]byte)
-	if !ok {
-		err := errValueNoMatch(element, []byte{})
-		logDb.Error(err)
-		return 0, err
-	}
+
 	defer func() {
 		if err := tx.Rollback(); err != nil && err != bolt.ErrTxClosed {
 			logDb.Fatal(err)
 		}
 	}()
+
+	element, ok := value.([]byte)
+	if !ok {
+		logDb.Error(err)
+		err := errValueNoMatch(value, []byte{})
+		return 0, err
+	}
 
 	bkt, err := tx.CreateBucketIfNotExists([]byte(dbAddrsBookBkt))
 	if err != nil {
@@ -219,10 +219,7 @@ func (b *BoltStorage) UpdateValue(key uint64, newVal interface{}) error {
 			logDb.Error(err)
 			return err
 		}
+
 		return bkt.Put(dbutil.Itob(key), element)
 	})
-}
-
-func errValueNoMatch(value, valType interface{}) error {
-	return fmt.Errorf("value %value type %T no match with type %T", value, value, valType)
 }

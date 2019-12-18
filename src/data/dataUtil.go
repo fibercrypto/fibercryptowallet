@@ -89,3 +89,7 @@ func decryptAESGCM(cipherData, key []byte) ([]byte, error) {
 
 	return aesGCM.Open(nil, nonce, cipherText, nil)
 }
+
+func errValueNoMatch(value, valType interface{}) error {
+	return fmt.Errorf("value %v type %T no match with type %T", value, value, valType)
+}

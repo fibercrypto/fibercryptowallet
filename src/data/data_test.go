@@ -16,6 +16,7 @@ const defaultPass = "Qwerty12345678"
 
 func Test_addressBook_DeleteContact(t *testing.T) {
 	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
+
 	type args struct {
 		id uint64
 	}
@@ -76,7 +77,7 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 	}
 
 	ab := InitAddrsBook(t)
-	defer CloseTest(t, ab)
+	defer CloseTest(t, ab.GetStorage())
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, _ = ab.InsertContact(&Contact{
@@ -92,6 +93,7 @@ func Test_addressBook_DeleteContact(t *testing.T) {
 
 func Test_addressBook_GetContact(t *testing.T) {
 	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
+
 	type fields struct {
 		Address []Address
 		Name    []byte
@@ -106,13 +108,13 @@ func Test_addressBook_GetContact(t *testing.T) {
 		want    core.Contact
 		wantErr bool
 	}{
-		{name: "empty",
-			fields: fields{},
-			args: args{
-				id: 1,
-			},
-			want:    nil,
-			wantErr: true},
+		// {name: "empty",
+		// 	args: args{},
+		// 	args: args{
+		// 		id: 1,
+		// 	},
+		// 	want:    nil,
+		// 	wantErr: true},
 		{name: "one-address",
 			fields: fields{
 				Address: []Address{{
@@ -158,31 +160,27 @@ func Test_addressBook_GetContact(t *testing.T) {
 			},
 			wantErr: false,
 		},
-		{name: "bad-ID",
-			fields: fields{
-				Name: []byte("Contact3"),
-			},
-			args: args{
-				id: 6,
-			},
-			want:    nil,
-			wantErr: true,
-		},
+		// {name: "bad-ID",
+		// 	args: args{
+		// 		Name: []byte("Contact3"),
+		// 	},
+		// 	args: args{
+		// 		id: 6,
+		// 	},
+		// 	want:    nil,
+		// 	wantErr: true,
+		// },
 	}
 
 	ab := InitAddrsBook(t)
-	defer CloseTest(t, ab)
+	defer CloseTest(t, ab.GetStorage())
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 
-			if _, err := ab.InsertContact(&Contact{
+			_, _ = ab.InsertContact(&Contact{
 				Address: tt.fields.Address,
-				Name:    tt.fields.Name,
-			}); (err != nil) == tt.wantErr {
-				return
-			}
-
+				Name:    tt.fields.Name})
 			got, err := ab.GetContact(tt.args.id)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GetContact() error = %v, wantErr %v", err, tt.wantErr)
@@ -198,7 +196,7 @@ func Test_addressBook_GetContact(t *testing.T) {
 func Test_addressBook_InsertContact(t *testing.T) {
 	local.LoadAltcoinManager().RegisterPlugin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
 	type args struct {
-		c core.Contact
+		contact core.Contact
 	}
 	tests := []struct {
 		name    string
@@ -207,12 +205,12 @@ func Test_addressBook_InsertContact(t *testing.T) {
 	}{
 		{name: "empty",
 			args: args{
-				c: &Contact{},
+				contact: &Contact{},
 			},
 			wantErr: true,
 		}, {name: "one-address",
 			args: args{
-				c: &Contact{
+				contact: &Contact{
 					Address: []Address{{
 						Value: []byte("2DpeofcsamDfanrRz34qjYvskRzKqzNKMcj"),
 						Coin:  []byte("SKY"),
@@ -223,7 +221,7 @@ func Test_addressBook_InsertContact(t *testing.T) {
 			wantErr: false,
 		}, {name: "two-address",
 			args: args{
-				c: &Contact{
+				contact: &Contact{
 					Address: []Address{{
 						Value: []byte("25MP2EHPZyfEqUnXfapgUj1TQfZVXdn5RrZ"),
 						Coin:  []byte("SKY"),
@@ -237,7 +235,7 @@ func Test_addressBook_InsertContact(t *testing.T) {
 			wantErr: false},
 		// }, {name: "repeat-address-diff-type",
 		// 	args: args{
-		// 		c: &Contact{
+		// 		contact: &Contact{
 		// 			Address: []Address{{
 		// 				Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
 		// 				Coin:  []byte("SKY"),
@@ -248,7 +246,7 @@ func Test_addressBook_InsertContact(t *testing.T) {
 		// 	wantErr: false},
 		{name: "repeat-address-same-type",
 			args: args{
-				c: &Contact{
+				contact: &Contact{
 					Address: []Address{{
 						Value: []byte("2TFC2Ktc6Y3UAUqo7WGA55X6mqoKZRaFp9s"),
 						Coin:  []byte("SKY"),
@@ -260,7 +258,7 @@ func Test_addressBook_InsertContact(t *testing.T) {
 		},
 		{name: "repeat-name",
 			args: args{
-				c: &Contact{
+				contact: &Contact{
 					Address: []Address{{
 						Value: []byte("2LRUs2MFEhCpDfSHaNjCtzjz8TJjuTK98s5"),
 						Coin:  []byte("SKY"),
@@ -272,10 +270,10 @@ func Test_addressBook_InsertContact(t *testing.T) {
 		},
 	}
 	ab := InitAddrsBook(t)
-	defer CloseTest(t, ab)
+	defer CloseTest(t, ab.GetStorage())
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if _, err := ab.InsertContact(tt.args.c); (err != nil) != tt.wantErr {
+			if _, err := ab.InsertContact(tt.args.contact); (err != nil) != tt.wantErr {
 				t.Errorf("InsertContact() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -457,7 +455,7 @@ func Test_addressBook_ListContact(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ab := InitAddrsBook(t)
-			defer CloseTest(t, ab)
+			defer CloseTest(t, ab.GetStorage())
 			for _, contact := range tt.fields.Contacts {
 
 				if _, err := ab.InsertContact(&contact); err != nil {
@@ -631,7 +629,7 @@ func TestDB_UpdateContact(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ab := InitAddrsBook(t)
-			defer CloseTest(t, ab)
+			defer CloseTest(t, ab.GetStorage())
 			for e := range tt.insertArgs.contacts {
 				_, err := ab.InsertContact(tt.insertArgs.contacts[e])
 				if err != nil && tt.wantErr {
@@ -654,7 +652,7 @@ func TestDB_Init(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		// fields  fields
+		// args  args
 		args    args
 		wantErr bool
 	}{
@@ -696,7 +694,7 @@ func TestDB_Init(t *testing.T) {
 				}
 			}
 
-			defer CloseTest(t, addressBook)
+			defer CloseTest(t, addressBook.GetStorage())
 
 			if err := addressBook.Init(tt.args.secType, tt.args.password); (err != nil) != tt.wantErr {
 				t.Errorf("Init() error = %v, wantErr %v", err, tt.wantErr)
@@ -711,7 +709,7 @@ func TestDB_Authenticate(t *testing.T) {
 	// address book error: crypto/bcrypt: hashedPassword is not the hash of the given password
 	require.Error(t, ab.Authenticate(""))
 
-	CloseTest(t, ab)
+	CloseTest(t, ab.GetStorage())
 	// error database not open
 	require.Error(t, ab.Authenticate(defaultPass))
 
@@ -787,7 +785,7 @@ func Test_addrsBook_ChangeSecurity(t *testing.T) {
 			require.NoError(t, err)
 			addrsBook := NewAddressBook(db)
 
-			defer CloseTest(t, addrsBook)
+			defer CloseTest(t, addrsBook.GetStorage())
 
 			err = addrsBook.Init(tt.firstSecTypeParam.secType, tt.firstSecTypeParam.password)
 			require.NoError(t, err)
@@ -852,8 +850,8 @@ func InitAddrsBook(t *testing.T) core.AddressBook {
 	return AddrsBook
 }
 
-func CloseTest(t *testing.T, ab core.AddressBook) {
-	path := ab.GetStorage().Path()
+func CloseTest(t *testing.T, ab core.Storage) {
+	path := ab.Path()
 	if err := ab.Close(); err != nil {
 		t.Errorf("Error closing db: %s", err)
 	}

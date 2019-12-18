@@ -203,8 +203,8 @@ func (addrsBook *addrsBook) GetContact(id uint64) (core.Contact, error) {
 		logDb.Error(errValueNoMatch(encryptData.([]byte), []byte{}))
 		return nil, errValueNoMatch(encryptData.([]byte), []byte{})
 	}
-	var contact Contact
 
+	var contact Contact
 	if err := contact.Decrypt(addrsBook.GetSecType(), encryptData.([]byte), addrsBook.key); err != nil {
 		return nil, err
 	}
