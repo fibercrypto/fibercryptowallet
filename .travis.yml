@@ -53,8 +53,7 @@ matrix:
         - travis_wait make install-deps-Windows
         - make install-linters
         - make install-coveralls
-        - travis_wait curl -vLO http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
-        - ./qt-unified-windows-x86-online.exe --script tools/qt-installer-windows.qs
+        - ./.travis/install-qt-win.sh
       script:
         - make build
         - make test
