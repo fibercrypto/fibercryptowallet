@@ -110,12 +110,12 @@ Item {
 
                 onWalletCreationRequested: {
                     stackView.replace(componentGeneralSwipeView)
-                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType() ,0)
+                    walletModel.addWallet(walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType() ,0))
                 }
 
                 onWalletLoadingRequested:{
                     stackView.replace(componentGeneralSwipeView)
-                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType(), 10)
+                    walletModel.addWallet(walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType(), 11))
                 }
             }
         }
