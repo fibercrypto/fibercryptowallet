@@ -5,7 +5,7 @@
 .PHONY: prepare-release gen-mocks
 .PHONY: run help
 .PHONY: test test-core test-sky test-sky-launch-html-cover test-cover lint
-.PHONY: clean-test clean-build clean clean-Windows tw
+.PHONY: clean-test clean-build clean clean-Windows
 
 # Application info (for dumping)
 ORG_DOMAIN		:= simelo.tech.org
@@ -195,6 +195,11 @@ $(BINPATH_Windows_NT): $(SRCFILES)
 	make build-res-Windows_NT
 	make build-qt
 
+build-Windows-travis: $(SRCFILES)
+	make build-icon
+	make build-res-Windows_NT
+	make build-qt
+
 build-res-Darwin: $(PLIST) $(APP_ICON_PATH)/appIcon.icns
 	@echo "Building on Darwin"
 	mkdir -p "$(DARWIN_RES)/Content/Resources"
@@ -272,9 +277,6 @@ run-docker: install-docker-deps ## Run CMD inside Docker container
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
 	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.21.0
-
-tw: ## Install linters
-	@echo $(UNAME_S)
 
 install-coveralls: ## Install coveralls
 	go get golang.org/x/tools/cmd/cover
