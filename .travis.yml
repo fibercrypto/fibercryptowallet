@@ -48,11 +48,11 @@ matrix:
     - stage: Windows
       os: windows
       install:
-        - choco install make -y
-        - choco install unzip -y
-        - travis_wait 50 make install-deps-Windows
-        - make install-linters
-        - make install-coveralls
+       #        - choco install make -y
+       #        - choco install unzip -y
+       #        - travis_wait 50 make install-deps-Windows
+       #        - make install-linters
+       #        - make install-coveralls
         - make tw
       script:
         - make build
