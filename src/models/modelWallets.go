@@ -127,6 +127,10 @@ func (m *ModelWallets) loadModel() {
 			mo.SetAddress(a.String())
 			qOutputs := make([]*QOutput, 0)
 
+			if outputs == nil {
+				continue
+			}
+
 			for outputs.Next() {
 				to := outputs.Value()
 				qo := NewQOutput(nil)
