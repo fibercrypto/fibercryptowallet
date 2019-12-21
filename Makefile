@@ -5,7 +5,7 @@
 .PHONY: prepare-release gen-mocks
 .PHONY: run help
 .PHONY: test test-core test-sky test-sky-launch-html-cover test-cover lint
-.PHONY: clean-test clean-build clean clean-Windows
+.PHONY: clean-test clean-build clean clean-Windows tw
 
 # Application info (for dumping)
 ORG_DOMAIN		:= simelo.tech.org
@@ -272,6 +272,9 @@ run-docker: install-docker-deps ## Run CMD inside Docker container
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
 	cat ./.travis/install-golangci-lint.sh | sh -s -- -b $(GOPATH)/bin v1.21.0
+
+tw: ## Install linters
+	@echo $(UNAME_S)
 
 install-coveralls: ## Install coveralls
 	go get golang.org/x/tools/cmd/cover

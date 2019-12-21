@@ -53,6 +53,7 @@ matrix:
         - travis_wait 50 make install-deps-Windows
         - make install-linters
         - make install-coveralls
+        - make tw
       script:
         - make build
         - make test
