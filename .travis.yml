@@ -47,9 +47,12 @@ matrix:
         - make run-docker CMD='make install-coveralls ; make test-cover-travis'
     - stage: Windows
       os: windows
+      env:
+        - QT5_BASE_DIR: C:/Qt/5.12.3/msvc2017
       install:
         - choco install make -y
         - choco install unzip -y
+        - .travis/install-qt-win.sh
         - travis_wait 50 make install-deps-Windows
         - make install-linters
         - make install-coveralls

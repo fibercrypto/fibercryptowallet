@@ -1,6 +1,4 @@
-wget "http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe" -O qt.exe
-./qt.exe --verbose --script util/qt-headless.qs					
-export MWDIR="/c/Users/travis/Qt/Tools/mingw730_64"
-export QTDIR="/c/Users/travis/Qt/5.12.3/mingw73_64"
-export PATH="$MWDIR/bin:$QTDIR/bin:$PATH"
-echo "QT already installed"
+curl -vLo ~/qt-unified-windows-x86-online.exe http://download.qt.io/official_releases/online_installers/qt-unified-windows-x86-online.exe
+if ! ~/qt-unified-windows-x86-online.exe --verbose --script .travis/qt-installer-windows.qs > ~/qt-installer-output.txt; then
+  cat ~/qt-installer-output.txt; exit 1
+fi
