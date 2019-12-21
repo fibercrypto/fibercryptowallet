@@ -49,13 +49,12 @@ matrix:
       os: windows
       install:
         - choco install make -y
-       #        - choco install unzip -y
-       #        - travis_wait 50 make install-deps-Windows
-       #        - make install-linters
-       #        - make install-coveralls
-        - make tw
+        - choco install unzip -y
+        - travis_wait 50 make install-deps-Windows
+        - make install-linters
+        - make install-coveralls
       script:
-        - make build
+        - make build-Windows-travis 
         - make test
         - make build-icon
         - make lint
