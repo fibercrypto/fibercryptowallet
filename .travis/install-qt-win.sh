@@ -14,7 +14,7 @@ echo "Installing..."
 # periodically print some progress. On error, show the full log and abort.
 ~/qt-unified-windows-x86-online.exe --verbose --script .travis/qt-installer-windows.qs |
     tee ~/qt-installer-output.txt |
-    tools/report-progress.sh ||
+    .travis/report-progress.sh ||
     (cat ~/qt-installer-output.txt; exit 1)
 
 printf 'Installation size: '
