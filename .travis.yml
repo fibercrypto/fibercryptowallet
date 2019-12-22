@@ -54,13 +54,13 @@ matrix:
       install:
         - choco install make -y
         - choco install unzip -y
-        - df -h
-        - .travis/install-qt-win.sh
-        - df -h
-        - ls C:/Qt
-        - ls C:/Qt/5.13.0
-        - ls C:/Qt/5.13.0/mingw73_64
-        - ls C:/Qt/5.13.0/mingw73_64/bin
+        #- df -h
+        #- .travis/install-qt-win.sh
+        #- df -h
+        #- ls C:/Qt
+        #- ls C:/Qt/5.13.0
+        #- ls C:/Qt/5.13.0/mingw73_64
+        #- ls C:/Qt/5.13.0/mingw73_64/bin
         - travis_wait 50 make install-deps-Windows
         - df -h
         - make install-linters
