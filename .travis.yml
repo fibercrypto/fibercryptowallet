@@ -51,18 +51,80 @@ matrix:
         - QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
         - QT_DIR: C:/Qt
         - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
+
+      before-install:
+        - >-
+            case "$TRAVIS_OS_NAME" in
+            "osx")
+                export GNU_MAKE=gmake;
+                export COVERITY_SCAN_BRANCH_PATTERN=disable_coverity_scan;
+                ;;
+            "linux")
+                export GNU_MAKE=make;
+                export AR=gcc-ar-9;
+                export RANLIB=gcc-ranlib-9;
+                if [[ "$TRAVIS_PULL_REQUEST" == "false" &&
+                      ! -z "$CODE_INSPECTOR_ACCESS_KEY" ]];
+                then
+                    # http://doc.code-inspector.com/ci-support.html
+                    sudo apt-get install python3-pip python3-setuptools python3-wheel;
+                    pip3 install code-inspector;
+                fi;
+                # Workaround for https://github.com/travis-ci/travis-ci/issues/3668
+                mkdir -p latest-gcc-symlinks;
+                ln -s /usr/bin/g++-9 latest-gcc-symlinks/g++;
+                ln -s /usr/bin/gcc-9 latest-gcc-symlinks/gcc;
+                export PATH=$PWD/latest-gcc-symlinks:$PATH;
+                ;;
+            "windows")
+                [[ ! -f C:/tools/msys64/msys2_shell.cmd ]] && rm -rf C:/tools/msys64;
+                choco uninstall -y mingw;
+                choco upgrade -y msys2 bazel;
+                export msys2='cmd //C RefreshEnv.cmd ';
+                export msys2+='& set MSYS=winsymlinks:nativestrict ';
+                export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start';
+                export shell="$msys2 -mingw64 -full-path -here -c \$\* --";
+                export msys2+=" -msys2 -c \$\* --";
+                $msys2 pacman --sync --noconfirm --needed \
+                        autoconf \
+                        automake \
+                        mingw-w64-x86_64-libtool \
+                        mingw-w64-x86_64-toolchain \
+                        perl \
+                        unzip;
+                taskkill //IM gpg-agent.exe //F;
+                export CPPFLAGS=-D__USE_MINGW_ANSI_STDIO=1;
+                export PATH=/C/tools/msys64/mingw64/bin:$PATH;
+                export GNU_MAKE=mingw32-make;
+                export MAKE=mingw32-make;
+                export AR=gcc-ar;
+                export RANLIB=gcc-ranlib;
+                export COVERITY_SCAN_BRANCH_PATTERN=disable_coverity_scan;
+                ;;
+            esac
+        - export BAZEL=bazel
+        - export GIT=git
+        - g++ --version
+        - $GNU_MAKE --version
+        - $GIT --version
+        
+    
+
       install:
         - choco install make -y
         - choco install unzip -y
-        - df -h
-        - .travis/install-qt-win.sh
-        - df -h
-        - ls C:/Qt
-        - ls C:/Qt/5.13.0
-        - ls C:/Qt/5.13.0/mingw73_64
-        - ls C:/Qt/5.13.0/mingw73_64/bin
-        - travis_wait 50 make install-deps-Windows
-        - df -h
+        
+#        - travis_wait 50 make install-deps-Windows
+        - $shell export QT_MSYS2_ARCH=amd64
+        - $shell pacman -Syyu
+        - $shell pacman -S mingw-w64-x86_64-qt-creator mingw-w64-x86_64-qt5-static
+        - $shell pacman -Scc
+        - $shell export QT_MSYS2_STATIC=true
+        - go get -u -v github.com/therecipe/qt/cmd/...
+        - $shell qtsetup 
+        - go get -t -d -v ./...
+        - wget -O magick.zip https://sourceforge.net/projects/imagemagick/files/im7-exes/ImageMagick-7.0.7-25-portable-Q16-x64.zip
+        - unzip magick.zip convert.exe
         - make install-linters
         - make install-coveralls
       script:
