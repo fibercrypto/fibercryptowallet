@@ -185,18 +185,19 @@ Item {
                     Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
 
-                    contentHeight: 160
+                    contentHeight: listViewInputs.height
 
                     ListView {
                         id: listViewInputs
 
                         Material.foreground: Material.Grey
+                        height: contentHeight
                         model: modelInputs
                         clip: true
                         Layout.alignment: Qt.AlignTop
                         Layout.fillWidth: true
                         delegate: InputOutputDelegate {
-                            width: ListView.view.width
+                            width: parent.width
                         }
                     }
                 } // ScrollView
@@ -218,18 +219,19 @@ Item {
                     Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
 
-                    contentHeight: 160
+                    contentHeight: listViewInputs.height
 
                     ListView {
                         id: listViewOutputs
 
                         Material.foreground: Material.Grey
+                        height: contentHeight
                         model: modelOutputs
                         clip: true
                         Layout.alignment: Qt.AlignTop
                         Layout.fillWidth: true
                         delegate: InputOutputDelegate {
-                            width: ListView.view.width
+                            width: parent.width
                         }
                     }
                 } // ScrollView
