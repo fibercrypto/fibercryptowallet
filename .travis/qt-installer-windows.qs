@@ -2,7 +2,7 @@
 
 var INSTALL_COMPONENTS = [
     "qt.qt5.5130.win64_mingw73",
-    //"qt.qt5.5130.qtscript",
+    "qt.qt5.5130.qtscript",
     "qt.qt5.5130.qtscript.win64_mingw73",
     
 ];
