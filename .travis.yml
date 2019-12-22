@@ -50,6 +50,7 @@ matrix:
       env:
         - QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
         - QT_DIR: C:/Qt
+        - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
       install:
         - choco install make -y
         - choco install unzip -y

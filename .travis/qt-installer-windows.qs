@@ -1,7 +1,6 @@
 
 
 var INSTALL_COMPONENTS = [
-    "qt.qt5.5130.win64_msvc2017_64",
     "qt.qt5.5130.win64_mingw73",
     
 ];
