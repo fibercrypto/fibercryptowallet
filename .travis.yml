@@ -55,6 +55,7 @@ matrix:
         - choco install unzip -y
         - .travis/install-qt-win.sh
         - ls C:/Qt
+        - ls C:/Qt/5.13.0
         - travis_wait 50 make install-deps-Windows
         - make install-linters
         - make install-coveralls
