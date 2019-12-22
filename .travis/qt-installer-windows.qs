@@ -1,7 +1,6 @@
 
 
 var INSTALL_COMPONENTS = [
-    installer.environmentVariable("PLATFORM") == "x64" ?
     "qt.qt5.5125.win32_mingw73",
     "qt.qt5.5125.win32_msvc2017",
     "qt.qt5.5125.win64_mingw73",
