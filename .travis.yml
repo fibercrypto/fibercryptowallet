@@ -58,6 +58,7 @@ matrix:
         - make install-linters
         - make install-coveralls
       script:
+        - ls $GOPATH/src/github.com/therecipe/qt
         - make build-Windows-travis 
         - make test
         - make build-icon
