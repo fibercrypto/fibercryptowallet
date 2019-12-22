@@ -52,7 +52,7 @@ matrix:
       install:
         - choco install make -y
         - choco install unzip -y
-        - travis_wait 30 .travis/install-qt-win.sh
+        - travis_wait 60 .travis/install-qt-win.sh
         - travis_wait 50 make install-deps-Windows
         - make install-linters
         - make install-coveralls
