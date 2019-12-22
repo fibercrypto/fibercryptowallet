@@ -48,9 +48,7 @@ matrix:
     - stage: Windows
       os: windows
       env:
-        - QT5_BASE_DIR: C:/Qt/5.12.5/msvc2017
         - QT_DIR: C:/Qt
-        - QT_VERSION: 5.12.5
       install:
         - choco install make -y
         - choco install unzip -y
