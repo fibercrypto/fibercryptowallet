@@ -112,7 +112,7 @@ matrix:
 
       install:
         - choco install make -y
-        - choco install unzip -y
+#        - choco install unzip -y
         
 #        - travis_wait 50 make install-deps-Windows
         - $shell export QT_MSYS2_ARCH=amd64
@@ -127,7 +127,8 @@ matrix:
         - unzip magick.zip convert.exe
         - make install-linters
         - make install-coveralls
-      script:
+      
+        script:
         - make build
         - make test
         - make build-icon
