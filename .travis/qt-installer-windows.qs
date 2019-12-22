@@ -2,9 +2,8 @@
 
 var INSTALL_COMPONENTS = [
     "qt.qt5.5130.win64_msvc2017_64",
-    "qt.qt5.5130.win32_msvc2017",
     "qt.qt5.5130.win64_mingw73",
-    "qt.qt5.5130.win64_msvc2017_64",
+    
 ];
 
 function Controller() {
