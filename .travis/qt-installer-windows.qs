@@ -1,10 +1,9 @@
 
 
 var INSTALL_COMPONENTS = [
-    "qt.qt5.5125.win32_mingw73",
+    installer.environmentVariable("PLATFORM") == "x64" ?
+    "qt.qt5.5125.win64_msvc2017_64" :
     "qt.qt5.5125.win32_msvc2017",
-    "qt.qt5.5125.win64_mingw73",
-    "qt.qt5.5125.win64_msvc2017_64",
 ];
 
 function Controller() {
@@ -66,7 +65,7 @@ Controller.prototype.ComponentSelectionPageCallback = function() {
     }
 
     widget.selectComponent("qt.tools.qtcreator");
-    widget.selectComponent("qt.55.qt3d");
+    //widget.selectComponent("qt.55.qt3d");
 
     gui.clickButton(buttons.NextButton);
 }
