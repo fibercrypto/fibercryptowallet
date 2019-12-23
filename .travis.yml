@@ -53,7 +53,7 @@ matrix:
       os: windows
       install:
         - choco install make -y
-        - choco install unzip -y
+        #- choco install unzip -y
         - travis_wait 50 make install-deps-Windows
         - make install-linters
         - make install-coveralls
@@ -61,7 +61,7 @@ matrix:
         - ls $GOPATH/src/github.com/therecipe/qt
         - make build-Windows-travis 
         - make test
-        - make build-icon
+        #- make build-icon
         - make lint
         - make test-cover-travis
     - stage: MacOS
