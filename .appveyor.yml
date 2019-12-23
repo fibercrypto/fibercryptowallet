@@ -18,7 +18,7 @@ install:
   - echo %GOPATH%
   - go version
   - go env
-  - bash -c "ls $(QT_DIR)"
+  - bash -c "ls C:/Qt"
   - choco install make -y
   - make install-deps-Windows
   - make install-linters
