@@ -1,0 +1,31 @@
+version: '{build}'
+clone_depth: 1
+
+platform: x64
+
+clone_folder: c:\gopath\src\github.com\fibercrypto\fibercryptowallet
+
+environment:
+  GOPATH: c:\gopath
+  GOROOT: C:\go
+
+install:
+  - set PATH=%GOPATH%\bin;%GOROOT%\bin;%PATH%
+  - echo %PATH%
+  - echo %GOPATH%
+  - go version
+  - go env
+  - .travis/install-qt-win.sh
+  - choco install make -y
+  - make install-deps-Windows
+  - make install-linters
+  - make install-coveralls
+
+test_script:
+  - make build-Windows-travis
+  - make test
+  - make lint
+  - make test-cover-travis
+
+build: off
+deploy: off
