@@ -52,7 +52,7 @@ matrix:
         - QT_DIR: C:/Qt
         - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
 
-      before-install:
+      install:
         - choco uninstall -y mingw
         - choco upgrade -y
         - export msys2='cmd //C RefreshEnv.cmd '
@@ -79,10 +79,6 @@ matrix:
         - g++ --version
         - $GNU_MAKE --version
         - $GIT --version
-        
-    
-
-      install:
         - choco install make -y
         - choco install unzip -y
 #        - travis_wait 50 make install-deps-Windows
