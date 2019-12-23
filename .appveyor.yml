@@ -10,7 +10,8 @@ environment:
   GOROOT: C:\go
   QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
   QT_DIR: C:/Qt
-  QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
+  QT_VERSION: 5.13
+  QT_QMAKE_DIR: C:/Qt/5.13/mingw73_64/bin
 
 install:
   - set "PATH=C:\msys64\usr\bin;C:\msys64\mingw64\bin;C:\Windows\System32;C:\Windows;%PATH%"
@@ -20,7 +21,7 @@ install:
   - echo %GOPATH%
   - go version
   - go env
-  - bash -c "ls C:/Qt"
+  - bash -c "ls C:/Qt/5.13"
   - choco install make -y
   - make install-deps-Windows
   - make install-linters
