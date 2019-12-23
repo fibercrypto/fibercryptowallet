@@ -83,7 +83,8 @@ matrix:
         - g++ --version
         - $GNU_MAKE --version
         - $GIT --version
-        - choco install make -y
+        - choco install make -y | true
+        - type C:\ProgramData\chocolatey\logs\chocolatey.log
         - choco install unzip -y
 #        - travis_wait 50 make install-deps-Windows
         - $shell export QT_MSYS2_ARCH=amd64
