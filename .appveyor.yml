@@ -15,7 +15,7 @@ install:
   - echo %GOPATH%
   - go version
   - go env
-  - .travis/install-qt-win.sh
+  - bash -c ".travis/install-qt-win.sh"
   - choco install make -y
   - make install-deps-Windows
   - make install-linters
