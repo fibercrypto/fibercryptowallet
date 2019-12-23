@@ -54,7 +54,7 @@ matrix:
 
       install:
         - choco uninstall -y mingw
-        - choco upgrade -y
+        - choco upgrade -y msys2
         - export msys2='cmd //C RefreshEnv.cmd '
         - export msys2+='& set MSYS=winsymlinks:nativestrict '
         - export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
