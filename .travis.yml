@@ -54,12 +54,15 @@ matrix:
 
       install:
         - choco uninstall -y mingw
+        - tasklist
         - choco upgrade -y msys2
+        - tasklist
         - export msys2='cmd //C RefreshEnv.cmd '
         - export msys2+='& set MSYS=winsymlinks:nativestrict '
         - export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
         - export shell="$msys2 -mingw64 -full-path -here -c \$\* --"
         - export msys2+=" -msys2 -c \$\* --"
+        - tasklist
         - $msys2 pacman --sync --noconfirm --needed \
                   autoconf \
                   automake \
@@ -68,7 +71,7 @@ matrix:
                   perl \
                   unzip
         - tasklist
-        - taskkill //IM gpg-agent.exe //F
+        - taskkill //IM TrustedInstaller.exe //F
         - export CPPFLAGS=-D__USE_MINGW_ANSI_STDIO=1
         - export PATH=/C/tools/msys64/mingw64/bin:$PATH
         - export GNU_MAKE=mingw32-make
