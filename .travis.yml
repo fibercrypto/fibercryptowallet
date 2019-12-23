@@ -88,9 +88,8 @@ matrix:
 
       install:
         - choco install make -y
-#        - choco install unzip -y
-        
-#        - travis_wait 50 make install-deps-Windows
+        - choco install unzip -y
+        - travis_wait 50 make install-deps-Windows
         - $shell export QT_MSYS2_ARCH=amd64
         - $shell pacman -Syyu
         - $shell pacman -S mingw-w64-x86_64-qt-creator mingw-w64-x86_64-qt5-static
