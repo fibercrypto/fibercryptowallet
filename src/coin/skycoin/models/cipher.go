@@ -3,34 +3,19 @@ package skycoin
 import (
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 )
 
-type SkycoinAddressIterator struct { // Implements AddressIterator interfaces
-	current   int
-	addresses []core.Address
-}
-
-func (it *SkycoinAddressIterator) Value() core.Address {
-	return it.addresses[it.current]
-}
-
-func (it *SkycoinAddressIterator) Next() bool {
-	if it.HasNext() {
-		it.current++
-		return true
-	}
-	return false
-}
-
-func (it *SkycoinAddressIterator) HasNext() bool {
-	return (it.current + 1) < len(it.addresses)
+type SkycoinAddressIterator struct {
+	core.Iterator
 }
 
 func NewSkycoinAddressIterator(addresses []core.Address) *SkycoinAddressIterator {
-	return &SkycoinAddressIterator{addresses: addresses, current: -1}
+	return &SkycoinAddressIterator{Iterator: util.NewGenericIterator(addresses)}
 }
 
 func NewSkycoinAddress(addrStr string) (SkycoinAddress, error) {
+
 	var skyAddr cipher.Address
 	var err error
 	if skyAddr, err = cipher.DecodeBase58Address(addrStr); err != nil {

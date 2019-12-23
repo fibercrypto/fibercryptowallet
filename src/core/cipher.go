@@ -41,16 +41,6 @@ type Address interface {
 	Null() bool
 }
 
-// AddressIterator iterate over addresses in a container
-type AddressIterator interface {
-	// Value of address at iterator pointer position
-	Value() Address
-	// Next discards current value and moves iteration pointer up to next item
-	Next() bool
-	// HasNext may be used to query whether more items are to be expected in the sequence
-	HasNext() bool
-}
-
 // TxnSigner defines the contract enforced upon objects able to sin transacions.
 type TxnSigner interface {
 	// ReadyForTxn determines whether this signer instance can be used by wallet to sign given transaction

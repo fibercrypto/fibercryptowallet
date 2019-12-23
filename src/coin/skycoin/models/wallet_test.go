@@ -559,8 +559,10 @@ func TestRemoteWalletGenAddresses(t *testing.T) {
 		return "pwd", nil
 	}
 	iter := wlt.GenAddresses(0, 0, 2, pwdReader)
+	var addr core.Address
 	for iter.Next() {
-		a := iter.Value()
+		require.NoError(t, iter.CurrentData(&addr))
+		a := addr
 		require.Equal(t, "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8", a.String())
 	}
 }
@@ -574,8 +576,10 @@ func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
 	iter, err := wlt.GetLoadedAddresses()
 	require.NoError(t, err)
 	items := 0
+	var addr core.Address
 	for iter.Next() {
-		a := iter.Value()
+		require.NoError(t, iter.CurrentData(&addr))
+		a := addr
 		items++
 		require.Equal(t, "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8", a.String())
 	}
@@ -1007,8 +1011,10 @@ func TestLocalWalletTransfer(t *testing.T) {
 	loadedAddrs, err := wlt.GetLoadedAddresses()
 	require.NoError(t, err)
 	addrs := make([]string, 0)
+	var addrIter core.Address
 	for loadedAddrs.Next() {
-		addrs = append(addrs, loadedAddrs.Value().String())
+		require.NoError(t, loadedAddrs.CurrentData(&addrIter))
+		addrs = append(addrs, addrIter.String())
 	}
 
 	opt := NewTransferOptions()
@@ -1214,7 +1220,7 @@ func TestLocalWalletSpend(t *testing.T) {
 func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	CleanGlobalMock()
 
-	//Test skycoinCreatedTransaction
+	// Test skycoinCreatedTransaction
 	txn, keyData, uxs, err := makeTransactionMultipleInputs(t, 1)
 	require.Nil(t, err)
 	require.Equal(t, txn.In[0], uxs[0].Hash())
@@ -1245,7 +1251,7 @@ func TestLocalWalletSignSkycoinTxn(t *testing.T) {
 	require.Nil(t, err)
 	require.True(t, ok)
 
-	//Test that calculated hours were calculated ok
+	// Test that calculated hours were calculated ok
 	txn.Out[0].Hours = 1000
 	err = txn.UpdateHeader()
 	require.Nil(t, err)

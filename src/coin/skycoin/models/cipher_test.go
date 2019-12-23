@@ -98,7 +98,7 @@ func TestNewSkycoinAddress(t *testing.T) {
 }
 
 func TestNewSkycoinAddressIterator(t *testing.T) {
-	var got core.AddressIterator
+	var got core.Iterator
 	type args struct {
 		addresses []string
 	}
@@ -132,7 +132,9 @@ func TestNewSkycoinAddressIterator(t *testing.T) {
 			}
 
 			for got.Next() {
-				assert.Contains(t, tt.args.addresses, got.Value().String())
+				var addr core.Address
+				require.NoError(t, got.CurrentData(&addr))
+				assert.Contains(t, tt.args.addresses, addr.String())
 			}
 		})
 	}

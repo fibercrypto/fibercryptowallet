@@ -632,7 +632,7 @@ func (wlt *RemoteWallet) Spend(unspent, new []core.TransactionOutput, change cor
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 }
 
-func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+func (wlt *RemoteWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.Iterator {
 	logWallet.Info("Generate new addresses in remote wallet")
 	c, err := NewSkycoinApiClient(wlt.poolSection)
 	if err != nil {
@@ -690,7 +690,7 @@ func (wlt *RemoteWallet) GetCryptoAccount() core.CryptoAccount {
 	return wlt
 }
 
-func (wlt *RemoteWallet) GetLoadedAddresses() (core.AddressIterator, error) {
+func (wlt *RemoteWallet) GetLoadedAddresses() (core.Iterator, error) {
 	logWallet.Info("Loading addresses from remote wallet")
 	c, err := NewSkycoinApiClient(wlt.poolSection)
 	if err != nil {
@@ -1134,11 +1134,11 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 	var resultTxn core.Transaction
 	walletDir := filepath.Join(wlt.WalletDir, wlt.Id)
 	skyWlt, err := wallet.Load(walletDir)
-	var originalInputs []api.CreatedTransactionInput
 	if err != nil {
 		logWallet.WithError(err).Warn("Couldn't load api client")
 		return nil, err
 	}
+	var originalInputs []api.CreatedTransactionInput
 	rTxn, isReadableTxn := txn.(skytypes.ReadableTxn)
 	if isReadableTxn {
 		// Readable tranasctions should not need extra API calls
@@ -1299,27 +1299,23 @@ func (wlt *LocalWallet) signSkycoinTxn(txn core.Transaction, pwd core.PasswordRe
 		for i, ux := range uxouts {
 			calCh, err := util.GetCoinValue(originalInputs[i].CalculatedHours, CoinHour)
 			if err != nil {
+				logWallet.WithError(err).Warn("Couldn't create a transaction input")
 				return nil, err
 			}
 			vin := visor.TransactionInput{
 				UxOut:           ux,
 				CalculatedHours: calCh,
 			}
-			if err != nil {
-				logWallet.WithError(err).Warn("Couldn't create a transaction input")
-				return nil, err
-			}
+
 			vins = append(vins, vin)
 		}
 		crtTxn, err := api.NewCreatedTransaction(signedTxn, vins)
-		if err != nil {
-			return nil, err
-		}
-		crtTxn.In = originalInputs
+
 		if err != nil {
 			logWallet.WithError(err).Warn("Couldn't create an un SkycoinCreatedTransaction")
 			return nil, err
 		}
+		crtTxn.In = originalInputs
 		resultTxn = NewSkycoinCreatedTransaction(*crtTxn)
 	} else {
 		resultTxn, err = NewUninjectedTransaction(signedTxn, txnFee)
@@ -1402,7 +1398,12 @@ func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValu
 		return nil, err
 	}
 	for iterAddr.Next() {
-		addresses = append(addresses, iterAddr.Value())
+		var addr core.Address
+		if err := iterAddr.CurrentData(&addr); err != nil {
+			logWallet.Error(err)
+			return nil, err
+		}
+		addresses = append(addresses, addr)
 	}
 
 	createTxnFunc := skyAPICreateTxn
@@ -1451,7 +1452,7 @@ func (wlt LocalWallet) Spend(unspent, new []core.TransactionOutput, change core.
 	return createTransaction(nil, new, unspent, change, options, createTxnFunc)
 }
 
-func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.AddressIterator {
+func (wlt *LocalWallet) GenAddresses(addrType core.AddressType, startIndex, count uint32, pwd core.PasswordReader) core.Iterator {
 
 	if addrType != core.AccountAddress && addrType != core.ChangeAddress {
 		logWallet.Errorf("Incorret address type %d", addrType)
@@ -1592,7 +1593,7 @@ func (wlt *LocalWallet) GetCryptoAccount() core.CryptoAccount {
 	return wlt
 }
 
-func (wlt *LocalWallet) GetLoadedAddresses() (core.AddressIterator, error) {
+func (wlt *LocalWallet) GetLoadedAddresses() (core.Iterator, error) {
 	logWallet.Info("Getting loaded addresses from local wallet")
 	walletName := filepath.Join(wlt.WalletDir, wlt.Id)
 	walletLoaded, err := wallet.Load(walletName)
@@ -1647,7 +1648,11 @@ func checkEquivalentSkycoinWallets(wlt1, wlt2 core.Wallet) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return addrs1.HasNext() && addrs2.HasNext() && addrs1.Value().String() == addrs2.Value().String(), nil
+	var addrs core.Address
+	if err := addrs1.CurrentData(&addrs); err != nil {
+		return false, err
+	}
+	return addrs1.HasNext() && addrs2.HasNext() && addrs.String() == addrs.String(), nil
 }
 
 func checkTxnSupported(wlt1, wlt2 core.Wallet, txn core.Transaction) (bool, error) {

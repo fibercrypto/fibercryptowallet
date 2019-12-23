@@ -8,8 +8,9 @@ import (
 )
 
 type GenericIterator struct {
-	data  []interface{}
-	index int
+	data     []interface{}
+	index    int
+	dataType reflect.Type
 }
 
 func NewGenericIterator(value interface{}) core.Iterator {
@@ -23,8 +24,9 @@ func NewGenericIterator(value interface{}) core.Iterator {
 	}
 
 	return &GenericIterator{
-		data:  iteratorData,
-		index: -1,
+		data:     iteratorData,
+		index:    -1,
+		dataType: reflect.TypeOf(value).Elem(),
 	}
 }
 
@@ -37,9 +39,8 @@ func (g *GenericIterator) CurrentData(val interface{}) error {
 	if reflectVal.Kind() != reflect.Ptr || reflectVal.IsNil() {
 		return errors.New("val must be a pointer")
 	}
-
-	if !reflect.TypeOf(g.data[g.index]).AssignableTo(reflect.TypeOf(val).Elem()) {
-		return fmt.Errorf("type:%T can't be assignable to type %T", g.data[g.index], val)
+	if !g.dataType.AssignableTo(reflect.TypeOf(val).Elem()) {
+		return fmt.Errorf("type:%T can't be assignable to type %T", g.dataType, val)
 	}
 	reflectCurrentData := reflect.ValueOf(g.data[g.index])
 	reflectVal.Elem().Set(reflectCurrentData)
@@ -58,9 +59,9 @@ func (g *GenericIterator) Next() bool {
 	return false
 }
 
-// func (g *GenericIterator) GetType() string {
-// 	if len(g.data) == 0 {
-// 		return ""
-// 	}
-// 	return reflect.TypeOf(g.data[0]).Name()
-// }
+func (g *GenericIterator) GetType() string {
+	if len(g.data) == 0 {
+		return ""
+	}
+	return g.dataType.Name()
+}

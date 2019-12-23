@@ -61,11 +61,11 @@ type Wallet interface {
 	Spend(unspent, new []TransactionOutput, change Address, options KeyValueStore) (Transaction, error)
 	// GenAddresses discover new addresses based on default hierarchically deterministic derivation sequences
 	// FIXME: Support account index to be fully compatible with BIP44
-	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) AddressIterator
+	GenAddresses(addrType AddressType, startIndex, count uint32, pwd PasswordReader) Iterator
 	// GetCryptoAccount instantiate object to determine wallet balance and transaction history
 	GetCryptoAccount() CryptoAccount
 	// GetLoadedAddresses iterates over wallet addresses discovered and known to have previous history and coins
-	GetLoadedAddresses() (AddressIterator, error)
+	GetLoadedAddresses() (Iterator, error)
 	// Sign creates a new transaction by (fully or partially) choosing a strategy to sign given transaction
 	// If signer instance is nil then default wallet strategy should be used for signing
 	Sign(txn Transaction, signer TxnSigner, pwd PasswordReader, index []string) (Transaction, error)
