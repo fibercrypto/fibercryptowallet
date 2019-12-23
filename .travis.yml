@@ -49,6 +49,18 @@ matrix:
         - make run-docker CMD='make test'
         - make lint
         - make run-docker CMD='make install-coveralls ; make test-cover-travis'
+    - stage: Windows
+      os: windows
+      install:
+        - choco install make -y
+        - choco install unzip -y
+        - travis_wait 50 make install-deps-Windows
+        - make install-linters
+        - make install-coveralls
+      script:
+        - make build-Windows-travis
+        - make build-icon
+        - make lint
     - stage: MacOS
       os: osx
       osx_image: xcode10.2
