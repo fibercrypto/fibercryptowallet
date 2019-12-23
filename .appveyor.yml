@@ -13,6 +13,8 @@ environment:
   QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
 
 install:
+  - set "PATH=C:\msys64\usr\bin;C:\msys64\mingw64\bin;C:\Windows\System32;C:\Windows;%PATH%"
+  - set MSYSTEM=MINGW64
   - set PATH=%GOPATH%\bin;%GOROOT%\bin;%PATH%
   - echo %PATH%
   - echo %GOPATH%
