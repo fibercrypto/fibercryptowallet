@@ -8,10 +8,10 @@ clone_folder: c:\gopath\src\github.com\fibercrypto\fibercryptowallet
 environment:
   GOPATH: c:\gopath
   GOROOT: C:\go
-  QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
+  QT5_BASE_DIR: C:/Qt/5.12.5/msvc2017
   QT_DIR: C:/Qt
-  QT_VERSION: 5.13
-  QT_QMAKE_DIR: C:/Qt/5.13/mingw73_64/bin
+  QT_VERSION: 5.12.5
+  QT_QMAKE_DIR: C:/Qt/5.12.5/mingw73_64/bin
 
 install:
   - set "PATH=C:\msys64\usr\bin;C:\msys64\mingw64\bin;C:\Windows\System32;C:\Windows;%PATH%"
@@ -21,7 +21,7 @@ install:
   - echo %GOPATH%
   - go version
   - go env
-  - bash -c "ls C:/Qt/5.13"
+  - bash -c "ls C:/Qt"
   - choco install make -y
   - make install-deps-Windows
   - make install-linters
