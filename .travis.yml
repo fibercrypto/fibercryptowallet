@@ -89,7 +89,7 @@ matrix:
 #        - travis_wait 50 make install-deps-Windows
         - $msys2 export QT_MSYS2_ARCH=amd64
         - $msys2 pacman -Syyu
-        - $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-qt-creator mingw-w64-x86_64-qt5-static
+        - $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-qt-creator mingw-w64-x86_64-qt5
         - $msys2 pacman -Scc
         - $msys2 export QT_MSYS2_STATIC=true
         - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
