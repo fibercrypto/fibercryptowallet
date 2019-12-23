@@ -53,8 +53,6 @@ matrix:
         - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
 
       before-install:
-        
-            
         - choco uninstall -y mingw;
         - choco upgrade -y msys2 bazel;
         - export msys2='cmd //C RefreshEnv.cmd ';
@@ -63,12 +61,12 @@ matrix:
         - export shell="$msys2 -mingw64 -full-path -here -c \$\* --";
         - export msys2+=" -msys2 -c \$\* --";
         - $msys2 pacman --sync --noconfirm --needed \
-        -         autoconf \
-        -         automake \
-        -         mingw-w64-x86_64-libtool \
-        -         mingw-w64-x86_64-toolchain \
-        -         perl \
-        -         unzip;
+                  autoconf \
+                  automake \
+                  mingw-w64-x86_64-libtool \
+                  mingw-w64-x86_64-toolchain \
+                  perl \
+                  unzip;
         - taskkill //IM gpg-agent.exe //F;
         - export CPPFLAGS=-D__USE_MINGW_ANSI_STDIO=1;
         - export PATH=/C/tools/msys64/mingw64/bin:$PATH;
@@ -77,8 +75,6 @@ matrix:
         - export AR=gcc-ar;
         - export RANLIB=gcc-ranlib;
         - export COVERITY_SCAN_BRANCH_PATTERN=disable_coverity_scan;
-                
-            
         - export GIT=git
         - g++ --version
         - $GNU_MAKE --version
@@ -103,7 +99,7 @@ matrix:
         - make install-linters
         - make install-coveralls
       
-        script:
+      script:
         - make build
         - make test
         - make build-icon
