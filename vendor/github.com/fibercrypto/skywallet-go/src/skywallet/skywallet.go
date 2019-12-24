@@ -923,7 +923,7 @@ func (d *Device) PinMatrixAck(p string) (wire.Message, error) {
 	}
 	defer d.Disconnect()
 
-	log.Printf("Setting pin: %s\n", p)
+	log.Printf("Setting pin %s\n", p)
 
 	pinMatrixChunks, err := MessagePinMatrixAck(p)
 	if err != nil {
