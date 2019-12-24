@@ -10,7 +10,9 @@ import (
 
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
+
+	//local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/models"
 	"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
@@ -45,13 +47,8 @@ func (hm *HistoryManager) init() {
 	hm.ConnectLoadHistory(hm.loadHistory)
 	hm.ConnectAddFilter(hm.addFilter)
 	hm.ConnectRemoveFilter(hm.removeFilter)
-	altManager := local.LoadAltcoinManager()
-	walletsEnvs := make([]core.WalletEnv, 0)
-	for _, plug := range altManager.ListRegisteredPlugins() {
-		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
-	}
+	hm.walletEnv = models.GetWalletEnv()
 
-	hm.walletEnv = walletsEnvs[0]
 }
 
 type ByDate []*transactions.TransactionDetails
@@ -71,7 +68,6 @@ func (a ByDate) Less(i, j int) bool {
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
 	logHistoryManager.Info("Getting transactions of Addresses")
 	addresses := hm.getAddressesWithWallets()
-
 	var sent, internally bool
 	var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
 

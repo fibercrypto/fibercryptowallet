@@ -5,6 +5,10 @@ go:
 services:
   - docker
 go_import_path: github.com/fibercrypto/fibercryptowallet
+cache:
+ directories:
+ - $GOPATH/src/github.com/therecipe 
+ - $GOPATH/bin
 matrix:
   include:
     - stage: RPI
@@ -14,52 +18,49 @@ matrix:
         - DEFAULT_ARCH=rpi2 make install-docker-deps
         - DEFAULT_ARCH=rpi3 make install-docker-deps
         - make install-deps-no-envs
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=rpi1 make build-docker
         - DEFAULT_TARGET=rpi2 make build-docker
         - DEFAULT_TARGET=rpi3 make build-docker
         - make lint
-        - make test
+        - make run-docker CMD='make test'
     - stage: Android
       if: branch = release*$
       install:
         - DEFAULT_ARCH=android make install-docker-deps
         - make install-deps-no-envs
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=android make build-docker
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
-        - make test
-    - make test-cover-travis
+        - make run-docker CMD='make test'
+        - make run-docker CMD='make install coveralls ; make test-cover-travis'
     - stage: Linux
       install:
         - make install-docker-deps
         - make install-deps-no-envs
         - make install-linters
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
-        - make test
+        - make clean
+        - make run-docker CMD='make test'
         - make lint
-        - make test-cover-travis
+        - make run-docker CMD='make install-coveralls ; make test-cover-travis'
     - stage: Windows
       os: windows
       install:
         - choco install make -y
-        - travis_wait make install-deps-Windows
+        - choco install unzip -y
+        - travis_wait 50 make install-deps-Windows
         - make install-linters
         - make install-coveralls
       script:
-        - make build
-        - make test
+        - make build-Windows-travis
         - make build-icon
         - make lint
-        - make test-cover-travis
     - stage: MacOS
       os: osx
       osx_image: xcode10.2
@@ -77,8 +78,8 @@ notifications:
   email: false
   webhooks:
     urls:
-      - https://fathomless-fjord-24024.herokuapp.com/notify
-      - https://coveralls.io/webhook
+      -  https://fathomless-fjord-24024.herokuapp.com/notify
+      -  https://coveralls.io/webhook
 
 before_deploy:
   - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
@@ -97,5 +98,6 @@ deploy:
   draft: true
   overwrite: true
   on:
-    repo: fibercrypto/fibercryptowallet
+    repo: fibercrypto/FiberCryptoWallet
     tags: true
+

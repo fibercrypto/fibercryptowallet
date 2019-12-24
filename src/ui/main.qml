@@ -50,6 +50,7 @@ ApplicationWindow {
         ConfigManager{
             id: configManager
         }
+        
 
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()
@@ -101,6 +102,7 @@ ApplicationWindow {
         }
 
         onAboutQtRequested: {
+            
             dialogAboutQt.open()
         }
 
@@ -116,9 +118,7 @@ ApplicationWindow {
     GeneralStackView {
         id: generalStackView
         anchors.fill: parent
-        //property WalletManager  walletManger: WalletManager{
-        //id: walletManager
-        //}
+       
         WalletManager {
             id: walletManager
         }
@@ -127,6 +127,7 @@ ApplicationWindow {
     //! Settings
     Settings {
         id: settings
+        
     }
 
     //! Dialogs
