@@ -5,120 +5,63 @@ go:
 services:
   - docker
 go_import_path: github.com/fibercrypto/fibercryptowallet
+cache:
+ directories:
+ - $GOPATH/src/github.com/therecipe 
+ - $GOPATH/bin
 matrix:
   include:
-    #- stage: RPI
-    #  if: branch = release*$
-    #  install:
-    #    - DEFAULT_ARCH=rpi1 make install-docker-deps
-    #    - DEFAULT_ARCH=rpi2 make install-docker-deps
-    #    - DEFAULT_ARCH=rpi3 make install-docker-deps
-    #    - make install-deps-no-envs
-    #  script:
-    #    - make clean
-    #    - DEFAULT_TARGET=rpi1 make build-docker
-    #    - DEFAULT_TARGET=rpi2 make build-docker
-    #    - DEFAULT_TARGET=rpi3 make build-docker
-    #    - make lint
-    #    - make run-docker CMD='make test'
-    #- stage: Android
-    #  if: branch = release*$
-    #  install:
-    #    - DEFAULT_ARCH=android make install-docker-deps
-    #    - make install-deps-no-envs
-    #  script:
-    #    - make clean
-    #    - DEFAULT_TARGET=android make build-docker
-    #    - DEFAULT_TARGET=android-emulator make build-docker
-    #    - make lint
-    #    - make run-docker CMD='make test'
-    #    - make run-docker CMD='make install coveralls ; make test-cover-travis'
-    #- stage: Linux
-    #  install:
-    #    - make install-docker-deps
-    #    - make install-deps-no-envs
-    #    - make install-linters
-    #  script:
-    #    - make clean
-    #    - DEFAULT_TARGET=linux make build-docker
-    #    - make clean
-    #    - make run-docker CMD='make test'
-    #    - make lint
-    #    - make run-docker CMD='make install-coveralls ; make test-cover-travis'
-    - stage: Windows
-      os: windows
-      env:
-        - QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
-        - QT_DIR: C:/Qt
-        - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
-
+    - stage: RPI
+      if: branch = release*$
       install:
-        - choco uninstall -y mingw
-        - tasklist
-        - choco upgrade -y msys2
-        # - tasklist
-        - export msys2='cmd //C RefreshEnv.cmd '
-        - export msys2+='& set MSYS=winsymlinks:nativestrict '
-        - export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
-        - export shell="$msys2 -mingw64 -full-path -here -c \$\* --"
-        - export msys2+=" -msys2 -c \$\* --"
-        # - tasklist
-        # - $msys2 pacman --sync --noconfirm --needed \
-        #           autoconf \
-        #           automake \
-        #           mingw-w64-x86_64-libtool \
-        #           mingw-w64-x86_64-toolchain \
-        #           perl \
-        #           unzip
-        # - tasklist
-        # - taskkill //IM bash.exe //F
-        #- export CPPFLAGS=-D__USE_MINGW_ANSI_STDIO=1
-        #- export PATH=/C/tools/msys64/mingw64/bin:$PATH
-        #- export GNU_MAKE=mingw32-make
-        #- export MAKE=mingw32-make
-        #- export AR=gcc-ar
-        #- export RANLIB=gcc-ranlib
-        #- export COVERITY_SCAN_BRANCH_PATTERN=disable_coverity_scan
-        #- export GIT=git
-        #- g++ --version
-        #- $GNU_MAKE --version
-        #- $GIT --version
-        # - choco install make -y | true
-        # - type C:\ProgramData\chocolatey\logs\chocolatey.log
-        # - choco install unzip -y
-#        - travis_wait 50 make install-deps-Windows
-        - $shell export QT_MSYS2_ARCH=amd64
-        - $shell pacman -Syyu
-        - $shell pacman --sync --noconfirm --needed mingw-w64-x86_64-qt-creator mingw-w64-x86_64-qt5
-        - $shell pacman -Scc
-        - $shell export QT_MSYS2_STATIC=true
-        - go get -v -tags=no_env github.com/therecipe/qt/cmd/...
-        - $shell qtsetup 
-        - go get -t -d -v ./...
-        - wget -O magick.zip https://sourceforge.net/projects/imagemagick/files/im7-exes/ImageMagick-7.0.7-25-portable-Q16-x64.zip
-        - unzip magick.zip convert.exe
-        - make install-linters
-        - make install-coveralls
-      
+        - DEFAULT_ARCH=rpi1 make install-docker-deps
+        - DEFAULT_ARCH=rpi2 make install-docker-deps
+        - DEFAULT_ARCH=rpi3 make install-docker-deps
+        - make install-deps-no-envs
       script:
+        - make clean
+        - DEFAULT_TARGET=rpi1 make build-docker
+        - DEFAULT_TARGET=rpi2 make build-docker
+        - DEFAULT_TARGET=rpi3 make build-docker
+        - make lint
+        - make run-docker CMD='make test'
+    - stage: Android
+      if: branch = release*$
+      install:
+        - DEFAULT_ARCH=android make install-docker-deps
+        - make install-deps-no-envs
+      script:
+        - make clean
+        - DEFAULT_TARGET=android make build-docker
+        - DEFAULT_TARGET=android-emulator make build-docker
+        - make lint
+        - make run-docker CMD='make test'
+        - make run-docker CMD='make install coveralls ; make test-cover-travis'
+    - stage: Linux
+      install:
+        - make install-docker-deps
+        - make install-deps-no-envs
+        - make install-linters
+      script:
+        - make clean
+        - DEFAULT_TARGET=linux make build-docker
+        - make clean
+        - make run-docker CMD='make test'
+        - make lint
+        - make run-docker CMD='make install-coveralls ; make test-cover-travis'
+    - stage: MacOS
+      os: osx
+      osx_image: xcode10.2
+      install:
+        - make install-deps
+        - make install-coveralls
+      script:
+        - make clean
         - make build
         - make test
         - make build-icon
         - make lint
         - make test-cover-travis
-    #- stage: MacOS
-    #  os: osx
-    #  osx_image: xcode10.2
-    #  install:
-    #    - make install-deps
-    #    - make install-coveralls
-    #  script:
-    #    - make clean
-    #    - make build
-    #    - make test
-    #    - make build-icon
-    #    - make lint
-    #    - make test-cover-travis
 notifications:
   email: false
   webhooks:

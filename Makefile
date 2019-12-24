@@ -128,9 +128,9 @@ install-deps-Darwin: ## Install osx dependencies
 	go get -t -d -v ./...
 
 install-deps-Windows: ## Install Windowns dependencies
-	go get -u -v github.com/therecipe/qt/cmd/...
-	@echo "Running qtsetup"
-	qtsetup -test=false
+	set GO111MODULE=off
+	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
+	(qtsetup -test=false)
 	go get -t -d -v ./...
 	wget -O magick.zip https://sourceforge.net/projects/imagemagick/files/im7-exes/ImageMagick-7.0.7-25-portable-Q16-x64.zip
 	unzip magick.zip convert.exe
@@ -192,6 +192,11 @@ build-res-Windows_NT: $(RC_FILE)
 	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
 
 $(BINPATH_Windows_NT): $(SRCFILES)
+	make build-icon
+	make build-res-Windows_NT
+	make build-qt
+
+build-Windows-travis: $(SRCFILES)
 	make build-icon
 	make build-res-Windows_NT
 	make build-qt
