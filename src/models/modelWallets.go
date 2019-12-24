@@ -136,7 +136,6 @@ func (m *ModelWallets) loadModel() {
 			mo.SetAddress(addr.String())
 			qOutputs := make([]*QOutput, 0)
 
-			var out core.TransactionOutput
 			for outputs.Next() {
 				if err := outputs.CurrentData(&out); err != nil {
 					logWalletModel.Error(err)

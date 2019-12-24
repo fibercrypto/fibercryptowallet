@@ -40,7 +40,7 @@ func TestSkycoinTransactionGetStatus(t *testing.T) {
 }
 
 func TestSkycoinTransactionGetInputs(t *testing.T) {
-	//set correct return value
+	// set correct return value
 	response := &readable.TransactionWithStatusVerbose{
 		Transaction: readable.TransactionVerbose{},
 	}
@@ -188,7 +188,7 @@ func TestSkycoinUninjectedTransactionGetInputs(t *testing.T) {
 	hours, err := ti.GetCoins(CoinHour)
 	require.NoError(t, err)
 	require.Equal(t, hours, uint64(20))
-	//TODO: Find a way to get the calculatedHours for the expected value
+	// TODO: Find a way to get the calculatedHours for the expected value
 	val, err := ti.GetCoins("INVALID_TICKER")
 	require.Error(t, err)
 	require.Equal(t, uint64(0), val)

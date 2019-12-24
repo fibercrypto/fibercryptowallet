@@ -17,7 +17,6 @@ LICENSE			:= GPLv3
 COPYRIGHT		:= Copyright © 2019 $(ORG_NAME)
 
 UNAME_S = $(shell uname -s)
-OSNAME = $(shell echo $(UNAME_S) | tr A-Z a-z)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
 ## In future use as a parameter tu make command.
@@ -232,6 +231,7 @@ clean: clean-test clean-build ## Remove temporary files
 
 gen-mocks: ## Generate mocks for interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
+	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/fibercryptowallet/g' PATH
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
@@ -239,6 +239,10 @@ test-sky: ## Run Skycoin plugin test suite
 
 test-core: ## Run tests for API core and helpers
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+
+test-data: ## Run tests for data package
+	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
+
 
 test-sky-launch-html-cover:
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
@@ -256,7 +260,7 @@ test-cover-travis:
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test: clean-test test-core test-sky ## Run project test suite
+test: clean-test test-core test-sky test-data ## Run project test suite
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck
