@@ -3,10 +3,10 @@ clone_depth: 1
 
 platform: x64
 
-clone_folder: c:\gopath\src\github.com\fibercrypto\fibercryptowallet
+clone_folder: C:\go\src\github.com\fibercrypto\fibercryptowallet
 
 environment:
-  GOPATH: c:\gopath
+  GOPATH: C:\go
   GOROOT: C:\go
   QT5_BASE_DIR: C:/Qt/5.13/msvc2017
   QT_DIR: C:/Qt
