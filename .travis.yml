@@ -5,6 +5,10 @@ go:
 services:
   - docker
 go_import_path: github.com/fibercrypto/fibercryptowallet
+cache:
+ directories:
+ - $GOPATH/src/github.com/therecipe 
+ - $GOPATH/bin
 matrix:
   include:
     - stage: RPI
@@ -32,8 +36,7 @@ matrix:
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
         - make run-docker CMD='make test'
-        # TODO: Restore this. See https://github.com/fibercrypto/fibercryptowallet/issues/284
-        # - make run-docker CMD='make install coveralls ; make test-cover-travis'
+        - make run-docker CMD='make install coveralls ; make test-cover-travis'
     - stage: Linux
       install:
         - make install-docker-deps
@@ -45,21 +48,19 @@ matrix:
         - make clean
         - make run-docker CMD='make test'
         - make lint
-        # TODO: Restore this. See https://github.com/fibercrypto/fibercryptowallet/issues/284
-        # - make run-docker CMD='make install-coveralls ; make test-cover-travis'
+        - make run-docker CMD='make install-coveralls ; make test-cover-travis'
     - stage: Windows
       os: windows
       install:
         - choco install make -y
-        - travis_wait make install-deps-Windows
+        - choco install unzip -y
+        - travis_wait 50 make install-deps-Windows
         - make install-linters
         - make install-coveralls
       script:
-        - make build
-        - make test
+        - make build-Windows-travis
         - make build-icon
         - make lint
-        - make test-cover-travis
     - stage: MacOS
       os: osx
       osx_image: xcode10.2
