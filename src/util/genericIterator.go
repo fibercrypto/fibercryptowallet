@@ -7,12 +7,19 @@ import (
 	"reflect"
 )
 
+var (
+	errIteratorEmpty = errors.New("iterator is empty")
+	errMustBePointer = errors.New("val must be a pointer")
+)
+
+// GenericIterator implement the iterator interface for any type.
 type GenericIterator struct {
 	data     []interface{}
 	index    int
 	dataType reflect.Type
 }
 
+// NewGenericIterator return a new instance of GenericIterator
 func NewGenericIterator(value interface{}) core.Iterator {
 	var iteratorData []interface{}
 	reflectValue := reflect.ValueOf(value)
@@ -30,14 +37,16 @@ func NewGenericIterator(value interface{}) core.Iterator {
 	}
 }
 
+// CurrentData write in val parameter the current data of the iterator. If val is not a pointer or is nil
+// return an error. If iterator type is not assignable to val type return an error.
 func (g *GenericIterator) CurrentData(val interface{}) error {
 	reflectVal := reflect.ValueOf(val)
 	if len(g.data) == 0 {
-		return errors.New("iterator is empty")
+		return errIteratorEmpty
 	}
 
 	if reflectVal.Kind() != reflect.Ptr || reflectVal.IsNil() {
-		return errors.New("val must be a pointer")
+		return errMustBePointer
 	}
 	if !g.dataType.AssignableTo(reflect.TypeOf(val).Elem()) {
 		return fmt.Errorf("type:%T can't be assignable to type %T", g.dataType, val)
@@ -47,10 +56,13 @@ func (g *GenericIterator) CurrentData(val interface{}) error {
 	return nil
 }
 
+// HasNext ask if next instance of the iterator is not nil.
 func (g *GenericIterator) HasNext() bool {
 	return (g.index + 1) < len(g.data)
 }
 
+// Next assign to the current data the data of the next instance of the iterator and return true.
+// If the next instance not exist (is nil) return false.
 func (g *GenericIterator) Next() bool {
 	if g.HasNext() {
 		g.index++
@@ -59,9 +71,9 @@ func (g *GenericIterator) Next() bool {
 	return false
 }
 
-func (g *GenericIterator) GetType() string {
-	if len(g.data) == 0 {
-		return ""
-	}
-	return g.dataType.Name()
-}
+// func (g *GenericIterator) GetType() string {
+// 	if len(g.data) == 0 {
+// 		return ""
+// 	}
+// 	return g.dataType.Name()
+// }
