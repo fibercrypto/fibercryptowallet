@@ -7,7 +7,7 @@ clone_folder: C:\go\src\github.com\fibercrypto\fibercryptowallet
 
 environment:
   GOPATH: C:\go
-  GOROOT: C:\go
+  GOBIN: C:\go\bin
   QT5_BASE_DIR: C:/Qt/5.13/msvc2017
   QT_DIR: C:/Qt
   QT_VERSION: 5.13
