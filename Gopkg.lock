@@ -10,6 +10,60 @@
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:217ded54b7421d89365f998c11f0f94a7ad4691b43029584a365636930b24ed7"
+  name = "github.com/SkycoinProject/skycoin"
+  packages = [
+    "src/api",
+    "src/cipher",
+    "src/cipher/base58",
+    "src/cipher/bip32",
+    "src/cipher/bip39",
+    "src/cipher/bip39/wordlists",
+    "src/cipher/bip44",
+    "src/cipher/chacha20poly1305",
+    "src/cipher/chacha20poly1305/internal/chacha20",
+    "src/cipher/encoder",
+    "src/cipher/encrypt",
+    "src/cipher/pbkdf2",
+    "src/cipher/poly1305",
+    "src/cipher/ripemd160",
+    "src/cipher/scrypt",
+    "src/cipher/secp256k1-go",
+    "src/cipher/secp256k1-go/secp256k1-go2",
+    "src/cipher/testsuite",
+    "src/cli",
+    "src/coin",
+    "src/daemon",
+    "src/daemon/gnet",
+    "src/daemon/pex",
+    "src/daemon/strand",
+    "src/kvstorage",
+    "src/params",
+    "src/readable",
+    "src/testutil",
+    "src/transaction",
+    "src/util/apputil",
+    "src/util/droplet",
+    "src/util/elapse",
+    "src/util/fee",
+    "src/util/file",
+    "src/util/http",
+    "src/util/iputil",
+    "src/util/logging",
+    "src/util/mathutil",
+    "src/util/timeutil",
+    "src/util/useragent",
+    "src/visor",
+    "src/visor/blockdb",
+    "src/visor/dbutil",
+    "src/visor/historydb",
+    "src/wallet",
+  ]
+  pruneopts = "UT"
+  revision = "66f5df5849d339d403a475d523ebe7d1a4c92c31"
+  version = "v0.27.0"
+
+[[projects]]
   digest = "1:d6afaeed1502aa28e80a4ed0981d570ad91b2579193404256ce672ed0a609e0d"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
@@ -48,6 +102,35 @@
   pruneopts = "UT"
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
+
+[[projects]]
+  branch = "develop"
+  digest = "1:7c75ad6f1efde4cb658f81499c076f3bb773badc0971d225686371b9981ad58f"
+  name = "github.com/fibercrypto/fibercryptowallet"
+  packages = [
+    "src/coin/mocks",
+    "src/coin/skycoin",
+    "src/coin/skycoin/models",
+    "src/coin/skycoin/params",
+    "src/coin/skycoin/skytypes",
+    "src/coin/skycoin/testsuite",
+    "src/core",
+    "src/data",
+    "src/errors",
+    "src/main",
+    "src/models",
+    "src/models/address",
+    "src/models/addressBook",
+    "src/models/history",
+    "src/models/pending",
+    "src/models/transactions",
+    "src/params",
+    "src/util",
+    "src/util/logging",
+    "src/util/signutil",
+  ]
+  pruneopts = "UT"
+  revision = "86f2d7d3a4c8374e5ba3742cb7deeb44efbfb412"
 
 [[projects]]
   digest = "1:573ca21d3669500ff845bdebee890eb7fc7f0f50c59f2132f2a0c6b03d85086a"
@@ -181,58 +264,17 @@
   version = "v1.4.2"
 
 [[projects]]
-  branch = "develop"
-  digest = "1:5ede931cf0314ea9ac6628f65e0926cbf92754c105a0883475a6aaa3fc68c757"
-  name = "github.com/SkycoinProject/skycoin"
+  digest = "1:bfe68cfcde42eb6c27ebc94799cd38840b33bd1b02ffaf1360a8ff11f147d5b9"
+  name = "github.com/skycoin/skycoin"
   packages = [
-    "src/api",
-    "src/cipher",
-    "src/cipher/base58",
-    "src/cipher/bip32",
-    "src/cipher/bip39",
-    "src/cipher/bip39/wordlists",
-    "src/cipher/bip44",
-    "src/cipher/chacha20poly1305",
-    "src/cipher/chacha20poly1305/internal/chacha20",
     "src/cipher/encoder",
-    "src/cipher/encrypt",
-    "src/cipher/pbkdf2",
-    "src/cipher/poly1305",
-    "src/cipher/ripemd160",
-    "src/cipher/scrypt",
-    "src/cipher/secp256k1-go",
-    "src/cipher/secp256k1-go/secp256k1-go2",
-    "src/cipher/testsuite",
-    "src/cli",
-    "src/coin",
-    "src/daemon",
-    "src/daemon/gnet",
-    "src/daemon/pex",
-    "src/daemon/strand",
-    "src/kvstorage",
-    "src/params",
-    "src/readable",
-    "src/testutil",
-    "src/transaction",
-    "src/util/apputil",
-    "src/util/droplet",
-    "src/util/elapse",
-    "src/util/fee",
     "src/util/file",
-    "src/util/http",
-    "src/util/iputil",
     "src/util/logging",
-    "src/util/mathutil",
-    "src/util/timeutil",
-    "src/util/useragent",
-    "src/visor",
-    "src/visor/blockdb",
     "src/visor/dbutil",
-    "src/visor/historydb",
-    "src/wallet",
   ]
   pruneopts = "UT"
-  revision = "d7e4b2f3e31ea96bdcaba595507fde42baa156b9"
+  revision = "ff754084df0912bc0d151529e2893ca86618fb3f"
+  version = "v0.26.0"
 
 [[projects]]
   digest = "1:e096613fb7cf34743d49af87d197663cfccd61876e2219853005a57baedfa562"
@@ -271,22 +313,27 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1f2ac409d4e44c88b9fdd8b9ce57b02cf42825293e76ad2dd98dab6288e1fd4a"
+  digest = "1:956f1340e935c769246eb57a99d2e0b40ae8eb39960df9062e13c4f7b4812464"
   name = "github.com/therecipe/qt"
   packages = [
     "core",
     "gui",
     "network",
     "qml",
+    "widgets",
   ]
   pruneopts = "UT"
   revision = "590f404884c99350e2ae27bc5f4a1aa44fcf4249"
 
 [[projects]]
   branch = "master"
-  digest = "1:bbe51412d9915d64ffaa96b51d409e070665efc5194fcf145c4a27d4133107a4"
+  digest = "1:b7cda6bf367836ce3675325f6f7aec675af1ff2fde841524800f499a1acf0ee2"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
+  packages = [
+    "bcrypt",
+    "blowfish",
+    "ssh/terminal",
+  ]
   pruneopts = "UT"
   revision = "87dc89f01550277dc22b74ffcf4cd89fa2f40f4c"
 
@@ -313,10 +360,11 @@
   analyzer-name = "dep"
   analyzer-version = 1
   input-imports = [
-    "github.com/sirupsen/logrus",
     "github.com/SkycoinProject/skycoin/src/api",
     "github.com/SkycoinProject/skycoin/src/cipher",
+    "github.com/SkycoinProject/skycoin/src/cipher/base58",
     "github.com/SkycoinProject/skycoin/src/cipher/bip39",
+    "github.com/SkycoinProject/skycoin/src/cipher/pbkdf2",
     "github.com/SkycoinProject/skycoin/src/cipher/testsuite",
     "github.com/SkycoinProject/skycoin/src/cli",
     "github.com/SkycoinProject/skycoin/src/coin",
@@ -325,14 +373,43 @@
     "github.com/SkycoinProject/skycoin/src/testutil",
     "github.com/SkycoinProject/skycoin/src/util/droplet",
     "github.com/SkycoinProject/skycoin/src/util/file",
+    "github.com/SkycoinProject/skycoin/src/util/logging",
     "github.com/SkycoinProject/skycoin/src/visor",
     "github.com/SkycoinProject/skycoin/src/wallet",
+    "github.com/boltdb/bolt",
+    "github.com/fibercrypto/fibercryptowallet/src/coin/mocks",
+    "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin",
+    "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models",
+    "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params",
+    "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes",
+    "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/testsuite",
+    "github.com/fibercrypto/fibercryptowallet/src/core",
+    "github.com/fibercrypto/fibercryptowallet/src/data",
+    "github.com/fibercrypto/fibercryptowallet/src/errors",
+    "github.com/fibercrypto/fibercryptowallet/src/main",
+    "github.com/fibercrypto/fibercryptowallet/src/models",
+    "github.com/fibercrypto/fibercryptowallet/src/models/address",
+    "github.com/fibercrypto/fibercryptowallet/src/models/addressBook",
+    "github.com/fibercrypto/fibercryptowallet/src/models/history",
+    "github.com/fibercrypto/fibercryptowallet/src/models/pending",
+    "github.com/fibercrypto/fibercryptowallet/src/models/transactions",
+    "github.com/fibercrypto/fibercryptowallet/src/params",
+    "github.com/fibercrypto/fibercryptowallet/src/util",
+    "github.com/fibercrypto/fibercryptowallet/src/util/logging",
+    "github.com/fibercrypto/fibercryptowallet/src/util/signutil",
+    "github.com/mgutz/ansi",
+    "github.com/sirupsen/logrus",
+    "github.com/skycoin/skycoin/src/util/file",
+    "github.com/skycoin/skycoin/src/visor/dbutil",
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
     "github.com/therecipe/qt/core",
     "github.com/therecipe/qt/gui",
     "github.com/therecipe/qt/qml",
+    "github.com/therecipe/qt/widgets",
+    "golang.org/x/crypto/bcrypt",
+    "golang.org/x/crypto/ssh/terminal",
   ]
   solver-name = "gps-cdcl"
   solver-version = 1
