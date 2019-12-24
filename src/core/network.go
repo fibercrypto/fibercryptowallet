@@ -16,27 +16,17 @@ var multiConnectionsPool *MultiConnectionsPool
 // PEX exposes cryptocurrency API for peer-to-peer communication
 type PEX interface {
 	// GetTxnPool return transactions pending for confirmation by network peers
-	GetTxnPool() (TransactionIterator, error)
+	GetTxnPool() (Iterator, error)
 	// GetConnection enumerate connectionns to peer nodes
 	GetConnections() (PexNodeSet, error)
 	// BroadcastTxn injects a transaction for confirmation by network peers
 	BroadcastTxn(txn Transaction) error
 }
 
-// PexNodeIterator scans nodes in a set
-type PexNodeIterator interface {
-	// Value of PEX node data instance at iterator pointer position
-	Value() PexNode
-	// Next discards current value and moves iteration pointer up to next item
-	Next() bool
-	// HasNext may be used to query whether more items are to be expected in the sequence
-	HasNext() bool
-}
-
 // PexNodeSet represent a set of nodes
 type PexNodeSet interface {
 	// ListPeers offers an iterator over this set of nodes
-	ListPeers() PexNodeIterator
+	ListPeers() Iterator
 }
 
 // PexNode represents a peer in he cryptocurrency network

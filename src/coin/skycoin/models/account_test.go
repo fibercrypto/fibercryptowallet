@@ -55,12 +55,21 @@ func TestWalletListPendingTransactions(t *testing.T) {
 	wallets := NewSkycoinWalletIterator([]core.Wallet{remote, local})
 
 	for wallets.Next() {
-		txns, err := wallets.Value().GetCryptoAccount().ListPendingTransactions()
+		var wallet core.Wallet
+		if err := wallets.CurrentData(&wallet); err != nil {
+			require.NoError(t, err)
+		}
+		txns, err := wallet.GetCryptoAccount().ListPendingTransactions()
 		require.NoError(t, err)
 		for txns.Next() {
-			iter := NewSkycoinTransactionOutputIterator(txns.Value().GetOutputs())
+			var txn core.Transaction
+			require.NoError(t, txns.CurrentData(&txn))
+			iter := NewSkycoinTransactionOutputIterator(txn.GetOutputs())
+
+			var out core.TransactionOutput
 			for iter.Next() {
-				output := iter.Value()
+				require.NoError(t, iter.CurrentData(&out))
+				output := out
 				val, err3 := output.GetCoins(Sky)
 				require.NoError(t, err3)
 				require.Equal(t, val, uint64(1000000))
@@ -109,8 +118,10 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 	skyAddrs := addrs.GetCryptoAccount()
 	it := skyAddrs.ScanUnspentOutputs()
 
+	var out core.TransactionOutput
 	for it.Next() {
-		output := it.Value()
+		require.NoError(t, it.CurrentData(&out))
+		output := out
 		require.Equal(t, output.GetId(), "hash1")
 		require.Equal(t, output.GetAddress().String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
 		val, err := output.GetCoins(Sky)
@@ -149,11 +160,14 @@ func TestSkycoinAddressListTransactions(t *testing.T) {
 	assert.NoError(t, err)
 	skyAddr := addr.GetCryptoAccount()
 	it := skyAddr.ListTransactions()
+	var txn core.Transaction
 	it.Next()
-	thx := it.Value()
+	require.NoError(t, it.CurrentData(&txn))
+	thx := txn
 	require.Equal(t, thx.GetStatus(), core.TXN_STATUS_CONFIRMED)
 	it.Next()
-	thx = it.Value()
+	require.NoError(t, it.CurrentData(&txn))
+	thx = txn
 	require.Equal(t, thx.GetStatus(), core.TXN_STATUS_PENDING)
 }
 
@@ -262,8 +276,11 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 	}
 	iter := wlt.ScanUnspentOutputs()
 	items := 0
+
+	var out core.TransactionOutput
 	for iter.Next() {
-		to := iter.Value()
+		require.NoError(t, iter.CurrentData(&out))
+		to := out
 		items++
 		require.Equal(t, "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", to.GetAddress().String())
 	}
@@ -276,8 +293,10 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 	}
 	iter = wlt.ScanUnspentOutputs()
 	items = 0
+
 	for iter.Next() {
-		to := iter.Value()
+		require.NoError(t, iter.CurrentData(&out))
+		to := out
 		items++
 		require.Nil(t, to)
 	}
@@ -321,8 +340,13 @@ func TestRemoteWalletListTransactions(t *testing.T) {
 	}
 	iter := wlt.ListTransactions()
 	items := 0
+
+	var txn core.Transaction
+
 	for iter.Next() {
-		tx := iter.Value()
+		require.NoError(t, iter.CurrentData(&txn))
+
+		tx := txn
 		items++
 		require.Equal(t, "hash1", tx.GetId())
 	}
@@ -359,8 +383,11 @@ func TestLocalWalletScanUnspentOutputs(t *testing.T) {
 
 	iter := wlt.ScanUnspentOutputs()
 	items := 0
+
+	var out core.TransactionOutput
 	for iter.Next() {
-		to := iter.Value()
+		require.NoError(t, iter.CurrentData(&out))
+		to := out
 		items++
 		require.Equal(t, "2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP", to.GetAddress().String())
 	}
@@ -397,10 +424,11 @@ func TestLocalWalletListTransactions(t *testing.T) {
 
 	iter := wlt.ListTransactions()
 	items := 0
+	var txn core.Transaction
 	for iter.Next() {
-		tx := iter.Value()
+		require.NoError(t, iter.CurrentData(&txn))
 		items++
-		require.Equal(t, "hash1", tx.GetId())
+		require.Equal(t, "hash1", txn.GetId())
 	}
 	require.Equal(t, 4, items)
 }

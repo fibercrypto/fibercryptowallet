@@ -83,7 +83,10 @@ func TestSkycoinRemoteWalletListWallets(t *testing.T) {
 	wltSrv := &SkycoinRemoteWallet{poolSection: PoolSection}
 	iter := wltSrv.ListWallets()
 	for iter.Next() {
-		wlt := iter.Value()
+		var wlt core.Wallet
+		if err := iter.CurrentData(&wlt); err != nil {
+			require.NoError(t, err)
+		}
 		require.Equal(t, "wallet", wlt.GetLabel())
 		require.Equal(t, "FiberCrypto", wlt.GetId())
 	}

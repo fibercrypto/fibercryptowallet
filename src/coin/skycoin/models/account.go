@@ -42,7 +42,7 @@ func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 func (addr *SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
-func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (addr *SkycoinAddress) ScanUnspentOutputs() core.Iterator {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		log.WithError(err).Error("Couldn't get API client")
@@ -74,7 +74,7 @@ func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator 
 
 	return NewSkycoinTransactionOutputIterator(skyOutputs)
 }
-func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
+func (addr *SkycoinAddress) ListTransactions() core.Iterator {
 
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
@@ -105,7 +105,7 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 	return NewSkycoinTransactionIterator(transactions)
 
 }
-func (addr *SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { // ------TODO
+func (addr *SkycoinAddress) ListPendingTransactions() (core.Iterator, error) { // ------TODO
 	return nil, nil
 }
 
@@ -137,7 +137,7 @@ func (wlt *RemoteWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt *RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (wlt *RemoteWallet) ScanUnspentOutputs() core.Iterator {
 	log.Info("Calling RemoteWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
@@ -152,14 +152,19 @@ func (wlt *RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 			return nil
 		}
 		outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
+		var out core.TransactionOutput
 		for outsIter.Next() {
-			unOuts = append(unOuts, outsIter.Value())
+			if err := outsIter.CurrentData(&out); err != nil {
+				log.Error(err)
+				return nil
+			}
+			unOuts = append(unOuts, out)
 		}
 	}
 	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt *RemoteWallet) ListTransactions() core.TransactionIterator {
+func (wlt *RemoteWallet) ListTransactions() core.Iterator {
 	log.Info("Calling RemoteWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
@@ -174,15 +179,21 @@ func (wlt *RemoteWallet) ListTransactions() core.TransactionIterator {
 			return nil
 		}
 		txnsIter := addr.GetCryptoAccount().ListTransactions()
+
+		var txn core.Transaction
 		for txnsIter.Next() {
-			txns = append(txns, txnsIter.Value())
+			if err := txnsIter.CurrentData(&txn); err != nil {
+				log.Error(err)
+				return nil
+			}
+			txns = append(txns, txn)
 		}
 	}
 
 	return NewSkycoinTransactionIterator(txns)
 }
 
-func (wlt *RemoteWallet) ListPendingTransactions() (core.TransactionIterator, error) {
+func (wlt *RemoteWallet) ListPendingTransactions() (core.Iterator, error) {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		log.WithError(err).Error("Couldn't get API client")
@@ -269,7 +280,7 @@ func (wlt *LocalWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt *LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (wlt *LocalWallet) ScanUnspentOutputs() core.Iterator {
 	log.Info("Calling LocalWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
@@ -284,14 +295,19 @@ func (wlt *LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 			return nil
 		}
 		outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
+
+		var out core.TransactionOutput
 		for outsIter.Next() {
-			unOuts = append(unOuts, outsIter.Value())
+			if err := outsIter.CurrentData(&out); err != nil {
+				return nil
+			}
+			unOuts = append(unOuts, out)
 		}
 	}
 	return NewSkycoinTransactionOutputIterator(unOuts)
 }
 
-func (wlt *LocalWallet) ListTransactions() core.TransactionIterator {
+func (wlt *LocalWallet) ListTransactions() core.Iterator {
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		log.WithError(err).Error("LocalWallet.GetLoadedAddresses() failed")
@@ -305,15 +321,21 @@ func (wlt *LocalWallet) ListTransactions() core.TransactionIterator {
 			return nil
 		}
 		txnsIter := addr.GetCryptoAccount().ListTransactions()
+
+		var txn core.Transaction
 		for txnsIter.Next() {
-			txns = append(txns, txnsIter.Value())
+			if err := txnsIter.CurrentData(&txn); err != nil {
+				log.Error(err)
+				return nil
+			}
+			txns = append(txns, txn)
 		}
 	}
 
 	return NewSkycoinTransactionIterator(txns)
 }
 
-func (wlt *LocalWallet) ListPendingTransactions() (core.TransactionIterator, error) { // ------TODO
+func (wlt *LocalWallet) ListPendingTransactions() (core.Iterator, error) { // ------TODO
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		log.WithError(err).Error("Couldn't get API client")

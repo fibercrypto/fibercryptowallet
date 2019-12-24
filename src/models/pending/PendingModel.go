@@ -1,7 +1,7 @@
 package pending
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models" //callable as skycoin
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models" // callable as skycoin
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
@@ -76,8 +76,13 @@ func (model *PendingTransactionList) getAll() {
 		return
 	}
 	ptModels := make([]*PendingTransaction, 0)
+
+	var txn core.Transaction
 	for txns.Next() {
-		ptModel := TransactionToPendingTransaction(txns.Value())
+		if err := txns.CurrentData(&txn); err != nil {
+			logPendingTxn.Error(err)
+		}
+		ptModel := TransactionToPendingTransaction(txn)
 		ptModel.SetMine(0)
 		ptModels = append(ptModels, ptModel)
 	}
@@ -95,16 +100,25 @@ func (model *PendingTransactionList) getMine() {
 		return
 	}
 	ptModels := make([]*PendingTransaction, 0)
+
+	var wallet core.Wallet
 	for wallets.Next() {
-		account := wallets.Value().GetCryptoAccount()
+		if err := wallets.CurrentData(&wallet); err != nil {
+			logPendingTxn.Error(err)
+		}
+		account := wallet.GetCryptoAccount()
 		txns, err := account.ListPendingTransactions()
 		if err != nil {
-			//display an error in qml app when Mine is selected
+			// display an error in qml app when Mine is selected
 			logPendingTxn.WithError(err).Warn("Couldn't list pending transactions")
 			continue
 		}
+		var txn core.Transaction
 		for txns.Next() {
-			txn := txns.Value()
+			if err := txns.CurrentData(&txn); err != nil {
+				logPendingTxn.Error(err)
+			}
+			txn := txn
 			if txn.GetStatus() == core.TXN_STATUS_PENDING {
 				ptModel := TransactionToPendingTransaction(txn)
 				ptModel.SetMine(1)
@@ -124,8 +138,13 @@ func TransactionToPendingTransaction(stxn core.Transaction) *PendingTransaction 
 	iterator := skycoin.NewSkycoinTransactionOutputIterator(stxn.GetOutputs())
 	sky, coinHours := uint64(0), uint64(0)
 	skyErr, coinHoursErr := false, false
+
+	var out core.TransactionOutput
 	for iterator.Next() {
-		output := iterator.Value()
+		if err := iterator.CurrentData(&out); err != nil {
+			logPendingTxn.Error(err)
+		}
+		output := out
 		val, err := output.GetCoins(skycoin.Sky)
 		if err != nil {
 			logPendingTxn.WithError(err).Warn("Couldn't get Skycoins")

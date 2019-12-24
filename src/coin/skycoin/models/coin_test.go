@@ -67,11 +67,14 @@ func TestSkycoinTransactionGetInputs(t *testing.T) {
 	require.Equal(t, inputs[0].GetId(), "I1")
 	require.Equal(t, inputs[1].GetId(), "I2")
 	it := NewSkycoinTransactioninputIterator(inputs)
+
+	var inp core.TransactionInput
 	for it.Next() {
-		sky, err := it.Value().GetCoins(Sky)
+		require.NoError(t, it.CurrentData(&inp))
+		sky, err := inp.GetCoins(Sky)
 		require.NoError(t, err)
 		require.Equal(t, sky, uint64(20000000))
-		hours, err1 := it.Value().GetCoins(CoinHour)
+		hours, err1 := inp.GetCoins(CoinHour)
 		require.NoError(t, err1)
 		require.Equal(t, hours, uint64(20))
 	}
@@ -91,7 +94,7 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
 	output := input.GetSpentOutput()
 
-	t.Logf("%#v",output)
+	t.Logf("%#v", output)
 	require.Equal(t, output.GetId(), "out1")
 	require.Equal(t, output.GetAddress().String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
 	sky, err := output.GetCoins(Sky)

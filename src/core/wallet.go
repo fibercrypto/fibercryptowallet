@@ -1,19 +1,9 @@
 package core
 
-// WalletIterator iterates over sequences of wallets
-type WalletIterator interface {
-	// Value of wallet at iterator pointer position
-	Value() Wallet
-	// Next discards current value and moves iteration pointer up to next item
-	Next() bool
-	// HasNext may be used to query whether more items are to be expected in the sequence
-	HasNext() bool
-}
-
 // WalletSet allows for creating wallets and listing those in a set
 type WalletSet interface {
 	// ListWallets returns an iterator over wallets in the set
-	ListWallets() WalletIterator
+	ListWallets() Iterator
 	// GetWallet to lookup wallet by ID
 	GetWallet(id string) Wallet
 	// CreateWallet instantiates a new wallet given account seed

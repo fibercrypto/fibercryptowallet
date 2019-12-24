@@ -40,28 +40,11 @@ const (
 
 // SkycoinWalletIterator implements WalletIterator interface
 type SkycoinWalletIterator struct {
-	current int
-	wallets []core.Wallet
-}
-
-func (it *SkycoinWalletIterator) Value() core.Wallet {
-	return it.wallets[it.current]
-}
-
-func (it *SkycoinWalletIterator) Next() bool {
-	if it.HasNext() {
-		it.current++
-		return true
-	}
-	return false
-}
-
-func (it *SkycoinWalletIterator) HasNext() bool {
-	return !((it.current + 1) >= len(it.wallets))
+	core.Iterator
 }
 
 func NewSkycoinWalletIterator(wallets []core.Wallet) *SkycoinWalletIterator {
-	return &SkycoinWalletIterator{wallets: wallets, current: -1}
+	return &SkycoinWalletIterator{Iterator: util.NewGenericIterator(wallets)}
 }
 
 type SkycoinRemoteWallet struct {
@@ -70,7 +53,7 @@ type SkycoinRemoteWallet struct {
 }
 
 // ListWallets returns an iterator over wallets in the set
-func (wltSrv *SkycoinRemoteWallet) ListWallets() core.WalletIterator {
+func (wltSrv *SkycoinRemoteWallet) ListWallets() core.Iterator {
 	logWallet.Info("Listing wallets")
 	c, err := NewSkycoinApiClient(wltSrv.poolSection)
 	if err != nil {
@@ -836,7 +819,7 @@ type SkycoinLocalWallet struct {
 	walletDir string
 }
 
-func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
+func (wltSrv *SkycoinLocalWallet) ListWallets() core.Iterator {
 	logWallet.Info("Listing Skycoin local wallets")
 	wallets := make([]core.Wallet, 0)
 	entries, err := ioutil.ReadDir(wltSrv.walletDir)
@@ -1397,8 +1380,9 @@ func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValu
 		logWallet.WithError(err).Warn("Couldn't get loaded addresses")
 		return nil, err
 	}
+
+	var addr core.Address
 	for iterAddr.Next() {
-		var addr core.Address
 		if err := iterAddr.CurrentData(&addr); err != nil {
 			logWallet.Error(err)
 			return nil, err
@@ -1704,6 +1688,7 @@ var (
 	_ core.Wallet            = &RemoteWallet{}
 	_ skytypes.SkycoinWallet = &LocalWallet{}
 	_ skytypes.SkycoinWallet = &RemoteWallet{}
+	_ core.Iterator          = &SkycoinWalletIterator{}
 	_ core.WalletEnv         = &WalletNode{}
 	_ core.WalletEnv         = &WalletDirectory{}
 	_ core.WalletSet         = &SkycoinRemoteWallet{}

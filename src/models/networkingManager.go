@@ -33,8 +33,11 @@ func (net *NetworkingManager) getNetworks() []*QNetworking {
 		return networks
 	}
 	for netIterator.Next() {
-
-		networks = append(networks, INetworkToQNetworking(netIterator.Value()))
+		var pexNode core.PexNode
+		if err := netIterator.CurrentData(&pexNode); err != nil {
+			logNetworkingManager.Error(err)
+		}
+		networks = append(networks, INetworkToQNetworking(pexNode))
 	}
 
 	return networks

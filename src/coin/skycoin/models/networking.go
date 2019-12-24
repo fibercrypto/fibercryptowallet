@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"strings"
 
 	"github.com/SkycoinProject/skycoin/src/api"
@@ -9,33 +10,15 @@ import (
 )
 
 type SkycoinPexNodeIterator struct {
-	//Implements PexNodeIterator interface
-	current  int
-	networks []core.PexNode
-}
-
-func (it *SkycoinPexNodeIterator) Value() core.PexNode {
-	return it.networks[it.current]
-}
-
-func (it *SkycoinPexNodeIterator) Next() bool {
-	if it.HasNext() {
-		it.current++
-		return true
-	}
-	return false
-}
-
-func (it *SkycoinPexNodeIterator) HasNext() bool {
-	return !((it.current + 1) >= len(it.networks))
+	core.Iterator
 }
 
 func NewSkycoinPexNodeIterator(network []core.PexNode) *SkycoinPexNodeIterator {
-	return &SkycoinPexNodeIterator{networks: network, current: -1}
+	return &SkycoinPexNodeIterator{Iterator: util.NewGenericIterator(network)}
 }
 
 type SkycoinNetworkConnections struct {
-	//Implements NetworkSet interface
+	// Implements NetworkSet interface
 	nodeAddress string
 }
 
@@ -47,7 +30,7 @@ func (remoteNetwork *SkycoinNetworkConnections) newClient() *api.Client {
 	return api.NewClient(remoteNetwork.nodeAddress)
 }
 
-func (remoteNetwork *SkycoinNetworkConnections) ListPeers() core.PexNodeIterator {
+func (remoteNetwork *SkycoinNetworkConnections) ListPeers() core.Iterator {
 	logNetwork.Info("Getting list of peers in Skycoin network connections")
 	c := remoteNetwork.newClient()
 	nets, err := c.NetworkConnections(nil)
@@ -107,3 +90,5 @@ func connectionsToNetwork(connection readable.Connection) *SkycoinPexNode {
 		Source:      connection.IsTrustedPeer,
 	}
 }
+
+var _ core.Iterator = &SkycoinPexNodeIterator{}

@@ -175,8 +175,12 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		walletM.addresseseByWallets[wltId] = qAddresses
 		return
 	}
+
+	var addr core.Address
 	for it.Next() {
-		addr := it.Value()
+		if err := it.CurrentData(&addr); err != nil {
+			logWalletManager.Error(err)
+		}
 		qAddress := NewQAddress(nil)
 		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 		qAddress.SetAddress(addr.String())
@@ -228,12 +232,18 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		walletM.outputsByAddress[address] = outs
 		return
 	}
+
 	var addr core.Address
+
 	for addressIterator.Next() {
-		if addressIterator.Value().String() == address {
-			addr = addressIterator.Value()
+		if err := addressIterator.CurrentData(&addr); err != nil {
+			logWalletManager.Error(err)
+		}
+
+		if addr.String() == address {
 			break
 		}
+		addr = nil
 	}
 	if addr == nil {
 		logWalletManager.WithError(err).Warn("Couldn't get address")
@@ -246,11 +256,16 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		walletM.outputsByAddress[address] = outs
 		return
 	}
+
+	var out core.TransactionOutput
 	for outsIter.Next() {
+		if err := outsIter.CurrentData(&out); err != nil {
+			logWalletManager.Error(err)
+		}
 		qout := NewQOutput(nil)
 		qml.QQmlEngine_SetObjectOwnership(qout, qml.QQmlEngine__CppOwnership)
-		qout.SetOutputID(outsIter.Value().GetId())
-		skyV, err := outsIter.Value().GetCoins(sky.Sky)
+		qout.SetOutputID(out.GetId())
+		skyV, err := out.GetCoins(sky.Sky)
 		if err != nil {
 			qout.SetAddressSky("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't get " + sky.Sky + " coins")
@@ -264,7 +279,7 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		}
 		sSky := util.FormatCoins(skyV, quotient)
 		qout.SetAddressSky(sSky)
-		ch, err := outsIter.Value().GetCoins(sky.CoinHour)
+		ch, err := out.GetCoins(sky.CoinHour)
 		if err != nil {
 			qout.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't get " + sky.CoinHour + " coins")
@@ -293,14 +308,19 @@ func (walletM *WalletManager) updateWallets() {
 		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
 		return
 	}
-	for it.Next() {
 
-		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
+	var wlt core.Wallet
+	for it.Next() {
+		if err := it.CurrentData(&wlt); err != nil {
+			logWalletManager.Error(err)
+		}
+
+		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(wlt.GetId())
 		if err != nil {
 			logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
 			continue
 		}
-		qw := fromWalletToQWallet(it.Value(), encrypted)
+		qw := fromWalletToQWallet(wlt, encrypted)
 		qWallets = append(qWallets, qw)
 
 	}
@@ -315,8 +335,12 @@ func (walletM *WalletManager) getAllAddresses() []*QAddress {
 		logWalletManager.Warn("Error getting the list of wallets")
 		return nil
 	}
+	var wlt core.Wallet
 	for wltIter.Next() {
-		qAddresses = append(qAddresses, walletM.getAddresses(wltIter.Value().GetId())...)
+		if err := wltIter.CurrentData(&wlt); err != nil {
+			logWalletManager.Error(err)
+		}
+		qAddresses = append(qAddresses, walletM.getAddresses(wlt.GetId())...)
 	}
 	return qAddresses
 }
@@ -526,8 +550,13 @@ func (walletM *WalletManager) getOutputsFromWallet(wltId string) []*QOutput {
 		logWalletManager.WithError(err).Warn("Couldn't load addresses iterator")
 		return nil
 	}
+
+	var addr core.Address
 	for addrIter.Next() {
-		outs = append(outs, walletM.getOutputs(wltId, addrIter.Value().String())...)
+		if err := addrIter.CurrentData(&addr); err != nil {
+			logWalletManager.Error(err)
+		}
+		outs = append(outs, walletM.getOutputs(wltId, addr.String())...)
 	}
 	logWalletManager.Info("Loaded all outputs")
 	return outs
@@ -794,23 +823,27 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 
 	}
 
+	var wlt core.Wallet
 	for it.Next() {
+		if err := it.CurrentData(&wlt); err != nil {
+			logWalletManager.Error(err)
+		}
 
-		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
+		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(wlt.GetId())
 		if err != nil {
 			logWalletManager.WithError(err).Error("Couldn't get wallets")
 			return walletM.wallets
 		}
 		if encrypted {
-			qw := fromWalletToQWallet(it.Value(), true)
+			qw := fromWalletToQWallet(wlt, true)
 			walletM.wallets = append(walletM.wallets, qw)
 		} else {
-			qw := fromWalletToQWallet(it.Value(), false)
+			qw := fromWalletToQWallet(wlt, false)
 			walletM.wallets = append(walletM.wallets, qw)
 		}
 
 	}
-	//walletM.wallets = make([]*QWallet, 0)
+	// walletM.wallets = make([]*QWallet, 0)
 
 	logWalletManager.Info("Wallets obtained")
 	return walletM.wallets

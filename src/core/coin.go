@@ -39,16 +39,6 @@ type Transaction interface {
 	IsFullySigned() (bool, error)
 }
 
-// TransactionIterator iterates over a sequence of transactions
-type TransactionIterator interface {
-	// Value of transaction at iterator pointer position
-	Value() Transaction
-	// Next discards current value and moves iteration pointer up to next item
-	Next() bool
-	// HasNext may be used to query whether more items are to be expected in the sequence
-	HasNext() bool
-}
-
 // TransactionInput provides cryptographic proof of spending funds
 type TransactionInput interface {
 	// GetId provides transaction input ID
@@ -60,16 +50,6 @@ type TransactionInput interface {
 	GetCoins(ticker string) (uint64, error)
 	// SupportedAssets enumerates tickers of crypto assets supported by this output
 	SupportedAssets() []string
-}
-
-// TransactionInputIterator iterates over a sequence of transaction inputs
-type TransactionInputIterator interface {
-	// Value of transaction input at iterator pointer position
-	Value() TransactionInput
-	// Next discards current value and moves iteration pointer up to next item
-	Next() bool
-	// HasNext may be used to query whether more items are to be expected in the sequence
-	HasNext() bool
 }
 
 // TransactionOutput provides cryptographic proof of funds transfer
@@ -84,16 +64,6 @@ type TransactionOutput interface {
 	GetCoins(ticker string) (uint64, error)
 	// SupportedAssets enumerates tickers of crypto assets supported by this output
 	SupportedAssets() []string
-}
-
-// TransactionOutputIterator iterates over a sequence of transaction outputs
-type TransactionOutputIterator interface {
-	// Value of transaction output at iterator pointer position
-	Value() TransactionOutput
-	// Next discards current value and moves iteration pointer up to next item
-	Next() bool
-	// HasNext may be used to query whether more items are to be expected in the sequence
-	HasNext() bool
 }
 
 // Block included in the blockchain

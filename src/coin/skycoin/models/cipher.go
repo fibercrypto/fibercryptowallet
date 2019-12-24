@@ -153,7 +153,8 @@ func (pk *SkycoinPubKey) Bytes() []byte {
 
 // Type assertions
 var (
-	_ core.Address = &SkycoinAddress{}
-	_ core.PubKey  = &SkycoinPubKey{}
-	_ core.SecKey  = &SkycoinSecKey{}
+	_ core.Address  = &SkycoinAddress{}
+	_ core.PubKey   = &SkycoinPubKey{}
+	_ core.SecKey   = &SkycoinSecKey{}
+	_ core.Iterator = &SkycoinAddressIterator{}
 )

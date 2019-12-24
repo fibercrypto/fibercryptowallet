@@ -226,56 +226,22 @@ func (txn *SkycoinPendingTransaction) IsFullySigned() (bool, error) {
  * SkycoinTransactionIterator
  */
 type SkycoinTransactionIterator struct { // Implements TransactionIterator interface
-	Current      int
-	Transactions []core.Transaction
-}
-
-func (it *SkycoinTransactionIterator) Value() core.Transaction {
-	return it.Transactions[it.Current]
-}
-
-func (it *SkycoinTransactionIterator) Next() bool {
-	if it.HasNext() {
-		it.Current++
-		return true
-	}
-	return false
-}
-
-func (it *SkycoinTransactionIterator) HasNext() bool {
-	return (it.Current + 1) < len(it.Transactions)
+	core.Iterator
 }
 
 func NewSkycoinTransactionIterator(transactions []core.Transaction) *SkycoinTransactionIterator {
-	return &SkycoinTransactionIterator{Transactions: transactions, Current: -1}
+	return &SkycoinTransactionIterator{Iterator: util.NewGenericIterator(transactions)}
 }
 
 /**
  * SkycoinTransactionOutputIterator
  */
 type SkycoinTransactionOutputIterator struct { // Implements TransactionOutputIterator interface
-	Current int
-	Outputs []core.TransactionOutput
-}
-
-func (it *SkycoinTransactionOutputIterator) Value() core.TransactionOutput {
-	return it.Outputs[it.Current]
-}
-
-func (it *SkycoinTransactionOutputIterator) Next() bool {
-	if it.HasNext() {
-		it.Current++
-		return true
-	}
-	return false
-}
-
-func (it *SkycoinTransactionOutputIterator) HasNext() bool {
-	return (it.Current + 1) < len(it.Outputs)
+	core.Iterator
 }
 
 func NewSkycoinTransactionOutputIterator(outputs []core.TransactionOutput) *SkycoinTransactionOutputIterator {
-	return &SkycoinTransactionOutputIterator{Outputs: outputs, Current: -1}
+	return &SkycoinTransactionOutputIterator{Iterator: util.NewGenericIterator(outputs)}
 }
 
 func NewUninjectedTransaction(txn *coin.Transaction, fee uint64) (*SkycoinUninjectedTransaction, error) {
@@ -639,28 +605,11 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
  * SkycoinTransactionInputIterator
  */
 type SkycoinTransactionInputIterator struct {
-	current int
-	data    []core.TransactionInput
-}
-
-func (iter *SkycoinTransactionInputIterator) Value() core.TransactionInput {
-	return iter.data[iter.current]
-}
-
-func (iter *SkycoinTransactionInputIterator) Next() bool {
-	if iter.HasNext() {
-		iter.current++
-		return true
-	}
-	return false
-}
-
-func (iter *SkycoinTransactionInputIterator) HasNext() bool {
-	return (iter.current + 1) < len(iter.data)
+	core.Iterator
 }
 
 func NewSkycoinTransactioninputIterator(ins []core.TransactionInput) *SkycoinTransactionInputIterator {
-	return &SkycoinTransactionInputIterator{data: ins, current: -1}
+	return &SkycoinTransactionInputIterator{Iterator: util.NewGenericIterator(ins)}
 }
 
 /**
@@ -997,20 +946,20 @@ func (txn *SkycoinCreatedTransaction) IsFullySigned() (bool, error) {
 
 // Type assertions to abort compilation if contracts not satisfied
 var (
-	_ skytypes.SkycoinTxn            = &SkycoinPendingTransaction{}
-	_ skytypes.ReadableTxn           = &SkycoinPendingTransaction{}
-	_ core.Transaction               = &SkycoinPendingTransaction{}
-	_ core.TransactionIterator       = &SkycoinTransactionIterator{}
-	_ core.TransactionInputIterator  = &SkycoinTransactionInputIterator{}
-	_ core.TransactionOutputIterator = &SkycoinTransactionOutputIterator{}
-	_ core.Transaction               = &SkycoinUninjectedTransaction{}
-	_ skytypes.SkycoinTxn            = &SkycoinUninjectedTransaction{}
-	_ skytypes.SkycoinTxn            = &SkycoinTransaction{}
-	_ skytypes.ReadableTxn           = &SkycoinTransaction{}
-	_ core.Transaction               = &SkycoinTransaction{}
-	_ core.TransactionInput          = &SkycoinTransactionInput{}
-	_ core.TransactionOutput         = &SkycoinTransactionOutput{}
-	_ skytypes.SkycoinTxn            = &SkycoinCreatedTransaction{}
-	_ skytypes.ReadableTxn           = &SkycoinCreatedTransaction{}
-	_ core.Transaction               = &SkycoinCreatedTransaction{}
+	_ skytypes.SkycoinTxn    = &SkycoinPendingTransaction{}
+	_ skytypes.ReadableTxn   = &SkycoinPendingTransaction{}
+	_ core.Transaction       = &SkycoinPendingTransaction{}
+	_ core.Iterator          = &SkycoinTransactionIterator{}
+	_ core.Iterator          = &SkycoinTransactionInputIterator{}
+	_ core.Iterator          = &SkycoinTransactionOutputIterator{}
+	_ core.Transaction       = &SkycoinUninjectedTransaction{}
+	_ skytypes.SkycoinTxn    = &SkycoinUninjectedTransaction{}
+	_ skytypes.SkycoinTxn    = &SkycoinTransaction{}
+	_ skytypes.ReadableTxn   = &SkycoinTransaction{}
+	_ core.Transaction       = &SkycoinTransaction{}
+	_ core.TransactionInput  = &SkycoinTransactionInput{}
+	_ core.TransactionOutput = &SkycoinTransactionOutput{}
+	_ skytypes.SkycoinTxn    = &SkycoinCreatedTransaction{}
+	_ skytypes.ReadableTxn   = &SkycoinCreatedTransaction{}
+	_ core.Transaction       = &SkycoinCreatedTransaction{}
 )

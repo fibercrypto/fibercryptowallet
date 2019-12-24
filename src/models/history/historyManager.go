@@ -87,25 +87,40 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
 		return make([]*transactions.TransactionDetails, 0)
 	}
+
+	var wallet core.Wallet
 	for wltIterator.Next() {
-		addressIterator, err := wltIterator.Value().GetLoadedAddresses()
+		if err := wltIterator.CurrentData(&wallet); err != nil {
+			logHistoryManager.Error(err)
+		}
+		addressIterator, err := wallet.GetLoadedAddresses()
 		if err != nil {
 			logHistoryManager.Warn("Couldn't get address iterator")
 			continue
 		}
+
+		var addr core.Address
 		for addressIterator.Next() {
-			_, ok := find[addressIterator.Value().String()]
+			if err := addressIterator.CurrentData(&addr); err != nil {
+				logHistoryManager.Error(err)
+			}
+			_, ok := find[addr.String()]
 			if ok {
-				txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
+				txnsIterator := addr.GetCryptoAccount().ListTransactions()
 				if txnsIterator == nil {
 					logHistoryManager.Warn("Couldn't get transaction iterator")
 					continue
 				}
+
+				var txn core.Transaction
 				for txnsIterator.Next() {
-					_, ok2 := txnFind[txnsIterator.Value().GetId()]
+					if err := txnsIterator.CurrentData(&txn); err != nil {
+						logHistoryManager.Error(err)
+					}
+					_, ok2 := txnFind[txn.GetId()]
 					if !ok2 {
-						txns = append(txns, txnsIterator.Value())
-						txnFind[txnsIterator.Value().GetId()] = struct{}{}
+						txns = append(txns, txn)
+						txnFind[txn.GetId()] = struct{}{}
 					}
 				}
 			}
@@ -316,7 +331,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 				}
 				txnDetails.SetHoursTraspassed(util.FormatCoins(traspassedHoursMoved, accuracy))
 				val := float64(skyAmountMoved)
-				//FIXME: Error here is skipped
+				// FIXME: Error here is skipped
 				accuracy, _ = util.AltcoinQuotient(params.SkycoinTicker)
 				if err != nil {
 					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
@@ -407,15 +422,25 @@ func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 		logHistoryManager.WithError(nil).Warn("Couldn't load addresses")
 		return response
 	}
+
+	var wlt core.Wallet
 	for it.Next() {
-		wlt := it.Value()
+		if err := it.CurrentData(&wlt); err != nil {
+			logHistoryManager.Error(err)
+		}
+
 		addresses, err := wlt.GetLoadedAddresses()
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get loaded addresses")
 			continue
 		}
+
+		var addr core.Address
 		for addresses.Next() {
-			response[addresses.Value().String()] = wlt.GetId()
+			if err := addresses.CurrentData(&addr); err != nil {
+				logHistoryManager.Error(err)
+			}
+			response[addr.String()] = wlt.GetId()
 		}
 
 	}

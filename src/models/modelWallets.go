@@ -110,28 +110,40 @@ func (m *ModelWallets) loadModel() {
 		logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
 		return
 	}
+
+	var wlt core.Wallet
 	for wallets.Next() {
-		addresses, err := wallets.Value().GetLoadedAddresses()
+		if err := wallets.CurrentData(&wlt); err != nil {
+			logWalletModel.Error(err)
+		}
+		addresses, err := wlt.GetLoadedAddresses()
 		if err != nil {
 			logWalletsModel.WithError(nil).Warn("Couldn't get loaded address")
 			return
 		}
 		ma := NewModelAddresses(nil)
-		ma.SetName(wallets.Value().GetLabel())
+		ma.SetName(wlt.GetLabel())
 		oModels := make([]*ModelOutputs, 0)
 
+		var addr core.Address
 		for addresses.Next() {
-			a := addresses.Value()
-			outputs := a.GetCryptoAccount().ScanUnspentOutputs()
+			if err := addresses.CurrentData(&addr); err != nil {
+				logWalletModel.Error(err)
+			}
+
+			outputs := addr.GetCryptoAccount().ScanUnspentOutputs()
 			mo := NewModelOutputs(nil)
-			mo.SetAddress(a.String())
+			mo.SetAddress(addr.String())
 			qOutputs := make([]*QOutput, 0)
 
+			var out core.TransactionOutput
 			for outputs.Next() {
-				to := outputs.Value()
+				if err := outputs.CurrentData(&out); err != nil {
+					logWalletModel.Error(err)
+				}
 				qo := NewQOutput(nil)
-				qo.SetOutputID(to.GetId())
-				val, err := to.GetCoins(coin.Sky)
+				qo.SetOutputID(out.GetId())
+				val, err := out.GetCoins(coin.Sky)
 				if err != nil {
 					logWalletsModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
 					continue
@@ -143,7 +155,7 @@ func (m *ModelWallets) loadModel() {
 				}
 				coins := util.FormatCoins(val, accuracy)
 				qo.SetAddressSky(coins)
-				val, err = to.GetCoins(coin.CoinHoursTicker)
+				val, err = out.GetCoins(coin.CoinHoursTicker)
 				if err != nil {
 					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
 					continue

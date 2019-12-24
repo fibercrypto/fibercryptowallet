@@ -2,6 +2,7 @@ package skycoin
 
 import (
 	"encoding/hex"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"testing"
 
 	"github.com/SkycoinProject/skycoin/src/visor"
@@ -48,10 +49,15 @@ func TestSkycoinPEXGetTxnPool(t *testing.T) {
 	txns, err2 := pex.GetTxnPool()
 	require.NoError(t, err2)
 
+	var txn core.Transaction
 	for txns.Next() {
-		iter := NewSkycoinTransactionOutputIterator(txns.Value().GetOutputs())
+		require.NoError(t, txns.CurrentData(&txn))
+		iter := NewSkycoinTransactionOutputIterator(txn.GetOutputs())
+
+		var out core.TransactionOutput
 		for iter.Next() {
-			output := iter.Value()
+			require.NoError(t, iter.CurrentData(&out))
+			output := out
 			val, err3 := output.GetCoins(Sky)
 			require.NoError(t, err3)
 			require.Equal(t, val, uint64(1000000))
