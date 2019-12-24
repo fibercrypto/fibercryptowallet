@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	"strconv"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models" //callable as skycoin
 	"github.com/fibercrypto/fibercryptowallet/src/core"
@@ -105,24 +106,15 @@ func (blockchainStatus *BlockchainStatusModel) updateInfo() error {
 	}
 
 	// block details
-	blockchainStatus.SetNumberOfBlocks(util.FormatCoins(numberOfBlocks, 1))
+	blockchainStatus.SetNumberOfBlocks(strconv.FormatUint(numberOfBlocks, 10))
 	blockchainStatus.SetTimestampLastBlock(qtcore.NewQDateTime3(qtcore.NewQDate3(year, month, day), qtcore.NewQTime3(h, m, s, 0), qtcore.Qt__LocalTime))
 	blockchainStatus.SetHashLastBlock(string(lastBlockHash))
-	
-	// sky details
-	accuracy, err := util.AltcoinQuotient(skycoin.SkycoinTicker)
-	if err != nil {
-		logWalletsModel.WithError(err).Warn("Couldn't get " + skycoin.SkycoinTicker + " coins quotient")
-	}
-	blockchainStatus.SetCurrentSkySupply(util.FormatCoins(currentSkySupply, accuracy))
-	blockchainStatus.SetTotalSkySupply(util.FormatCoins(totalSkySupply, accuracy))
 
-	accuracy, err = util.AltcoinQuotient(skycoin.CoinHoursTicker)
-	if err != nil {
-		logWalletsModel.WithError(err).Warn("Couldn't get " + skycoin.CoinHoursTicker + " coins quotient")
-	}
-	blockchainStatus.SetCurrentCoinHoursSupply(util.FormatCoins(currentCoinHoursSupply, accuracy))
-	blockchainStatus.SetTotalCoinHoursSupply(util.FormatCoins(totalCoinHoursSupply, accuracy))
+	// sky details
+	blockchainStatus.SetCurrentSkySupply(strconv.FormatUint(currentSkySupply, 10))
+	blockchainStatus.SetTotalSkySupply(strconv.FormatUint(totalSkySupply, 10))
+	blockchainStatus.SetCurrentCoinHoursSupply(strconv.FormatUint(currentCoinHoursSupply, 10))
+	blockchainStatus.SetTotalCoinHoursSupply(strconv.FormatUint(totalCoinHoursSupply, 10))
 	blockchainStatus.SetLoading(false)
 
 	return nil

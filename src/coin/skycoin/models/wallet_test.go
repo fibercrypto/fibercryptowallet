@@ -2,7 +2,6 @@ package skycoin
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"math"
 	"strconv"
@@ -292,7 +291,7 @@ func TestRemoteWalletTransfer(t *testing.T) {
 	hash := testutil.RandSHA256(t)
 
 	addr, err := NewSkycoinAddress(destinationAddress.String())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	opt := NewTransferOptions()
 	opt.SetValue("BurnFactor", "0.5")
 	opt.SetValue("CoinHoursSelectionType", "auto")
@@ -368,9 +367,9 @@ func TestRemoteWalletSendFromAddress(t *testing.T) {
 		},
 	}
 	fromAddr, err := NewSkycoinAddress(startAddress.String())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	chgAddr, err := NewSkycoinAddress(changeAddress)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	opt1 := NewTransferOptions()
 	opt1.SetValue("BurnFactor", "0.5")
@@ -481,7 +480,7 @@ func TestRemoteWalletSpend(t *testing.T) {
 		},
 	}
 	chgAddr, err := NewSkycoinAddress(changeAddress)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	opt := NewTransferOptions()
 	opt.SetValue("BurnFactor", "0.5")
 	opt.SetValue("CoinHoursSelectionType", "auto")
@@ -1011,7 +1010,7 @@ func TestLocalWalletTransfer(t *testing.T) {
 	wlt := makeLocalWallet(t)
 
 	addr, err := NewSkycoinAddress(destinationAddress.String())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	loadedAddrs, err := wlt.GetLoadedAddresses()
 	require.NoError(t, err)
 	addrs := make([]string, 0)
@@ -1087,9 +1086,9 @@ func TestLocalWalletSendFromAddress(t *testing.T) {
 		},
 	}
 	fromAddr, err := NewSkycoinAddress(startAddress.String())
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	chgAddr, err := NewSkycoinAddress(changeAddress)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 
 	opt1 := NewTransferOptions()
 	opt1.SetValue("BurnFactor", "0.5")
@@ -1179,7 +1178,7 @@ func TestLocalWalletSpend(t *testing.T) {
 		},
 	}
 	chgAddr, err := NewSkycoinAddress(changeAddress)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	opt := NewTransferOptions()
 	opt.SetValue("BurnFactor", "0.5")
 	opt.SetValue("CoinHoursSelectionType", "auto")
@@ -1328,7 +1327,7 @@ func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
 		},
 		ChangeAddress: &changeAddrString,
 		To: []api.Receiver{
-			api.Receiver{
+			{
 				Address: destinationAddress.String(),
 				Coins:   strconv.Itoa(sky),
 			},
@@ -1347,7 +1346,7 @@ func TestSkycoinBlockchainSendFromAddress(t *testing.T) {
 		},
 		ChangeAddress: &changeAddrString,
 		To: []api.Receiver{
-			api.Receiver{
+			{
 				Address: destinationAddress.String(),
 				Coins:   strconv.Itoa(sky),
 				Hours:   "250",
@@ -1454,7 +1453,6 @@ func TestSkycoinBlockchainSpend(t *testing.T) {
 	opt1 := NewTransferOptions()
 	opt1.SetValue("BurnFactor", "0.5")
 	opt1.SetValue("CoinHoursSelectionType", "auto")
-
 	changeAddrString := changeAddr.String()
 	req1 := api.CreateTransactionRequest{
 		UxOuts:            uxOutsStr,

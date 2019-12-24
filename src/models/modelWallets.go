@@ -139,8 +139,6 @@ func (m *ModelWallets) loadModel() {
 			if outputs == nil {
 				logWalletModel.Warn("unspent outputs not founds")
 				return
-			}
-
 			var out core.TransactionOutput
 			for outputs.Next() {
 				if err := outputs.CurrentData(&out); err != nil {

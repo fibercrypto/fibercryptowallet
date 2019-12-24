@@ -1,18 +1,38 @@
 package skycoin //nolint goimports
 
 import (
+	"encoding/json"
+
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	sky "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+
+	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 
 	util "github.com/fibercrypto/fibercryptowallet/src/util"
 )
 
+var logSkycoin = logging.MustGetLogger("Skycoin Altcoin")
+
 func init() {
-	cf := local.GetConfigManager()
-	err := core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(cf.GetNode()))
+	err := config.RegisterConfig()
 	if err != nil {
-		return
+		logSkycoin.Warn("Couldn't register Skycoin configuration")
+	}
+	nodeStr, err := config.GetOption(config.SettingPathToNode)
+	if err != nil {
+		logSkycoin.Warn("Couldn't get node options")
+	}
+	node := make(map[string]string)
+	err = json.Unmarshal([]byte(nodeStr), &node)
+	if err != nil {
+		logSkycoin.Warn("Couldn't unmarshal from options")
+	}
+	err = core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(node["address"]))
+	if err != nil {
+		logSkycoin.Warn("Couldn't create section for Skycoin")
 	}
 	util.RegisterAltcoin(sky.NewSkyFiberPlugin(sky.SkycoinMainNetParams))
+
 }
