@@ -80,14 +80,6 @@ Item {
         }
     }
 
-    function openAddressBookPage() {
-            if (stackView.depth > 1) {
-                stackView.replace(componentAddressBook)
-            } else {
-                stackView.push(componentAddressBook)
-            }
-        }
-
     function pop() {
         stackView.pop()
     }
@@ -110,12 +102,12 @@ Item {
 
                 onWalletCreationRequested: {
                     stackView.replace(componentGeneralSwipeView)
-                    walletModel.addWallet(walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType() ,0))
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType() ,0)
                 }
 
                 onWalletLoadingRequested:{
                     stackView.replace(componentGeneralSwipeView)
-                    walletModel.addWallet(walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType(), 11))
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType(), 10)
                 }
             }
         }
@@ -173,14 +165,6 @@ Item {
             id: settings
         }
     }
-
-    Component {
-            id: componentAddressBook
-
-            AddressBook {
-                id: addressBook
-            }
-        }
 
     
 }

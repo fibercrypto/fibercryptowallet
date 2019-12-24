@@ -2,7 +2,7 @@ package util
 
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"testing"
 )
 
@@ -32,19 +32,19 @@ func TestNewGenericAddress(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := NewGenericAddress(tt.args.addr)
-			assert.Equal(t, got, tt.want)
-			assert.Equal(t, got.Bytes(), []byte(tt.args.addr))
-			assert.Equal(t, got.String(), tt.args.addr)
-			assert.False(t, got.IsBip32())
+			require.Equal(t, got, tt.want)
+			require.Equal(t, got.Bytes(), []byte(tt.args.addr))
+			require.Equal(t, got.String(), tt.args.addr)
+			require.False(t, got.IsBip32())
 			if tt.name == "invalid_Addrs" {
-				assert.True(t, got.Null())
+				require.True(t, got.Null())
 			} else {
-				assert.False(t, got.Null())
+				require.False(t, got.Null())
 			}
 
-			assert.Nil(t, got.Verify(nil))
-			assert.Nil(t, got.GetCryptoAccount())
-			assert.Equal(t, got.Checksum(), core.Checksum{})
+			require.Nil(t, got.Verify(nil))
+			require.Nil(t, got.GetCryptoAccount())
+			require.Equal(t, got.Checksum(), core.Checksum{})
 
 		})
 	}

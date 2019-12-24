@@ -16,7 +16,6 @@ RowLayout {
     property alias enableBlockchain: menuItemBlockchain.enabled
     property alias enableNetworking: menuItemNetworking.enabled
     property alias enableSettings: menuItemSettings.enabled
-    property alias enableAddrsBook: menuItemAddressBook.enabled
 
     // Signals
     signal outputsRequested()
@@ -27,8 +26,6 @@ RowLayout {
     signal aboutRequested()
     signal aboutQtRequested()
     signal licenseRequested()
-    signal addressBookRequested()
-
 
     // Functions
     function back() {
@@ -74,7 +71,6 @@ RowLayout {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-            enableAddrsBook = true
         }
     }
 
@@ -86,6 +82,7 @@ RowLayout {
         property color menuTextColor: toolButtonBack.hide ? Material.primaryTextColor : Material.background
 
         Layout.fillWidth: true
+        topInset: -1
         leftInset:  -(toolButtonBack.width + toolButtonBack.padding)
         rightInset: -(toolButtonTheme.width + toolButtonTheme.padding)
         Material.foreground: menuTextColor
@@ -138,14 +135,6 @@ RowLayout {
 
                 onClicked: settingsRequested()
             }
-
-            CustomMenuItem {
-                            id: menuItemAddressBook
-                            text: qsTr("&Address Book")
-                            iconSource: "qrc:/images/resources/images/icons/settings.svg"
-
-                            onClicked: addressBookRequested()
-                        }
         } // menuTools
 
         Menu {

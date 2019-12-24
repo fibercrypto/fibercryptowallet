@@ -2,245 +2,231 @@ package local
 
 import (
 	"encoding/json"
-	"io/ioutil"
-	"os"
-	"path/filepath"
-	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	qtcore "github.com/therecipe/qt/core"
 )
 
-var logConfigManager = logging.MustGetLogger("ConfigManager")
-
 const (
-	pathToConfigFromHome         = ".fiber/config.json"
-	pathToDefaultWalletsFromHome = ".skycoin/wallets"
-	LocalWallet                  = iota
+	LocalWallet = iota
 	RemoteWallet
 )
 
 var (
-	confManager *ConfigManager
-	once        sync.Once
+	confManager         *ConfigManager
+	OptionNotFoundError = errors.ErrInvalidOptions
 )
 
-type ConfigManager struct {
-	sourceList []*WalletSource
-	node       string
-}
-
-type WalletSource struct {
-	id         int
-	sourceType int
-	source     string
-}
-
-func (ws *WalletSource) GetType() int {
-	logConfigManager.Info("Getting wallet type")
-	return ws.sourceType
-}
-func (ws *WalletSource) GetSource() string {
-	logConfigManager.Info("Getting wallet source")
-	return ws.source
-}
-func (ws *WalletSource) GetId() int {
-	logConfigManager.Info("Getting wallet id")
-	return ws.id
-}
-
-func (ws *WalletSource) edit(source string, tp int) {
-	logConfigManager.Info("Editing wallet source")
-	ws.source = source
-	ws.sourceType = tp
-}
-
-func (ws *WalletSource) getWalletSourceJson() *walletSourceJson {
-	return &walletSourceJson{
-		SourceType: ws.GetType(),
-		Source:     ws.GetSource(),
+func init() {
+	qs := qtcore.NewQSettings(qtcore.QCoreApplication_OrganizationName(), qtcore.QCoreApplication_ApplicationName(), nil)
+	confManager = &ConfigManager{
+		setting:  qs,
+		sections: make(map[string]*SectionManager),
 	}
+
 }
 
-func (cm *ConfigManager) GetSources() []*WalletSource {
-	return cm.sourceList
+type ConfigManager struct {
+	setting  *qtcore.QSettings
+	sections map[string]*SectionManager
 }
 
-func (cm *ConfigManager) GetNode() string {
-	return cm.node
+func (cm *ConfigManager) GetSections() []string {
+	return cm.setting.ChildGroups()
 }
 
-func (cm *ConfigManager) EditWalletSource(id int, source string, tp int) error {
-	var src *WalletSource
-	for _, wltSrc := range cm.sourceList {
-		if wltSrc.id == id {
-			src = wltSrc
-			break
+func (cm *ConfigManager) GetSectionManager(section string) *SectionManager {
+	sectionM, ok := cm.sections[section]
+	if !ok {
+		return nil
+	}
+	return sectionM
+}
+
+func (cm *ConfigManager) RegisterSection(name string, options []*Option) *SectionManager {
+
+	cm.sections[name] = &SectionManager{
+		name:     name,
+		settings: cm.setting,
+		options:  options,
+	}
+
+	cm.setting.BeginGroup(name)
+	defer cm.setting.EndGroup()
+	defer cm.setting.Sync()
+
+	for _, opt := range options {
+		for _, sect := range opt.sectionPath {
+			cm.setting.BeginGroup(sect)
+			defer cm.setting.EndGroup()
+		}
+		if !opt.optional && !cm.setting.Contains(opt.name) {
+			cm.setting.SetValue(opt.name, qtcore.NewQVariant1(opt._default))
+
 		}
 	}
-	if src == nil {
-		return errors.ErrInvalidID
-	}
 
-	if tp != LocalWallet && tp != RemoteWallet {
-		tp = src.sourceType
-	}
+	return cm.sections[name]
+}
 
-	if source == "" {
-		source = src.source
-	}
+type SectionManager struct {
+	name     string
+	settings *qtcore.QSettings
+	options  []*Option
+}
 
-	src.edit(source, tp)
+func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, error) {
+	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
+	for _, sect := range sectionPath {
+		groups := sm.settings.ChildGroups()
+		finded := false
+		for _, grp := range groups {
+			if grp == sect {
+				finded = true
+				break
+			}
+		}
+		if !finded {
+			return "", OptionNotFoundError
+		}
+		sm.settings.BeginGroup(sect)
+		defer sm.settings.EndGroup()
+	}
+	val := sm.settings.Value(name, qtcore.NewQVariant())
+	if val.IsNull() {
+		return "", OptionNotFoundError
+	}
+	return val.ToString(), nil
+}
+
+func (sm *SectionManager) GetDefaultValue(option string, sectionPath []string, name string) (string, error) {
+	for _, opt := range sm.options {
+		if compareStringSlices(sectionPath, opt.sectionPath) && option == opt.name {
+			store := make(map[string]string)
+			err := json.Unmarshal([]byte(opt._default), &store)
+			if err != nil {
+				return "", err
+			}
+			val, ok := store[name]
+			if !ok {
+				return "", errors.ErrInvalidOptions
+			}
+			return val, nil
+		}
+	}
+	return "", OptionNotFoundError
+}
+
+func (sm *SectionManager) Save(name string, sectionPath []string, value string) error {
+	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
+	for _, sect := range sectionPath {
+		groups := sm.settings.ChildGroups()
+		finded := false
+		for _, grp := range groups {
+			if grp == sect {
+				finded = true
+				break
+			}
+		}
+		if !finded {
+			return OptionNotFoundError
+		}
+		sm.settings.BeginGroup(sect)
+		defer sm.settings.EndGroup()
+	}
+	if !sm.settings.Contains(name) {
+		return OptionNotFoundError
+	}
+	sm.settings.SetValue(name, qtcore.NewQVariant1(value))
 	return nil
-
 }
 
-func (cm *ConfigManager) EditNode(node string) {
-	cm.node = node
-}
+func (sm *SectionManager) GetValues(sectionPath []string) ([]string, error) {
+	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
 
-func (cm *ConfigManager) Save() error {
-	logConfigManager.Info("Saving configuration")
+	for _, sect := range sectionPath {
 
-	jsonFormat, err := json.Marshal(cm.getConfigManagerJson())
-	if err != nil {
-		return err
+		groups := sm.settings.ChildGroups()
+		finded := false
+		for _, grp := range groups {
+			if grp == sect {
+				finded = true
+				break
+			}
+		}
+		if !finded {
+			return nil, OptionNotFoundError
+		}
+		sm.settings.BeginGroup(sect)
+		defer sm.settings.EndGroup()
 	}
-	return ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
-}
-
-func (cm *ConfigManager) getConfigManagerJson() *configManagerJson {
-	logConfigManager.Info("Getting configuration from JSON")
-
-	wltSources := make([]*walletSourceJson, 0)
-	for _, wltS := range cm.sourceList {
-		wltSources = append(wltSources, wltS.getWalletSourceJson())
+	keys := sm.settings.ChildKeys()
+	values := make([]string, 0)
+	for _, key := range keys {
+		values = append(values, sm.settings.Value(key, qtcore.NewQVariant()).ToString())
 	}
-	return &configManagerJson{
-		SourceList: wltSources,
-		Node:       cm.node,
-	}
+	return values, nil
 }
 
-type configManagerJson struct {
-	SourceList []*walletSourceJson `json:"SourceList"`
-	Node       string              `json:"Node"`
+func (sm *SectionManager) GetPaths() [][]string {
+	sm.settings.BeginGroup(sm.name)
+	defer sm.settings.EndGroup()
+	return sm.getPaths([]string{})
 }
 
-func (cmJ *configManagerJson) getConfigManager() *ConfigManager {
-	wltsSource := make([]*WalletSource, 0)
-	for _, wltS := range cmJ.SourceList {
-		wltsSource = append(wltsSource, wltS.getWalletSource())
+func (sm *SectionManager) getPaths(prefix []string) [][]string {
+	if len(prefix) > 0 {
+		lastGrp := prefix[len(prefix)-1]
+		sm.settings.BeginGroup(lastGrp)
+		defer sm.settings.EndGroup()
 	}
 
-	return &ConfigManager{
-		node:       cmJ.Node,
-		sourceList: wltsSource,
+	grps := sm.settings.ChildGroups()
+	if len(grps) == 0 {
+		return [][]string{prefix}
 	}
+	values := make([][]string, 0)
+	for _, grp := range grps {
+		values = append(values, sm.getPaths(append(prefix, grp))...)
+	}
+	return values
+
 }
 
-type walletSourceJson struct {
-	SourceType int    `json:"Type"`
-	Source     string `json:"Source"`
+type Option struct {
+	name        string
+	sectionPath []string
+	optional    bool
+	_default    string
 }
 
-func (wsJ *walletSourceJson) getWalletSource() *WalletSource {
-	return &WalletSource{
-		source:     wsJ.Source,
-		sourceType: wsJ.SourceType,
+func NewOption(name string, sectionPath []string, optional bool, _default string) *Option {
+	if !optional && _default == "" {
+		return nil
+	}
+	return &Option{
+		name:        name,
+		sectionPath: sectionPath,
+		optional:    optional,
+		_default:    _default,
 	}
 }
 
 func GetConfigManager() *ConfigManager {
-	once.Do(func() {
-		var cm *ConfigManager
-
-		if configFileExist() {
-
-			cm = loadConfigFromFile()
-		} else {
-
-			cm = getDefaultConfigManager()
-
-		}
-		confManager = cm
-	})
-
 	return confManager
 }
 
-func configFileExist() bool {
-	fileDir := getConfigFileDir()
-	if _, err := os.Stat(fileDir); err != nil {
-		if os.IsNotExist(err) {
+func compareStringSlices(a []string, b []string) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, val := range a {
+		if val != b[i] {
 			return false
 		}
 	}
 	return true
-}
-
-func loadConfigFromFile() *ConfigManager {
-	cm := new(configManagerJson)
-	fileDir := getConfigFileDir()
-	dat, err := ioutil.ReadFile(fileDir) //nolint gosec
-
-	if err != nil {
-
-		return getDefaultConfigManager()
-	}
-	err = json.Unmarshal(dat, cm)
-	if err != nil {
-
-		return getDefaultConfigManager()
-	}
-	configM := cm.getConfigManager()
-	cont := 1
-	for _, ws := range configM.sourceList {
-		ws.id = cont
-		cont++
-	}
-	return configM
-
-}
-
-func getDefaultConfigManager() *ConfigManager {
-
-	cm := new(ConfigManager)
-
-	cm.node = "https://staging.node.skycoin.net"
-	cm.sourceList = []*WalletSource{getDefaultWalletSource()}
-
-	jsonFormat, err := json.Marshal(cm.getConfigManagerJson())
-	if err != nil {
-		return nil
-	}
-
-	err = os.MkdirAll(filepath.Dir(getConfigFileDir()), 0750)
-	if err != nil {
-		return nil
-	}
-
-	err = ioutil.WriteFile(getConfigFileDir(), jsonFormat, 0644)
-	if err != nil {
-		return nil
-	}
-
-	return cm
-
-}
-
-func getConfigFileDir() string {
-	homeDir := os.Getenv("HOME")
-	fileDir := filepath.Join(homeDir, pathToConfigFromHome)
-	return fileDir
-}
-
-func getDefaultWalletSource() *WalletSource {
-	ws := new(WalletSource)
-	ws.sourceType = LocalWallet
-	ws.id = 1
-	walletsDir := filepath.Join(os.Getenv("HOME"), pathToDefaultWalletsFromHome)
-	ws.source = walletsDir
-	return ws
-
 }
