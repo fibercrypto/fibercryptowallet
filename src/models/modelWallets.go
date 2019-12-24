@@ -136,6 +136,12 @@ func (m *ModelWallets) loadModel() {
 			mo.SetAddress(addr.String())
 			qOutputs := make([]*QOutput, 0)
 
+			if outputs == nil {
+				logWalletModel.Warn("unspent outputs not founds")
+				return
+			}
+
+			var out core.TransactionOutput
 			for outputs.Next() {
 				if err := outputs.CurrentData(&out); err != nil {
 					logWalletModel.Error(err)
