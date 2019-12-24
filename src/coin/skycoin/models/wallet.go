@@ -1632,11 +1632,18 @@ func checkEquivalentSkycoinWallets(wlt1, wlt2 core.Wallet) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	var addrs core.Address
-	if err := addrs1.CurrentData(&addrs); err != nil {
+	var addr1 core.Address
+	if err := addrs1.CurrentData(&addr1); err != nil {
+		logWallet.Error(err)
 		return false, err
 	}
-	return addrs1.HasNext() && addrs2.HasNext() && addrs.String() == addrs.String(), nil
+	var addr2 core.Address
+	if err := addrs1.CurrentData(&addr2); err != nil {
+		logWallet.Error(err)
+		return false, err
+	}
+
+	return addrs1.HasNext() && addrs2.HasNext() && addr1.String() == addr2.String(), nil
 }
 
 func checkTxnSupported(wlt1, wlt2 core.Wallet, txn core.Transaction) (bool, error) {
