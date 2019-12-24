@@ -16,7 +16,6 @@ RowLayout {
     property alias enableBlockchain: menuItemBlockchain.enabled
     property alias enableNetworking: menuItemNetworking.enabled
     property alias enableSettings: menuItemSettings.enabled
-    property alias enableAddrsBook: menuItemAddressBook.enabled
 
     // Signals
     signal outputsRequested()
@@ -27,8 +26,6 @@ RowLayout {
     signal aboutRequested()
     signal aboutQtRequested()
     signal licenseRequested()
-    signal addressBookRequested()
-
 
     // Functions
     function back() {
@@ -74,7 +71,6 @@ RowLayout {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-            enableAddrsBook = true
         }
     }
 
@@ -139,14 +135,6 @@ RowLayout {
 
                 onClicked: settingsRequested()
             }
-
-            CustomMenuItem {
-                            id: menuItemAddressBook
-                            text: qsTr("&Address Book")
-                            iconSource: "qrc:/images/resources/images/icons/settings.svg"
-
-                            onClicked: addressBookRequested()
-                        }
         } // menuTools
 
         Menu {

@@ -62,6 +62,7 @@ func (m *AddressesModel) init() {
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectColumnCount(m.columnCount)
 	m.ConnectRoleNames(m.roleNames)
+
 	m.ConnectAddAddress(m.addAddress)
 	m.ConnectUpdateModel(m.updateModel)
 	m.ConnectEditAddress(m.editAddress)
@@ -192,10 +193,13 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 }
 
 func (m *AddressesModel) updateModel(fileName string) {
+	wait := make(chan bool)
 	go func() {
 		walletManager.updateAddresses(fileName)
-		m.LoadModel(walletManager.getAddresses(fileName))
+		wait <- true
 	}()
+	<- wait
+	go m.LoadModel(walletManager.getAddresses(fileName))
 }
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {

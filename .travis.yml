@@ -78,8 +78,8 @@ notifications:
   email: false
   webhooks:
     urls:
-      - https://fathomless-fjord-24024.herokuapp.com/notify
-      - https://coveralls.io/webhook
+      -  https://fathomless-fjord-24024.herokuapp.com/notify
+      -  https://coveralls.io/webhook
 
 before_deploy:
   - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
@@ -98,5 +98,6 @@ deploy:
   draft: true
   overwrite: true
   on:
-    repo: fibercrypto/fibercryptowallet
+    repo: fibercrypto/FiberCryptoWallet
     tags: true
+

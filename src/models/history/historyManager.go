@@ -149,7 +149,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
 				continue
 			}
-			qIn.SetAddressCoinHours(util.FormatCoins(chUint64, accuracy))
+			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64/accuracy, 10))
 			inputs.AddAddress(qIn)
 			_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
 			if ok {
@@ -247,22 +247,14 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			logHistoryManager.WithError(err).Warn("Couldn't compute fee of the operation")
 			continue
 		}
-		accuracy, err := util.AltcoinQuotient(coin.CoinHoursTicker)
-		if err != nil {
-			logHistoryManager.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
-		}
-		txnDetails.SetHoursBurned(util.FormatCoins(fee, accuracy))
+		txnDetails.SetHoursBurned(strconv.FormatUint(fee, 10))
 
 		switch txnDetails.Type() {
 		case transactions.TransactionTypeReceive:
 			{
-				accuracy, err := util.AltcoinQuotient(coin.CoinHoursTicker)
-				if err != nil {
-					logHistoryManager.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
-				}
-				txnDetails.SetHoursTraspassed(util.FormatCoins(traspassedHoursIn, accuracy))
+				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursIn, 10))
 				val := float64(skyAmountIn)
-				accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
+				accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 				if err != nil {
 					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
 					continue
@@ -306,14 +298,9 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 					}
 
 				}
-				accuracy, err := util.AltcoinQuotient(coin.CoinHoursTicker)
-				if err != nil {
-					logHistoryManager.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
-				}
-				txnDetails.SetHoursTraspassed(util.FormatCoins(traspassedHoursMoved, accuracy))
+				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursMoved, 10))
 				val := float64(skyAmountMoved)
-				//FIXME: Error here is skipped
-				accuracy, _ = util.AltcoinQuotient(params.SkycoinTicker)
+				accuracy, _ := util.AltcoinQuotient(params.SkycoinTicker)
 				if err != nil {
 					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
 					continue
@@ -324,13 +311,9 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 			}
 		case transactions.TransactionTypeSend:
 			{
-				accuracy, err := util.AltcoinQuotient(coin.CoinHoursTicker)
-				if err != nil {
-					logHistoryManager.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
-				}
-				txnDetails.SetHoursTraspassed(util.FormatCoins(traspassedHoursOut, accuracy))
+				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursOut, 10))
 				val := float64(skyAmountOut)
-				accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
+				accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 				if err != nil {
 					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
 					continue

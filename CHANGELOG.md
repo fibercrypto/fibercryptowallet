@@ -63,4 +63,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - QR code images are buttons
 - GUI to add wallets
 - GUI to generate new addresses for a wallet
-- Added Address Book
+

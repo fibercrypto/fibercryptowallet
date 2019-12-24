@@ -17,6 +17,7 @@ LICENSE			:= GPLv3
 COPYRIGHT		:= Copyright © 2019 $(ORG_NAME)
 
 UNAME_S = $(shell uname -s)
+OSNAME = $(shell echo $(UNAME_S) | tr A-Z a-z)
 DEFAULT_TARGET ?= desktop
 DEFAULT_ARCH ?= linux
 ## In future use as a parameter tu make command.
@@ -80,8 +81,8 @@ QTFILES       := $(shell echo "$(QRCFILES) $(TSFILES) $(PLISTFILES) $(QTCONFFILE
 RESOURCEFILES := $(shell echo "$(SVGFILES) $(PNGFILES) $(OTFFILES) $(ICNSFILES) $(ICOFILES) $(RCFILES)")
 SRCFILES      := $(shell echo "$(QTFILES) $(RESOURCEFILES) $(GOFILES)")
 
-BINPATH_Linux      := deploy/linux/fibercryptowallet
-BINPATH_Windows_NT := deploy/windows/fibercryptowallet.exe
+BINPATH_Linux      := deploy/linux/FiberCryptoWallet
+BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
 BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
 BINPATH            := $(BINPATH_$(UNAME_S))
 
@@ -243,7 +244,6 @@ clean: clean-test clean-build ## Remove temporary files
 
 gen-mocks: ## Generate mocks for interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
-	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/fibercryptowallet/g' PATH
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
@@ -251,10 +251,6 @@ test-sky: ## Run Skycoin plugin test suite
 
 test-core: ## Run tests for API core and helpers
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
-
-test-data: ## Run tests for data package
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
-
 
 test-sky-launch-html-cover:
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
@@ -272,7 +268,7 @@ test-cover-travis:
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test: clean-test test-core test-sky test-data ## Run project test suite
+test: clean-test test-core test-sky ## Run project test suite
 
 run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
