@@ -73,7 +73,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectNewWalletAddress(walletM.newWalletAddress)
 		walletM.ConnectEncryptWallet(walletM.encryptWallet)
 		walletM.ConnectDecryptWallet(walletM.decryptWallet)
-		walletM.ConnectGetWallets(walletM.getWallets)
+		go walletM.ConnectGetWallets(walletM.getWallets)
 		walletM.ConnectGetAddresses(walletM.getAddresses)
 		walletM.ConnectSendTo(walletM.sendTo)
 		walletM.ConnectSignTxn(walletM.signTxn)
