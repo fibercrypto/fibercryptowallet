@@ -44,6 +44,7 @@ ApplicationWindow {
             enableOutputs = false
             enablePendingTransactions = true
             enableBlockchain = true
+            enableExplorer = true
             enableNetworking = true
             enableSettings = true
         }
@@ -59,6 +60,7 @@ ApplicationWindow {
             enableOutputs = true
             enablePendingTransactions = false
             enableBlockchain = true
+            enableExplorer = true
             enableNetworking = true
             enableSettings = true
 
@@ -71,9 +73,22 @@ ApplicationWindow {
             enableOutputs = true
             enablePendingTransactions = true
             enableBlockchain = false
+            enableExplorer = true
             enableNetworking = true
             enableSettings = true
         }
+
+        onExplorerRequested: {
+            generalStackView.openExplorerPage()
+            customHeader.text = qsTr("Explorer")
+
+            enableOutputs = true
+            enablePendingTransactions = true
+            enableBlockchain = true
+            enableNetworking = true
+            enableExplorer = false
+            enableSettings = true
+                }
 
         onNetworkingRequested: {
             generalStackView.openNetworkingPage()
@@ -82,6 +97,7 @@ ApplicationWindow {
             enableOutputs = true
             enablePendingTransactions = true
             enableBlockchain = true
+            enableExplorer = true
             enableNetworking = false
             enableSettings = true
         }
@@ -93,6 +109,7 @@ ApplicationWindow {
             enableOutputs = true
             enablePendingTransactions = true
             enableBlockchain = true
+            enableExplorer = true
             enableNetworking = true
             enableSettings = false
         }

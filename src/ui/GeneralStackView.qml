@@ -72,6 +72,14 @@ Item {
         }
     }
 
+    function openExplorerPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentExplorer)
+        } else {
+            stackView.push(componentExplorer)
+        }
+    }
+
     function openSettingsPage() {
         if (stackView.depth > 1) {
             stackView.replace(componentSettings)
@@ -155,6 +163,14 @@ Item {
 
         Networking {
             id: networking
+        }
+    }
+
+    Component {
+        id: componentExplorer
+
+        ExplorerPage {
+            id: explorer
         }
     }
 

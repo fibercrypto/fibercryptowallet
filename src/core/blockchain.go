@@ -18,6 +18,8 @@ type BlockchainStatus interface {
 	GetLastBlock() (Block, error)
 	// GetNumberOfBlocks determine number of blocks in the blockchain
 	GetNumberOfBlocks() (uint64, error)
+
+	GetRangeBlocks(start, end uint64) ([]Block, error)
 }
 
 // BlockchainAPI abstract interface for transactions management and utility functions for specific blockchain.

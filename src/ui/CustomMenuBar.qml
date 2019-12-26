@@ -16,11 +16,13 @@ RowLayout {
     property alias enableBlockchain: menuItemBlockchain.enabled
     property alias enableNetworking: menuItemNetworking.enabled
     property alias enableSettings: menuItemSettings.enabled
+    property alias enableExplorer: menuItemExplorer.enabled
 
     // Signals
     signal outputsRequested()
     signal pendingTransactionsRequested()
     signal networkingRequested()
+    signal explorerRequested()
     signal settingsRequested()
     signal blockchainRequested()
     signal aboutRequested()
@@ -70,6 +72,7 @@ RowLayout {
             enablePendingTransactions = true
             enableBlockchain = true
             enableNetworking = true
+            enableExplorer= true
             enableSettings = true
         }
     }
@@ -127,6 +130,13 @@ RowLayout {
                 iconSource: "qrc:/images/resources/images/icons/networking.svg"
 
                 onClicked: networkingRequested()
+            }
+            CustomMenuItem {
+                id: menuItemExplorer
+                text: qsTr("&Explorer")
+                iconSource: "qrc:/images/resources/images/icons/networking.svg"
+
+                onClicked: explorerRequested()
             }
             CustomMenuItem {
                 id: menuItemSettings

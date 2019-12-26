@@ -246,6 +246,28 @@ func (it *SkycoinTransactionIterator) HasNext() bool {
 	return (it.Current + 1) < len(it.Transactions)
 }
 
+func GetSkycoinTransactionByTxId(txId string) (core.Transaction, error) {
+	logCoin.Info("Getting a transaction by its transaction id")
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logCoin.Error(err)
+		return nil, err
+	}
+	txVerb, err := c.TransactionVerbose(txId)
+
+	if err != nil {
+		logCoin.Error(err)
+		return nil, err
+	}
+
+	return &SkycoinTransaction{
+		skyTxn:  txVerb.Transaction,
+		status:  0,
+		inputs:  nil,
+		outputs: nil,
+	}, nil
+}
+
 func NewSkycoinTransactionIterator(transactions []core.Transaction) *SkycoinTransactionIterator {
 	return &SkycoinTransactionIterator{Transactions: transactions, Current: -1}
 }

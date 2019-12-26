@@ -22,6 +22,8 @@ type SkycoinAPI interface {
 	PendingTransactionsVerbose() ([]readable.UnconfirmedTransactionVerbose, error)
 	// CoinSupply Determine coin supply
 	CoinSupply() (*api.CoinSupply, error)
+	// BlocksInRange return a block between start and end range.
+	BlocksInRange(start, end uint64) (*readable.Blocks, error)
 	// LastBlocks Get last N blocks
 	LastBlocks(n uint64) (*readable.Blocks, error)
 	// BlockchainProgress Get blockchain progress
