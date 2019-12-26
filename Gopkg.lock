@@ -271,19 +271,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:1f2ac409d4e44c88b9fdd8b9ce57b02cf42825293e76ad2dd98dab6288e1fd4a"
-  name = "github.com/therecipe/qt"
-  packages = [
-    "core",
-    "gui",
-    "network",
-    "qml",
-  ]
-  pruneopts = "UT"
-  revision = "590f404884c99350e2ae27bc5f4a1aa44fcf4249"
-
-[[projects]]
-  branch = "master"
   digest = "1:b7cda6bf367836ce3675325f6f7aec675af1ff2fde841524800f499a1acf0ee2"
   name = "golang.org/x/crypto"
   packages = [
@@ -339,9 +326,6 @@
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
-    "github.com/therecipe/qt/core",
-    "github.com/therecipe/qt/gui",
-    "github.com/therecipe/qt/qml",
     "golang.org/x/crypto/bcrypt",
     "golang.org/x/crypto/ssh/terminal",
   ]
