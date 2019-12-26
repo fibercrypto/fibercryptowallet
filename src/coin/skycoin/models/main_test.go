@@ -1,18 +1,19 @@
 package skycoin
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"os"
 	"testing"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	util "github.com/fibercrypto/FiberCryptoWallet/src/util"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	util "github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/stretchr/testify/mock"
 )
 
 var global_mock *SkycoinApiMock
 
 var logModelTest = logging.MustGetLogger("Skycoin Model Test")
+
 // CleanGlobalMock util when is needed to change the values of an
 
 // API method used in other test with different values.

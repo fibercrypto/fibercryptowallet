@@ -1,9 +1,9 @@
 package skytypes
 
 import (
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/coin"
-	"github.com/skycoin/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/coin"
+	"github.com/SkycoinProject/skycoin/src/readable"
 )
 
 // SkycoinAPI contract for Skycoin REST API clients
@@ -22,6 +22,8 @@ type SkycoinAPI interface {
 	PendingTransactionsVerbose() ([]readable.UnconfirmedTransactionVerbose, error)
 	// CoinSupply Determine coin supply
 	CoinSupply() (*api.CoinSupply, error)
+	// BlocksInRange return a block between start and end range.
+	BlocksInRange(start, end uint64) (*readable.Blocks, error)
 	// LastBlocks Get last N blocks
 	LastBlocks(n uint64) (*readable.Blocks, error)
 	// BlockchainProgress Get blockchain progress

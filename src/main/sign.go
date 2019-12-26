@@ -1,9 +1,9 @@
 package local
 
 import (
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/fibercrypto/FiberCryptoWallet/src/errors"
-	"github.com/fibercrypto/FiberCryptoWallet/src/util/signutil"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util/signutil"
 )
 
 func (m *fibercryptoAltcoinManager) AttachSignService(signSrv core.TxnSigner) error {

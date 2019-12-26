@@ -72,6 +72,14 @@ Item {
         }
     }
 
+    function openExplorerPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentExplorer)
+        } else {
+            stackView.push(componentExplorer)
+        }
+    }
+
     function openSettingsPage() {
         if (stackView.depth > 1) {
             stackView.replace(componentSettings)
@@ -102,12 +110,12 @@ Item {
 
                 onWalletCreationRequested: {
                     stackView.replace(componentGeneralSwipeView)
-                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,0)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType() ,0)
                 }
 
                 onWalletLoadingRequested:{
                     stackView.replace(componentGeneralSwipeView)
-                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name,10)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType(), 10)
                 }
             }
         }
@@ -155,6 +163,14 @@ Item {
 
         Networking {
             id: networking
+        }
+    }
+
+    Component {
+        id: componentExplorer
+
+        ExplorerPage {
+            id: explorer
         }
     }
 

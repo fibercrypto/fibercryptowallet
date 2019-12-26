@@ -112,4 +112,6 @@ type Block interface {
 	GetFee(ticker string) (uint64, error)
 	// IsGenesisBlock determines whether this block starts blockchain sequence
 	IsGenesisBlock() (bool, error)
+
+	GetTransactions() ([]Transaction, error)
 }

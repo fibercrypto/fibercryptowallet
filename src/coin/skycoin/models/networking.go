@@ -3,9 +3,9 @@ package skycoin
 import (
 	"strings"
 
-	"github.com/fibercrypto/FiberCryptoWallet/src/core"
-	"github.com/skycoin/skycoin/src/api"
-	"github.com/skycoin/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/api"
+	"github.com/SkycoinProject/skycoin/src/readable"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
 type SkycoinPexNodeIterator struct {
