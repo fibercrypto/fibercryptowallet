@@ -51,22 +51,22 @@ const (
 type BlocksModel struct {
 	qtcore.QAbstractListModel
 
-	_ func()            		`constructor:"init"`
+	_ func() `constructor:"init"`
 
-	_ int               		`property:"currentPage"`
-	_ map[int]*core.QByteArray  `property:"roles"`
-	_ []*QBlock                 `property:"blocks"`
+	_ int                        `property:"currentPage"`
+	_ map[int]*qtcore.QByteArray `property:"roles"`
+	_ []*QBlock                  `property:"blocks"`
 
-	_ func(pageNum int) 		`signal:"loadPage"`
-	_ func()            		`signal:"update,auto"`
+	_ func(pageNum int) `signal:"loadPage"`
+	_ func()            `signal:"update,auto"`
 
-	_ func([]*QBlock) 			`slot:"addBlocks"`
-	_ func([]*QBlock) 			`slot:"loadModel"`
+	_ func([]*QBlock) `slot:"addBlocks"`
+	_ func() 		  `slot:"loadModel"`
 }
 
 // QBlock Contains info about the block to be show.
 type QBlock struct {
-	core.QObject
+	qtcore.QObject
 
 	_ string `property:"time"`
 	_ string `property:"blockNumber"`
@@ -74,18 +74,19 @@ type QBlock struct {
 	_ string `property:"Blockhash"`
 }
 
-func (blocksM *BlocksModel) init() {
-	m.SetRoles(map[int]*core.QByteArray{
-		QBlocks: core.NewQByteArray2("qblocks", -1),
+func (m *BlocksModel) init() {
+	m.SetRoles(map[int]*qtcore.QByteArray{
+		Time:         qtcore.NewQByteArray2("time", -1),
+		BlockNumber:  qtcore.NewQByteArray2("blockNumber", -1),
+		Transactions: qtcore.NewQByteArray2("transactions", -1),
+		Blockhash:    qtcore.NewQByteArray2("blockhash", -1),
 	})
 
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 	m.ConnectAddBlocks(m.addBlocks)
-	m.ConnectInsertBlocks(m.insertBlocks)
 	m.ConnectLoadModel(m.loadModel)
-	m.ConnectCleanModel(m.cleanModel)
 
 	m.loadModel()
 }
@@ -108,17 +109,17 @@ func (blocksM *BlocksModel) loadPage(pageNum int) {
 
 }
 
-func (m *BlocksModel) rowCount(*core.QModelIndex) int {
-	return len(m.Outputs())
+func (m *BlocksModel) rowCount(*qtcore.QModelIndex) int {
+	return len(m.Blocks())
 }
 
-func (m *BlocksModel) roleNames() map[int]*core.QByteArray {
+func (m *BlocksModel) roleNames() map[int]*qtcore.QByteArray {
 	return m.Roles()
 }
 
-func (m *BlocksModel) data(index *core.QModelIndex, role int) *core.QVariant {
+func (m *BlocksModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant {
 	if !index.IsValid() || index.Row() >= len(m.Blocks()) {
-		return core.NewQVariant()
+		return qtcore.NewQVariant()
 	}
 
 	qb := m.Blocks()[index.Row()]
@@ -126,25 +127,31 @@ func (m *BlocksModel) data(index *core.QModelIndex, role int) *core.QVariant {
 	switch role {
 	case Time:
 		{
-			return core.NewQVariant1(qb.Time())
+			return qtcore.NewQVariant1(qb.Time())
 		}
 	case BlockNumber:
 		{
-			return core.NewQVariant1(qb.BlockNumber())
+			return qtcore.NewQVariant1(qb.BlockNumber())
 		}
 	case Transactions:
 		{
-			return core.NewQVariant1(qb.Transactions())
+			return qtcore.NewQVariant1(qb.Transactions())
 		}
 	case Blockhash:
 		{
-			return core.NewQVariant1(qb.Blockhash())
+			return qtcore.NewQVariant1(qb.Blockhash())
 		}
 	default:
 		{
-			return core.NewQVariant()
+			return qtcore.NewQVariant()
 		}
 	}
+}
+
+func (m *BlocksModel) insertRows(row int, count int) bool {
+	m.BeginInsertRows(qtcore.NewQModelIndex(), row, row+count)
+	m.EndInsertRows()
+	return true
 }
 
 func (m *BlocksModel) addBlocks(qb []*QBlock) {
@@ -155,4 +162,3 @@ func (m *BlocksModel) addBlocks(qb []*QBlock) {
 func (m *BlocksModel) loadModel() {
 	//m.SetOutputs(mo)
 }
-

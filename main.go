@@ -7,6 +7,7 @@ import (
 	_ "github.com/fibercrypto/fibercryptowallet/src/models"
 	_ "github.com/fibercrypto/fibercryptowallet/src/models/history"
 	_ "github.com/fibercrypto/fibercryptowallet/src/models/pending"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models/explorer"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"

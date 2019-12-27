@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import ExplorerModels 1.0
 
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 
@@ -70,33 +71,38 @@ ScrollView {
             delegate: BlockListDelegate{}
         }
     }
-ListModel{
-id:blockModel
-ListElement{
-date:"01/02/1990"
-blockNumber:10000898
-txNumber:2
-hash:"9516639399ab2b02f6f0bc873f03f2f2ac1c94853dd031685de1021be78c71d7"
-}
-ListElement{
-date:"01/02/1990"
-blockNumber:1
-txNumber:2
-hash:"9516639399ab2b02f6f0bc873f03f2f2ac1c94853dd031685de1021be78c71d7"
 
+QBlocks{
+    id:blockModel
 }
-ListElement{
-date:"01/02/1990"
-blockNumber:2
-txNumber:1
-hash:"5ac7b5f4d170e606cc75e08c20b3ec216703e9ca77df178ea0130255bf20d5e5"
-}
-ListElement{
-date:"01/02/1990"
-blockNumber:3
-txNumber:1
-hash:"5ac7b5f4d170e606cc75e08c20b3ec216703e9ca77df178ea0130255bf20d5e5"
-}
-}//listModel
+
+// ListModel{
+// id:blockModeld
+// ListElement{
+// date:"01/02/1990"
+// blockNumber:10000898
+// txNumber:2
+// hash:"9516639399ab2b02f6f0bc873f03f2f2ac1c94853dd031685de1021be78c71d7"
+// }
+// ListElement{
+// date:"01/02/1990"
+// blockNumber:1
+// txNumber:2
+// hash:"9516639399ab2b02f6f0bc873f03f2f2ac1c94853dd031685de1021be78c71d7"
+
+// }
+// ListElement{
+// date:"01/02/1990"
+// blockNumber:2
+// txNumber:1
+// hash:"5ac7b5f4d170e606cc75e08c20b3ec216703e9ca77df178ea0130255bf20d5e5"
+// }
+// ListElement{
+// date:"01/02/1990"
+// blockNumber:3
+// txNumber:1
+// hash:"5ac7b5f4d170e606cc75e08c20b3ec216703e9ca77df178ea0130255bf20d5e5"
+// }
+//}//listModel
 
 }
