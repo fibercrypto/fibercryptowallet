@@ -12,6 +12,7 @@ Page {
     readonly property real listBlocksRightMargin: 50
     readonly property real listBlocksSpacing: 20
     readonly property real internalLabelsWidth: 70
+
     header: ColumnLayout {
 
         RowLayout {
@@ -28,7 +29,8 @@ Page {
                 text: qsTr("Block Number")
                 font.pointSize: 9
                 horizontalAlignment: Text.AlignLeft
-                Layout.preferredWidth: internalLabelsWidth
+                Layout.preferredWidth: internalLabelsWidth+10
+                 Layout.rightMargin: 40
             }
             Label {
                 text: qsTr("Transactions")
@@ -59,7 +61,10 @@ Page {
 
 ScrollView {
         id: scrollItem
-
+        Component.onCompleted:{
+            blockModel.update()
+            loader.running=false
+        }
         anchors.fill: parent
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
@@ -71,10 +76,42 @@ ScrollView {
             delegate: BlockListDelegate{}
         }
     }
+footer: ColumnLayout{
+anchors.margins: 5
+RowLayout {
+            Layout.preferredHeight: 40
+            Layout.alignment: Qt.AlignHCenter
+            Button {
+                text: "<"
+                onClicked: {
+                    if(blockModel.currentPage > 1){
+                        blockModel.loadModel(blockModel.currentPage-- )
+                    }
+                }
+            }
+            Text {
+                text: blockModel.currentPage + " / " + blockModel.countPage
+            }
+            Button {
+                text: ">"
+                onClicked: {
+                    if(blockModel.currentPage < blockModel.countPage){
+                        blockModel.loadModel(blockModel.currentPage++ )
+                    }
+                }
+            }
+        }
+}
 
 QBlocks{
     id:blockModel
 }
+
+BusyIndicator {
+        id: loader
+        running: true
+        anchors.centerIn: parent
+    }
 
 // ListModel{
 // id:blockModeld
@@ -89,7 +126,7 @@ QBlocks{
 // blockNumber:1
 // txNumber:2
 // hash:"9516639399ab2b02f6f0bc873f03f2f2ac1c94853dd031685de1021be78c71d7"
-
+//
 // }
 // ListElement{
 // date:"01/02/1990"

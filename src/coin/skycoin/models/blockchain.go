@@ -179,6 +179,9 @@ func (ss *SkycoinBlockchain) GetRangeBlocks(start, end uint64) ([]core.Block, er
 		logBlockchain.Error(err)
 		return nil, err
 	}
+
+	defer ReturnSkycoinClient(c)
+
 	blocks, err := c.BlocksInRange(start, end)
 	if err != nil {
 		logBlockchain.Error(err)
@@ -188,7 +191,6 @@ func (ss *SkycoinBlockchain) GetRangeBlocks(start, end uint64) ([]core.Block, er
 	for e := range blocks.Blocks {
 		skyBlocks = append(skyBlocks, &SkycoinBlock{Block: &blocks.Blocks[e]})
 	}
-
 	return skyBlocks, nil
 }
 
