@@ -5,6 +5,9 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+
 	"github.com/SkycoinProject/skycoin/src/readable"
 )
 
@@ -32,4 +35,21 @@ func TestSkycoinPexNode(t *testing.T) {
 	require.Equal(t, recived, pex.GetLastSeenOut())
 	require.Equal(t, height, pex.GetBlockHeight())
 	require.Equal(t, trusted, pex.IsTrusted())
+}
+
+func TestSkycoinPexNodeIterator(t *testing.T) {
+	pexs := make([]core.PexNode, 0)
+	addrs := []string{"addr1", "addr2", "addr3"}
+	for _, addr := range addrs {
+		pex := &mocks.PexNode{}
+		pex.On("GetIp").Return(addr)
+		pexs = append(pexs, pex)
+	}
+
+	it := NewSkycoinPexNodeIterator(pexs)
+	for _, addr := range addrs {
+		require.Equal(t, true, it.Next())
+		require.Equal(t, addr, it.Value().GetIp())
+	}
+	require.Equal(t, false, it.Next())
 }
