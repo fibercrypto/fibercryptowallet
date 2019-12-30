@@ -10,6 +10,63 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 )
 
+func TestSkycoinBlockStructure(t *testing.T) {
+	rBlock := &readable.Block{}
+	skyBlock := &SkycoinBlock{}
+
+	_, err := skyBlock.GetHash()
+	require.Error(t, err)
+	_, err = skyBlock.GetPrevHash()
+	require.Error(t, err)
+	_, err = skyBlock.GetVersion()
+	require.Error(t, err)
+	_, err = skyBlock.GetTime()
+	require.Error(t, err)
+	_, err = skyBlock.GetHeight()
+	require.Error(t, err)
+	_, err = skyBlock.GetFee("coin")
+	require.Error(t, err)
+	_, err = skyBlock.IsGenesisBlock()
+	require.Error(t, err)
+
+	skyfee := uint64(0)
+	version := uint32(42)
+	time, chfee := uint64(100), uint64(10000)
+	hash, prev := "block_hash", "block_prev_hash"
+	rBlock.Head.Time = time
+	rBlock.Head.Fee = chfee
+	rBlock.Head.Hash = hash
+	rBlock.Head.Version = version
+	rBlock.Head.PreviousHash = prev
+
+	skyBlock.Block = rBlock
+	bhash, err1 := skyBlock.GetHash()
+	require.NoError(t, err1)
+	require.Equal(t, []byte(hash), bhash)
+	bprev, err2 := skyBlock.GetPrevHash()
+	require.NoError(t, err2)
+	require.Equal(t, []byte(prev), bprev)
+	bversion, err3 := skyBlock.GetVersion()
+	require.NoError(t, err3)
+	require.Equal(t, version, bversion)
+	btime, err4 := skyBlock.GetTime()
+	require.NoError(t, err4)
+	require.Equal(t, core.Timestamp(time), btime)
+	bheigth, err5 := skyBlock.GetHeight()
+	require.NoError(t, err5)
+	//TODO: When the behavior of the GetHeight function is decided, the test must be modified accordingly
+	require.Equal(t, uint64(0), bheigth)
+	bfee, err6 := skyBlock.GetFee(CoinHour)
+	require.NoError(t, err6)
+	require.Equal(t, chfee, bfee)
+	bfee, err6 = skyBlock.GetFee(Sky)
+	require.NoError(t, err6)
+	require.Equal(t, skyfee, bfee)
+	genesis, err7 := skyBlock.IsGenesisBlock()
+	require.NoError(t, err7)
+	require.True(t, genesis)
+}
+
 func TestSkycoinBlockchainStatusGetCoinValue(t *testing.T) {
 	global_mock.On("CoinSupply").Return(
 		&api.CoinSupply{
@@ -82,4 +139,11 @@ func TestSkycoinBlockchainStatusGetLastBlock(t *testing.T) {
 	val, err2 := block.GetVersion()
 	require.NoError(t, err2)
 	require.Equal(t, val, uint32(3))
+}
+
+func TestSkycoinBlockchainSetCacheTime(t *testing.T) {
+	bchn := &SkycoinBlockchain{}
+	time := uint64(345)
+	bchn.SetCacheTime(time)
+	require.Equal(t, time, bchn.CacheTime)
 }
