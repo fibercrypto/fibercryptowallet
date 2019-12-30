@@ -1,8 +1,9 @@
 package skycoin
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/stretchr/testify/require"
 
@@ -70,6 +71,15 @@ func TestWalletListPendingTransactions(t *testing.T) {
 			}
 		}
 	}
+}
+
+func TestSkycoinAddressListAssets(t *testing.T) {
+	addr, err := NewSkycoinAddress("2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt")
+	assert.NoError(t, err)
+	assets := addr.ListAssets()
+	require.Equal(t, 2, len(assets))
+	require.True(t, assets[0] == Sky || assets[1] == Sky)
+	require.True(t, assets[0] == CoinHour || assets[1] == CoinHour)
 }
 
 func TestSkycoinAddressGetBalance(t *testing.T) {
@@ -190,6 +200,16 @@ func TestLocalWalletGetBalance(t *testing.T) {
 	val, err = wlt.GetBalance("INVALID_TICKER")
 	require.Error(t, err)
 	require.Equal(t, uint64(0), val)
+}
+
+func TestWalletsListAssets(t *testing.T) {
+	wlts := []core.CryptoAccount{&RemoteWallet{}, &LocalWallet{}}
+	for _, wlt := range wlts {
+		assets := wlt.ListAssets()
+		require.Equal(t, 2, len(assets))
+		require.True(t, assets[0] == Sky || assets[1] == Sky)
+		require.True(t, assets[0] == CoinHour || assets[1] == CoinHour)
+	}
 }
 
 func TestRemoteWalletGetBalance(t *testing.T) {
