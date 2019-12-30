@@ -69,7 +69,6 @@ matrix:
         - make build
         - make test
         - make build-icon
-        - make lint
         - make test-cover-travis
     #- stage: MacOS
     #  os: osx
