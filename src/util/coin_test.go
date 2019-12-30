@@ -34,6 +34,9 @@ func TestNewGenericOutput(t *testing.T) {
 	}
 	require.True(t, find)
 
+	_, err2 := output.GetCoins("invalid_coin")
+	require.Error(t, err2)
+
 	//TODO: Find how to test PushCoin. There are problems registering coins
 
 }
