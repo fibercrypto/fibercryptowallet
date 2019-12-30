@@ -7,82 +7,83 @@ services:
 go_import_path: github.com/fibercrypto/fibercryptowallet
 matrix:
   include:
-    #- stage: RPI
-    #  if: branch = release*$
-    #  install:
-    #    - DEFAULT_ARCH=rpi1 make install-docker-deps
-    #    - DEFAULT_ARCH=rpi2 make install-docker-deps
-    #    - DEFAULT_ARCH=rpi3 make install-docker-deps
-    #    - make install-deps-no-envs
-    #  script:
-    #    - make clean
-    #    - DEFAULT_TARGET=rpi1 make build-docker
-    #    - DEFAULT_TARGET=rpi2 make build-docker
-    #    - DEFAULT_TARGET=rpi3 make build-docker
-    #    - make lint
-    #    - make run-docker CMD='make test'
-    #- stage: Android
-    #  if: branch = release*$
-    #  install:
-    #    - DEFAULT_ARCH=android make install-docker-deps
-    #    - make install-deps-no-envs
-    #  script:
-    #    - make clean
-    #    - DEFAULT_TARGET=android make build-docker
-    #    - DEFAULT_TARGET=android-emulator make build-docker
-    #    - make lint
-    #    - make run-docker CMD='make test'
-    #    - make run-docker CMD='make install coveralls ; make test-cover-travis'
-    #- stage: Linux
-    #  install:
-    #    - make install-docker-deps
-    #    - make install-deps-no-envs
-    #    - make install-linters
-    #  script:
-    #    - make clean
-    #    - DEFAULT_TARGET=linux make build-docker
-    #    - make clean
-    #    - make run-docker CMD='make test'
-    #    - make lint
-    #    - make run-docker CMD='make install-coveralls ; make test-cover-travis'
-    - stage: Windows
-      os: windows
-      env:
-        - QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
-        - QT_DIR: C:/Qt
-        - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
+    - stage: RPI
+      if: branch = release*$
       install:
-        - choco install make -y
-        - choco install unzip -y
-        #- df -h
-        #- .travis/install-qt-win.sh
-        #- df -h
-        #- ls C:/Qt
-        #- ls C:/Qt/5.13.0
-        #- ls C:/Qt/5.13.0/mingw73_64
-        #- ls C:/Qt/5.13.0/mingw73_64/bin
-        - travis_wait 50 make install-deps-Windows
-        - df -h
+        - DEFAULT_ARCH=rpi1 make install-docker-deps
+        - DEFAULT_ARCH=rpi2 make install-docker-deps
+        - DEFAULT_ARCH=rpi3 make install-docker-deps
+        - make install-deps-no-envs
+      script:
+        - make clean
+        - DEFAULT_TARGET=rpi1 make build-docker
+        - DEFAULT_TARGET=rpi2 make build-docker
+        - DEFAULT_TARGET=rpi3 make build-docker
+        - make lint
+        - make run-docker CMD='make test'
+    - stage: Android
+      if: branch = release*$
+      install:
+        - DEFAULT_ARCH=android make install-docker-deps
+        - make install-deps-no-envs
+      script:
+        - make clean
+        - DEFAULT_TARGET=android make build-docker
+        - DEFAULT_TARGET=android-emulator make build-docker
+        - make lint
+        - make run-docker CMD='make test'
+        - make run-docker CMD='make install coveralls ; make test-cover-travis'
+    - stage: Linux
+      install:
+        - make install-docker-deps
+        - make install-deps-no-envs
         - make install-linters
+      script:
+        - make clean
+        - DEFAULT_TARGET=linux make build-docker
+        - make clean
+        - make run-docker CMD='make test'
+        - make lint
+        - make run-docker CMD='make install-coveralls ; make test-cover-travis'
+# FIXME: Restore Windows builds
+#    - stage: Windows
+#      os: windows
+#      env:
+#        - QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
+#        - QT_DIR: C:/Qt
+#        - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
+#      install:
+#        - choco install make -y
+#        - choco install unzip -y
+#        #- df -h
+#        #- .travis/install-qt-win.sh
+#        #- df -h
+#        #- ls C:/Qt
+#        #- ls C:/Qt/5.13.0
+#        #- ls C:/Qt/5.13.0/mingw73_64
+#        #- ls C:/Qt/5.13.0/mingw73_64/bin
+#        - travis_wait 50 make install-deps-Windows
+#        - df -h
+#        - make install-linters
+#        - make install-coveralls
+#      script:
+#        - make build
+#        - make test
+#        - make build-icon
+#        - make test-cover-travis
+    - stage: MacOS
+      os: osx
+      osx_image: xcode10.2
+      install:
+        - make install-deps
         - make install-coveralls
       script:
+        - make clean
         - make build
         - make test
         - make build-icon
+        - make lint
         - make test-cover-travis
-    #- stage: MacOS
-    #  os: osx
-    #  osx_image: xcode10.2
-    #  install:
-    #    - make install-deps
-    #    - make install-coveralls
-    #  script:
-    #    - make clean
-    #    - make build
-    #    - make test
-    #    - make build-icon
-    #    - make lint
-    #    - make test-cover-travis
 notifications:
   email: false
   webhooks:
