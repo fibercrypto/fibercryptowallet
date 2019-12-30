@@ -162,6 +162,9 @@ func (walletM *WalletManager) updateWalletEnvs() {
 	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
 	}
+	if walletsEnvs == nil {
+		logWalletManager.Error("Error loading wallet envs")
+	}
 	walletM.WalletEnv = walletsEnvs[0]
 }
 

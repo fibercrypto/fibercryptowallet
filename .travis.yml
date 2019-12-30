@@ -6,6 +6,10 @@ services:
   - docker
   - xvfb
 go_import_path: github.com/fibercrypto/fibercryptowallet
+cache:
+ directories:
+ - $GOPATH/src/github.com/therecipe 
+ - $GOPATH/bin
 env:
   global:
     - XARGS="-screen 0 1024x768x24"
@@ -19,27 +23,25 @@ matrix:
         - DEFAULT_ARCH=rpi2 make install-docker-deps
         - DEFAULT_ARCH=rpi3 make install-docker-deps
         - make install-deps-no-envs
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=rpi1 make build-docker
         - DEFAULT_TARGET=rpi2 make build-docker
         - DEFAULT_TARGET=rpi3 make build-docker
         - make lint
-        - make test
+        - make run-docker CMD='make test'
     - stage: Android
       if: branch = release*$
       install:
         - DEFAULT_ARCH=android make install-docker-deps
         - make install-deps-no-envs
-        - make install-coveralls
       script:
         - make clean
         - DEFAULT_TARGET=android make build-docker
         - DEFAULT_TARGET=android-emulator make build-docker
         - make lint
-        - make test
-        - make test-cover-travis
+        - make run-docker CMD='make test'
+        - make run-docker CMD='make install coveralls ; make test-cover-travis'
     - stage: Linux
       before_install:
         - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
@@ -47,7 +49,6 @@ matrix:
         - make install-docker-deps
         - make install-deps-no-envs
         - make install-linters
-        - make install-coveralls
       before_script:
         - echo "PATH=$PATH";
         - echo "PIP=$PIP";
@@ -62,23 +63,37 @@ matrix:
       script:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
-        - make test
+        - make clean
+        - make run-docker CMD='make test'
         - make test-skyhw
         - make lint
-        - make test-cover-travis
-    - stage: Windows
-      os: windows
-      install:
-        - choco install make -y
-        - travis_wait make install-deps-Windows
-        - make install-linters
-        - make install-coveralls
-      script:
-        - make build
-        - make test
-        - make build-icon
-        - make lint
-        - make test-cover-travis
+        - make run-docker CMD='make install-coveralls ; make test-cover-travis'
+# FIXME: Restore Windows builds
+#    - stage: Windows
+#      os: windows
+#      env:
+#        - QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
+#        - QT_DIR: C:/Qt
+#        - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
+#      install:
+#        - choco install make -y
+#        - choco install unzip -y
+#        #- df -h
+#        #- .travis/install-qt-win.sh
+#        #- df -h
+#        #- ls C:/Qt
+#        #- ls C:/Qt/5.13.0
+#        #- ls C:/Qt/5.13.0/mingw73_64
+#        #- ls C:/Qt/5.13.0/mingw73_64/bin
+#        - travis_wait 50 make install-deps-Windows
+#        - df -h
+#        - make install-linters
+#        - make install-coveralls
+#      script:
+#        - make build
+#        - make test
+#        - make build-icon
+#        - make test-cover-travis
     - stage: MacOS
       os: osx
       osx_image: xcode10.2
@@ -109,7 +124,11 @@ matrix:
         - make test-cover-travis
 notifications:
   email: false
-  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+  webhooks:
+    urls:
+      -  https://fathomless-fjord-24024.herokuapp.com/notify
+      -  https://coveralls.io/webhook
+
 before_deploy:
   - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
   - export ARCH="$(uname -m)"

@@ -8,6 +8,7 @@ import (
 	util "github.com/fibercrypto/fibercryptowallet/src/util"
 )
 
+
 //Prepare the mock API for all test
 func TestMain(m *testing.M) {
 	if global_mock == nil {
