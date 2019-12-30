@@ -132,6 +132,9 @@ func (m *ModelWallets) loadModel() {
 			}
 
 			outputs := addr.GetCryptoAccount().ScanUnspentOutputs()
+			if outputs == nil {
+				continue
+			}
 			mo := NewModelOutputs(nil)
 			mo.SetAddress(addr.String())
 			qOutputs := make([]*QOutput, 0)
