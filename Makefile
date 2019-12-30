@@ -128,7 +128,8 @@ install-deps-Darwin: ## Install osx dependencies
 	go get -t -d -v ./...
 
 install-deps-Windows: ## Install Windowns dependencies
-	go get -u -v github.com/therecipe/qt/cmd/...
+	set GO111MODULE=off
+	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
 	@echo "Running qtsetup"
 	(qtsetup -test=false | true)
 	go get -t -d -v ./...
@@ -192,6 +193,11 @@ build-res-Windows_NT: $(RC_FILE)
 	$(WINDRES) -i "$(RC_FILE)" -o "$(RC_OBJ)"
 
 $(BINPATH_Windows_NT): $(SRCFILES)
+	make build-icon
+	make build-res-Windows_NT
+	make build-qt
+
+build-Windows-travis: $(SRCFILES)
 	make build-icon
 	make build-res-Windows_NT
 	make build-qt

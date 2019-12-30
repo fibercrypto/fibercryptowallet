@@ -5,6 +5,10 @@ go:
 services:
   - docker
 go_import_path: github.com/fibercrypto/fibercryptowallet
+cache:
+ directories:
+ - $GOPATH/src/github.com/therecipe 
+ - $GOPATH/bin
 matrix:
   include:
     - stage: RPI
