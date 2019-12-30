@@ -153,6 +153,10 @@ func CleanGlobalMock() {
 	}
 }
 
+func SetGlobalMock(mock *SkycoinApiMock) {
+	global_mock = mock
+}
+
 func TransactionSignInputTestSkyHwImpl(t *testing.T, signers []core.TxnSigner, setWallet func(*testing.T, core.TxnSigner, core.Wallet)) {
 	_, keysData, _, err := makeTransactionMultipleInputs(t, 3)
 	require.NoError(t, err)

@@ -183,9 +183,7 @@ Page {
         focus: true
 		onAccepted: {
             signerSelected = stackView.currentItem.simplePage.getSignerSelected()
-			var signedTxn = walletManager.signTxn(wallet, signerSelected, dialogSendTransaction.passwordText, [], txn)
-            // FIXME check return error from walletManager.signTxn
-            walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
+            walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],signerSelected, bridgeForPassword, [], txn)
         }
     }
 
