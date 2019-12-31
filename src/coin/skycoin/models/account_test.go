@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -204,11 +205,13 @@ func TestLocalWalletGetBalance(t *testing.T) {
 
 func TestWalletsListAssets(t *testing.T) {
 	wlts := []core.CryptoAccount{&RemoteWallet{}, &LocalWallet{}}
+	assets := []string{Sky, CoinHour}
+	sort.Strings(assets)
+
 	for _, wlt := range wlts {
-		assets := wlt.ListAssets()
-		require.Equal(t, 2, len(assets))
-		require.True(t, assets[0] == Sky || assets[1] == Sky)
-		require.True(t, assets[0] == CoinHour || assets[1] == CoinHour)
+		wllt_assets := wlt.ListAssets()
+		sort.Strings(wllt_assets)
+		require.Equal(t, assets, wllt_assets)
 	}
 }
 

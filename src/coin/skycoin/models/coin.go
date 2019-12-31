@@ -345,8 +345,11 @@ func (skyTxn *SkycoinUninjectedTransaction) ComputeFee(ticker string) (uint64, e
 	logCoin.Info("Computing fee for un injected transaction with" + ticker + " ticker")
 	if ticker == CoinHour {
 		return skyTxn.fee, nil
+	} else if util.StringInList(ticker, skyTxn.SupportedAssets()) {
+		return uint64(0), nil
 	}
-	return 0, nil
+	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
 func (skyTxn *SkycoinUninjectedTransaction) GetId() string {
@@ -764,7 +767,7 @@ func (in *SkycoinCreatedTransactionInput) GetId() string {
 func (in *SkycoinCreatedTransactionInput) GetSpentOutput() core.TransactionOutput {
 	if in.spentOutput == nil {
 
-		calculatedHours, err := in.GetCoins(in.skyIn.CalculatedHours)
+		calculatedHours, err := in.GetCoins(CalculatedHour)
 		if err != nil {
 			calculatedHours = 0
 		}
