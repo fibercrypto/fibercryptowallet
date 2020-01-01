@@ -308,27 +308,27 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 }
 
 func (walletM *WalletManager) updateWallets() {
-	go func() {
+	//go func() {
 
-		qWallets := make([]*QWallet, 0)
-		it := walletM.WalletEnv.GetWalletSet().ListWallets()
-		if it == nil {
-			logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
-			return
+	qWallets := make([]*QWallet, 0)
+	it := walletM.WalletEnv.GetWalletSet().ListWallets()
+	if it == nil {
+		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
+		return
+	}
+	for it.Next() {
+
+		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
+		if err != nil {
+			logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
+			continue
 		}
-		for it.Next() {
+		qw := fromWalletToQWallet(it.Value(), encrypted)
+		qWallets = append(qWallets, qw)
 
-			encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
-			if err != nil {
-				logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
-				continue
-			}
-			qw := fromWalletToQWallet(it.Value(), encrypted)
-			qWallets = append(qWallets, qw)
-
-		}
-		walletM.wallets = qWallets
-	}()
+	}
+	walletM.wallets = qWallets
+	//}()
 }
 
 func (walletM *WalletManager) getAllAddresses() []*QAddress {
@@ -802,41 +802,41 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 }
 
 func (walletM *WalletManager) getWallets() []*QWallet {
-	if walletM.wallets == nil {
-		walletM.updateWallets()
-	}
-	logWalletManager.Info("Getting wallets")
-	walletM.wallets = make([]*QWallet, 0)
-	if walletM.WalletEnv == nil {
-		walletM.UpdateWalletEnvs()
-	}
-	it := walletM.WalletEnv.GetWalletSet().ListWallets()
-
-	if it == nil {
-		logWalletManager.WithError(nil).Error("Couldn't load wallets")
-		return walletM.wallets
-
-	}
-
-	for it.Next() {
-
-		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
-		if err != nil {
-			logWalletManager.WithError(err).Error("Couldn't get wallets")
-			return walletM.wallets
-		}
-		if encrypted {
-			qw := fromWalletToQWallet(it.Value(), true)
-			walletM.wallets = append(walletM.wallets, qw)
-		} else {
-			qw := fromWalletToQWallet(it.Value(), false)
-			walletM.wallets = append(walletM.wallets, qw)
-		}
-
-	}
+	//if walletM.wallets == nil {
+	walletM.updateWallets()
+	//}
+	//logWalletManager.Info("Getting wallets")
 	//walletM.wallets = make([]*QWallet, 0)
-
-	logWalletManager.Info("Wallets obtained")
+	//if walletM.WalletEnv == nil {
+	//	walletM.UpdateWalletEnvs()
+	//}
+	//it := walletM.WalletEnv.GetWalletSet().ListWallets()
+	//
+	//if it == nil {
+	//	logWalletManager.WithError(nil).Error("Couldn't load wallets")
+	//	return walletM.wallets
+	//
+	//}
+	//
+	//for it.Next() {
+	//
+	//	encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
+	//	if err != nil {
+	//		logWalletManager.WithError(err).Error("Couldn't get wallets")
+	//		return walletM.wallets
+	//	}
+	//	if encrypted {
+	//		qw := fromWalletToQWallet(it.Value(), true)
+	//		walletM.wallets = append(walletM.wallets, qw)
+	//	} else {
+	//		qw := fromWalletToQWallet(it.Value(), false)
+	//		walletM.wallets = append(walletM.wallets, qw)
+	//	}
+	//
+	//}
+	////walletM.wallets = make([]*QWallet, 0)
+	//
+	//logWalletManager.Info("Wallets obtained")
 	return walletM.wallets
 }
 
