@@ -1,21 +1,21 @@
 package history
 
 import (
-	"sort"
-	"strconv"
+	//"sort"
+	//"strconv"
 	"time"
 
-	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	//"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 
-	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	//coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 
 	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/models"
-	"github.com/fibercrypto/fibercryptowallet/src/models/address"
+	//"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
-	"github.com/fibercrypto/fibercryptowallet/src/util"
+	//"github.com/fibercrypto/fibercryptowallet/src/util"
 	qtCore "github.com/therecipe/qt/core"
 )
 
@@ -67,269 +67,269 @@ func (a ByDate) Less(i, j int) bool {
 }
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
 	logHistoryManager.Info("Getting transactions of Addresses")
-	addresses := hm.getAddressesWithWallets()
-	var sent, internally bool
-	var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
-
-	find := make(map[string]struct{}, len(filterAddresses))
-	for _, addr := range filterAddresses {
-		find[addr] = struct{}{}
-	}
-	txnFind := make(map[string]struct{})
-	txns := make([]core.Transaction, 0)
-
-	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
-	if wltIterator == nil {
-		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
-		return make([]*transactions.TransactionDetails, 0)
-	}
-	for wltIterator.Next() {
-		addressIterator, err := wltIterator.Value().GetLoadedAddresses()
-		if err != nil {
-			logHistoryManager.Warn("Couldn't get address iterator")
-			continue
-		}
-		for addressIterator.Next() {
-			_, ok := find[addressIterator.Value().String()]
-			if ok {
-				txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
-				if txnsIterator == nil {
-					logHistoryManager.Warn("Couldn't get transaction iterator")
-					continue
-				}
-				for txnsIterator.Next() {
-					_, ok2 := txnFind[txnsIterator.Value().GetId()]
-					if !ok2 {
-						txns = append(txns, txnsIterator.Value())
-						txnFind[txnsIterator.Value().GetId()] = struct{}{}
-					}
-				}
-			}
-
-		}
-	}
+	//addresses := hm.getAddressesWithWallets()
+	//var sent, internally bool
+	//var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
+	//
+	//find := make(map[string]struct{}, len(filterAddresses))
+	//for _, addr := range filterAddresses {
+	//	find[addr] = struct{}{}
+	//}
+	//txnFind := make(map[string]struct{})
+	//txns := make([]core.Transaction, 0)
+	//
+	//wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
+	//if wltIterator == nil {
+	//	logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
+	//	return make([]*transactions.TransactionDetails, 0)
+	//}
+	//for wltIterator.Next() {
+	//	addressIterator, err := wltIterator.Value().GetLoadedAddresses()
+	//	if err != nil {
+	//		logHistoryManager.Warn("Couldn't get address iterator")
+	//		continue
+	//	}
+	//	for addressIterator.Next() {
+	//		_, ok := find[addressIterator.Value().String()]
+	//		if ok {
+	//			txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
+	//			if txnsIterator == nil {
+	//				logHistoryManager.Warn("Couldn't get transaction iterator")
+	//				continue
+	//			}
+	//			for txnsIterator.Next() {
+	//				_, ok2 := txnFind[txnsIterator.Value().GetId()]
+	//				if !ok2 {
+	//					txns = append(txns, txnsIterator.Value())
+	//					txnFind[txnsIterator.Value().GetId()] = struct{}{}
+	//				}
+	//			}
+	//		}
+	//
+	//	}
+	//}
 
 	txnsDetails := make([]*transactions.TransactionDetails, 0)
-	for _, txn := range txns {
-		traspassedHoursIn = 0
-		traspassedHoursOut = 0
-		skyAmountIn = 0
-		skyAmountOut = 0
-		internally = true
-		sent = false
-		txnDetails := transactions.NewTransactionDetails(nil)
-		txnAddresses := address.NewAddressList(nil)
-		inAddresses := make(map[string]struct{}, 0)
-		inputs := address.NewAddressList(nil)
-		outputs := address.NewAddressList(nil)
-		txnIns := txn.GetInputs()
-
-		for _, in := range txnIns {
-			qIn := address.NewAddressDetails(nil)
-			qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
-			skyUint64, err := in.GetCoins(params.SkycoinTicker)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
-				continue
-			}
-			accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-				continue
-			}
-			skyFloat := float64(skyUint64) / float64(accuracy)
-			qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-			chUint64, err := in.GetCoins(params.CoinHoursTicker)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
-				continue
-			}
-			accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
-				continue
-			}
-			qIn.SetAddressCoinHours(strconv.FormatUint(chUint64/accuracy, 10))
-			inputs.AddAddress(qIn)
-			_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
-			if ok {
-				skyAmountOut += skyUint64
-				sent = true
-				_, ok := inAddresses[qIn.Address()]
-				if !ok {
-					txnAddresses.AddAddress(qIn)
-					inAddresses[qIn.Address()] = struct{}{}
-				}
-
-			}
-		}
-		txnDetails.SetInputs(inputs)
-
-		for _, out := range txn.GetOutputs() {
-			sky, err := out.GetCoins(params.SkycoinTicker)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
-				continue
-			}
-			qOu := address.NewAddressDetails(nil)
-			qOu.SetAddress(out.GetAddress().String())
-			accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-				continue
-			}
-			qOu.SetAddressSky(util.FormatCoins(sky, accuracy))
-			val, err := out.GetCoins(params.CoinHoursTicker)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
-				continue
-			}
-			accuracy, err = util.AltcoinQuotient(coin.CoinHour)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
-				continue
-			}
-			qOu.SetAddressCoinHours(util.FormatCoins(val, accuracy))
-			outputs.AddAddress(qOu)
-			if sent {
-
-				if addresses[txn.GetInputs()[0].GetSpentOutput().GetAddress().String()] == addresses[out.GetAddress().String()] {
-					skyAmountOut -= sky
-
-				} else {
-					internally = false
-					val, err = out.GetCoins(params.CoinHoursTicker)
-					if err != nil {
-						logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours send it")
-						continue
-					}
-					traspassedHoursOut += val
-				}
-			} else {
-				_, ok := find[out.GetAddress().String()]
-				if ok {
-					val, err = out.GetCoins(params.CoinHoursTicker)
-					if err != nil {
-						logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
-						continue
-					}
-					traspassedHoursIn += val
-					skyAmountIn += sky
-
-					_, ok := inAddresses[qOu.Address()]
-					if !ok {
-						txnAddresses.AddAddress(qOu)
-						inAddresses[qOu.Address()] = struct{}{}
-					}
-
-				}
-
-			}
-
-		}
-		txnDetails.SetOutputs(outputs)
-		t := time.Unix(int64(txn.GetTimestamp()), 0)
-		txnDetails.SetDate(qtCore.NewQDateTime3(qtCore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtCore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtCore.Qt__LocalTime))
-		txnDetails.SetStatus(transactions.TransactionStatusPending)
-
-		if txn.GetStatus() == core.TXN_STATUS_CONFIRMED {
-			txnDetails.SetStatus(transactions.TransactionStatusConfirmed)
-		}
-		txnDetails.SetType(transactions.TransactionTypeReceive)
-		if sent {
-			txnDetails.SetType(transactions.TransactionTypeSend)
-			if internally {
-				txnDetails.SetType(transactions.TransactionTypeInternal)
-			}
-		}
-		fee, err := txn.ComputeFee(params.CoinHoursTicker)
-		if err != nil {
-			logHistoryManager.WithError(err).Warn("Couldn't compute fee of the operation")
-			continue
-		}
-		txnDetails.SetHoursBurned(strconv.FormatUint(fee, 10))
-
-		switch txnDetails.Type() {
-		case transactions.TransactionTypeReceive:
-			{
-				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursIn, 10))
-				val := float64(skyAmountIn)
-				accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-				if err != nil {
-					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-					continue
-				}
-				val = val / float64(accuracy)
-				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
-
-			}
-		case transactions.TransactionTypeInternal:
-			{
-				var traspassedHoursMoved, skyAmountMoved uint64
-				traspassedHoursMoved = 0
-				skyAmountMoved = 0
-				ins := inputs.Addresses()
-				inFind := make(map[string]struct{}, len(ins))
-				for _, addr := range ins {
-					inFind[addr.Address()] = struct{}{}
-				}
-				outs := outputs.Addresses()
-				for _, addr := range outs {
-					_, ok := inFind[addr.Address()]
-					if !ok {
-						hours, err := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
-						if err != nil {
-							logHistoryManager.WithError(err).Warn("Couldn't parse Coin Hours from address")
-							continue
-						}
-						traspassedHoursMoved += hours
-						skyFloat, err := strconv.ParseFloat(addr.AddressSky(), 64)
-						if err != nil {
-							logHistoryManager.WithError(err).Warn("Couldn't parse Skycoins from addresses")
-							continue
-						}
-						accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-						if err != nil {
-							logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-							continue
-						}
-						sky := uint64(skyFloat * float64(accuracy))
-						skyAmountMoved += sky
-					}
-
-				}
-				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursMoved, 10))
-				val := float64(skyAmountMoved)
-				accuracy, _ := util.AltcoinQuotient(params.SkycoinTicker)
-				if err != nil {
-					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-					continue
-				}
-				val = val / float64(accuracy)
-				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
-
-			}
-		case transactions.TransactionTypeSend:
-			{
-				txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursOut, 10))
-				val := float64(skyAmountOut)
-				accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-				if err != nil {
-					logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-					continue
-				}
-				val = val / float64(accuracy)
-				txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
-
-			}
-		}
-		txnDetails.SetAddresses(txnAddresses)
-		txnDetails.SetTransactionID(txn.GetId())
-
-		txnsDetails = append(txnsDetails, txnDetails)
-
-	}
-	sort.Sort(ByDate(txnsDetails))
+	//for _, txn := range txns {
+	//	traspassedHoursIn = 0
+	//	traspassedHoursOut = 0
+	//	skyAmountIn = 0
+	//	skyAmountOut = 0
+	//	internally = true
+	//	sent = false
+	//	txnDetails := transactions.NewTransactionDetails(nil)
+	//	txnAddresses := address.NewAddressList(nil)
+	//	inAddresses := make(map[string]struct{}, 0)
+	//	inputs := address.NewAddressList(nil)
+	//	outputs := address.NewAddressList(nil)
+	//	txnIns := txn.GetInputs()
+	//
+	//	for _, in := range txnIns {
+	//		qIn := address.NewAddressDetails(nil)
+	//		qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
+	//		skyUint64, err := in.GetCoins(params.SkycoinTicker)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
+	//			continue
+	//		}
+	//		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+	//			continue
+	//		}
+	//		skyFloat := float64(skyUint64) / float64(accuracy)
+	//		qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
+	//		chUint64, err := in.GetCoins(params.CoinHoursTicker)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
+	//			continue
+	//		}
+	//		accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
+	//			continue
+	//		}
+	//		qIn.SetAddressCoinHours(strconv.FormatUint(chUint64/accuracy, 10))
+	//		inputs.AddAddress(qIn)
+	//		_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
+	//		if ok {
+	//			skyAmountOut += skyUint64
+	//			sent = true
+	//			_, ok := inAddresses[qIn.Address()]
+	//			if !ok {
+	//				txnAddresses.AddAddress(qIn)
+	//				inAddresses[qIn.Address()] = struct{}{}
+	//			}
+	//
+	//		}
+	//	}
+	//	txnDetails.SetInputs(inputs)
+	//
+	//	for _, out := range txn.GetOutputs() {
+	//		sky, err := out.GetCoins(params.SkycoinTicker)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
+	//			continue
+	//		}
+	//		qOu := address.NewAddressDetails(nil)
+	//		qOu.SetAddress(out.GetAddress().String())
+	//		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+	//			continue
+	//		}
+	//		qOu.SetAddressSky(util.FormatCoins(sky, accuracy))
+	//		val, err := out.GetCoins(params.CoinHoursTicker)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
+	//			continue
+	//		}
+	//		accuracy, err = util.AltcoinQuotient(coin.CoinHour)
+	//		if err != nil {
+	//			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
+	//			continue
+	//		}
+	//		qOu.SetAddressCoinHours(util.FormatCoins(val, accuracy))
+	//		outputs.AddAddress(qOu)
+	//		if sent {
+	//
+	//			if addresses[txn.GetInputs()[0].GetSpentOutput().GetAddress().String()] == addresses[out.GetAddress().String()] {
+	//				skyAmountOut -= sky
+	//
+	//			} else {
+	//				internally = false
+	//				val, err = out.GetCoins(params.CoinHoursTicker)
+	//				if err != nil {
+	//					logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours send it")
+	//					continue
+	//				}
+	//				traspassedHoursOut += val
+	//			}
+	//		} else {
+	//			_, ok := find[out.GetAddress().String()]
+	//			if ok {
+	//				val, err = out.GetCoins(params.CoinHoursTicker)
+	//				if err != nil {
+	//					logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
+	//					continue
+	//				}
+	//				traspassedHoursIn += val
+	//				skyAmountIn += sky
+	//
+	//				_, ok := inAddresses[qOu.Address()]
+	//				if !ok {
+	//					txnAddresses.AddAddress(qOu)
+	//					inAddresses[qOu.Address()] = struct{}{}
+	//				}
+	//
+	//			}
+	//
+	//		}
+	//
+	//	}
+	//	txnDetails.SetOutputs(outputs)
+	//	t := time.Unix(int64(txn.GetTimestamp()), 0)
+	//	txnDetails.SetDate(qtCore.NewQDateTime3(qtCore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtCore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtCore.Qt__LocalTime))
+	//	txnDetails.SetStatus(transactions.TransactionStatusPending)
+	//
+	//	if txn.GetStatus() == core.TXN_STATUS_CONFIRMED {
+	//		txnDetails.SetStatus(transactions.TransactionStatusConfirmed)
+	//	}
+	//	txnDetails.SetType(transactions.TransactionTypeReceive)
+	//	if sent {
+	//		txnDetails.SetType(transactions.TransactionTypeSend)
+	//		if internally {
+	//			txnDetails.SetType(transactions.TransactionTypeInternal)
+	//		}
+	//	}
+	//	fee, err := txn.ComputeFee(params.CoinHoursTicker)
+	//	if err != nil {
+	//		logHistoryManager.WithError(err).Warn("Couldn't compute fee of the operation")
+	//		continue
+	//	}
+	//	txnDetails.SetHoursBurned(strconv.FormatUint(fee, 10))
+	//
+	//	switch txnDetails.Type() {
+	//	case transactions.TransactionTypeReceive:
+	//		{
+	//			txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursIn, 10))
+	//			val := float64(skyAmountIn)
+	//			accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+	//			if err != nil {
+	//				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+	//				continue
+	//			}
+	//			val = val / float64(accuracy)
+	//			txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
+	//
+	//		}
+	//	case transactions.TransactionTypeInternal:
+	//		{
+	//			var traspassedHoursMoved, skyAmountMoved uint64
+	//			traspassedHoursMoved = 0
+	//			skyAmountMoved = 0
+	//			ins := inputs.Addresses()
+	//			inFind := make(map[string]struct{}, len(ins))
+	//			for _, addr := range ins {
+	//				inFind[addr.Address()] = struct{}{}
+	//			}
+	//			outs := outputs.Addresses()
+	//			for _, addr := range outs {
+	//				_, ok := inFind[addr.Address()]
+	//				if !ok {
+	//					hours, err := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
+	//					if err != nil {
+	//						logHistoryManager.WithError(err).Warn("Couldn't parse Coin Hours from address")
+	//						continue
+	//					}
+	//					traspassedHoursMoved += hours
+	//					skyFloat, err := strconv.ParseFloat(addr.AddressSky(), 64)
+	//					if err != nil {
+	//						logHistoryManager.WithError(err).Warn("Couldn't parse Skycoins from addresses")
+	//						continue
+	//					}
+	//					accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+	//					if err != nil {
+	//						logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+	//						continue
+	//					}
+	//					sky := uint64(skyFloat * float64(accuracy))
+	//					skyAmountMoved += sky
+	//				}
+	//
+	//			}
+	//			txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursMoved, 10))
+	//			val := float64(skyAmountMoved)
+	//			accuracy, _ := util.AltcoinQuotient(params.SkycoinTicker)
+	//			if err != nil {
+	//				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+	//				continue
+	//			}
+	//			val = val / float64(accuracy)
+	//			txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
+	//
+	//		}
+	//	case transactions.TransactionTypeSend:
+	//		{
+	//			txnDetails.SetHoursTraspassed(strconv.FormatUint(traspassedHoursOut, 10))
+	//			val := float64(skyAmountOut)
+	//			accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+	//			if err != nil {
+	//				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+	//				continue
+	//			}
+	//			val = val / float64(accuracy)
+	//			txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
+	//
+	//		}
+	//	}
+	//	txnDetails.SetAddresses(txnAddresses)
+	//	txnDetails.SetTransactionID(txn.GetId())
+	//
+	//	txnsDetails = append(txnsDetails, txnDetails)
+	//
+	//}
+	//sort.Sort(ByDate(txnsDetails))
 	return txnsDetails
 }
 func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
