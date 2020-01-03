@@ -105,77 +105,75 @@ func (m *ModelWallets) cleanModel() {
 }
 
 func (m *ModelWallets) loadModel() {
-	go func() {
 
-		logWalletsModel.Info("Loading Model")
-		m.SetLoading(true)
-		aModels := make([]*ModelAddresses, 0)
-		wallets := m.WalletEnv.GetWalletSet().ListWallets()
-		if wallets == nil {
-			logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
+	logWalletsModel.Info("Loading Model")
+	m.SetLoading(true)
+	aModels := make([]*ModelAddresses, 0)
+	wallets := walletManager.getWalletIterators(false)
+	if wallets == nil {
+		logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
+		return
+	}
+	for wallets.Next() {
+		addresses, err := wallets.Value().GetLoadedAddresses()
+		if err != nil {
+			logWalletsModel.WithError(nil).Warn("Couldn't get loaded address")
 			return
 		}
-		for wallets.Next() {
-			addresses, err := wallets.Value().GetLoadedAddresses()
-			if err != nil {
-				logWalletsModel.WithError(nil).Warn("Couldn't get loaded address")
-				return
-			}
-			ma := NewModelAddresses(nil)
-			ma.SetName(wallets.Value().GetLabel())
-			oModels := make([]*ModelOutputs, 0)
+		ma := NewModelAddresses(nil)
+		ma.SetName(wallets.Value().GetLabel())
+		oModels := make([]*ModelOutputs, 0)
 
-			for addresses.Next() {
-				a := addresses.Value()
-				outputs := a.GetCryptoAccount().ScanUnspentOutputs()
-				if outputs == nil {
+		for addresses.Next() {
+			a := addresses.Value()
+			outputs := a.GetCryptoAccount().ScanUnspentOutputs()
+			if outputs == nil {
+				continue
+			}
+			mo := NewModelOutputs(nil)
+			mo.SetAddress(a.String())
+			qOutputs := make([]*QOutput, 0)
+
+			for outputs.Next() {
+				to := outputs.Value()
+				qo := NewQOutput(nil)
+				qo.SetOutputID(to.GetId())
+				val, err := to.GetCoins(coin.Sky)
+				if err != nil {
+					logWalletsModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
 					continue
 				}
-				mo := NewModelOutputs(nil)
-				mo.SetAddress(a.String())
-				qOutputs := make([]*QOutput, 0)
-
-				for outputs.Next() {
-					to := outputs.Value()
-					qo := NewQOutput(nil)
-					qo.SetOutputID(to.GetId())
-					val, err := to.GetCoins(coin.Sky)
-					if err != nil {
-						logWalletsModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
-						continue
-					}
-					accuracy, err := util.AltcoinQuotient(coin.Sky)
-					if err != nil {
-						logWalletsModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
-						continue
-					}
-					coins := util.FormatCoins(val, accuracy)
-					qo.SetAddressSky(coins)
-					val, err = to.GetCoins(coin.CoinHoursTicker)
-					if err != nil {
-						logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
-						continue
-					}
-					accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
-					if err != nil {
-						logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
-						continue
-					}
-					coinsH := util.FormatCoins(val, accuracy)
-					qo.SetAddressCoinHours(coinsH)
-					qOutputs = append(qOutputs, qo)
+				accuracy, err := util.AltcoinQuotient(coin.Sky)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+					continue
 				}
-				if len(qOutputs) != 0 {
-					mo.addOutputs(qOutputs)
-					oModels = append(oModels, mo)
+				coins := util.FormatCoins(val, accuracy)
+				qo.SetAddressSky(coins)
+				val, err = to.GetCoins(coin.CoinHoursTicker)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
+					continue
 				}
+				accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
+				if err != nil {
+					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+					continue
+				}
+				coinsH := util.FormatCoins(val, accuracy)
+				qo.SetAddressCoinHours(coinsH)
+				qOutputs = append(qOutputs, qo)
 			}
-			ma.addOutputs(oModels)
-			aModels = append(aModels, ma)
+			if len(qOutputs) != 0 {
+				mo.addOutputs(qOutputs)
+				oModels = append(oModels, mo)
+			}
 		}
-		m.SetLoading(false)
-		m.addAddresses(aModels)
-	}()
+		ma.addOutputs(oModels)
+		aModels = append(aModels, ma)
+	}
+	m.SetLoading(false)
+	m.addAddresses(aModels)
 }
 
 func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
