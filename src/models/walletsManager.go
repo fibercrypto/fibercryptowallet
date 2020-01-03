@@ -10,12 +10,13 @@ import (
 
 	"github.com/therecipe/qt/qml"
 
+	"time"
+
 	sky "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtCore "github.com/therecipe/qt/core"
-	"time"
 )
 
 var logWalletManager = logging.MustGetLogger("modelsWalletManager")
@@ -33,12 +34,13 @@ type WalletManager struct {
 	altManager          core.AltcoinManager
 	signer              core.BlockchainSignService
 	transactionAPI      core.BlockchainTransactionAPI
-	walletsIterator		core.WalletIterator
+	walletsIterator     core.WalletIterator
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
 	_ func(string)                                                                                                                     `slot:"updateAddresses"`
 	_ func()                                                                                                                           `slot:"updateWallets"`
+	_ func()                                                                                                                           `slot:"updateAll"`
 	_ func()                                                                                                                           `constructor:"init"`
 	_ func(seed string, label string, walletType string, password string, scanN int) *QWallet                                          `slot:"createEncryptedWallet"`
 	_ func(seed string, label string, walletType string, scanN int) *QWallet                                                           `slot:"createUnencryptedWallet"`
@@ -87,6 +89,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectGetOutputsFromWallet(walletM.getOutputsFromWallet)
 		walletM.ConnectUpdateWalletEnvs(walletM.updateWalletEnvs)
 		walletM.ConnectUpdateWallets(walletM.updateWallets)
+		walletM.ConnectUpdateAll(walletM.updateAll)
 		walletM.ConnectUpdateAddresses(walletM.updateAddresses)
 		walletM.ConnectUpdateOutputs(walletM.updateOutputs)
 		walletM.ConnectSignAndBroadcastTxnAsync(walletM.signAndBroadcastTxnAsync)
@@ -144,7 +147,7 @@ func (walletM *WalletManager) init() {
 					walletM.getWalletIterators(true)
 					tmp <- 0
 				}()
-				<- tmp
+				<-tmp
 				go walletM.updateWallets()
 			}()
 		}
@@ -157,6 +160,14 @@ func (walletM *WalletManager) getWalletIterators(force bool) core.WalletIterator
 		walletM.walletsIterator = walletM.WalletEnv.GetWalletSet().ListWallets()
 	}
 	return walletM.walletsIterator
+}
+
+func (walletM *WalletManager) updateAll() {
+	logWalletManager.Debug("Updating Wallet manager")
+	walletM.altManager = local.LoadAltcoinManager()
+	walletM.updateTransactionAPI()
+	walletM.updateSigner()
+	walletM.updateWalletEnvs()
 }
 
 func GetWalletEnv() core.WalletEnv {
