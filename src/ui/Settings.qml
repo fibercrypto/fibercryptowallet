@@ -49,7 +49,7 @@ Page {
         walletPath = savedWalletPath = configManager.getValue("skycoin/walletSource/1/Source")
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
-
+        walletManager.updateAll()
         updateFooterButtonsStatus()
     }
 
