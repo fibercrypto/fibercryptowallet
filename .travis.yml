@@ -6,9 +6,9 @@ services:
   - docker
 go_import_path: github.com/fibercrypto/fibercryptowallet
 cache:
- directories:
- - $GOPATH/src/github.com/therecipe 
- - $GOPATH/bin
+  directories:
+    - $GOPATH/src/github.com/therecipe
+    - $GOPATH/bin
 matrix:
   include:
     - stage: RPI
@@ -92,8 +92,8 @@ notifications:
   email: false
   webhooks:
     urls:
-      -  https://fathomless-fjord-24024.herokuapp.com/notify
-      -  https://coveralls.io/webhook
+      - https://fathomless-fjord-24024.herokuapp.com/notify
+      - https://coveralls.io/webhook
 
 before_deploy:
   - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
@@ -112,6 +112,5 @@ deploy:
   draft: true
   overwrite: true
   on:
-    repo: fibercrypto/FiberCryptoWallet
+    repo: fibercrypto/fibercryptowallet
     tags: true
-
