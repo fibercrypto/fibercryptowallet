@@ -159,6 +159,44 @@ Page {
                 }
             }
         } // GroupBox (network settings)
+
+        GroupBox {
+            Layout.fillWidth: true
+            title: qsTr("Log output")
+
+            RowLayout {
+                anchors.fill: parent
+
+                RadioButton {
+                    id: RadioButtonlogOutputNone
+                    checked: true
+                    text: qsTr("None")
+                }
+                RadioButton {
+                    id: RadioButtonlogOutputStdOut
+                    text: qsTr("stdout")
+                }
+                RadioButton {
+                    id: RadioButtonlogOutputFile
+                    text: qsTr("File")
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            
+            Label {
+                text: qsTr("Log level")
+                font.bold: true
+                color: Material.accent
+            }
+            ComboBox{
+                id: logLevelOption
+
+                model:["Debug", "Info", "Error", "Panic"]
+            }
+        }
     } // ColumnLayout
 
     // Confirm the discard or reset action:
