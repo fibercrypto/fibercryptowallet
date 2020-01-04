@@ -13,6 +13,7 @@ import (
 var global_mock *SkycoinApiMock
 
 var logModelTest = logging.MustGetLogger("Skycoin Model Test")
+
 // CleanGlobalMock util when is needed to change the values of an
 
 // API method used in other test with different values.

@@ -1,10 +1,11 @@
 package skycoin
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 	appParams "github.com/fibercrypto/fibercryptowallet/src/params"
 )
 
@@ -65,17 +66,19 @@ func (p *SkyFiberPlugin) GetDescription() string {
 // LoadWalletEnvs loads wallet environments to lookup and create wallets
 func (p *SkyFiberPlugin) LoadWalletEnvs() []core.WalletEnv {
 
-	config := local.GetConfigManager()
-	wltSources := config.GetSources()
-
+	wltSources, err := config.GetWalletSources()
+	if err != nil {
+		return nil
+	}
 	wltEnvs := make([]core.WalletEnv, 0)
 	for _, wltS := range wltSources {
-		tp := wltS.GetType()
-		source := wltS.GetSource()
+
+		tp := wltS.Tp
+		source := wltS.Source
 		var wltEnv core.WalletEnv
-		if tp == local.LocalWallet {
+		if tp == string(config.LocalWallet) {
 			wltEnv = &WalletDirectory{WalletDir: source}
-		} else if tp == local.RemoteWallet {
+		} else if tp == string(config.RemoteWallet) {
 			wltEnv = NewWalletNode(source)
 		}
 		wltEnvs = append(wltEnvs, wltEnv)
