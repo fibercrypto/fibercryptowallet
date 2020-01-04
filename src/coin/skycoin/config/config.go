@@ -14,6 +14,7 @@ const (
 	LocalWallet               = "local"
 	RemoteWallet              = "remote"
 	SectionName               = "skycoin"
+	SettingPathToLog          = "log"
 	SettingPathToNode         = "node"
 	SettingPathToWalletSource = "walletSource"
 )
@@ -52,7 +53,14 @@ func RegisterConfig() error {
 
 	wltOpt := local.NewOption(string(wltSrc.id), []string{SettingPathToWalletSource}, false, string(wltSrcBytes))
 
-	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt})
+	level := map[string]string{"level": "Debug"}
+	levelBytes, err := json.Marshal(level)
+	if err != nil {
+		return err
+	}
+	logLevelOpt := local.NewOption(SettingPathToLog, []string{}, false, string(levelBytes))
+
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt})
 	return nil
 }
 
