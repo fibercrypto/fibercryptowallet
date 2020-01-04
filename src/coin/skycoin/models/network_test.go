@@ -98,7 +98,7 @@ func TestSkycoinPexNode(t *testing.T) {
 	addr := "addr"
 	port := uint16(8000)
 	sent := int64(20)
-	recived := int64(42)
+	received := int64(42)
 	height := uint64(200)
 	trusted := true
 
@@ -106,7 +106,7 @@ func TestSkycoinPexNode(t *testing.T) {
 		Addr:          addr,
 		ListenPort:    port,
 		LastSent:      sent,
-		LastReceived:  recived,
+		LastReceived:  received,
 		Height:        height,
 		IsTrustedPeer: trusted,
 	}
@@ -115,7 +115,7 @@ func TestSkycoinPexNode(t *testing.T) {
 	require.Equal(t, addr, pex.GetIp())
 	require.Equal(t, port, pex.GetPort())
 	require.Equal(t, sent, pex.GetLastSeenIn())
-	require.Equal(t, recived, pex.GetLastSeenOut())
+	require.Equal(t, received, pex.GetLastSeenOut())
 	require.Equal(t, height, pex.GetBlockHeight())
 	require.Equal(t, trusted, pex.IsTrusted())
 }
