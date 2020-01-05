@@ -81,8 +81,8 @@ QTFILES       := $(shell echo "$(QRCFILES) $(TSFILES) $(PLISTFILES) $(QTCONFFILE
 RESOURCEFILES := $(shell echo "$(SVGFILES) $(PNGFILES) $(OTFFILES) $(ICNSFILES) $(ICOFILES) $(RCFILES)")
 SRCFILES      := $(shell echo "$(QTFILES) $(RESOURCEFILES) $(GOFILES)")
 
-BINPATH_Linux      := deploy/linux/FiberCryptoWallet
-BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
+BINPATH_Linux      := deploy/linux/fibercryptowallet
+BINPATH_Windows_NT := deploy/windows/fibercryptowallet.exe
 BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
 BINPATH            := $(BINPATH_$(UNAME_S))
 
@@ -130,7 +130,8 @@ install-deps-Darwin: ## Install osx dependencies
 install-deps-Windows: ## Install Windowns dependencies
 	set GO111MODULE=off
 	go get -v -tags=no_env github.com/therecipe/qt/cmd/...
-	(qtsetup -test=false)
+	@echo "Running qtsetup"
+	(qtsetup -test=false | true)
 	go get -t -d -v ./...
 	wget -O magick.zip https://sourceforge.net/projects/imagemagick/files/im7-exes/ImageMagick-7.0.7-25-portable-Q16-x64.zip
 	unzip magick.zip convert.exe
