@@ -20,7 +20,7 @@ Page {
     readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
-    readonly property string defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
+    readonly property string defaultLogLevel: configManager.getDefaultValue("skycoin/node/level")
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
@@ -28,14 +28,20 @@ Page {
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
-    property string savedLogLevel: configManager.getValue("skycoin/log/level")
+    property string savedLogLevel: configManager.getValue("skycoin/node/level")
+
+    // QtObject{
+    //     id: logLevel
+    //     property string modifier
+    //     property string old
+    // }
 
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
     property alias walletPath: textFieldWalletPath.text
     property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
-    property alias logLevel: logLevelOption.currentText
+    property alias logLevel: textFieldLogLevel.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -45,7 +51,7 @@ Page {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
-        configManager.setValue("skycoin/log/level", logLevel)
+        configManager.setValue("skycoin/node/level", logLevel)
         loadSavedSettings()
     }
 
@@ -53,7 +59,7 @@ Page {
         walletPath = savedWalletPath = configManager.getValue("skycoin/walletSource/1/Source")
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
-        logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
+        logLevel = savedLogLevel = configManager.getValue("skycoin/node/level")
 
         updateFooterButtonsStatus()
     }
@@ -68,7 +74,7 @@ Page {
     }
 
     function updateFooterButtonsStatus() {
-        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || logLevel !== savedLogLevel)
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || logLevel != savedLogLevel)
         var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || logLevel !== defaultLogLevel)
         footer.standardButton(Dialog.Apply).enabled = configChanged
         footer.standardButton(Dialog.Discard).enabled = configChanged
@@ -187,22 +193,47 @@ Page {
                     text: qsTr("File")
                 }
             }
+
         }
 
-        RowLayout {
+        GroupBox{
             Layout.fillWidth: true
-            
-            Label {
-                text: qsTr("Log level")
-                font.bold: true
-                color: Material.accent
-            }
-            ComboBox{
-                id: logLevelOption
+            title: qsTr("Log level")
 
-                model:["Debug", "Info", "Error", "Panic"]
+            RowLayout{
+                anchors.fill: parent
+
+                TextField {
+                    id: textFieldLogLevel
+
+                    selectByMouse: true
+                    placeholderText: qsTr("Log level")
+
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
             }
         }
+        // RowLayout {
+        //     Layout.fillWidth: true
+            
+        //     Label {
+        //         text: qsTr("Log level")
+        //         font.bold: true
+        //         color: Material.accent
+        //     }
+
+            // ComboBox{
+            //     id: logLevelOption
+
+            //     // When an item is selected, update the backend.
+            //     onActivated: logLevel.modifier = qsTr(logLevelOption.currentValue)
+            //     // // Set the initial currentIndex to the value stored in the backend.
+            //     // Component.onCompleted: currentIndex = indexOfValue(logLevel.old)
+            //     model:["debug", "info", "warn", "error", "fatal", "panic"]
+            // }
+        //}
     } // ColumnLayout
 
     // Confirm the discard or reset action:
