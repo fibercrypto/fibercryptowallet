@@ -20,6 +20,23 @@ func init() {
 	if err != nil {
 		logSkycoin.Warn("Couldn't register Skycoin configuration")
 	}
+
+	// logStr, err := config.GetOption(config.SettingPathToNode)
+	// if err != nil {
+	// 	logSkycoin.Warn("Couldn't get log options")
+	// 	logSkycoin.WithError(err).Error("AA")
+	// }
+	// log := make(map[string]string)
+	// err = json.Unmarshal([]byte(logStr), &log)
+	// if err != nil {
+	// 	logSkycoin.Warn("Couldn't unmarshal from options")
+	// }
+	// level, err := logging.LevelFromString(log["level"])
+	// if err != nil {
+	// 	logSkycoin.Warn("Couldn't get level from logging " + log["level"])
+	// }
+	// logging.SetLevel(level)
+
 	nodeStr, err := config.GetOption(config.SettingPathToNode)
 	if err != nil {
 		logSkycoin.Warn("Couldn't get node options")
@@ -29,6 +46,12 @@ func init() {
 	if err != nil {
 		logSkycoin.Warn("Couldn't unmarshal from options")
 	}
+	level, err := logging.LevelFromString(node["level"])
+	if err != nil {
+		logSkycoin.Warn("Couldn't get level from logging")
+		logSkycoin.WithError(err).WithField("string", node["level"]).Error()
+	}
+	logging.SetLevel(level)
 	err = core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(node["address"]))
 	if err != nil {
 		logSkycoin.Warn("Couldn't create section for Skycoin")
