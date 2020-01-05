@@ -1,28 +1,22 @@
 package history
 
 import (
-	//"sort"
-	//"strconv"
 	"sort"
 	"strconv"
 	"time"
 
-	//"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/fibercryptowallet/src/util"
+
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 
-	//coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 
-	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/models"
-	//"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
 
-	//"github.com/fibercrypto/fibercryptowallet/src/util"
-	"time"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 
 	qtCore "github.com/therecipe/qt/core"
 )
@@ -61,20 +55,12 @@ func (hm *HistoryManager) init() {
 	hm.walletEnv = models.GetWalletEnv()
 
 	go func() {
-		uptimeTicker := time.NewTicker(7 * time.Second)
+		uptimeTicker := time.NewTicker(10 * time.Second)
 
 		for {
 			<-uptimeTicker.C
-			logWalletManager.Debug("Updating wallet")
-			go func() {
-				tmp := make(chan int)
-				go func() {
-					walletM.getWalletIterators(true)
-					tmp <- 0
-				}()
-				<-tmp
-				go walletM.updateWallets()
-			}()
+			logHistoryManager.Debug("Updating history")
+			go hm.loadHistory()
 		}
 	}()
 
@@ -97,14 +83,15 @@ func (a ByDate) Less(i, j int) bool {
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
 
 	txnsDetails := make([]*transactions.TransactionDetails, 0)
-
+	addrs := make([]string, 0)
 	for _, addr := range filterAddresses {
 		val, ok := hm.txnForAddresses[addr]
 		if !ok {
-
+			addrs = append(addrs, addr)
 		}
 		txnsDetails = append(txnsDetails, val...)
 	}
+	go hm.updateTxnOfAddresses(addrs)
 
 	return txnsDetails
 }
@@ -371,11 +358,25 @@ func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*tran
 		txnDetails.SetTransactionID(txn.GetId())
 
 		txnsDetails = append(txnsDetails, txnDetails)
-
+		for _, addrInTxn := range txnAddresses.Addresses() {
+			if containsAddr(filterAddresses, addrInTxn) {
+				hm.txnForAddresses[addrInTxn.Address()] = append(hm.txnForAddresses[addrInTxn.Address()], txnDetails)
+			}
+		}
 	}
 	sort.Sort(ByDate(txnsDetails))
 	return txnsDetails
 }
+
+func containsAddr(addr1 []string, addr2 *address.AddressDetails) bool {
+	for _, addr := range addr1 {
+		if addr == addr2.Address() {
+			return true
+		}
+	}
+	return false
+}
+
 func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
 	logHistoryManager.Info("Loading history with some filters")
 	filterAddresses := hm.filters
