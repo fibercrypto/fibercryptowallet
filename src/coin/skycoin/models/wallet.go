@@ -839,13 +839,17 @@ type SkycoinLocalWallet struct {
 func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
 	logWallet.Info("Listing Skycoin local wallets")
 	wallets := make([]core.Wallet, 0)
+
+	logWallet.Debug("Reading wallet")
 	entries, err := ioutil.ReadDir(wltSrv.walletDir)
 	if err != nil {
 		logWallet.WithError(err).WithField("dirname", wltSrv.walletDir).Error("Call to ioutil.ReadDir(dirname) inside ListWallets failed.")
 		return nil
 	}
+	logWallet.Debug("Readed wallet")
 
-	for _, e := range entries {
+	for i, e := range entries {
+		logWallet.Debug("Entry " + strconv.Itoa(i) + " started")
 		if e.Mode().IsRegular() {
 			name := e.Name()
 			if !strings.HasSuffix(name, walletExt) {
@@ -867,7 +871,10 @@ func (wltSrv *SkycoinLocalWallet) ListWallets() core.WalletIterator {
 				WalletDir: wltSrv.walletDir,
 			})
 		}
+		logWallet.Debug("Entry " + strconv.Itoa(i) + " finished")
 	}
+
+	logWallet.Debug("number of wallets :=> " + strconv.Itoa(len(entries)))
 
 	return NewSkycoinWalletIterator(wallets)
 }

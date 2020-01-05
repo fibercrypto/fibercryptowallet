@@ -33,7 +33,7 @@ func getMultiPlatformUserDirectory() string {
 
 func RegisterConfig() error {
 	cm := local.GetConfigManager()
-	node := map[string]string{"address": "https://staging.node.skycoin.net"}
+	node := map[string]string{"address": "https://node.skycoin.com"}
 	nodeBytes, err := json.Marshal(node)
 	if err != nil {
 		return err

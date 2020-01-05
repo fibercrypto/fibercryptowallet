@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -16,6 +17,8 @@ var (
 	confManager         *ConfigManager
 	OptionNotFoundError = errors.ErrInvalidOptions
 )
+
+var logSettings = logging.MustGetLogger("Skycoin Altcoin")
 
 func init() {
 	qs := qtcore.NewQSettings(qtcore.QCoreApplication_OrganizationName(), qtcore.QCoreApplication_ApplicationName(), nil)
@@ -88,6 +91,7 @@ func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, e
 			}
 		}
 		if !finded {
+			logSettings.Debug("Couldn't found this setting => " + name)
 			return "", OptionNotFoundError
 		}
 		sm.settings.BeginGroup(sect)
@@ -95,8 +99,10 @@ func (sm *SectionManager) GetValue(name string, sectionPath []string) (string, e
 	}
 	val := sm.settings.Value(name, qtcore.NewQVariant())
 	if val.IsNull() {
+		logSettings.Debug("Couldn't found this setting => " + name)
 		return "", OptionNotFoundError
 	}
+	logSettings.Debug("The value for setting " + name + " is " + val.ToString())
 	return val.ToString(), nil
 }
 

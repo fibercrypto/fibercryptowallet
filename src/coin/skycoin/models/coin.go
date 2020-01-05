@@ -447,7 +447,7 @@ func (txn *SkycoinTransaction) GetOutputs() []core.TransactionOutput {
 }
 
 func (txn *SkycoinTransaction) GetId() string {
-	logCoin.Info("Getting if from transaction")
+	logCoin.Info("Getting id from transaction")
 	return txn.skyTxn.Hash
 }
 
@@ -695,7 +695,7 @@ func (in *SkycoinTransactionOutput) SupportedAssets() []string {
 
 // GetCoins return input balance in one of supported coins , or error
 func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
-	logCoin.Info("Getting coins for transaction outputs using " + ticker + "ticker")
+	logCoin.Info("Getting coins for transaction outputs using " + ticker + " ticker")
 	accuracy, err2 := util.AltcoinQuotient(ticker)
 	if err2 != nil {
 		return uint64(0), err2

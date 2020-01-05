@@ -44,15 +44,18 @@ func (m *ModelWallets) init() {
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
 	m.SetLoading(true)
-	altManager := local.LoadAltcoinManager()
-	walletsEnvs := make([]core.WalletEnv, 0)
-	for _, plug := range altManager.ListRegisteredPlugins() {
-		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
-	}
+	go func() {
 
-	m.WalletEnv = walletsEnvs[0]
+		altManager := local.LoadAltcoinManager()
+		walletsEnvs := make([]core.WalletEnv, 0)
+		for _, plug := range altManager.ListRegisteredPlugins() {
+			walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+		}
 
-	m.loadModel()
+		m.WalletEnv = walletsEnvs[0]
+
+		m.loadModel()
+	}()
 }
 
 func (m *ModelWallets) rowCount(*qtcore.QModelIndex) int {
@@ -102,10 +105,11 @@ func (m *ModelWallets) cleanModel() {
 }
 
 func (m *ModelWallets) loadModel() {
+
 	logWalletsModel.Info("Loading Model")
 	m.SetLoading(true)
 	aModels := make([]*ModelAddresses, 0)
-	wallets := m.WalletEnv.GetWalletSet().ListWallets()
+	wallets := walletManager.getWalletIterators(false)
 	if wallets == nil {
 		logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
 		return

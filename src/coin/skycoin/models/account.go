@@ -252,7 +252,6 @@ func (wlt *LocalWallet) GetBalance(ticker string) (uint64, error) {
 	} else {
 		return 0, errorTickerInvalid{ticker}
 	}
-
 }
 
 func (wlt *LocalWallet) ListAssets() []string {

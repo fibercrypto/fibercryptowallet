@@ -1,21 +1,29 @@
 package history
 
 import (
+	//"sort"
+	//"strconv"
 	"sort"
 	"strconv"
 	"time"
 
+	//"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 
-	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	//coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 
 	//local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/models"
+	//"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	"github.com/fibercrypto/fibercryptowallet/src/models/address"
 	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
-	"github.com/fibercrypto/fibercryptowallet/src/util"
+
+	//"github.com/fibercrypto/fibercryptowallet/src/util"
+	"time"
+
 	qtCore "github.com/therecipe/qt/core"
 )
 
@@ -32,14 +40,17 @@ const (
 */
 type HistoryManager struct {
 	qtCore.QObject
-	filters []string
-	_       func() `constructor:"init"`
-
-	_         func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
-	_         func() []*transactions.TransactionDetails `slot:"loadHistory"`
-	_         func(string)                              `slot:"addFilter"`
-	_         func(string)                              `slot:"removeFilter"`
 	walletEnv core.WalletEnv
+
+	filters         []string
+	txnForAddresses map[string][]*transactions.TransactionDetails
+
+	_ func() `constructor:"init"`
+
+	_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
+	_ func() []*transactions.TransactionDetails `slot:"loadHistory"`
+	_ func(string)                              `slot:"addFilter"`
+	_ func(string)                              `slot:"removeFilter"`
 }
 
 func (hm *HistoryManager) init() {
@@ -48,6 +59,24 @@ func (hm *HistoryManager) init() {
 	hm.ConnectAddFilter(hm.addFilter)
 	hm.ConnectRemoveFilter(hm.removeFilter)
 	hm.walletEnv = models.GetWalletEnv()
+
+	go func() {
+		uptimeTicker := time.NewTicker(7 * time.Second)
+
+		for {
+			<-uptimeTicker.C
+			logWalletManager.Debug("Updating wallet")
+			go func() {
+				tmp := make(chan int)
+				go func() {
+					walletM.getWalletIterators(true)
+					tmp <- 0
+				}()
+				<-tmp
+				go walletM.updateWallets()
+			}()
+		}
+	}()
 
 }
 
@@ -66,6 +95,21 @@ func (a ByDate) Less(i, j int) bool {
 	return d1.After(d2)
 }
 func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
+
+	txnsDetails := make([]*transactions.TransactionDetails, 0)
+
+	for _, addr := range filterAddresses {
+		val, ok := hm.txnForAddresses[addr]
+		if !ok {
+
+		}
+		txnsDetails = append(txnsDetails, val...)
+	}
+
+	return txnsDetails
+}
+
+func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
 	logHistoryManager.Info("Getting transactions of Addresses")
 	addresses := hm.getAddressesWithWallets()
 	var sent, internally bool
@@ -361,7 +405,7 @@ func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 	addresses := hm.getAddressesWithWallets()
 
 	filterAddresses := make([]string, 0)
-	for addr, _ := range addresses {
+	for addr := range addresses {
 		filterAddresses = append(filterAddresses, addr)
 	}
 
