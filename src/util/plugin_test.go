@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestFakePlugin(t *testing.T) {
+func TestRegisteredPlugin(t *testing.T) {
 	fakeTicker := "MOCKSCOIN"
 	fakeDesc := "Fake coin"
 	fakeExp := 3
@@ -34,4 +34,11 @@ func TestFakePlugin(t *testing.T) {
 	q, err := AltcoinQuotient(fakeTicker)
 	require.NoError(t, err)
 	require.Equal(t, uint64(fakeQuotient), q)
+}
+
+func TestUnknownPlugin(t *testing.T) {
+	fakeTicker := "MOCKSCOIN_UNK"
+	require.Equal(t, "MOCKSCOIN_UNK <Unregistered>", AltcoinCaption(fakeTicker))
+	_, err := AltcoinQuotient(fakeTicker)
+	require.Error(t, err)
 }
