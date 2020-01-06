@@ -195,7 +195,7 @@ ApplicationWindow {
     }
 
     SecureWalletDialog {
-        id: secureWalletDialog
+        id: dialogSkyWalletId
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: (applicationWindow.height > 590 ? 590 - 40 : applicationWindow.height - 40) - (enableBackupWarning ^ enablePINWarning ? 100 : 0) - (!enableBackupWarning && !enablePINWarning ? 240 : 0)

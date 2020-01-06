@@ -47,6 +47,12 @@ Item {
                     height: 6
                     visible: hasHardwareWallet
                     color: "red"
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            dialogSkyWalletId.visible = true
+                        }
+                    }
                 }
                 Image {
                     id: status
