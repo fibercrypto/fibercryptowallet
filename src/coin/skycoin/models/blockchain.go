@@ -68,6 +68,40 @@ func (sb *SkycoinBlock) GetFee(ticker string) (uint64, error) {
 	return 0, nil
 }
 
+// GetSize provides block size in bytes
+func (sb *SkycoinBlock) GetSize() (uint64, error) {
+	logBlockchain.Info("Getting size")
+	if sb.Block == nil {
+		return 0, errors.ErrBlockNotSet
+	}
+	return uint64(sb.Block.Size), nil
+}
+
+func (sb *SkycoinBlock) GetTotalAmount() (uint64, error) {
+	logBlockchain.Info("Getting size")
+	if sb.Block == nil {
+		return 0, errors.ErrBlockNotSet
+	}
+	txs, err := sb.GetTransactions()
+	if err != nil {
+		logBlockchain.Error(err)
+		return 0, err
+	}
+
+	var totalAmount uint64
+	for e := range txs {
+		for i := range txs[e].GetInputs() {
+			coins, err := txs[e].GetInputs()[i].GetCoins(Sky)
+			if err != nil {
+				logBlockchain.Error(err)
+				return 0, err
+			}
+			totalAmount += coins
+		}
+	}
+	return totalAmount, nil
+}
+
 func (sb *SkycoinBlock) IsGenesisBlock() (bool, error) {
 	logBlockchain.Info("Getting if is Genesis block")
 	if sb.Block == nil {
@@ -171,14 +205,38 @@ func (ss *SkycoinBlockchain) GetNumberOfBlocks() (uint64, error) {
 	return ss.cachedStatus.NumberOfBlocks.Current, nil
 }
 
-// GetRangeBlocks return a list of blocks between start and end range.
-func (ss *SkycoinBlockchain) GetRangeBlocks(start, end uint64) ([]core.Block, error) {
-	logBlockchain.Info("Getting all blocks")
+// GetBlockByHash return a block by a hash
+func (ss *SkycoinBlockchain) GetBlockByHash(hash string) (core.Block, error) {
+	logBlockchain.Info("Getting block by hash")
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		logBlockchain.Error(err)
 		return nil, err
 	}
+
+	defer ReturnSkycoinClient(c)
+
+	block, err := c.BlockByHash(hash)
+
+	if err != nil {
+		logBlockchain.Error(err)
+		return nil, err
+	}
+
+	return &SkycoinBlock{Block: block}, nil
+}
+
+// GetRangeBlocks return a list of blocks between start and end range.
+func (ss *SkycoinBlockchain) GetRangeBlocks(start, end uint64) ([]core.Block, error) {
+	logBlockchain.Info("Getting range of blocks")
+	c, err := NewSkycoinApiClient(PoolSection)
+	if err != nil {
+		logBlockchain.Error(err)
+		return nil, err
+	}
+
+	defer ReturnSkycoinClient(c)
+
 	blocks, err := c.BlocksInRange(start, end)
 	if err != nil {
 		logBlockchain.Error(err)
@@ -188,7 +246,6 @@ func (ss *SkycoinBlockchain) GetRangeBlocks(start, end uint64) ([]core.Block, er
 	for e := range blocks.Blocks {
 		skyBlocks = append(skyBlocks, &SkycoinBlock{Block: &blocks.Blocks[e]})
 	}
-
 	return skyBlocks, nil
 }
 

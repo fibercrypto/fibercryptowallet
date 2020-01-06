@@ -24,6 +24,8 @@ type SkycoinAPI interface {
 	CoinSupply() (*api.CoinSupply, error)
 	// BlocksInRange return a block between start and end range.
 	BlocksInRange(start, end uint64) (*readable.Blocks, error)
+	// BlockByHash makes a request to GET /api/v1/block?hash=xxx
+	BlockByHash(hash string) (*readable.Block, error)
 	// LastBlocks Get last N blocks
 	LastBlocks(n uint64) (*readable.Blocks, error)
 	// BlockchainProgress Get blockchain progress

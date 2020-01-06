@@ -51,7 +51,6 @@ func NewSkycoinApiClient(section string) (skytypes.SkycoinAPI, error) {
 	}
 
 	obj := pool.Get()
-
 	if err != nil {
 		for _, ok := err.(core.NotAvailableObjectsError); ok; _, ok = err.(core.NotAvailableObjectsError) {
 			if err == nil {

@@ -2,12 +2,14 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import BlockchainModels 1.0
 import WalletsManager 1.0
+import ExplorerModels 1.0
 
 Item {
     id: generalStackView
 
     property alias depth: stackView.depth
     property alias busy: stackView.busy
+    property string hash;
 
     function openOutputsPage() {
         if (stackView.depth > 1) {
@@ -88,6 +90,14 @@ Item {
         }
     }
 
+    function openBlockPage(hash) {
+        generalStackView.hash=hash
+        if (stackView.depth > 1) {
+            stackView.replace(componentBlockPage)
+        } else {
+            stackView.push(componentBlockPage)
+        }
+    }
     function pop() {
         stackView.pop()
     }
@@ -179,6 +189,15 @@ Item {
 
         Settings {
             id: settings
+        }
+    }
+
+    Component {
+        id: componentBlockPage
+
+        BlockPage {
+            id: blockPage
+            hash:generalStackView.hash
         }
     }
 

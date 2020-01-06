@@ -12,15 +12,9 @@ Item {
     id: root
 
     readonly property real delegateHeight: 30
-    property bool emptyAddressVisible: true
-    property bool expanded: expand
-    // The following property is used to avoid a binding conflict with the `height` property.
-    // Also avoids a bug with the animation when collapsing a wallet
-    readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
-
 
     width: blocksList.width
-    height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
+    height: itemDelegateMainButton.height
 
     Behavior on height { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
 
@@ -29,21 +23,27 @@ Item {
         anchors.fill: parent
 
         ItemDelegate {
+//        Component.onCompleted:{
+//        console.log(modelData.transactionList)
+//        }
             id: itemDelegateMainButton
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
-            font.bold: expanded
+
+            onClicked:{
+                generalStackView.openBlockPage(blockhash)
+            }
 
             RowLayout {
                 id: delegateRowLayout
                 anchors.fill: parent
-                anchors.leftMargin: listBlockLeftMargin
-                anchors.rightMargin: listBlockRightMargin
-                spacing: listBlockSpacing
+                anchors.leftMargin: listBlocksLeftMargin
+                anchors.rightMargin: listBlocksRightMargin
+                spacing: listBlocksSpacing
 
                 Label {
                     id: labelBlockTime
-                    text: date // a role of the model
+                    text: Qt.formatDateTime(time, Qt.DefaultLocaleShortDate) // a role of the model
                     Layout.leftMargin: listBlocksLeftMargin
                     Layout.fillWidth: true
                 }
@@ -58,7 +58,7 @@ Item {
 
                 Label {
                     id: labelTransactions
-                    text: txNumber // a role of the model
+                    text: transactionLen // a role of the model
                     horizontalAlignment: Text.AlignRight
                     Layout.rightMargin: listBlocksRightMargin
                     Layout.preferredWidth: internalLabelsWidth
@@ -66,13 +66,12 @@ Item {
 
                 Label {
                     id: labelHash
-                    text: hash // a role of the model
+                    text: blockhash // a role of the model
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.rightMargin: listBlocksRightMargin
                     visible:parent.width>750
                     Layout.fillWidth: true
-
                 }
             } // RowLayout
         } // ItemDelegate

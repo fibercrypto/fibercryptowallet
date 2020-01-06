@@ -253,6 +253,7 @@ func GetSkycoinTransactionByTxId(txId string) (core.Transaction, error) {
 		logCoin.Error(err)
 		return nil, err
 	}
+	defer ReturnSkycoinClient(c)
 	txVerb, err := c.TransactionVerbose(txId)
 
 	if err != nil {
