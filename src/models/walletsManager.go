@@ -131,7 +131,7 @@ func (walletM *WalletManager) init() {
 		qWallet.SetCoinHours("N/A")
 
 		qWallets = append(qWallets, qWallet)
-
+		walletM.updateAddresses(qWallet.FileName())
 	}
 	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
@@ -246,7 +246,6 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		it, err := wlt.GetLoadedAddresses()
 		if err != nil {
 			logWalletManager.WithError(err).Warn("Couldn't loaded addresses")
-			walletM.addresseseByWallets[wltId] = qAddresses
 			return
 		}
 		for it.Next() {
