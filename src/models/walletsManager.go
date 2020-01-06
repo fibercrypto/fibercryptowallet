@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
 	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
@@ -168,6 +169,7 @@ func (walletM *WalletManager) updateAll() {
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
+	skycoin.UpdateAltcoin()
 }
 
 func GetWalletEnv() core.WalletEnv {
