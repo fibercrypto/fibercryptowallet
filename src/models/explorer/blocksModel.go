@@ -3,9 +3,11 @@ package explorer
 import (
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/models"
 	"github.com/fibercrypto/fibercryptowallet/src/params"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	"github.com/skycoin/skycoin/src/util/droplet"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -47,8 +49,12 @@ var logExplorer = logging.MustGetLogger("Explorer")
 const (
 	Time = int(qtcore.Qt__UserRole) + iota + 1
 	BlockNumber
-	Transactions
-	BlockHash
+	TransactionLen
+	Blockhash
+	PrevBlockhash
+	Size
+	TotalAmount
+	TransactionList
 )
 
 // BlocksModel List of Blocks to be show.
@@ -62,9 +68,10 @@ type BlocksModel struct {
 	_ int                        `property:"blockNumber"`
 	_ map[int]*qtcore.QByteArray `property:"roles"`
 	_ []*QBlock                  `property:"blocks"`
-
-	_ func(pageNum int) `signal:"loadPage"`
-	_ func()            `signal:"update,auto"`
+	_ *QBlock                    `property:"blockDetail"`
+	_ func(pageNum int)          `signal:"loadPage"`
+	_ func()                     `signal:"update,auto"`
+	_ func(hash string)          `signal:"loadBlockByHash"`
 
 	_ func([]*QBlock) `slot:"addBlocks"`
 	_ func()          `slot:"loadModel"`
@@ -74,30 +81,35 @@ type BlocksModel struct {
 type QBlock struct {
 	qtcore.QObject
 
-	_ qtcore.QDateTime `property:"time"`
-	_ uint64           `property:"blockNumber"`
-	_ int              `property:"transactions"`
-	_ string           `property:"blockHash"`
+	_ []*models.QTransaction `property:"transactionList"`
+	_ qtcore.QDateTime       `property:"time"`
+	_ string                 `property:"blockhash"`
+	_ string                 `property:"prevBlockhash"`
+	_ string                 `property:"totalAmount"`
+	_ uint64                 `property:"blockNumber"`
+	_ uint64                 `property:"size"`
+	_ int                    `property:"transactionLen"`
 }
 
 func (m *BlocksModel) init() {
 	logExplorer.Info("Init Explorer Model")
 	m.SetRoles(map[int]*qtcore.QByteArray{
-		Time:         qtcore.NewQByteArray2("time", -1),
-		BlockNumber:  qtcore.NewQByteArray2("blockNumber", -1),
-		Transactions: qtcore.NewQByteArray2("transactions", -1),
-		BlockHash:    qtcore.NewQByteArray2("blockHash", -1),
+		Time:            qtcore.NewQByteArray2("time", -1),
+		BlockNumber:     qtcore.NewQByteArray2("blockNumber", -1),
+		TransactionLen:  qtcore.NewQByteArray2("transactionLen", -1),
+		Blockhash:       qtcore.NewQByteArray2("blockhash", -1),
+		PrevBlockhash:   qtcore.NewQByteArray2("prevBlockhash", -1),
+		Size:            qtcore.NewQByteArray2("size", -1),
+		TotalAmount:     qtcore.NewQByteArray2("totalAmount", -1),
+		TransactionList: qtcore.NewQByteArray2("transactionList", -1),
 	})
 	m.ConnectRowCount(m.rowCount)
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
-	m.ConnectAddBlocks(m.addBlocks)
-	m.ConnectLoadModel(m.loadModel)
 	m.ConnectUpdate(m.update)
 	m.ConnectLoadPage(m.loadPage)
+	m.ConnectLoadBlockByHash(m.loadBlockByHash)
 	m.blockChain = skycoin.NewSkycoinBlockchain(params.DataRefreshTimeout)
-	m.update()
-	m.loadPage(1)
 }
 
 func (blocksM *BlocksModel) update() {
@@ -128,6 +140,7 @@ func (blocksM *BlocksModel) updateInfo() error {
 }
 
 func (blocksM *BlocksModel) loadPage(pageNum int) {
+	logExplorer.Info("Load page ", pageNum)
 	if pageNum > 0 && pageNum <= blocksM.CountPage() {
 		blocksM.SetCurrentPage(pageNum)
 		blocksM.loadModel()
@@ -158,13 +171,29 @@ func (m *BlocksModel) data(index *qtcore.QModelIndex, role int) *qtcore.QVariant
 		{
 			return qtcore.NewQVariant1(qb.BlockNumber())
 		}
-	case Transactions:
+	case TransactionLen:
 		{
-			return qtcore.NewQVariant1(qb.Transactions())
+			return qtcore.NewQVariant1(qb.TransactionLen())
 		}
-	case BlockHash:
+	case Blockhash:
 		{
-			return qtcore.NewQVariant1(qb.BlockHash())
+			return qtcore.NewQVariant1(qb.Blockhash())
+		}
+	case PrevBlockhash:
+		{
+			return qtcore.NewQVariant1(qb.PrevBlockhash())
+		}
+	case Size:
+		{
+			return qtcore.NewQVariant1(qb.Size())
+		}
+	case TotalAmount:
+		{
+			return qtcore.NewQVariant1(qb.TotalAmount())
+		}
+	case TransactionList:
+		{
+			return qtcore.NewQVariant1(qb.TransactionList())
 		}
 	default:
 		{
@@ -200,41 +229,85 @@ func (m *BlocksModel) loadModel() {
 	m.addBlocks(qBlocks)
 }
 
+func (m *BlocksModel) loadBlockByHash(hash string) {
+	logExplorer.Info("Loading block details")
+	logExplorer.Info(hash)
+	block, err := m.blockChain.GetBlockByHash(hash)
+	if err != nil {
+		logExplorer.WithError(err).Errorf("Couldn't get the detail of block with hash %s", hash)
+	}
+
+	m.SetBlockDetail(blockToQBlock(block))
+}
+
 func blockToQBlock(block core.Block) *QBlock {
 	var qBlock = NewQBlock(nil)
-	timestamp, err := block.GetTime()
 
+	timestamp, err := block.GetTime()
 	if err != nil {
 		logExplorer.WithError(err).Error("Couldn't get the time of block")
 	}
 
 	year, month, day, h, m, s := util.ParseDate(int64(timestamp))
+
 	qBlock.SetTime(qtcore.NewQDateTime3(qtcore.NewQDate3(year, month, day),
 		qtcore.NewQTime3(h, m, s, 0), qtcore.Qt__LocalTime))
 
 	hash, err := block.GetHash()
-
 	if err != nil {
 		logExplorer.WithError(err).Error("Couldn't get the hash of block")
 	}
 
-	qBlock.SetBlockHash(string(hash))
+	qBlock.SetBlockhash(string(hash))
 
 	height, err := block.GetHeight()
-
 	if err != nil {
 		logExplorer.WithError(err).Error("Couldn't get the height of block")
 	}
 
 	qBlock.SetBlockNumber(height)
 
-	transactions, err := block.GetTransactions()
-
+	prevHash, err := block.GetPrevHash()
 	if err != nil {
-		logExplorer.Error(err)
+		logExplorer.WithError(err).Error("Couldn't get the prevBlockHash of block")
 	}
 
-	qBlock.SetTransactions(len(transactions))
+	qBlock.SetPrevBlockhash(string(prevHash))
+
+	blockSize, err := block.GetSize()
+	if err != nil {
+		logExplorer.WithError(err).Error("Couldn't get the size of block")
+	}
+
+	qBlock.SetSize(blockSize)
+
+	totalAmount, err := block.GetTotalAmount()
+	if err != nil {
+		logExplorer.WithError(err).Error("Couldn't get the total amount of block")
+	}
+
+	totalAmountStr, err := droplet.ToString(totalAmount)
+	if err != nil {
+		logExplorer.WithError(err).Error("Couldn't get the total amount of block")
+	}
+	qBlock.SetTotalAmount(totalAmountStr)
+
+	transactionList, err := block.GetTransactions()
+	if err != nil {
+		logExplorer.WithError(err).Error("Couldn't get the transactions list of block")
+	}
+	var qTransactionsList []*models.QTransaction
+	for e := range transactionList {
+
+		qTransaction, err := models.NewQTransactionFromTransaction(transactionList[e])
+		if err != nil {
+			logExplorer.WithError(err).Error("Couldn't get the transactions list of block")
+		}
+		qTransactionsList = append(qTransactionsList, qTransaction)
+	}
+	logExplorer.Info("Transaction Count: ", len(qTransactionsList))
+	qBlock.SetTransactionList(qTransactionsList)
+	qBlock.SetTransactionLen(len(qTransactionsList))
 
 	return qBlock
 }

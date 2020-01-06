@@ -19,6 +19,10 @@ type BlockchainStatus interface {
 	// GetNumberOfBlocks determine number of blocks in the blockchain
 	GetNumberOfBlocks() (uint64, error)
 
+	// GetBlockByHash return a block by a hash
+	GetBlockByHash(hash string) (Block, error)
+
+	// GetRangeBlocks return a list of blocks between start and end range.
 	GetRangeBlocks(start, end uint64) ([]Block, error)
 }
 

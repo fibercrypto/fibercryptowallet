@@ -110,8 +110,12 @@ type Block interface {
 	GetHeight() (uint64, error)
 	// GetFee computes block fee expressed in coins of asset identified by ticker
 	GetFee(ticker string) (uint64, error)
+	// GetSize provides block size in bytes
+	GetSize() (uint64, error)
 	// IsGenesisBlock determines whether this block starts blockchain sequence
 	IsGenesisBlock() (bool, error)
-
+	// GetTotalAmount provides the total of coin used in this block
+	GetTotalAmount() (uint64, error)
+	// GetTransactions provides a list of transactions of current block
 	GetTransactions() ([]Transaction, error)
 }

@@ -12,7 +12,10 @@ Page {
     readonly property real listBlocksRightMargin: 50
     readonly property real listBlocksSpacing: 20
     readonly property real internalLabelsWidth: 70
-
+Component.onCompleted:{
+blockModel.update()
+blockModel.loadPage(1)
+}
     header: ColumnLayout {
 
         RowLayout {
@@ -59,7 +62,7 @@ Page {
     } // ColumnLayout (header)
 
 
-ScrollView {
+    ScrollView {
         id: scrollItem
         Component.onCompleted:{
             blockModel.update()
@@ -76,16 +79,17 @@ ScrollView {
             delegate: BlockListDelegate{}
         }
     }
-footer: ColumnLayout{
-anchors.margins: 5
-RowLayout {
+    footer: ColumnLayout{
+        anchors.margins: 5
+        RowLayout {
             Layout.preferredHeight: 40
             Layout.alignment: Qt.AlignHCenter
             Button {
                 text: "<"
                 onClicked: {
                     if(blockModel.currentPage > 1){
-                        blockModel.loadModel(blockModel.currentPage-- )
+                        blockModel.currentPage-=1
+                        blockModel.loadPage(blockModel.currentPage )
                     }
                 }
             }
@@ -96,22 +100,31 @@ RowLayout {
                 text: ">"
                 onClicked: {
                     if(blockModel.currentPage < blockModel.countPage){
-                        blockModel.loadModel(blockModel.currentPage++ )
+                        blockModel.currentPage+=1
+                        blockModel.loadPage(blockModel.currentPage )
                     }
                 }
             }
         }
 }
 
-QBlocks{
-    id:blockModel
-}
+    QBlocks{
+        id:blockModel
+    }
 
-BusyIndicator {
+    BusyIndicator {
         id: loader
         running: true
         anchors.centerIn: parent
     }
+
+
+
+//    BlockPage{
+//    id:blockPage
+//    width:parent.width
+//    height:parent.height
+//    }
 
 // ListModel{
 // id:blockModeld

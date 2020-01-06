@@ -12,12 +12,6 @@ Item {
     id: root
 
     readonly property real delegateHeight: 30
-    property bool emptyAddressVisible: true
-//    property bool expanded: expand
-    // The following property is used to avoid a binding conflict with the `height` property.
-    // Also avoids a bug with the animation when collapsing a wallet
-//    readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
-
 
     width: blocksList.width
     height: itemDelegateMainButton.height
@@ -29,10 +23,16 @@ Item {
         anchors.fill: parent
 
         ItemDelegate {
+//        Component.onCompleted:{
+//        console.log(modelData.transactionList)
+//        }
             id: itemDelegateMainButton
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignTop
-//            font.bold: expanded
+
+            onClicked:{
+                generalStackView.openBlockPage(blockhash)
+            }
 
             RowLayout {
                 id: delegateRowLayout
@@ -58,7 +58,7 @@ Item {
 
                 Label {
                     id: labelTransactions
-                    text: transactions // a role of the model
+                    text: transactionLen // a role of the model
                     horizontalAlignment: Text.AlignRight
                     Layout.rightMargin: listBlocksRightMargin
                     Layout.preferredWidth: internalLabelsWidth
@@ -66,13 +66,12 @@ Item {
 
                 Label {
                     id: labelHash
-                    text: blockHash // a role of the model
+                    text: blockhash // a role of the model
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.rightMargin: listBlocksRightMargin
                     visible:parent.width>750
                     Layout.fillWidth: true
-
                 }
             } // RowLayout
         } // ItemDelegate
