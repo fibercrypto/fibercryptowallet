@@ -53,6 +53,7 @@ func (hm *HistoryManager) init() {
 	hm.ConnectAddFilter(hm.addFilter)
 	hm.ConnectRemoveFilter(hm.removeFilter)
 	hm.walletEnv = models.GetWalletEnv()
+	hm.txnForAddresses = make(map[string][]*transactions.TransactionDetails, 0)
 
 	go func() {
 		uptimeTicker := time.NewTicker(10 * time.Second)
