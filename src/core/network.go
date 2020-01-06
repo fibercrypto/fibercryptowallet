@@ -174,7 +174,7 @@ func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 func GetMultiPool() MultiPool {
 
 	once.Do(func() {
-		multiConnectionsPool = newMultiConnectionPool(10)
+		multiConnectionsPool = newMultiConnectionPool(30)
 	})
 
 	return multiConnectionsPool
