@@ -1,6 +1,10 @@
 package models
 
 import (
+	"strconv"
+
+	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
@@ -98,7 +102,12 @@ func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QV
 
 	case CoinHours:
 		{
-			return core.NewQVariant1(w.CoinHours())
+			accuracy, err := util.AltcoinQuotient(coin.CoinHoursTicker)
+			if err != nil {
+				logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+			}
+			val, err := strconv.ParseUint(w.CoinHours(), 10, 64)
+			return core.NewQVariant1(util.FormatCoins(val, accuracy))
 		}
 	case FileName:
 		{
