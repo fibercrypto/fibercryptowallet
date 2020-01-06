@@ -12,13 +12,15 @@ import (
 func TestFakePlugin(t *testing.T) {
 	fakeTicker := "MOCKSCOIN"
 	fakeDesc := "Fake coin"
+	fakeExp := 3
+	fakeQuotient := 1000 // 10 ^ fakeExp
 	fakeMeta := core.AltcoinMetadata{
 		Name:          fakeDesc,
 		Ticker:        fakeTicker,
 		Family:        fakeTicker,
 		HasBip44:      false,
 		Bip44CoinType: 0,
-		Accuracy:      3,
+		Accuracy:      int32(fakeExp),
 	}
 	mockPlugin := new(mocks.AltcoinPlugin)
 	mockPlugin.On("RegisterTo", mock.Anything).Return().Run(func(args mock.Arguments) {
@@ -26,7 +28,10 @@ func TestFakePlugin(t *testing.T) {
 		manager.RegisterAltcoin(fakeMeta, mockPlugin)
 	})
 	mockPlugin.On("GetName").Return(fakeDesc)
-
 	RegisterAltcoin(mockPlugin)
+
 	require.Equal(t, fakeDesc, AltcoinCaption(fakeTicker))
+	q, err := AltcoinQuotient(fakeTicker)
+	require.NoError(t, err)
+	require.Equal(t, uint64(fakeQuotient), q)
 }
