@@ -365,9 +365,7 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 }
 
 func (walletM *WalletManager) updateWallets() {
-	//go func() {
 
-	qWallets := make([]*QWallet, 0)
 	it := walletM.getWalletIterators(false)
 	if it == nil {
 		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
@@ -381,11 +379,16 @@ func (walletM *WalletManager) updateWallets() {
 			continue
 		}
 		qw := fromWalletToQWallet(it.Value(), encrypted, false)
-		qWallets = append(qWallets, qw)
 
+		for i := range walletM.wallets {
+			if walletM.wallets[i].FileName() == qw.FileName() {
+				if (walletM.wallets[i].Sky() == "N/A" && qw.Sky() != "N/A") ||
+					(walletM.wallets[i].CoinHours() != "N/A") && qw.CoinHours() != "N/A" {
+					walletM.wallets[i] = qw
+				}
+			}
+		}
 	}
-	walletM.wallets = qWallets
-	//}()
 }
 
 func (walletM *WalletManager) getAllAddresses() []*QAddress {
