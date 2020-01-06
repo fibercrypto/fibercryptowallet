@@ -269,21 +269,8 @@
   version = "v1.4.2"
 
 [[projects]]
-  branch = "develop"
   digest = "1:738ae44a75f643024f215f9b5c3c79f46c72f4327dc2fbeaec7ed92d7443f207"
   name = "github.com/skycoin/skycoin"
-  packages = [
-    "src/cipher",
-    "src/cipher/base58",
-    "src/cipher/ripemd160",
-    "src/cipher/secp256k1-go",
-    "src/cipher/secp256k1-go/secp256k1-go2",
-    "src/util/logging",
-  ]
-  pruneopts = "UT"
-  revision = "d7e4b2f3e31ea96bdcaba595507fde42baa156b9"
-
-[[projects]]
   digest = "1:e096613fb7cf34743d49af87d197663cfccd61876e2219853005a57baedfa562"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -321,24 +308,15 @@
 [[projects]]
   branch = "master"
   digest = "1:614aca825cacbe3f709a4587dcb76ab010016a9f18b7607c11d7259ef1331783"
-  name = "github.com/therecipe/qt"
+  name = "golang.org/x/crypto"
   packages = [
-    "core",
-    "gui",
+    "bcrypt",
+    "blowfish",
     "internal/binding/runtime",
-    "network",
-    "qml",
     "widgets",
   ]
   pruneopts = "UT"
   revision = "4ee12d6ea9262c808871052f0f23c409c930d5ae"
-
-[[projects]]
-  branch = "master"
-  digest = "1:bbe51412d9915d64ffaa96b51d409e070665efc5194fcf145c4a27d4133107a4"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  pruneopts = "UT"
   revision = "becbf705a91575484002d598f87d74f0002801e7"
 
 [[projects]]
@@ -368,6 +346,7 @@
     "github.com/SkycoinProject/skycoin/src/cipher",
     "github.com/SkycoinProject/skycoin/src/cipher/base58",
     "github.com/SkycoinProject/skycoin/src/cipher/bip39",
+    "github.com/SkycoinProject/skycoin/src/cipher/pbkdf2",
     "github.com/SkycoinProject/skycoin/src/cipher/testsuite",
     "github.com/SkycoinProject/skycoin/src/cli",
     "github.com/SkycoinProject/skycoin/src/coin",
@@ -390,9 +369,8 @@
     "github.com/stretchr/testify/assert",
     "github.com/stretchr/testify/mock",
     "github.com/stretchr/testify/require",
-    "github.com/therecipe/qt/core",
-    "github.com/therecipe/qt/gui",
-    "github.com/therecipe/qt/qml",
+    "golang.org/x/crypto/bcrypt",
+    "golang.org/x/crypto/ssh/terminal",
     "github.com/therecipe/qt/widgets",
     "golang.org/x/crypto/ssh/terminal",
   ]
