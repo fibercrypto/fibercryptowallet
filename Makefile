@@ -23,8 +23,10 @@ DEFAULT_ARCH ?= linux
 ## In future use as a parameter tu make command.
 COIN ?= skycoin
 COVERAGEPATH = src/coin/$(COIN)
-COVERAGEFILE = $(COVERAGEPATH)/coverage.out
-COVERAGEHTML = $(COVERAGEPATH)/coverage.html
+COVERAGEPREFIX = $(COVERAGEPATH)/coverage
+COVERAGEFILE = $(COVERAGEPREFIX).out
+COVERAGETEMP = $(COVERAGEPREFIX).tmp.out
+COVERAGEHTML = $(COVERAGEPREFIX).html
 
 # Icons
 APP_ICON_PATH	:= resources/images/icons/appIcon
@@ -221,6 +223,7 @@ prepare-release: ## Change the resources in the app and prepare to release the a
 
 clean-test: ## Remove temporary test files
 	rm -f $(COVERAGEFILE)
+	rm -f $(COVERAGETEMP)
 	rm -f $(COVERAGEHTML)
 
 clean-build: ## Remove temporary files
@@ -246,19 +249,23 @@ clean: clean-test clean-build ## Remove temporary files
 gen-mocks: ## Generate mocks for interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 
+$(COVERAGEFILE):
+	echo 'mode: set' > $(COVERAGEFILE)
+
 test-sky: ## Run Skycoin plugin test suite
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
-	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
 test-core: ## Run tests for API core and helpers
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
-test-sky-launch-html-cover:
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
-	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
-	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
+test-html-cover:
+	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEPREFIX).html
 
-test-cover-travis:
+test-cover-travis: clean-test
 	go test -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
@@ -266,10 +273,9 @@ test-cover-travis:
 	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 
+test-cover: test test-html-cover ## Show more details of test coverage
 
-test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
-
-test: clean-test test-core test-sky ## Run project test suite
+test: clean-test $(COVERAGEFILE) test-core test-sky ## Run project test suite
 
 run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
