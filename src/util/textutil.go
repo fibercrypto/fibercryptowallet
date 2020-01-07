@@ -55,9 +55,9 @@ func IndentMessageLines(message string, longestLabelLen int) string {
 		// no need to align first line because it starts at the correct location (after the label)
 		if i != 0 {
 			// append alignLen+1 spaces to align with "{{longestLabel}}:" before adding tab
-			_ = outBuf.WriteString("\n\t" + strings.Repeat(" ", longestLabelLen+1) + "\t")
+			_, _ = outBuf.WriteString("\n\t" + strings.Repeat(" ", longestLabelLen+1) + "\t")
 		}
-		_ = outBuf.WriteString(scanner.Text())
+		_, _ = outBuf.WriteString(scanner.Text())
 	}
 
 	return outBuf.String()
