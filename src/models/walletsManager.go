@@ -857,6 +857,7 @@ func (walletM *WalletManager) newWalletAddress(id string, n int, password string
 		wltEntriesLen++
 	}
 	wlt.GenAddresses(core.AccountAddress, uint32(wltEntriesLen), uint32(n), pwd)
+	go walletM.updateAddresses(id)
 	logWalletManager.Info("New addresses created")
 }
 

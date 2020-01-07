@@ -123,6 +123,7 @@ Page {
     }
 
     Component.onCompleted: {
+        modelTransactions.clear()
         modelTransactions.addMultipleTransactions(historyManager.loadHistory())
     }
 }

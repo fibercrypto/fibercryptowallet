@@ -224,7 +224,7 @@ Item {
         id: listAddresses
         property Timer timer: Timer {
             id: addressModelTimer
-            interval: 7000
+            interval: 3000
             repeat: true
             running: true
             onTriggered: {
