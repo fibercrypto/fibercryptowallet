@@ -10,6 +10,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
 )
 
 func TestSkycoinTransactionGetStatus(t *testing.T) {
@@ -91,7 +92,7 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
 	output := input.GetSpentOutput()
 
-	t.Logf("%#v",output)
+	t.Logf("%#v", output)
 	require.Equal(t, output.GetId(), "out1")
 	require.Equal(t, output.GetAddress().String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
 	sky, err := output.GetCoins(Sky)
@@ -212,4 +213,10 @@ func TestSkycoinCreatedTransactionOutputIsSpent(t *testing.T) {
 	require.Equal(t, output2.IsSpent(), true)
 	require.Equal(t, output2.IsSpent(), true)
 
+}
+
+func TestSupportedAssets(t *testing.T) {
+	var pendTxn = new(SkycoinPendingTransaction)
+	assets := pendTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
 }
