@@ -220,3 +220,8 @@ func TestSupportedAssets(t *testing.T) {
 	assets := pendTxn.SupportedAssets()
 	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
 }
+
+func TestPendingTxnStatus(t *testing.T) {
+	var pendTxn = new(SkycoinPendingTransaction)
+	require.Equal(t, core.TXN_STATUS_PENDING, pendTxn.GetStatus())
+}
