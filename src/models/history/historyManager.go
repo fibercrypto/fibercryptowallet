@@ -34,10 +34,11 @@ const (
 */
 type HistoryManager struct {
 	qtCore.QObject
-	walletEnv core.WalletEnv
-
+	walletEnv       core.WalletEnv
+	addresses       map[string]string
 	filters         []string
 	txnForAddresses map[string][]*transactions.TransactionDetails
+	walletsIterator core.WalletIterator
 
 	_ func() `constructor:"init"`
 
@@ -54,17 +55,33 @@ func (hm *HistoryManager) init() {
 	hm.ConnectRemoveFilter(hm.removeFilter)
 	hm.walletEnv = models.GetWalletEnv()
 	hm.txnForAddresses = make(map[string][]*transactions.TransactionDetails, 0)
+	hm.addresses = make(map[string]string, 0)
+	go hm.getAddressesWithWallets()
 
 	go func() {
 		uptimeTicker := time.NewTicker(10 * time.Second)
+		loadAddr := time.NewTicker(20 * time.Second)
 
 		for {
-			<-uptimeTicker.C
-			logHistoryManager.Debug("Updating history")
-			go hm.loadHistory()
+			select {
+			case <-uptimeTicker.C:
+				logHistoryManager.Debug("Updating history")
+				go hm.loadHistory()
+			case <-loadAddr.C:
+				logHistoryManager.Debug("Updating loaded Addresses")
+				go hm.getAddressesWithWallets()
+			}
+			go hm.getWalletIterators(true)
 		}
 	}()
 
+}
+
+func (hm *HistoryManager) getWalletIterators(force bool) core.WalletIterator {
+	if force || hm.walletsIterator == nil {
+		hm.walletsIterator = hm.walletEnv.GetWalletSet().ListWallets()
+	}
+	return hm.walletsIterator
 }
 
 type ByDate []*transactions.TransactionDetails
@@ -99,7 +116,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 
 func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
 	logHistoryManager.Info("Getting transactions of Addresses")
-	addresses := hm.getAddressesWithWallets()
+	addresses := hm.addresses
 	var sent, internally bool
 	var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
 
@@ -110,7 +127,7 @@ func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*tran
 	txnFind := make(map[string]struct{})
 	txns := make([]core.Transaction, 0)
 
-	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
+	wltIterator := hm.getWalletIterators(false)
 	if wltIterator == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
 		return make([]*transactions.TransactionDetails, 0)
@@ -404,7 +421,7 @@ func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDe
 
 func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 	logHistoryManager.Info("Loading history")
-	addresses := hm.getAddressesWithWallets()
+	addresses := hm.addresses
 
 	filterAddresses := make([]string, 0)
 	for addr := range addresses {
@@ -441,13 +458,13 @@ func (hm *HistoryManager) removeFilter(addr string) {
 	}
 
 }
-func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
+func (hm *HistoryManager) getAddressesWithWallets() {
 	logHistoryManager.Info("Get Addresses with wallets")
 	response := make(map[string]string, 0)
-	it := hm.walletEnv.GetWalletSet().ListWallets()
+	it := hm.getWalletIterators(false)
 	if it == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't load addresses")
-		return response
+		return
 	}
 	for it.Next() {
 		wlt := it.Value()
@@ -461,6 +478,7 @@ func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 		}
 
 	}
-
-	return response
+	for key, value := range response {
+		hm.addresses[key] = value
+	}
 }
