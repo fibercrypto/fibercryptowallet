@@ -130,8 +130,19 @@ func (hm *TransactionList) data(index *core.QModelIndex, role int) *core.QVarian
 func (hm *TransactionList) addMultipleTransactions(txns []*transactions.TransactionDetails) {
 
 	for _, txn := range txns {
-		hm.addTransaction(txn)
+		if !hm.txnContained(txn) {
+			hm.addTransaction(txn)
+		}
 	}
+}
+
+func (hm *TransactionList)txnContained(txn *transactions.TransactionDetails) bool {
+	for _, txnStored := range hm.Transactions() {
+		if txn.TransactionID() == txnStored.TransactionID() {
+			return true
+		}
+	}
+	return false
 }
 
 func (hm *TransactionList) clear() {

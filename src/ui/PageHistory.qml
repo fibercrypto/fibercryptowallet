@@ -126,4 +126,19 @@ Page {
         modelTransactions.clear()
         modelTransactions.addMultipleTransactions(historyManager.loadHistory())
     }
+
+    property Timer timer: Timer{
+        id: historyTimer
+        repeat: true
+        running: true
+        interval: 4000
+        onTriggered: {
+            if (switchFilters.checked) {
+                modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+            } else {
+                modelTransactions.addMultipleTransactions(historyManager.loadHistory())
+            }
+        }
+
+    }
 }
