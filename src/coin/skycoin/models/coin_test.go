@@ -216,18 +216,22 @@ func TestSkycoinCreatedTransactionOutputIsSpent(t *testing.T) {
 }
 
 func TestSupportedAssets(t *testing.T) {
-	var pendTxn = new(SkycoinPendingTransaction)
+	pendTxn := new(SkycoinPendingTransaction)
 	assets := pendTxn.SupportedAssets()
 	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+
+	coreTxn := new(SkycoinUninjectedTransaction)
+	assets = coreTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
 }
 
 func TestPendingTxnStatus(t *testing.T) {
-	var pendTxn = new(SkycoinPendingTransaction)
+	pendTxn := new(SkycoinPendingTransaction)
 	require.Equal(t, core.TXN_STATUS_PENDING, pendTxn.GetStatus())
 }
 
 func TestPendingTxnFee(t *testing.T) {
-	var pendTxn = new(SkycoinPendingTransaction)
+	pendTxn := new(SkycoinPendingTransaction)
 	fee, err := pendTxn.ComputeFee(Sky)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), fee)
