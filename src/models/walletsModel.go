@@ -8,7 +8,6 @@ import (
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
@@ -47,7 +46,6 @@ type WalletModel struct {
 	_ func()                                                                           `slot:"sniffHw"`
 	_ func()                                                                           `slot:"wipeDevice"`
 	_ int                                                                              `property:"count"`
-	dev skyWallet.Devicer
 }
 
 type QWallet struct {
@@ -58,16 +56,20 @@ type QWallet struct {
 	_ string `property:"coinHours"`
 	_ string `property:"fileName"`
 	_ bool   `property:"expand"`
-	_ bool    `property:"hasHardwareWallet"`
+	_ bool   `property:"hasHardwareWallet"`
 }
 
 func (walletModel *WalletModel) init() {
 	logWalletsModel.Info("Initialize Wallet model")
-	walletModel.dev = proxy.NewSequencer(skyWallet.NewDevice(skyWallet.DeviceTypeUSB), true, func()string{
-		var line string
-		fmt.Scan(&line)
-		return line
-	})
+	hardware.SkyWltCreateDeviceInstanceOnce(
+		skyWallet.DeviceTypeUSB,
+		func()string{
+			var line string
+			fmt.Scan(&line)
+			return line
+		},
+		func()string{return ""},
+	)
 	walletModel.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),
 		EncryptionEnabled: core.NewQByteArray2("encryptionEnabled", -1),
@@ -94,8 +96,8 @@ func (walletModel *WalletModel) init() {
 }
 
 // attachHwAsSigner add a hw as signer
-func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
-	hw := hardware.NewSkyWallet(wlt, dev)
+func attachHwAsSigner(wlt fccore.Wallet) error {
+	hw := hardware.NewSkyWallet(wlt)
 	am := wlcore.LoadAltcoinManager()
 	if err := am.AttachSignService(hw); err != nil {
 		logSignersModel.Errorln("error registering hardware wallet as signer")
@@ -107,7 +109,7 @@ func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
 	checkForDerivationType := func(dt string) {
-		addr, err := hardware.HwFirstAddr(walletModel.dev, dt)
+		addr, err := hardware.HwFirstAddr(dt)
 		if err == nil {
 			wlt, err := walletManager.WalletEnv.LookupWallet(addr)
 			if err != nil {
@@ -115,7 +117,7 @@ func (walletModel *WalletModel) sniffHw() {
 				// FIXME handle this scenario with a wallet registration.
 				return
 			}
-			err = attachHwAsSigner(wlt, walletModel.dev)
+			err = attachHwAsSigner(wlt)
 			if err != nil {
 				logSignersModel.WithError(err).Errorln("unable to attach signer")
 				return
@@ -336,7 +338,7 @@ func (walletModel *WalletModel) loadModel(wallets []*QWallet) {
 }
 
 func (walletModel *WalletModel) wipeDevice() {
-	msg, err := walletModel.dev.Wipe()
+	msg, err := hardware.SkyWltDeviceInstance().Wipe()
 	if err != nil {
 		logWalletsModel.WithError(err).Errorln("unable to wipe device")
 	}

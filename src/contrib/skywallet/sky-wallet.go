@@ -11,27 +11,55 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
+	"sync"
 )
 
 var logSkyWallet = logging.MustGetLogger("Skycoin hardware wallet")
 
 type SkyWallet struct {
 	wlt core.Wallet
-	dev skyWallet.Devicer
 }
 
 const (
 	urnPrefix = "signer:skywallet:"
 )
 
+var once sync.Once
+var dev skyWallet.Devicer
+
+// SkyWltCreateDeviceInstance initialize the device instance
+// trying to change the device interaction behavior by using
+// different arguments does not works because this is a singleton
+// like function method
+func SkyWltCreateDeviceInstanceOnce(deviceType skyWallet.DeviceType, praseReader, pinReader func()string) skyWallet.Devicer {
+	once.Do(func() {
+		dev = proxy.NewSequencer(skyWallet.NewDevice(deviceType), true, praseReader)
+	})
+	return dev
+}
+
+// SkyWltDeviceInstance return the shared device instance
+func SkyWltDeviceInstance() skyWallet.Devicer {
+	if dev == nil {
+		logSkyWallet.Errorln("device instance is null, a previous call to SkyWltCreateDeviceInstanceOnce it's required")
+	}
+	return dev
+}
+
+// NewSkyWallet create a new sky wallet instance
+func NewSkyWallet(wlt core.Wallet) *SkyWallet {
+	return &SkyWallet{wlt: wlt}
+}
+
 // HwFirstAddr return the first address in the deterministic sequence if there is a configured
 // device connected, error if not device found or some thing fail.
-func HwFirstAddr(dev skyWallet.Devicer, derivationType string) (string, error) {
+func HwFirstAddr(derivationType string) (string, error) {
 	msg, err := dev.AddressGen(1, 0, false, derivationType)
 	if err != nil {
 		logSkyWallet.WithError(err).Debugln("error getting address from device")
@@ -49,9 +77,9 @@ func HwFirstAddr(dev skyWallet.Devicer, derivationType string) (string, error) {
 	return addrs[0], nil
 }
 
-func hwMatchWallet(hw SkyWallet, wlt core.Wallet) bool {
+func hwMatchWallet(wlt core.Wallet) bool {
 	checkForDerivation := func(dt string) bool {
-		firstAddr, err := HwFirstAddr(hw.dev, dt)
+		firstAddr, err := HwFirstAddr(dt)
 		if err != nil {
 			logSkyWallet.WithError(err).Errorln("unable to get first address from hw")
 			return false
@@ -80,15 +108,7 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 	if !isSkycoinWlt {
 		return false, errors.New("a non Skycoin wallet received in ReadyForTxn")
 	}
-	return hwMatchWallet(sw, wlt), nil
-}
-
-// NewSkyWallet create a new sky wallet instance
-func NewSkyWallet(wlt core.Wallet, dev skyWallet.Devicer) *SkyWallet {
-	return &SkyWallet{
-		wlt: wlt,
-		dev: dev,
-	}
+	return hwMatchWallet(wlt), nil
 }
 
 func getAllIndexesFromTxn(txn core.Transaction) []int {
@@ -217,7 +237,7 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coi
 		logSkyWallet.WithError(err).Errorln("unable to get outputs")
 		return nil, fce.ErrTxnSignFailure
 	}
-	msg, err := sw.dev.TransactionSign(transactionInputs, transactionOutputs, dt)
+	msg, err := dev.TransactionSign(transactionInputs, transactionOutputs, dt)
 	if err != nil {
 		logSkyWallet.WithError(err).Error("error signing transaction")
 		return nil, fce.ErrTxnSignFailure
@@ -303,7 +323,7 @@ func verifyInputsGrouping(txn core.Transaction) error {
 
 // SignTransaction using hardware wallet
 func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader, indexes []string) (core.Transaction, error) {
-	if sw.dev == nil {
+	if dev == nil {
 		logSkyWallet.Errorln("error creating hardware wallet device handler")
 		return nil, fce.ErrTxnSignFailure
 	}
@@ -338,13 +358,13 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 }
 
 func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
-	if sw.dev == nil {
+	if dev == nil {
 		logSkyWallet.Error("error, nil hardware wallet device handler")
 		return messages.Features{}, fce.ErrHwUnexpected
 	}
 	// FIXME: This should not be closed, it's a lower level detail (check out in cli tool too).
 	// defer sw.dev.Close()
-	msg, err := sw.dev.GetFeatures()
+	msg, err := dev.GetFeatures()
 	if err != nil {
 		logSkyWallet.WithError(err).Error("error getting device features")
 		return messages.Features{}, fce.ErrHwUnexpected
