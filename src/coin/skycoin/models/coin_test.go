@@ -225,3 +225,10 @@ func TestPendingTxnStatus(t *testing.T) {
 	var pendTxn = new(SkycoinPendingTransaction)
 	require.Equal(t, core.TXN_STATUS_PENDING, pendTxn.GetStatus())
 }
+
+func TestPendingTxnFee(t *testing.T) {
+	var pendTxn = new(SkycoinPendingTransaction)
+	fee, err := pendTxn.ComputeFee(Sky)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), fee)
+}
