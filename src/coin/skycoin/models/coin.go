@@ -70,10 +70,12 @@ func (txn *SkycoinPendingTransaction) ComputeFee(ticker string) (uint64, error) 
 	logCoin.Info("Computing fee for " + ticker + " ticket")
 	if ticker == CoinHour {
 		return txn.Transaction.Transaction.Fee, nil
-	} else if util.StringInList(ticker, txn.SupportedAssets()) {
+	} else if ticker == Sky {
 		return uint64(0), nil
+	} else if ticker == CalculatedHour {
+		return uint64(0), errors.ErrNotImplemented
 	}
-	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Warningf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
@@ -345,10 +347,12 @@ func (skyTxn *SkycoinUninjectedTransaction) ComputeFee(ticker string) (uint64, e
 	logCoin.Info("Computing fee for un injected transaction with" + ticker + " ticker")
 	if ticker == CoinHour {
 		return skyTxn.fee, nil
-	} else if util.StringInList(ticker, skyTxn.SupportedAssets()) {
+	} else if ticker == Sky {
 		return uint64(0), nil
+	} else if ticker == CalculatedHour {
+		return uint64(0), errors.ErrNotImplemented
 	}
-	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Warningf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
@@ -458,10 +462,12 @@ func (txn *SkycoinTransaction) ComputeFee(ticker string) (uint64, error) {
 	logCoin.Info("Compute fee for transaction with " + ticker + "ticker")
 	if ticker == CoinHour {
 		return txn.skyTxn.Fee, nil
-	} else if util.StringInList(ticker, txn.SupportedAssets()) {
+	} else if ticker == Sky {
 		return uint64(0), nil
+	} else if ticker == CalculatedHour {
+		return uint64(0), errors.ErrNotImplemented
 	}
-	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Warningf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
@@ -966,10 +972,12 @@ func (txn *SkycoinCreatedTransaction) ComputeFee(ticker string) (uint64, error) 
 			return uint64(0), err
 		}
 		return uint64(fee), nil
-	} else if util.StringInList(ticker, txn.SupportedAssets()) {
+	} else if ticker == Sky {
 		return uint64(0), nil
+	} else if ticker == CalculatedHour {
+		return uint64(0), errors.ErrNotImplemented
 	}
-	logCoin.Errorf("Invalid ticker %v\n", ticker)
+	logCoin.Warningf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
 
