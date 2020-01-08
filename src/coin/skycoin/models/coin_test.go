@@ -241,3 +241,8 @@ func TestPendingTxnFee(t *testing.T) {
 	fee, err = pendTxn.ComputeFee("NOCOINATALL")
 	testutil.RequireError(t, err, "Invalid ticker")
 }
+
+func TestUninjectedTxnTimestamp(t *testing.T) {
+	coreTxn := new(SkycoinUninjectedTransaction)
+	require.Equal(t, core.Timestamp(0), coreTxn.GetTimestamp())
+}
