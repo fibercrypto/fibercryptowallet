@@ -219,10 +219,18 @@ func TestSkycoinCreatedTransactionOutputIsSpent(t *testing.T) {
 func TestSupportedAssets(t *testing.T) {
 	pendTxn := new(SkycoinPendingTransaction)
 	assets := pendTxn.SupportedAssets()
-	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
 
 	coreTxn := new(SkycoinUninjectedTransaction)
 	assets = coreTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
+
+	skyTxn := new(SkycoinTransaction)
+	assets = skyTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
+
+	cTxn := new(SkycoinCreatedTransaction)
+	assets = cTxn.SupportedAssets()
 	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
 }
 
