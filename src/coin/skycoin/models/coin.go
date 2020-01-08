@@ -30,7 +30,7 @@ type SkycoinPendingTransaction struct {
 
 func (txn *SkycoinPendingTransaction) SupportedAssets() []string {
 	logCoin.Info("Getting supported assets")
-	return []string{Sky, CoinHour, CalculatedHour}
+	return []string{Sky, CoinHour}
 }
 
 func (txn *SkycoinPendingTransaction) GetTimestamp() core.Timestamp {
@@ -393,7 +393,7 @@ type SkycoinTransaction struct {
 
 func (txn *SkycoinTransaction) SupportedAssets() []string {
 	logCoin.Info("Getting supported assets from transactions")
-	return []string{Sky, CoinHour, CalculatedHour}
+	return []string{Sky, CoinHour}
 }
 
 func (txn *SkycoinTransaction) GetTimestamp() core.Timestamp {
@@ -933,7 +933,7 @@ type SkycoinCreatedTransaction struct {
 
 // SupportedAssets are SKY, SKYCH, and accumulated SKYCH
 func (txn *SkycoinCreatedTransaction) SupportedAssets() []string {
-	return []string{Sky, CoinHour, CalculatedHour}
+	return []string{Sky, CoinHour}
 }
 
 // GetTimestamp will return zero
