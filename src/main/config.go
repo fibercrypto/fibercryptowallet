@@ -30,7 +30,10 @@ func init() {
 
 	cache := map[string]string{"lifeTime": valueLifeTime}
 
-	cacheBytes, _ := json.Marshal(cache)
+	cacheBytes, err := json.Marshal(cache)
+	if err != nil {
+		return
+	}
 	cacheOpt := NewOption("cache", []string{}, false, string(cacheBytes))
 
 	_ = confManager.RegisterSection("global", []*Option{cacheOpt})
