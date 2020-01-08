@@ -9,6 +9,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/api"
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
 )
@@ -232,7 +233,11 @@ func TestPendingTxnStatus(t *testing.T) {
 
 func TestPendingTxnFee(t *testing.T) {
 	pendTxn := new(SkycoinPendingTransaction)
+
 	fee, err := pendTxn.ComputeFee(Sky)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), fee)
+
+	fee, err = pendTxn.ComputeFee("NOCOINATALL")
+	testutil.RequireError(t, err, "Invalid ticker")
 }
