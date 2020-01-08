@@ -246,3 +246,8 @@ func TestUninjectedTxnTimestamp(t *testing.T) {
 	coreTxn := new(SkycoinUninjectedTransaction)
 	require.Equal(t, core.Timestamp(0), coreTxn.GetTimestamp())
 }
+
+func TestUninjectedTxnStatus(t *testing.T) {
+	coreTxn := new(SkycoinUninjectedTransaction)
+	require.Equal(t, core.TXN_STATUS_CREATED, coreTxn.GetStatus())
+}
