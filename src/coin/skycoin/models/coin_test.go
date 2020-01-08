@@ -251,3 +251,19 @@ func TestUninjectedTxnStatus(t *testing.T) {
 	coreTxn := new(SkycoinUninjectedTransaction)
 	require.Equal(t, core.TXN_STATUS_CREATED, coreTxn.GetStatus())
 }
+
+func TestUninjectedTxnFee(t *testing.T) {
+	coreTxn := new(SkycoinUninjectedTransaction)
+
+	fee, err := coreTxn.ComputeFee(Sky)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), fee)
+
+	coreTxn.fee = 64
+	fee, err = coreTxn.ComputeFee(CoinHour)
+	require.NoError(t, err)
+	require.Equal(t, uint64(64), fee)
+
+	fee, err = coreTxn.ComputeFee("NOCOINATALL")
+	testutil.RequireError(t, err, "Invalid ticker")
+}
