@@ -238,6 +238,9 @@ func TestPendingTxnFee(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), fee)
 
+	_, err = pendTxn.ComputeFee(CalculatedHour)
+	testutil.RequireError(t, err, "Feature not implemented")
+
 	_, err = pendTxn.ComputeFee("NOCOINATALL")
 	testutil.RequireError(t, err, "Invalid ticker")
 }
@@ -258,6 +261,9 @@ func TestUninjectedTxnFee(t *testing.T) {
 	fee, err := coreTxn.ComputeFee(Sky)
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), fee)
+
+	_, err = coreTxn.ComputeFee(CalculatedHour)
+	testutil.RequireError(t, err, "Feature not implemented")
 
 	coreTxn.fee = 64
 	fee, err = coreTxn.ComputeFee(CoinHour)
