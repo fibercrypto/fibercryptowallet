@@ -238,7 +238,7 @@ func TestPendingTxnFee(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), fee)
 
-	fee, err = pendTxn.ComputeFee("NOCOINATALL")
+	_, err = pendTxn.ComputeFee("NOCOINATALL")
 	testutil.RequireError(t, err, "Invalid ticker")
 }
 
@@ -264,6 +264,6 @@ func TestUninjectedTxnFee(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(64), fee)
 
-	fee, err = coreTxn.ComputeFee("NOCOINATALL")
+	_, err = coreTxn.ComputeFee("NOCOINATALL")
 	testutil.RequireError(t, err, "Invalid ticker")
 }
