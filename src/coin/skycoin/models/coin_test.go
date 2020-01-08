@@ -232,6 +232,22 @@ func TestSupportedAssets(t *testing.T) {
 	cTxn := new(SkycoinCreatedTransaction)
 	assets = cTxn.SupportedAssets()
 	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
+
+	skyTxnOut := new(SkycoinTransactionOutput)
+	assets = skyTxnOut.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+
+	skyTxnIn := new(SkycoinTransactionInput)
+	assets = skyTxnIn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+
+	cTxnOut := new(SkycoinCreatedTransactionOutput)
+	assets = cTxnOut.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+
+	cTxnIn := new(SkycoinTransactionInput)
+	assets = cTxnIn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
 }
 
 func TestPendingTxnStatus(t *testing.T) {
