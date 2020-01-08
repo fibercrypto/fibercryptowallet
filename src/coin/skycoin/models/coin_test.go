@@ -245,7 +245,7 @@ func TestSupportedAssets(t *testing.T) {
 	assets = cTxnOut.SupportedAssets()
 	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
 
-	cTxnIn := new(SkycoinTransactionInput)
+	cTxnIn := new(SkycoinCreatedTransactionInput)
 	assets = cTxnIn.SupportedAssets()
 	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
 }
