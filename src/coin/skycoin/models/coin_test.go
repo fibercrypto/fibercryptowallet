@@ -281,3 +281,17 @@ func TestUninjectedTxnFee(t *testing.T) {
 	_, err = coreTxn.ComputeFee("NOCOINATALL")
 	testutil.RequireError(t, err, "Invalid ticker")
 }
+
+func TestSkycoinTxnFee(t *testing.T) {
+	skyTxn := new(SkycoinTransaction)
+
+	fee, err := skyTxn.ComputeFee(Sky)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), fee)
+
+	_, err = skyTxn.ComputeFee(CalculatedHour)
+	testutil.RequireError(t, err, "Feature not implemented")
+
+	_, err = skyTxn.ComputeFee("NOCOINATALL")
+	testutil.RequireError(t, err, "Invalid ticker")
+}
