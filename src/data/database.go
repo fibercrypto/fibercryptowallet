@@ -3,8 +3,8 @@ package data
 import (
 	"errors"
 	"fmt"
+	"github.com/SkycoinProject/skycoin/src/visor/dbutil"
 	"github.com/boltdb/bolt"
-	"github.com/skycoin/skycoin/src/visor/dbutil"
 	"time"
 )
 
