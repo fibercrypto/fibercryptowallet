@@ -1,10 +1,10 @@
 package data
 
 import (
+	"github.com/SkycoinProject/skycoin/src/util/file"
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
-	"github.com/skycoin/skycoin/src/util/file"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"io/ioutil"
