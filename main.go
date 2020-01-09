@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/params"
 	"os"
 
 	_ "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
@@ -30,10 +31,10 @@ func main() {
 	app.QCoreApplication.ProcessEvents(core.QEventLoop__AllEvents)
 
 	// Set the application information
-	app.SetOrganizationName("Simelo.Tech")
-	app.SetOrganizationDomain("simelo.tech")
-	app.SetApplicationName("FiberCryptoWallet")
-	app.SetApplicationVersion("0.27.0")
+	app.SetOrganizationName(params.OrganizationName)
+	app.SetOrganizationDomain(params.OrganizationDomain)
+	app.SetApplicationName(params.ApplicationName)
+	app.SetApplicationVersion(params.ApplicationVersion)
 	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon/appIcon.png"))
 
 	// Add this monospaced font
