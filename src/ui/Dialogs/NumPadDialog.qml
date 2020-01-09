@@ -52,9 +52,12 @@ Dialog {
                 placeholderText: qsTr("12345678")
                 selectByMouse: true
                 validator: IntValidator {
+                    id: intValidator
                     bottom: 11111111
                     top: 99999999
                 }
+                echoMode: TextField.Password
+                passwordCharacter: '#'
 
                 inputMethodHints: Qt.ImhDigitsOnly
                 Layout.fillWidth: true
@@ -63,6 +66,21 @@ Dialog {
 
                 onTextChanged: {
                     standardButton(Dialog.Ok).enabled = textInput.length >= 4
+                }
+                function admitMoreDigits() {
+                    return intValidator.top.toString().length - textInput.text.length > 0;
+                }
+                function toggleEnabledButtonsIfAny() {
+                    gridNumPad.enabled = admitMoreDigits();
+                    backspace.enabled = textInput.text.length > 0;
+                }
+                function addChar(ch) {
+                    textInput.text += ch;
+                    toggleEnabledButtonsIfAny();
+                }
+                function removeLastChar() {
+                    textInput.text = textInput.text.slice(0, -1);
+                    toggleEnabledButtonsIfAny();
                 }
             }
 
@@ -99,7 +117,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Top Left clicked")
+                                textInput.addChar('7');
                             }
 
                             SequentialAnimation {
@@ -132,7 +150,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Top Center clicked")
+                                textInput.addChar('8');
                             }
 
                             SequentialAnimation {
@@ -165,7 +183,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Top Right clicked")
+                                textInput.addChar('9');
                             }
 
                             SequentialAnimation {
@@ -198,7 +216,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Center Left clicked")
+                                textInput.addChar('4');
                             }
 
                             SequentialAnimation {
@@ -231,7 +249,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Center Center clicked")
+                                textInput.addChar('5');
                             }
 
                             SequentialAnimation {
@@ -264,7 +282,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Center Right clicked")
+                                textInput.addChar('6');
                             }
 
                             SequentialAnimation {
@@ -297,7 +315,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Bottom Left clicked")
+                                textInput.addChar('1');
                             }
 
                             SequentialAnimation {
@@ -330,7 +348,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Bottom Center clicked")
+                                textInput.addChar('2');
                             }
 
                             SequentialAnimation {
@@ -363,7 +381,7 @@ Dialog {
                                 }
                             }
                             onClicked: {
-                                console.log("Bottom Right clicked")
+                                textInput.addChar('3');
                             }
 
                             SequentialAnimation {
@@ -389,6 +407,7 @@ Dialog {
                         font.pointSize: numPadButtonPointSize
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignCenter
+                        enabled: false
 
                         Shortcut {
                             sequence: "Backspace"
@@ -398,7 +417,7 @@ Dialog {
                             }
                         }
                         onClicked: {
-                            console.log("Backspace clicked")
+                            textInput.removeLastChar();
                         }
 
                         SequentialAnimation {
@@ -440,5 +459,4 @@ Dialog {
             anchors.rightMargin: -msgDialog.rightPadding + 1
         }
     } // Flickable
-
 }
