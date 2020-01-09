@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet"
 	"strconv"
 
@@ -59,17 +58,25 @@ type QWallet struct {
 	_ bool   `property:"hasHardwareWallet"`
 }
 
-func (walletModel *WalletModel) init() {
-	logWalletsModel.Info("Initialize Wallet model")
+func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 	hardware.SkyWltCreateDeviceInstanceOnce(
 		skyWallet.DeviceTypeUSB,
 		func()string{
-			var line string
-			fmt.Scan(&line)
-			return line
+			bridgeForPassword.BeginUse()
+			defer bridgeForPassword.EndUse()
+			bridgeForPassword.lock()
+			bridgeForPassword.GetSkyHardwareWalletPin("message")
+			bridgeForPassword.lock()
+			pass := bridgeForPassword.getResult()
+			bridgeForPassword.unlock()
+			return pass
 		},
 		func()string{return ""},
 	)
+}
+
+func (walletModel *WalletModel) init() {
+	logWalletsModel.Info("Initialize Wallet model")
 	walletModel.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),
 		EncryptionEnabled: core.NewQByteArray2("encryptionEnabled", -1),

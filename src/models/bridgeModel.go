@@ -9,6 +9,7 @@ import (
 type QBridge struct {
 	core.QObject
 	_      func()               `constructor:"init"`
+	_      func()               `slot:"onCompleted"`
 	_      func()               `slot:"lock"`
 	_      func()               `slot:"unlock"`
 	_      func(message string) `signal:"getPassword"`
@@ -25,6 +26,11 @@ func (b *QBridge) init() {
 	b.ConnectUnlock(b.unlock)
 	b.ConnectSetResult(b.setResult)
 	b.ConnectGetResult(b.getResult)
+	b.ConnectOnCompleted(b.onCompleted)
+}
+
+func (b *QBridge) onCompleted() {
+	createSkyHardwareWallet(b)
 }
 
 func (b *QBridge) BeginUse() {
@@ -37,7 +43,6 @@ func (b *QBridge) EndUse() {
 
 func (b *QBridge) lock() {
 	b.sem.Lock()
-
 }
 
 func (b *QBridge) setResult(result string) {
