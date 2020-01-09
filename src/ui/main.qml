@@ -218,6 +218,10 @@ ApplicationWindow {
 
         focus: true
         modal: true
+        onClosed:{
+            bridgeForPassword.setResult(numPadDialog.pin)
+            bridgeForPassword.unlock()
+        }
     }
 
     RestoreBackupWordsDialog {
