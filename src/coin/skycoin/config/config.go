@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
@@ -67,6 +66,14 @@ func getValues(prefix string) ([]string, error) {
 }
 
 func GetDataRefreshTimeout() uint64 {
+	return getFromCache(local.DataRefreshTimeoutKey)
+}
+
+func GetDataUpdateTime() uint64 {
+	return getFromCache(local.DataUpdateTimeKey)
+}
+
+func getFromCache(value string) uint64 {
 	cm := local.GetConfigManager()
 	sm := cm.GetSectionManager("global")
 	value, err := sm.GetValue("cache", nil)
@@ -79,7 +86,7 @@ func GetDataRefreshTimeout() uint64 {
 	if err != nil {
 		return 0
 	}
-	strVal, ok := keyValue["lifeTime"]
+	strVal, ok := keyValue[value]
 	if !ok {
 		return 0
 	}
