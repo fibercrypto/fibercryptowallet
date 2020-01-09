@@ -47,6 +47,8 @@ ApplicationWindow {
             enableExplorer = true
             enableNetworking = true
             enableSettings = true
+                    enableAddrsBook = true
+
         }
         ConfigManager{
             id: configManager
@@ -63,6 +65,7 @@ ApplicationWindow {
             enableExplorer = true
             enableNetworking = true
             enableSettings = true
+                    enableAddrsBook = true
 
         }
 
@@ -76,6 +79,8 @@ ApplicationWindow {
             enableExplorer = true
             enableNetworking = true
             enableSettings = true
+                    enableAddrsBook = true
+
         }
 
         onExplorerRequested: {
@@ -100,6 +105,8 @@ ApplicationWindow {
             enableExplorer = true
             enableNetworking = false
             enableSettings = true
+                    enableAddrsBook = true
+
         }
 
         onSettingsRequested: {
@@ -112,7 +119,20 @@ ApplicationWindow {
             enableExplorer = true
             enableNetworking = true
             enableSettings = false
+                    enableAddrsBook = true
         }
+
+        onAddressBookRequested: {
+                    generalStackView.openAddressBookPage()
+                    customHeader.text = qsTr("Address book")
+
+                    enableOutputs = true
+                    enablePendingTransactions = true
+                    enableBlockchain = true
+                    enableNetworking = true
+                    enableSettings = true
+                    enableAddrsBook = false
+                }
 
         onAboutRequested: {
             dialogAbout.open()

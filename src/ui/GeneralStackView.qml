@@ -90,6 +90,14 @@ Item {
         }
     }
 
+    function openAddressBookPage() {
+            if (stackView.depth > 1) {
+                stackView.replace(componentAddressBook)
+            } else {
+                stackView.push(componentAddressBook)
+            }
+        }
+
     function openBlockPage(hash) {
         generalStackView.hash=hash
         if (stackView.depth > 1) {
@@ -201,5 +209,13 @@ Item {
         }
     }
 
-    
+    Component {
+            id: componentAddressBook
+
+            AddressBook {
+                id: addressBook
+            }
+        }
+
+
 }
