@@ -127,6 +127,12 @@ Dialog {
                         visible: enablePINWarning
                         text: qsTr("Create PIN code")
                         Layout.fillWidth: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                walletModelId.changePin()
+                            }
+                        }
                     }
                     ItemDelegate {
                         id: buttonWipeDevice

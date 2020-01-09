@@ -44,6 +44,7 @@ type WalletModel struct {
 	_ func([]*QWallet)                                                                 `slot:"updateModel"`
 	_ func()                                                                           `slot:"sniffHw"`
 	_ func()                                                                           `slot:"wipeDevice"`
+	_ func()                                                                           `slot:"changePin"`
 	_ int                                                                              `property:"count"`
 }
 
@@ -100,6 +101,7 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectUpdateModel(walletModel.updateModel)
 	walletModel.ConnectSniffHw(walletModel.sniffHw)
 	walletModel.ConnectWipeDevice(walletModel.wipeDevice)
+	walletModel.ConnectChangePin(walletModel.changePin)
 }
 
 // attachHwAsSigner add a hw as signer
@@ -354,4 +356,21 @@ func (walletModel *WalletModel) wipeDevice() {
 		logWalletsModel.WithError(err).Errorln("unable to decode response")
 	}
 	logWalletsModel.Errorln("msgStr", msgStr)
+}
+
+func (walletModel *WalletModel) changePin() {
+	go func() {
+		rm := false
+		msg, err := hardware.SkyWltDeviceInstance().ChangePin(&rm)
+		if err != nil {
+			logWalletsModel.WithError(err).Errorln("unable to change pin")
+			return
+		}
+		msgStr, err := skyWallet.DecodeSuccessMsg(msg)
+		if err != nil {
+			logWalletsModel.WithError(err).Errorln("unable to change pin")
+			return
+		}
+		logWalletsModel.Infoln("msgStr", msgStr)
+	}()
 }
