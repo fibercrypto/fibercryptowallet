@@ -350,12 +350,14 @@ func (walletModel *WalletModel) wipeDevice() {
 	msg, err := hardware.SkyWltDeviceInstance().Wipe()
 	if err != nil {
 		logWalletsModel.WithError(err).Errorln("unable to wipe device")
+		return
 	}
 	msgStr, err := skyWallet.DecodeSuccessMsg(msg)
 	if err != nil {
 		logWalletsModel.WithError(err).Errorln("unable to decode response")
+		return
 	}
-	logWalletsModel.Errorln("msgStr", msgStr)
+	logWalletsModel.Infoln("msgStr", msgStr)
 }
 
 func (walletModel *WalletModel) changePin() {
