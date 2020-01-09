@@ -4,6 +4,7 @@ import QtQuick.Controls.Material 2.12
 import Qt.labs.settings 1.0
 import WalletsManager 1.0
 import Config 1.0
+import Utils 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
@@ -173,6 +174,40 @@ ApplicationWindow {
 
         focus: true
         modal: true
+    }
+
+    
+    
+    QBridge{
+        id: bridgeForPassword
+
+        onGetPassword:{
+            getPasswordDialog.title = message
+            getPasswordDialog.clear()
+            getPasswordDialog.open()
+        }
+        onGetSkyHardwareWalletPin: {
+            // numPadDialog.title = message
+            numPadDialog.open() = true
+        }
+        Component.onCompleted: {
+            bridgeForPassword.onCompleted()
+        }
+    }
+    
+    DialogGetPassword{
+        id: getPasswordDialog
+        anchors.centerIn: Overlay.overlay
+        property int nAddress
+        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
+        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+        onClosed:{
+            bridgeForPassword.setResult(getPasswordDialog.password)
+            bridgeForPassword.unlock()
+        }
     }
 
     NumPadDialog {

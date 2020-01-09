@@ -186,29 +186,4 @@ Page {
             walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],signerSelected, bridgeForPassword, [], txn)
         }
     }
-
-    DialogGetPassword{
-        id: getPasswordDialog
-        anchors.centerIn: Overlay.overlay
-        property int nAddress
-        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
-        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
-
-        focus: true
-        modal: true
-        onClosed:{
-            bridgeForPassword.setResult(getPasswordDialog.password)
-            bridgeForPassword.unlock()
-        }
-    }
-
-    QBridge{
-        id: bridgeForPassword
-
-        onGetPassword:{
-            getPasswordDialog.title = message
-            getPasswordDialog.clear()
-            getPasswordDialog.open()
-        }
-    }
 }
