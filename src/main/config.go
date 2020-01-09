@@ -2,6 +2,8 @@ package local
 
 import (
 	"encoding/json"
+	"github.com/fibercrypto/fibercryptowallet/src/params"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"strconv"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
@@ -11,6 +13,8 @@ import (
 const (
 	LocalWallet = iota
 	RemoteWallet
+	DataRefreshTimeoutKey = "lifeTime"
+	DataUpdateTimeKey     = "updateTime"
 )
 
 var (
@@ -21,15 +25,20 @@ var (
 var logSettings = logging.MustGetLogger("Skycoin Altcoin")
 
 func init() {
-	qs := qtcore.NewQSettings(qtcore.QCoreApplication_OrganizationName(), qtcore.QCoreApplication_ApplicationName(), nil)
+	qs := qtcore.NewQSettings(params.OrganizationName, params.ApplicationName, nil)
 	confManager = &ConfigManager{
 		setting:  qs,
 		sections: make(map[string]*SectionManager),
 	}
+	logSettings.Debug("Configuration path :=> " +qs.FileName())
 
 	valueLifeTime := strconv.FormatUint(params.DataRefreshTimeout, 10)
+	valueUpdateTime := strconv.FormatUint(params.DataUpdateTime, 10)
 
-	cache := map[string]string{"lifeTime": valueLifeTime}
+	cache := map[string]string{
+		DataRefreshTimeoutKey: valueLifeTime,
+		DataUpdateTimeKey:     valueUpdateTime,
+	}
 
 	cacheBytes, err := json.Marshal(cache)
 	if err != nil {
