@@ -74,7 +74,7 @@ func GetDataRefreshTimeout() uint64 {
 		return 0
 	}
 
-	keyValue := make(map[string]string, 0)
+	keyValue := make(map[string]string)
 	err = json.Unmarshal([]byte(value), &keyValue)
 	if err != nil {
 		return 0
