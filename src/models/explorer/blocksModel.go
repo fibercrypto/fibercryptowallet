@@ -3,7 +3,7 @@ package explorer
 import (
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/fibercrypto/fibercryptowallet/src/models"
+	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
 	"github.com/fibercrypto/fibercryptowallet/src/params"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
@@ -81,14 +81,14 @@ type BlocksModel struct {
 type QBlock struct {
 	qtcore.QObject
 
-	_ []*models.QTransaction `property:"transactionList"`
-	_ qtcore.QDateTime       `property:"time"`
-	_ string                 `property:"blockhash"`
-	_ string                 `property:"prevBlockhash"`
-	_ string                 `property:"totalAmount"`
-	_ uint64                 `property:"blockNumber"`
-	_ uint64                 `property:"size"`
-	_ int                    `property:"transactionLen"`
+	_ []*transactions.TransactionDetails `property:"transactionList"`
+	_ qtcore.QDateTime                   `property:"time"`
+	_ string                             `property:"blockhash"`
+	_ string                             `property:"prevBlockhash"`
+	_ string                             `property:"totalAmount"`
+	_ uint64                             `property:"blockNumber"`
+	_ uint64                             `property:"size"`
+	_ int                                `property:"transactionLen"`
 }
 
 func (m *BlocksModel) init() {
@@ -296,10 +296,10 @@ func blockToQBlock(block core.Block) *QBlock {
 	if err != nil {
 		logExplorer.WithError(err).Error("Couldn't get the transactions list of block")
 	}
-	var qTransactionsList []*models.QTransaction
+	var qTransactionsList []*transactions.TransactionDetails
 	for e := range transactionList {
 
-		qTransaction, err := models.NewQTransactionFromTransaction(transactionList[e])
+		qTransaction, err := transactions.NewTransactionDetailFromCoreTransaction(transactionList[e], -1)
 		if err != nil {
 			logExplorer.WithError(err).Error("Couldn't get the transactions list of block")
 		}

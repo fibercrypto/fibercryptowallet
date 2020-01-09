@@ -1,25 +1,25 @@
 package explorer
 
-// import (
-// 	qtCore "github.com/therecipe/qt/core"
-// )
-//
 func init() {
 	BlocksModel_QmlRegisterType2("ExplorerModels", 1, 0, "QBlocks")
 	// BlocksModel_QmlRegisterType2("ExplorerModels", 1, 0, "ExplorerManager")
 }
 
-//
-// type ExploreManager struct {
+// type ExplorerManager struct {
 // 	qtCore.QObject
-// 	Blockchain core.BlockchainStatus
-// _ func() `constructor:"init"`
-//
-// _ func(hash string) `slot:"loadBlockByHash"`
+// 	_ func() `constructor:"init"`
+
+// _         func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
+// _         func() []*transactions.TransactionDetails `slot:"loadHistory"`
+// _         func(string)                              `slot:"addFilter"`
+// _         func(string)                              `slot:"removeFilter"`
+// walletEnv core.WalletEnv
 // }
 //
-// func (explorer *ExploreManager) init() {
-// 	logExplorer.Info("Init explorerManager")
+// func (em *ExplorerManager) init() {
 //
 // }
 //
+// func (em *ExplorerManager) GetTransactionDetails(txId string) *transactions.TransactionDetails {
+//
+// }

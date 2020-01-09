@@ -35,7 +35,8 @@ Item {
     enum Type {
         Send,
         Receive,
-        Internal
+        Internal,
+        Generic
     }
 
     implicitHeight: 80 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
@@ -122,7 +123,7 @@ Item {
                 Layout.topMargin: -10
                 Layout.rightMargin: 20
                 Image {
-                    source: "qrc:/images/resources/images/icons/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
+                    source: "qrc:/images/resources/images/icons/send-" + (type === TransactionDetails.Type.Receive || type === TransactionDetails.Type.Generic ? "blue" : "amber") + ".svg"
                     sourceSize: "72x72"
                     fillMode: Image.PreserveAspectFit
                     mirror: type === TransactionDetails.Type.Receive

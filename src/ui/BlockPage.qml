@@ -43,7 +43,7 @@ Page {
             id: groupBoxBlockDetails
             title: qsTr("Block Details")
             clip: true
-            Layout.fillWidth: true
+            width:parent.width
             Layout.alignment: Qt.AlignTop | Qt.AlignHCenter
 
             ColumnLayout {
