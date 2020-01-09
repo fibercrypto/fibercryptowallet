@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
@@ -36,6 +37,7 @@ type WalletManager struct {
 	signer              core.BlockchainSignService
 	transactionAPI      core.BlockchainTransactionAPI
 	walletsIterator     core.WalletIterator
+	uptimeTicker 		*time.Ticker
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
@@ -137,18 +139,13 @@ func (walletM *WalletManager) init() {
 	walletM.wallets = qWallets
 
 	go func() {
-		uptimeTicker := time.NewTicker(7 * time.Second)
+		walletM.uptimeTicker = time.NewTicker(time.Duration(config.GetDataUpdateTime()))
 
 		for {
-			<-uptimeTicker.C
+			<-walletM.uptimeTicker.C
 			logWalletManager.Debug("Updating wallet")
 			go func() {
-				tmp := make(chan int)
-				go func() {
-					walletM.getWalletIterators(true)
-					tmp <- 0
-				}()
-				<-tmp
+				walletM.getWalletIterators(true)
 				go walletM.updateWallets()
 			}()
 		}
@@ -169,6 +166,7 @@ func (walletM *WalletManager) updateAll() {
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
+	walletM.uptimeTicker = time.NewTicker(time.Duration(config.GetDataUpdateTime()))
 	skycoin.UpdateAltcoin()
 }
 

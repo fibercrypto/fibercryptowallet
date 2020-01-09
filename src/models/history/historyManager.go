@@ -1,6 +1,7 @@
 package history
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"sort"
 	"strconv"
 	"time"
@@ -39,7 +40,8 @@ type HistoryManager struct {
 	filters         []string
 	txnForAddresses map[string][]*transactions.TransactionDetails
 	walletsIterator core.WalletIterator
-
+	uptimeTicker	*time.Ticker
+	loadAddrTicker	*time.Ticker
 	_ func() `constructor:"init"`
 
 	_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
@@ -59,20 +61,25 @@ func (hm *HistoryManager) init() {
 	go hm.getAddressesWithWallets()
 
 	go func() {
-		uptimeTicker := time.NewTicker(10 * time.Second)
-		loadAddr := time.NewTicker(20 * time.Second)
+		hm.uptimeTicker = time.NewTicker(time.Duration(config.GetDataUpdateTime()*2))
+		hm.loadAddrTicker = time.NewTicker(time.Duration(config.GetDataRefreshTimeout()*4))
 
 		for {
 			select {
-			case <-uptimeTicker.C:
+			case <-hm.uptimeTicker.C:
 				logHistoryManager.Debug("Updating history")
 				go hm.loadHistory()
-			case <-loadAddr.C:
+			case <-hm.loadAddrTicker.C:
 				logHistoryManager.Debug("Updating loaded Addresses")
 				go hm.getAddressesWithWallets()
 			}
 			go hm.getWalletIterators(true)
 		}
+	}()
+
+	go func() {
+		hm.uptimeTicker = time.NewTicker(time.Duration(config.GetDataUpdateTime()*2))
+		hm.loadAddrTicker = time.NewTicker(time.Duration(config.GetDataRefreshTimeout()*4))
 	}()
 
 }
