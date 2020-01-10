@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import AddrsBookManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/"
@@ -9,6 +10,7 @@ import QtQuick.Layouts 1.12
 // import "qrc:/ui/src/ui"
 import "../" // For quick UI development, switch back to resources when making a release
 import "../Controls" // For quick UI development, switch back to resources when making a release
+import "../Dialogs" // For quick UI development, switch back to resources when making a release
 
 Item {
     id: root
@@ -20,6 +22,17 @@ Item {
         dialogQR.open()
     }
 
+function getAddressList(){
+contactAddrsModel.clear()
+console.log(abm.count)
+for(var i=0;i<abm.count;i++){
+for(var j=0;j<abm.contacts[i].address.address.length;j++){
+contactAddrsModel.append({name:abm.contacts[i].name,
+address:abm.contacts[i].address.address[j].value,
+coinType:abm.contacts[i].address.address[j].coinType})
+}
+}
+}
 
     implicitHeight: rootLayout.height
     clip: true
@@ -34,6 +47,34 @@ Item {
         // TODO: Use `add`, `remove`, etc. transitions
         Component.onCompleted: { opacity = 1.0 } // Not the best way to do this
         Behavior on opacity { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } }
+            Button {
+                    id: buttonSelectCustomChangeAddress
+                    text: qsTr("Select")
+                    flat: true
+                    highlighted: true
+
+                    onClicked: {
+                   if(abm.getSecType()!=2){
+                          abm.loadContacts()
+                            dialogSelectAddressByAddressBook.open()
+                         }else{
+                             getpass.open()
+                        }
+                }
+                }
+                 DialogGetPassword{
+                                 id:getpass
+                                 anchors.centerIn: Overlay.overlay
+                                 height:180
+                                 onAccepted:{
+                                 if(!abm.authenticate(getpass.password)){
+                                 getpass.open()
+                                 }else{
+                                 abm.loadContacts()
+                                 dialogSelectAddressByAddressBook.open()
+                                 }
+                                 }
+                                 }
 
         RowLayout {
             Layout.fillWidth: true
@@ -56,8 +97,10 @@ Item {
                 text: address
                 selectByMouse: true
                 Layout.fillWidth: true
+                Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
                 onTextChanged: address = text
             }
+
         } // RowLayout
 
         RowLayout {
@@ -113,4 +156,30 @@ Item {
 
         } // ToolButton (Add/Remove)
     } // RowLayout (rootLayout)
+
+                 DialogSelectAddressByAddressBook{
+                            id: dialogSelectAddressByAddressBook
+
+                            anchors.centerIn: Overlay.overlay
+                            width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+                            height: applicationWindow.height - 40
+
+                            listAddrsModel: contactAddrsModel
+onAboutToShow:{
+getAddressList()
+}
+                            focus: true
+                            modal: true
+
+                            onAccepted: {
+                                textFieldDestinationAddress.text = selectedAddress
+                            }
+                        }
+
+ListModel{
+id:contactAddrsModel
+}
+ AddrsBookModel{
+    id:abm
+    }
 }
