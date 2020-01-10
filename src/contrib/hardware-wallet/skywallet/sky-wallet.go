@@ -8,11 +8,11 @@ import (
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
+	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
-	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
@@ -55,26 +55,6 @@ func SkyWltDeviceInstance() skyWallet.Devicer {
 // NewSkyWallet create a new sky wallet instance
 func NewSkyWallet(wlt core.Wallet) *SkyWallet {
 	return &SkyWallet{wlt: wlt}
-}
-
-// HwFirstAddr return the first address in the deterministic sequence if there is a configured
-// device connected, error if not device found or some thing fail.
-func HwFirstAddr(derivationType string) (string, error) {
-	msg, err := dev.AddressGen(1, 0, false, derivationType)
-	if err != nil {
-		logSkyWallet.WithError(err).Debugln("error getting address from device")
-		return "", fce.ErrHwUnexpected
-	}
-	addrs, err := skywallet.DecodeResponseSkycoinAddress(msg)
-	if err != nil {
-		logSkyWallet.WithError(err).Error("error decoding device response")
-		return "", fce.ErrHwUnexpected
-	}
-	if len(addrs) != 1 {
-		logSkyWallet.WithField("addr_len", len(addrs)).Error("unexpected address count in response")
-		return "", fce.ErrHwUnexpected
-	}
-	return addrs[0], nil
 }
 
 func hwMatchWallet(wlt core.Wallet) bool {
