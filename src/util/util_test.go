@@ -185,6 +185,6 @@ func TestAddressFromString(t *testing.T) {
 	require.NotNil(t, err)
 
 	newAddr, err2 := AddressFromString("someAddress", "someCoin")
-	require.Nil(t, err)
+	require.Nil(t, err2)
 	require.Equal(t, addr, newAddr)
 }
