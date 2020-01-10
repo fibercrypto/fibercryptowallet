@@ -3,6 +3,9 @@ package util
 import (
 	"testing"
 
+	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -57,6 +60,8 @@ func TestFormatCoins(t *testing.T) {
 		{name: "format3", value: uint64(1234), result: "0.1234", quotient: uint64(10000)},
 		{name: "format4", value: uint64(12340), result: "1.234", quotient: uint64(10000)},
 		{name: "format5", value: uint64(421142), result: "4,211.42", quotient: uint64(100)},
+		{name: "format6", value: uint64(0), result: "0", quotient: uint64(100)},
+		{name: "format7", value: uint64(42), result: "0", quotient: uint64(10000)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -130,11 +135,11 @@ func TestGetCoinValue(t *testing.T) {
 	RegisterAltcoin(mockPlugin)
 
 	tests := []struct {
-		name 	string
-		value   string
-		ticker  string
-		valid 	bool
-		want	uint64
+		name   string
+		value  string
+		ticker string
+		valid  bool
+		want   uint64
 	}{
 		{name: "invalidGetCoinValue1", value: "10", ticker: "MYCOIN", valid: false, want: uint64(0)},
 		{name: "invalidGetCoinValue2", value: "coin", ticker: fakeTicker, valid: false, want: uint64(0)},
