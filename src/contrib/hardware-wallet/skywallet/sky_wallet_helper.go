@@ -2,16 +2,21 @@ package hardware
 
 import (
 	"github.com/chebyrash/promise"
+	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 )
 
 type SkyWalletHelper struct {
+	di hardware_wallet.DeviceInteraction
 }
 
-func (*SkyWalletHelper) FirstAddress(walletType string) *promise.Promise {
-	dev := NewSkyWalletInteraction()
-	prm := dev.AddressGen(1, 0, false, walletType)
+func NewSkyWalletHelper() hardware_wallet.DeviceHelper{
+	return &SkyWalletHelper{di: NewSkyWalletInteraction()}
+}
+
+func (dev *SkyWalletHelper) FirstAddress(walletType string) *promise.Promise {
+	prm := dev.di.AddressGen(1, 0, false, walletType)
 	return prm.Then(func(data interface{}) interface{} {
 		addresses := data.([]string)
 		return addresses[0]

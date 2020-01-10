@@ -67,7 +67,7 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 	if !isSkycoinWlt {
 		return false, errors.New("a non Skycoin wallet received in ReadyForTxn")
 	}
-	dev := &SkyWalletHelper{}
+	dev := NewSkyWalletHelper()
 	match, err := dev.DeviceMatch(wlt).Then(func(data interface{}) interface{} {
 		return data
 	}).Catch(func(err error) error {

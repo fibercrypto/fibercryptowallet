@@ -1,7 +1,6 @@
 package models
 
 import (
-	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
 	"strconv"
 
@@ -119,7 +118,7 @@ func attachHwAsSigner(wlt fccore.Wallet) error {
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
 	checkForDerivationType := func(dt string) {
-		var dev hardware_wallet.DeviceHelper = &hardware.SkyWalletHelper{}
+		dev := hardware.NewSkyWalletHelper()
 		addr, err := dev.FirstAddress(dt).Then(func(data interface{}) interface{} {
 			return data
 			// FIXME remove Await
