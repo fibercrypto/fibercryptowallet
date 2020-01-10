@@ -36,7 +36,6 @@ type WalletManager struct {
 	signer              core.BlockchainSignService
 	transactionAPI      core.BlockchainTransactionAPI
 	walletsIterator     core.WalletIterator
-	uptimeTicker 		*time.Ticker
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
@@ -134,23 +133,17 @@ func (walletM *WalletManager) init() {
 		qWallets = append(qWallets, qWallet)
 		walletM.updateAddresses(qWallet.FileName())
 	}
-	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
 
 	go func() {
-		walletM.uptimeTicker = time.NewTicker(7* time.Second)
+		uptimeTicker := time.NewTicker(7* time.Second)
 		end := make(chan bool)
 		for {
-			<-walletM.uptimeTicker.C
+			<-uptimeTicker.C
 			logWalletManager.Debug("Updating wallet")
 			go func() {
-				tmp := make(chan int)
-				go func() {
-					walletM.getWalletIterators(true)
-					tmp <- 0
-				}()
-				<-tmp
-				go walletM.updateWallets()
+				walletM.getWalletIterators(true)
+				walletM.updateWallets()
 				end <- true
 			}()
 			<-end
@@ -172,7 +165,7 @@ func (walletM *WalletManager) updateAll() {
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
-	walletM.uptimeTicker = time.NewTicker(7 * time.Second)
+	//walletM.uptimeTicker = time.NewTicker(7 * time.Second)
 	skycoin.UpdateAltcoin()
 }
 

@@ -42,7 +42,7 @@ type HistoryManager struct {
 	walletsIterator core.WalletIterator
 	uptimeTicker    *time.Ticker
 	loadAddrTicker  *time.Ticker
-	end 			chan bool
+	end             chan bool
 	_               func() `constructor:"init"`
 
 	_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
@@ -59,27 +59,28 @@ func (hm *HistoryManager) init() {
 	hm.walletEnv = models.GetWalletEnv()
 	hm.txnForAddresses = make(map[string][]*transactions.TransactionDetails, 0)
 	hm.addresses = make(map[string]string, 0)
-	go hm.getAddressesWithWallets()
+	hm.end = make(chan bool)
+	hm.end <- true
+	getAddrChan := make(chan bool)
+	go func() {
+		hm.getAddressesWithWallets()
+		getAddrChan <- true
+	}()
 
 	go func() {
-		hm.uptimeTicker = time.NewTicker(7 * time.Second)
+		<-getAddrChan
+		hm.uptimeTicker = time.NewTicker(10 * time.Second)
 		hm.loadAddrTicker = time.NewTicker(20 * time.Second)
-		end := make(chan bool)
 
 		for {
-			go func() {
-				select {
-				case <-hm.uptimeTicker.C:
-					logHistoryManager.Debug("Updating history")
-					go hm.loadHistory()
-				case <-hm.loadAddrTicker.C:
-					logHistoryManager.Debug("Updating loaded Addresses")
-					go hm.getAddressesWithWallets()
-				}
-				go hm.getWalletIterators(true)
-				end <- true
-			}()
-			<-end
+			select {
+			case <-hm.uptimeTicker.C:
+				logHistoryManager.Debug("Updating history")
+				hm.loadHistory()
+			case <-hm.loadAddrTicker.C:
+				logHistoryManager.Debug("Updating loaded Addresses")
+				hm.getAddressesWithWallets()
+			}
 		}
 	}()
 
@@ -88,8 +89,6 @@ func (hm *HistoryManager) init() {
 		hm.loadAddrTicker = time.NewTicker(time.Duration(config.GetDataRefreshTimeout() * 4))
 	}()
 
-	hm.end = make(chan bool)
-	hm.end <- true
 }
 
 func (hm *HistoryManager) getWalletIterators(force bool) core.WalletIterator {
@@ -125,7 +124,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		txnsDetails = append(txnsDetails, val...)
 	}
 	go func() {
-		<- hm.end
+		<-hm.end
 		hm.updateTxnOfAddresses(addrs)
 		hm.end <- true
 	}()
