@@ -40,9 +40,10 @@ type HistoryManager struct {
 	filters         []string
 	txnForAddresses map[string][]*transactions.TransactionDetails
 	walletsIterator core.WalletIterator
-	uptimeTicker	*time.Ticker
-	loadAddrTicker	*time.Ticker
-	_ func() `constructor:"init"`
+	uptimeTicker    *time.Ticker
+	loadAddrTicker  *time.Ticker
+	end 			chan bool
+	_               func() `constructor:"init"`
 
 	_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
 	_ func() []*transactions.TransactionDetails `slot:"loadHistory"`
@@ -61,27 +62,34 @@ func (hm *HistoryManager) init() {
 	go hm.getAddressesWithWallets()
 
 	go func() {
-		hm.uptimeTicker = time.NewTicker(time.Duration(config.GetDataUpdateTime()*2))
-		hm.loadAddrTicker = time.NewTicker(time.Duration(config.GetDataRefreshTimeout()*4))
+		hm.uptimeTicker = time.NewTicker(7 * time.Second)
+		hm.loadAddrTicker = time.NewTicker(20 * time.Second)
+		end := make(chan bool)
 
 		for {
-			select {
-			case <-hm.uptimeTicker.C:
-				logHistoryManager.Debug("Updating history")
-				go hm.loadHistory()
-			case <-hm.loadAddrTicker.C:
-				logHistoryManager.Debug("Updating loaded Addresses")
-				go hm.getAddressesWithWallets()
-			}
-			go hm.getWalletIterators(true)
+			go func() {
+				select {
+				case <-hm.uptimeTicker.C:
+					logHistoryManager.Debug("Updating history")
+					go hm.loadHistory()
+				case <-hm.loadAddrTicker.C:
+					logHistoryManager.Debug("Updating loaded Addresses")
+					go hm.getAddressesWithWallets()
+				}
+				go hm.getWalletIterators(true)
+				end <- true
+			}()
+			<-end
 		}
 	}()
 
 	go func() {
-		hm.uptimeTicker = time.NewTicker(time.Duration(config.GetDataUpdateTime()*2))
-		hm.loadAddrTicker = time.NewTicker(time.Duration(config.GetDataRefreshTimeout()*4))
+		hm.uptimeTicker = time.NewTicker(time.Duration(config.GetDataUpdateTime() * 2))
+		hm.loadAddrTicker = time.NewTicker(time.Duration(config.GetDataRefreshTimeout() * 4))
 	}()
 
+	hm.end = make(chan bool)
+	hm.end <- true
 }
 
 func (hm *HistoryManager) getWalletIterators(force bool) core.WalletIterator {
@@ -116,7 +124,11 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		}
 		txnsDetails = append(txnsDetails, val...)
 	}
-	go hm.updateTxnOfAddresses(addrs)
+	go func() {
+		<- hm.end
+		hm.updateTxnOfAddresses(addrs)
+		hm.end <- true
+	}()
 
 	return txnsDetails
 }

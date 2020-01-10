@@ -2,12 +2,12 @@ package config
 
 import (
 	"encoding/json"
+	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"os"
 	"os/user"
 	"path/filepath"
 	"strconv"
 	"strings"
-	local "github.com/fibercrypto/fibercryptowallet/src/main"
 )
 
 const (
@@ -73,7 +73,7 @@ func GetDataUpdateTime() uint64 {
 	return getFromCache(local.DataUpdateTimeKey)
 }
 
-func getFromCache(value string) uint64 {
+func getFromCache(cacheKeyValue string) uint64 {
 	cm := local.GetConfigManager()
 	sm := cm.GetSectionManager("global")
 	value, err := sm.GetValue("cache", nil)
@@ -86,7 +86,7 @@ func getFromCache(value string) uint64 {
 	if err != nil {
 		return 0
 	}
-	strVal, ok := keyValue[value]
+	strVal, ok := keyValue[cacheKeyValue]
 	if !ok {
 		return 0
 	}
