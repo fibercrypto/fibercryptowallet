@@ -168,6 +168,21 @@ Page {
             }
         } // GroupBox (network settings)
 
+        GroupBox {
+            Layout.fillWidth: true
+            title: qsTr("Global settings")
+
+            TextField {
+                id: textFieldCacheLifeTime
+                anchors.fill: parent
+                selectByMouse: true
+                placeholderText: qsTr("Cache life time")
+                onTextChanged: {
+                    updateFooterButtonsStatus();
+                }
+            }
+        } // GroupBox (global settings)
+
          GroupBox {
          enabled:abm.hasInit()
          AddrsBookModel{
