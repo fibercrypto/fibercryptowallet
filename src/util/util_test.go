@@ -117,7 +117,6 @@ func TestGetCoinValue(t *testing.T) {
 	fakeTicker := "MOCKSCOIN"
 	fakeDesc := "Fake coin"
 	fakeExp := 3
-	fakeQuotient := 1000 // 10 ^ fakeExp
 	fakeMeta := core.AltcoinMetadata{
 		Name:          fakeDesc,
 		Ticker:        fakeTicker,
@@ -158,4 +157,34 @@ func TestGetCoinValue(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAddressFromString(t *testing.T) {
+	fakeTicker := "MOCKSCOIN"
+	fakeDesc := "Fake coin"
+	fakeExp := 3
+	fakeMeta := core.AltcoinMetadata{
+		Name:          fakeDesc,
+		Ticker:        fakeTicker,
+		Family:        fakeTicker,
+		HasBip44:      false,
+		Bip44CoinType: 0,
+		Accuracy:      int32(fakeExp),
+	}
+	mockPlugin := new(mocks.AltcoinPlugin)
+	mockPlugin.On("RegisterTo", mock.Anything).Return().Run(func(args mock.Arguments) {
+		manager := args.Get(0).(core.AltcoinManager)
+		manager.RegisterAltcoin(fakeMeta, mockPlugin)
+	})
+	mockPlugin.On("GetName").Return(fakeDesc)
+	strAddr, addr := "addr1", new(mocks.Address)
+	mockPlugin.On("AddressFromString", strAddr, fakeTicker).Return(addr, nil)
+	RegisterAltcoin(mockPlugin)
+
+	_, err := AddressFromString("someAddress", "someCoin")
+	require.NotNil(t, err)
+
+	newAddr, err2 := AddressFromString("someAddress", "someCoin")
+	require.Nil(t, err)
+	require.Equal(t, addr, newAddr)
 }
