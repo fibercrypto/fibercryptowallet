@@ -107,3 +107,50 @@ func TestStringInList(t *testing.T) {
 		})
 	}
 }
+
+func TestGetCoinValue(t *testing.T) {
+	fakeTicker := "MOCKSCOIN"
+	fakeDesc := "Fake coin"
+	fakeExp := 3
+	fakeQuotient := 1000 // 10 ^ fakeExp
+	fakeMeta := core.AltcoinMetadata{
+		Name:          fakeDesc,
+		Ticker:        fakeTicker,
+		Family:        fakeTicker,
+		HasBip44:      false,
+		Bip44CoinType: 0,
+		Accuracy:      int32(fakeExp),
+	}
+	mockPlugin := new(mocks.AltcoinPlugin)
+	mockPlugin.On("RegisterTo", mock.Anything).Return().Run(func(args mock.Arguments) {
+		manager := args.Get(0).(core.AltcoinManager)
+		manager.RegisterAltcoin(fakeMeta, mockPlugin)
+	})
+	mockPlugin.On("GetName").Return(fakeDesc)
+	RegisterAltcoin(mockPlugin)
+
+	tests := []struct {
+		name 	string
+		value   string
+		ticker  string
+		valid 	bool
+		want	uint64
+	}{
+		{name: "invalidGetCoinValue1", value: "10", ticker: "MYCOIN", valid: false, want: uint64(0)},
+		{name: "invalidGetCoinValue2", value: "coin", ticker: fakeTicker, valid: false, want: uint64(0)},
+		{name: "validGetCoinValue1", value: "10", ticker: fakeTicker, valid: true, want: uint64(10000)},
+		{name: "validGetCoinValue2", value: "12.123456", ticker: fakeTicker, valid: true, want: uint64(12123)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.valid {
+				val, err := GetCoinValue(tt.value, tt.ticker)
+				require.Nil(t, err)
+				require.Equal(t, tt.want, val)
+			} else {
+				_, err := GetCoinValue(tt.value, tt.ticker)
+				require.NotNil(t, err)
+			}
+		})
+	}
+}

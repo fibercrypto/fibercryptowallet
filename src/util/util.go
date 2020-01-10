@@ -25,7 +25,7 @@ func GetCoinValue(value string, ticker string) (uint64, error) {
 	}
 	coin, err2 := strconv.ParseFloat(value, 64)
 	if err2 != nil {
-		return uint64(0), err
+		return uint64(0), err2
 	}
 	return uint64(coin * float64(accuracy)), nil
 }
