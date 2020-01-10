@@ -1,17 +1,18 @@
 package models
 
 import (
-	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet"
+	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
+	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
 	"strconv"
 
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
+	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
-	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
-	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
-	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
 	"time"
 )
 
@@ -118,9 +119,15 @@ func attachHwAsSigner(wlt fccore.Wallet) error {
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
 	checkForDerivationType := func(dt string) {
-		addr, err := hardware.HwFirstAddr(dt)
+		var dev hardware_wallet.DeviceHelper = &hardware.SkyWalletHelper{}
+		addr, err := dev.FirstAddress(dt).Then(func(data interface{}) interface{} {
+			return data
+			// FIXME remove Await
+		}).Catch(func(err error) error {
+			return err
+		}).Await()
 		if err == nil {
-			wlt, err := walletManager.WalletEnv.LookupWallet(addr)
+			wlt, err := walletManager.WalletEnv.LookupWallet(addr.(string))
 			if err != nil {
 				logSignersModel.Warnln("can not find a wallet matching the hardware one")
 				// FIXME handle this scenario with a wallet registration.

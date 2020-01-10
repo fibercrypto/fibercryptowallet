@@ -8,7 +8,6 @@ import (
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
-	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
@@ -57,26 +56,6 @@ func NewSkyWallet(wlt core.Wallet) *SkyWallet {
 	return &SkyWallet{wlt: wlt}
 }
 
-func hwMatchWallet(wlt core.Wallet) bool {
-	checkForDerivation := func(dt string) bool {
-		firstAddr, err := HwFirstAddr(dt)
-		if err != nil {
-			logSkyWallet.WithError(err).Errorln("unable to get first address from hw")
-			return false
-		}
-		addrs := wlt.GenAddresses(core.AccountAddress, 0, 1, nil)
-		if addrs.Next() {
-			addr := addrs.Value()
-			return addr.String() == firstAddr
-		}
-		return false
-	}
-	if checkForDerivation(skyWallet.WalletTypeDeterministic) {
-		return true
-	}
-	return checkForDerivation(skyWallet.WalletTypeBip44)
-}
-
 func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, error) {
 	if txn != nil {
 		_, isSkycoinTxn := txn.(skytypes.SkycoinTxn)
@@ -88,7 +67,13 @@ func (sw SkyWallet) ReadyForTxn(wlt core.Wallet, txn core.Transaction) (bool, er
 	if !isSkycoinWlt {
 		return false, errors.New("a non Skycoin wallet received in ReadyForTxn")
 	}
-	return hwMatchWallet(wlt), nil
+	dev := &SkyWalletHelper{}
+	match, err := dev.DeviceMatch(wlt).Then(func(data interface{}) interface{} {
+		return data
+	}).Catch(func(err error) error {
+		return err
+	}).Await()
+	return match.(bool), err
 }
 
 func getAllIndexesFromTxn(txn core.Transaction) []int {
