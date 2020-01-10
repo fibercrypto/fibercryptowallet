@@ -117,29 +117,23 @@ func attachHwAsSigner(wlt fccore.Wallet) error {
 
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
+	dev := hardware.NewSkyWalletHelper()
 	checkForDerivationType := func(dt string) {
-		dev := hardware.NewSkyWalletHelper()
-		addr, err := dev.FirstAddress(dt).Then(func(data interface{}) interface{} {
-			return data
-			// FIXME remove Await
-		}).Catch(func(err error) error {
-			return err
-		}).Await()
-		if err == nil {
-			wlt, err := walletManager.WalletEnv.LookupWallet(addr.(string))
+		dev.FirstAddress(dt).Then(func(data interface{}) interface{} {
+			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
 			if err != nil {
 				logSignersModel.Warnln("can not find a wallet matching the hardware one")
 				// FIXME handle this scenario with a wallet registration.
-				return
+				return err
 			}
-			err = attachHwAsSigner(wlt)
-			if err != nil {
+			if err = attachHwAsSigner(wlt); err != nil {
 				logSignersModel.WithError(err).Errorln("unable to attach signer")
-				return
+				return err
 			}
 			hadHwConnected = true
 			walletModel.updateWallet(wlt.GetId())
-		} else {
+			return data
+		}).Catch(func(err error) error {
 			if hadHwConnected {
 				hadHwConnected = false
 				hwConnectedOn = []int{}
@@ -148,7 +142,8 @@ func (walletModel *WalletModel) sniffHw() {
 				walletModel.DataChanged(beginIndex, endIndex, []int{HasHardwareWallet})
 				logSignersModel.WithError(err).Info("connection to hardware wallet was lose")
 			}
-		}
+			return err
+		}).Await()
 	}
 	go func() {
 		for {
