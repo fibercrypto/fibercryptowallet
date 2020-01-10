@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
@@ -43,29 +44,16 @@ func TestUnknownPlugin(t *testing.T) {
 	require.Error(t, err)
 }
 
-package util
-
-import (
-	"testing"
-	"fmt"
-
-	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
-	"github.com/fibercrypto/fibercryptowallet/src/core"
-	_ "github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
-)
-
-
 func TestLookupSignerByUID(t *testing.T) {
 	type WalletSigner struct {
 		mocks.Wallet
 		mocks.TxnSigner
 	}
-	
+
 	emptyUID := core.UID("")
 	uid := core.UID("walletid")
 	other := core.UID("otherid")
-	
+
 	ws := new(WalletSigner)
 	ws.TxnSigner.On("GetSignerUID").Return(uid)
 	var signer core.TxnSigner
@@ -73,9 +61,9 @@ func TestLookupSignerByUID(t *testing.T) {
 	AttachSigner(signer)
 
 	tests := []struct {
-		wallet 	core.Wallet
-		id		core.UID
-		want 	core.TxnSigner
+		wallet core.Wallet
+		id     core.UID
+		want   core.TxnSigner
 	}{
 		{wallet: new(mocks.Wallet), id: emptyUID, want: nil},
 		{wallet: ws, id: emptyUID, want: signer},
@@ -84,11 +72,10 @@ func TestLookupSignerByUID(t *testing.T) {
 		{wallet: new(mocks.Wallet), id: other, want: nil},
 		{wallet: ws, id: other, want: nil},
 	}
-	
+
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("lookup%d", i), func(t *testing.T) {
 			require.Equal(t, tt.want, LookupSignerByUID(tt.wallet, tt.id))
 		})
 	}
 }
-
