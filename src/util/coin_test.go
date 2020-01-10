@@ -51,9 +51,9 @@ func TestNewGenericOutput(t *testing.T) {
 	require.False(t, output.IsSpent())
 
 	testAssets := []string{fakeTicker, invalid_coin}
-	sort.Strins(testAssets)
+	sort.Strings(testAssets)
 	assets := output.SupportedAssets()
-	sort.Strins(assets)
+	sort.Strings(assets)
 	require.Equal(t, testAssets, assets)
 
 	_, err2 := output.GetCoins("other_coin")
