@@ -2,6 +2,7 @@ package hardware
 
 import (
 	"github.com/chebyrash/promise"
+	"github.com/fibercrypto/fibercryptowallet/src/contrib"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
@@ -9,6 +10,10 @@ import (
 
 type SkyWalletInteraction struct {
 	dev skywallet.Devicer
+}
+
+func NewSkyWalletInteraction() contrib.DeviceInteraction {
+	return &SkyWalletInteraction{dev: SkyWltDeviceInstance()}
 }
 
 func(wlt *SkyWalletInteraction) AddressGen(addressN, startIndex uint32, confirmAddress bool, walletType string) *promise.Promise {

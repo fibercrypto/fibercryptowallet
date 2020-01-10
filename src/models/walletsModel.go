@@ -347,32 +347,23 @@ func (walletModel *WalletModel) loadModel(wallets []*QWallet) {
 }
 
 func (walletModel *WalletModel) wipeDevice() {
-	msg, err := hardware.SkyWltDeviceInstance().Wipe()
-	if err != nil {
+	dev := hardware.NewSkyWalletInteraction()
+	dev.Wipe().Then(func(data interface{}) interface{} {
+		logWalletsModel.Infoln(data.(string))
+		return data
+	}).Catch(func(err error) error {
 		logWalletsModel.WithError(err).Errorln("unable to wipe device")
-		return
-	}
-	msgStr, err := skyWallet.DecodeSuccessMsg(msg)
-	if err != nil {
-		logWalletsModel.WithError(err).Errorln("unable to decode response")
-		return
-	}
-	logWalletsModel.Infoln("msgStr", msgStr)
+		return err
+	})
 }
 
 func (walletModel *WalletModel) changePin() {
-	go func() {
-		rm := false
-		msg, err := hardware.SkyWltDeviceInstance().ChangePin(&rm)
-		if err != nil {
-			logWalletsModel.WithError(err).Errorln("unable to change pin")
-			return
-		}
-		msgStr, err := skyWallet.DecodeSuccessMsg(msg)
-		if err != nil {
-			logWalletsModel.WithError(err).Errorln("unable to change pin")
-			return
-		}
-		logWalletsModel.Infoln("msgStr", msgStr)
-	}()
+	dev := hardware.NewSkyWalletInteraction()
+	dev.Wipe().Then(func(data interface{}) interface{} {
+		logWalletsModel.Infoln(data.(string))
+		return data
+	}).Catch(func(err error) error {
+		logWalletsModel.WithError(err).Errorln("unable to change pin")
+		return err
+	})
 }
