@@ -1,4 +1,4 @@
-package contrib
+package hardware_wallet
 
 import (
 	"github.com/chebyrash/promise"

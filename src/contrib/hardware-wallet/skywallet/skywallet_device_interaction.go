@@ -2,7 +2,7 @@ package hardware
 
 import (
 	"github.com/chebyrash/promise"
-	"github.com/fibercrypto/fibercryptowallet/src/contrib"
+	"github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
@@ -12,7 +12,7 @@ type SkyWalletInteraction struct {
 	dev skywallet.Devicer
 }
 
-func NewSkyWalletInteraction() contrib.DeviceInteraction {
+func NewSkyWalletInteraction() hardware_wallet.DeviceInteraction {
 	return &SkyWalletInteraction{dev: SkyWltDeviceInstance()}
 }
 

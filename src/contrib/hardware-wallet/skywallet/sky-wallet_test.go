@@ -2,21 +2,21 @@ package hardware
 
 import (
 	"errors"
+	mocks2 "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet/mocks"
 	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
+	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
 	"testing"
-	messages "github.com/fibercrypto/skywallet-protob/go"
 )
 
 
 
 func TestGetSignerUIDShouldBeOk(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
+	dev := mocks2.Devicer{}
 	expectedDevId := "c24a046d-7d7b-484d-baf6-abedd883023f"
 	f := messages.Features{
 		DeviceId: proto.String(expectedDevId),
@@ -53,7 +53,7 @@ func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
 
 func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
+	dev := mocks2.Devicer{}
 	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
 	sw := NewSkyWallet(nil, &dev)
 
@@ -67,7 +67,7 @@ func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
 
 func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
+	dev := mocks2.Devicer{}
 	f := messages.Failure{}
 	fb, err := proto.Marshal(&f)
 	require.Nil(t, err)
@@ -88,7 +88,7 @@ func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 
 func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
+	dev := mocks2.Devicer{}
 	msg := wire.Message{
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
@@ -105,8 +105,8 @@ func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
 
 func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
-	expectedDevDescription := urnPrefix+"c24a046d-7d7b-484d-baf6-abedd883023f"
+	dev := mocks2.Devicer{}
+	expectedDevDescription := urnPrefix +"c24a046d-7d7b-484d-baf6-abedd883023f"
 	f := messages.Features{
 		Label: proto.String("c24a046d-7d7b-484d-baf6-abedd883023f"),
 	}
@@ -141,7 +141,7 @@ func TestGetSignerDescriptionShouldFailForUninitializedDevice(t *testing.T) {
 
 func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
+	dev := mocks2.Devicer{}
 	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
 	sw := NewSkyWallet(nil, &dev)
 
@@ -155,7 +155,7 @@ func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 
 func TestGetSignerDescriptionShouldFailForFailResponse(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
+	dev := mocks2.Devicer{}
 	f := messages.Failure{}
 	fb, err := proto.Marshal(&f)
 	require.Nil(t, err)
@@ -176,7 +176,7 @@ func TestGetSignerDescriptionShouldFailForFailResponse(t *testing.T) {
 
 func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
 	// Giving
-	dev := mocks.Devicer{}
+	dev := mocks2.Devicer{}
 	msg := wire.Message{
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
