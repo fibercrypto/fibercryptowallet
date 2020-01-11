@@ -8,8 +8,8 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
 func TestSignerMethods(t *testing.T) {
@@ -196,7 +196,7 @@ func TestLookupSignServiceForWallet(t *testing.T) {
 }
 
 func TestSignTransaction(t *testing.T) {
-	pwd := func(s string, kvs core.KeyValueStore) (string, error){
+	pwd := func(s string, kvs core.KeyValueStore) (string, error) {
 		return s, nil
 	}
 
@@ -208,16 +208,17 @@ func TestSignTransaction(t *testing.T) {
 
 	ind := make([]string, 0)
 	txn := new(mocks.Transaction)
+	ctx := new(mocks.KeyValueStore)
 
 	signer.On("SignTransaction", mock.Anything).Return(args.Get(0), nil).Run(func(args mock.Arguments) {
 		pwdReader := args.Get(1).(core.PasswordReader)
 		msg := "message"
-		require.Equal(t, msg, pwdReader(msg))
+		require.Equal(t, msg, pwdReader(msg, ctx))
 	})
 	signedTxn, err := SignTransaction(uid, txn, pwd, ind)
 	require.Nil(t, err)
 	require.Equal(t, txn, signedTxn)
-	
+
 	_, err = SignTransaction(core.UID(""), txn, pwd, ind)
 	require.NotNil(t, err)
 }
