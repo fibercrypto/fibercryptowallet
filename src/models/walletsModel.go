@@ -2,6 +2,7 @@ package models
 
 import (
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
+	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"strconv"
 
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
@@ -117,21 +118,32 @@ func attachHwAsSigner(wlt fccore.Wallet) error {
 
 // sniffHw notify the model about available hardware wallet device if any
 func (walletModel *WalletModel) sniffHw() {
-	dev := hardware.NewSkyWalletHelper()
-	checkForDerivationType := func(dt string) {
-		dev.FirstAddress(dt).Then(func(data interface{}) interface{} {
-			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
-			if err != nil {
-				logSignersModel.Warnln("can not find a wallet matching the hardware one")
-				// FIXME handle this scenario with a wallet registration.
-				return err
-			}
-			if err = attachHwAsSigner(wlt); err != nil {
-				logSignersModel.WithError(err).Errorln("unable to attach signer")
-				return err
-			}
+	blockingCheck := func() {
+		registerWlt := func(wlt fccore.Wallet) {
 			hadHwConnected = true
 			walletModel.updateWallet(wlt.GetId())
+			attachHwAsSigner(wlt)
+		}
+		logError := func(err error) {
+			if err != nil {
+				if err == fce.ErrWltFromAddrNotFound {
+					logWalletsModel.WithError(err).Debugln("wallet not found")
+					return
+				}
+				logWalletsModel.WithError(err).Errorln("unexpected error")
+			}
+		}
+		dev := hardware.NewSkyWalletHelper()
+		addr := dev.FirstAddress(skyWallet.WalletTypeDeterministic)
+		addr.Then(func(data interface{}) interface{} {
+			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
+			logError(err)
+			registerWlt(wlt)
+			return dev.FirstAddress(skyWallet.WalletTypeBip44)
+		}).Then(func(data interface{}) interface{} {
+			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
+			logError(err)
+			registerWlt(wlt)
 			return data
 		}).Catch(func(err error) error {
 			if hadHwConnected {
@@ -148,8 +160,7 @@ func (walletModel *WalletModel) sniffHw() {
 	go func() {
 		for {
 			hwConnectedOn = []int{}
-			checkForDerivationType(skyWallet.WalletTypeDeterministic)
-			checkForDerivationType(skyWallet.WalletTypeBip44)
+			blockingCheck()
 			time.Sleep(time.Millisecond * 500)
 		}
 	}()
