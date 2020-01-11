@@ -151,3 +151,45 @@ func TestSignersReadyForTxn(t *testing.T) {
 	_, err = ReadyForTxn(core.UID("unknown_id"), wlt, txn)
 	require.NotNil(t, err)
 }
+
+func TestLookupSignServiceForWallet(t *testing.T) {
+	type WalletSigner struct {
+		mocks.Wallet
+		mocks.TxnSigner
+	}
+
+	emptyUID := core.UID("")
+	uid := core.UID("walletid")
+	other := core.UID("otherid")
+
+	ws := new(WalletSigner)
+	ws.TxnSigner.On("GetSignerUID").Return(uid)
+	var signer core.TxnSigner
+	signer = ws
+	err := AttachSignService(signer)
+	defer RemoveSignService(uid)
+	require.NoError(t, err)
+
+	tests := []struct {
+		wallet core.Wallet
+		id     core.UID
+		want   core.TxnSigner
+	}{
+		{wallet: new(mocks.Wallet), id: emptyUID, want: nil},
+		{wallet: ws, id: emptyUID, want: signer},
+		{wallet: ws, id: uid, want: signer},
+		{wallet: new(mocks.Wallet), id: uid, want: signer},
+		{wallet: new(mocks.Wallet), id: other, want: nil},
+		{wallet: ws, id: other, want: nil},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("lookup%d", i), func(t *testing.T) {
+			_signer, err := LookupSignServiceForWallet(tt.wallet, tt.id)
+			require.Equal(t, tt.want, _signer)
+			if tt.want == nil {
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
