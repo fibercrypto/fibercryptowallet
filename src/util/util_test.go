@@ -178,7 +178,7 @@ func TestAddressFromString(t *testing.T) {
 	})
 	mockPlugin.On("GetName").Return(fakeDesc)
 	strAddr, addr := "addr1", new(mocks.Address)
-	mockPlugin.On("AddressFromString", strAddr, fakeTicker).Return(addr, nil)
+	mockPlugin.On("AddressFromString", strAddr).Return(addr, nil)
 	RegisterAltcoin(mockPlugin)
 
 	_, err := AddressFromString("someAddress", "someCoin")
