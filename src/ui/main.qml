@@ -46,6 +46,8 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
+                    enableAddrsBook = true
+
         }
         ConfigManager{
             id: configManager
@@ -61,6 +63,7 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
+                    enableAddrsBook = true
 
         }
 
@@ -73,6 +76,8 @@ ApplicationWindow {
             enableBlockchain = false
             enableNetworking = true
             enableSettings = true
+                    enableAddrsBook = true
+
         }
 
         onNetworkingRequested: {
@@ -84,6 +89,8 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = false
             enableSettings = true
+                    enableAddrsBook = true
+
         }
 
         onSettingsRequested: {
@@ -95,7 +102,20 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = false
+                    enableAddrsBook = true
         }
+
+        onAddressBookRequested: {
+                    generalStackView.openAddressBookPage()
+                    customHeader.text = qsTr("Address book")
+
+                    enableOutputs = true
+                    enablePendingTransactions = true
+                    enableBlockchain = true
+                    enableNetworking = true
+                    enableSettings = true
+                    enableAddrsBook = false
+                }
 
         onAboutRequested: {
             dialogAbout.open()

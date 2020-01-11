@@ -33,6 +33,9 @@ ICONSET			:= resources/images/icons/appIcon/appIcon.iconset
 CONVERT			:= convert
 SIPS			:= sips
 ICONUTIL		:= iconutil
+UNAME_S         = $(shell uname -s)
+DEFAULT_TARGET  ?= desktop
+DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
@@ -245,6 +248,7 @@ clean: clean-test clean-build ## Remove temporary files
 
 gen-mocks: ## Generate mocks for interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
+	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/fibercryptowallet/g' PATH
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
@@ -252,6 +256,10 @@ test-sky: ## Run Skycoin plugin test suite
 
 test-core: ## Run tests for API core and helpers
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+
+test-data: ## Run tests for data package
+	go test -coverprofile=src/data/coverage.out -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
+
 
 test-sky-launch-html-cover:
 	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
@@ -269,7 +277,7 @@ test-cover-travis:
 
 test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
 
-test: clean-test test-core test-sky ## Run project test suite
+test: clean-test test-core test-sky test-data## Run project test suite
 
 run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
