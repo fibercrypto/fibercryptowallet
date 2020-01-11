@@ -165,8 +165,7 @@ func TestLookupSignServiceForWallet(t *testing.T) {
 
 	ws := new(WalletSigner)
 	ws.TxnSigner.On("GetSignerUID").Return(uid)
-	var signer core.TxnSigner
-	signer = ws
+	var signer core.TxnSigner = ws
 	err := AttachSignService(signer)
 	defer RemoveSignService(uid) // nolint gosec
 	require.NoError(t, err)
@@ -193,4 +192,30 @@ func TestLookupSignServiceForWallet(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestSignTransaction(t *testing.T) {
+	pwd := func(s string, kvs core.KeyValueStore) (string, error){
+		return s, nil
+	}
+
+	uid := core.UID("signer_id")
+	signer := new(mocks.TxnSigner)
+	signer.On("GetSignerUID").Return(uid)
+	AttachSignService(signer)
+	defer RemoveSignService(uid) // nolint gosec
+
+	ind := make([]string, 0)
+	txn := new(mocks.Transaction)
+
+	signer.On("SignTransaction", mock.Anything).Return(args.Get(0), nil).Run(func(args mock.Arguments) {
+		pwdReader := args.Get(1).(core.PasswordReader)
+		msg := "message"
+		require.Equal(t, msg, pwdReader(msg))
+	})
+	signedTxn, err := SignTransaction(uid, txn, pwd, ind)
+	require.Nil(t, err)
+	require.Equal(t, txn, signedTxn)
+	
+	_, err := SignTransaction(core.UID(), txn, pwd, ind)
 }

@@ -58,7 +58,7 @@ func TestLookupSignerByUID(t *testing.T) {
 	ws.TxnSigner.On("GetSignerUID").Return(uid)
 	var signer core.TxnSigner = ws
 	err := AttachSignService(signer)
-	defer RemoveSignService(uid)
+	defer RemoveSignService(uid) // nolint gosec
 	require.NoError(t, err)
 
 	tests := []struct {
