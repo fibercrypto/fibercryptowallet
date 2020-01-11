@@ -217,5 +217,6 @@ func TestSignTransaction(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, txn, signedTxn)
 	
-	_, err := SignTransaction(core.UID(), txn, pwd, ind)
+	_, err = SignTransaction(core.UID(""), txn, pwd, ind)
+	require.NotNil(t, err)
 }
