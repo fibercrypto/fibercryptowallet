@@ -59,6 +59,7 @@ func TestLookupSignerByUID(t *testing.T) {
 	var signer core.TxnSigner
 	signer = ws
 	err := AttachSignService(signer)
+	defer RemoveSignService(uid)
 	require.NoError(t, err)
 
 	tests := []struct {
