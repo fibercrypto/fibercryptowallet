@@ -167,7 +167,7 @@ func TestLookupSignServiceForWallet(t *testing.T) {
 	var signer core.TxnSigner
 	signer = ws
 	err := AttachSignService(signer)
-	defer RemoveSignService(uid)
+	defer RemoveSignService(uid) // nolint gosec
 	require.NoError(t, err)
 
 	tests := []struct {

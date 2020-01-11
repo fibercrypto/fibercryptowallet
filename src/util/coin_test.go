@@ -33,24 +33,28 @@ func TestNewGenericOutput(t *testing.T) {
 
 	addr := new(mocks.Address)
 
-	invalid_coin := "some_coin"
+	notRegisteredCoin := "some_coin"
 	output := NewGenericOutput(addr, "id")
 	require.Equal(t, GenericOutput{Address: addr, id: "id", Balance: make(map[string]uint64)}, output)
 
-	output.PushCoins(fakeTicker, "42")
-	output.SetCoins(invalid_coin, uint64(20))
-	some_coin, err := output.GetCoins(invalid_coin)
-	require.Equal(t, uint64(20), some_coin)
+	pushError := output.PushCoins(fakeTicker, "42")
+	require.Nil(t, pushError)
+	pushError = output.PushCoins(notRegisteredCoin, "42")
+	require.NotNil(t, pushError)
+
+	output.SetCoins(notRegisteredCoin, uint64(20))
+	amount, err := output.GetCoins(notRegisteredCoin)
+	require.Equal(t, uint64(20), amount)
 	require.Nil(t, err)
-	some_coin, err = output.GetCoins(fakeTicker)
-	require.Equal(t, uint64(42000), some_coin)
+	amount, err = output.GetCoins(fakeTicker)
+	require.Equal(t, uint64(42000), amount)
 	require.Nil(t, err)
 
 	require.Equal(t, addr, output.GetAddress())
 	require.Equal(t, "id", output.GetId())
 	require.False(t, output.IsSpent())
 
-	testAssets := []string{fakeTicker, invalid_coin}
+	testAssets := []string{fakeTicker, notRegisteredCoin}
 	sort.Strings(testAssets)
 	assets := output.SupportedAssets()
 	sort.Strings(assets)

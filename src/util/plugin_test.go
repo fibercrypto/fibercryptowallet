@@ -56,8 +56,7 @@ func TestLookupSignerByUID(t *testing.T) {
 
 	ws := new(WalletSigner)
 	ws.TxnSigner.On("GetSignerUID").Return(uid)
-	var signer core.TxnSigner
-	signer = ws
+	var signer core.TxnSigner = ws
 	err := AttachSignService(signer)
 	defer RemoveSignService(uid)
 	require.NoError(t, err)
