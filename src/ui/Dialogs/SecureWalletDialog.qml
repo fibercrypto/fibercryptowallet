@@ -2,7 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
-import WalletsManager 1.0
+import DeviceInteraction 1.0
 
 Dialog {
     id: secureWalletDialog
@@ -16,8 +16,8 @@ Dialog {
     title: Qt.application.name
     standardButtons: Dialog.Abort
     closePolicy: Dialog.NoAutoClose
-    WalletModel {
-        id: walletModelId
+    DeviceInteraction {
+        id: deviceInteraction
     }
 
     Flickable {
@@ -130,7 +130,7 @@ Dialog {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                walletModelId.changePin()
+                                deviceInteraction.changePin()
                             }
                         }
                     }
@@ -142,7 +142,7 @@ Dialog {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                walletModelId.wipeDevice()
+                                deviceInteraction.wipeDevice()
                             }
                         }
                     }

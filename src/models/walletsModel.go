@@ -44,8 +44,6 @@ type WalletModel struct {
 	_ func([]*QWallet)                                                                 `slot:"loadModel"`
 	_ func([]*QWallet)                                                                 `slot:"updateModel"`
 	_ func()                                                                           `slot:"sniffHw"`
-	_ func()                                                                           `slot:"wipeDevice"`
-	_ func()                                                                           `slot:"changePin"`
 	_ int                                                                              `property:"count"`
 }
 
@@ -101,8 +99,6 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectLoadModel(walletModel.loadModel)
 	walletModel.ConnectUpdateModel(walletModel.updateModel)
 	walletModel.ConnectSniffHw(walletModel.sniffHw)
-	walletModel.ConnectWipeDevice(walletModel.wipeDevice)
-	walletModel.ConnectChangePin(walletModel.changePin)
 }
 
 // attachHwAsSigner add a hw as signer
@@ -356,26 +352,4 @@ func (walletModel *WalletModel) loadModel(wallets []*QWallet) {
 
 	walletModel.EndResetModel()
 	walletModel.SetCount(len(walletModel.Wallets()))
-}
-
-func (walletModel *WalletModel) wipeDevice() {
-	dev := hardware.NewSkyWalletInteraction()
-	dev.Wipe().Then(func(data interface{}) interface{} {
-		logWalletsModel.Infoln(data.(string))
-		return data
-	}).Catch(func(err error) error {
-		logWalletsModel.WithError(err).Errorln("unable to wipe device")
-		return err
-	})
-}
-
-func (walletModel *WalletModel) changePin() {
-	dev := hardware.NewSkyWalletInteraction()
-	dev.Wipe().Then(func(data interface{}) interface{} {
-		logWalletsModel.Infoln(data.(string))
-		return data
-	}).Catch(func(err error) error {
-		logWalletsModel.WithError(err).Errorln("unable to change pin")
-		return err
-	})
 }
