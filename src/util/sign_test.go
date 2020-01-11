@@ -9,6 +9,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/mock"
 )
 
 func TestSignerMethods(t *testing.T) {
