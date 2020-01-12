@@ -203,7 +203,8 @@ func TestSignTransaction(t *testing.T) {
 	uid := core.UID("signer_id")
 	signer := new(mocks.TxnSigner)
 	signer.On("GetSignerUID").Return(uid)
-	AttachSignService(signer)
+	attachErr := AttachSignService(signer)
+	require.Nil(t, attachErr)
 	defer RemoveSignService(uid) // nolint gosec
 
 	ind := make([]string, 0)
@@ -222,5 +223,52 @@ func TestSignTransaction(t *testing.T) {
 	require.Equal(t, txn, signedTxn)
 
 	_, err = SignTransaction(core.UID(""), txn, pwd, ind)
+	require.NotNil(t, err)
+}
+
+func TestGenericMultiWalletSign(t *testing.T) {
+	var pwd core.PasswordReader = func(s string, kvs core.KeyValueStore) (string, error){
+		return s, nil
+	}
+
+	inputsIdx := []string{"index1", "index2"}
+	wlt, txn := new(mocks.Wallet), new(mocks.Transaction)
+
+	uid := core.UID("signer_id")
+	signer := new(mocks.TxnSigner)
+	signer.On("GetSignerUID").Return(uid)
+	attachErr := AttachSignService(signer)
+	require.Nil(t, attachErr)
+	defer RemoveSignService(uid) // nolint gosec
+
+	spec := make([]core.InputSignDescriptor, 0)
+	for _, input := range inputsIdx {
+		inputSpec := core.InputSignDescriptor{
+			InputIndex: input,
+			SignerID:   uid,
+			Wallet:     wlt,
+		}
+		spec = append(spec, inputSpec)
+	}
+
+	badTxn := new(mocks.Transaction)
+	badTxn.On("GetId").Return("bad_txn_id")
+	wlt.On("Sign", txn, signer, mock.Anything, inputsIdx).Return(txn, nil)
+	wlt.On("Sign", badTxn, signer, mock.Anything, inputsIdx).Return(txn, errors.ErrInvalidTxn)
+	_txn, err := GenericMultiWalletSign(txn, spec, pwd)
+	require.Equal(t, txn, _txn)
+	require.Nil(t, err)
+
+	_, err = GenericMultiWalletSign(badTxn, spec, pwd)
+	require.NotNil(t, err)
+
+	spec = []core.InputSignDescriptor{
+		core.InputSignDescriptor{
+			InputIndex: "",
+			SignerID:   core.UID(""),
+			Wallet:     wlt,
+		},
+	}
+	_, err = GenericMultiWalletSign(txn, spec, pwd)
 	require.NotNil(t, err)
 }
