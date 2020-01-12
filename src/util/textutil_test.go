@@ -70,3 +70,12 @@ func TestMessageFromMsgAndArgs(t *testing.T) {
 		require.Equal(t, expected, MessageFromMsgAndArgs(data...))
 	}
 }
+
+func TestIndentMessageLines(t *testing.T) {
+	s := "def factorial(n):\nif n <= 1:\n\t\treturn 1\nreturn n * factorial(n - 1)"
+	sFormated := "def factorial(n):\n\t\tif n <= 1:\n\t\t\t\treturn 1\n\t\treturn n * factorial(n - 1)"
+	require.Equal(t, sFormated, IndentMessageLines(s, -1))
+
+	s, sFormated = "firstLine\nsecondLine", "firstLine\n\t       \tsecondLine"
+	require.Equal(t, sFormated, IndentMessageLines(s, 6))
+}
