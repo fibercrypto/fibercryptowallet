@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/fibercrypto/fibercryptowallet/src/core"
@@ -48,5 +49,24 @@ func TestPasswords(t *testing.T) {
 			require.NoError(t, err)
 			require.Equal(t, tt.expected_pwd, pwd)
 		})
+	}
+}
+
+func TestMessageFromMsgAndArgs(t *testing.T) {
+	require.Equal(t, "", MessageFromMsgAndArgs())
+	require.Equal(t, "5", MessageFromMsgAndArgs(5))
+	require.Equal(t, "skycoin", MessageFromMsgAndArgs("skycoin"))
+	require.Equal(t, "hello world", MessageFromMsgAndArgs("%s %s", "hello", "world"))
+
+	intFormat := "%d"
+	data := make([]interface{}, 0)
+	data = append(data, "")
+	expected, format := "", ""
+	for i := 0; i < 10; i++ {
+		expected += fmt.Sprintf(intFormat, i)
+		format += intFormat
+		data[0] = format
+		data = append(data, i)
+		require.Equal(t, expected, MessageFromMsgAndArgs(data...))
 	}
 }
