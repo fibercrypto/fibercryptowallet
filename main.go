@@ -45,21 +45,13 @@ func main() {
 	// url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
 	url := core.NewQUrl3("src/ui/main.qml", 0) // disable this to make a release
 
-	// TODO: Find a way to use a `core.Qt__QueuedConnection`, so we can remove the flag `allOk`
-	allOk := true
-	engine.ConnectObjectCreated(func(object *core.QObject, objUrl *core.QUrl) {
-		if object.Pointer() == nil && url.ToString(0) == objUrl.ToString(0) {
-			allOk = false
-			app.Exit(-1) // Ignored because we need a `core.Qt__QueuedConnection`
+	engine.ConnectSignal(engine.ConnectObjectCreated, func(object *core.QObject, objUrl *core.QUrl) {
+		if object.Pointer() == nil && url.ToString(0) == objUrl.ToString(0)[len(objUrl.ToString(0)) - len(url.ToString(0)):] {
+			app.Exit(-1)
 		}
-	})
+	}, core.Qt__QueuedConnection)
 	engine.Load(url)
 	splash.QWidget.Close()
 
-	// A `core.Qt__QueuedConnection` will allows us to remove the condition bellow, leaving only `app.Exec()`
-	if allOk == true {
-		app.Exec()
-	} else {
-		app.Exit(-1)
-	}
+	app.Exec()
 }
