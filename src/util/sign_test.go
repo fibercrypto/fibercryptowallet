@@ -210,7 +210,7 @@ func TestSignTransaction(t *testing.T) {
 	txn := new(mocks.Transaction)
 	ctx := new(mocks.KeyValueStore)
 
-	signer.On("SignTransaction", mock.Anything).Return(txn, nil).Run(func(args mock.Arguments) {
+	signer.On("SignTransaction", txn, mock.Anything, ind).Return(txn, nil).Run(func(args mock.Arguments) {
 		pwdReader := args.Get(1).(core.PasswordReader)
 		msg := "message"
 		_msg, err2 := pwdReader(msg, ctx)
