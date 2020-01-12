@@ -87,7 +87,7 @@ func TestLabeledOutput(t *testing.T) {
 	}
 	body := LabeledContent{
 		Label:   "[body]",
-		Content: "\t...\n\t//some proccess\n\t...",
+		Content: "\t...\n\t//some process\n\t...",
 	}
 	end := LabeledContent{
 		Label:   "[method end]",
@@ -97,7 +97,7 @@ func TestLabeledOutput(t *testing.T) {
 		"\t[method head]:\t//this is the method's description and next line is it's declaration\n",
 		"\t              \tfunc foo(param1 type1, param2 type2) (returnType1) {\n",
 		"\t[body]:       \t\t...\n",
-		"\t              \t\t//some proccess\n",
+		"\t              \t\t//some process\n",
 		"\t              \t\t...\n",
 		"\t[method end]: \t}\n",
 	}
