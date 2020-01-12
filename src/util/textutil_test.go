@@ -79,3 +79,27 @@ func TestIndentMessageLines(t *testing.T) {
 	s, sFormated = "firstLine\nsecondLine", "firstLine\n\t       \tsecondLine"
 	require.Equal(t, sFormated, IndentMessageLines(s, 6))
 }
+
+func TestLabeledOutput(t *testing.T) {
+	method := LabeledContent{
+		Label:   "[method head]",
+		Content: "//this is the method's description and next line is it's declaration\nfunc foo(param1 type1, param2 type2) (returnType1) {",
+	}
+	body := LabeledContent{
+		Label:   "[body]",
+		Content: "\t...\n\t//some proccess\n\t...",
+	}
+	end := LabeledContent{
+		Label:   "[method end]",
+		Content: "}",
+	}
+	lines := []interface{}{
+		"\t[method head]:\t//this is the method's description and next line is it's declaration\n",
+		"\t              \tfunc foo(param1 type1, param2 type2) (returnType1) {\n",
+		"\t[body]:       \t\t...\n",
+		"\t              \t\t//some proccess\n",
+		"\t              \t\t...\n",
+		"\t[method end]: \t}\n",
+	}
+	require.Equal(t, fmt.Sprintf("%s%s%s%s%s%s", lines...), LabeledOutput(method, body, end))
+}
