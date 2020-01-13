@@ -5,6 +5,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/data"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	"github.com/skycoin/skycoin/src/util/file"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	"os"
@@ -78,6 +79,7 @@ func (abm *AddrsBookModel) init() {
 	abm.ConnectHasInit(abm.hasInit)
 	abm.ConnectChangeSecType(abm.changeSecType)
 	abm.ConnectAddAddress(abm.addAddress)
+	logAddressBook.Infof("%s,\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", getConfigFileDir())
 	if addrsBook == nil {
 		db, err := data.GetBoltStorage(getConfigFileDir())
 		if err != nil {
@@ -185,8 +187,19 @@ func (abm *AddrsBookModel) editContact(row int, id uint64, name string) {
 }
 
 func getConfigFileDir() string {
-	homeDir := os.Getenv("HOME")
-	fileDir := filepath.Join(homeDir, ".fiber/data.dt")
+	qSettingDir := qtcore.NewQSettings(qtcore.QCoreApplication_OrganizationName(), qtcore.QCoreApplication_ApplicationName(), nil).FileName()
+	path, _ := filepath.Split(qSettingDir)
+	ok, err := file.Exists(path)
+	if err != nil {
+		logAddressBook.WithError(err).Warn("getting file dir")
+	}
+	if !ok {
+		if err := os.Mkdir(path, 0777); err != nil {
+			logAddressBook.WithError(err).Warn("getting file dir")
+		}
+	}
+
+	fileDir := filepath.Join(path, "data.dt")
 	return fileDir
 }
 
