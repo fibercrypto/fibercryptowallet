@@ -79,7 +79,6 @@ func (abm *AddrsBookModel) init() {
 	abm.ConnectHasInit(abm.hasInit)
 	abm.ConnectChangeSecType(abm.changeSecType)
 	abm.ConnectAddAddress(abm.addAddress)
-	logAddressBook.Infof("%s,\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", getConfigFileDir())
 	if addrsBook == nil {
 		db, err := data.GetBoltStorage(getConfigFileDir())
 		if err != nil {
