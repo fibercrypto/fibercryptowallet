@@ -23,6 +23,7 @@ Page {
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
+    readonly property var defaultCacheUpdateTime: configManager.getDefaultValue("global/cache/updateTime")
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
@@ -31,6 +32,7 @@ Page {
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
+    property var savedUpdateTime: configManager.getValue("global/cache/updateTime")
 
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
@@ -38,6 +40,7 @@ Page {
     property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
     property alias cacheLifeTime: textFieldCacheLifeTime.text
+    property alias cacheUpdateTime: textFieldCacheUpdateTime.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -48,6 +51,7 @@ Page {
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
         configManager.setValue("global/cache/lifeTime", cacheLifeTime)
+        configManager.setValue("global/cache/updateTime", cacheUpdateTime)
         loadSavedSettings()
     }
 
@@ -56,6 +60,7 @@ Page {
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
+        cacheUpdateTime = savedUpdateTime = configManager.getValue("global/cache/updateTime")
 
         walletManager.updateAll()
         updateFooterButtonsStatus()
@@ -71,8 +76,8 @@ Page {
     }
 
     function updateFooterButtonsStatus() {
-        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime)
-        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime || defaultCacheLifeTime)
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime || cacheUpdateTime != savedUpdateTime)
+        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime !== defaultCacheLifeTime || cacheUpdateTime !== defaultCacheUpdateTime)
         footer.standardButton(Dialog.Apply).enabled = configChanged
         footer.standardButton(Dialog.Discard).enabled = configChanged
         footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
@@ -173,13 +178,34 @@ Page {
             Layout.fillWidth: true
             title: qsTr("Global settings")
 
-            TextField {
-                id: textFieldCacheLifeTime
+            ColumnLayout {
                 anchors.fill: parent
-                selectByMouse: true
-                placeholderText: qsTr("Cache life time")
-                onTextChanged: {
-                    updateFooterButtonsStatus();
+
+                TextField {
+                    id: textFieldCacheLifeTime
+
+                    Layout.alignment: Qt.AlignTop
+                    Layout.fillWidth: true
+                    selectByMouse: true
+                    placeholderText: qsTr("Cache life time")
+
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
+                TextField {
+
+                    id: textFieldCacheUpdateTime
+
+                    Layout.alignment: Qt.AlignTop
+                    Layout.fillWidth: true
+
+                    selectByMouse: true
+                    placeholderText: qsTr("Time to update")
+
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
                 }
             }
         } // GroupBox (global settings)
