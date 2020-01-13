@@ -7,6 +7,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
+	"time"
 )
 
 var logWalletModel = logging.MustGetLogger("Wallet Model")
@@ -44,6 +45,8 @@ func (m *ModelWallets) init() {
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
 	m.SetLoading(true)
+	cont := make(chan bool)
+
 	go func() {
 
 		altManager := local.LoadAltcoinManager()
@@ -55,6 +58,17 @@ func (m *ModelWallets) init() {
 		m.WalletEnv = walletsEnvs[0]
 
 		m.loadModel()
+		cont <- true
+	}()
+
+	go func() {
+		<- cont
+		uptimeTicker := time.NewTicker(7 * time.Second)
+
+		for {
+			<-uptimeTicker.C
+			m.loadModel()
+		}
 	}()
 }
 

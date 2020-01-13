@@ -151,9 +151,9 @@ func (walletM *WalletManager) init() {
 				<-tmp
 				go walletM.updateWallets()
 			}()
+			walletManager = walletM
 		}
 	}()
-
 }
 
 func (walletM *WalletManager) getWalletIterators(force bool) core.WalletIterator {
