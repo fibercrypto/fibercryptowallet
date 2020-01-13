@@ -132,6 +132,7 @@ func (walletM *WalletManager) init() {
 
 		qWallets = append(qWallets, qWallet)
 		walletM.updateAddresses(qWallet.FileName())
+		walletM.initWalletAddresses(it.Value().GetId())
 	}
 	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
@@ -235,6 +236,35 @@ func (walletM *WalletManager) updateWalletEnvs() {
 		logWalletManager.Error("Error loading wallet envs")
 	}
 	walletM.WalletEnv = walletsEnvs[0]
+}
+
+func (walletM *WalletManager) initWalletAddresses(wltId string) {
+	logWalletManager.Info("Updating Addresses")
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	qAddresses := make([]*QAddress, 0)
+	it, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't loaded addresses")
+		return
+	}
+	for it.Next() {
+		addr := it.Value()
+		qAddress := NewQAddress(nil)
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
+		qAddress.SetAddress(addr.String())
+		qAddress.SetMarked(0)
+		qAddress.SetWallet(wlt.GetLabel())
+		qAddress.SetWalletId(wlt.GetId())
+		qAddress.SetAddressSky("N/A")
+		qAddress.SetAddressCoinHours("N/A")
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
+
+		qAddresses = append(qAddresses, qAddress)
+
+	}
+
+	walletM.addresseseByWallets[wltId] = qAddresses
+
 }
 
 func (walletM *WalletManager) updateAddresses(wltId string) {
