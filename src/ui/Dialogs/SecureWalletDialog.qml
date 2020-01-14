@@ -21,8 +21,20 @@ Dialog {
         onHasPinDetermined: buttonCreatePIN.visible = !hasPin
         onNameDetermined: deviceName = name
         onNeedsBackupDetermined: buttonCreateBackup.visible = needsBackup
+        onOperationDone: unblockButtons()
     }
     onAboutToShow: deviceInteraction.deviceFeatures()
+    function setEnableButtons(enabled) {
+        buttonCreateBackup.enabled = enabled;
+        buttonWipeDevice.enabled = enabled;
+        buttonCreatePIN.enabled = enabled;
+        secureWalletDialog.standardButton(Dialog.Abort).enabled = enabled;
+    }
+    function blockButtons() {
+        setEnableButtons(false);
+    }
+    function unblockButtons() {
+        setEnableButtons(true);
     }
 
     Flickable {
@@ -129,6 +141,7 @@ Dialog {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
+                                blockButtons();
                                 deviceInteraction.backupDevice();
                             }
                         }
@@ -141,7 +154,8 @@ Dialog {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                deviceInteraction.changePin()
+                                blockButtons();
+                                deviceInteraction.changePin();
                             }
                         }
                     }
@@ -153,7 +167,8 @@ Dialog {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                deviceInteraction.wipeDevice()
+                                blockButtons();
+                                deviceInteraction.wipeDevice();
                             }
                         }
                     }

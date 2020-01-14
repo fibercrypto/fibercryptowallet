@@ -33,9 +33,11 @@ func (devI *QDeviceInteraction) wipeDevice() {
 	dev := hardware.NewSkyWalletInteraction()
 	dev.Wipe().Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data.(string))
+		devI.OperationDone()
 		return data
 	}).Catch(func(err error) error {
 		logWalletsModel.WithError(err).Errorln("unable to wipe device")
+		devI.OperationDone()
 		return err
 	})
 }
@@ -43,8 +45,10 @@ func (devI *QDeviceInteraction) wipeDevice() {
 func (devI *QDeviceInteraction) backupDevice() {
 	dev := hardware.NewSkyWalletInteraction()
 	dev.Backup().Then(func(data interface{}) interface{} {
+		devI.OperationDone()
 		return data
 	}).Catch(func(err error) error {
+		devI.OperationDone()
 		return err
 	})
 }
@@ -54,9 +58,11 @@ func (devI *QDeviceInteraction) changePin() {
 	rm := false
 	dev.ChangePin(&rm).Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data.(string))
+		devI.OperationDone()
 		return data
 	}).Catch(func(err error) error {
 		logWalletsModel.WithError(err).Errorln("unable to change pin")
+		devI.OperationDone()
 		return err
 	})
 }
@@ -68,8 +74,10 @@ func (devI *QDeviceInteraction) deviceFeatures() {
 		devI.HasPinDetermined(*features.PinProtection)
 		devI.NameDetermined(*features.Label)
 		devI.NeedsBackupDetermined(*features.NeedsBackup)
+		devI.OperationDone()
 		return data
 	}).Catch(func(err error) error {
+		devI.OperationDone()
 		return err
 	})
 }
