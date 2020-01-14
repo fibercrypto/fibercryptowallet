@@ -132,16 +132,14 @@ func (walletM *WalletManager) init() {
 		qWallet.SetCoinHours("N/A")
 
 		qWallets = append(qWallets, qWallet)
-		walletM.updateAddresses(qWallet.FileName())
 		walletM.initWalletAddresses(it.Value().GetId())
 	}
 	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
 
 	go func() {
-		logWalletManager.Debug("Update time is :=> ", time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
+		logWalletManager.Debug("Update time is :=> ", time.Duration(config.GetDataUpdateTime())*time.Microsecond)
 		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
-
 
 		for {
 			<-uptimeTicker.C
@@ -271,60 +269,57 @@ func (walletM *WalletManager) initWalletAddresses(wltId string) {
 }
 
 func (walletM *WalletManager) updateAddresses(wltId string) {
-	go func() {
-
-		logWalletManager.Info("Updating Addresses")
-		wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
-		qAddresses := make([]*QAddress, 0)
-		it, err := wlt.GetLoadedAddresses()
+	logWalletManager.Info("Updating Addresses")
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	qAddresses := make([]*QAddress, 0)
+	it, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't loaded addresses")
+		return
+	}
+	for it.Next() {
+		addr := it.Value()
+		qAddress := NewQAddress(nil)
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
+		qAddress.SetAddress(addr.String())
+		qAddress.SetMarked(0)
+		qAddress.SetWallet(wlt.GetLabel())
+		qAddress.SetWalletId(wlt.GetId())
+		skyFl, err := addr.GetCryptoAccount().GetBalance(params.SkycoinTicker)
 		if err != nil {
-			logWalletManager.WithError(err).Warn("Couldn't loaded addresses")
-			return
+			qAddress.SetAddressSky("N/A")
+			qAddress.SetAddressCoinHours("N/A")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " Balance")
+			continue
 		}
-		for it.Next() {
-			addr := it.Value()
-			qAddress := NewQAddress(nil)
-			qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
-			qAddress.SetAddress(addr.String())
-			qAddress.SetMarked(0)
-			qAddress.SetWallet(wlt.GetLabel())
-			qAddress.SetWalletId(wlt.GetId())
-			skyFl, err := addr.GetCryptoAccount().GetBalance(params.SkycoinTicker)
-			if err != nil {
-				qAddress.SetAddressSky("N/A")
-				qAddress.SetAddressCoinHours("N/A")
-				logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " Balance")
-				continue
-			}
-			accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-			if err != nil {
-				qAddress.SetAddressSky("N/A")
-				qAddress.SetAddressCoinHours("N/A")
-				logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " quotient")
-				continue
-			}
-			qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
-			coinH, err := addr.GetCryptoAccount().GetBalance(params.CoinHoursTicker)
-			if err != nil {
-				qAddress.SetAddressCoinHours("N/A")
-				logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " Balance")
-				continue
-			}
-			accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
-			if err != nil {
-				qAddress.SetAddressCoinHours("N/A")
-				logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " quotient")
-				continue
-			}
-			qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
-			qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
-
-			qAddresses = append(qAddresses, qAddress)
-
+		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+		if err != nil {
+			qAddress.SetAddressSky("N/A")
+			qAddress.SetAddressCoinHours("N/A")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " quotient")
+			continue
 		}
+		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
+		coinH, err := addr.GetCryptoAccount().GetBalance(params.CoinHoursTicker)
+		if err != nil {
+			qAddress.SetAddressCoinHours("N/A")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " Balance")
+			continue
+		}
+		accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
+		if err != nil {
+			qAddress.SetAddressCoinHours("N/A")
+			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " quotient")
+			continue
+		}
+		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 
-		walletM.addresseseByWallets[wltId] = qAddresses
-	}()
+		qAddresses = append(qAddresses, qAddress)
+
+	}
+
+	walletM.addresseseByWallets[wltId] = qAddresses
 }
 
 func (walletM *WalletManager) updateOutputs(wltId, address string) {
@@ -404,6 +399,8 @@ func (walletM *WalletManager) updateWallets() {
 		return
 	}
 	for it.Next() {
+
+		go walletM.updateAddresses(it.Value().GetId())
 
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {
