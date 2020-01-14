@@ -18,10 +18,13 @@ Dialog {
     closePolicy: Dialog.NoAutoClose
     DeviceInteraction {
         id: deviceInteraction
-        onHasPinDetermined: buttonCreatePIN.visible = !hasPin
+        onHasPinDetermined: enablePINWarning = !hasPin;
         onNameDetermined: deviceName = name
-        onNeedsBackupDetermined: buttonCreateBackup.visible = needsBackup
-        onOperationDone: unblockButtons()
+        onNeedsBackupDetermined: enableBackupWarning = needsBackup;
+        onOperationDone: {
+            deviceInteraction.deviceFeatures();
+            unblockButtons();
+        }
     }
     onAboutToShow: deviceInteraction.deviceFeatures()
     function setEnableButtons(enabled) {

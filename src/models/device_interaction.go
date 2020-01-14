@@ -74,10 +74,8 @@ func (devI *QDeviceInteraction) deviceFeatures() {
 		devI.HasPinDetermined(*features.PinProtection)
 		devI.NameDetermined(*features.Label)
 		devI.NeedsBackupDetermined(*features.NeedsBackup)
-		devI.OperationDone()
 		return data
 	}).Catch(func(err error) error {
-		devI.OperationDone()
 		return err
 	})
 }
