@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
@@ -138,7 +139,9 @@ func (walletM *WalletManager) init() {
 	walletM.wallets = qWallets
 
 	go func() {
-		uptimeTicker := time.NewTicker(7 * time.Second)
+		logWalletManager.Debug("Update time is :=> ", time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
+		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
+
 
 		for {
 			<-uptimeTicker.C
