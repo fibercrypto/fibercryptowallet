@@ -11,6 +11,7 @@ type QDeviceInteraction struct {
 	core.QObject
 	_ func()                    `constructor:"init"`
 	_ func()                    `slot:"wipeDevice"`
+	_ func()                    `slot:"backupDevice"`
 	_ func()                    `slot:"changePin"`
 	_ func()                    `slot:"deviceFeatures"`
 	_ func(hasPin bool)         `signal:"hasPinDetermined"`
@@ -25,6 +26,7 @@ func (devI *QDeviceInteraction) init() {
 	devI.ConnectWipeDevice(devI.wipeDevice)
 	devI.ConnectChangePin(devI.changePin)
 	devI.ConnectDeviceFeatures(devI.deviceFeatures)
+	devI.ConnectBackupDevice(devI.backupDevice)
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
@@ -34,6 +36,15 @@ func (devI *QDeviceInteraction) wipeDevice() {
 		return data
 	}).Catch(func(err error) error {
 		logWalletsModel.WithError(err).Errorln("unable to wipe device")
+		return err
+	})
+}
+
+func (devI *QDeviceInteraction) backupDevice() {
+	dev := hardware.NewSkyWalletInteraction()
+	dev.Backup().Then(func(data interface{}) interface{} {
+		return data
+	}).Catch(func(err error) error {
 		return err
 	})
 }

@@ -126,6 +126,12 @@ Dialog {
                         visible: enableBackupWarning
                         text: qsTr("Create a backup")
                         Layout.fillWidth: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                deviceInteraction.backupDevice();
+                            }
+                        }
                     }
                     ItemDelegate {
                         id: buttonCreatePIN
