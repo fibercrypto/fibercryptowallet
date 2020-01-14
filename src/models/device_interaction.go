@@ -51,7 +51,8 @@ func (devI *QDeviceInteraction) backupDevice() {
 
 func (devI *QDeviceInteraction) changePin() {
 	dev := hardware.NewSkyWalletInteraction()
-	dev.Wipe().Then(func(data interface{}) interface{} {
+	rm := false
+	dev.ChangePin(&rm).Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data.(string))
 		return data
 	}).Catch(func(err error) error {
