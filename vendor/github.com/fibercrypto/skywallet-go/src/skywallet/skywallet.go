@@ -64,6 +64,13 @@ const (
 	firstHardenedChild = uint32(0x80000000)
 )
 
+type InputRequestKind uint32
+const (
+	RequestKindPinMatrix InputRequestKind = iota
+	RequestKindPassphrase
+	RequestKindWord
+)
+
 //go:generate mockery -name Devicer -case underscore -inpkg -testonly
 
 // Devicer provides api for the hw wallet functions

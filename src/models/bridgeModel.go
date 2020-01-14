@@ -8,14 +8,14 @@ import (
 
 type QBridge struct {
 	core.QObject
-	_      func()               `constructor:"init"`
-	_      func()               `slot:"onCompleted"`
-	_      func()               `slot:"lock"`
-	_      func()               `slot:"unlock"`
-	_      func(message string) `signal:"getPassword"`
-	_      func(message string) `signal:"getSkyHardwareWalletPin"`
-	_      func(string)         `slot:"setResult"`
-	_      func() string        `slot:"getResult"`
+	_      func()                         `constructor:"init"`
+	_      func()                         `slot:"onCompleted"`
+	_      func()                         `slot:"lock"`
+	_      func()                         `slot:"unlock"`
+	_      func(message string)           `signal:"getPassword"`
+	_      func(title, message string)    `signal:"getSkyHardwareWalletPin"`
+	_      func(string)                   `slot:"setResult"`
+	_      func() string                  `slot:"getResult"`
 	result string
 	sem    sync.Mutex
 	use    sync.Mutex

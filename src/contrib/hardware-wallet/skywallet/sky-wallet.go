@@ -36,9 +36,9 @@ var dev skyWallet.Devicer
 // trying to change the device interaction behavior by using
 // different arguments does not works because this is a singleton
 // like function method
-func SkyWltCreateDeviceInstanceOnce(deviceType skyWallet.DeviceType, praseReader, pinReader func()string) skyWallet.Devicer {
+func SkyWltCreateDeviceInstanceOnce(deviceType skyWallet.DeviceType, inputReader func(skyWallet.InputRequestKind, string, string)(string, error)) skyWallet.Devicer {
 	once.Do(func() {
-		dev = proxy.NewSequencer(skyWallet.NewDevice(deviceType), true, praseReader)
+		dev = proxy.NewSequencer(skyWallet.NewDevice(deviceType), true, inputReader)
 	})
 	return dev
 }
@@ -50,7 +50,6 @@ func SkyWltDeviceInstance() skyWallet.Devicer {
 	}
 	return dev
 }
-
 // NewSkyWallet create a new sky wallet instance
 func NewSkyWallet(wlt core.Wallet) *SkyWallet {
 	return &SkyWallet{wlt: wlt}

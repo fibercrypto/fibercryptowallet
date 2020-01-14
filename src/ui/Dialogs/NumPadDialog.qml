@@ -19,6 +19,24 @@ Dialog {
     readonly property real numPadButtonPointSize: 18
     property alias pin: textInput.text
 
+    function clear(newTitle) {
+        textInput.clear()
+        title = newTitle
+        if (newTitle === "enter new pin:") {
+            labelInstructions.text =
+                    qsTr("Enter a hard-to-guess PIN of between 4 and 8 digits. " +
+                         "The PIN layout is displayed in the hardware wallet screen.")
+        } else if (newTitle === "confirm new pin:") {
+            labelInstructions.text =
+                    qsTr("If you forget the new PIN you will no able to work " +
+                         "with this device configuretion.")
+        } else if (newTitle === "enter current pin:") {
+            labelInstructions.text =
+                    qsTr("This device is currently protected with a PIN, to " +
+                         "be able to work with it, you need to enter the PIN.")
+        }
+    }
+
     Component.onCompleted: {
         standardButton(Dialog.Ok).enabled = textInput.length >= 4
     }
@@ -39,8 +57,7 @@ Dialog {
 
             Label {
                 id: labelInstructions
-                text: qsTr("Enter a hard-to-guess PIN of between 4 and 8 digits. " +
-                        "The PIN layout is displayed in the hardware wallet screen.")
+                text: qsTr("instructions")
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignHCenter
                 horizontalAlignment: Label.AlignHCenter

@@ -18,6 +18,11 @@ Dialog {
     closePolicy: Dialog.NoAutoClose
     DeviceInteraction {
         id: deviceInteraction
+        onHasPinDetermined: buttonCreatePIN.visible = !hasPin
+        onNameDetermined: deviceName = name
+        onNeedsBackupDetermined: buttonCreateBackup.visible = needsBackup
+    }
+    onAboutToShow: deviceInteraction.deviceFeatures()
     }
 
     Flickable {

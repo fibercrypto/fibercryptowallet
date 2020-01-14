@@ -2,15 +2,21 @@ package models
 
 import (
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
+	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 )
 
 type QDeviceInteraction struct {
 	core.QObject
-	_ func()      `constructor:"init"`
-	_ func()      `slot:"wipeDevice"`
-	_ func()      `slot:"changePin"`
+	_ func()                    `constructor:"init"`
+	_ func()                    `slot:"wipeDevice"`
+	_ func()                    `slot:"changePin"`
+	_ func()                    `slot:"deviceFeatures"`
+	_ func(hasPin bool)         `signal:"hasPinDetermined"`
+	_ func(name string)         `signal:"nameDetermined"`
+	_ func(needsBackup bool)    `signal:"needsBackupDetermined"`
+	_ func()                    `signal:"operationDone"`
 }
 
 func (devI *QDeviceInteraction) init() {
@@ -18,6 +24,7 @@ func (devI *QDeviceInteraction) init() {
 	qml.QQmlEngine_SetObjectOwnership(devI, qml.QQmlEngine__CppOwnership)
 	devI.ConnectWipeDevice(devI.wipeDevice)
 	devI.ConnectChangePin(devI.changePin)
+	devI.ConnectDeviceFeatures(devI.deviceFeatures)
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
@@ -42,3 +49,15 @@ func (devI *QDeviceInteraction) changePin() {
 	})
 }
 
+func (devI *QDeviceInteraction) deviceFeatures() {
+	dev := hardware.NewSkyWalletInteraction()
+	dev.Features().Then(func(data interface{}) interface{} {
+		features := data.(messages.Features)
+		devI.HasPinDetermined(*features.PinProtection)
+		devI.NameDetermined(*features.Label)
+		devI.NeedsBackupDetermined(*features.NeedsBackup)
+		return data
+	}).Catch(func(err error) error {
+		return err
+	})
+}

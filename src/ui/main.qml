@@ -175,8 +175,6 @@ ApplicationWindow {
         focus: true
         modal: true
     }
-
-    
     
     QBridge{
         id: bridgeForPassword
@@ -187,8 +185,8 @@ ApplicationWindow {
             getPasswordDialog.open()
         }
         onGetSkyHardwareWalletPin: {
-            // numPadDialog.title = message
-            numPadDialog.open() = true
+            numPadDialog.clear(title)
+            numPadDialog.open()
         }
         Component.onCompleted: {
             bridgeForPassword.onCompleted()

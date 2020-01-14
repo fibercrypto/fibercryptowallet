@@ -2,7 +2,6 @@ package proxy //nolint goimports
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gogo/protobuf/proto"
 	"io/ioutil"
 	"sync"
@@ -20,11 +19,11 @@ type Sequencer struct {
 	log *logging.MasterLogger
 	logCli *logging.MasterLogger
 	dev skywallet.Devicer
-	scan func()string
+	scan func(requestKind skywallet.InputRequestKind, title, message string) (string, error)
 }
 
 // NewSequencer create a new sequencer instance
-func NewSequencer(dev skywallet.Devicer, cliSpeechless bool, scanner func()string) skywallet.Devicer {
+func NewSequencer(dev skywallet.Devicer, cliSpeechless bool, scanner func(requestKind skywallet.InputRequestKind, title, message string) (string, error)) skywallet.Devicer {
 	sq := &Sequencer{
 		log: logging.NewMasterLogger(),
 		logCli: logging.NewMasterLogger(),
@@ -71,27 +70,38 @@ func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, err
 			sq.log.Errorln("pmr.Type should not be null")
 			return wire.Message{}, errors.New("unexpected null object")
 		}
-		switch *pmr.Type {
-		case messages.PinMatrixRequestType_PinMatrixRequestType_Current:
-			sq.log.Infoln("enter current pin:")
-		case messages.PinMatrixRequestType_PinMatrixRequestType_NewFirst:
-			sq.log.Infoln("enter new pin:")
-		case messages.PinMatrixRequestType_PinMatrixRequestType_NewSecond:
-			sq.log.Infoln("confirm new pin:")
-		default:
-			errStr := "unexpected PinMatrixRequestType"
-			sq.log.WithField("type", *pmr.Type).Errorln(errStr)
-			return wire.Message{}, errors.New(errStr)
+		str4PinType, err := func(t messages.PinMatrixRequestType) (string, error) {
+			switch t {
+			case messages.PinMatrixRequestType_PinMatrixRequestType_Current:
+				return "enter current pin:", nil
+			case messages.PinMatrixRequestType_PinMatrixRequestType_NewFirst:
+				return "enter new pin:", nil
+			case messages.PinMatrixRequestType_PinMatrixRequestType_NewSecond:
+				return "confirm new pin:", nil
+			default:
+				return "", errors.New("unexpected PinMatrixRequestType")
+			}
+		}(*pmr.Type)
+		if err != nil {
+			sq.log.WithField("type", *pmr.Type).Errorln(err.Error())
+			return wire.Message{}, err
 		}
-		pinEnc := sq.scan()
+		pinEnc, err := sq.scan(skywallet.RequestKindPinMatrix, str4PinType, "")
+		if err != nil {
+			sq.log.WithError(err).Errorln("reading user input")
+			return wire.Message{}, err
+		}
 		if msg, err = sq.dev.PinMatrixAck(pinEnc); err != nil {
 			sq.log.WithError(err).Errorln("pin matrixAck ack: sending message failed")
 			return wire.Message{}, err
 		}
 		return sq.handleInputInteraction(msg)
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_PassphraseRequest) {
-		sq.log.Println("PassphraseRequest request:")
-		passphrase := sq.scan()
+		passphrase, err := sq.scan(skywallet.RequestKindPassphrase, "PassphraseRequest request:", "passprase TODO chnageit")
+		if err != nil {
+			sq.log.WithError(err).Errorln("reading user input")
+			return wire.Message{}, err
+		}
 		msg, err = sq.dev.PassphraseAck(passphrase)
 		msgStr, err := handleResponse(msg, err)
 		if err != nil {
@@ -100,8 +110,11 @@ func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, err
 		}
 		sq.logCli.Infof("PassphraseAck response:", msgStr)
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_WordRequest) {
-		fmt.Printf("Word: ")
-		word := sq.scan()
+		word, err := sq.scan(skywallet.RequestKindWord, "Word:", "wordd TODO change it")
+		if err != nil {
+			sq.log.WithError(err).Errorln("reading user input")
+			return wire.Message{}, err
+		}
 		if msg, err = sq.dev.WordAck(word); err != nil {
 			sq.log.WithError(err).Errorln("word ack: sending message failed")
 			return msg, err

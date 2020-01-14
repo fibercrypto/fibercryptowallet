@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"strconv"
@@ -61,17 +62,23 @@ type QWallet struct {
 func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 	hardware.SkyWltCreateDeviceInstanceOnce(
 		skyWallet.DeviceTypeUSB,
-		func()string{
+		func(kind skyWallet.InputRequestKind, tittle, message string)(string, error) {
 			bridgeForPassword.BeginUse()
 			defer bridgeForPassword.EndUse()
 			bridgeForPassword.lock()
-			bridgeForPassword.GetSkyHardwareWalletPin("message")
+			switch kind {
+			case skyWallet.RequestKindPinMatrix:
+				bridgeForPassword.GetSkyHardwareWalletPin(tittle, message)
+			default:
+				errStr := "invalid request kind"
+				logWalletsModel.WithField("kind", kind).Errorln(errStr)
+				return "", errors.New(errStr)
+			}
 			bridgeForPassword.lock()
 			pass := bridgeForPassword.getResult()
 			bridgeForPassword.unlock()
-			return pass
+			return pass, nil
 		},
-		func()string{return ""},
 	)
 }
 
