@@ -36,6 +36,36 @@ func NewSequencer(dev skywallet.Devicer, cliSpeechless bool, scanner func(reques
 	return sq
 }
 
+func (sq *Sequencer) handleInputReaderResponse(err error) error {
+	if err == skywallet.ErrUserCancelledWithDeviceButton {
+		sq.log.WithError(err).Warningln("action canceled")
+		return err
+	}
+	if err == skywallet.ErrUserCancelledFromInputReader {
+		if err := sq.handleInputReaderCanceled(err); err != nil {
+			sq.log.WithError(err).Infoln("invalid state")
+			return err
+		}
+		return err
+	}
+	return err
+}
+
+func (sq *Sequencer) handleInputReaderCanceled(err error) error {
+	msg, err := sq.dev.Cancel()
+	if err != nil {
+		sq.log.WithError(err).Errorln("unable to cancel command")
+		return err
+	}
+	msgStr, err := skywallet.DecodeFailMsg(msg)
+	if err != nil {
+		sq.log.WithError(err).Errorln("unable to decode response")
+		return err
+	}
+	sq.log.Infoln("device response: " + msgStr)
+	return nil
+}
+
 func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, error) {
 	var err error
 	handleResponse := func(scopedMsg wire.Message, err error) (string, error) {
@@ -87,8 +117,7 @@ func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, err
 			return wire.Message{}, err
 		}
 		pinEnc, err := sq.scan(skywallet.RequestKindPinMatrix, str4PinType, "")
-		if err != nil {
-			sq.log.WithError(err).Errorln("reading user input")
+		if err = sq.handleInputReaderResponse(err); err != nil {
 			return wire.Message{}, err
 		}
 		if msg, err = sq.dev.PinMatrixAck(pinEnc); err != nil {
@@ -98,8 +127,7 @@ func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, err
 		return sq.handleInputInteraction(msg)
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_PassphraseRequest) {
 		passphrase, err := sq.scan(skywallet.RequestKindPassphrase, "PassphraseRequest request:", "passprase TODO chnageit")
-		if err != nil {
-			sq.log.WithError(err).Errorln("reading user input")
+		if err = sq.handleInputReaderResponse(err); err != nil {
 			return wire.Message{}, err
 		}
 		msg, err = sq.dev.PassphraseAck(passphrase)
@@ -111,8 +139,7 @@ func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, err
 		sq.logCli.Infof("PassphraseAck response:", msgStr)
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_WordRequest) {
 		word, err := sq.scan(skywallet.RequestKindWord, "Word:", "wordd TODO change it")
-		if err != nil {
-			sq.log.WithError(err).Errorln("reading user input")
+		if err = sq.handleInputReaderResponse(err); err != nil {
 			return wire.Message{}, err
 		}
 		if msg, err = sq.dev.WordAck(word); err != nil {
@@ -125,8 +152,7 @@ func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, err
 			"Verify the information in the device",
 			"Be careful on checking all the details in the device screen, if all this" +
 				" is right, then take the required action to continue...")
-		if err != nil {
-			sq.log.WithError(err).Errorln("reading user input")
+		if err = sq.handleInputReaderResponse(err); err != nil {
 			return wire.Message{}, err
 		}
 		if msg, err = sq.dev.ButtonAck(); err != nil {
@@ -145,7 +171,9 @@ func (sq *Sequencer) handleFirstCommandResponse(successMsgKind messages.MessageT
 	for msg.Kind != uint16(successMsgKind) && msg.Kind != uint16(messages.MessageType_MessageType_Failure) {
 		if msg.Kind == uint16(messages.MessageType_MessageType_PinMatrixRequest) || msg.Kind == uint16(messages.MessageType_MessageType_PassphraseRequest) || msg.Kind == uint16(messages.MessageType_MessageType_ButtonRequest) {
 			if msg, err = sq.handleInputInteraction(msg); err != nil {
-				sq.log.WithError(err).Errorln("error handling interaction")
+				if err != skywallet.ErrUserCancelledFromInputReader && err != skywallet.ErrUserCancelledWithDeviceButton {
+					sq.log.WithError(err).Errorln("error handling interaction")
+				}
 				return wire.Message{}, err
 			}
 		}
@@ -164,6 +192,10 @@ func (sq *Sequencer) handleFinalResponse(msg wire.Message,  expectedMsgKind mess
 		}
 		sq.log.Errorln(failMsg)
 		return wire.Message{}, errors.New(failMsg)
+	}
+	if msg.Kind == uint16(messages.MessageType_MessageType_Cancel) {
+		sq.log.Warningln("action canceled")
+		return wire.Message{}, skywallet.ErrUserCancelledWithDeviceButton
 	}
 	sq.log.Errorln("unexpected message")
 	return wire.Message{}, errors.New("unexpected message")
@@ -210,8 +242,6 @@ func (sq *Sequencer) Backup() (wire.Message, error) {
 
 // Cancel forward the call to Device
 func (sq *Sequencer) Cancel() (wire.Message, error) {
-	sq.Lock()
-	defer sq.Unlock()
 	return sq.dev.Cancel()
 }
 
@@ -301,7 +331,9 @@ func (sq *Sequencer) Recovery(wordCount uint32, usePassphrase *bool, dryRun bool
 	for msg.Kind != uint16(messages.MessageType_MessageType_Success) && msg.Kind != uint16(messages.MessageType_MessageType_Failure) {
 		if msg.Kind == uint16(messages.MessageType_MessageType_PinMatrixRequest) || msg.Kind == uint16(messages.MessageType_MessageType_PassphraseRequest) || msg.Kind == uint16(messages.MessageType_MessageType_ButtonRequest) || msg.Kind == uint16(messages.MessageType_MessageType_WordRequest) {
 			if msg, err = sq.handleInputInteraction(msg); err != nil {
-				sq.log.WithError(err).Errorln("error handling interaction")
+				if err != skywallet.ErrUserCancelledFromInputReader && err != skywallet.ErrUserCancelledWithDeviceButton {
+					sq.log.WithError(err).Errorln("error handling interaction")
+				}
 				return wire.Message{}, err
 			}
 		}

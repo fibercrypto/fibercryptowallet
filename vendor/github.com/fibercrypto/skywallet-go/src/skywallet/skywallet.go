@@ -50,6 +50,10 @@ var (
 	ErrNoDeviceConnected = errors.New("no device connected")
 	// ErrInvalidWalletType a valid wallet type should  be specified
 	ErrInvalidWalletType = errors.New("invalid wallet type, options are: " + WalletTypeDeterministic + " or " + WalletTypeBip44)
+	// ErrUserCancelledWithDeviceButton the requested operation has been cancelled from the device input button
+	ErrUserCancelledWithDeviceButton = errors.New("the requested operation has been cancelled from the device input button")
+	// ErrUserCancelledFromInputReader the requested operation has been cancelled from the device input button
+	ErrUserCancelledFromInputReader = errors.New("the requested operation has been cancelled from the user interaction")
 )
 
 const (
