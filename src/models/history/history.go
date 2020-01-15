@@ -3,6 +3,7 @@ package history
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
 	"github.com/therecipe/qt/core"
+	"time"
 )
 
 func init() {
@@ -11,8 +12,15 @@ func init() {
 
 }
 
+type Filter struct {
+	Activated       bool
+	SelectedWallets []string
+}
+
 type TransactionList struct {
 	core.QAbstractListModel
+	historyManager *HistoryManager
+	filterSelected Filter
 
 	_ map[int]*core.QByteArray `property:"roles"`
 
@@ -47,6 +55,29 @@ func (hm *TransactionList) init() {
 	hm.ConnectAddMultipleTransactions(hm.addMultipleTransactions)
 	hm.ConnectClear(hm.clear)
 
+	go func() {
+		timer := time.NewTicker(time.Second * 2)
+		for {
+			<-timer.C
+			if hm.historyManager == nil {
+				continue
+			}
+			if hm.filterSelected.Activated {
+				hm.addMultipleTransactions(hm.historyManager.loadHistoryWithFilters())
+			} else {
+				hm.addMultipleTransactions(hm.historyManager.loadHistory())
+			}
+
+		}
+	}()
+
+}
+
+func (hm *TransactionList) RegisterHistoryManager(manager *HistoryManager) {
+	hm.historyManager = manager
+	hm.addMultipleTransactions(hm.historyManager.loadHistory())
+
+	logHistoryManager.Panic("Registered History Manager")
 }
 
 func (hm *TransactionList) rowCount(*core.QModelIndex) int {
@@ -136,7 +167,7 @@ func (hm *TransactionList) addMultipleTransactions(txns []*transactions.Transact
 	}
 }
 
-func (hm *TransactionList)txnContained(txn *transactions.TransactionDetails) bool {
+func (hm *TransactionList) txnContained(txn *transactions.TransactionDetails) bool {
 	for _, txnStored := range hm.Transactions() {
 		if txn.TransactionID() == txnStored.TransactionID() {
 			return true

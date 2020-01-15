@@ -114,29 +114,20 @@ Page {
 
     QTransactionList {
         id: modelTransactions
+        Component.onCompleted: {
+            console.log("modelTransactions completed")
+            RegisterHistoryManager(historyManager)
+        }
     }
 
     HistoryManager {
         id: historyManager
+        Component.onCompleted: {
+            console.log("history manager completed")
+        }
     }
 
     Component.onCompleted: {
-        modelTransactions.clear()
-        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
-    }
-
-    property Timer timer: Timer{
-        id: historyTimer
-        repeat: true
-        running: true
-        interval: 4000
-        onTriggered: {
-            if (switchFilters.checked) {
-                modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
-            } else {
-                modelTransactions.addMultipleTransactions(historyManager.loadHistory())
-            }
-        }
-
+        console.log("COJONEEEEEEEE")
     }
 }

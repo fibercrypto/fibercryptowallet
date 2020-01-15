@@ -1,6 +1,7 @@
 package history
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"sort"
 	"strconv"
 	"time"
@@ -39,8 +40,8 @@ type HistoryManager struct {
 	filters         []string
 	txnForAddresses map[string][]*transactions.TransactionDetails
 	walletsIterator core.WalletIterator
-
-	_ func() `constructor:"init"`
+	end             chan bool
+	_               func() `constructor:"init"`
 
 	_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
 	_ func() []*transactions.TransactionDetails `slot:"loadHistory"`
@@ -56,12 +57,15 @@ func (hm *HistoryManager) init() {
 	hm.walletEnv = models.GetWalletEnv()
 	hm.txnForAddresses = make(map[string][]*transactions.TransactionDetails, 0)
 	hm.addresses = make(map[string]string, 0)
-	go hm.getAddressesWithWallets()
+
+	updateTime := config.GetDataUpdateTime()
+	uptimeTicker := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 2)
+	loadAddr := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 3)
+	hm.getAddressesWithWallets()
+	go hm.loadHistory()
+
 
 	go func() {
-		uptimeTicker := time.NewTicker(10 * time.Second)
-		loadAddr := time.NewTicker(20 * time.Second)
-
 		for {
 			select {
 			case <-uptimeTicker.C:
@@ -74,7 +78,12 @@ func (hm *HistoryManager) init() {
 			go hm.getWalletIterators(true)
 		}
 	}()
-
+	go func() {
+		timer := time.NewTicker(5 * time.Second)
+		for {
+			<-timer.C
+		}
+	}()
 }
 
 func (hm *HistoryManager) getWalletIterators(force bool) core.WalletIterator {
@@ -107,8 +116,10 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		if !ok {
 			addrs = append(addrs, addr)
 		}
+		logHistoryManager.Debug("Getting txns from ", addr)
 		txnsDetails = append(txnsDetails, val...)
 	}
+
 	go hm.updateTxnOfAddresses(addrs)
 
 	return txnsDetails
@@ -133,6 +144,7 @@ func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*tran
 		return make([]*transactions.TransactionDetails, 0)
 	}
 	for wltIterator.Next() {
+		logHistoryManager.Debug("Getting addresses history for wallet ", wltIterator.Value().GetId())
 		addressIterator, err := wltIterator.Value().GetLoadedAddresses()
 		if err != nil {
 			logHistoryManager.Warn("Couldn't get address iterator")
@@ -394,24 +406,12 @@ func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*tran
 
 		txnsDetails = append(txnsDetails, txnDetails)
 		for _, addrInTxn := range txnAddresses.Addresses() {
-			if containsAddr(filterAddresses, addrInTxn) {
-				hm.txnForAddresses[addrInTxn.Address()] = append(hm.txnForAddresses[addrInTxn.Address()], txnDetails)
-			}
+			hm.txnForAddresses[addrInTxn.Address()] = append(hm.txnForAddresses[addrInTxn.Address()], txnDetails)
 		}
 	}
 	sort.Sort(ByDate(txnsDetails))
 	return txnsDetails
 }
-
-func containsAddr(addr1 []string, addr2 *address.AddressDetails) bool {
-	for _, addr := range addr1 {
-		if addr == addr2.Address() {
-			return true
-		}
-	}
-	return false
-}
-
 func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
 	logHistoryManager.Info("Loading history with some filters")
 	filterAddresses := hm.filters
@@ -421,13 +421,14 @@ func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDe
 
 func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
 	logHistoryManager.Info("Loading history")
+	hm.getAddressesWithWallets()
 	addresses := hm.addresses
 
 	filterAddresses := make([]string, 0)
-	for addr := range addresses {
+	for addr, _ := range addresses {
 		filterAddresses = append(filterAddresses, addr)
 	}
-
+	logHistoryManager.WithField("Addresses to filter", filterAddresses).Debug("Addresses to filter")
 	return hm.getTransactionsOfAddresses(filterAddresses)
 
 }

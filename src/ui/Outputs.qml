@@ -86,10 +86,22 @@ Page {
     // Implement the model in the backend (a more recommendable approach)
     QWallets {
         id: modelWallets
-        Component.onCompleted: {
-            modelWallets.cleanModel()
-            modelWallets.loadModel()
-            console.log("Outputs completed")
+    }
+
+    property Timer timer: Timer {
+        id: addressModelTimer
+        interval: 10000
+        repeat: true
+        running: true
+        onTriggered: {
+            new Promise(function(resolve, reject) {
+                            modelWallets.loadModel()
+
+        				}).then(result => {
+        					console.log(result);
+        				}).catch(reason => {
+        					console.log(reason);
+        				});
         }
     }
 

@@ -7,7 +7,6 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
-	"time"
 )
 
 var logWalletModel = logging.MustGetLogger("Wallet Model")
@@ -19,12 +18,11 @@ const (
 
 type ModelWallets struct {
 	qtcore.QAbstractListModel
-
+	addresses []*ModelAddresses
 	WalletEnv core.WalletEnv
 	_         func() `constructor:"init"`
 
 	_ map[int]*qtcore.QByteArray `property:"roles"`
-	_ []*ModelAddresses          `property:"addresses"`
 	_ bool                       `property:"loading"`
 
 	_ func()                  `slot:"loadModel"`
@@ -45,6 +43,7 @@ func (m *ModelWallets) init() {
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
 	m.SetLoading(true)
+	m.addresses = make([]*ModelAddresses, 0)
 	altManager := local.LoadAltcoinManager()
 	walletsEnvs := make([]core.WalletEnv, 0)
 	for _, plug := range altManager.ListRegisteredPlugins() {
@@ -53,22 +52,10 @@ func (m *ModelWallets) init() {
 
 	m.WalletEnv = walletsEnvs[0]
 
-	m.cleanModel()
-	m.loadModel()
-
-	go func() {
-
-		uptimeTicker := time.NewTicker(10 * time.Second)
-
-		for {
-			<-uptimeTicker.C
-			m.loadModel()
-		}
-	}()
 }
 
 func (m *ModelWallets) rowCount(*qtcore.QModelIndex) int {
-	return len(m.Addresses())
+	return len(m.addresses)
 }
 
 func (m *ModelWallets) roleNames() map[int]*qtcore.QByteArray {
@@ -80,11 +67,11 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 		return qtcore.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Addresses()) {
+	if index.Row() >= len(m.addresses) {
 		return qtcore.NewQVariant()
 	}
 
-	w := m.Addresses()[index.Row()]
+	w := m.addresses[index.Row()]
 
 	switch role {
 	case QName:
@@ -110,10 +97,11 @@ func (m *ModelWallets) insertRows(row int, count int) bool {
 
 func (m *ModelWallets) cleanModel() {
 	m.SetLoading(false)
-	m.SetAddresses(make([]*ModelAddresses, 0))
+	m.addresses = make([]*ModelAddresses, 0)
 }
 
 func (m *ModelWallets) loadModel() {
+	m.BeginResetModel()
 	logWalletModel.Info("Loading Model")
 	m.SetLoading(true)
 	aModels := make([]*ModelAddresses, 0)
@@ -131,6 +119,7 @@ func (m *ModelWallets) loadModel() {
 		}
 		ma := NewModelAddresses(nil)
 		ma.SetName(wallets.Value().GetLabel())
+		ma.SetId(wallets.Value().GetId())
 		oModels := make([]*ModelOutputs, 0)
 
 		for addresses.Next() {
@@ -183,11 +172,24 @@ func (m *ModelWallets) loadModel() {
 		aModels = append(aModels, ma)
 	}
 	logWalletModel.Info("Model loaded")
-	m.SetLoading(false)
 	m.addAddresses(aModels)
+	m.SetLoading(false)
+	m.EndResetModel()
 }
 
 func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
-	m.SetAddresses(ma)
-	m.insertRows(len(m.Addresses()), len(ma))
+	for _, modelAddresses := range ma {
+		find := false
+		for _, modelASet := range m.addresses {
+			if modelAddresses.Id() == modelASet.Id() {
+				modelASet.addOutputs(modelAddresses.outputs)
+				find = true
+				break
+			}
+		}
+		if !find {
+			m.addresses = append(m.addresses, modelAddresses)
+		}
+	}
+	m.insertRows(len(m.addresses), len(ma))
 }
