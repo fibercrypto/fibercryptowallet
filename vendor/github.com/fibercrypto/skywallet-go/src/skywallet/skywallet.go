@@ -69,6 +69,7 @@ const (
 	RequestKindPinMatrix InputRequestKind = iota
 	RequestKindPassphrase
 	RequestKindWord
+	RequestJustInformingUser
 )
 
 //go:generate mockery -name Devicer -case underscore -inpkg -testonly

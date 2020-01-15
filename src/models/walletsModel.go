@@ -63,21 +63,24 @@ func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 	hardware.SkyWltCreateDeviceInstanceOnce(
 		skyWallet.DeviceTypeUSB,
 		func(kind skyWallet.InputRequestKind, tittle, message string)(string, error) {
-			bridgeForPassword.BeginUse()
-			defer bridgeForPassword.EndUse()
-			bridgeForPassword.lock()
 			switch kind {
 			case skyWallet.RequestKindPinMatrix:
+				bridgeForPassword.BeginUse()
+				defer bridgeForPassword.EndUse()
+				bridgeForPassword.lock()
 				bridgeForPassword.GetSkyHardwareWalletPin(tittle, message)
+				bridgeForPassword.lock()
+				pass := bridgeForPassword.getResult()
+				bridgeForPassword.unlock()
+				return pass, nil
+			case skyWallet.RequestJustInformingUser:
+				bridgeForPassword.DeviceRequireAction(tittle, message)
 			default:
 				errStr := "invalid request kind"
 				logWalletsModel.WithField("kind", kind).Errorln(errStr)
 				return "", errors.New(errStr)
 			}
-			bridgeForPassword.lock()
-			pass := bridgeForPassword.getResult()
-			bridgeForPassword.unlock()
-			return pass, nil
+			return "", nil
 		},
 	)
 }

@@ -14,6 +14,7 @@ type QBridge struct {
 	_      func()                         `slot:"unlock"`
 	_      func(message string)           `signal:"getPassword"`
 	_      func(title, message string)    `signal:"getSkyHardwareWalletPin"`
+	_      func(title, message string)    `signal:"deviceRequireAction"`
 	_      func(string)                   `slot:"setResult"`
 	_      func() string                  `slot:"getResult"`
 	result string

@@ -120,6 +120,15 @@ func (sq *Sequencer) handleInputInteraction(msg wire.Message) (wire.Message, err
 			return msg, err
 		}
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_ButtonRequest) {
+		_, err := sq.scan(
+			skywallet.RequestJustInformingUser,
+			"Verify the information in the device",
+			"Be careful on checking all the details in the device screen, if all this" +
+				" is right, then take the required action to continue...")
+		if err != nil {
+			sq.log.WithError(err).Errorln("reading user input")
+			return wire.Message{}, err
+		}
 		if msg, err = sq.dev.ButtonAck(); err != nil {
 			sq.log.WithError(err).Errorln("handling message failed")
 			return msg, err

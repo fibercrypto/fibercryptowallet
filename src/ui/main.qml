@@ -179,11 +179,17 @@ ApplicationWindow {
     QBridge{
         id: bridgeForPassword
 
-        onGetPassword:{
+        onGetPassword: {
             getPasswordDialog.title = message
             getPasswordDialog.clear()
             getPasswordDialog.open()
         }
+        onDeviceRequireAction: {
+            msgDialog.title = title
+            msgDialog.text = message
+            msgDialog.open()
+        }
+
         onGetSkyHardwareWalletPin: {
             numPadDialog.clear(title)
             numPadDialog.open()
@@ -216,7 +222,7 @@ ApplicationWindow {
 
         focus: true
         modal: true
-        onClosed:{
+        onClosed: {
             bridgeForPassword.setResult(numPadDialog.pin)
             bridgeForPassword.unlock()
         }
