@@ -45,25 +45,20 @@ func (m *ModelWallets) init() {
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
 	m.SetLoading(true)
-	cont := make(chan bool)
+	altManager := local.LoadAltcoinManager()
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range altManager.ListRegisteredPlugins() {
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
+
+	m.WalletEnv = walletsEnvs[0]
+
+	m.cleanModel()
+	m.loadModel()
 
 	go func() {
 
-		altManager := local.LoadAltcoinManager()
-		walletsEnvs := make([]core.WalletEnv, 0)
-		for _, plug := range altManager.ListRegisteredPlugins() {
-			walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
-		}
-
-		m.WalletEnv = walletsEnvs[0]
-
-		m.loadModel()
-		cont <- true
-	}()
-
-	go func() {
-		<- cont
-		uptimeTicker := time.NewTicker(7 * time.Second)
+		uptimeTicker := time.NewTicker(10 * time.Second)
 
 		for {
 			<-uptimeTicker.C
@@ -119,19 +114,19 @@ func (m *ModelWallets) cleanModel() {
 }
 
 func (m *ModelWallets) loadModel() {
-
-	logWalletsModel.Info("Loading Model")
+	logWalletModel.Info("Loading Model")
 	m.SetLoading(true)
 	aModels := make([]*ModelAddresses, 0)
-	wallets := walletManager.getWalletIterators(false)
+	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
-		logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
+		logWalletModel.WithError(nil).Warn("Couldn't load wallet")
 		return
 	}
 	for wallets.Next() {
+
 		addresses, err := wallets.Value().GetLoadedAddresses()
 		if err != nil {
-			logWalletsModel.WithError(nil).Warn("Couldn't get loaded address")
+			logWalletModel.WithError(nil).Warn("Couldn't get loaded address")
 			return
 		}
 		ma := NewModelAddresses(nil)
@@ -142,6 +137,7 @@ func (m *ModelWallets) loadModel() {
 			a := addresses.Value()
 			outputs := a.GetCryptoAccount().ScanUnspentOutputs()
 			if outputs == nil {
+				logWalletModel.WithField("address", a.String()).Warn("Couldn't get unspent outputs")
 				continue
 			}
 			mo := NewModelOutputs(nil)
@@ -154,24 +150,24 @@ func (m *ModelWallets) loadModel() {
 				qo.SetOutputID(to.GetId())
 				val, err := to.GetCoins(coin.Sky)
 				if err != nil {
-					logWalletsModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+					logWalletModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
 					continue
 				}
 				accuracy, err := util.AltcoinQuotient(coin.Sky)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+					logWalletModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
 					continue
 				}
 				coins := util.FormatCoins(val, accuracy)
 				qo.SetAddressSky(coins)
 				val, err = to.GetCoins(coin.CoinHoursTicker)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
+					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
 					continue
 				}
 				accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
 					continue
 				}
 				coinsH := util.FormatCoins(val, accuracy)
@@ -186,6 +182,7 @@ func (m *ModelWallets) loadModel() {
 		ma.addOutputs(oModels)
 		aModels = append(aModels, ma)
 	}
+	logWalletModel.Info("Model loaded")
 	m.SetLoading(false)
 	m.addAddresses(aModels)
 }

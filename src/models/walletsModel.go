@@ -73,7 +73,6 @@ func (walletModel *WalletModel) init() {
 }
 
 func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
-	logWalletsModel.Info("Loading data for index")
 	if !index.IsValid() {
 		return core.NewQVariant()
 	}
