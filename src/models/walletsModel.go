@@ -126,6 +126,9 @@ func attachHwAsSigner(wlt fccore.Wallet) error {
 func (walletModel *WalletModel) sniffHw() {
 	blockingCheck := func() {
 		registerWlt := func(wlt fccore.Wallet) {
+			if wlt == nil {
+				return
+			}
 			hadHwConnected = true
 			walletModel.updateWallet(wlt.GetId())
 			attachHwAsSigner(wlt)
