@@ -35,7 +35,7 @@ func getMultiPlatformUserDirectory() string {
 
 func RegisterConfig() error {
 	cm := local.GetConfigManager()
-	node := map[string]string{"address": "https://staging.node.skycoin.net", "level": "warn"}
+	node := map[string]string{"address": "https://staging.node.skycoin.net"}
 	nodeBytes, err := json.Marshal(node)
 	if err != nil {
 		return err
@@ -54,14 +54,14 @@ func RegisterConfig() error {
 
 	wltOpt := local.NewOption(string(wltSrc.id), []string{SettingPathToWalletSource}, false, string(wltSrcBytes))
 
-	// level := map[string]string{"level": "warn"}
-	// levelBytes, err := json.Marshal(level)
-	// if err != nil {
-	// 	return err
-	// }
-	// logLevelOpt := local.NewOption(SettingPathToNode, []string{}, false, string(levelBytes))
+	level := map[string]string{"level": "warn"}
+	levelBytes, err := json.Marshal(level)
+	if err != nil {
+		return err
+	}
+	logLevelOpt := local.NewOption(SettingPathToLog, []string{}, false, string(levelBytes))
 
-	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt}) //, logLevelOpt})
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt}) //, logLevelOpt})
 	return nil
 }
 
