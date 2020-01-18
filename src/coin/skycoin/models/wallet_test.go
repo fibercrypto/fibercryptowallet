@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -1615,7 +1616,7 @@ func TestSkycoinLocalWalletListWallets(t *testing.T) {
 		{
 			dir:   "testdata",
 			valid: true,
-			want:  []string{"testWallet"},
+			want:  []string{"testWallet", "encryptedWallet"},
 		},
 		{
 			dir:   "no-dir",
@@ -1646,6 +1647,40 @@ func TestSkycoinLocalWalletListWallets(t *testing.T) {
 			sort.Strings(labels)
 			sort.Strings(tt.want)
 			require.Equal(t, tt.want, labels)
+		})
+	}
+}
+
+func TestSkycoinLocalWalletEncrypt(t *testing.T) {
+	slw := &SkycoinLocalWallet{walletDir: "testdata"}
+	pwd := func(s string, store core.KeyValueStore) (string, error) {
+		return "test-password", nil
+	}
+	emptyPwd := func(s string, store core.KeyValueStore) (string, error) {
+		return "", nil
+	}
+	tests := []struct {
+		srv   *SkycoinLocalWallet
+		pwd   core.PasswordReader
+		name  string
+		valid bool
+	}{
+		{srv: slw, pwd: pwd, valid: true, name: "test.wlt"},
+		{srv: slw, pwd: pwd, valid: true, name: "encrypted.wlt"},
+		{srv: slw, pwd: pwd, valid: false, name: "unknown.wlt"},
+		{srv: slw, pwd: emptyPwd, valid: false, name: "test.wlt"},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("Wallet%d -> %s", i, tt.name), func(t *testing.T) {
+			wlt, err := wallet.Load(filepath.Join(tt.srv.walletDir, tt.name))
+			clean := err == nil
+
+			tt.srv.Encrypt(tt.name, tt.pwd)
+			encrypted, _ := tt.srv.IsEncrypted(tt.name)
+			if clean {
+				_ = wallet.Save(wlt, tt.srv.walletDir)
+			}
+			require.Equal(t, tt.valid, encrypted)
 		})
 	}
 }
