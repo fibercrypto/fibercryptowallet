@@ -1,10 +1,10 @@
 package history
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
-	"sort"
 	"strconv"
 	"time"
+
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 
@@ -24,7 +24,7 @@ import (
 
 var (
 	logHistoryManager = logging.MustGetLogger("modelsHistoryManager")
-	historyManager *HistoryManager
+	historyManager    *HistoryManager
 )
 
 const (
@@ -40,21 +40,28 @@ type HistoryManager struct {
 	qtCore.QObject
 	walletEnv       core.WalletEnv
 	addresses       map[string]string
+	newTxn          []*transactions.TransactionDetails
+	txnFinded       map[string]struct{}
 	filters         []string
 	txnForAddresses map[string][]*transactions.TransactionDetails
 	walletsIterator core.WalletIterator
 	end             chan bool
 	_               func() `constructor:"init"`
 
-	_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
-	_ func() []*transactions.TransactionDetails `slot:"loadHistory"`
+	//_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
+	//_ func() []*transactions.TransactionDetails `slot:"loadHistory"`
+	_ func()                                    `signal:"newTransactions"`
+	_ func() []*transactions.TransactionDetails `slot:"getTransactions"`
+	_ func() []*transactions.TransactionDetails `slot:"getTransactionsWithFilters"`
+	_ func() []*transactions.TransactionDetails `slot:"getNewTransactions"`
+	_ func() []*transactions.TransactionDetails `slot:"getNewTransactionsWithFilters"`
 	_ func(string)                              `slot:"addFilter"`
 	_ func(string)                              `slot:"removeFilter"`
 }
 
 func (hm *HistoryManager) init() {
-	hm.ConnectLoadHistoryWithFilters(hm.loadHistoryWithFilters)
-	hm.ConnectLoadHistory(hm.loadHistory)
+	//hm.ConnectLoadHistoryWithFilters(hm.loadHistoryWithFilters)
+	//hm.ConnectLoadHistory(hm.loadHistory)
 	hm.ConnectAddFilter(hm.addFilter)
 	hm.ConnectRemoveFilter(hm.removeFilter)
 	hm.walletEnv = models.GetWalletEnv()
@@ -97,26 +104,26 @@ func (a ByDate) Less(i, j int) bool {
 	d2, _ := time.Parse(dateTimeFormatForGo, a[j].Date().ToString(dateTimeFormatForQML))
 	return d1.After(d2)
 }
-func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
+//func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
+//
+//	txnsDetails := make([]*transactions.TransactionDetails, 0)
+//	addrs := make([]string, 0)
+//	for _, addr := range filterAddresses {
+//		val, ok := hm.txnForAddresses[addr]
+//		if !ok {
+//			addrs = append(addrs, addr)
+//			continue
+//		}
+//		logHistoryManager.Debug("Getting txns from ", addr)
+//		txnsDetails = append(txnsDetails, val...)
+//	}
+//
+//	go hm.updateTxnOfAddresses(addrs)
+//
+//	return txnsDetails
+//}
 
-	txnsDetails := make([]*transactions.TransactionDetails, 0)
-	addrs := make([]string, 0)
-	for _, addr := range filterAddresses {
-		val, ok := hm.txnForAddresses[addr]
-		if !ok {
-			addrs = append(addrs, addr)
-			continue
-		}
-		logHistoryManager.Debug("Getting txns from ", addr)
-		txnsDetails = append(txnsDetails, val...)
-	}
-
-	go hm.updateTxnOfAddresses(addrs)
-
-	return txnsDetails
-}
-
-func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
+func (hm *HistoryManager) updateTxns(filterAddresses []string) {
 	logHistoryManager.Info("Getting transactions of Addresses")
 	addresses := hm.addresses
 	var sent, internally bool
@@ -163,6 +170,9 @@ func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*tran
 
 	txnsDetails := make([]*transactions.TransactionDetails, 0)
 	for _, txn := range txns {
+		if _, ok := hm.txnFinded[txn.GetId()]; ok {
+			continue
+		}
 		traspassedHoursIn = 0
 		traspassedHoursOut = 0
 		skyAmountIn = 0
@@ -396,12 +406,76 @@ func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*tran
 		txnDetails.SetTransactionID(txn.GetId())
 
 		txnsDetails = append(txnsDetails, txnDetails)
-		for _, addrInTxn := range txnAddresses.Addresses() {
-			hm.txnForAddresses[addrInTxn.Address()] = append(hm.txnForAddresses[addrInTxn.Address()], txnDetails)
+		//for _, addrInTxn := range txnAddresses.Addresses() {
+		//	hm.txnForAddresses[addrInTxn.Address()] = append(hm.txnForAddresses[addrInTxn.Address()], txnDetails)
+		//}
+	}
+	//sort.Sort(ByDate(txnsDetails))
+
+	hm.newTxn = append(hm.newTxn, txnsDetails)
+	// If there is at least one new txn send a signal
+}
+
+func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
+	txnsForReturn := make([]*transactions.TransactionDetails, 0)
+	added := make(map[string]struct{}, 0)
+	for _, txns := range hm.txnForAddresses {
+		for _, txn := range txns {
+			if _, exist := hm.txnForAddresses[txn]; !exist {
+				txnsForReturn = append(txnsForReturn, txn)
+				added[txn.TransactionID()] = struct{}{}
+			}
 		}
 	}
-	sort.Sort(ByDate(txnsDetails))
-	return txnsDetails
+	return txnsForReturn
+}
+
+func (hm *HistoryManager) getTransansactionsWithFilters() []*transactions.TransactionDetails {
+	txnsForReturn := make([]*transactions.TransactionDetails, 0)
+	added := make(map[string]struct{}, 0)
+	for _, addr := range hm.filters {
+		for _, txn := range hm.txnForAddresses[addr] {
+			if _, exist := added[txn.TransactionID()]; !exist {
+				txnsForReturn = append(txnsForReturn, txn)
+				added[txn.TransactionID()] = struct{}{}
+			}
+		}
+	}
+	return txnsForReturn
+}
+
+func (hm *HistoryManager) getNewTransactions() []*transactions.TransactionDetails{
+	txnsForReturn := make([]*transactions.TransactionDetails, 0)
+	for _, txn := range hm.newTxn{
+		txnsForReturn = append(txnsForReturn, txn)
+		addrs := txn.Addresses()
+		for _, addr := range addrs.Addresses(){
+			hm.txnForAddresses[addr.Address()] = append(hm.txnForAddresses[addr.Address()], txn)
+		}
+	}
+	hm.newTxn = make([]*transactions.TransactionDetails, 0)
+	return txnsForReturn
+}
+
+func (hm *HistoryManager) getNewTransactionsWithFilters() []*transactions.TransactionDetails{
+	txnsForReturn := make([]*transactions.TransactionDetails, 0)
+	for _, txn := range hm.newTxn{
+		forReturn := false
+		addrs := txn.Addresses()
+		for _, addr := range addrs.Addresses(){
+			hm.txnForAddresses[addr] = append(hm.txnForAddresses[addr], txn)
+			for _, fAddr := hm.filters{
+				if fAddr == addr{
+					forReturn = true
+					break
+				}
+			}
+		}
+		if forReturn{
+			txnsForReturn = append(txnsForReturn, txn)
+		}
+	}
+	return txnsForReturn
 }
 func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
 	logHistoryManager.Info("Loading history with some filters")
