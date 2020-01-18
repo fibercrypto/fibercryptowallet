@@ -1587,3 +1587,20 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 	require.Equal(t, true, signed)
 
 }
+
+func TestWalletDirectoryGetStorage(t *testing.T) {
+	dir := "wallet-dir"
+	tests := []struct {
+		wlt  *WalletDirectory
+		want *SkycoinLocalWallet
+	}{
+		{wlt: &WalletDirectory{WalletDir: dir}, want: &SkycoinLocalWallet{walletDir: dir}},
+		{wlt: &WalletDirectory{wltService: new(SkycoinLocalWallet)}, want: new(SkycoinLocalWallet)},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("GetStorage_%d", i), func(t *testing.T) {
+			storage := tt.wlt.GetStorage()
+			require.Equal(t, tt.want, storage)
+		})
+	}
+}
