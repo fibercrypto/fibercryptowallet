@@ -19,7 +19,6 @@ type Filter struct {
 
 type TransactionList struct {
 	core.QAbstractListModel
-	historyManager *HistoryManager
 	filterSelected Filter
 
 	_ map[int]*core.QByteArray `property:"roles"`
@@ -56,28 +55,21 @@ func (hm *TransactionList) init() {
 	hm.ConnectClear(hm.clear)
 
 	go func() {
-		timer := time.NewTicker(time.Second * 2)
+		timer := time.NewTicker(time.Second * 5)
 		for {
 			<-timer.C
-			if hm.historyManager == nil {
+			if historyManager == nil {
 				continue
 			}
 			if hm.filterSelected.Activated {
-				hm.addMultipleTransactions(hm.historyManager.loadHistoryWithFilters())
+				hm.addMultipleTransactions(historyManager.loadHistoryWithFilters())
 			} else {
-				hm.addMultipleTransactions(hm.historyManager.loadHistory())
+				hm.addMultipleTransactions(historyManager.loadHistory())
 			}
 
 		}
 	}()
 
-}
-
-func (hm *TransactionList) RegisterHistoryManager(manager *HistoryManager) {
-	hm.historyManager = manager
-	hm.addMultipleTransactions(hm.historyManager.loadHistory())
-
-	logHistoryManager.Panic("Registered History Manager")
 }
 
 func (hm *TransactionList) rowCount(*core.QModelIndex) int {

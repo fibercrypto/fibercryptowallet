@@ -22,7 +22,10 @@ import (
 	qtCore "github.com/therecipe/qt/core"
 )
 
-var logHistoryManager = logging.MustGetLogger("modelsHistoryManager")
+var (
+	logHistoryManager = logging.MustGetLogger("modelsHistoryManager")
+	historyManager *HistoryManager
+)
 
 const (
 	dateTimeFormatForGo  = "2006-01-02T15:04:05"
@@ -62,8 +65,8 @@ func (hm *HistoryManager) init() {
 	uptimeTicker := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 2)
 	loadAddr := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 3)
 	hm.getAddressesWithWallets()
+	historyManager = hm
 	go hm.loadHistory()
-
 
 	go func() {
 		for {
@@ -75,22 +78,9 @@ func (hm *HistoryManager) init() {
 				logHistoryManager.Debug("Updating loaded Addresses")
 				go hm.getAddressesWithWallets()
 			}
-			go hm.getWalletIterators(true)
+			historyManager = hm
 		}
 	}()
-	go func() {
-		timer := time.NewTicker(5 * time.Second)
-		for {
-			<-timer.C
-		}
-	}()
-}
-
-func (hm *HistoryManager) getWalletIterators(force bool) core.WalletIterator {
-	if force || hm.walletsIterator == nil {
-		hm.walletsIterator = hm.walletEnv.GetWalletSet().ListWallets()
-	}
-	return hm.walletsIterator
 }
 
 type ByDate []*transactions.TransactionDetails
@@ -115,6 +105,7 @@ func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) [
 		val, ok := hm.txnForAddresses[addr]
 		if !ok {
 			addrs = append(addrs, addr)
+			continue
 		}
 		logHistoryManager.Debug("Getting txns from ", addr)
 		txnsDetails = append(txnsDetails, val...)
@@ -138,7 +129,7 @@ func (hm *HistoryManager) updateTxnOfAddresses(filterAddresses []string) []*tran
 	txnFind := make(map[string]struct{})
 	txns := make([]core.Transaction, 0)
 
-	wltIterator := hm.getWalletIterators(false)
+	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
 	if wltIterator == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
 		return make([]*transactions.TransactionDetails, 0)
@@ -462,7 +453,7 @@ func (hm *HistoryManager) removeFilter(addr string) {
 func (hm *HistoryManager) getAddressesWithWallets() {
 	logHistoryManager.Info("Get Addresses with wallets")
 	response := make(map[string]string, 0)
-	it := hm.getWalletIterators(false)
+	it := hm.walletEnv.GetWalletSet().ListWallets()
 	if it == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't load addresses")
 		return
