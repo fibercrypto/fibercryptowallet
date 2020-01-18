@@ -61,7 +61,7 @@ func RegisterConfig() error {
 	}
 	logLevelOpt := local.NewOption(SettingPathToLog, []string{}, false, string(levelBytes))
 
-	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt}) //, logLevelOpt})
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt})
 	return nil
 }
 

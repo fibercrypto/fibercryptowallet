@@ -22,7 +22,7 @@ Page {
     readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
-    readonly property string defaultLogLevel: configManager.getDefaultValue("skycoin/node/level")
+    readonly property string defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
 
     // These are the saved settings, must be applied when the settings are opened or when
@@ -31,7 +31,7 @@ Page {
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
-    property string savedLogLevel: configManager.getValue("skycoin/node/level")
+    property string savedLogLevel: configManager.getValue("skycoin/log/level")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
     // QtObject{
@@ -56,7 +56,7 @@ Page {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
-        configManager.setValue("skycoin/node/level", logLevel)
+        configManager.setValue("skycoin/log/level", logLevel)
         loadSavedSettings()
     }
 
@@ -65,7 +65,7 @@ Page {
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
-        logLevel = savedLogLevel = configManager.getValue("skycoin/node/level")
+        logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
 
         updateFooterButtonsStatus()
     }
