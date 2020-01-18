@@ -1651,6 +1651,31 @@ func TestSkycoinLocalWalletListWallets(t *testing.T) {
 	}
 }
 
+func TestSkycoinLocalIsEncrypted(t *testing.T) {
+	slw := &SkycoinLocalWallet{walletDir: "testdata"}
+	tests := []struct {
+		srv   *SkycoinLocalWallet
+		name  string
+		valid bool
+		want  bool
+	}{
+		{srv: slw, valid: true, want: false, name: "test.wlt"},
+		{srv: slw, valid: true, want: true, name: "encrypted.wlt"},
+		{srv: slw, valid: false, want: false, name: "unknown.wlt"},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("Wallet%d -> %s", i, tt.name), func(t *testing.T) {
+			encrypted, err := tt.srv.IsEncrypted(tt.name)
+			require.Equal(t, tt.want, encrypted)
+			if tt.valid {
+				require.Nil(t, err)
+			} else {
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
+
 func TestSkycoinLocalWalletEncrypt(t *testing.T) {
 	slw := &SkycoinLocalWallet{walletDir: "testdata"}
 	pwd := func(s string, store core.KeyValueStore) (string, error) {
