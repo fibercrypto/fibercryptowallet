@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -76,4 +77,15 @@ func SetOutputTo(w io.Writer) {
 // Disable disables the logger completely
 func Disable() {
 	log.Out = ioutil.Discard
+}
+
+// SetOutputToFile sets the logger's outputs to a file with path <dir>
+func SetOutputToFile(dir string) {
+	f, err := os.OpenFile(dir, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.WithError(err).Error("Error opening file: ", dir)
+	}
+	defer f.Close()
+
+	SetOutputTo(f)
 }
