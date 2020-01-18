@@ -104,6 +104,7 @@ func (m *ModelWallets) loadModel() {
 	m.BeginResetModel()
 	logWalletModel.Info("Loading Model")
 	m.SetLoading(true)
+	fullyLoad := true
 	aModels := make([]*ModelAddresses, 0)
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
@@ -127,6 +128,7 @@ func (m *ModelWallets) loadModel() {
 			outputs := a.GetCryptoAccount().ScanUnspentOutputs()
 			if outputs == nil {
 				logWalletModel.WithField("address", a.String()).Warn("Couldn't get unspent outputs")
+				fullyLoad = false
 				continue
 			}
 			mo := NewModelOutputs(nil)
@@ -140,11 +142,13 @@ func (m *ModelWallets) loadModel() {
 				val, err := to.GetCoins(coin.Sky)
 				if err != nil {
 					logWalletModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+					fullyLoad = false
 					continue
 				}
 				accuracy, err := util.AltcoinQuotient(coin.Sky)
 				if err != nil {
 					logWalletModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+					fullyLoad = false
 					continue
 				}
 				coins := util.FormatCoins(val, accuracy)
@@ -152,11 +156,13 @@ func (m *ModelWallets) loadModel() {
 				val, err = to.GetCoins(coin.CoinHoursTicker)
 				if err != nil {
 					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
+					fullyLoad = false
 					continue
 				}
 				accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
 				if err != nil {
 					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+					fullyLoad = false
 					continue
 				}
 				coinsH := util.FormatCoins(val, accuracy)
@@ -173,7 +179,9 @@ func (m *ModelWallets) loadModel() {
 	}
 	logWalletModel.Info("Model loaded")
 	m.addAddresses(aModels)
-	m.SetLoading(false)
+	if fullyLoad {
+		m.SetLoading(false)
+	}
 	m.EndResetModel()
 }
 
