@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -1601,6 +1602,50 @@ func TestWalletDirectoryGetStorage(t *testing.T) {
 		t.Run(fmt.Sprintf("GetStorage_%d", i), func(t *testing.T) {
 			storage := tt.wlt.GetStorage()
 			require.Equal(t, tt.want, storage)
+		})
+	}
+}
+
+func TestSkycoinLocalWalletListWallets(t *testing.T) {
+	tests := []struct {
+		dir   string
+		valid bool
+		want  []string
+	}{
+		{
+			dir:   "testdata",
+			valid: true,
+			want:  []string{"testWallet"},
+		},
+		{
+			dir:   "no-dir",
+			valid: false,
+			want:  make([]string, 0),
+		},
+		{
+			dir:   "testdata/invalid/wallets",
+			valid: false,
+			want:  make([]string, 0),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("ListWalletsOn -> %s", tt.dir), func(t *testing.T) {
+			slw := &SkycoinLocalWallet{walletDir: tt.dir}
+			it := slw.ListWallets()
+			labels := make([]string, 0)
+			if tt.valid {
+				require.NotNil(t, it)
+				for it.Next() {
+					wlt := it.Value()
+					labels = append(labels, wlt.GetLabel())
+				}
+			} else {
+				require.Nil(t, it)
+			}
+			sort.Strings(labels)
+			sort.Strings(tt.want)
+			require.Equal(t, tt.want, labels)
 		})
 	}
 }
