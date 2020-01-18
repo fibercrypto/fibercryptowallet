@@ -271,11 +271,26 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:b7cda6bf367836ce3675325f6f7aec675af1ff2fde841524800f499a1acf0ee2"
+  name = "github.com/therecipe/qt"
+  packages = [
+    "core",
+    "gui",
+    "internal/binding/runtime",
+    "network",
+    "qml",
+    "widgets",
+  ]
+  pruneopts = "UT"
+  revision = "2b818d970888dab6bbf6aa2702bc28c1e6fbdb83"
+
+[[projects]]
+  branch = "master"
+  digest = "1:3f4267ef48c80f89cfd1e5b7f104c184a646e51e0b51a030d62184c830da5c4d"
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
     "blowfish",
+    "pbkdf2",
     "ssh/terminal",
   ]
   pruneopts = "UT"
@@ -303,31 +318,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = [
-    "github.com/SkycoinProject/skycoin/src/api",
-    "github.com/SkycoinProject/skycoin/src/cipher",
-    "github.com/SkycoinProject/skycoin/src/cipher/base58",
-    "github.com/SkycoinProject/skycoin/src/cipher/bip39",
-    "github.com/SkycoinProject/skycoin/src/cipher/pbkdf2",
-    "github.com/SkycoinProject/skycoin/src/cipher/testsuite",
-    "github.com/SkycoinProject/skycoin/src/cli",
-    "github.com/SkycoinProject/skycoin/src/coin",
-    "github.com/SkycoinProject/skycoin/src/params",
-    "github.com/SkycoinProject/skycoin/src/readable",
-    "github.com/SkycoinProject/skycoin/src/testutil",
-    "github.com/SkycoinProject/skycoin/src/util/droplet",
-    "github.com/SkycoinProject/skycoin/src/util/file",
-    "github.com/SkycoinProject/skycoin/src/util/logging",
-    "github.com/SkycoinProject/skycoin/src/visor",
-    "github.com/SkycoinProject/skycoin/src/wallet",
-    "github.com/boltdb/bolt",
-    "github.com/mgutz/ansi",
-    "github.com/sirupsen/logrus",
-    "github.com/stretchr/testify/assert",
-    "github.com/stretchr/testify/mock",
-    "github.com/stretchr/testify/require",
-    "golang.org/x/crypto/bcrypt",
-    "golang.org/x/crypto/ssh/terminal",
-  ]
+  inputs-digest = "33a754eab205b8b232c2e9e4f7936fdc65be1e5f08384feaf417e8bd4b663e14"
   solver-name = "gps-cdcl"
   solver-version = 1
