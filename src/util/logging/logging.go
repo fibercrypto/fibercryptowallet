@@ -5,6 +5,7 @@ package logging
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -79,13 +80,25 @@ func Disable() {
 	log.Out = ioutil.Discard
 }
 
-// SetOutputToFile sets the logger's outputs to a file with path <dir>
-func SetOutputToFile(dir string) {
-	f, err := os.OpenFile(dir, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
-	if err != nil {
-		log.WithError(err).Error("Error opening file: ", dir)
+// SetOutput call correct function given a option to set logger's output
+func SetOutput(opt string) error {
+	if opt == "stdout" {
+		SetOutputTo(os.Stderr)
+		return nil
+	} else {
+		return SetOutputToFile(opt)
 	}
-	defer f.Close()
+}
+
+// SetOutputToFile sets the logger's outputs to a file with path <dir>
+func SetOutputToFile(dir string) error {
+	f, err := os.OpenFile(dir+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		return err
+	}
+	fmt.Fprintln(f)
+	//defer f.Close()
 
 	SetOutputTo(f)
+	return nil
 }
