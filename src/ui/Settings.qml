@@ -23,6 +23,7 @@ Page {
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
     readonly property string defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
+    readonly property string defaultLogOutput: configManager.getDefaultValue("skycoin/log/output")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
 
     // These are the saved settings, must be applied when the settings are opened or when
@@ -32,6 +33,7 @@ Page {
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
     property string savedLogLevel: configManager.getValue("skycoin/log/level")
+    property string savedLogOutput: configManager.getValue("skycoin/log/output")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
     // QtObject{
@@ -47,6 +49,7 @@ Page {
     property alias nodeUrl: textFieldNodeUrl.text
     property alias cacheLifeTime: textFieldCacheLifeTime.text
     property alias logLevel: textFieldLogLevel.text
+    property alias logOutput: textFieldLogOutput.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -57,6 +60,7 @@ Page {
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
         configManager.setValue("skycoin/log/level", logLevel)
+        configManager.setValue("skycoin/log/output", logOutput)
         loadSavedSettings()
     }
 
@@ -66,6 +70,7 @@ Page {
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
         logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
+        logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
 
         updateFooterButtonsStatus()
     }
@@ -76,13 +81,14 @@ Page {
         nodeUrl = defaultNodeUrl
         cacheLifeTime = defaultCacheLifeTime
         logLevel = defaultLogLevel
+        logOutput = defaultLogOutput
 
         saveCurrentSettings()
     }
 
     function updateFooterButtonsStatus() {
-        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime || logLevel != savedLogLevel)
-        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime || defaultCacheLifeTime || logLevel !== defaultLogLevel)
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime || logLevel != savedLogLevel || logOutput != savedLogOutput)
+        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime || defaultCacheLifeTime || logLevel !== defaultLogLevel || logOutput != defaultLogOutput)
         footer.standardButton(Dialog.Apply).enabled = configChanged
         footer.standardButton(Dialog.Discard).enabled = configChanged
         footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
@@ -318,8 +324,28 @@ Page {
                     }
                 }
             }
-        // RowLayout {
         }
+
+        GroupBox{
+            Layout.fillWidth: true
+            title: qsTr("Log output")
+
+            RowLayout{
+
+                anchors.fill: parent
+                TextField {
+                    id: textFieldLogOutput
+
+                    selectByMouse: true
+
+                    placeholderText: qsTr("Log output")
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
+            }
+        }
+        // RowLayout {
         //     Layout.fillWidth: true
             
         //         text: qsTr("Log level")
