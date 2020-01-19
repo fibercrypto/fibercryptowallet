@@ -1969,3 +1969,12 @@ func TestSeedServiceVerifyMnemonic(t *testing.T) {
 		})
 	}
 }
+
+func TestErrorTickerInvalidError(t *testing.T) {
+	format := " is an invalid ticker. Use " + Sky + " or " + CoinHour
+	tickers := []string{"a", "b", "c"}
+	for _, ticker := range tickers {
+		err := errorTickerInvalid{ticker}
+		require.Equal(t, ticker+format, err.Error())
+	}
+}
