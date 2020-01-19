@@ -1917,3 +1917,55 @@ func TestWalletNodeGetStorage(t *testing.T) {
 		})
 	}
 }
+
+func TestSeedServiceGenerateMnemonic(t *testing.T) {
+	srv := new(SeedService)
+	tests := []struct {
+		name  string
+		bits  int
+		valid bool
+	}{
+		{name: "bad-entropyBits", bits: 15, valid: false},
+		{name: "128-bits", bits: 128, valid: true},
+		{name: "256-bits", bits: 256, valid: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := srv.GenerateMnemonic(tt.bits)
+			if tt.valid {
+				require.Nil(t, err)
+			} else {
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestSeedServiceVerifyMnemonic(t *testing.T) {
+	srv := new(SeedService)
+	mnc128, _ := srv.GenerateMnemonic(128)
+	mnc256, _ := srv.GenerateMnemonic(256)
+	tests := []struct {
+		name     string
+		mnemonic string
+		valid    bool
+	}{
+		{name: "bad-mnemonic", mnemonic: "invalid-mnemonic", valid: false},
+		{name: "128-bits", mnemonic: mnc128, valid: true},
+		{name: "256-bits", mnemonic: mnc256, valid: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := srv.VerifyMnemonic(tt.mnemonic)
+			if tt.valid {
+				require.True(t, valid)
+				require.Nil(t, err)
+			} else {
+				require.False(t, valid)
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
