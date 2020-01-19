@@ -1883,3 +1883,37 @@ func TestLocalWalletFunctions(t *testing.T) {
 	require.Equal(t, core.UID(SignerIDLocalWallet), wlt.GetSignerUID())
 	require.Equal(t, "Remote Skycoin wallet "+id, wlt.GetSignerDescription())
 }
+
+func TestWalletNodeGetWalletSet(t *testing.T) {
+	sectionName := "custom-section"
+	tests := []struct {
+		wlt  *WalletNode
+		want core.WalletSet
+	}{
+		{wlt: new(WalletNode), want: new(SkycoinRemoteWallet)},
+		{wlt: &WalletNode{poolSection: sectionName}, want: &SkycoinRemoteWallet{poolSection: sectionName}},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("GetWalletSet%d", i), func(t *testing.T) {
+			require.Equal(t, tt.want, tt.wlt.GetWalletSet())
+		})
+	}
+}
+
+func TestWalletNodeGetStorage(t *testing.T) {
+	sectionName := "custom-section"
+	tests := []struct {
+		wlt  *WalletNode
+		want core.WalletSet
+	}{
+		{wlt: new(WalletNode), want: new(SkycoinRemoteWallet)},
+		{wlt: &WalletNode{poolSection: sectionName}, want: &SkycoinRemoteWallet{poolSection: sectionName}},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("GetWalletSet%d", i), func(t *testing.T) {
+			require.Equal(t, tt.want, tt.wlt.GetStorage())
+		})
+	}
+}
