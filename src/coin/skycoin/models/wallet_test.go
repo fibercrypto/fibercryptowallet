@@ -1744,3 +1744,28 @@ func TestSkycoinLocalWalletDecrypt(t *testing.T) {
 		})
 	}
 }
+
+func TestLocalWalletSetLabel(t *testing.T) {
+	newLabel := "custom-label"
+	tests := []struct {
+		name  string
+		label string
+		valid bool
+	}{
+		{label: "testWallet", name: "test.wlt", valid: true},
+		{label: "encryptedWallet", name: "encrypted.wlt", valid: true},
+		{name: "unknown.wlt", valid: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("CangeLabelOf -> %s", tt.name), func(t *testing.T) {
+			lw := &LocalWallet{WalletDir: "testdata", Id: tt.name}
+			lw.SetLabel(newLabel)
+			if tt.valid {
+				label := lw.GetLabel()
+				lw.SetLabel(tt.label)
+				require.Equal(t, newLabel, label)
+			}
+		})
+	}
+}
