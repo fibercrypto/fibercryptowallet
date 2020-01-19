@@ -21,22 +21,6 @@ func init() {
 		logSkycoin.Warn("Couldn't register Skycoin configuration")
 	}
 
-	// logStr, err := config.GetOption(config.SettingPathToNode)
-	// if err != nil {
-	// 	logSkycoin.Warn("Couldn't get log options")
-	// 	logSkycoin.WithError(err).Error("AA")
-	// }
-	// log := make(map[string]string)
-	// err = json.Unmarshal([]byte(logStr), &log)
-	// if err != nil {
-	// 	logSkycoin.Warn("Couldn't unmarshal from options")
-	// }
-	// level, err := logging.LevelFromString(log["level"])
-	// if err != nil {
-	// 	logSkycoin.Warn("Couldn't get level from logging " + log["level"])
-	// }
-	// logging.SetLevel(level)
-
 	logSettingStr, err := config.GetOption(config.SettingPathToLog)
 	if err != nil {
 		logSkycoin.Warn("Couldn't get log options")
@@ -52,6 +36,10 @@ func init() {
 		logSkycoin.WithError(err).WithField("string", logSetting["level"]).Error()
 	}
 	logging.SetLevel(level)
+	err = logging.SetOutput(logSetting["output"])
+	if err != nil {
+		logSkycoin.WithError(err).Error("Error opening file: ", logSetting["output"])
+	}
 
 	nodeSettingStr, err := config.GetOption(config.SettingPathToNode)
 	if err != nil {
