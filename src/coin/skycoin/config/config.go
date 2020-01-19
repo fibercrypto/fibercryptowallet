@@ -61,7 +61,14 @@ func RegisterConfig() error {
 	}
 	logLevelOpt := local.NewOption(SettingPathToLog, []string{}, false, string(levelBytes))
 
-	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt})
+	output := map[string]string{"output": "stdout"}
+	outputBytes, err := json.Marshal(output)
+	if err != nil {
+		return err
+	}
+	logOutputOpt := local.NewOption(SettingPathToLog, []string{}, false, string(outputBytes))
+
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt, logOutputOpt})
 	return nil
 }
 
