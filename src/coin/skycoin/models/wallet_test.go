@@ -1877,11 +1877,15 @@ func TestWalletsReadyForTxn(t *testing.T) {
 	}
 }
 
-func TestLocalWalletFunctions(t *testing.T) {
+func TestWalletFunctions(t *testing.T) {
 	id := "local-id"
 	wlt := &LocalWallet{Id: id}
 	require.Equal(t, core.UID(SignerIDLocalWallet), wlt.GetSignerUID())
 	require.Equal(t, "Remote Skycoin wallet "+id, wlt.GetSignerDescription())
+
+	rmt := &RemoteWallet{Id: id}
+	require.Equal(t, core.UID(SignerIDRemoteWallet), rmt.GetSignerUID())
+	require.Equal(t, "Remote Skycoin wallet "+id, rmt.GetSignerDescription())
 }
 
 func TestWalletNodeGetWalletSet(t *testing.T) {
