@@ -13,6 +13,7 @@ import (
 
 	"github.com/SkycoinProject/skycoin/src/visor"
 
+	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
@@ -24,6 +25,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/SkycoinProject/skycoin/src/wallet"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -1694,6 +1696,7 @@ func TestSkycoinLocalWalletEncrypt(t *testing.T) {
 		{srv: slw, pwd: pwd, valid: true, name: "encrypted.wlt"},
 		{srv: slw, pwd: pwd, valid: false, name: "unknown.wlt"},
 		{srv: slw, pwd: emptyPwd, valid: false, name: "test.wlt"},
+		{srv: slw, pwd: emptyPwd, valid: true, name: "encrypted.wlt"},
 	}
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("Wallet%d -> %s", i, tt.name), func(t *testing.T) {
@@ -1765,6 +1768,110 @@ func TestLocalWalletSetLabel(t *testing.T) {
 				label := lw.GetLabel()
 				lw.SetLabel(tt.label)
 				require.Equal(t, newLabel, label)
+			}
+		})
+	}
+}
+
+func TestWalletsReadyForTxn(t *testing.T) {
+	type WalleSigner struct {
+		mocks.Wallet
+		mocks.TxnSigner
+	}
+	emptyWlt := new(LocalWallet)
+	mockWlt := new(WalleSigner)
+	mockWlt.TxnSigner.On(
+		"ReadyForTxn",
+		mock.AnythingOfType("*skycoin.LocalWallet"),
+		mock.AnythingOfType("*mocks.Transaction"),
+	).Return(
+		func(w core.Wallet, txn core.Transaction) bool {
+			ok, _ := checkTxnSupported(mockWlt, w, txn)
+			return ok
+		},
+		nil,
+	)
+
+	tests := []struct {
+		signer core.TxnSigner
+		wlt2   core.Wallet
+		txn    core.Transaction
+		valid  bool
+		want   bool
+	}{
+		{
+			valid:  true,
+			want:   false,
+			signer: mockWlt,
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: new(LocalWallet),
+			wlt2:   mockWlt,
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: &LocalWallet{Type: "custom-type"},
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  false,
+			want:   false,
+			signer: new(LocalWallet),
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: emptyWlt,
+			wlt2:   emptyWlt,
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  false,
+			want:   false,
+			signer: &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   true,
+			signer: &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			wlt2:   &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			txn:    new(SkycoinTransaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			wlt2:   &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			txn:    new(mocks.Transaction),
+		},
+		//RemoteWallet
+		{
+			valid:  false,
+			want:   false,
+			signer: new(RemoteWallet),
+			wlt2:   new(RemoteWallet),
+			txn:    new(mocks.Transaction),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run("ReadyForTxn", func(t *testing.T) {
+			ready, err := tt.signer.ReadyForTxn(tt.wlt2, tt.txn)
+			if tt.valid {
+				require.Equal(t, tt.want, ready)
+			} else {
+				require.NotNil(t, err)
 			}
 		})
 	}
