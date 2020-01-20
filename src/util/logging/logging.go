@@ -102,3 +102,12 @@ func SetOutputToFile(dir string) error {
 	SetOutputTo(f)
 	return nil
 }
+
+// NoWriter is a writer that write nothing, useful when no writing or output is desired.
+type NoWriter struct {
+	io.Writer
+}
+
+func (NoWriter) Write(p []byte) (n int, err error) {
+	return 0, nil
+}
