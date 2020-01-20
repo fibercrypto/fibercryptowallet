@@ -2,10 +2,11 @@ package util
 
 import (
 	"errors"
+	"strconv"
+
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"strconv"
 )
 
 var logUtil = logging.MustGetLogger("FiberCrypto util")

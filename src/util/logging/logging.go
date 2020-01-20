@@ -82,10 +82,17 @@ func Disable() {
 
 // SetOutput call correct function given a option to set logger's output
 func SetOutput(opt string) error {
-	if opt == "stdout" {
+	switch opt {
+	case "stdout":
 		SetOutputTo(os.Stderr)
 		return nil
-	} else {
+	case "stderr":
+		SetOutputTo(os.Stderr)
+		return nil
+	case "none":
+		SetOutputTo(NoWriter{})
+		return nil
+	default:
 		return SetOutputToFile(opt)
 	}
 }
