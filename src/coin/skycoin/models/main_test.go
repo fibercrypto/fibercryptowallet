@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"fmt"
 	"os"
 	"sort"
 	"testing"
@@ -13,6 +14,8 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	util "github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/fibercrypto/fibercryptowallet/src/params"
 )
 
 var global_mock *SkycoinApiMock
@@ -111,4 +114,33 @@ func TestSkyFiberPluginRegisterTo(t *testing.T) {
 	)
 	plugin.RegisterTo(manager)
 	require.Equal(t, 0, len(altcoins))
+}
+
+func TestSkyFiberPluginNetOperations(t *testing.T) {
+	plugin := NewSkyFiberPlugin(SkycoinMainNetParams)
+	net, invalidNet := "MainNet", "custom-net%s"
+
+	for i := 10; i < 20; i++ {
+		name := fmt.Sprintf(invalidNet, i)
+		t.Run(name, func(t *testing.T) {
+			pex, err := plugin.LoadPEX(name)
+			require.Nil(t, pex)
+			require.NotNil(t, err)
+
+			api, err1 := plugin.LoadTransactionAPI(name)
+			require.Nil(t, api)
+			require.NotNil(t, err1)
+		})
+	}
+	t.Run(net, func(t *testing.T) {
+		pex, err := plugin.LoadPEX(net)
+		require.Nil(t, err)
+		spex := pex.(*SkycoinPEX)
+		require.Equal(t, PoolSection, spex.poolSection)
+
+		api, err1 := plugin.LoadTransactionAPI(net)
+		require.Nil(t, err1)
+		sAPI := api.(*SkycoinBlockchain)
+		require.Equal(t, uint64(params.DataRefreshTimeout), sAPI.CacheTime)
+	})
 }
