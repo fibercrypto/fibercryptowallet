@@ -61,7 +61,7 @@ func RegisterConfig() error {
 	}
 	logLevelOpt := local.NewOption(SettingPathToLog, []string{}, false, string(levelBytes))
 
-	output := map[string]string{"output": "stdout"}
+	output := map[string]string{"output": "none"}
 	outputBytes, err := json.Marshal(output)
 	if err != nil {
 		return err
