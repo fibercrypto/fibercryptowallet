@@ -6,9 +6,9 @@ import (
 
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 
-	"github.com/therecipe/qt/qml"
-
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/qml"
 )
 
 type ConfigManager struct {
@@ -129,24 +129,39 @@ func (cs *ConfigSection) getOption(name string, path []string) *KeyValueStorage 
 func (cs *ConfigSection) saveOptionValue(opt string, path []string, name string, value string) {
 	optV := cs.getOption(opt, path)
 	if optV == nil {
-		//log error
+		//TODO: log error
 		return
 	}
 
 	optV.setValue(name, value)
 	data, err := json.Marshal(optV.keyValues)
 	if err != nil {
-		//log error
+		//TODO: log error
 		return
 	}
 	cs.sm.Save(opt, path, string(data))
 
+	if opt == "log" {
+		if name == "level" {
+			level, err := logging.LevelFromString(value)
+			if err != nil {
+				//TODO: log error
+			} else {
+				logging.SetLevel(level)
+			}
+		} else if name == "output" {
+			err = logging.SetOutput(value)
+			if err != nil {
+				//TODO: log error
+			}
+		}
+	}
 }
 
 func (cs *ConfigSection) getValue(opt string, path []string, name string) string {
 	optV := cs.getOption(opt, path)
 	if optV == nil {
-		//log error
+		//TODO: log error
 		return ""
 	}
 	return optV.getValue(name)

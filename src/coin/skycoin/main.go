@@ -34,8 +34,9 @@ func init() {
 	if err != nil {
 		logSkycoin.Warn("Couldn't get level from logging")
 		logSkycoin.WithError(err).WithField("string", logSetting["level"]).Error()
+	} else {
+		logging.SetLevel(level)
 	}
-	logging.SetLevel(level)
 	err = logging.SetOutput(logSetting["output"])
 	if err != nil {
 		logSkycoin.WithError(err).Error("Error opening file: ", logSetting["output"])
