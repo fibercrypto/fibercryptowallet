@@ -89,3 +89,4 @@ darwin
 # Auto-generates go files.
 
 *.pb.go
+*.log
