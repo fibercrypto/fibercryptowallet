@@ -60,27 +60,51 @@ type QWallet struct {
 }
 
 func createSkyHardwareWallet(bridgeForPassword *QBridge) {
+	requestKind2Prompt := func(kind skyWallet.InputRequestKind, bridge *QBridge) (func(string, string), error) {
+		switch kind {
+		case skyWallet.RequestKindPinMatrix:
+			return bridge.GetSkyHardwareWalletPin, nil
+		case skyWallet.RequestInformUserOkAndCancel:
+			return bridge.DeviceRequireConfirmableAction, nil
+		case skyWallet.RequestInformUserOnlyCancel:
+			return bridge.DeviceRequireCancelableAction, nil
+		case skyWallet.RequestInformUserOnlyOk:
+			return bridge.DeviceRequireAction, nil
+		default:
+			errStr := "invalid request kind"
+			logWalletsModel.WithField("kind", kind).Errorln(errStr)
+			return nil, errors.New(errStr)
+		}
+	}
 	hardware.SkyWltCreateDeviceInstanceOnce(
-		skyWallet.DeviceTypeUSB,
+		skyWallet.DeviceTypeEmulator,
 		func(kind skyWallet.InputRequestKind, tittle, message string)(string, error) {
+			prompt, err := requestKind2Prompt(kind, bridgeForPassword)
+			if err != nil {
+				return "", err
+			}
+			bridgeForPassword.BeginUse()
+			defer bridgeForPassword.EndUse()
 			switch kind {
 			case skyWallet.RequestKindPinMatrix:
-				bridgeForPassword.BeginUse()
-				defer bridgeForPassword.EndUse()
 				bridgeForPassword.lock()
-				bridgeForPassword.GetSkyHardwareWalletPin(tittle, message)
+				prompt(tittle, message)
 				bridgeForPassword.lock()
-				pass := bridgeForPassword.getResult()
+				pass, err := bridgeForPassword.getOptionalResult()
 				bridgeForPassword.unlock()
+				if err != nil {
+					logWalletsModel.WithError(err).Errorln("error handling user interaction")
+					return "", skyWallet.ErrUserCancelledFromInputReader
+				}
 				return pass, nil
-			case skyWallet.RequestJustInformingUser:
-				bridgeForPassword.DeviceRequireAction(tittle, message)
+			case skyWallet.RequestInformUserOkAndCancel, skyWallet.RequestInformUserOnlyCancel, skyWallet.RequestInformUserOnlyOk:
+				prompt(tittle, message)
+				return "", nil
 			default:
 				errStr := "invalid request kind"
 				logWalletsModel.WithField("kind", kind).Errorln(errStr)
 				return "", errors.New(errStr)
 			}
-			return "", nil
 		},
 	)
 }
