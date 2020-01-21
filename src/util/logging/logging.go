@@ -82,7 +82,7 @@ func Disable() {
 
 // GetFileToLog get a file with path <dir> for the logger's output
 func GetFileToLog(dir string) (io.Writer, error) {
-	f, err := os.OpenFile(dir+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile(dir+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		return nil, err
 	}
