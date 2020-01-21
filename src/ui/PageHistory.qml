@@ -25,12 +25,15 @@ Page {
                 text: qsTr("Filters")
                 onClicked:{
                     if (!checked) {
+                        console.log("LOADING TXNS")
+                        //historyManager.update()
                         modelTransactions.clear()
-                        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
+                        console.log(historyManager.getTransactions())
+                        modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
                     }
                     else {
                         modelTransactions.clear()
-                        modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+                        modelTransactions.addMultipleTransactions(historyManager.getTransactionsWithFilters())
                     }
                 }
             }
@@ -79,7 +82,7 @@ Page {
 
         onClosed: {
             modelTransactions.clear()
-            modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+            modelTransactions.addMultipleTransactions(historyManager.getTransactions())
         }
         
         HistoryFilterList {
@@ -125,9 +128,21 @@ Page {
         Component.onCompleted: {
             console.log("history manager completed")
         }
+        onNewTransactions: {
+            console.log("THERE ARE NEW TRANSACTIONS")
+            if (!switchFilters.checked) {
+                modelTransactions.clear()
+                modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
+            }
+            else {
+                modelTransactions.clear()
+                modelTransactions.addMultipleTransactions(historyManager.getTNewTransactionsWithFilters())
+            }
+        }
     }
 
     Component.onCompleted: {
+        modelTransactions.addMultipleTransactions(historyManager.getTransactions())
         console.log("COJONEEEEEEEE")
     }
 }

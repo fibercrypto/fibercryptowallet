@@ -3,7 +3,6 @@ package history
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/models/transactions"
 	"github.com/therecipe/qt/core"
-	"time"
 )
 
 func init() {
@@ -54,21 +53,21 @@ func (hm *TransactionList) init() {
 	hm.ConnectAddMultipleTransactions(hm.addMultipleTransactions)
 	hm.ConnectClear(hm.clear)
 
-	go func() {
-		timer := time.NewTicker(time.Second * 5)
-		for {
-			<-timer.C
-			if historyManager == nil {
-				continue
-			}
-			if hm.filterSelected.Activated {
-				hm.addMultipleTransactions(historyManager.loadHistoryWithFilters())
-			} else {
-				hm.addMultipleTransactions(historyManager.loadHistory())
-			}
+	// go func() {
+	// 	timer := time.NewTicker(time.Second * 5)
+	// 	for {
+	// 		<-timer.C
+	// 		if historyManager == nil {
+	// 			continue
+	// 		}
+	// 		if hm.filterSelected.Activated {
+	// 			hm.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+	// 		} else {
+	// 			hm.addMultipleTransactions(historyManager.loadHistory())
+	// 		}
 
-		}
-	}()
+	// 	}
+	// }()
 
 }
 
