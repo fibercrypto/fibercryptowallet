@@ -154,3 +154,50 @@ func TestSkyFiberPluginNetOperations(t *testing.T) {
 		require.Equal(t, uint64(params.DataRefreshTimeout), sAPI.CacheTime)
 	})
 }
+
+func TestSkyFiberPluginAddressFromString(t *testing.T) {
+	tests := []struct {
+		name    string
+		args    string
+		wantErr bool
+	}{
+		{
+			name:    "address1",
+			args:    "R6aHqKWSQfvpdo2fGSrq4F1RYXkBWR9HHJ",
+			wantErr: false,
+		},
+		{
+			name:    "address2",
+			args:    "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt",
+			wantErr: false,
+		},
+		{
+			name:    "empty",
+			args:    "",
+			wantErr: true,
+		},
+		{
+			name:    "invalid character",
+			args:    "701d23fd513bad325938ba56869f9faba19384a8ec3dd41833aff147eac53947",
+			wantErr: true,
+		},
+		{
+			name:    "invalid checksum",
+			args:    "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKk",
+			wantErr: true,
+		},
+	}
+
+	plugin := NewSkyFiberPlugin(SkycoinMainNetParams)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			addr, err := plugin.AddressFromString(tt.args)
+			if tt.wantErr {
+				require.NotNil(t, err)
+			} else {
+				require.Nil(t, err)
+				require.IsType(t, new(SkycoinAddress), addr)
+			}
+		})
+	}
+}
