@@ -7,6 +7,7 @@ import (
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	skylog "github.com/SkycoinProject/skycoin/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 )
@@ -150,9 +151,12 @@ func (cs *ConfigSection) saveOptionValue(opt string, path []string, name string,
 				logging.SetLevel(level)
 			}
 		} else if name == "output" {
-			err = logging.SetOutput(value)
+			writer, err := logging.GetOutputWriter(value)
 			if err != nil {
 				//TODO: log error
+			} else {
+				logging.SetOutputTo(writer)
+				skylog.SetOutputTo(writer)
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package skycoin //nolint goimports
 import (
 	"encoding/json"
 
+	skylog "github.com/SkycoinProject/skycoin/src/util/logging"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	sky "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
@@ -37,9 +38,12 @@ func init() {
 	} else {
 		logging.SetLevel(level)
 	}
-	err = logging.SetOutput(logSetting["output"])
+	writer, err := logging.GetOutputWriter(logSetting["output"])
 	if err != nil {
 		logSkycoin.WithError(err).Error("Error opening file: ", logSetting["output"])
+	} else {
+		logging.SetOutputTo(writer)
+		skylog.SetOutputTo(writer)
 	}
 
 	nodeSettingStr, err := config.GetOption(config.SettingPathToNode)
