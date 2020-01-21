@@ -18,6 +18,7 @@ type DeviceInteraction interface {
 	Recovery(wordCount uint32, usePassphrase *bool, dryRun bool) *promise.Promise
 	// FIXME: change inputs and outputs to the generic types:
 	// core.TransactionInputIterator and core.TransactionOutputIterator respectively
+	Cancel() *promise.Promise
 	TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput, walletType string) *promise.Promise
 	SignMessage(addressN, addressIndex int, message string, walletType string) *promise.Promise
 	Wipe() *promise.Promise

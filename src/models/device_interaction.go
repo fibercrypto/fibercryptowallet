@@ -14,6 +14,7 @@ type QDeviceInteraction struct {
 	_ func()                    `slot:"backupDevice"`
 	_ func()                    `slot:"changePin"`
 	_ func()                    `slot:"deviceFeatures"`
+	_ func()                    `slot:"cancelCommand"`
 	_ func(hasPin bool)         `signal:"hasPinDetermined"`
 	_ func(name string)         `signal:"nameDetermined"`
 	_ func(needsBackup bool)    `signal:"needsBackupDetermined"`
@@ -27,6 +28,7 @@ func (devI *QDeviceInteraction) init() {
 	devI.ConnectChangePin(devI.changePin)
 	devI.ConnectDeviceFeatures(devI.deviceFeatures)
 	devI.ConnectBackupDevice(devI.backupDevice)
+	devI.ConnectCancelCommand(devI.cancelCommand)
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
@@ -63,6 +65,17 @@ func (devI *QDeviceInteraction) changePin() {
 	}).Catch(func(err error) error {
 		logWalletsModel.WithError(err).Errorln("unable to change pin")
 		devI.OperationDone()
+		return err
+	})
+}
+
+func (devI* QDeviceInteraction) cancelCommand() {
+	dev := hardware.NewSkyWalletInteraction()
+	dev.Cancel().Then(func(data interface{}) interface{} {
+		logWalletsModel.Infoln(data.(string))
+		return data
+	}).Catch(func(err error) error {
+		logWalletsModel.WithError(err).Errorln("unable to cancel operation")
 		return err
 	})
 }

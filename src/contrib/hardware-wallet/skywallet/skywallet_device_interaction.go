@@ -207,3 +207,20 @@ func(wlt *SkyWalletInteraction) Wipe() *promise.Promise {
 		resolve(msgStr)
 	})
 }
+
+// TODO refactor all success into a reusable function
+func (wlt *SkyWalletInteraction) Cancel() *promise.Promise {
+	return promise.New(func(resolve func(interface{}), reject func(error)) {
+		msg, err := wlt.dev.Cancel()
+		if err != nil {
+			reject(err)
+			return
+		}
+		msgStr, err := skywallet.DecodeFailMsg(msg)
+		if err != nil {
+			reject(err)
+			return
+		}
+		resolve(msgStr)
+	})
+}
