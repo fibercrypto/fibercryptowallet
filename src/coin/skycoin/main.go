@@ -29,7 +29,7 @@ func init() {
 	logSetting := make(map[string]string)
 	err = json.Unmarshal([]byte(logSettingStr), &logSetting)
 	if err != nil {
-		logSkycoin.Warn("Couldn't unmarshal from options")
+		logSkycoin.WithError(err).Warn("Couldn't unmarshal from options")
 	}
 	level, err := logging.LevelFromString(logSetting["level"])
 	if err != nil {
@@ -52,6 +52,9 @@ func init() {
 	}
 	node := make(map[string]string)
 	err = json.Unmarshal([]byte(nodeSettingStr), &node)
+	if err != nil {
+		logSkycoin.WithError(err).Warn("Couldn't unmarshal from options")
+	}
 
 	err = core.GetMultiPool().CreateSection(sky.PoolSection, sky.NewSkycoinConnectionFactory(node["address"]))
 	if err != nil {
