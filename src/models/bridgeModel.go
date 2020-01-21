@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"sync"
 
 	"github.com/therecipe/qt/core"
@@ -15,15 +16,17 @@ type QBridge struct {
 	_      func(message string)           `signal:"getPassword"`
 	_      func(title, message string)    `signal:"getSkyHardwareWalletPin"`
 	_      func(title, message string)    `signal:"deviceRequireAction"`
+	_      func(title, message string)    `signal:"deviceRequireCancelableAction"`
+	_      func(title, message string)    `signal:"deviceRequireConfirmableAction"`
 	_      func(string)                   `slot:"setResult"`
 	_      func() string                  `slot:"getResult"`
+	_ string                              `property:"errMessage"`
 	result string
 	sem    sync.Mutex
 	use    sync.Mutex
 }
 
 func (b *QBridge) init() {
-
 	b.ConnectLock(b.lock)
 	b.ConnectUnlock(b.unlock)
 	b.ConnectSetResult(b.setResult)
@@ -37,6 +40,7 @@ func (b *QBridge) onCompleted() {
 
 func (b *QBridge) BeginUse() {
 	b.use.Lock()
+	b.SetErrMessage("")
 }
 
 func (b *QBridge) EndUse() {
@@ -53,6 +57,13 @@ func (b *QBridge) setResult(result string) {
 
 func (b *QBridge) getResult() string {
 	return b.result
+}
+
+func (b *QBridge) getOptionalResult() (string, error) {
+	if len(b.ErrMessage()) > 0 {
+		return "", errors.New(b.ErrMessage())
+	}
+	return b.result, nil
 }
 
 func (b *QBridge) unlock() {
