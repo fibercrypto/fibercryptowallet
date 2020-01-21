@@ -78,6 +78,9 @@ func TestSkyFiberPluginFunctions(t *testing.T) {
 
 	plugin := NewSkyFiberPlugin(SkycoinMainNetParams)
 	require.NotNil(t, plugin)
+	sPlugin := plugin.(*SkyFiberPlugin)
+	require.NotNil(t, sPlugin)
+	require.Equal(t, SkycoinMainNetParams, sPlugin.Params)
 	require.Equal(t, name, plugin.GetName())
 	require.Equal(t, description, plugin.GetDescription())
 
@@ -90,6 +93,11 @@ func TestSkyFiberPluginFunctions(t *testing.T) {
 	cmp(pluginAltcoins)
 	cmp(altcoins)
 	require.Equal(t, altcoins, pluginAltcoins)
+
+	signer, err := plugin.LoadSignService()
+	require.Nil(t, err)
+	require.NotNil(t, signer)
+	require.IsType(t, new(SkycoinSignService), signer)
 }
 
 func TestSkyFiberPluginRegisterTo(t *testing.T) {
@@ -135,11 +143,13 @@ func TestSkyFiberPluginNetOperations(t *testing.T) {
 	t.Run(net, func(t *testing.T) {
 		pex, err := plugin.LoadPEX(net)
 		require.Nil(t, err)
+		require.IsType(t, new(SkycoinPEX), pex)
 		spex := pex.(*SkycoinPEX)
 		require.Equal(t, PoolSection, spex.poolSection)
 
 		api, err1 := plugin.LoadTransactionAPI(net)
 		require.Nil(t, err1)
+		require.IsType(t, new(SkycoinBlockchain), api)
 		sAPI := api.(*SkycoinBlockchain)
 		require.Equal(t, uint64(params.DataRefreshTimeout), sAPI.CacheTime)
 	})
