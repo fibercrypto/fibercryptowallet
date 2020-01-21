@@ -1,11 +1,13 @@
 package skycoin
 
 import (
+	"encoding/hex"
 	"fmt"
 	"os"
 	"sort"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
@@ -126,7 +128,7 @@ func TestSkyFiberPluginRegisterTo(t *testing.T) {
 
 func TestSkyFiberPluginNetOperations(t *testing.T) {
 	plugin := NewSkyFiberPlugin(SkycoinMainNetParams)
-	net, invalidNet := "MainNet", "custom-net%s"
+	net, invalidNet := "MainNet", "custom-net%d"
 
 	for i := 10; i < 20; i++ {
 		name := fmt.Sprintf(invalidNet, i)
@@ -198,6 +200,86 @@ func TestSkyFiberPluginAddressFromString(t *testing.T) {
 				require.Nil(t, err)
 				require.IsType(t, new(SkycoinAddress), addr)
 			}
+		})
+	}
+}
+
+func TestSkyFiberPluginPubKeyFromBytes(t *testing.T) {
+	pubkeyFromHex := func(s string) []byte {
+		b, err := hex.DecodeString(s)
+		require.NoError(t, err)
+		return b
+	}
+	tests := []struct {
+		name    string
+		pubkHex string
+		wantErr bool
+	}{
+		{name: "OK", pubkHex: "034f1e3f2391bd3670151fd4fa3accc6a0273885984404089e5b846871db4c5304", wantErr: false},
+		{name: "wrong", pubkHex: "0213c9273d9f944c3d907bfe844090ecef3d9504c88c5165cb690de98125a4e4", wantErr: true},
+		{name: "OK2", pubkHex: "0304eb48d7c0b3a915d0f53c6d966f4d9fa75df645e63dfb91d589592790943613", wantErr: false},
+	}
+
+	plugin := NewSkyFiberPlugin(SkycoinMainNetParams)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sPk, err := plugin.PubKeyFromBytes(pubkeyFromHex(tt.pubkHex))
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.IsType(t, new(SkycoinPubKey), sPk)
+			got := sPk.(*SkycoinPubKey)
+			require.NoError(t, err)
+			assert.Equal(t, pubkeyFromHex(tt.pubkHex), got.Bytes())
+			assert.Equal(t, tt.pubkHex, got.pubkey.Hex())
+			require.NoError(t, got.Verify())
+			assert.False(t, got.Null())
+			spk, err := toSkycoinPubKey(got)
+			require.NoError(t, err)
+			assert.Equal(t, spk.Hex(), tt.pubkHex)
+			require.NoError(t, spk.Verify())
+			assert.False(t, spk.Null())
+		})
+	}
+}
+
+func TestSkyFiberPluginSecKeyFromBytes(t *testing.T) {
+	pubkeyFromHex := func(s string) []byte {
+		b, err := hex.DecodeString(s)
+		require.NoError(t, err)
+		return b
+	}
+	tests := []struct {
+		name    string
+		pubkHex string
+		wantErr bool
+	}{
+		{name: "OK", pubkHex: "c9135a2b667eb0847fb7ad3d1ae58a1ea2d0c38526c8948b520417dcab618563", wantErr: false},
+		{name: "wrong", pubkHex: "0213c9273d9f944c3d907bfe844090ecef3d9504c88c5165cb690de985a4e4", wantErr: true},
+		{name: "OK2", pubkHex: "408ea9aef71391071d275f8255bd9b6d22d5d5a22e6ab2bfc54307fb273d468c", wantErr: false},
+	}
+
+	plugin := NewSkyFiberPlugin(SkycoinMainNetParams)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sSk, err := plugin.SecKeyFromBytes(pubkeyFromHex(tt.pubkHex))
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.IsType(t, new(SkycoinSecKey), sSk)
+			got := sSk.(*SkycoinSecKey)
+			require.NoError(t, err)
+			assert.Equal(t, pubkeyFromHex(tt.pubkHex), got.Bytes())
+			assert.Equal(t, tt.pubkHex, got.seckey.Hex())
+			require.NoError(t, got.Verify())
+			assert.False(t, got.Null())
+			spk, err := toSkycoinSecKey(got)
+			require.NoError(t, err)
+			assert.Equal(t, spk.Hex(), tt.pubkHex)
+			require.NoError(t, spk.Verify())
+			assert.False(t, spk.Null())
 		})
 	}
 }
