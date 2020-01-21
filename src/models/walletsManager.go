@@ -2,9 +2,10 @@ package models
 
 import (
 	"fmt"
+	"sync"
+
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
-	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 
@@ -28,15 +29,16 @@ var walletManager *WalletManager
 
 type WalletManager struct {
 	qtCore.QObject
-	WalletEnv           core.WalletEnv
-	SeedGenerator       core.SeedGenerator
-	wallets             []*QWallet
-	addresseseByWallets map[string][]*QAddress
-	outputsByAddress    map[string][]*QOutput
-	altManager          core.AltcoinManager
-	signer              core.BlockchainSignService
-	transactionAPI      core.BlockchainTransactionAPI
-	walletsIterator     core.WalletIterator
+	WalletEnv                core.WalletEnv
+	SeedGenerator            core.SeedGenerator
+	wallets                  []*QWallet
+	addresseseByWallets      map[string][]*QAddress
+	addressesAndWalletsMutex sync.Mutex
+	outputsByAddress         map[string][]*QOutput
+	altManager               core.AltcoinManager
+	signer                   core.BlockchainSignService
+	transactionAPI           core.BlockchainTransactionAPI
+	walletsIterator          core.WalletIterator
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
@@ -318,8 +320,9 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		qAddresses = append(qAddresses, qAddress)
 
 	}
-
+	walletM.addressesAndWalletsMutex.Lock()
 	walletM.addresseseByWallets[wltId] = qAddresses
+	walletM.addressesAndWalletsMutex.Unlock()
 }
 
 func (walletM *WalletManager) updateOutputs(wltId, address string) {

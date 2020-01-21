@@ -5,11 +5,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/therecipe/qt/qml"
-
-	"github.com/davecgh/go-spew/spew"
-
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
+	"github.com/therecipe/qt/qml"
 
 	"sync"
 
@@ -43,11 +41,13 @@ const (
 type HistoryManager struct {
 	qtCore.QObject
 	walletEnv       core.WalletEnv
-	newTxn          []*transactions.TransactionDetails
+	newTxn          map[string][]core.Transaction
 	txnFinded       map[string]struct{}
 	filters         []string
-	txnForAddresses map[string][]*transactions.TransactionDetails
-	mutexForUpdate  sync.Mutex
+	txnForAddresses map[string][]core.Transaction
+	mutexForNew     sync.Mutex
+	mutexForAll     sync.Mutex
+	addresses       map[string]string
 	walletsIterator core.WalletIterator
 	end             chan bool
 	_               func() `constructor:"init"`
@@ -65,8 +65,6 @@ type HistoryManager struct {
 }
 
 func (hm *HistoryManager) init() {
-	//hm.ConnectLoadHistoryWithFilters(hm.loadHistoryWithFilters)
-	//hm.ConnectLoadHistory(hm.loadHistory)
 	hm.ConnectGetTransactions(hm.getTransactions)
 	hm.ConnectGetTransactionsWithFilters(hm.getTransansactionsWithFilters)
 	hm.ConnectGetNewTransactions(hm.getNewTransactions)
@@ -75,22 +73,37 @@ func (hm *HistoryManager) init() {
 	hm.ConnectRemoveFilter(hm.removeFilter)
 	hm.ConnectUpdate(hm.updateTxns)
 	hm.walletEnv = models.GetWalletEnv()
-	hm.txnForAddresses = make(map[string][]*transactions.TransactionDetails, 0)
-	//updateTime := config.GetDataUpdateTime()
-	//uptimeTicker := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 2)
+
+	hm.txnForAddresses = make(map[string][]core.Transaction, 0)
+	hm.newTxn = make(map[string][]core.Transaction, 0)
+	updateTime := config.GetDataUpdateTime()
+	uptimeTicker := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 2)
 	historyManager = hm
 	hm.txnFinded = make(map[string]struct{}, 0)
-	hm.updateTxns()
-	//go func() {
-	//	for {
-	//		select {
-	//		case <-uptimeTicker.C:
-	//			logHistoryManager.Debug("Updating history")
-	//			go hm.updateTxns()
-	//		}
-	//		historyManager = hm
-	//	}
-	//}()
+	//hm.updateTxns()
+	go func() {
+		for {
+			select {
+			case <-uptimeTicker.C:
+				logHistoryManager.Debug("Updating history")
+				go hm.updateTxns()
+				go hm.reviewForNew()
+			}
+			historyManager = hm
+		}
+	}()
+}
+
+func (hm *HistoryManager) reviewForNew() {
+	hm.mutexForNew.Lock()
+	defer hm.mutexForNew.Unlock()
+	for _, txns := range hm.newTxn {
+		for _, _ = range txns {
+			fmt.Println("THERE ARE TXNS")
+			hm.NewTransactions()
+			return
+		}
+	}
 }
 
 type ByDate []*transactions.TransactionDetails
@@ -127,25 +140,14 @@ func (a ByDate) Less(i, j int) bool {
 //	return txnsDetails
 //}
 
-func (hm *HistoryManager) updateTxns( /*filterAddresses []string*/ ) {
+func (hm *HistoryManager) updateTxns() {
 	logHistoryManager.Info("Getting transactions of Addresses")
-	hm.mutexForUpdate.Lock()
-	defer hm.mutexForUpdate.Unlock()
-	addresses := hm.getAddressesWithWallets()
-	//var sent, internally bool
-	//var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
 
-	// find := make(map[string]struct{}, len(filterAddresses))
-	// for _, addr := range filterAddresses {
-	// 	find[addr] = struct{}{}
-	// }
-	txnFind := make(map[string]struct{})
-	txns := make([]core.Transaction, 0)
-
+	hm.addresses = hm.getAddressesWithWallets()
 	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
 	if wltIterator == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
-		return //make([]*transactions.TransactionDetails, 0)
+		return
 	}
 	for wltIterator.Next() {
 		logHistoryManager.Debug("Getting addresses history for wallet ", wltIterator.Value().GetId())
@@ -154,62 +156,67 @@ func (hm *HistoryManager) updateTxns( /*filterAddresses []string*/ ) {
 			logHistoryManager.Warn("Couldn't get address iterator")
 			continue
 		}
+		var newTxnsFinded bool
 		for addressIterator.Next() {
-			// _, ok := find[addressIterator.Value().String()]
-			// if ok {
+			newTxnsFinded = false
 			txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
 			if txnsIterator == nil {
 				logHistoryManager.Warn("Couldn't get transaction iterator")
 				continue
 			}
 			for txnsIterator.Next() {
-				_, ok2 := txnFind[txnsIterator.Value().GetId()]
-				if !ok2 {
-					txns = append(txns, txnsIterator.Value())
-					txnFind[txnsIterator.Value().GetId()] = struct{}{}
+				if _, exist := hm.txnFinded[txnsIterator.Value().GetId()]; !exist {
+					newTxnsFinded = true
+					hm.txnFinded[txnsIterator.Value().GetId()] = struct{}{}
+					for _, in := range txnsIterator.Value().GetInputs() {
+						if _, exist := hm.addresses[in.GetSpentOutput().GetAddress().String()]; exist {
+							hm.mutexForNew.Lock()
+							_, exist2 := hm.newTxn[in.GetSpentOutput().GetAddress().String()]
+							if exist2 {
+								hm.newTxn[in.GetSpentOutput().GetAddress().String()] = append(hm.newTxn[in.GetSpentOutput().GetAddress().String()], txnsIterator.Value())
+							} else {
+								hm.newTxn[in.GetSpentOutput().GetAddress().String()] = []core.Transaction{txnsIterator.Value()}
+							}
+							hm.mutexForNew.Unlock()
+						}
+					}
+					for _, out := range txnsIterator.Value().GetOutputs() {
+						if _, exist := hm.addresses[out.GetAddress().String()]; exist {
+							hm.mutexForNew.Lock()
+							_, exist2 := hm.newTxn[out.GetAddress().String()]
+							if exist2 {
+								hm.newTxn[out.GetAddress().String()] = append(hm.newTxn[out.GetAddress().String()], txnsIterator.Value())
+							} else {
+								hm.newTxn[out.GetAddress().String()] = []core.Transaction{txnsIterator.Value()}
+							}
+							hm.mutexForNew.Unlock()
+						}
+					}
 				}
 			}
-			//}
+			if newTxnsFinded {
+				hm.NewTransactions()
+			}
 
 		}
 	}
 
-	txnsDetails := make([]*transactions.TransactionDetails, 0)
-	for _, txn := range txns {
-		if _, ok := hm.txnFinded[txn.GetId()]; ok {
-			continue
-		} else {
-			hm.txnFinded[txn.GetId()] = struct{}{}
-		}
-		txnDetail, err := TransactionDetailsFromCoreTxn(txn, addresses)
-		if err != nil {
-			logHistoryManager.WithError(err).Warn("Couldn't conver core transaction")
-		}
-		txnsDetails = append(txnsDetails, txnDetail)
-	}
-	//sort.Sort(ByDate(txnsDetails))
-
-	hm.newTxn = append(hm.newTxn, txnsDetails...)
-	// If there is at least one new txn send a signal
-	if len(txnsDetails) >= 1 {
-		hm.NewTransactions()
-	}
 }
 
 func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
-	hm.mutexForUpdate.Lock()
-	defer hm.mutexForUpdate.Unlock()
+	hm.mutexForAll.Lock()
+	defer hm.mutexForAll.Unlock()
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
 	added := make(map[string]struct{}, 0)
-	fmt.Println("AAAAAAAAAAAAAAAA")
-	spew.Dump(hm.txnForAddresses)
 	for _, txns := range hm.txnForAddresses {
-		fmt.Println(len(txns))
 		for _, txn := range txns {
-			if _, exist := hm.txnForAddresses[txn.TransactionID()]; !exist {
-				fmt.Println("Adding")
-				txnsForReturn = append(txnsForReturn, txn)
-				added[txn.TransactionID()] = struct{}{}
+			if _, exist := hm.txnForAddresses[txn.GetId()]; !exist {
+				txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
+				if err != nil {
+					logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
+				}
+				txnsForReturn = append(txnsForReturn, txnDetail)
+				added[txn.GetId()] = struct{}{}
 			}
 		}
 	}
@@ -217,15 +224,19 @@ func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
 }
 
 func (hm *HistoryManager) getTransansactionsWithFilters() []*transactions.TransactionDetails {
-	hm.mutexForUpdate.Lock()
-	defer hm.mutexForUpdate.Unlock()
+	hm.mutexForAll.Lock()
+	defer hm.mutexForAll.Unlock()
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
 	added := make(map[string]struct{}, 0)
 	for _, addr := range hm.filters {
 		for _, txn := range hm.txnForAddresses[addr] {
-			if _, exist := added[txn.TransactionID()]; !exist {
-				txnsForReturn = append(txnsForReturn, txn)
-				added[txn.TransactionID()] = struct{}{}
+			if _, exist := added[txn.GetId()]; !exist {
+				txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
+				if err != nil {
+					logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
+				}
+				txnsForReturn = append(txnsForReturn, txnDetail)
+				added[txn.GetId()] = struct{}{}
 			}
 		}
 	}
@@ -233,39 +244,51 @@ func (hm *HistoryManager) getTransansactionsWithFilters() []*transactions.Transa
 }
 
 func (hm *HistoryManager) getNewTransactions() []*transactions.TransactionDetails {
-	hm.mutexForUpdate.Lock()
-	defer hm.mutexForUpdate.Unlock()
+	hm.mutexForNew.Lock()
+	defer hm.mutexForNew.Unlock()
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
-	for _, txn := range hm.newTxn {
-		txnsForReturn = append(txnsForReturn, txn)
-		addrs := txn.Addresses()
-		for _, addr := range addrs.Addresses() {
-			hm.txnForAddresses[addr.Address()] = append(hm.txnForAddresses[addr.Address()], txn)
+	for addr, _ := range hm.newTxn {
+		for _, txn := range hm.newTxn[addr] {
+			txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
+			}
+			txnsForReturn = append(txnsForReturn, txnDetail)
+			hm.mutexForAll.Lock()
+			_, exist := hm.txnForAddresses[addr]
+			if exist {
+				hm.txnForAddresses[addr] = append(hm.txnForAddresses[addr], txn)
+			} else {
+				hm.txnForAddresses[addr] = []core.Transaction{txn}
+			}
+			hm.mutexForAll.Unlock()
 		}
+		hm.newTxn[addr] = make([]core.Transaction, 0)
 	}
-	hm.newTxn = make([]*transactions.TransactionDetails, 0)
 	return txnsForReturn
 }
 
 func (hm *HistoryManager) getNewTransactionsWithFilters() []*transactions.TransactionDetails {
-	hm.mutexForUpdate.Lock()
-	defer hm.mutexForUpdate.Unlock()
+	hm.mutexForNew.Lock()
+	defer hm.mutexForNew.Unlock()
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
-	for _, txn := range hm.newTxn {
-		forReturn := false
-		addrs := txn.Addresses()
-		for _, addr := range addrs.Addresses() {
-			hm.txnForAddresses[addr.Address()] = append(hm.txnForAddresses[addr.Address()], txn)
-			for _, fAddr := range hm.filters {
-				if fAddr == addr.Address() {
-					forReturn = true
-					break
-				}
+	for _, addr := range hm.filters {
+		for _, txn := range hm.newTxn[addr] {
+			txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
+			if err != nil {
+				logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
 			}
+			txnsForReturn = append(txnsForReturn, txnDetail)
+			hm.mutexForAll.Lock()
+			_, exist := hm.txnForAddresses[addr]
+			if exist {
+				hm.txnForAddresses[addr] = append(hm.txnForAddresses[addr], txn)
+			} else {
+				hm.txnForAddresses[addr] = []core.Transaction{txn}
+			}
+			hm.mutexForAll.Unlock()
 		}
-		if forReturn {
-			txnsForReturn = append(txnsForReturn, txn)
-		}
+		hm.newTxn[addr] = make([]core.Transaction, 0)
 	}
 	return txnsForReturn
 }

@@ -44,7 +44,7 @@ func NewMasterLogger() *MasterLogger {
 				ForceColors:        false,
 			},
 			Hooks: hooks,
-			Level: logrus.DebugLevel,
+			Level: logrus.FatalLevel,
 		},
 	}
 }
