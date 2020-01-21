@@ -77,6 +77,8 @@ func (hm *HistoryManager) init() {
 	hm.txnForAddresses = make(map[string][]core.Transaction, 0)
 	hm.newTxn = make(map[string][]core.Transaction, 0)
 	updateTime := config.GetDataUpdateTime()
+	fmt.Println("UPDATE TIMEEEEEE")
+	fmt.Println(updateTime)
 	uptimeTicker := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 2)
 	historyManager = hm
 	hm.txnFinded = make(map[string]struct{}, 0)
@@ -85,6 +87,7 @@ func (hm *HistoryManager) init() {
 		for {
 			select {
 			case <-uptimeTicker.C:
+				fmt.Println("///////////////////////////////////////////TICKING HISTORY/////////////////////////////////")
 				logHistoryManager.Debug("Updating history")
 				go hm.updateTxns()
 				go hm.reviewForNew()
@@ -99,7 +102,7 @@ func (hm *HistoryManager) reviewForNew() {
 	defer hm.mutexForNew.Unlock()
 	for _, txns := range hm.newTxn {
 		for _, _ = range txns {
-			fmt.Println("THERE ARE TXNS")
+			fmt.Println("THERE ARE TXNS //////////////////////////////////")
 			hm.NewTransactions()
 			return
 		}

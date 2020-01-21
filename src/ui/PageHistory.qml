@@ -131,11 +131,10 @@ Page {
         onNewTransactions: {
             console.log("THERE ARE NEW TRANSACTIONS")
             if (!switchFilters.checked) {
-                modelTransactions.clear()
                 modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
+                
             }
             else {
-                modelTransactions.clear()
                 modelTransactions.addMultipleTransactions(historyManager.getTNewTransactionsWithFilters())
             }
         }
