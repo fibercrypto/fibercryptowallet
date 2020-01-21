@@ -255,7 +255,8 @@ test-sky: ## Run Skycoin plugin test suite
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
 
 test-core: ## Run tests for API core and helpers
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+	go test -coverprofile=src/util/coverage.out -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+	go tool cover -html=src/util/coverage.out -o src/util/coverage.html
 
 test-data: ## Run tests for data package
 	go test -coverprofile=src/data/coverage.out -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
