@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -77,10 +78,20 @@ func TestSkycoinBlockchainStatusGetCoinValue(t *testing.T) {
 		},
 		nil,
 	)
+	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, errors.New("failure")).Once()
 	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, nil)
 
 	block := &SkycoinBlockchain{CacheTime: 20}
+
+	// api interaction error
 	val, err := block.GetCoinValue(core.CoinCurrentSupply, Sky)
+	require.Error(t, err)
+
+	// invalid coin
+	val, err = block.GetCoinValue(core.CoinCurrentSupply, "INVALIDCOIN")
+	require.Error(t, err)
+
+	val, err = block.GetCoinValue(core.CoinCurrentSupply, Sky)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(200111111))
 	val, err = block.GetCoinValue(core.CoinCurrentSupply, CoinHour)
@@ -104,6 +115,7 @@ func TestSkycoinBlockchainStatusGetNumberOfBlocks(t *testing.T) {
 		},
 		nil,
 	)
+	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, errors.New("failure")).Once()
 	global_mock.On("BlockchainProgress").Return(
 		&readable.BlockchainProgress{
 			Current: uint64(20),
@@ -113,8 +125,13 @@ func TestSkycoinBlockchainStatusGetNumberOfBlocks(t *testing.T) {
 		nil,
 	)
 
-	block := &SkycoinBlockchain{CacheTime: 20}
+	// api interaction error
+	block := new(SkycoinBlockchain)
 	val, err := block.GetNumberOfBlocks()
+	require.Error(t, err)
+
+	block = &SkycoinBlockchain{CacheTime: 20}
+	val, err = block.GetNumberOfBlocks()
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(20))
 }
@@ -131,10 +148,16 @@ func TestSkycoinBlockchainStatusGetLastBlock(t *testing.T) {
 		},
 		nil,
 	)
+	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, errors.New("failure")).Once()
 	global_mock.On("BlockchainProgress").Return(&readable.BlockchainProgress{}, nil)
 
 	status := &SkycoinBlockchain{CacheTime: 20}
+
+	// api interaction error
 	block, err := status.GetLastBlock()
+	require.Error(t, err)
+
+	block, err = status.GetLastBlock()
 	require.NoError(t, err)
 	val, err2 := block.GetVersion()
 	require.NoError(t, err2)
