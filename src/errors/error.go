@@ -55,4 +55,6 @@ var (
 	ErrInvalidValue = errors.New("Value errors")
 	// ErrWalletCantSign wallet can not sign transactions
 	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
+	// ErrNotImplemented feature not implemented
+	ErrNotImplemented = errors.New("Feature not implemented")
 )
