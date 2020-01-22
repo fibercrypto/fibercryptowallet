@@ -267,7 +267,9 @@ test-core: ## Run tests for API core and helpers
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
 test-data: ## Run tests for data package
-	go test -coverprofile=src/data/coverage.out -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
+
 test-html-cover:
 	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEPREFIX).html
 
