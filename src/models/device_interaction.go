@@ -2,6 +2,7 @@ package models
 
 import (
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
+	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
@@ -63,7 +64,13 @@ func (devI *QDeviceInteraction) changePin() {
 		devI.OperationDone()
 		return data
 	}).Catch(func(err error) error {
-		logWalletsModel.WithError(err).Errorln("unable to change pin")
+		if err == skywallet.ErrUserCancelledFromInputReader {
+			logWalletsModel.WithError(err).Infoln("unable to change pin")
+		} else if err == skywallet.ErrUserCancelledWithDeviceButton {
+			logWalletsModel.WithError(err).Warningln("unable to change pin")
+		} else {
+			logWalletsModel.WithError(err).Errorln("unable to change pin")
+		}
 		devI.OperationDone()
 		return err
 	})

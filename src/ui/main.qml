@@ -5,6 +5,7 @@ import Qt.labs.settings 1.0
 import WalletsManager 1.0
 import Config 1.0
 import Utils 1.0
+import DeviceInteraction 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Dialogs"
@@ -152,6 +153,30 @@ ApplicationWindow {
                  + "eu fugiat nulla pariatur. Excepteur sint obcaecat cupiditat non proident, "
                  + "sunt in culpa qui officia deserunt mollit anim id est laborum.")
     }
+    MsgDialog {
+        id: requestCancel
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+        focus: true
+        modal: true
+        standardButtons: Dialog.Cancel
+        onRejected: {
+            deviceInteraction.cancelCommand()
+        }
+    }
+    MsgDialog {
+        id: requestConfirmation
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+        focus: true
+        modal: true
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        onRejected: {
+            deviceInteraction.cancelCommand()
+        }
+    }
 
     // QR
     DialogQR {
@@ -176,6 +201,9 @@ ApplicationWindow {
         modal: true
     }
     
+    DeviceInteraction {
+        id: deviceInteraction
+    }
     QBridge{
         id: bridgeForPassword
 
@@ -189,7 +217,16 @@ ApplicationWindow {
             msgDialog.text = message
             msgDialog.open()
         }
-
+        onDeviceRequireConfirmableAction: {
+            requestConfirmation.title = title
+            requestConfirmation.text = message
+            requestConfirmation.open()
+        }
+        onDeviceRequireCancelableAction: {
+            requestCancel.title = title
+            requestCancel.text = message
+            requestCancel.open()
+        }
         onGetSkyHardwareWalletPin: {
             numPadDialog.clear(title)
             numPadDialog.open()
@@ -223,8 +260,7 @@ ApplicationWindow {
         focus: true
         modal: true
         onClosed: {
-            bridgeForPassword.setResult(numPadDialog.pin)
-            bridgeForPassword.unlock()
+            msgDialog.close()
         }
     }
 

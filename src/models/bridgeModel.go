@@ -1,7 +1,7 @@
 package models
 
 import (
-	"errors"
+	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"sync"
 
 	"github.com/therecipe/qt/core"
@@ -61,7 +61,8 @@ func (b *QBridge) getResult() string {
 
 func (b *QBridge) getOptionalResult() (string, error) {
 	if len(b.ErrMessage()) > 0 {
-		return "", errors.New(b.ErrMessage())
+		logWalletsModel.Warningln(b.ErrMessage())
+		return "", skywallet.ErrUserCancelledFromInputReader
 	}
 	return b.result, nil
 }

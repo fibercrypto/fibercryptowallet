@@ -17,7 +17,6 @@ Dialog {
     readonly property string numPadButtonText: "#"
     readonly property real numPadButtonImplicitSize: 50
     readonly property real numPadButtonPointSize: 18
-    property alias pin: textInput.text
 
     function clear(newTitle) {
         textInput.clear()
@@ -43,6 +42,14 @@ Dialog {
 
     onAboutToShow: {
         textInput.forceActiveFocus()
+    }
+    onRejected: {
+        bridgeForPassword.errMessage = "Action canceled";
+        bridgeForPassword.unlock()
+    }
+    onAccepted: {
+        bridgeForPassword.setResult(textInput.text)
+        bridgeForPassword.unlock()
     }
 
     Flickable {

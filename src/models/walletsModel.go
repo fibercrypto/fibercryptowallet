@@ -93,7 +93,7 @@ func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 				pass, err := bridgeForPassword.getOptionalResult()
 				bridgeForPassword.unlock()
 				if err != nil {
-					logWalletsModel.WithError(err).Errorln("error handling user interaction")
+					logWalletsModel.WithError(err).Warningln("error handling user interaction")
 					return "", skyWallet.ErrUserCancelledFromInputReader
 				}
 				return pass, nil
