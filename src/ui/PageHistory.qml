@@ -25,11 +25,8 @@ Page {
                 text: qsTr("Filters")
                 onClicked:{
                     if (!checked) {
-                        console.log("LOADING TXNS")
-                        //historyManager.update()
                         modelTransactions.clear()
-                        console.log(historyManager.getTransactions())
-                        modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
+                        modelTransactions.addMultipleTransactions(historyManager.getTransactions())
                     }
                     else {
                         modelTransactions.clear()
@@ -129,10 +126,8 @@ Page {
             console.log("history manager completed")
         }
         onNewTransactions: {
-            console.log("THERE ARE NEW TRANSACTIONS")
             if (!switchFilters.checked) {
                 modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
-                
             }
             else {
                 modelTransactions.addMultipleTransactions(historyManager.getTNewTransactionsWithFilters())
@@ -140,8 +135,4 @@ Page {
         }
     }
 
-    Component.onCompleted: {
-        modelTransactions.addMultipleTransactions(historyManager.getTransactions())
-        console.log("COJONEEEEEEEE")
-    }
 }

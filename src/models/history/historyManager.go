@@ -1,7 +1,6 @@
 package history
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -50,18 +49,15 @@ type HistoryManager struct {
 	addresses       map[string]string
 	walletsIterator core.WalletIterator
 	end             chan bool
-	_               func() `constructor:"init"`
-
-	//_ func() []*transactions.TransactionDetails `slot:"loadHistoryWithFilters"`
-	//_ func() []*transactions.TransactionDetails `slot:"loadHistory"`
-	_ func()                                    `signal:"newTransactions"`
-	_ func() []*transactions.TransactionDetails `slot:"getTransactions"`
-	_ func() []*transactions.TransactionDetails `slot:"getTransactionsWithFilters"`
-	_ func() []*transactions.TransactionDetails `slot:"getNewTransactions"`
-	_ func() []*transactions.TransactionDetails `slot:"getNewTransactionsWithFilters"`
-	_ func(string)                              `slot:"addFilter"`
-	_ func(string)                              `slot:"removeFilter"`
-	_ func()                                    `slot:"update"`
+	_               func()                                    `constructor:"init"`
+	_               func()                                    `signal:"newTransactions"`
+	_               func() []*transactions.TransactionDetails `slot:"getTransactions"`
+	_               func() []*transactions.TransactionDetails `slot:"getTransactionsWithFilters"`
+	_               func() []*transactions.TransactionDetails `slot:"getNewTransactions"`
+	_               func() []*transactions.TransactionDetails `slot:"getNewTransactionsWithFilters"`
+	_               func(string)                              `slot:"addFilter"`
+	_               func(string)                              `slot:"removeFilter"`
+	_               func()                                    `slot:"update"`
 }
 
 func (hm *HistoryManager) init() {
@@ -77,20 +73,16 @@ func (hm *HistoryManager) init() {
 	hm.txnForAddresses = make(map[string][]core.Transaction, 0)
 	hm.newTxn = make(map[string][]core.Transaction, 0)
 	updateTime := config.GetDataUpdateTime()
-	fmt.Println("UPDATE TIMEEEEEE")
-	fmt.Println(updateTime)
 	uptimeTicker := time.NewTicker(time.Duration(updateTime) * time.Microsecond * 2)
 	historyManager = hm
 	hm.txnFinded = make(map[string]struct{}, 0)
-	//hm.updateTxns()
 	go func() {
 		for {
 			select {
 			case <-uptimeTicker.C:
-				fmt.Println("///////////////////////////////////////////TICKING HISTORY/////////////////////////////////")
 				logHistoryManager.Debug("Updating history")
 				go hm.updateTxns()
-				go hm.reviewForNew()
+				//go hm.reviewForNew()
 			}
 			historyManager = hm
 		}
@@ -102,7 +94,6 @@ func (hm *HistoryManager) reviewForNew() {
 	defer hm.mutexForNew.Unlock()
 	for _, txns := range hm.newTxn {
 		for _, _ = range txns {
-			fmt.Println("THERE ARE TXNS //////////////////////////////////")
 			hm.NewTransactions()
 			return
 		}
@@ -123,25 +114,6 @@ func (a ByDate) Less(i, j int) bool {
 	d2, _ := time.Parse(dateTimeFormatForGo, a[j].Date().ToString(dateTimeFormatForQML))
 	return d1.After(d2)
 }
-
-//func (hm *HistoryManager) getTransactionsOfAddresses(filterAddresses []string) []*transactions.TransactionDetails {
-//
-//	txnsDetails := make([]*transactions.TransactionDetails, 0)
-//	addrs := make([]string, 0)
-//	for _, addr := range filterAddresses {
-//		val, ok := hm.txnForAddresses[addr]
-//		if !ok {
-//			addrs = append(addrs, addr)
-//			continue
-//		}
-//		logHistoryManager.Debug("Getting txns from ", addr)
-//		txnsDetails = append(txnsDetails, val...)
-//	}
-//
-//	go hm.updateTxnOfAddresses(addrs)
-//
-//	return txnsDetails
-//}
 
 func (hm *HistoryManager) updateTxns() {
 	logHistoryManager.Info("Getting transactions of Addresses")
@@ -296,27 +268,6 @@ func (hm *HistoryManager) getNewTransactionsWithFilters() []*transactions.Transa
 	return txnsForReturn
 }
 
-//func (hm *HistoryManager) loadHistoryWithFilters() []*transactions.TransactionDetails {
-//	logHistoryManager.Info("Loading history with some filters")
-//	filterAddresses := hm.filters
-//	return hm.getTransactionsOfAddresses(filterAddresses)
-//
-//}
-
-//func (hm *HistoryManager) loadHistory() []*transactions.TransactionDetails {
-//	logHistoryManager.Info("Loading history")
-//	hm.getAddressesWithWallets()
-//	addresses := hm.addresses
-//
-//	filterAddresses := make([]string, 0)
-//	for addr, _ := range addresses {
-//		filterAddresses = append(filterAddresses, addr)
-//	}
-//	logHistoryManager.WithField("Addresses to filter", filterAddresses).Debug("Addresses to filter")
-//	return hm.getTransactionsOfAddresses(filterAddresses)
-//
-//}
-
 func (hm *HistoryManager) addFilter(addr string) {
 	logHistoryManager.Info("Add filter")
 	alreadyIs := false
@@ -383,7 +334,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 	qml.QQmlEngine_SetObjectOwnership(inputs, qml.QQmlEngine__CppOwnership)
 	qml.QQmlEngine_SetObjectOwnership(outputs, qml.QQmlEngine__CppOwnership)
 	txnIns := txn.GetInputs()
-	//spew.Dump(txnIns)
+
 	for _, in := range txnIns {
 		qIn := address.NewAddressDetails(nil)
 		qml.QQmlEngine_SetObjectOwnership(qIn, qml.QQmlEngine__CppOwnership)
@@ -391,32 +342,28 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 		skyUint64, err := in.GetCoins(params.SkycoinTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
-			fmt.Println(1)
 			return nil, err
 		}
 		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-			fmt.Println(2)
+
 			return nil, err
 		}
 		skyFloat := float64(skyUint64) / float64(accuracy)
 		qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
-		chUint64, err := in.GetCoins(params.CoinHoursTicker)
+		chUint64, err := in.GetCoins(params.CalculatedHoursTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
-			fmt.Println(3)
 			return nil, err
 		}
-		accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
+		accuracy, err = util.AltcoinQuotient(params.CalculatedHoursTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
-			fmt.Println(4)
 			return nil, err
 		}
 		qIn.SetAddressCoinHours(util.FormatCoins(chUint64, accuracy))
 		inputs.AddAddress(qIn)
-		fmt.Println(5)
 		_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
 		if ok {
 			skyAmountOut += skyUint64
@@ -614,14 +561,6 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 	}
 	txnDetails.SetAddresses(txnAddresses)
 	txnDetails.SetTransactionID(txn.GetId())
-	//fmt.Println(txn.GetId())
-	//fmt.Println(txnDetails.TransactionID())
-	//spew.Dump(txnDetails)
 	return txnDetails, nil
-	//txnsDetails = append(txnsDetails, txnDetails)
-
-	//for _, addrInTxn := range txnAddresses.Addresses() {
-	//	hm.txnForAddresses[addrInTxn.Address()] = append(hm.txnForAddresses[addrInTxn.Address()], txnDetails)
-	//}
 
 }
