@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 )
 
 const (
@@ -22,12 +23,13 @@ const (
 
 var (
 	sectionManager *local.SectionManager
+	log            = logging.MustGetLogger("Skycoin Config")
 )
 
 func getMultiPlatformUserDirectory() string {
 	usr, err := user.Current()
 	if err != nil {
-		//TODO: Log error
+		log.WithError(err).Error()
 		return ""
 	}
 	return filepath.Join(usr.HomeDir, string(os.PathSeparator), ".skycoin", string(os.PathSeparator), "wallets")
@@ -86,12 +88,14 @@ func GetDataRefreshTimeout() uint64 {
 	sm := cm.GetSectionManager("global")
 	value, err := sm.GetValue("cache", nil)
 	if err != nil {
+		log.WithError(err).Warn("Couldn't get cache value option for saved settings")
 		return 0
 	}
 
 	keyValue := make(map[string]string)
 	err = json.Unmarshal([]byte(value), &keyValue)
 	if err != nil {
+		log.WithError(err).Warn("Couldn't unmarshal from options")
 		return 0
 	}
 	strVal, ok := keyValue["lifeTime"]
@@ -100,6 +104,7 @@ func GetDataRefreshTimeout() uint64 {
 	}
 	val, err := strconv.ParseUint(strVal, 10, 64)
 	if err != nil {
+		log.WithError(err).Warn("Couldn't parse %s to int", strVal)
 		return 0
 	}
 	return val
