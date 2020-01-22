@@ -5,7 +5,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/data"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	"github.com/skycoin/skycoin/src/util/file"
+	"github.com/skycoin/SkycoinProject/src/util/file"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
 	"os"
