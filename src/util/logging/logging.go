@@ -41,7 +41,7 @@ func LevelFromString(s string) (logrus.Level, error) {
 	case "panic":
 		return logrus.PanicLevel, nil
 	default:
-		return logrus.DebugLevel, errors.New("could not convert string to log level")
+		return logrus.DebugLevel, errors.New("Couldn't convert string to log level")
 	}
 }
 
@@ -105,7 +105,7 @@ func (NoWriter) Write(p []byte) (n int, err error) {
 func GetOutputWriter(opt string) (io.Writer, error) {
 	switch opt {
 	case "stdout":
-		return os.Stderr, nil
+		return os.Stdout, nil
 	case "stderr":
 		return os.Stderr, nil
 	case "none":
