@@ -3,9 +3,11 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 import WalletsManager 1.0
+import AddrsBookManager 1.0
 
 // Resource imports
 // import "qrc:/ui/src/ui/Controls"
+import "Dialogs"
 import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {
@@ -29,10 +31,61 @@ Page {
     }
     signal qrCodeRequested(var data)
 
+function getAddressList(){
+addressList.clear()
+for(var i=0;i<abm.count;i++){
+for(var j=0;j<abm.contacts[i].address.rowCount();j++){
+addressList.append({name:abm.contacts[i].name,
+address:abm.contacts[i].address.address[j].value,
+coinType:abm.contacts[i].address.address[j].coinType})
+}
+}
+}
+
+
     onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
     }
+
+ AddrsBookModel{
+    id:abm
+    }
+
+ DialogSelectAddressByAddressBook{
+                            id: dialogSelectAddressByAddressBook
+
+                            anchors.centerIn: Overlay.overlay
+                            width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+                            height: applicationWindow.height - 40
+
+                            listAddrsModel: addressList
+
+                            focus: true
+                            modal: true
+
+onAboutToShow:{
+getAddressList()
+}
+
+         onAccepted: {
+                textFieldWalletsSendTo.text = selectedAddress
+                      }
+                }
+
+                 DialogGetPassword{
+                 id:getpass
+                 anchors.centerIn: Overlay.overlay
+                 height:180
+                 onAccepted:{
+                 if(!abm.authenticate(getpass.password)){
+                 getpass.open()
+                 }else{
+                 abm.loadContacts()
+                 dialogSelectAddressByAddressBook.open()
+                 }
+                 }
+                 }
 
     ColumnLayout {
         id: columnLayoutRoot
@@ -86,7 +139,23 @@ Page {
             Layout.alignment: Qt.AlignTop
 
             Label { text: qsTr("Send to") }
-            
+
+             Button {
+                                id: buttonSelectCustomChangeAddress
+                                text: qsTr("Select")
+                                flat: true
+                                highlighted: true
+
+                                onClicked: {
+                                 if(abm.getSecType()!=2){
+                                        abm.loadContacts()
+                                        dialogSelectAddressByAddressBook.open()
+                                     }else{
+                                     getpass.open()
+                                   }
+                                }
+                            }
+
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 8
@@ -109,8 +178,10 @@ Page {
                     selectByMouse: true
                     Layout.fillWidth: true
                     Layout.topMargin: -5
+                    Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
                     onTextChanged:{
                         root.destinationAddress = text
+
                     }
                 }
             } // RowLayout
@@ -130,4 +201,8 @@ Page {
                 }
         }
     } // ColumnLayout (root)
+
+    ListModel{
+    id:addressList
+    }
 }
