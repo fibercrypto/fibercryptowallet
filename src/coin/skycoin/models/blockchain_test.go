@@ -154,7 +154,7 @@ func TestSkycoinBlockchainStatusGetLastBlock(t *testing.T) {
 	status := &SkycoinBlockchain{CacheTime: 20}
 
 	// api interaction error
-	block, err := status.GetLastBlock()
+	block, err := status.GetLastBlock() // nolint gosec
 	require.Error(t, err)
 
 	block, err = status.GetLastBlock()

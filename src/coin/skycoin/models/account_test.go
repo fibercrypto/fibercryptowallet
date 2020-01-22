@@ -58,7 +58,7 @@ func TestWalletListPendingTransactions(t *testing.T) {
 		wlt := wallets.Value()
 		account := wlt.GetCryptoAccount()
 		global_mock.On(method, wlt.GetId()).Return(response, errors.New("failure")).Once()
-		txns, err := account.ListPendingTransactions()
+		txns, err := account.ListPendingTransactions() // nolint gosec
 		require.Error(t, err)
 		global_mock.On(method, wlt.GetId()).Return(response, nil).Once()
 		txns, err = account.ListPendingTransactions()
@@ -95,7 +95,7 @@ func TestSkycoinAddressGetBalance(t *testing.T) {
 	response.Confirmed = readable.Balance{Coins: uint64(42000000), Hours: uint64(200)}
 	skyAddrs := addr.GetCryptoAccount()
 	global_mock.On("Balance", []string{addr.String()}).Return(response, errors.New("failure")).Once()
-	val, err := skyAddrs.GetBalance(Sky)
+	val, err := skyAddrs.GetBalance(Sky) // nolint gosec
 	require.Error(t, err)
 	global_mock.On("Balance", []string{addr.String()}).Return(response, nil)
 	val, err = skyAddrs.GetBalance(Sky)
@@ -216,17 +216,17 @@ func TestLocalWalletGetBalance(t *testing.T) {
 
 	// wallet not found
 	wlt := &LocalWallet{WalletDir: "./testdata", Id: "no_wallet.wlt"}
-	val, err := wlt.GetBalance(Sky)
+	val, err := wlt.GetBalance(Sky) // nolint gosec
 	require.Error(t, err)
 
 	// api interaction error
 	wlt = &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
-	val, err = wlt.GetBalance(Sky)
+	val, err = wlt.GetBalance(Sky) // nolint gosec
 	require.Error(t, err)
 
 	// invalid HeadOutputs
 	wlt = &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
-	val, err = wlt.GetBalance(Sky)
+	val, err = wlt.GetBalance(Sky) // nolint gosec
 	require.Error(t, err)
 	response.HeadOutputs = response.HeadOutputs[:len(response.HeadOutputs)-1]
 
