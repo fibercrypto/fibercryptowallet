@@ -91,7 +91,7 @@ func TestSkycoinBlockchainStatusGetCoinValue(t *testing.T) {
 	_, err = block.GetCoinValue(core.CoinCurrentSupply, "INVALIDCOIN")
 	require.Error(t, err)
 
-	val, err = block.GetCoinValue(core.CoinCurrentSupply, Sky)
+	val, err := block.GetCoinValue(core.CoinCurrentSupply, Sky)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(200111111))
 	val, err = block.GetCoinValue(core.CoinCurrentSupply, CoinHour)
