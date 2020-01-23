@@ -127,11 +127,11 @@ func TestSkycoinBlockchainStatusGetNumberOfBlocks(t *testing.T) {
 
 	// api interaction error
 	block := new(SkycoinBlockchain)
-	val, err := block.GetNumberOfBlocks()
+	_, err := block.GetNumberOfBlocks()
 	require.Error(t, err)
 
 	block = &SkycoinBlockchain{CacheTime: 20}
-	val, err = block.GetNumberOfBlocks()
+	val, err := block.GetNumberOfBlocks()
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(20))
 }
