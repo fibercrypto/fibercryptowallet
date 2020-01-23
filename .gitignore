@@ -37,6 +37,7 @@ nosetests.xml
 coverage.xml
 coverage.html
 coverage.out
+coverage.tmp.out
 *.cover
 .hypothesis/
 
