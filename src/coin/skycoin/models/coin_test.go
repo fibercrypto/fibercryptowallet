@@ -2,6 +2,7 @@ package skycoin
 
 import (
 	"encoding/hex"
+	"fmt"
 	"testing"
 	"time"
 
@@ -333,4 +334,22 @@ func TestPendingTxnGetTimestamp(t *testing.T) {
 	sTxn.Transaction.Received = cur
 
 	require.Equal(t, core.Timestamp(cur.Unix()), sTxn.GetTimestamp())
+}
+
+func TestPendingTxnGetInputs(t *testing.T) {
+	hashes := make([]string, 0)
+	for i := 0; i < 10; i++ {
+		hashes = append(hashes, fmt.Sprintf("hash%d", i))
+	}
+	sTxn := new(SkycoinPendingTransaction)
+	inputs := make([]readable.TransactionInput, 0)
+	for _, hash := range hashes {
+		inputs = append(inputs, readable.TransactionInput{Hash: hash})
+	}
+	sTxn.Transaction.Transaction.In = inputs
+	inHashes := make([]string, 0)
+	for _, input := range sTxn.GetInputs() {
+		inHashes = append(inHashes, input.GetId())
+	}
+	requirethat.ElementsMatch(t, hashes, inHashes)
 }
