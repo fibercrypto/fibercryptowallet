@@ -371,3 +371,17 @@ func TestPendingTxnGetOutputs(t *testing.T) {
 	}
 	requirethat.ElementsMatch(t, hashes, outHashes)
 }
+
+func TestPendingTxnGetId(t *testing.T) {
+	hashes := make([]string, 0)
+	for i := 0; i < 10; i++ {
+		hashes = append(hashes, fmt.Sprintf("hash%d", i))
+	}
+	for _, hash := range hashes {
+		t.Run(hash, func(t *testing.T) {
+			sTxn := new(SkycoinPendingTransaction)
+			sTxn.Transaction.Transaction.Hash = hash
+			require.Equal(t, hash, sTxn.GetId())
+		})
+	}
+}
