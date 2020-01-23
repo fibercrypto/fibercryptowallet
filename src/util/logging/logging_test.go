@@ -25,7 +25,7 @@ func TestGetOutputWriter(t *testing.T) {
 	val, err = GetOutputWriter("log")
 	require.NoError(t, err)
 
-	val, err = GetOutputWriter("//log")
+	val, err = GetOutputWriter(".....*/*/a**%$&#$@log")
 	require.Error(t, err)
 }
 
