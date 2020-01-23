@@ -13,6 +13,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
 )
 
@@ -382,6 +383,31 @@ func TestPendingTxnGetId(t *testing.T) {
 			sTxn := new(SkycoinPendingTransaction)
 			sTxn.Transaction.Transaction.Hash = hash
 			require.Equal(t, hash, sTxn.GetId())
+		})
+	}
+}
+
+func TestPendingTxnComputeFee(t *testing.T) {
+	tests := []struct {
+		ticker      string
+		fee         uint64
+		amount      uint64
+		wantedError error
+	}{
+		{ticker: Sky, wantedError: nil},
+		{ticker: CoinHour, fee: 20, amount: 20, wantedError: nil},
+		{ticker: CoinHour, fee: 42, amount: 42, wantedError: nil},
+		{ticker: CalculatedHour, wantedError: errors.ErrNotImplemented},
+		{ticker: "INVALIDTICKER", wantedError: errors.ErrInvalidAltcoinTicker},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.ticker, func(t *testing.T) {
+			sTxn := new(SkycoinPendingTransaction)
+			sTxn.Transaction.Transaction.Fee = tt.fee
+			amount, err := sTxn.ComputeFee(tt.ticker)
+			require.Equal(t, tt.amount, amount)
+			require.Equal(t, tt.wantedError, err)
 		})
 	}
 }
