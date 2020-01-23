@@ -15,9 +15,11 @@ type QDeviceInteraction struct {
 	_ func()                    `slot:"backupDevice"`
 	_ func()                    `slot:"changePin"`
 	_ func()                    `slot:"deviceFeatures"`
+	_ func(uint, bool)          `slot:"generateMnemonic"`
 	_ func()                    `slot:"cancelCommand"`
 	_ func(hasPin bool)         `signal:"hasPinDetermined"`
 	_ func(name string)         `signal:"nameDetermined"`
+	_ func(isInitialized bool)  `signal:"isInitializedDetermined"`
 	_ func(needsBackup bool)    `signal:"needsBackupDetermined"`
 	_ func()                    `signal:"operationDone"`
 }
@@ -30,6 +32,7 @@ func (devI *QDeviceInteraction) init() {
 	devI.ConnectDeviceFeatures(devI.deviceFeatures)
 	devI.ConnectBackupDevice(devI.backupDevice)
 	devI.ConnectCancelCommand(devI.cancelCommand)
+	devI.ConnectGenerateMnemonic(devI.generateMnemonic)
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
@@ -94,8 +97,22 @@ func (devI *QDeviceInteraction) deviceFeatures() {
 		devI.HasPinDetermined(*features.PinProtection)
 		devI.NameDetermined(*features.Label)
 		devI.NeedsBackupDetermined(*features.NeedsBackup)
+		devI.IsInitializedDetermined(*features.Initialized)
 		return data
 	}).Catch(func(err error) error {
+		return err
+	})
+}
+
+func (devI *QDeviceInteraction) generateMnemonic(wordCount uint, usePassphrase bool) {
+	dev := hardware.NewSkyWalletInteraction()
+	dev.GenerateMnemonic(uint32(wordCount), usePassphrase).Then(func(data interface{}) interface{} {
+		logWalletsModel.Infoln(data)
+		devI.OperationDone()
+		return data
+	}).Catch(func(err error) error {
+		devI.OperationDone()
+		logWalletsModel.WithError(err).Errorln("unable to generate mnemonic")
 		return err
 	})
 }

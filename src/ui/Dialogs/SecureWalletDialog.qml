@@ -26,7 +26,7 @@ Dialog {
             unblockButtons();
         }
     }
-    onAboutToShow: deviceInteraction.deviceFeatures()
+    onAboutToShow: deviceInteraction.deviceFeatures();
     function setEnableButtons(enabled) {
         buttonCreateBackup.enabled = enabled;
         buttonWipeDevice.enabled = enabled;

@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import DeviceInteraction 1.0
 
 Dialog {
     id: dialogUnconfiguredWallet
@@ -9,6 +10,16 @@ Dialog {
     title: qsTr("Unconfigured wallet")
     standardButtons: Dialog.Abort
     closePolicy: Dialog.NoAutoClose
+    DeviceInteraction {
+        id: deviceInteraction2
+        onOperationDone: {
+            deviceInteraction2.deviceFeatures();
+        }
+        onIsInitializedDetermined: {
+            buttonAutoConf.visible = !isInitialized;
+        }
+    }
+    onAboutToShow: deviceInteraction2.deviceFeatures();
 
     Flickable {
         id: flickable
@@ -53,10 +64,28 @@ Dialog {
                     font.bold: true
                     Layout.fillWidth: true
                 }
-                ItemDelegate {
+                RowLayout {
                     id: buttonAutoConf
-                    text: qsTr("Configure automatically")
                     Layout.fillWidth: true
+                    ItemDelegate {
+                        text: qsTr("Configure automatically")
+                        Layout.fillWidth: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                deviceInteraction.generateMnemonic(+wordCount.currentText, usePassphrase.checked);
+                            }
+                        }
+                    }
+                    CheckBox {
+                        id: usePassphrase
+                        text: qsTr("Use pass phrase")
+                        enabled: false
+                    }
+                    ComboBox {
+                        id: wordCount
+                        model: [12, 24]
+                    }
                 }
                 ItemDelegate {
                     id: buttonBackupConf
