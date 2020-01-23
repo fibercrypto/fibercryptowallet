@@ -353,3 +353,21 @@ func TestPendingTxnGetInputs(t *testing.T) {
 	}
 	requirethat.ElementsMatch(t, hashes, inHashes)
 }
+
+func TestPendingTxnGetOutputs(t *testing.T) {
+	hashes := make([]string, 0)
+	for i := 0; i < 10; i++ {
+		hashes = append(hashes, fmt.Sprintf("hash%d", i))
+	}
+	sTxn := new(SkycoinPendingTransaction)
+	outputs := make([]readable.TransactionOutput, 0)
+	for _, hash := range hashes {
+		outputs = append(outputs, readable.TransactionOutput{Hash: hash})
+	}
+	sTxn.Transaction.Transaction.Out = outputs
+	outHashes := make([]string, 0)
+	for _, output := range sTxn.GetOutputs() {
+		outHashes = append(outHashes, output.GetId())
+	}
+	requirethat.ElementsMatch(t, hashes, outHashes)
+}
