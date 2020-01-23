@@ -3,6 +3,7 @@ package skycoin
 import (
 	"encoding/hex"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -324,4 +325,12 @@ func TestSkycoinCreatedTxnFee(t *testing.T) {
 
 	_, err = cTxn.ComputeFee("NOCOINATALL")
 	testutil.RequireError(t, err, "Invalid ticker")
+}
+
+func TestPendingTxnGetTimestamp(t *testing.T) {
+	cur := time.Now()
+	sTxn := new(SkycoinPendingTransaction)
+	sTxn.Transaction.Received = cur
+
+	require.Equal(t, core.Timestamp(cur.Unix()), sTxn.GetTimestamp())
 }
