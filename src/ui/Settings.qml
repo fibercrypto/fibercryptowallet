@@ -345,26 +345,7 @@ Page {
                 }
             }
         }
-        // RowLayout {
-        //     Layout.fillWidth: true
-            
-        //         text: qsTr("Log level")
-        //         font.bold: true
-        //     Label {
-        //         color: Material.accent
-        //     }
-
-            //     id: logLevelOption
-            // ComboBox{
-            //     // When an item is selected, update the backend.
-            //     onActivated: logLevel.modifier = qsTr(logLevelOption.currentValue)
-
-            //     // // Set the initial currentIndex to the value stored in the backend.
-            //     // Component.onCompleted: currentIndex = indexOfValue(logLevel.old)
-            // }
-            //     model:["debug", "info", "warn", "error", "fatal", "panic"]
-        //}
-    } // ColumnLayout
+    }  
 
   ButtonGroup {
   property int select:checkedButton.pos
