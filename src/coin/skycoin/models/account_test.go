@@ -265,10 +265,10 @@ func TestRemoteWalletGetBalance(t *testing.T) {
 		poolSection: PoolSection,
 	}
 	global_mock.On("WalletBalance", "wallet").Return(response, errors.New("failure")).Once()
-	val, err := wlt.GetBalance(Sky)
+	_, err := wlt.GetBalance(Sky)
 	require.Error(t, err)
 	global_mock.On("WalletBalance", "wallet").Return(response, nil)
-	val, err = wlt.GetBalance(Sky)
+	val, err := wlt.GetBalance(Sky)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(42000000))
 	val, err = wlt.GetBalance(CoinHour)

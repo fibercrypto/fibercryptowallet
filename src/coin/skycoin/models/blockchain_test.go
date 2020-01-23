@@ -84,14 +84,14 @@ func TestSkycoinBlockchainStatusGetCoinValue(t *testing.T) {
 	block := &SkycoinBlockchain{CacheTime: 20}
 
 	// api interaction error
-	val, err := block.GetCoinValue(core.CoinCurrentSupply, Sky)
+	_, err := block.GetCoinValue(core.CoinCurrentSupply, Sky)
 	require.Error(t, err)
 
 	// invalid coin
-	val, err = block.GetCoinValue(core.CoinCurrentSupply, "INVALIDCOIN")
+	_, err = block.GetCoinValue(core.CoinCurrentSupply, "INVALIDCOIN")
 	require.Error(t, err)
 
-	val, err = block.GetCoinValue(core.CoinCurrentSupply, Sky)
+	val, err := block.GetCoinValue(core.CoinCurrentSupply, Sky)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(200111111))
 	val, err = block.GetCoinValue(core.CoinCurrentSupply, CoinHour)
