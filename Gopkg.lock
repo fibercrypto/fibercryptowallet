@@ -10,7 +10,60 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:ac2a05be7167c495fe8aaf8aaf62ecf81e78d2180ecb04e16778dc6c185c96a5"
+  digest = "1:217ded54b7421d89365f998c11f0f94a7ad4691b43029584a365636930b24ed7"
+  name = "github.com/SkycoinProject/skycoin"
+  packages = [
+    "src/api",
+    "src/cipher",
+    "src/cipher/base58",
+    "src/cipher/bip32",
+    "src/cipher/bip39",
+    "src/cipher/bip39/wordlists",
+    "src/cipher/bip44",
+    "src/cipher/chacha20poly1305",
+    "src/cipher/chacha20poly1305/internal/chacha20",
+    "src/cipher/encoder",
+    "src/cipher/encrypt",
+    "src/cipher/pbkdf2",
+    "src/cipher/poly1305",
+    "src/cipher/ripemd160",
+    "src/cipher/scrypt",
+    "src/cipher/secp256k1-go",
+    "src/cipher/secp256k1-go/secp256k1-go2",
+    "src/cipher/testsuite",
+    "src/cli",
+    "src/coin",
+    "src/daemon",
+    "src/daemon/gnet",
+    "src/daemon/pex",
+    "src/daemon/strand",
+    "src/kvstorage",
+    "src/params",
+    "src/readable",
+    "src/testutil",
+    "src/transaction",
+    "src/util/apputil",
+    "src/util/droplet",
+    "src/util/elapse",
+    "src/util/fee",
+    "src/util/file",
+    "src/util/http",
+    "src/util/iputil",
+    "src/util/logging",
+    "src/util/mathutil",
+    "src/util/timeutil",
+    "src/util/useragent",
+    "src/visor",
+    "src/visor/blockdb",
+    "src/visor/dbutil",
+    "src/visor/historydb",
+    "src/wallet",
+  ]
+  pruneopts = "UT"
+  revision = "66f5df5849d339d403a475d523ebe7d1a4c92c31"
+  version = "v0.27.0"
+
+[[projects]]
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
   pruneopts = ""
@@ -214,60 +267,6 @@
   version = "v1.4.2"
 
 [[projects]]
-  branch = "develop"
-  digest = "1:a96107d03315106d509f02d1bae169f6fc9a4f62a28f5d4d49f08de62e9ec5cb"
-  name = "github.com/SkycoinProject/skycoin"
-  packages = [
-    "src/api",
-    "src/cipher",
-    "src/cipher/base58",
-    "src/cipher/bip32",
-    "src/cipher/bip39",
-    "src/cipher/bip39/wordlists",
-    "src/cipher/bip44",
-    "src/cipher/chacha20poly1305",
-    "src/cipher/chacha20poly1305/internal/chacha20",
-    "src/cipher/encoder",
-    "src/cipher/encrypt",
-    "src/cipher/pbkdf2",
-    "src/cipher/poly1305",
-    "src/cipher/ripemd160",
-    "src/cipher/scrypt",
-    "src/cipher/secp256k1-go",
-    "src/cipher/secp256k1-go/secp256k1-go2",
-    "src/cipher/testsuite",
-    "src/cli",
-    "src/coin",
-    "src/daemon",
-    "src/daemon/gnet",
-    "src/daemon/pex",
-    "src/daemon/strand",
-    "src/kvstorage",
-    "src/params",
-    "src/readable",
-    "src/testutil",
-    "src/transaction",
-    "src/util/apputil",
-    "src/util/droplet",
-    "src/util/elapse",
-    "src/util/fee",
-    "src/util/file",
-    "src/util/http",
-    "src/util/iputil",
-    "src/util/logging",
-    "src/util/mathutil",
-    "src/util/timeutil",
-    "src/util/useragent",
-    "src/visor",
-    "src/visor/blockdb",
-    "src/visor/dbutil",
-    "src/visor/historydb",
-    "src/wallet",
-  ]
-  pruneopts = ""
-  revision = "d7e4b2f3e31ea96bdcaba595507fde42baa156b9"
-
-[[projects]]
   digest = "1:0c63b3c7ad6d825a898f28cb854252a3b29d37700c68a117a977263f5ec94efe"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -304,7 +303,6 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:2f02f4bd6febc160aa539753b29b7457ed63454a29d7cf2e8b2fd0e1851e7d5f"
   name = "github.com/therecipe/qt"
   packages = [
     "core",
@@ -312,17 +310,21 @@
     "internal/binding/runtime",
     "network",
     "qml",
+    "widgets",
   ]
   pruneopts = ""
-  revision = "0f56c6673a90e5cb2f0b7e626b930a0994536d47"
+  revision = "2b818d970888dab6bbf6aa2702bc28c1e6fbdb83"
 
 [[projects]]
   branch = "master"
-  digest = "1:0296ee1ea79f78060b44458a816950f9b388b1cee78b870527cdb122d5010e29"
+  digest = "1:3f4267ef48c80f89cfd1e5b7f104c184a646e51e0b51a030d62184c830da5c4d"
   name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  pruneopts = ""
-  revision = "4f8c1d86b1ba699e7a66cd649947ed270a74e0bb"
+  packages = [
+    "bcrypt",
+    "blowfish",
+    "pbkdf2",
+    "ssh/terminal",
+  ]
 
 [[projects]]
   branch = "master"
@@ -346,7 +348,7 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  input-imports = [
+  inputs-digest = "33a754eab205b8b232c2e9e4f7936fdc65be1e5f08384feaf417e8bd4b663e14"
     "github.com/davecgh/go-spew/spew",
     "github.com/fibercrypto/skywallet-go/src/skywallet",
     "github.com/fibercrypto/skywallet-go/src/skywallet/usb",
@@ -354,27 +356,7 @@
     "github.com/fibercrypto/skywallet-protob/go",
     "github.com/gogo/protobuf/proto",
     "github.com/mgutz/ansi",
-    "github.com/sirupsen/logrus",
-    "github.com/SkycoinProject/skycoin/src/api",
-    "github.com/SkycoinProject/skycoin/src/cipher",
-    "github.com/SkycoinProject/skycoin/src/cipher/bip39",
-    "github.com/SkycoinProject/skycoin/src/cipher/testsuite",
-    "github.com/SkycoinProject/skycoin/src/cli",
-    "github.com/SkycoinProject/skycoin/src/coin",
-    "github.com/SkycoinProject/skycoin/src/params",
-    "github.com/SkycoinProject/skycoin/src/readable",
-    "github.com/SkycoinProject/skycoin/src/testutil",
-    "github.com/SkycoinProject/skycoin/src/util/droplet",
-    "github.com/SkycoinProject/skycoin/src/util/file",
     "github.com/skycoin/skycoin/src/util/logging",
-    "github.com/SkycoinProject/skycoin/src/visor",
-    "github.com/SkycoinProject/skycoin/src/wallet",
-    "github.com/stretchr/testify/mock",
-    "github.com/stretchr/testify/require",
-    "github.com/therecipe/qt/core",
-    "github.com/therecipe/qt/gui",
-    "github.com/therecipe/qt/qml",
     "golang.org/x/crypto/ssh/terminal",
-  ]
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -175,8 +175,8 @@ Page {
         anchors.centerIn: Overlay.overlay
         property var walletsAddresses
         readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
-        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
+        width: applicationWindow.width > 640 - 40 ? 640 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > maxHeight - 40 ? maxHeight - 40 : applicationWindow.height - 40
         Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
         
         modal: true
