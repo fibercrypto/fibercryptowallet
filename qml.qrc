@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/ui">
+        <file>src/ui/splash.qml</file>
         <file>src/ui/main.qml</file>
         <file>src/ui/PageWallets.qml</file>
         <file>src/ui/PageSend.qml</file>
