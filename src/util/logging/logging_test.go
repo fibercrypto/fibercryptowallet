@@ -22,10 +22,10 @@ func TestGetOutputWriter(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, NoWriter{}, val)
 
-	val, err = GetOutputWriter("log")
+	_, err = GetOutputWriter("log")
 	require.NoError(t, err)
 
-	val, err = GetOutputWriter(".....*/*/a**%$&#$@log")
+	_, err = GetOutputWriter(".....*/*/a**%$&#$@log")
 	require.Error(t, err)
 }
 
@@ -58,6 +58,6 @@ func TestLevelFromString(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, logrus.PanicLevel, val)
 
-	val, err = LevelFromString("information")
+	_, err = LevelFromString("information")
 	require.Error(t, err)
 }
