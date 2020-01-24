@@ -258,20 +258,6 @@ func TestPendingTxnStatus(t *testing.T) {
 	require.Equal(t, core.TXN_STATUS_PENDING, pendTxn.GetStatus())
 }
 
-func TestPendingTxnFee(t *testing.T) {
-	pendTxn := new(SkycoinPendingTransaction)
-
-	fee, err := pendTxn.ComputeFee(Sky)
-	require.NoError(t, err)
-	require.Equal(t, uint64(0), fee)
-
-	_, err = pendTxn.ComputeFee(CalculatedHour)
-	testutil.RequireError(t, err, "Feature not implemented")
-
-	_, err = pendTxn.ComputeFee("NOCOINATALL")
-	testutil.RequireError(t, err, "Invalid ticker")
-}
-
 func TestUninjectedTxnTimestamp(t *testing.T) {
 	coreTxn := new(SkycoinUninjectedTransaction)
 	require.Equal(t, core.Timestamp(0), coreTxn.GetTimestamp())
@@ -332,7 +318,7 @@ func TestSkycoinCreatedTxnFee(t *testing.T) {
 func TestPendingTxnGetTimestamp(t *testing.T) {
 	cur := time.Now()
 	sTxn := new(SkycoinPendingTransaction)
-	sTxn.Transaction.Received = cur
+	sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{Received: cur}
 
 	require.Equal(t, core.Timestamp(cur.Unix()), sTxn.GetTimestamp())
 }
@@ -347,7 +333,11 @@ func TestPendingTxnGetInputs(t *testing.T) {
 	for _, hash := range hashes {
 		inputs = append(inputs, readable.TransactionInput{Hash: hash})
 	}
-	sTxn.Transaction.Transaction.In = inputs
+	sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{
+		Transaction: readable.BlockTransactionVerbose{
+			In: inputs,
+		},
+	}
 	inHashes := make([]string, 0)
 	for _, input := range sTxn.GetInputs() {
 		inHashes = append(inHashes, input.GetId())
@@ -365,7 +355,11 @@ func TestPendingTxnGetOutputs(t *testing.T) {
 	for _, hash := range hashes {
 		outputs = append(outputs, readable.TransactionOutput{Hash: hash})
 	}
-	sTxn.Transaction.Transaction.Out = outputs
+	sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{
+		Transaction: readable.BlockTransactionVerbose{
+			Out: outputs,
+		},
+	}
 	outHashes := make([]string, 0)
 	for _, output := range sTxn.GetOutputs() {
 		outHashes = append(outHashes, output.GetId())
@@ -381,7 +375,11 @@ func TestPendingTxnGetId(t *testing.T) {
 	for _, hash := range hashes {
 		t.Run(hash, func(t *testing.T) {
 			sTxn := new(SkycoinPendingTransaction)
-			sTxn.Transaction.Transaction.Hash = hash
+			sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{
+				Transaction: readable.BlockTransactionVerbose{
+					Hash: hash,
+				},
+			}
 			require.Equal(t, hash, sTxn.GetId())
 		})
 	}
@@ -404,7 +402,11 @@ func TestPendingTxnComputeFee(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.ticker, func(t *testing.T) {
 			sTxn := new(SkycoinPendingTransaction)
-			sTxn.Transaction.Transaction.Fee = tt.fee
+			sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{
+				Transaction: readable.BlockTransactionVerbose{
+					Fee: tt.fee,
+				},
+			}
 			amount, err := sTxn.ComputeFee(tt.ticker)
 			require.Equal(t, tt.amount, amount)
 			require.Equal(t, tt.wantedError, err)

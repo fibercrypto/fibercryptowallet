@@ -133,7 +133,7 @@ func (spex *SkycoinPEX) GetTxnPool() (core.TransactionIterator, error) {
 	}
 	skycoinTxns := make([]core.Transaction, 0)
 	for _, txn := range txns {
-		skycoinTxns = append(skycoinTxns, &SkycoinPendingTransaction{Transaction: txn})
+		skycoinTxns = append(skycoinTxns, &SkycoinPendingTransaction{Transaction: &txn})
 	}
 	return NewSkycoinTransactionIterator(skycoinTxns), nil
 }

@@ -25,7 +25,7 @@ var logCoin = logging.MustGetLogger("Skycoin coin")
 	Implements Transaction interface
 */
 type SkycoinPendingTransaction struct {
-	Transaction readable.UnconfirmedTransactionVerbose
+	Transaction *readable.UnconfirmedTransactionVerbose
 }
 
 func (txn *SkycoinPendingTransaction) SupportedAssets() []string {
