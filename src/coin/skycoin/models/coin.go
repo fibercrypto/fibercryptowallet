@@ -174,7 +174,7 @@ func (txn *SkycoinPendingTransaction) EncodeSkycoinTransaction() ([]byte, error)
 
 func verifyReadableTransaction(rTxn skytypes.ReadableTxn, checkSigned bool) error {
 	var createdTxn *api.CreatedTransaction
-	if cTxn, err := rTxn.ToCreatedTransaction(); err != nil {
+	if cTxn, err := rTxn.ToCreatedTransaction(); err == nil {
 		createdTxn = cTxn
 	} else {
 		return err
