@@ -10,7 +10,6 @@ Menu {
     readonly property color currentAccent: applicationWindow.accentColor
     property int currentSelectedIndex // initialized when the component is completed (see bellow)
     readonly property var materialPredefinedColors: [
-        Material.Red,
         Material.Pink,
         Material.Purple,
         Material.DeepPurple,
