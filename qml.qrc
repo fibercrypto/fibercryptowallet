@@ -27,6 +27,7 @@
         <file>src/ui/NetworkSettings.qml</file>
         <file>src/ui/WalletSettings.qml</file>
         <file>src/ui/Settings.qml</file>
+        <file>src/ui/SettingsAddressBook.qml</file>
         <file>src/ui/MenuThemeAccent.qml</file>
         <file>src/ui/ToolButtonQR.qml</file>
         <file>src/ui/Delegates/WalletListDelegate.qml</file>
