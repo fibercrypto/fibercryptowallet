@@ -34,6 +34,7 @@ var ActionConfirmOkAndCancelFromDevButton ActionConfirmFrom = 0x4
 var ActionConfirmOkFromWireProtocol ActionConfirmFrom = 0x8
 var ActionConfirmCancelFromWireProtocol ActionConfirmFrom = 0x16
 var ActionConfirmOkAndCancelFromWireProtocol ActionConfirmFrom = 0x32
+var ActionWordRequest ActionConfirmFrom = 0x64
 
 // mixActionConfirmFrom create a merged value from all the masks
 func mixActionConfirmFrom(masks ...ActionConfirmFrom) ActionConfirmFrom {
@@ -45,6 +46,9 @@ func mixActionConfirmFrom(masks ...ActionConfirmFrom) ActionConfirmFrom {
 		result |= ActionConfirmOkAndCancelFromDevButton
 	}
 	if matchAcf(result, ActionConfirmOkFromWireProtocol) && matchAcf(result, ActionConfirmCancelFromWireProtocol) {
+		result |= ActionConfirmOkAndCancelFromWireProtocol
+	}
+	if matchAcf(result, ActionWordRequest) {
 		result |= ActionConfirmOkAndCancelFromWireProtocol
 	}
 	return result
@@ -171,7 +175,13 @@ func (sq *Sequencer) handleInputInteraction(cf ActionConfirmFrom, msg wire.Messa
 		}
 		sq.logCli.Infof("PassphraseAck response:", msgStr)
 	} else if msg.Kind == uint16(messages.MessageType_MessageType_WordRequest) {
-		word, err := sq.scan(skywallet.RequestKindWord, "Word:", "wordd TODO change it")
+		cancelableFrom2InputKind := func(cf ActionConfirmFrom) skywallet.InputRequestKind {
+			return skywallet.RequestKindWord
+		}
+		word, err := sq.scan(
+			cancelableFrom2InputKind(cf),
+			"Word required from device",
+			"Look at the device screen and follow the instructions for the required word.")
 		if err = sq.handleInputReaderResponse(err); err != nil {
 			return wire.Message{}, err
 		}
@@ -376,7 +386,7 @@ func (sq *Sequencer) Recovery(wordCount uint32, usePassphrase *bool, dryRun bool
 			return wire.Message{}, err
 		}
 	}
-	confirm := mixActionConfirmFrom(ActionConfirmNone)
+	confirm := mixActionConfirmFrom(ActionWordRequest, ActionConfirmOkAndCancelFromWireProtocol)
 	for msg.Kind != uint16(messages.MessageType_MessageType_Success) && msg.Kind != uint16(messages.MessageType_MessageType_Failure) {
 		if msg.Kind == uint16(messages.MessageType_MessageType_PinMatrixRequest) || msg.Kind == uint16(messages.MessageType_MessageType_PassphraseRequest) || msg.Kind == uint16(messages.MessageType_MessageType_ButtonRequest) || msg.Kind == uint16(messages.MessageType_MessageType_WordRequest) {
 			if msg, err = sq.handleInputInteraction(confirm, msg); err != nil {
