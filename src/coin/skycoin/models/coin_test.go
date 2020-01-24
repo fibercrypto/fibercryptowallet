@@ -411,3 +411,323 @@ func TestPendingTxnComputeFee(t *testing.T) {
 		})
 	}
 }
+
+func Test_newCreatedTransactionOutput(t *testing.T) {
+	tests := []struct {
+		uxID    string
+		address string
+		coins   string
+		hours   string
+	}{
+		{uxID: "uxId1", address: "addr1", coins: "coins1", hours: "hours1"},
+		{uxID: "uxId2", address: "addr2", coins: "coins2", hours: "hours2"},
+		{uxID: "uxId3", address: "addr3", coins: "coins3", hours: "hours3"},
+		{uxID: "uxId4", address: "addr4", coins: "coins4", hours: "hours4"},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("case%d", i), func(t *testing.T) {
+			txn := newCreatedTransactionOutput(tt.uxID, tt.address, tt.coins, tt.hours)
+			require.Equal(t, tt.uxID, txn.UxID)
+			require.Equal(t, tt.address, txn.Address)
+			require.Equal(t, tt.coins, txn.Coins)
+			require.Equal(t, tt.hours, txn.Hours)
+		})
+	}
+}
+
+func Test_newCreatedTransactionInput(t *testing.T) {
+	tests := []struct {
+		uxID            string
+		address         string
+		coins           string
+		hours           string
+		calculatedHours string
+		time            uint64
+		block           uint64
+		txID            string
+	}{
+		{
+			uxID:            "uxId1",
+			address:         "addr1",
+			coins:           "coins1",
+			hours:           "hours1",
+			calculatedHours: "cH1",
+			txID:            "id1",
+			time:            1,
+			block:           1,
+		},
+		{
+			uxID:            "uxId2",
+			address:         "addr2",
+			coins:           "coins2",
+			hours:           "hours2",
+			calculatedHours: "cH2",
+			txID:            "id2",
+			time:            2,
+			block:           2,
+		},
+		{
+			uxID:            "uxId3",
+			address:         "addr3",
+			coins:           "coins3",
+			hours:           "hours3",
+			calculatedHours: "cH3",
+			txID:            "id3",
+			time:            3,
+			block:           3,
+		},
+		{
+			uxID:            "uxId4",
+			address:         "addr4",
+			coins:           "coins4",
+			hours:           "hours4",
+			calculatedHours: "cH4",
+			txID:            "id4",
+			time:            4,
+			block:           4,
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("case%d", i), func(t *testing.T) {
+			txn := newCreatedTransactionInput(
+				tt.uxID, tt.address, tt.coins, tt.hours, tt.calculatedHours, tt.time, tt.block, tt.txID,
+			)
+			require.Equal(t, tt.uxID, txn.UxID)
+			require.Equal(t, tt.address, txn.Address)
+			require.Equal(t, tt.coins, txn.Coins)
+			require.Equal(t, tt.hours, txn.Hours)
+			require.Equal(t, tt.calculatedHours, txn.CalculatedHours)
+			require.Equal(t, tt.time, txn.Time)
+			require.Equal(t, tt.block, txn.Block)
+			require.Equal(t, tt.txID, txn.TxID)
+		})
+	}
+}
+
+func Test_newCreatedTransaction(t *testing.T) {
+	tests := []struct {
+		length    uint32
+		txnType   uint8
+		txID      string
+		innerHash string
+		fee       string
+		ins       []api.CreatedTransactionInput
+		outs      []api.CreatedTransactionOutput
+		sigs      []string
+	}{
+		{
+			length:    1,
+			txnType:   1,
+			txID:      "txID1",
+			innerHash: "hash1",
+			fee:       "fee1",
+			ins: []api.CreatedTransactionInput{
+				api.CreatedTransactionInput{UxID: "UxID1"},
+			},
+			outs: []api.CreatedTransactionOutput{
+				api.CreatedTransactionOutput{UxID: "UxID1"},
+			},
+			sigs: []string{"first1", "second1"},
+		},
+		{
+			length:    2,
+			txnType:   2,
+			txID:      "txID2",
+			innerHash: "hash2",
+			fee:       "fee2",
+			ins: []api.CreatedTransactionInput{
+				api.CreatedTransactionInput{UxID: "UxID2"},
+			},
+			outs: []api.CreatedTransactionOutput{
+				api.CreatedTransactionOutput{UxID: "UxID2"},
+			},
+			sigs: []string{"first2", "second2"},
+		},
+		{
+			length:    3,
+			txnType:   3,
+			txID:      "txID3",
+			innerHash: "hash3",
+			fee:       "fee3",
+			ins: []api.CreatedTransactionInput{
+				api.CreatedTransactionInput{UxID: "UxID3"},
+			},
+			outs: []api.CreatedTransactionOutput{
+				api.CreatedTransactionOutput{UxID: "UxID3"},
+			},
+			sigs: []string{"first3", "second3"},
+		},
+		{
+			length:    4,
+			txnType:   4,
+			txID:      "txID4",
+			innerHash: "hash4",
+			fee:       "fee4",
+			ins: []api.CreatedTransactionInput{
+				api.CreatedTransactionInput{UxID: "UxID4"},
+			},
+			outs: []api.CreatedTransactionOutput{
+				api.CreatedTransactionOutput{UxID: "UxID4"},
+			},
+			sigs: []string{"first4", "second4"},
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("case%d", i), func(t *testing.T) {
+			txn := newCreatedTransaction(
+				tt.length,
+				tt.txnType,
+				tt.txID,
+				tt.innerHash,
+				tt.fee,
+				tt.ins,
+				tt.outs,
+				tt.sigs,
+			)
+			require.Equal(t, tt.length, txn.Length)
+			require.Equal(t, tt.txnType, txn.Type)
+			require.Equal(t, tt.txID, txn.TxID)
+			require.Equal(t, tt.innerHash, txn.InnerHash)
+			require.Equal(t, tt.fee, txn.Fee)
+			requirethat.ElementsMatch(t, tt.ins, txn.In)
+			requirethat.ElementsMatch(t, tt.outs, txn.Out)
+			requirethat.ElementsMatch(t, tt.sigs, txn.Sigs)
+		})
+	}
+}
+
+func Test_blockTxnToCreatedTxn(t *testing.T) {
+	tests := []struct {
+		Address         string
+		Coins           string
+		Hours           uint64
+		CalculatedHours uint64
+		Time            uint64
+		Block           uint64
+		Hash            string
+		Length          uint32
+		Type            uint8
+		InnerHash       string
+		Fee             uint64
+		sigs            []string
+	}{
+		{
+			Address:         "addr1",
+			Coins:           "coins1",
+			Hours:           1,
+			CalculatedHours: 1,
+			Time:            1,
+			Hash:            "hash1",
+			Length:          1,
+			Type:            1,
+			InnerHash:       "inner1",
+			Fee:             1,
+			sigs:            []string{"first1", "second1"},
+		},
+		{
+			Address:         "addr2",
+			Coins:           "coins2",
+			Hours:           2,
+			CalculatedHours: 2,
+			Time:            2,
+			Hash:            "hash2",
+			Length:          2,
+			Type:            2,
+			InnerHash:       "inner2",
+			Fee:             2,
+			sigs:            []string{"first2", "second2"},
+		},
+		{
+			Address:         "addr3",
+			Coins:           "coins3",
+			Hours:           3,
+			CalculatedHours: 3,
+			Time:            3,
+			Hash:            "hash3",
+			Length:          3,
+			Type:            3,
+			InnerHash:       "inner3",
+			Fee:             3,
+			sigs:            []string{"first3", "second3"},
+		},
+		{
+			Address:         "addr4",
+			Coins:           "coins4",
+			Hours:           4,
+			CalculatedHours: 4,
+			Time:            4,
+			Hash:            "hash4",
+			Length:          4,
+			Type:            4,
+			InnerHash:       "inner4",
+			Fee:             4,
+			sigs:            []string{"first4", "second4"},
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("case%d", i), func(*testing.T) {
+			block := readable.BlockTransactionVerbose{
+				Length:    tt.Length,
+				Type:      tt.Type,
+				Hash:      tt.Hash,
+				InnerHash: tt.InnerHash,
+				Fee:       tt.Fee,
+				In: []readable.TransactionInput{
+					readable.TransactionInput{
+						Hash:            tt.Hash,
+						Address:         tt.Address,
+						Coins:           tt.Coins,
+						Hours:           tt.Hours,
+						CalculatedHours: tt.CalculatedHours,
+					},
+				},
+				Out: []readable.TransactionOutput{
+					readable.TransactionOutput{
+						Hash:    tt.Hash,
+						Address: tt.Address,
+						Coins:   tt.Coins,
+						Hours:   tt.Hours,
+					},
+				},
+				Sigs: tt.sigs,
+			}
+			txn, err := blockTxnToCreatedTxn(block, tt.Time)
+			require.NoError(t, err)
+			require.Equal(t, tt.Length, txn.Length)
+			require.Equal(t, tt.Type, txn.Type)
+			require.Equal(t, tt.Hash, txn.TxID)
+			require.Equal(t, tt.InnerHash, txn.InnerHash)
+			require.Equal(t, fmt.Sprint(tt.Fee), txn.Fee)
+			require.Equal(t, 1, len(txn.In))
+			require.Equal(t, 1, len(txn.Out))
+			requirethat.ElementsMatch(t,
+				[]api.CreatedTransactionInput{
+					newCreatedTransactionInput(
+						tt.Hash,
+						tt.Address,
+						tt.Coins,
+						fmt.Sprint(tt.Hours),
+						fmt.Sprint(tt.CalculatedHours),
+						tt.Time,
+						tt.Block,
+						tt.Hash,
+					),
+				},
+				txn.In,
+			)
+			requirethat.ElementsMatch(t,
+				[]api.CreatedTransactionOutput{
+					newCreatedTransactionOutput(
+						tt.Hash, tt.Address, tt.Coins, fmt.Sprint(tt.Hours),
+					),
+				},
+				txn.Out,
+			)
+			requirethat.ElementsMatch(t, tt.sigs, txn.Sigs)
+		})
+	}
+}
