@@ -62,6 +62,8 @@ type QWallet struct {
 func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 	requestKind2Prompt := func(kind skyWallet.InputRequestKind, bridge *QBridge) (func(string, string), error) {
 		switch kind {
+		case skyWallet.RequestKindWord:
+			return bridge.GetBip39Word, nil
 		case skyWallet.RequestKindPinMatrix:
 			return bridge.GetSkyHardwareWalletPin, nil
 		case skyWallet.RequestInformUserOkAndCancel:
@@ -86,7 +88,7 @@ func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 			bridgeForPassword.BeginUse()
 			defer bridgeForPassword.EndUse()
 			switch kind {
-			case skyWallet.RequestKindPinMatrix:
+			case skyWallet.RequestKindPinMatrix, skyWallet.RequestKindWord:
 				bridgeForPassword.lock()
 				prompt(tittle, message)
 				bridgeForPassword.lock()

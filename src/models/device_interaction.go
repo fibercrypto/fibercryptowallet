@@ -16,6 +16,7 @@ type QDeviceInteraction struct {
 	_ func()                    `slot:"changePin"`
 	_ func()                    `slot:"deviceFeatures"`
 	_ func(uint, bool)          `slot:"generateMnemonic"`
+	_ func(uint, bool)          `slot:"restoreBackup"`
 	_ func()                    `slot:"cancelCommand"`
 	_ func(hasPin bool)         `signal:"hasPinDetermined"`
 	_ func(name string)         `signal:"nameDetermined"`
@@ -33,6 +34,7 @@ func (devI *QDeviceInteraction) init() {
 	devI.ConnectBackupDevice(devI.backupDevice)
 	devI.ConnectCancelCommand(devI.cancelCommand)
 	devI.ConnectGenerateMnemonic(devI.generateMnemonic)
+	devI.ConnectRestoreBackup(devI.restoreBackup)
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
@@ -113,6 +115,19 @@ func (devI *QDeviceInteraction) generateMnemonic(wordCount uint, usePassphrase b
 	}).Catch(func(err error) error {
 		devI.OperationDone()
 		logWalletsModel.WithError(err).Errorln("unable to generate mnemonic")
+		return err
+	})
+}
+
+func (devI *QDeviceInteraction) restoreBackup(wordCount uint, usePassphrase bool) {
+	dev := hardware.NewSkyWalletInteraction()
+	dev.Recovery(uint32(wordCount), &usePassphrase, false).Then(func(data interface{}) interface{} {
+		logWalletsModel.Infoln(data)
+		devI.OperationDone()
+		return data
+	}).Catch(func(err error) error {
+		logWalletsModel.WithError(err).Errorln("unable to recover device with you seed")
+		devI.OperationDone()
 		return err
 	})
 }
