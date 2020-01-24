@@ -833,3 +833,38 @@ func Test_verifyReadableTransaction(t *testing.T) {
 
 	//TODO: add a case that not raise an error
 }
+
+func TestPendingTxnVerifySignature(t *testing.T) {
+	tests := []struct {
+		name string
+		sTxn *SkycoinPendingTransaction
+	}{
+		{
+			name: "empty transaction",
+			sTxn: &SkycoinPendingTransaction{Transaction: new(readable.UnconfirmedTransactionVerbose)},
+		},
+		{
+			name: "cero outputs",
+			sTxn: &SkycoinPendingTransaction{
+				Transaction: &readable.UnconfirmedTransactionVerbose{
+					Transaction: readable.BlockTransactionVerbose{
+						In: []readable.TransactionInput{readable.TransactionInput{}},
+					},
+				},
+			},
+		},
+		//TODO: add valid tests
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if !tt.sTxn.Transaction.IsValid {
+				require.Error(t, tt.sTxn.VerifySigned())
+				require.Error(t, tt.sTxn.VerifyUnsigned())
+				tt.sTxn.Transaction.IsValid = true
+			}
+			require.Equal(t, verifyReadableTransaction(tt.sTxn, false), tt.sTxn.VerifyUnsigned())
+			require.Equal(t, verifyReadableTransaction(tt.sTxn, true), tt.sTxn.VerifySigned())
+		})
+	}
+}
