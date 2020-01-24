@@ -1705,10 +1705,12 @@ func TestSkycoinLocalWalletEncrypt(t *testing.T) {
 
 			tt.srv.Encrypt(tt.name, tt.pwd)
 			encrypted, err := tt.srv.IsEncrypted(tt.name)
-			require.NoError(t, err)
 			if clean {
+				require.NoError(t, err)
 				err = wallet.Save(wlt, tt.srv.walletDir)
 				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
 			}
 			require.Equal(t, tt.valid, encrypted)
 		})
@@ -1742,10 +1744,12 @@ func TestSkycoinLocalWalletDecrypt(t *testing.T) {
 
 			tt.srv.Decrypt(tt.name, tt.pwd)
 			encrypted, err := tt.srv.IsEncrypted(tt.name)
-			require.NoError(t, err)
 			if clean {
+				require.NoError(t, err)
 				err = wallet.Save(wlt, tt.srv.walletDir)
 				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
 			}
 			require.Equal(t, tt.valid, encrypted)
 		})
