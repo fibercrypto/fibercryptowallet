@@ -803,3 +803,33 @@ func TestSkycoinPendingTransactionEncodeSkycoinTransaction(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, exp, ser)
 }
+
+func Test_verifyReadableTransaction(t *testing.T) {
+	mockTxn := new(mocks.ReadableTxn)
+	id := "0000000000000000000000000000000000000000000000000000000000000000"
+	created := &api.CreatedTransaction{
+		TxID:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
+		InnerHash: "No-match",
+	}
+	mockTxn.On("ToCreatedTransaction").Return(nil, goerrors.New("failure")).Once()
+	mockTxn.On("ToCreatedTransaction").Return(created, nil)
+
+	// ReadableTxn error
+	err := verifyReadableTransaction(mockTxn, false)
+	require.Error(t, err)
+
+	// transaction hash error
+	err = verifyReadableTransaction(mockTxn, false)
+	require.Error(t, err)
+
+	// Verify fail
+	created.InnerHash = id
+	err = verifyReadableTransaction(mockTxn, false)
+	require.Error(t, err)
+
+	// VerifyUnsigned fail
+	err = verifyReadableTransaction(mockTxn, true)
+	require.Error(t, err)
+
+	//TODO: add a case that not raise an error
+}
