@@ -733,3 +733,26 @@ func Test_blockTxnToCreatedTxn(t *testing.T) {
 		})
 	}
 }
+
+func TestPendingTxnToCreatedTransaction(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		t.Run(fmt.Sprintf("case%d", i), func(t *testing.T) {
+			txn := &SkycoinPendingTransaction{
+				Transaction: &readable.UnconfirmedTransactionVerbose{
+					Transaction: readable.BlockTransactionVerbose{
+						Hash: fmt.Sprintf("hash%d", i),
+					},
+					Announced: time.Now(),
+				},
+			}
+			expected, err := blockTxnToCreatedTxn(
+				txn.Transaction.Transaction,
+				uint64(txn.Transaction.Announced.UnixNano()),
+			)
+			require.NoError(t, err)
+			created, err1 := txn.ToCreatedTransaction()
+			require.NoError(t, err1)
+			require.Equal(t, expected, created)
+		})
+	}
+}
