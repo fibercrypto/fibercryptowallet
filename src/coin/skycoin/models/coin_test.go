@@ -784,3 +784,21 @@ func Test_serializeCreatedTransaction(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, expected, ser)
 }
+
+func TestSkycoinPendingTransactionEncodeSkycoinTransaction(t *testing.T) {
+	date, _ := time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")
+	sTxn := &SkycoinPendingTransaction{
+		Transaction: &readable.UnconfirmedTransactionVerbose{
+			Transaction: readable.BlockTransactionVerbose{
+				InnerHash: "0000000000000000000000000000000000000000000000000000000000000000",
+				Hash:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
+			},
+			Announced: date,
+		},
+	}
+	ser, err := sTxn.EncodeSkycoinTransaction()
+	require.NoError(t, err)
+	exp, err := serializeCreatedTransaction(sTxn)
+	require.NoError(t, err)
+	require.Equal(t, exp, ser)
+}
