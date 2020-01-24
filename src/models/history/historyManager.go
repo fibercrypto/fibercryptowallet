@@ -1,6 +1,7 @@
 package history
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -319,6 +320,7 @@ func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 
 func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]string) (*transactions.TransactionDetails, error) {
 	var traspassedHoursIn, traspassedHoursOut, skyAmountIn, skyAmountOut uint64
+	fmt.Println(1)
 	traspassedHoursIn = 0
 	traspassedHoursOut = 0
 	skyAmountIn = 0
@@ -334,7 +336,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 	qml.QQmlEngine_SetObjectOwnership(inputs, qml.QQmlEngine__CppOwnership)
 	qml.QQmlEngine_SetObjectOwnership(outputs, qml.QQmlEngine__CppOwnership)
 	txnIns := txn.GetInputs()
-
+	fmt.Println(2)
 	for _, in := range txnIns {
 		qIn := address.NewAddressDetails(nil)
 		qml.QQmlEngine_SetObjectOwnership(qIn, qml.QQmlEngine__CppOwnership)
@@ -378,7 +380,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 	}
 
 	txnDetails.SetInputs(inputs)
-
+	fmt.Println(3)
 	for _, out := range txn.GetOutputs() {
 		sky, err := out.GetCoins(params.SkycoinTicker)
 		if err != nil {
@@ -442,6 +444,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 		}
 
 	}
+	fmt.Println(4)
 	txnDetails.SetOutputs(outputs)
 	t := time.Unix(int64(txn.GetTimestamp()), 0)
 	txnDetails.SetDate(qtCore.NewQDateTime3(qtCore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtCore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtCore.Qt__LocalTime))
@@ -468,7 +471,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 		return nil, err
 	}
 	txnDetails.SetHoursBurned(util.FormatCoins(fee, accuracy))
-
+	fmt.Println(5)
 	switch txnDetails.Type() {
 	case transactions.TransactionTypeReceive:
 		{
@@ -559,8 +562,10 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 
 		}
 	}
+	fmt.Println(6)
 	txnDetails.SetAddresses(txnAddresses)
 	txnDetails.SetTransactionID(txn.GetId())
+	fmt.Println(7)
 	return txnDetails, nil
 
 }
