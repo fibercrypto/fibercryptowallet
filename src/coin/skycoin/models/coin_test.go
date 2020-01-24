@@ -2,6 +2,7 @@ package skycoin
 
 import (
 	"encoding/hex"
+	goerrors "errors"
 	"fmt"
 	"testing"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/SkycoinProject/skycoin/src/testutil"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
@@ -755,4 +757,30 @@ func TestPendingTxnToCreatedTransaction(t *testing.T) {
 			require.Equal(t, expected, created)
 		})
 	}
+}
+
+func Test_serializeCreatedTransaction(t *testing.T) {
+	mockTxn := new(mocks.ReadableTxn)
+	id := "0000000000000000000000000000000000000000000000000000000000000000"
+	created := &api.CreatedTransaction{
+		TxID:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
+		InnerHash: "No-match",
+	}
+	mockTxn.On("ToCreatedTransaction").Return(nil, goerrors.New("failure")).Once()
+	mockTxn.On("ToCreatedTransaction").Return(created, nil)
+
+	_, err := serializeCreatedTransaction(mockTxn)
+	require.Error(t, err)
+
+	_, err = serializeCreatedTransaction(mockTxn)
+	require.Error(t, err)
+
+	created.InnerHash = id
+	ser, err := serializeCreatedTransaction(mockTxn)
+	require.NoError(t, err)
+	txn, err := created.ToTransaction()
+	require.NoError(t, err)
+	expected, err := txn.Serialize()
+	require.NoError(t, err)
+	require.Equal(t, expected, ser)
 }
