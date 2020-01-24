@@ -37,6 +37,10 @@ ApplicationWindow {
     menuBar: CustomMenuBar {
         id: customMenuBar
 
+        ConfigManager{
+            id: configManager
+        }
+
         onOutputsRequested: {
             generalStackView.openOutputsPage()
             customHeader.text = qsTr("Outputs")
@@ -46,14 +50,10 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-                    enableAddrsBook = true
-
-        }
-        ConfigManager{
-            id: configManager
+            enableSettingsAddressBook = true
+            enableAddrsBook = true
         }
         
-
         onPendingTransactionsRequested: {
             generalStackView.openPendingTransactionsPage()
             customHeader.text = qsTr("Pending transactions")
@@ -63,7 +63,8 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-                    enableAddrsBook = true
+            enableSettingsAddressBook = true
+            enableAddrsBook = true
 
         }
 
@@ -76,7 +77,8 @@ ApplicationWindow {
             enableBlockchain = false
             enableNetworking = true
             enableSettings = true
-                    enableAddrsBook = true
+            enableSettingsAddressBook = true
+            enableAddrsBook = true
 
         }
 
@@ -89,8 +91,21 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = false
             enableSettings = true
-                    enableAddrsBook = true
+            enableSettingsAddressBook = true
+            enableAddrsBook = true
+        }
 
+        onAddressBookRequested: {
+            generalStackView.openAddressBookPage()
+            customHeader.text = qsTr("Address book")
+
+            enableOutputs = true
+            enablePendingTransactions = true
+            enableBlockchain = true
+            enableNetworking = true
+            enableSettings = true
+            enableSettingsAddressBook = true
+            enableAddrsBook = false
         }
 
         onSettingsRequested: {
@@ -102,27 +117,28 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = false
-                    enableAddrsBook = true
+            enableSettingsAddressBook = true
+            enableAddrsBook = true
         }
 
-        onAddressBookRequested: {
-                    generalStackView.openAddressBookPage()
-                    customHeader.text = qsTr("Address book")
+        onSettingsAddressBookRequested: {
+            generalStackView.openSettingsPage()
+            customHeader.text = qsTr("Address Book Settings")
 
-                    enableOutputs = true
-                    enablePendingTransactions = true
-                    enableBlockchain = true
-                    enableNetworking = true
-                    enableSettings = true
-                    enableAddrsBook = false
-                }
+            enableOutputs = true
+            enablePendingTransactions = true
+            enableBlockchain = true
+            enableNetworking = true
+            enableSettings = true
+            enableSettingsAddressBook = false
+            enableAddrsBook = true
+        }
 
         onAboutRequested: {
             dialogAbout.open()
         }
 
         onAboutQtRequested: {
-            
             dialogAboutQt.open()
         }
 
@@ -147,7 +163,6 @@ ApplicationWindow {
     //! Settings
     Settings {
         id: settings
-        
     }
 
     //! Dialogs
