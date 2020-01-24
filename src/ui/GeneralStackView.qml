@@ -80,13 +80,21 @@ Item {
         }
     }
 
-    function openAddressBookPage() {
-            if (stackView.depth > 1) {
-                stackView.replace(componentAddressBook)
-            } else {
-                stackView.push(componentAddressBook)
-            }
+    function openSettingsAddressBookPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentSettingsAddressBook)
+        } else {
+            stackView.push(componentSettingsAddressBook)
         }
+    }
+
+    function openAddressBookPage() {
+        if (stackView.depth > 1) {
+            stackView.replace(componentAddressBook)
+        } else {
+            stackView.push(componentAddressBook)
+        }
+    }
 
     function pop() {
         stackView.pop()
@@ -167,6 +175,14 @@ Item {
     }
 
     Component {
+        id: componentAddressBook
+
+        AddressBook {
+            id: addressBook
+        }
+    }
+
+    Component {
         id: componentSettings
 
         Settings {
@@ -175,12 +191,10 @@ Item {
     }
 
     Component {
-            id: componentAddressBook
+        id: componentSettingsAddressBook
 
-            AddressBook {
-                id: addressBook
-            }
+        SettingsAddressBook {
+            id: settingsAddressBook
         }
-
-    
+    }
 }
