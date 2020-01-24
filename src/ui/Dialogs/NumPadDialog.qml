@@ -477,11 +477,11 @@ Dialog {
         } // ColumnLayout (root)
 
         ScrollIndicator.vertical: ScrollIndicator {
-            parent: msgDialog.contentItem
+            parent: numPadDialog.contentItem
             anchors.top: flickable.top
             anchors.bottom: flickable.bottom
             anchors.right: parent.right
-            anchors.rightMargin: -msgDialog.rightPadding + 1
+            anchors.rightMargin: -numPadDialog.rightPadding + 1
         }
     } // Flickable
 }

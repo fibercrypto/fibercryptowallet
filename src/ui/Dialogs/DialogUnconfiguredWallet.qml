@@ -16,7 +16,8 @@ Dialog {
             deviceInteraction2.deviceFeatures();
         }
         onIsInitializedDetermined: {
-            buttonAutoConf.visible = !isInitialized;
+            buttonAutoConfDevice.visible = !isInitialized;
+            buttonRecoveryDevice.visible = !isInitialized;
         }
     }
     onAboutToShow: deviceInteraction2.deviceFeatures();
@@ -65,7 +66,7 @@ Dialog {
                     Layout.fillWidth: true
                 }
                 RowLayout {
-                    id: buttonAutoConf
+                    id: buttonAutoConfDevice
                     Layout.fillWidth: true
                     ItemDelegate {
                         text: qsTr("Configure automatically")
@@ -73,25 +74,39 @@ Dialog {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                deviceInteraction.generateMnemonic(+wordCount.currentText, usePassphrase.checked);
+                                deviceInteraction2.generateMnemonic(+generateWordCount.currentText, generateUsePassphrase.checked);
                             }
                         }
                     }
                     CheckBox {
-                        id: usePassphrase
+                        id: generateUsePassphrase
                         text: qsTr("Use pass phrase")
                         enabled: false
                     }
                     ComboBox {
-                        id: wordCount
+                        id: generateWordCount
                         model: [12, 24]
                     }
                 }
-                ItemDelegate {
-                    id: buttonBackupConf
-                    text: qsTr("Restore backup")
+                RowLayout {
+                    id: buttonRecoveryDevice
                     Layout.fillWidth: true
-
+                    ItemDelegate {
+                        text: qsTr("Restore backup")
+                        Layout.fillWidth: true
+                        onClicked: {
+                            deviceInteraction2.restoreBackup(+recoveryWordCount.currentText, recoveryUsePassphrase.checked)
+                        }
+                    }
+                    CheckBox {
+                        id: recoveryUsePassphrase
+                        text: qsTr("Use pass phrase")
+                        enabled: false
+                    }
+                    ComboBox {
+                        id: recoveryWordCount
+                        model: [12, 24]
+                    }
                 }
             }
         } // ColumnLayout (root)

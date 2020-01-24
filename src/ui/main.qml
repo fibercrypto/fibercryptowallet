@@ -231,6 +231,10 @@ ApplicationWindow {
             numPadDialog.clear(title)
             numPadDialog.open()
         }
+        onGetBip39Word: {
+            bip39WordDialog.clear(title, message)
+            bip39WordDialog.open()
+        }
         Component.onCompleted: {
             bridgeForPassword.onCompleted()
         }
@@ -262,6 +266,16 @@ ApplicationWindow {
         onClosed: {
             msgDialog.close()
         }
+    }
+    
+    DialogGetBip39Word {
+        id: bip39WordDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
     }
 
     RestoreBackupWordsDialog {
