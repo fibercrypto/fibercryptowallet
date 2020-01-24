@@ -786,7 +786,8 @@ func Test_serializeCreatedTransaction(t *testing.T) {
 }
 
 func TestSkycoinPendingTransactionEncodeSkycoinTransaction(t *testing.T) {
-	date, _ := time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")
+	date, err := time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")
+	require.NoError(t, err)
 	sTxn := &SkycoinPendingTransaction{
 		Transaction: &readable.UnconfirmedTransactionVerbose{
 			Transaction: readable.BlockTransactionVerbose{

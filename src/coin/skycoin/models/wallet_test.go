@@ -1704,9 +1704,11 @@ func TestSkycoinLocalWalletEncrypt(t *testing.T) {
 			clean := err == nil
 
 			tt.srv.Encrypt(tt.name, tt.pwd)
-			encrypted, _ := tt.srv.IsEncrypted(tt.name) // nolint gosec
+			encrypted, err := tt.srv.IsEncrypted(tt.name)
+			require.NoError(t, err)
 			if clean {
-				_ = wallet.Save(wlt, tt.srv.walletDir) // nolint gosec
+				err = wallet.Save(wlt, tt.srv.walletDir)
+				require.NoError(t, err)
 			}
 			require.Equal(t, tt.valid, encrypted)
 		})
@@ -1739,9 +1741,11 @@ func TestSkycoinLocalWalletDecrypt(t *testing.T) {
 			clean := err == nil
 
 			tt.srv.Decrypt(tt.name, tt.pwd)
-			encrypted, _ := tt.srv.IsEncrypted(tt.name) // nolint gosec
+			encrypted, err := tt.srv.IsEncrypted(tt.name)
+			require.NoError(t, err)
 			if clean {
-				_ = wallet.Save(wlt, tt.srv.walletDir) // nolint gosec
+				err = wallet.Save(wlt, tt.srv.walletDir)
+				require.NoError(t, err)
 			}
 			require.Equal(t, tt.valid, encrypted)
 		})
@@ -1786,7 +1790,8 @@ func TestWalletsReadyForTxn(t *testing.T) {
 		mock.AnythingOfType("*mocks.Transaction"),
 	).Return(
 		func(w core.Wallet, txn core.Transaction) bool {
-			ok, _ := checkTxnSupported(mockWlt, w, txn) // nolint gosec
+			ok, err := checkTxnSupported(mockWlt, w, txn)
+			require.NoError(t, err)
 			return ok
 		},
 		nil,
@@ -1948,8 +1953,10 @@ func TestSeedServiceGenerateMnemonic(t *testing.T) {
 
 func TestSeedServiceVerifyMnemonic(t *testing.T) {
 	srv := new(SeedService)
-	mnc128, _ := srv.GenerateMnemonic(128) // nolint gosec
-	mnc256, _ := srv.GenerateMnemonic(256) // nolint gosec
+	mnc128, err := srv.GenerateMnemonic(128)
+	require.NoError(t, err)
+	mnc256, err := srv.GenerateMnemonic(256)
+	require.NoError(t, err)
 	tests := []struct {
 		name     string
 		mnemonic string
