@@ -41,6 +41,7 @@
         <file>resources/images/icons/log_level_error.svg</file>
         <file>resources/images/icons/log_level_fatal.svg</file>
         <file>resources/images/icons/log_level_panic.svg</file>
+        <file>resources/images/icons/user.svg</file>
         <file>resources/images/icons/outputs.svg</file>
         <file>resources/images/icons/pending-transactions.svg</file>
         <file>resources/images/icons/blockchain.svg</file>
