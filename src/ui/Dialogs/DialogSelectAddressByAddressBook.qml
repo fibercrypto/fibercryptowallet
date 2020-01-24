@@ -5,8 +5,9 @@ import QtQuick.Layouts 1.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/Controls"
+// import "qrc:/ui/src/ui/Delegates"
 import "../Controls" // For quick UI development, switch back to resources when making a release
-import "../Delegates"
+import "../Delegates" // For quick UI development, switch back to resources when making a release
 Dialog {
 
     id: dialogSelectAddressByAddressBook

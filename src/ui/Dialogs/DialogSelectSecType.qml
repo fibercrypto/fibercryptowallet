@@ -3,17 +3,19 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 
-import "../Delegates"
+// Resource imports
+// import "qrc:/ui/src/ui/Delegates"
+import "../Delegates" // For quick UI development, switch back to resources when making a release
 
-Dialog{
+Dialog {
+    id:dialogCreateAddressBook
 
-property int select:0
+    property int select: 0
 
-id:dialogCreateAddressBook
- standardButtons: Dialog.Ok | Dialog.Close
+    standardButtons: Dialog.Ok | Dialog.Close
 
 
-Flickable {
+    Flickable {
         id: flickable
         anchors.fill: parent
         contentHeight: columnLayoutRoot.height
@@ -33,32 +35,32 @@ Flickable {
             }
 
              ColumnLayout {
+                id: columnRadioButtons
                 Layout.fillWidth:true
-                 id: column
-                  RadioButton {
-                  property int pos:0
-                      checked: true
-                      text: qsTr("Low (Plain text)")
-                  }
-                  RadioButton {
-                  property int pos:1
-                      text: qsTr("Medium (Recommended)")
-                  }
-                  RadioButton {
-                  property int pos:2
-                  Layout.fillWidth:true
-                      text: qsTr("Hard (With password)\n"+
-                      "(This can slow your dispositive)")
+                RadioButton {
+                    property int pos:0
+                    checked: true
+                    text: qsTr("Low (Plain text)")
+                }
+                RadioButton {
+                    property int pos:1
+                    text: qsTr("Medium (Recommended)")
+                }
+                RadioButton {
+                    property int pos:2
+                    Layout.fillWidth:true
+                    text: qsTr("Hard (With password)\n"+
+                          "(This can slow your device)")
                   }
               }
         } // ColumnLayout (root)
     } // Flickable
 
     ButtonGroup {
-        id:buttonsGroup
-        buttons: column.children
-       onClicked:{
-       select=checkedButton.pos
-       }
-       }
-       }
+        id: buttonsGroup
+        buttons: columnRadioButtons.children
+        onClicked: {
+            select = checkedButton.pos
+        }
+    }
+}

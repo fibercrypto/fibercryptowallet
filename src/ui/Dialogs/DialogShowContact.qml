@@ -3,53 +3,49 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 
-import "../Delegates"
+// Resource imports
+// import "qrc:/ui/src/ui/Delegates"
+import "../Delegates" // For quick UI development, switch back to resources when making a release
 
-Dialog{
+Dialog {
+     id: dialogShowContact
+     standardButtons: Dialog.Close
 
-id:dialogShowContact
- standardButtons: Dialog.Close
-header:ColumnLayout {
-RowLayout{
-     anchors.horizontalCenter: parent.horizontalCenter
-Image{
- Layout.topMargin: 20
-      source:"../../../resources/images/icons/user_icon-icons.com_66546.svg"
- }
+     header: ColumnLayout {
+          Image {
+               Layout.topMargin: 20
+               source: "qrc:/images/resources/images/icons/user.svg"
+          }
 
-}
-                RowLayout {
-           Layout.topMargin: 20
-Label{
- text:menu.name
-  font.bold: true
-    horizontalAlignment: Qt.AlignHCenter
-          verticalAlignment: Qt.AlignVCenter
-  Layout.fillWidth: true
- }
-}
-}
+          Label {
+               Layout.topMargin: 20
+               text: menu.name
+               font.bold: true
+               horizontalAlignment: Qt.AlignHCenter
+               verticalAlignment: Qt.AlignVCenter
+               Layout.fillWidth: true
+          }
+     }
 
-  ScrollView {
-                anchors.fill: parent
-                clip: true
-                ListView {
-                    id: addresses
-                    Layout.fillWidth: true
+     ScrollView {
+          anchors.fill: parent
+          clip: true
+          ListView {
+               id: addresses
+               Layout.fillWidth: true
+               Layout.fillHeight: true
+               model: menu.address
+               section.property: "coinType"
+               section.criteria: ViewSection.FullString
+               section.delegate: SectionDelegate {
+                    width: addresses.width
+               }
+               delegate: ItemDelegate{
+                    id:addressdelegate
                     Layout.fillHeight: true
-                    model: menu.address
-                    section.property: "coinType"
-                    section.criteria: ViewSection.FullString
-                    section.delegate: SectionDelegate {
-                        width: addresses.width
-                    }
-                    delegate: ItemDelegate{
-                   id:addressdelegate
-                   Layout.fillHeight: true
-                   width:parent.width
-                   text:value
-                    }
-                }
-       }// ScrollView
-
-       }
+                    width:parent.width
+                    text:value
+               }    
+          }
+     } // ScrollView
+}
