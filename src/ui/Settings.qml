@@ -14,6 +14,9 @@ import "Controls/" // For quick UI development, switch back to resources when ma
 Page {
     id: settings
 
+    enum LogLevel { Debug, Information, Warning, Error, FatalError, Panic }
+    enum LogOutput { Stdout, Stderr, None, File }
+
     // BUG: About the wallet path: What happens on Windows?
     // TODO: Consider using `StandardPaths.standardLocations(StandardPaths.AppDataLocation)`
 
@@ -22,6 +25,8 @@ Page {
     readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
+    readonly property int defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
+    readonly property string defaultLogOutput: configManager.getDefaultValue("skycoin/log/output")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
 
     // These are the saved settings, must be applied when the settings are opened or when
@@ -30,6 +35,8 @@ Page {
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
+    property int savedLogLevel: configManager.getValue("skycoin/log/level")
+    property string savedLogOutput: configManager.getValue("skycoin/log/output")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
     // These are the properties that are actually set, so they are aliases of the respective
@@ -37,6 +44,8 @@ Page {
     property alias walletPath: textFieldWalletPath.text
     property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
+    property alias logLevel: comboBoxLogLevel.currentIndex
+    property alias logOutput: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
 
     Component.onCompleted: {
@@ -47,6 +56,8 @@ Page {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
+        configManager.setValue("skycoin/log/level", logLevel)
+        configManager.setValue("skycoin/log/output", logOutput)
         configManager.setValue("global/cache/lifeTime", cacheLifeTime)
         loadSavedSettings()
     }
@@ -55,7 +66,10 @@ Page {
         walletPath = savedWalletPath = configManager.getValue("skycoin/walletSource/1/Source")
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
+        logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
+        logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
+        console.log("cacheLifeTime", cacheLifeTime)
 
         updateFooterButtonsStatus()
     }
@@ -64,14 +78,16 @@ Page {
         walletPath = defaultWalletPath
         isLocalWalletEnv = defaultIsLocalWalletEnv
         nodeUrl = defaultNodeUrl
+        logLevel = defaultLogLevel
+        logOutput = defaultLogOutput
         cacheLifeTime = defaultCacheLifeTime
 
         saveCurrentSettings()
     }
 
     function updateFooterButtonsStatus() {
-        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime)
-        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime || defaultCacheLifeTime)
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || logLevel != savedLogLevel || logOutput != savedLogOutput || cacheLifeTime != savedLifeTime)
+        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || logLevel !== defaultLogLevel || logOutput !== defaultLogOutput || cacheLifeTime !== defaultCacheLifeTime)
         footer.standardButton(Dialog.Apply).enabled = configChanged
         footer.standardButton(Dialog.Discard).enabled = configChanged
         footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
@@ -95,208 +111,322 @@ Page {
         }
     }
 
-    ColumnLayout {
-        anchors { top: parent.top; left: parent.left; right: parent.right; margins: 20 }
+    ScrollView {
+        id: scrollView
+        anchors.fill: parent
+        contentWidth: width
 
-        spacing: 20
+        ColumnLayout {
+            id: columnLayout
+            width: parent.width
+            spacing: 20
 
-        GroupBox {
-            Layout.fillWidth: true
-            title: qsTr("Wallet environment settings")
+            GroupBox {
+                id: groupBoxWalletEnvironment
+                Layout.fillWidth: true
+                Layout.topMargin: 10
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                title: qsTr("Wallet environment settings")
 
-            RowLayout {
-                anchors.fill: parent
+                RowLayout {
+                    anchors.fill: parent
 
-                Label {
-                    text: qsTr("Remote")
-                    font.bold: true
-                    color: Material.hintTextColor
-                }
-                Switch {
-                    id: switchLocalWalletEnv
-
-                    checked: savedIsLocalWalletEnv
-                    font.bold: true
-
-                    onToggled: {
-                        updateFooterButtonsStatus();
+                    Label {
+                        text: qsTr("Remote")
+                        font.bold: true
+                        color: Material.hintTextColor
                     }
-                }
-                Label {
-                    text: qsTr("Local")
-                    font.bold: true
-                    color: Material.accent
-                }
+                    Switch {
+                        id: switchLocalWalletEnv
 
-                Rectangle {
-                    Layout.fillHeight: true
-                    Layout.leftMargin: 10
-                    Layout.rightMargin: 10
-                    width: 1
-                    color: Material.hintTextColor
-                }
+                        checked: savedIsLocalWalletEnv
+                        font.bold: true
+
+                        onToggled: {
+                            updateFooterButtonsStatus();
+                        }
+                    }
+                    Label {
+                        text: qsTr("Local")
+                        font.bold: true
+                        color: Material.accent
+                    }
+
+                    Rectangle {
+                        Layout.fillHeight: true
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        width: 1
+                        color: Material.hintTextColor
+                    }
+
+                    TextField {
+                        id: textFieldWalletPath
+
+                        Layout.fillWidth: true
+                        enabled: isLocalWalletEnv
+                        selectByMouse: true
+                        placeholderText: qsTr("Local wallet path")
+
+                        onTextChanged: {
+                            updateFooterButtonsStatus();
+                        }
+                    }
+                } // RowLayout
+            } // GroupBox (wallet settings)
+
+            GroupBox {
+                id: groupBoxNetworkSettings
+
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+
+                title: qsTr("Network settings")
 
                 TextField {
-                    id: textFieldWalletPath
+                    id: textFieldNodeUrl
 
-                    Layout.fillWidth: true
-                    enabled: isLocalWalletEnv
+                    anchors.fill: parent
                     selectByMouse: true
-                    placeholderText: qsTr("Local wallet path")
+                    placeholderText: qsTr("Node URL")
 
                     onTextChanged: {
                         updateFooterButtonsStatus();
                     }
                 }
-            } // RowLayout
-        } // GroupBox (wallet settings)
+            } // GroupBox (network settings)
 
-        GroupBox {
-            Layout.fillWidth: true
-            title: qsTr("Network settings")
+            GroupBox {
+                id: groupBoxGlobalSettings
 
-            TextField {
-                id: textFieldNodeUrl
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
 
-                anchors.fill: parent
-                selectByMouse: true
-                placeholderText: qsTr("Node URL")
+                title: qsTr("Global settings")
 
-                onTextChanged: {
-                    updateFooterButtonsStatus();
-                }
-            }
-        } // GroupBox (network settings)
+                ColumnLayout {
+                    id: columnLayoutGlobalSettings
+                    anchors.fill: parent
 
-        GroupBox {
-            Layout.fillWidth: true
-            title: qsTr("Global settings")
+                    spacing: 20
 
-            TextField {
-                id: textFieldCacheLifeTime
-                anchors.fill: parent
-                selectByMouse: true
-                placeholderText: qsTr("Cache life time")
-                onTextChanged: {
-                    updateFooterButtonsStatus();
-                }
-            }
-        } // GroupBox (global settings)
-
-         GroupBox {
-         enabled:abm.hasInit()
-         AddrsBookModel{
-             id:abm
-         }
-                    Layout.fillWidth: true
-                    title: qsTr("Address Book Settings")
-                    ColumnLayout {
-                        anchors.fill: parent
-                        RowLayout{
-                            Layout.fillWidth: true
-                            Label { text: qsTr("Security type:"); font.bold: true }
+                    TextField {
+                        id: textFieldCacheLifeTime
+                        Layout.fillWidth: true
+                        selectByMouse: true
+                        placeholderText: qsTr("Cache lifetime")
+                        onTextChanged: {
+                            updateFooterButtonsStatus();
                         }
-                        RowLayout {
-                        id: groupRadBtn
-                            Layout.fillWidth: true
-                                             RadioButton {
-                                             property int pos:0
-                                                 checked: abm.getSecType()==0
-                                                 anchors.margins:10
-                                                         Layout.fillWidth:true
-                                                 text: qsTr("Low (Plain text)")
-                                             }
-                                             RadioButton {
-                                             property int pos:1
-                                             checked: abm.getSecType()==1
-                                             anchors.margins: 10
-                                                         Layout.fillWidth:true
-                                                 text: qsTr("Medium (Recommended)")
-                                             }
-                                             RadioButton {
-                                             property int pos:2
-                                             checked: abm.getSecType()==2
-                                                anchors.margins: 10
-                                                Layout.fillWidth:true
-                                                 text: qsTr("Hard (With password)\n"+
-                                                 "(This can slow your dispositive)")
-                                             }
+                    }
 
-                        }//RowLayoutRadioButtons
-                        RowLayout {
-                             Layout.fillWidth: true
-                            Button{
-                            id:changePassBtn
-                                    enabled:abm.getSecType()==2
-                                      text: qsTr("Change Password")
-                                    highlighted: true
-                                              anchors.margins: 10
-                                              Layout.fillWidth:true
-                                              onClicked: {
-                                              getpass.open()
-                                              }
+                    Label { text: qsTr("Log level") }
+
+                    ComboBox {
+                        id: comboBoxLogLevel
+                        Layout.fillWidth: true
+                        Layout.topMargin: -20
+
+                        readonly property var logLevelString: [ "debug", "info", "warn", "error", "fatal", "panic" ]
+                        readonly property var logLevelColor: [ Material.Teal, Material.Blue, Material.Amber, Material.DeepOrange, Material.Red, Material.primaryTextColor ]
+
+                        currentIndex: savedLogLevel
+                        model: [ qsTr("Debug"), qsTr("Informations"), qsTr("Warnings"), qsTr("Errors"), qsTr("Fatal errors"), qsTr("Panics") ]
+                        delegate: MenuItem {
+                            width: parent.width
+                            text: comboBoxLogLevel.textRole ? (Array.isArray(comboBoxLogLevel.model) ? modelData[comboBoxLogLevel.textRole] : model[comboBoxLogLevel.textRole]) : modelData
+                            icon.source: "qrc:/images/resources/images/icons/log_level_" + comboBoxLogLevel.logLevelString[index] + ".svg"
+                            icon.color: Material.accent
+                            Material.accent: comboBoxLogLevel.logLevelColor[index]
+                            Material.foreground: comboBoxLogLevel.currentIndex === index ? parent.Material.accent : parent.Material.foreground
+                            highlighted: comboBoxLogLevel.highlightedIndex === index
+                            hoverEnabled: comboBoxLogLevel.hoverEnabled
+                            leftPadding: highlighted ? 2*padding : padding // added
+                            Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+                        } // MenuItem (delegate)
+                    } // ComboBox
+
+                    Label { text: qsTr("Log output") }
+
+                    ListView {
+                        id: listViewLogOutput
+
+                        property alias outputFile: textFieldLogOutputFile.text
+                        readonly property var logOutputString: [ "stdout", "stderr", "none", "file" ]
+
+                        Layout.fillWidth: true
+                        Layout.topMargin: -20
+                        height: contentHeight
+
+                        spacing: -6
+                        interactive: false
+                        model: [ qsTr("Standard output"), qsTr("Standard error output"), qsTr("None"), qsTr("File") ]
+                        delegate: RadioButton {
+                            width: index === Settings.LogOutput.File && textFieldLogOutputFile.enabled ? implicitWidth : parent.width
+                            rightInset: textFieldLogOutputFile.enabled ? textFieldLogOutputFile.width : 0
+                            text: modelData
+                            checked: savedLogOutput === ListView.view.logOutputString[index]
+
+                            onCheckedChanged: {
+                                if (checked) {
+                                    ListView.view.currentIndex = index
+                                    if (index === Settings.LogOutput.File) {
+                                        textFieldLogOutputFile.forceActiveFocus()
+                                    }
+                                }
                             }
-                            Button{
-                            id:applyChangesBtn
-                                      text: qsTr("Apply Changes")
-                                      enabled:false
-                                        highlighted: true
-                                                anchors.margins: 10
-                                                Layout.fillWidth:true
-                                                onClicked: {
-                                                if(abm.getSecType()==2){
-                                                getpass.open()
-                                                }else{
-                                                if(buttonsGroup.select==2){
-                                                setpass.open()
-                                                }else{
-                                                this.enabled=!abm.changeSecType(buttonsGroup.select,"","")
-                                                changePassBtn.enabled=false
-                                                }
-                                                }
-                                                }
-                                  }
+                        } // RadioButton (delegate)
 
-                                  }//RowLayoutButtons
+                        Component.onCompleted: {
+                            textFieldLogOutputFile.anchors.leftMargin = listViewLogOutput.itemAtIndex(3).implicitWidth
+                        }
 
-                    } // ColumnLayout
-                    DialogGetPassword{
-                    id:getpass
+                        TextField {
+                            id: textFieldLogOutputFile
+
+                            anchors.bottom: parent.bottom
+                            anchors.bottomMargin: 6
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+
+                            enabled: listViewLogOutput.currentIndex === Settings.LogOutput.File
+                            placeholderText: qsTr("Output file")
+                            selectByMouse: true
+                        }
+                    } // ListView (log output)
+                } // ColumnLayout (global settings)
+            } // GroupBox (global settings)
+
+            GroupBox {
+                id: groupBoxAddressBookSettings
+
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Layout.bottomMargin: 10 // The Last `GroupBox` must have this set
+
+                title: qsTr("Address Book Settings")
+                visible: addrsBookModel.hasInit()
+
+                AddrsBookModel {
+                    id: addrsBookModel
+                }
+                
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    Label { text: qsTr("Security type:"); font.bold: true }
+                    
+                    RowLayout {
+                        id: rowLayoutSecurityType
+                        Layout.fillWidth: true
+                        
+                        RadioButton {
+                            property int pos: 0
+                            Layout.fillWidth: true
+                            checked: addrsBookModel.getSecType() === 0
+                            text: qsTr("Low (Plain text)")
+                        }
+                        RadioButton {
+                            property int pos: 1
+                            Layout.fillWidth: true
+                            checked: addrsBookModel.getSecType() === 1
+                            text: qsTr("Medium (Recommended)")
+                        }
+                        RadioButton {
+                            property int pos: 2
+                            Layout.fillWidth: true
+                            checked: addrsBookModel.getSecType() === 2
+                            text: qsTr("Hard (with password)")// +
+                                //qsTr("(This can slowdown your device)")
+                        }
+                    } // RowLayout (radio buttons)
+
+                    RowLayout {
+                        Layout.fillWidth: true
+
+                        Button {
+                            id: buttonChangePassword
+                            
+                            Layout.fillWidth: true
+                            enabled:addrsBookModel.getSecType() === 2
+                            text: qsTr("Change Password")
+                            highlighted: true
+
+                            onClicked: {
+                                dialogGetPassword.open()
+                            }
+                        }
+
+                        Button {
+                            id: buttonApplyChanges
+
+                            Layout.fillWidth: true
+
+                            text: qsTr("Apply Changes")
+                            enabled: false
+                            highlighted: true
+
+                            onClicked: {
+                                if (addrsBookModel.getSecType() === 2) {
+                                    dialogGetPassword.open()
+                                } else {
+                                    if (buttonGroupSecurityType.select === 2) {
+                                        dialogSetPassword.open()
+                                    } else {
+                                        this.enabled = !addrsBookModel.changeSecType(buttonGroupSecurityType.select, "", "")
+                                        buttonChangePassword.enabled = false
+                                    }
+                                }
+                            }
+                        }
+                    } // RowLayout (buttons)
+
+                } // ColumnLayout
+
+                DialogGetPassword {
+                    id: dialogGetPassword
                     anchors.centerIn: Overlay.overlay
-                    height:180
-                    onAccepted:{
-                    if(!abm.authenticate(getpass.password)){
-                    getpass.open()
-                    }else{
-                    if (buttonsGroup.select==2){
-                    setpass.open()
-                    }else{
-                    applyChangesBtn.enabled=!abm.changeSecType(buttonsGroup.select,getpass.password,"")
-                    changePassBtn.enabled=false
-                    }
-                    }
-                    }
-                    }
+                    height: 180
 
-                    DialogSetPassword{
-                    id:setpass
+                    onAccepted: {
+                        if(!addrsBookModel.authenticate(dialogGetPassword.password)) {
+                            dialogGetPassword.open()
+                        } else {
+                            if (buttonGroupSecurityType.select === 2) {
+                                dialogSetPassword.open()
+                            } else {
+                                buttonApplyChanges.enabled = !addrsBookModel.changeSecType(buttonGroupSecurityType.select, dialogGetPassword.password, "")
+                                buttonChangePassword.enabled = false
+                            }
+                        }
+                    }
+                }
+
+                DialogSetPassword {
+                    id: dialogSetPassword
                     anchors.centerIn: Overlay.overlay
-                    onAccepted:{
-                    applyChangesBtn.enabled=!abm.changeSecType(2,getpass.password,setpass.password)
-                    changePassBtn.enabled=!applyChangesBtn.enabled
-                    }
-                    }
 
-                } // GroupBox (addressBook setting)
-    } // ColumnLayout
+                    onAccepted: {
+                        buttonApplyChanges.enabled = !addrsBookModel.changeSecType(2, dialogGetPassword.password, dialogSetPassword.password)
+                        buttonChangePassword.enabled = !buttonApplyChanges.enabled
+                    }
+                }
+            } // GroupBox (addressBook setting)
+        } // ColumnLayout
+    } // ScrollView
 
-  ButtonGroup {
-  property int select:checkedButton.pos
-       id:buttonsGroup
-        buttons: groupRadBtn.children
-     onClicked:{
-     applyChangesBtn.enabled=select!=abm.getSecType()
-     }
+    ButtonGroup {
+        id: buttonGroupSecurityType
+        property int select: checkedButton.pos
+
+        buttons: rowLayoutSecurityType.children
+        onClicked: {
+            buttonApplyChanges.enabled = select !== addrsBookModel.getSecType()
+        }
      }
 
     // Confirm the discard or reset action:
