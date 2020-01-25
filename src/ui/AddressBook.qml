@@ -45,6 +45,12 @@ Page {
                 id: contactDelegate
                 width: parent.width
 
+                onClicked: {
+                    dialogShowContact.name = name
+                    dialogShowContact.addressModel = address
+                    dialogShowContact.open()
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.RightButton
@@ -79,7 +85,7 @@ Page {
         }
     } //RoundButton
 
-    AddrsBookModel{
+    AddrsBookModel {
         id: abm
     }
 
@@ -94,6 +100,8 @@ Page {
         MenuItem {
             text: qsTr("&View")
             onTriggered: {
+                dialogShowContact.name = menu.name
+                dialogShowContact.addressModel = menu.address
                 dialogShowContact.open()
             }
         }

@@ -2,12 +2,18 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 
+import AddrsBookManager 1.0
+
 // Resource imports
 // import "qrc:/ui/src/ui/Delegates"
 import "../Delegates" // For quick UI development, switch back to resources when making a release
 
 Dialog {
      id: dialogShowContact
+
+     property alias name: labelName.text
+     property AddrsBkAddressModel addressModel
+
      standardButtons: Dialog.Close
 
      header: ColumnLayout {
@@ -19,10 +25,10 @@ Dialog {
           }
 
           Label {
+               id: labelName
                Layout.fillWidth: true
                Layout.topMargin: 20
                horizontalAlignment: Qt.AlignHCenter
-               text: menu.name
                font.bold: true
           }
      }
@@ -34,10 +40,9 @@ Dialog {
           ListView {
                id: addresses
 
-               model: menu.address
+               model: addressModel
                delegate: ItemDelegate {
                     id: addressdelegate
-                    Layout.fillHeight: true
                     width: parent.width
                     text: value
                }    
