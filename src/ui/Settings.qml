@@ -313,7 +313,7 @@ Page {
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 300 ? 300 - 40 : applicationWindow.width - 40
 
-        standardButtons: Dialog.Yes | Dialog.No
+        standardButtons: Dialog.Ok | Dialog.Cancel
         title: qsTr("Confirm action")
         modal: true
         focus: visible
@@ -336,6 +336,12 @@ Page {
                 font.italic: true
                 wrapMode: Text.Wrap
             }
+        }
+
+        Component.onCompleted: {
+            standardButton(Dialog.Ok).Material.accent = Material.Red
+            standardButton(Dialog.Ok).highlighted = true
+            standardButton(Dialog.Ok).text = Qt.binding(function() { return dialogConfirmation.onlyDiscard ? qsTr("Discard") : qsTr("Restore defaults") })
         }
 
         onAccepted: {
