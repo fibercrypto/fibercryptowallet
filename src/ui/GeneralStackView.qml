@@ -9,6 +9,8 @@ Item {
     property alias depth: stackView.depth
     property alias busy: stackView.busy
 
+    signal backRequested()
+
     function openOutputsPage() {
         if (stackView.depth > 1) {
             stackView.replace(componentOutputs)
@@ -175,6 +177,10 @@ Item {
 
         AddressBook {
             id: addressBook
+
+            onCanceled: {
+                backRequested()
+            }
         }
     }
 
