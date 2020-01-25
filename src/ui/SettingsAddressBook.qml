@@ -13,19 +13,27 @@ import "Controls/" // For quick UI development, switch back to resources when ma
 Page {
     id: settingsAddressBook
 
-    property bool configChanged: false
+    enum SecurityType { LowSecurity, MediumSecurity, StrongSecurity }
+
+    property bool enableButtonChangePassword: addrsBookModel.getSecType() === SettingsAddressBook.SecurityType.StrongSecurity
 
     signal canceled()
 
-    function updateFooterButtonsStatus() {
-        footer.standardButton(Dialog.Apply).enabled = configChanged
-    }
-
     footer: DialogButtonBox {
+        id: footer
         standardButtons: Dialog.Apply | Dialog.Cancel
 
         onApplied: {
-            saveCurrentSettings()
+            if (addrsBookModel.getSecType() === SettingsAddressBook.SecurityType.StrongSecurity) {
+                dialogGetPassword.open()
+            } else {
+                if (listViewSecurityType.currentIndex === SettingsAddressBook.SecurityType.StrongSecurity) {
+                    dialogSetPassword.open()
+                } else {
+                    footer.standardButton(Dialog.Apply).enabled = !addrsBookModel.changeSecType(listViewSecurityType.currentIndex, "", "")
+                    enableButtonChangePassword = false
+                }
+            }
         }
 
         onRejected: {
@@ -41,25 +49,36 @@ Page {
         ColumnLayout {
             anchors.fill: parent
 
-            Label { text: qsTr("Security type:"); font.bold: true }
+            Label {
+                Layout.topMargin: 10
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+
+                text: qsTr("Security type")
+                font.bold: true
+            }
 
             ListView {
                 id: listViewSecurityType
 
                 Layout.fillWidth: true
-                Layout.topMargin: -20
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
                 height: contentHeight
 
                 spacing: -6
                 interactive: false
+                currentIndex: addrsBookModel.getSecType()
                 model: [ qsTr("Low (Plain text)"), qsTr("Medium (Recommended)"), qsTr("Hard (with password)") ]
                 delegate: RadioButton {
                     width: parent.width
                     text: modelData
+                    checked: index === ListView.view.currentIndex
 
                     onCheckedChanged: {
                         if (checked) {
                             ListView.view.currentIndex = index
+                            footer.standardButton(Dialog.Apply).enabled = index !== addrsBookModel.getSecType()
                         }
                     }
 
@@ -69,8 +88,8 @@ Page {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
 
-                        visible: index === Settings.SecurityType.StrongSecurity
-                        enabled: visible && addrsBookModel.getSecType() === Settings.SecurityType.StrongSecurity
+                        visible: index === SettingsAddressBook.SecurityType.StrongSecurity
+                        enabled: visible && enableButtonChangePassword
                         text: qsTr("Change password")
                         highlighted: true
 
@@ -80,90 +99,26 @@ Page {
                     }
                 } // RadioButton (delegate)
             } // ListView (log output)
-            
-            /*
-            RowLayout {
-                id: rowLayoutSecurityType
-                Layout.fillWidth: true
-                
-                RadioButton {
-                    property int pos: 0
-                    Layout.fillWidth: true
-                    checked: addrsBookModel.getSecType() === 0
-                    text: qsTr("Low (Plain text)")
-                }
-                RadioButton {
-                    property int pos: 1
-                    Layout.fillWidth: true
-                    checked: addrsBookModel.getSecType() === 1
-                    text: qsTr("Medium (Recommended)")
-                }
-                RadioButton {
-                    property int pos: 2
-                    Layout.fillWidth: true
-                    checked: addrsBookModel.getSecType() === 2
-                    text: qsTr("Hard (with password)")// +
-                        //qsTr("(This can slowdown your device)")
-                }
-            } // RowLayout (radio buttons)
-            */
-
-            RowLayout {
-                Layout.fillWidth: true
-
-                Button {
-                    id: buttonChangePassword
-                    
-                    Layout.fillWidth: true
-                    enabled:addrsBookModel.getSecType() === 2
-                    text: qsTr("Change Password")
-                    highlighted: true
-
-                    onClicked: {
-                        dialogGetPassword.open()
-                    }
-                }
-
-                Button {
-                    id: buttonApplyChanges
-
-                    Layout.fillWidth: true
-
-                    text: qsTr("Apply Changes")
-                    enabled: false
-                    highlighted: true
-
-                    onClicked: {
-                        if (addrsBookModel.getSecType() === 2) {
-                            dialogGetPassword.open()
-                        } else {
-                            if (buttonGroupSecurityType.select === 2) {
-                                dialogSetPassword.open()
-                            } else {
-                                this.enabled = !addrsBookModel.changeSecType(buttonGroupSecurityType.select, "", "")
-                                buttonChangePassword.enabled = false
-                            }
-                        }
-                    }
-                }
-            } // RowLayout (buttons)
-
         } // ColumnLayout
 
         DialogGetPassword {
             id: dialogGetPassword
             anchors.centerIn: Overlay.overlay
-            height: 180
+            width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+            height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+
+            modal: true
+            focus: visible
 
             onAccepted: {
                 if(!addrsBookModel.authenticate(dialogGetPassword.password)) {
                     dialogGetPassword.open()
                 } else {
-                    if (buttonGroupSecurityType.select === 2) {
+                    if (listViewSecurityType.currentIndex === SettingsAddressBook.SecurityType.StrongSecurity) {
                         dialogSetPassword.open()
                     } else {
-                        buttonApplyChanges.enabled = !addrsBookModel.changeSecType(buttonGroupSecurityType.select, dialogGetPassword.password, "")
-                        buttonChangePassword.enabled = false
+                        footer.standardButton(Dialog.Apply).enabled = !addrsBookModel.changeSecType(listViewSecurityType.currentIndex, dialogGetPassword.password, "")
+                        enableButtonChangePassword = false
                     }
                 }
             }
@@ -172,21 +127,19 @@ Page {
         DialogSetPassword {
             id: dialogSetPassword
             anchors.centerIn: Overlay.overlay
+            width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+
+            modal: true
+            focus: visible
 
             onAccepted: {
-                buttonApplyChanges.enabled = !addrsBookModel.changeSecType(2, dialogGetPassword.password, dialogSetPassword.password)
-                buttonChangePassword.enabled = !buttonApplyChanges.enabled
+                footer.standardButton(Dialog.Apply).enabled = !addrsBookModel.changeSecType(SettingsAddressBook.SecurityType.StrongSecurity, dialogGetPassword.password, dialogSetPassword.password)
+                enableButtonChangePassword = true
             }
         }
     } // ScrollView
 
-    ButtonGroup {
-        id: buttonGroupSecurityType
-        property int select: checkedButton.pos
-
-        buttons: rowLayoutSecurityType.children
-        onClicked: {
-            buttonApplyChanges.enabled = select !== addrsBookModel.getSecType()
-        }
+    AddrsBookModel {
+        id: addrsBookModel
     }
 }
