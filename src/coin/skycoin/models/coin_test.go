@@ -172,6 +172,7 @@ func TestSkycoinUninjectedTransactionGetInputs(t *testing.T) {
 
 	addr := makeAddress()
 
+	global_mock.On("UxOut", h.String()).Return(nil, goerrors.New("failure")).Once()
 	global_mock.On("UxOut", h.String()).Return(
 		&readable.SpentOutput{
 			OwnerAddress: addr.String(),
@@ -184,6 +185,9 @@ func TestSkycoinUninjectedTransactionGetInputs(t *testing.T) {
 	)
 
 	tiList := ut.GetInputs()
+	require.Nil(t, tiList)
+
+	tiList = ut.GetInputs()
 	ti := tiList[0]
 	require.Equal(t, 1, len(tiList))
 	sky, err := ti.GetCoins(Sky)
