@@ -1,5 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
 
@@ -9,7 +10,7 @@ Window {
     width: dialogSplash.width + 100
     height: dialogSplash.height + 100
     visible: true
-    flags: Qt.SplashScreen
+    flags: Qt.Dialog | Qt.CustomizeWindowHint
     color: "transparent"
 
     Dialog {
@@ -17,10 +18,22 @@ Window {
         anchors.centerIn: Overlay.overlay
         visible: true
         closePolicy: Dialog.NoAutoClose
+        standardButtons: Dialog.Abort
 
+        Component.onCompleted: {
+            standardButton(Dialog.Abort).Material.accent = Material.Red
+            standardButton(Dialog.Abort).highlighted = true
+        }
+
+        onRejected: Qt.exit(-1)
         onClosed: windowSplash.visible = false
 
-        contentItem: ColumnLayout {
+        width: 300
+        height: 300
+        // The width/height must be always greater than its implicit version:
+        // onAboutToShow: console.log("Size:", width + 'x' + height, "Implicit size:", implicitWidth + 'x' + implicitHeight)
+
+        ColumnLayout {
             Image {
                 id: imageLogo
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
@@ -34,7 +47,7 @@ Window {
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                 text: "FiberCrypto Wallet"
                 // font.family: "???"
-                font.pointSize: Qt.application.font.pointSize * 2.25
+                font.pointSize: Qt.application.font.pointSize * 2.2
             }
 
             Label {
@@ -46,7 +59,7 @@ Window {
 
             RowLayout {
                 clip: true
-                Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
+                Layout.alignment: Qt.AlignBottom | Qt.AlignHCenter
 
                 BusyIndicator {
                     running: visible
