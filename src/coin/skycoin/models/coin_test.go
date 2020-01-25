@@ -37,6 +37,7 @@ func TestTransactionGetStatus(t *testing.T) {
 		},
 		nil,
 	).Once()
+	global_mock.On("Transaction", "hash3").Return(nil, goerrors.New("failure")).Once()
 
 	tests := []struct {
 		name string
@@ -64,6 +65,17 @@ func TestTransactionGetStatus(t *testing.T) {
 				},
 			},
 			want: core.TXN_STATUS_PENDING,
+		},
+		{
+			name: "SkycoinTransaction-ApiError",
+			txn: &SkycoinTransaction{
+				skyTxn: readable.TransactionVerbose{
+					BlockTransactionVerbose: readable.BlockTransactionVerbose{
+						Hash: "hash3",
+					},
+				},
+			},
+			want: core.TXN_STATUS_CREATED,
 		},
 		{
 			name: "SkycoinPendingTransaction",
