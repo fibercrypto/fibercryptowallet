@@ -11,6 +11,7 @@ import (
 
 	"github.com/SkycoinProject/skycoin/src/api"
 	"github.com/SkycoinProject/skycoin/src/cipher"
+	"github.com/SkycoinProject/skycoin/src/coin"
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
@@ -926,6 +927,77 @@ func TestPendingTxnIsFullySigned(t *testing.T) {
 			fully1, err1 := tt.sTxn.IsFullySigned()
 			require.Equal(t, err, err1)
 			require.Equal(t, fully, fully1)
+		})
+	}
+}
+
+func TestSkycoinUninjectedTransactionGetOutputs(t *testing.T) {
+	addr := makeAddress()
+	addr1 := makeAddress()
+	tests := []struct {
+		name    string
+		ujTxn   *SkycoinUninjectedTransaction
+		addrs   []string
+		wantNil bool
+	}{
+		{
+			name: "empty transaction",
+			ujTxn: &SkycoinUninjectedTransaction{
+				outputs: []core.TransactionOutput{},
+			},
+			addrs: make([]string, 0),
+		},
+		{
+			name: "nil outputs",
+			ujTxn: &SkycoinUninjectedTransaction{
+				txn: &coin.Transaction{},
+			},
+			addrs: make([]string, 0),
+		},
+		{
+			name: "incorrect output",
+			ujTxn: &SkycoinUninjectedTransaction{
+				txn: &coin.Transaction{
+					Out: []coin.TransactionOutput{
+						coin.TransactionOutput{
+							Coins: 9223372036854775808,
+						},
+					},
+				},
+			},
+			wantNil: true,
+		},
+		{
+			name: "some outputs",
+			ujTxn: &SkycoinUninjectedTransaction{
+				txn: &coin.Transaction{
+					Out: []coin.TransactionOutput{
+						coin.TransactionOutput{
+							Address: addr,
+						},
+						coin.TransactionOutput{
+							Address: addr1,
+						},
+					},
+				},
+			},
+			addrs: []string{addr.String(), addr1.String()},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			outputs := tt.ujTxn.GetOutputs()
+			if tt.wantNil {
+				require.Nil(t, outputs)
+			} else {
+				require.Equal(t, len(tt.addrs), len(outputs))
+				hashes := make([]string, len(tt.addrs))
+				for i, out := range outputs {
+					hashes[i] = out.GetAddress().String()
+				}
+				requirethat.ElementsMatch(t, tt.addrs, hashes)
+			}
 		})
 	}
 }
