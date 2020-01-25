@@ -76,7 +76,11 @@ RowLayout {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-            enableAddrsBook = true
+            enableAddrsBook = generalStackView.depth <= 1
+            enableSettingsAddressBook = generalStackView.depth > 1
+            if (generalStackView.depth > 1) {
+                customHeader.text = qsTr("Address book")
+            }
         }
     }
 
