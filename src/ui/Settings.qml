@@ -14,7 +14,6 @@ Page {
 
     enum LogLevel { Debug, Information, Warning, Error, FatalError, Panic }
     enum LogOutput { Stdout, Stderr, None, File }
-    enum SecurityType { LowSecurity, MediumSecurity, StrongSecurity }
 
     // BUG: About the wallet path: What happens on Windows?
     // TODO: Consider using `StandardPaths.standardLocations(StandardPaths.AppDataLocation)`
