@@ -888,7 +888,40 @@ func Test_checkFullySigned(t *testing.T) {
 	// false
 	created.InnerHash = id
 	val, err := checkFullySigned(mockTxn)
+	require.NoError(t, err)
 	require.False(t, val)
 
 	//TODO: add valid test
+}
+
+func TestPendingTxnIsFullySigned(t *testing.T) {
+	tests := []struct {
+		name string
+		sTxn *SkycoinPendingTransaction
+	}{
+		{
+			name: "empty transaction",
+			sTxn: &SkycoinPendingTransaction{Transaction: new(readable.UnconfirmedTransactionVerbose)},
+		},
+		{
+			name: "cero outputs",
+			sTxn: &SkycoinPendingTransaction{
+				Transaction: &readable.UnconfirmedTransactionVerbose{
+					Transaction: readable.BlockTransactionVerbose{
+						In: []readable.TransactionInput{readable.TransactionInput{}},
+					},
+				},
+			},
+		},
+		//TODO: add valid tests
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fully, err := checkFullySigned(tt.sTxn)
+			fully1, err1 := tt.sTxn.IsFullySigned()
+			require.Equal(t, err, err1)
+			require.Equal(t, fully, fully1)
+		})
+	}
 }
