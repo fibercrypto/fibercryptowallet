@@ -142,7 +142,7 @@ RowLayout {
             CustomMenuItem {
                 id: menuItemAddressBook
                 text: qsTr("&Address Book")
-                iconSource: "qrc:/images/resources/images/icons/settings.svg"
+                iconSource: "qrc:/images/resources/images/icons/contacts.svg"
 
                 onClicked: addressBookRequested()
             }
