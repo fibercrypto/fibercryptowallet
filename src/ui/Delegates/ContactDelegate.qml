@@ -23,13 +23,4 @@ ItemDelegate {
             Layout.fillWidth: true
         }
     }
-
-    onClicked: {
-        menu.index = index
-        console.log(id)
-        menu.cId = id
-        menu.name = name
-        menu.address = address
-        menu.popup()
-    }
 }
