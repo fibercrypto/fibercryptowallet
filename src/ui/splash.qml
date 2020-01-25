@@ -32,7 +32,7 @@ Window {
             Label {
                 id: labelApplicationName
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-                text: Qt.application.name
+                text: "FiberCrypto Wallet"
                 // font.family: "???"
                 font.pointSize: Qt.application.font.pointSize * 2.25
             }
