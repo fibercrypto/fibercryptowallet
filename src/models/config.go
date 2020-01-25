@@ -6,10 +6,13 @@ import (
 
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 
-	"github.com/therecipe/qt/qml"
-
+	skylog "github.com/SkycoinProject/skycoin/src/util/logging"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/qml"
 )
+
+var log = logging.MustGetLogger("Config Model")
 
 type ConfigManager struct {
 	qtcore.QObject
@@ -75,6 +78,8 @@ func (cm *ConfigManager) getDefaultValue(path string) string {
 	return cm.GetSection(section).getDefaultValue(optName, optPath, name)
 }
 
+//TODO: Exported type ConfigSection should have comment or be unexported (linter suggestion)
+// ConfigSection <description>
 type ConfigSection struct {
 	qtcore.QObject
 	sm *local.SectionManager
@@ -96,7 +101,7 @@ func (cs *ConfigSection) getPaths() [][]string {
 func (cs *ConfigSection) getOptions(path []string) []*KeyValueStorage {
 	opts, err := cs.sm.GetValues(path)
 	if err != nil {
-		//log error
+		log.WithError(err).Warn("Couldn't get values from options")
 		return nil
 	}
 
@@ -115,7 +120,7 @@ func (cs *ConfigSection) getOptions(path []string) []*KeyValueStorage {
 func (cs *ConfigSection) getOption(name string, path []string) *KeyValueStorage {
 	opt, err := cs.sm.GetValue(name, path)
 	if err != nil {
-		//log error
+		log.WithError(err).Warn("Couldn't get value %s from saved settings", name)
 		return nil
 	}
 
@@ -129,24 +134,42 @@ func (cs *ConfigSection) getOption(name string, path []string) *KeyValueStorage 
 func (cs *ConfigSection) saveOptionValue(opt string, path []string, name string, value string) {
 	optV := cs.getOption(opt, path)
 	if optV == nil {
-		//log error
+		log.Warn("Couldn't get option %s from saved settings when saving its new value", opt)
 		return
 	}
 
 	optV.setValue(name, value)
 	data, err := json.Marshal(optV.keyValues)
 	if err != nil {
-		//log error
+		log.WithError(err).Error("Couldn't marshal values")
 		return
 	}
 	cs.sm.Save(opt, path, string(data))
 
+	if opt == "log" {
+		if name == "level" {
+			level, err := logging.LevelFromString(value)
+			if err != nil {
+				log.WithError(err).Warn("%s is not a correct log level", value)
+			} else {
+				logging.SetLevel(level)
+			}
+		} else if name == "output" {
+			writer, err := logging.GetOutputWriter(value)
+			if err != nil {
+				log.WithError(err).Warn("%s is not a correct output entry or path", value)
+			} else {
+				logging.SetOutputTo(writer)
+				skylog.SetOutputTo(writer)
+			}
+		}
+	}
 }
 
 func (cs *ConfigSection) getValue(opt string, path []string, name string) string {
 	optV := cs.getOption(opt, path)
 	if optV == nil {
-		//log error
+		log.Warn("Couldn't get value %s from saved settings", opt)
 		return ""
 	}
 	return optV.getValue(name)
@@ -161,6 +184,8 @@ func (cs *ConfigSection) getDefaultValue(opt string, path []string, name string)
 	return val
 }
 
+//TODO: Exported type KeyValueStorage should have comment or be unexported (linter suggestion)
+// KeyValueStorage <description>
 type KeyValueStorage struct {
 	qtcore.QObject
 	_         func() []string     `slot:"getKeys"`
@@ -192,7 +217,7 @@ func (kv *KeyValueStorage) getKeys() []string {
 func (kv *KeyValueStorage) getValue(key string) string {
 	val, ok := kv.keyValues[key]
 	if !ok {
-		//log error
+		log.Warn("Incorrect key %s", key)
 		return ""
 	}
 	return val
