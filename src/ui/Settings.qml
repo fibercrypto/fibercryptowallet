@@ -220,6 +220,10 @@ Page {
                         onTextChanged: {
                             updateFooterButtonsStatus();
                         }
+                        validator: IntValidator {
+                            bottom: 0
+                            top: 99999999
+                        }
                     }
 
                     Label { text: qsTr("Log level") }
