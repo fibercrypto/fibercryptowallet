@@ -73,6 +73,8 @@ Menu {
 
         property int markedIndex: 5
 
+        width: columns * (48 + columnSpacing) + columnSpacing
+
         columns: 4
         columnSpacing: 10
         rowSpacing: 10
@@ -81,7 +83,7 @@ Menu {
         bottomPadding: 4
 
         Repeater {
-            model: 19
+            model: materialPredefinedColors.length
 
             delegate: Rectangle {
                 id: rectangleDelegate
