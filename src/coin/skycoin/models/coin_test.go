@@ -1001,3 +1001,39 @@ func TestSkycoinUninjectedTransactionGetOutputs(t *testing.T) {
 		})
 	}
 }
+
+func TestSkycoinUninjectedTransactionGetId(t *testing.T) {
+	tests := []struct {
+		ujTxn *SkycoinUninjectedTransaction
+		want  string
+	}{
+		{
+			ujTxn: &SkycoinUninjectedTransaction{
+				txn: new(coin.Transaction),
+			},
+			want: "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
+		},
+		{
+			ujTxn: &SkycoinUninjectedTransaction{
+				txn: &coin.Transaction{
+					Length: 5,
+				},
+			},
+			want: "03e228f59704bc30de09f76fe9db0981ca77b6421aaa997e227d39bcc317174e",
+		},
+		{
+			ujTxn: &SkycoinUninjectedTransaction{
+				txn: &coin.Transaction{
+					Type: 2,
+				},
+			},
+			want: "bb5e828965130b51e627725f6fea3247124da6799d28ccac81c247fd78b34621",
+		},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("ID%d", i), func(t *testing.T) {
+			require.Equal(t, tt.want, tt.ujTxn.GetId())
+		})
+	}
+}
