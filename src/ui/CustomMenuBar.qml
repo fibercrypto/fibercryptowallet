@@ -210,6 +210,7 @@ RowLayout {
 
         visible: opacity > 0
         opacity: enabled ? 1.0 : 0.0
+        enabled: false
         Behavior on opacity { NumberAnimation { duration: 500 } }
 
         // icon
