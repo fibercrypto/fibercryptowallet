@@ -81,11 +81,7 @@ Item {
     }
 
     function openSettingsAddressBookPage() {
-        if (stackView.depth > 1) {
-            stackView.replace(componentSettingsAddressBook)
-        } else {
-            stackView.push(componentSettingsAddressBook)
-        }
+        stackView.push(componentSettingsAddressBook)
     }
 
     function openAddressBookPage() {
