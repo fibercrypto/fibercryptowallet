@@ -45,6 +45,7 @@ Page {
         id: scrollView
         anchors.fill: parent
         contentWidth: width
+        clip: true
         
         ColumnLayout {
             anchors.fill: parent
@@ -53,8 +54,10 @@ Page {
                 Layout.topMargin: 10
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
+                Layout.fillWidth: true
 
                 text: qsTr("Security type")
+                wrapMode: Text.Wrap
                 font.bold: true
             }
 
@@ -69,7 +72,7 @@ Page {
                 spacing: -6
                 interactive: false
                 currentIndex: addrsBookModel.getSecType()
-                model: [ qsTr("Low (Plain text)"), qsTr("Medium (Recommended)"), qsTr("Hard (with password)") ]
+                model: [ qsTr("Low (plain text)"), qsTr("Medium (recommended)"), qsTr("Hard (with password)") ]
                 delegate: RadioButton {
                     width: parent.width
                     text: modelData
@@ -99,47 +102,59 @@ Page {
                     }
                 } // RadioButton (delegate)
             } // ListView (log output)
+
+            Label {
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Layout.fillWidth: true
+
+                visible: listViewSecurityType.currentIndex === DialogSelectSecType.SecurityType.StrongSecurity
+                text: "<b>" + qsTr("Note:") + "</b> " + qsTr("Accessing a password-protected address book can slowdown your device")
+                wrapMode: Text.Wrap
+                Material.foreground: Material.Red
+                font.italic: true
+            }
         } // ColumnLayout
-
-        DialogGetPassword {
-            id: dialogGetPassword
-            anchors.centerIn: Overlay.overlay
-            width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
-            height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
-
-            modal: true
-            focus: visible
-
-            onAccepted: {
-                if(!addrsBookModel.authenticate(dialogGetPassword.password)) {
-                    dialogGetPassword.open()
-                } else {
-                    if (listViewSecurityType.currentIndex === SettingsAddressBook.SecurityType.StrongSecurity) {
-                        dialogSetPassword.open()
-                    } else {
-                        footer.standardButton(Dialog.Apply).enabled = !addrsBookModel.changeSecType(listViewSecurityType.currentIndex, dialogGetPassword.password, "")
-                        enableButtonChangePassword = false
-                    }
-                }
-            }
-        }
-
-        DialogSetPassword {
-            id: dialogSetPassword
-            anchors.centerIn: Overlay.overlay
-            width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
-
-            modal: true
-            focus: visible
-
-            onAccepted: {
-                footer.standardButton(Dialog.Apply).enabled = !addrsBookModel.changeSecType(SettingsAddressBook.SecurityType.StrongSecurity, dialogGetPassword.password, dialogSetPassword.password)
-                enableButtonChangePassword = true
-            }
-        }
     } // ScrollView
 
     AddrsBookModel {
         id: addrsBookModel
+    }
+
+    DialogGetPassword {
+        id: dialogGetPassword
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+
+        modal: true
+        focus: visible
+
+        onAccepted: {
+            if(!addrsBookModel.authenticate(dialogGetPassword.password)) {
+                dialogGetPassword.open()
+            } else {
+                if (listViewSecurityType.currentIndex === SettingsAddressBook.SecurityType.StrongSecurity) {
+                    dialogSetPassword.open()
+                } else {
+                    footer.standardButton(Dialog.Apply).enabled = !addrsBookModel.changeSecType(listViewSecurityType.currentIndex, dialogGetPassword.password, "")
+                    enableButtonChangePassword = false
+                }
+            }
+        }
+    }
+
+    DialogSetPassword {
+        id: dialogSetPassword
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+
+        modal: true
+        focus: visible
+
+        onAccepted: {
+            footer.standardButton(Dialog.Apply).enabled = !addrsBookModel.changeSecType(SettingsAddressBook.SecurityType.StrongSecurity, dialogGetPassword.password, dialogSetPassword.password)
+            enableButtonChangePassword = true
+        }
     }
 }
