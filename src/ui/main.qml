@@ -50,7 +50,7 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-            enableSettingsAddressBook = true
+            enableSettingsAddressBook = false
             enableAddrsBook = true
         }
         
@@ -63,7 +63,7 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-            enableSettingsAddressBook = true
+            enableSettingsAddressBook = false
             enableAddrsBook = true
 
         }
@@ -77,7 +77,7 @@ ApplicationWindow {
             enableBlockchain = false
             enableNetworking = true
             enableSettings = true
-            enableSettingsAddressBook = true
+            enableSettingsAddressBook = false
             enableAddrsBook = true
 
         }
@@ -91,7 +91,7 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = false
             enableSettings = true
-            enableSettingsAddressBook = true
+            enableSettingsAddressBook = false
             enableAddrsBook = true
         }
 
@@ -117,7 +117,7 @@ ApplicationWindow {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = false
-            enableSettingsAddressBook = true
+            enableSettingsAddressBook = false
             enableAddrsBook = true
         }
 
