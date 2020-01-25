@@ -21,17 +21,6 @@ Page {
     property int secType
     property string password
 
-    DialogAddContact {
-        id: contactDialog
-
-        anchors.centerIn: Overlay.overlay
-        width:  applicationWindow.width  > 540 ? 540 : applicationWindow.width
-        height: applicationWindow.height > 640 ? 640 : applicationWindow.height
-
-        focus: visible
-        modal: true
-    }
-
     Component.onCompleted: {
         if (abm.hasInit()) {
             if (abm.getSecType() !== AddressBook.SecurityType.StrongSecurity) {
@@ -133,13 +122,25 @@ Page {
         }
     } // Menu
 
+    DialogAddContact {
+        id: contactDialog
+
+        anchors.centerIn: Overlay.overlay
+        width:  applicationWindow.width  > 540 ? 540 : applicationWindow.width
+        height: applicationWindow.height > 640 ? 640 : applicationWindow.height
+
+        focus: visible
+        modal: true
+    }
+
     DialogSelectSecType {
         id: dialogCreateAddrsBk
 
         anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+        width: applicationWindow.width > 480 ? 480 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 400 ? 400 - 40 : applicationWindow.height - 40
 
+        title: qsTr("Initial setup")
         focus: visible
         modal: true
 
