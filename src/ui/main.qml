@@ -122,7 +122,7 @@ ApplicationWindow {
         }
 
         onSettingsAddressBookRequested: {
-            generalStackView.openSettingsPage()
+            generalStackView.openSettingsAddressBookPage()
             customHeader.text = qsTr("Address Book Settings")
 
             enableOutputs = true
