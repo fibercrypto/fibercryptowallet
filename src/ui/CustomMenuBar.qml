@@ -170,7 +170,7 @@ RowLayout {
 
             CustomMenuItem {
                 text: "English"
-                iconSource: "qrc:/images/resources/images/icons/country-flags/united states.svg"
+                iconSource: "qrc:/images/resources/images/icons/country-flags/united_states.svg"
 
                 onClicked: { /* nothing to do (for now) */ }
             }
