@@ -50,6 +50,7 @@ func SkyWltDeviceInstance() skyWallet.Devicer {
 	}
 	return dev
 }
+
 // NewSkyWallet create a new sky wallet instance
 func NewSkyWallet(wlt core.Wallet) *SkyWallet {
 	return &SkyWallet{wlt: wlt}

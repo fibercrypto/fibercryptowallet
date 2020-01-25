@@ -21,6 +21,7 @@ Dialog {
         }
     }
     onAboutToShow: deviceInteraction2.deviceFeatures();
+    onRejected: topLevelDialogLocker.unlock();
 
     Flickable {
         id: flickable

@@ -5,6 +5,7 @@ import (
 	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
+	messages "github.com/fibercrypto/skywallet-protob/go"
 )
 
 type SkyWalletHelper struct {
@@ -47,6 +48,33 @@ func (dev *SkyWalletHelper) DeviceMatch(wlt core.Wallet) *promise.Promise {
 			return val
 		}
 		return matcher(data.(string))
+	}).Catch(func(err error) error {
+		return err
+	})
+}
+
+func (dev *SkyWalletHelper) ShouldBeSecured() *promise.Promise {
+	return dev.di.Features().Then(func(data interface{}) interface{} {
+		features := data.(messages.Features)
+		if !*features.PinProtection {
+			return true
+		}
+		if *features.NeedsBackup {
+			return true
+		}
+		return false
+	}).Catch(func(err error) error {
+		return err
+	})
+}
+
+func (dev *SkyWalletHelper) ShouldBeInitialized() *promise.Promise {
+	return dev.di.Features().Then(func(data interface{}) interface{} {
+		features := data.(messages.Features)
+		if !*features.Initialized {
+			return true
+		}
+		return false
 	}).Catch(func(err error) error {
 		return err
 	})

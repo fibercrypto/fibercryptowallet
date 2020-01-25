@@ -23,6 +23,8 @@ type QDeviceInteraction struct {
 	_ func(isInitialized bool)  `signal:"isInitializedDetermined"`
 	_ func(needsBackup bool)    `signal:"needsBackupDetermined"`
 	_ func()                    `signal:"operationDone"`
+	_ func()                    `signal:"secureDevice"`
+	_ func()                    `signal:"initializeDevice"`
 }
 
 func (devI *QDeviceInteraction) init() {

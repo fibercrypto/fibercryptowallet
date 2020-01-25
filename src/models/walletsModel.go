@@ -44,7 +44,7 @@ type WalletModel struct {
 	_ func(row int)                                                                    `slot:"removeWallet"`
 	_ func([]*QWallet)                                                                 `slot:"loadModel"`
 	_ func([]*QWallet)                                                                 `slot:"updateModel"`
-	_ func()                                                                           `slot:"sniffHw"`
+	_ func(devI *QDeviceInteraction, locker *QBridge)                                  `slot:"sniffHw"`
 	_ int                                                                              `property:"count"`
 }
 
@@ -149,7 +149,7 @@ func attachHwAsSigner(wlt fccore.Wallet) error {
 }
 
 // sniffHw notify the model about available hardware wallet device if any
-func (walletModel *WalletModel) sniffHw() {
+func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBridge) {
 	blockingCheck := func() {
 		registerWlt := func(wlt fccore.Wallet) {
 			if wlt == nil {
@@ -189,6 +189,31 @@ func (walletModel *WalletModel) sniffHw() {
 				walletModel.DataChanged(beginIndex, endIndex, []int{HasHardwareWallet})
 				logSignersModel.WithError(err).Info("connection to hardware wallet was lose")
 			}
+			return err
+		}).Await()
+		dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
+			if data.(bool) {
+				locker.BeginUse()
+				defer locker.EndUse()
+				locker.lock()
+				qmlDevI.InitializeDevice()
+				locker.lock()
+				locker.unlock()
+			}
+			return data
+		}).Then(func(data interface{}) interface{} {
+			return dev.ShouldBeSecured()
+		}).Then(func(data interface{}) interface{} {
+			if data.(bool) {
+				locker.BeginUse()
+				defer locker.EndUse()
+				locker.lock()
+				qmlDevI.SecureDevice()
+				locker.lock()
+				locker.unlock()
+			}
+			return data
+		}).Catch(func(err error) error {
 			return err
 		}).Await()
 	}

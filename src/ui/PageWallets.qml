@@ -101,7 +101,7 @@ Page {
                 repeat: false
                 running: true
                 onTriggered: {
-                    walletModel.sniffHw()
+                    walletModel.sniffHw(deviceInteraction, topLevelDialogLocker)
                 }
             }
 

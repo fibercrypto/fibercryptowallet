@@ -27,6 +27,7 @@ Dialog {
         }
     }
     onAboutToShow: deviceInteraction.deviceFeatures();
+    onRejected: topLevelDialogLocker.unlock();
     function setEnableButtons(enabled) {
         buttonCreateBackup.enabled = enabled;
         buttonWipeDevice.enabled = enabled;

@@ -203,6 +203,15 @@ ApplicationWindow {
     
     DeviceInteraction {
         id: deviceInteraction
+        onInitializeDevice: {
+            dialogUnconfiguredWallet.open();
+        }
+        onSecureDevice: {
+            dialogSkyWalletId.open();
+        }
+    }
+    QBridge {
+        id: topLevelDialogLocker
     }
     QBridge{
         id: bridgeForPassword

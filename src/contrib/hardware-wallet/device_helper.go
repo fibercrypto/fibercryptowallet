@@ -12,4 +12,10 @@ type DeviceHelper interface {
 
 	// DeviceMatch check if there is an attached device that matches with the giving wallet
 	DeviceMatch(wlt core.Wallet) *promise.Promise
+
+	// ShouldBeSecured check if the device needs to be secured
+	ShouldBeSecured() *promise.Promise
+
+	// ShouldBeInitialized check if the device needs to be initialized
+	ShouldBeInitialized() *promise.Promise
 }
