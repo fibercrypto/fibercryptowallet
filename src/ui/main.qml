@@ -125,13 +125,8 @@ ApplicationWindow {
             generalStackView.openSettingsAddressBookPage()
             customHeader.text = qsTr("Address Book Settings")
 
-            enableOutputs = true
-            enablePendingTransactions = true
-            enableBlockchain = true
-            enableNetworking = true
-            enableSettings = true
-            enableSettingsAddressBook = false
-            enableAddrsBook = true
+            // The back button must be used to go back to the Address Book
+            enableOutputs = enablePendingTransactions = enableBlockchain = enableNetworking = enableSettings = enableSettingsAddressBook = enableAddrsBook = false
         }
 
         onAboutRequested: {
@@ -149,11 +144,15 @@ ApplicationWindow {
 
     CustomHeader {
         id: customHeader
-    } // CustomHeader
+    }
 
     GeneralStackView {
         id: generalStackView
         anchors.fill: parent
+
+        onBackRequested: {
+            customMenuBar.back()
+        }
        
         WalletManager {
             id: walletManager
@@ -216,7 +215,7 @@ ApplicationWindow {
         width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 540 ? 540 - 40 : applicationWindow.height - 40
 
-        focus: true
+        focus: visible
         modal: true
     }
 
@@ -226,7 +225,7 @@ ApplicationWindow {
         width: applicationWindow.width > 460 ? 460 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
 
-        focus: true
+        focus: visible
         modal: true
     }
 
@@ -236,7 +235,7 @@ ApplicationWindow {
         width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
         height: (applicationWindow.height > 590 ? 590 - 40 : applicationWindow.height - 40) - (enableBackupWarning ^ enablePINWarning ? 100 : 0) - (!enableBackupWarning && !enablePINWarning ? 240 : 0)
         
-        focus: true
+        focus: visible
         modal: true
     }
 
@@ -248,7 +247,7 @@ ApplicationWindow {
         width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 360 ? 360 - 40 : applicationWindow.height - 40
         
-        focus: true
+        focus: visible
         modal: true
     }
 
@@ -285,7 +284,7 @@ ApplicationWindow {
         width: applicationWindow.width - 40
         height: applicationWindow.height - 40
         
-        focus: true
+        focus: visible
         modal: true
     }
 
