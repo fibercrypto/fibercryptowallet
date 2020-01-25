@@ -265,9 +265,43 @@ func TestPendingTxnStatus(t *testing.T) {
 	require.Equal(t, core.TXN_STATUS_PENDING, pendTxn.GetStatus())
 }
 
-func TestUninjectedTxnTimestamp(t *testing.T) {
-	coreTxn := new(SkycoinUninjectedTransaction)
-	require.Equal(t, core.Timestamp(0), coreTxn.GetTimestamp())
+func TestTransactionsGetTimestamp(t *testing.T) {
+	cur := time.Now()
+	tests := []struct {
+		name string
+		txn  core.Transaction
+		want uint64
+	}{
+		{
+			name: "SkycoinUninjectTransaction",
+			txn:  new(SkycoinUninjectedTransaction),
+			want: 0,
+		},
+		{
+			name: "SkycoinTransaction",
+			txn: &SkycoinTransaction{
+				skyTxn: readable.TransactionVerbose{
+					Timestamp: 42,
+				},
+			},
+			want: 42,
+		},
+		{
+			name: "SkycoinPendingTransaction",
+			txn: &SkycoinPendingTransaction{
+				Transaction: &readable.UnconfirmedTransactionVerbose{
+					Received: cur,
+				},
+			},
+			want: uint64(cur.Unix()),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, core.Timestamp(tt.want), tt.txn.GetTimestamp())
+		})
+	}
 }
 
 func TestUninjectedTxnStatus(t *testing.T) {
@@ -320,14 +354,6 @@ func TestSkycoinCreatedTxnFee(t *testing.T) {
 
 	_, err = cTxn.ComputeFee("NOCOINATALL")
 	testutil.RequireError(t, err, "Invalid ticker")
-}
-
-func TestPendingTxnGetTimestamp(t *testing.T) {
-	cur := time.Now()
-	sTxn := new(SkycoinPendingTransaction)
-	sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{Received: cur}
-
-	require.Equal(t, core.Timestamp(cur.Unix()), sTxn.GetTimestamp())
 }
 
 func TestPendingTxnGetInputs(t *testing.T) {
