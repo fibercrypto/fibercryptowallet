@@ -20,7 +20,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
 )
 
-func TestSkycoinTransactionGetStatus(t *testing.T) {
+func TestTransactionGetStatus(t *testing.T) {
 	global_mock.On("Transaction", "hash1").Return(
 		&readable.TransactionWithStatus{
 			Status: readable.TransactionStatus{
@@ -28,7 +28,7 @@ func TestSkycoinTransactionGetStatus(t *testing.T) {
 			},
 		},
 		nil,
-	)
+	).Once()
 	global_mock.On("Transaction", "hash2").Return(
 		&readable.TransactionWithStatus{
 			Status: readable.TransactionStatus{
@@ -36,15 +36,52 @@ func TestSkycoinTransactionGetStatus(t *testing.T) {
 			},
 		},
 		nil,
-	)
+	).Once()
 
-	thx1 := &SkycoinTransaction{skyTxn: readable.TransactionVerbose{}}
-	thx1.skyTxn.Hash = "hash1"
-	thx2 := &SkycoinTransaction{skyTxn: readable.TransactionVerbose{}}
-	thx2.skyTxn.Hash = "hash2"
+	tests := []struct {
+		name string
+		txn  core.Transaction
+		want core.TransactionStatus
+	}{
+		{
+			name: "SkycoinTransaction-Confirmed",
+			txn: &SkycoinTransaction{
+				skyTxn: readable.TransactionVerbose{
+					BlockTransactionVerbose: readable.BlockTransactionVerbose{
+						Hash: "hash1",
+					},
+				},
+			},
+			want: core.TXN_STATUS_CONFIRMED,
+		},
+		{
+			name: "SkycoinTransaction-Unconfirmed",
+			txn: &SkycoinTransaction{
+				skyTxn: readable.TransactionVerbose{
+					BlockTransactionVerbose: readable.BlockTransactionVerbose{
+						Hash: "hash2",
+					},
+				},
+			},
+			want: core.TXN_STATUS_PENDING,
+		},
+		{
+			name: "SkycoinPendingTransaction",
+			txn:  new(SkycoinPendingTransaction),
+			want: core.TXN_STATUS_PENDING,
+		},
+		{
+			name: "SkycoinUnjectedTransaction",
+			txn:  new(SkycoinUninjectedTransaction),
+			want: core.TXN_STATUS_CREATED,
+		},
+	}
 
-	require.Equal(t, thx1.GetStatus(), core.TXN_STATUS_CONFIRMED)
-	require.Equal(t, thx2.GetStatus(), core.TXN_STATUS_PENDING)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, tt.txn.GetStatus())
+		})
+	}
 }
 
 func TestSkycoinTransactionGetInputs(t *testing.T) {
@@ -260,11 +297,6 @@ func TestSupportedAssets(t *testing.T) {
 	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
 }
 
-func TestPendingTxnStatus(t *testing.T) {
-	pendTxn := new(SkycoinPendingTransaction)
-	require.Equal(t, core.TXN_STATUS_PENDING, pendTxn.GetStatus())
-}
-
 func TestTransactionsGetTimestamp(t *testing.T) {
 	cur := time.Now()
 	tests := []struct {
@@ -302,11 +334,6 @@ func TestTransactionsGetTimestamp(t *testing.T) {
 			require.Equal(t, core.Timestamp(tt.want), tt.txn.GetTimestamp())
 		})
 	}
-}
-
-func TestUninjectedTxnStatus(t *testing.T) {
-	coreTxn := new(SkycoinUninjectedTransaction)
-	require.Equal(t, core.TXN_STATUS_CREATED, coreTxn.GetStatus())
 }
 
 func TestUninjectedTxnFee(t *testing.T) {
