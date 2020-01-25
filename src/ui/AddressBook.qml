@@ -23,10 +23,13 @@ Page {
 
     DialogAddContact {
         id: contactDialog
+
         anchors.centerIn: Overlay.overlay
-        focus: true
         width:  applicationWindow.width  > 540 ? 540 : applicationWindow.width
         height: applicationWindow.height > 640 ? 640 : applicationWindow.height
+
+        focus: visible
+        modal: true
     }
 
     Component.onCompleted: {
@@ -128,13 +131,17 @@ Page {
                 dialogConfirmation.open()
             }
         }
-    } //Menu
+    } // Menu
 
     DialogSelectSecType {
         id: dialogCreateAddrsBk
-        width:300
-        height:300
+
         anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+
+        focus: visible
+        modal: true
 
         onAccepted: {
             secType = select
@@ -152,7 +159,12 @@ Page {
 
     DialogSetPassword {
         id: setpass
+
         anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+
+        focus: visible
+        modal: true
 
         onAccepted: {
             abm.initAddrsBook(AddressBook.SecurityType.StrongSecurity, setpass.password)
@@ -165,12 +177,13 @@ Page {
 
     DialogGetPassword {
         id: getpass
+
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
 
         modal: true
-            focus: visible
+        focus: visible
 
         onAccepted: {
             if (!abm.authenticate(getpass.password)) {
@@ -187,9 +200,11 @@ Page {
 
     DialogShowContact {
         id: dialogShowContact
+
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 440 ? 440 - 40 : applicationWindow.height - 40
+
         modal: true
         focus: visible
     }
