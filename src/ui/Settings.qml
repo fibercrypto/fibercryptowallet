@@ -67,7 +67,6 @@ Page {
         logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
         logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
-        console.log("cacheLifeTime", cacheLifeTime)
 
         updateFooterButtonsStatus()
     }

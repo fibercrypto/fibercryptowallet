@@ -8,7 +8,6 @@ Page {
     id: blockchain
 
     property BlockchainStatusModel model: null
-    onModelChanged: console.log("Model changed")
 
     property string numberOfBlocks: model.numberOfBlocks
     property date timestampLastBlock: model.timestampLastBlock

@@ -156,9 +156,6 @@ Item {
 
 
         }
-        onRejected: {
-            console.log("Adding rejected")
-        }
     } // DialogAddAddresses
     DialogGetPassword {
         id: dialogGetPasswordForAddAddresses

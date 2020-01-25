@@ -94,7 +94,6 @@ Page {
         MenuItem {
             text: qsTr("&View")
             onTriggered: {
-                console.log(menu.name)
                 dialogShowContact.open()
             }
         }
