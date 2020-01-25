@@ -97,40 +97,77 @@ func TestTransactionGetStatus(t *testing.T) {
 }
 
 func TestSkycoinTransactionGetInputs(t *testing.T) {
-	//set correct return value
+	skyAmount := uint64(20000000)
+	chAmount := uint64(20)
+
 	response := &readable.TransactionWithStatusVerbose{
-		Transaction: readable.TransactionVerbose{},
-	}
-	response.Transaction.In = []readable.TransactionInput{
-		readable.TransactionInput{
-			Hash:            "I1",
-			Coins:           "20",
-			Hours:           uint64(20),
-			CalculatedHours: uint64(20),
+		Transaction: readable.TransactionVerbose{
+			BlockTransactionVerbose: readable.BlockTransactionVerbose{
+				In: []readable.TransactionInput{
+					readable.TransactionInput{
+						Hash:  "I1",
+						Coins: "20",
+						Hours: chAmount,
+					},
+					readable.TransactionInput{
+						Hash:  "I2",
+						Coins: "20",
+						Hours: uint64(20),
+					},
+				},
+			},
 		},
-		readable.TransactionInput{
-			Hash:            "I2",
-			Coins:           "20",
-			Hours:           uint64(20),
-			CalculatedHours: uint64(20),
+	}
+	global_mock.On("TransactionVerbose", "hash1").Return(nil, goerrors.New("failure")).Once()
+	global_mock.On("TransactionVerbose", "hash1").Return(response, nil).Once()
+
+	st := new(SkycoinTransaction)
+	st.skyTxn.Hash = "hash1"
+
+	tests := []struct {
+		name    string
+		txn     core.Transaction
+		ids     []string
+		wantNil bool
+	}{
+		{
+			name:    "SkycoinTransaction-ApiError",
+			txn:     st,
+			wantNil: true,
+		},
+		{
+			name: "SkycoinTransaction",
+			txn:  st,
+			ids:  []string{"I1", "I2"},
+		},
+		{
+			name: "SkycoinTransaction-InputsSaved",
+			txn:  st,
+			ids:  []string{"I1", "I2"},
 		},
 	}
-	global_mock.On("TransactionVerbose", "hash1").Return(response, nil)
 
-	thx1 := &SkycoinTransaction{skyTxn: readable.TransactionVerbose{}}
-	thx1.skyTxn.Hash = "hash1"
-
-	inputs := thx1.GetInputs()
-	require.Equal(t, inputs[0].GetId(), "I1")
-	require.Equal(t, inputs[1].GetId(), "I2")
-	it := NewSkycoinTransactioninputIterator(inputs)
-	for it.Next() {
-		sky, err := it.Value().GetCoins(Sky)
-		require.NoError(t, err)
-		require.Equal(t, sky, uint64(20000000))
-		hours, err1 := it.Value().GetCoins(CoinHour)
-		require.NoError(t, err1)
-		require.Equal(t, hours, uint64(20))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			inputs := tt.txn.GetInputs()
+			if tt.wantNil {
+				require.Nil(t, inputs)
+			} else {
+				ids := make([]string, 0)
+				it := NewSkycoinTransactioninputIterator(inputs)
+				for it.Next() {
+					input := it.Value()
+					ids = append(ids, input.GetId())
+					sky, err := input.GetCoins(Sky)
+					require.NoError(t, err)
+					require.Equal(t, skyAmount, sky)
+					hours, err1 := it.Value().GetCoins(CoinHour)
+					require.NoError(t, err1)
+					require.Equal(t, chAmount, hours)
+				}
+				requirethat.ElementsMatch(t, tt.ids, ids)
+			}
+		})
 	}
 }
 
