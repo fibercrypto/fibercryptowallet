@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 
 	"github.com/SkycoinProject/skycoin/src/api"
@@ -18,6 +19,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
 )
 
@@ -1458,6 +1460,25 @@ func TestGetCoins(t *testing.T) {
 		GetCoins(string) (uint64, error)
 	}
 
+	fakeTicker := "MOCKSCOIN"
+	fakeDesc := "Fake coin"
+	fakeExp := 3
+	fakeMeta := core.AltcoinMetadata{
+		Name:          fakeDesc,
+		Ticker:        fakeTicker,
+		Family:        fakeTicker,
+		HasBip44:      false,
+		Bip44CoinType: 0,
+		Accuracy:      int32(fakeExp),
+	}
+	mockPlugin := new(mocks.AltcoinPlugin)
+	mockPlugin.On("RegisterTo", mock.Anything).Return().Run(func(args mock.Arguments) {
+		manager := args.Get(0).(core.AltcoinManager)
+		manager.RegisterAltcoin(fakeMeta, mockPlugin)
+	})
+	mockPlugin.On("GetName").Return(fakeDesc)
+	util.RegisterAltcoin(mockPlugin)
+
 	invalidTicker := "INVALIDTICKER"
 	tests := []struct {
 		name   string
@@ -1470,6 +1491,12 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinCreatedTransactionOutput",
 			ticker: invalidTicker,
+			obj:    new(SkycoinCreatedTransactionOutput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: fakeTicker,
 			obj:    new(SkycoinCreatedTransactionOutput),
 			err:    true,
 		},
@@ -1543,6 +1570,12 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinCreatedTransactionInput",
 			ticker: invalidTicker,
+			obj:    new(SkycoinCreatedTransactionInput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: fakeTicker,
 			obj:    new(SkycoinCreatedTransactionInput),
 			err:    true,
 		},
@@ -1625,6 +1658,12 @@ func TestGetCoins(t *testing.T) {
 		},
 		{
 			name:   "SkycoinTransactionInput",
+			ticker: fakeTicker,
+			obj:    new(SkycoinTransactionInput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinTransactionInput",
 			ticker: Sky,
 			obj: &SkycoinTransactionInput{
 				skyIn: readable.TransactionInput{
@@ -1677,6 +1716,12 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionOutput",
 			ticker: invalidTicker,
+			obj:    new(SkycoinTransactionOutput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinTransactionOutput",
+			ticker: fakeTicker,
 			obj:    new(SkycoinTransactionOutput),
 			err:    true,
 		},
