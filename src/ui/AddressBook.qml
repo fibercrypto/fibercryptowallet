@@ -51,6 +51,22 @@ Page {
                     dialogShowContact.open()
                 }
 
+                onEditRequested: {
+                    contactDialog.isEdit = true
+                    contactDialog.name   = name
+                    contactDialog.index  = index
+                    contactDialog.cId    = id
+                    contactDialog.addressModel = address
+                    contactDialog.open()
+                }
+
+                onDeleteRequested: {
+                    dialogConfirmation.index = index
+                    dialogConfirmation.cId   = id
+                    dialogConfirmation.name  = name
+                    dialogConfirmation.open()
+                }
+
                 MouseArea {
                     anchors.fill: parent
                     acceptedButtons: Qt.RightButton
@@ -99,6 +115,7 @@ Page {
 
         MenuItem {
             text: qsTr("&View")
+            icon.source: "qrc:/images/resources/images/icons/visibleOn.svg"
             onTriggered: {
                 dialogShowContact.name = menu.name
                 dialogShowContact.addressModel = menu.address
@@ -110,6 +127,7 @@ Page {
 
         MenuItem {
             text: qsTr("&Edit")
+            icon.source: "qrc:/images/resources/images/icons/edit.svg"
             onTriggered: {
                 contactDialog.isEdit = true
                 contactDialog.open()
@@ -120,6 +138,10 @@ Page {
 
         MenuItem {
             text: qsTr("&Remove")
+            icon.source: "qrc:/images/resources/images/icons/delete.svg"
+            icon.color: Material.accent
+            Material.accent: Material.Red
+
             onTriggered: {
                 dialogConfirmation.index = menu.index
                 dialogConfirmation.cId   = menu.cId
@@ -138,6 +160,17 @@ Page {
 
         focus: visible
         modal: true
+
+        onAccepted: {
+            for (var i = 0; i < listModelAddresses.count; i++) {
+            abm.addAddress(listModelAddresses.get(i).value, listModelAddresses.get(i).coinType)
+            }
+            if (isEdit) {
+                abm.editContact(index, cId, name)
+            } else {
+                abm.newContact(name)
+            }
+        }
     }
 
     DialogSelectSecType {
