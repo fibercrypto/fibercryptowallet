@@ -1993,3 +1993,12 @@ func TestErrorTickerInvalidError(t *testing.T) {
 		require.Equal(t, ticker+format, err.Error())
 	}
 }
+
+func TestNewWalletNode(t *testing.T) {
+	addr := "addr"
+	for i := 1; i < 4; i++ {
+		wn := NewWalletNode(addr)
+		require.Equal(t, fmt.Sprintf("skycoin-%d", i), wn.poolSection)
+		require.Equal(t, addr, wn.NodeAddress)
+	}
+}
