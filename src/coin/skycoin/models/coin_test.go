@@ -46,6 +46,18 @@ func TestTransactionGetStatus(t *testing.T) {
 		want core.TransactionStatus
 	}{
 		{
+			name: "SkycoinCreatedTransaction-Created",
+			txn:  new(SkycoinCreatedTransaction),
+			want: core.TXN_STATUS_CREATED,
+		},
+		{
+			name: "SkycoinCreatedTransaction-Created",
+			txn: &SkycoinCreatedTransaction{
+				skyTxn: api.CreatedTransaction{Length: 10},
+			},
+			want: core.TXN_STATUS_CREATED,
+		},
+		{
 			name: "SkycoinTransaction-Confirmed",
 			txn: &SkycoinTransaction{
 				skyTxn: readable.TransactionVerbose{
@@ -131,6 +143,25 @@ func TestSkycoinTransactionGetInputs(t *testing.T) {
 		ids     []string
 		wantNil bool
 	}{
+		{
+			name: "SkycoinCreatedTransaction",
+			txn: &SkycoinCreatedTransaction{
+				skyTxn: api.CreatedTransaction{
+					In: []api.CreatedTransactionInput{
+						api.CreatedTransactionInput{
+							UxID: "out1", Coins: "20", Hours: "20",
+						},
+						api.CreatedTransactionInput{
+							UxID: "out2", Coins: "20", Hours: "20",
+						},
+						api.CreatedTransactionInput{
+							UxID: "out3", Coins: "20", Hours: "20",
+						},
+					},
+				},
+			},
+			ids: []string{"out1", "out2", "out3"},
+		},
 		{
 			name:    "SkycoinTransaction-ApiError",
 			txn:     st,
@@ -351,6 +382,13 @@ func TestTransactionsGetTimestamp(t *testing.T) {
 			want: 0,
 		},
 		{
+			name: "SkycoinCreatedTransaction-Created",
+			txn: &SkycoinCreatedTransaction{
+				skyTxn: api.CreatedTransaction{Length: 10},
+			},
+			want: 0,
+		},
+		{
 			name: "SkycoinTransaction",
 			txn: &SkycoinTransaction{
 				skyTxn: readable.TransactionVerbose{
@@ -367,6 +405,11 @@ func TestTransactionsGetTimestamp(t *testing.T) {
 				},
 			},
 			want: uint64(cur.Unix()),
+		},
+		{
+			name: "SkycoinCreatedTransaction",
+			txn:  new(SkycoinCreatedTransaction),
+			want: 0,
 		},
 	}
 
@@ -1127,6 +1170,25 @@ func TestSkycoinTransactionGetOutputs(t *testing.T) {
 		wantNil bool
 	}{
 		{
+			name: "SkycoinCreatedTransaction",
+			txn: &SkycoinCreatedTransaction{
+				skyTxn: api.CreatedTransaction{
+					Out: []api.CreatedTransactionOutput{
+						api.CreatedTransactionOutput{
+							UxID: "out1", Coins: "20", Hours: "20",
+						},
+						api.CreatedTransactionOutput{
+							UxID: "out2", Coins: "20", Hours: "20",
+						},
+						api.CreatedTransactionOutput{
+							UxID: "out3", Coins: "20", Hours: "20",
+						},
+					},
+				},
+			},
+			ids: []string{"out1", "out2", "out3"},
+		},
+		{
 			name: "SkycoinTransaction1",
 			txn:  st,
 			ids:  []string{"O1", "O2"},
@@ -1299,6 +1361,10 @@ func TestTransactionVerifyUnsigned(t *testing.T) {
 			name: "empty Txn",
 			txn:  new(SkycoinTransaction),
 		},
+		{
+			name: "empty Txn",
+			txn:  new(SkycoinCreatedTransaction),
+		},
 		//TODO: add better tests
 	}
 
@@ -1323,6 +1389,10 @@ func TestTransactionVerifySigned(t *testing.T) {
 		{
 			name: "empty Txn",
 			txn:  new(SkycoinTransaction),
+		},
+		{
+			name: "empty Txn",
+			txn:  new(SkycoinCreatedTransaction),
 		},
 		//TODO: add better tests
 	}
