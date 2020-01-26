@@ -53,8 +53,7 @@ Page {
     property alias logLevel: comboBoxLogLevel.currentIndex
     property alias logOutput: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
-    property alias logLevel: textFieldLogLevel.text
-    property alias logOutput: textFieldLogOutput.text
+
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -66,6 +65,7 @@ Page {
         configManager.setValue("skycoin/node/address", nodeUrl)
         configManager.setValue("skycoin/log/level", logLevel)
         configManager.setValue("skycoin/log/output", logOutput)
+        console.log("logOutput", logOutput)
         configManager.setValue("global/cache/lifeTime", cacheLifeTime)
         loadSavedSettings()
     }
@@ -78,6 +78,9 @@ Page {
         logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
         console.log("cacheLifeTime", cacheLifeTime)
+        console.log("savedLogLevel", savedLogLevel)
+        console.log("defaultLogLevel", defaultLogLevel)
+        console.log("savedLogOutput", savedLogOutput)
 
         updateFooterButtonsStatus()
     }
@@ -91,6 +94,7 @@ Page {
         cacheLifeTime = defaultCacheLifeTime
         logLevel = defaultLogLevel
         logOutput = defaultLogOutput
+        console.log("logOutputDefault", defaultLogOutput)
 
         saveCurrentSettings()
     }
