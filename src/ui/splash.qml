@@ -48,7 +48,7 @@ Window {
                 id: labelApplicationName
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
                 text: "FiberCrypto Wallet"
-                // font.family: "???"
+                font.family: "Hemi Head"
                 font.pointSize: Qt.application.font.pointSize * 2.2
             }
 
