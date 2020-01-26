@@ -1361,11 +1361,15 @@ func Test_getSkycoinTransactionInputsFromTxnHash(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestSkycoinTransactionInputGetCoins(t *testing.T) {
+func TestGetCoins(t *testing.T) {
+	type CoinPackage interface {
+		GetCoins(string) (uint64, error)
+	}
+
 	invalidTicker := "INVALIDTICKER"
 	tests := []struct {
 		name   string
-		input  core.TransactionInput
+		input  CoinPackage
 		ticker string
 		want   uint64
 		err    bool
@@ -1423,6 +1427,61 @@ func TestSkycoinTransactionInputGetCoins(t *testing.T) {
 				skyIn: readable.TransactionInput{
 					CalculatedHours: 42,
 				},
+			},
+			want: 42,
+		},
+		// TransactionOutput
+		{
+			name:   "SkycoinTransactionOutput",
+			ticker: invalidTicker,
+			input:  new(SkycoinTransactionOutput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinTransactionOutput",
+			ticker: Sky,
+			input: &SkycoinTransactionOutput{
+				skyOut: readable.TransactionOutput{
+					Coins: "20",
+				},
+			},
+			want: 20000000,
+		},
+		{
+			name:   "SkycoinTransactionOutput",
+			ticker: Sky,
+			input: &SkycoinTransactionOutput{
+				skyOut: readable.TransactionOutput{
+					Coins: "20.1",
+				},
+			},
+			want: 20100000,
+		},
+		{
+			name:   "SkycoinTransactionOutput",
+			ticker: Sky,
+			input: &SkycoinTransactionOutput{
+				skyOut: readable.TransactionOutput{
+					Coins: "20,1a",
+				},
+			},
+			err: true,
+		},
+		{
+			name:   "SkycoinTransactionOutput",
+			ticker: CoinHour,
+			input: &SkycoinTransactionOutput{
+				skyOut: readable.TransactionOutput{
+					Hours: 42,
+				},
+			},
+			want: 42,
+		},
+		{
+			name:   "SkycoinTransactionOutput",
+			ticker: CalculatedHour,
+			input: &SkycoinTransactionOutput{
+				calculatedHours: 42,
 			},
 			want: 42,
 		},
