@@ -204,24 +204,17 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 }
 
 func TestSkycoinTransactionOutputIsSpent(t *testing.T) {
-	global_mock.On("UxOut", "out1").Return(
-		&readable.SpentOutput{
-			SpentTxnID: "0000000000000000000000000000000000000000000000000000000000000000",
-		},
-		nil,
-	)
-	global_mock.On("UxOut", "out2").Return(
-		&readable.SpentOutput{
-			SpentTxnID: "0",
-		},
-		nil,
-	)
+	badID := "0000000000000000000000000000000000000000000000000000000000000000"
+	global_mock.On("UxOut", "out").Return(nil, goerrors.New("failure")).Once()
+	global_mock.On("UxOut", "out").Return(&readable.SpentOutput{SpentTxnID: badID}, nil).Once()
+	global_mock.On("UxOut", "out").Return(&readable.SpentOutput{SpentTxnID: "42"}, nil).Once()
 
-	output1 := &SkycoinTransactionOutput{skyOut: readable.TransactionOutput{Hash: "out1"}}
-	output2 := &SkycoinTransactionOutput{skyOut: readable.TransactionOutput{Hash: "out2"}}
+	output := &SkycoinTransactionOutput{skyOut: readable.TransactionOutput{Hash: "out"}}
 
-	require.Equal(t, output1.IsSpent(), false)
-	require.Equal(t, output2.IsSpent(), true)
+	require.Equal(t, output.IsSpent(), false)
+	require.Equal(t, output.IsSpent(), false)
+	require.Equal(t, output.IsSpent(), true)
+	require.Equal(t, output.IsSpent(), true)
 }
 
 func TestUninjectedTransactionSignedUnsigned(t *testing.T) {
