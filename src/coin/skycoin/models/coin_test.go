@@ -1360,3 +1360,83 @@ func Test_getSkycoinTransactionInputsFromTxnHash(t *testing.T) {
 	_, err := getSkycoinTransactionInputsFromTxnHash("hash")
 	require.Error(t, err)
 }
+
+func TestSkycoinTransactionInputGetCoins(t *testing.T) {
+	invalidTicker := "INVALIDTICKER"
+	tests := []struct {
+		name   string
+		input  core.TransactionInput
+		ticker string
+		want   uint64
+		err    bool
+	}{
+		{
+			name:   "SkycoinTransactionInput",
+			ticker: invalidTicker,
+			input:  new(SkycoinTransactionInput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinTransactionInput",
+			ticker: Sky,
+			input: &SkycoinTransactionInput{
+				skyIn: readable.TransactionInput{
+					Coins: "20",
+				},
+			},
+			want: 20000000,
+		},
+		{
+			name:   "SkycoinTransactionInput",
+			ticker: Sky,
+			input: &SkycoinTransactionInput{
+				skyIn: readable.TransactionInput{
+					Coins: "20.1",
+				},
+			},
+			want: 20100000,
+		},
+		{
+			name:   "SkycoinTransactionInput",
+			ticker: Sky,
+			input: &SkycoinTransactionInput{
+				skyIn: readable.TransactionInput{
+					Coins: "20,1a",
+				},
+			},
+			err: true,
+		},
+		{
+			name:   "SkycoinTransactionInput",
+			ticker: CoinHour,
+			input: &SkycoinTransactionInput{
+				skyIn: readable.TransactionInput{
+					Hours: 42,
+				},
+			},
+			want: 42,
+		},
+		{
+			name:   "SkycoinTransactionInput",
+			ticker: CalculatedHour,
+			input: &SkycoinTransactionInput{
+				skyIn: readable.TransactionInput{
+					CalculatedHours: 42,
+				},
+			},
+			want: 42,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name+"-"+tt.ticker, func(t *testing.T) {
+			amount, err := tt.input.GetCoins(tt.ticker)
+			if tt.err {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				require.Equal(t, tt.want, amount)
+			}
+		})
+	}
+}
