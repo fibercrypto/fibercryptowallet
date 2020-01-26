@@ -39,6 +39,12 @@ Page {
     property string savedLogOutput: configManager.getValue("skycoin/log/output")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
+    // QtObject{
+    //     id: logLevel
+    //     property string modifier
+    //     property string old
+    // }
+
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
     property alias walletPath: textFieldWalletPath.text
@@ -47,6 +53,8 @@ Page {
     property alias logLevel: comboBoxLogLevel.currentIndex
     property alias logOutput: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
+    property alias logLevel: textFieldLogLevel.text
+    property alias logOutput: textFieldLogOutput.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -81,6 +89,8 @@ Page {
         logLevel = defaultLogLevel
         logOutput = defaultLogOutput
         cacheLifeTime = defaultCacheLifeTime
+        logLevel = defaultLogLevel
+        logOutput = defaultLogOutput
 
         saveCurrentSettings()
     }
