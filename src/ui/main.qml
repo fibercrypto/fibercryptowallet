@@ -23,7 +23,6 @@ ApplicationWindow {
         }
     }
 
-    visible: true
     width: 680
     height: 580
     title: Qt.application.name + ' v' + Qt.application.version
