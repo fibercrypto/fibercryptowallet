@@ -56,7 +56,7 @@ func RegisterConfig() error {
 
 	wltOpt := local.NewOption(string(wltSrc.id), []string{SettingPathToWalletSource}, false, string(wltSrcBytes))
 
-	level := map[string]string{"level": "warn"}
+	level := map[string]string{"level": strconv.Itoa(logging.Warning)}
 	levelBytes, err := json.Marshal(level)
 	if err != nil {
 		return err
