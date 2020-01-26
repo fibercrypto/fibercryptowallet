@@ -6,8 +6,9 @@ import WalletsManager 1.0
 import AddrsBookManager 1.0
 
 // Resource imports
+// import "qrc:/ui/src/ui/Dialogs"
 // import "qrc:/ui/src/ui/Controls"
-import "Dialogs"
+import "Dialogs" // For quick UI development, switch back to resources when making a release
 import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {

@@ -133,20 +133,19 @@ RowLayout {
                 onClicked: networkingRequested()
             }
             CustomMenuItem {
+                id: menuItemAddressBook
+                text: qsTr("&Address Book")
+                iconSource: "qrc:/images/resources/images/icons/settings.svg"
+
+                onClicked: addressBookRequested()
+            }
+            CustomMenuItem {
                 id: menuItemSettings
                 text: qsTr("&Settings")
                 iconSource: "qrc:/images/resources/images/icons/settings.svg"
 
                 onClicked: settingsRequested()
             }
-
-            CustomMenuItem {
-                            id: menuItemAddressBook
-                            text: qsTr("&Address Book")
-                            iconSource: "qrc:/images/resources/images/icons/settings.svg"
-
-                            onClicked: addressBookRequested()
-                        }
         } // menuTools
 
         Menu {
