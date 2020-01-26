@@ -18,12 +18,11 @@ const (
 
 type ModelWallets struct {
 	qtcore.QAbstractListModel
-
+	addresses []*ModelAddresses
 	WalletEnv core.WalletEnv
 	_         func() `constructor:"init"`
 
 	_ map[int]*qtcore.QByteArray `property:"roles"`
-	_ []*ModelAddresses          `property:"addresses"`
 	_ bool                       `property:"loading"`
 
 	_ func()                  `slot:"loadModel"`
@@ -44,22 +43,19 @@ func (m *ModelWallets) init() {
 	m.ConnectLoadModel(m.loadModel)
 	m.ConnectAddAddresses(m.addAddresses)
 	m.SetLoading(true)
-	go func() {
+	m.addresses = make([]*ModelAddresses, 0)
+	altManager := local.LoadAltcoinManager()
+	walletsEnvs := make([]core.WalletEnv, 0)
+	for _, plug := range altManager.ListRegisteredPlugins() {
+		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
+	}
 
-		altManager := local.LoadAltcoinManager()
-		walletsEnvs := make([]core.WalletEnv, 0)
-		for _, plug := range altManager.ListRegisteredPlugins() {
-			walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
-		}
+	m.WalletEnv = walletsEnvs[0]
 
-		m.WalletEnv = walletsEnvs[0]
-
-		m.loadModel()
-	}()
 }
 
 func (m *ModelWallets) rowCount(*qtcore.QModelIndex) int {
-	return len(m.Addresses())
+	return len(m.addresses)
 }
 
 func (m *ModelWallets) roleNames() map[int]*qtcore.QByteArray {
@@ -71,11 +67,11 @@ func (m *ModelWallets) data(index *qtcore.QModelIndex, role int) *qtcore.QVarian
 		return qtcore.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Addresses()) {
+	if index.Row() >= len(m.addresses) {
 		return qtcore.NewQVariant()
 	}
 
-	w := m.Addresses()[index.Row()]
+	w := m.addresses[index.Row()]
 
 	switch role {
 	case QName:
@@ -101,33 +97,38 @@ func (m *ModelWallets) insertRows(row int, count int) bool {
 
 func (m *ModelWallets) cleanModel() {
 	m.SetLoading(false)
-	m.SetAddresses(make([]*ModelAddresses, 0))
+	m.addresses = make([]*ModelAddresses, 0)
 }
 
 func (m *ModelWallets) loadModel() {
-
-	logWalletsModel.Info("Loading Model")
+	m.BeginResetModel()
+	logWalletModel.Info("Loading Model")
 	m.SetLoading(true)
+	fullyLoad := true
 	aModels := make([]*ModelAddresses, 0)
-	wallets := walletManager.getWalletIterators(false)
+	wallets := m.WalletEnv.GetWalletSet().ListWallets()
 	if wallets == nil {
-		logWalletsModel.WithError(nil).Warn("Couldn't load wallet")
+		logWalletModel.WithError(nil).Warn("Couldn't load wallet")
 		return
 	}
 	for wallets.Next() {
+
 		addresses, err := wallets.Value().GetLoadedAddresses()
 		if err != nil {
-			logWalletsModel.WithError(nil).Warn("Couldn't get loaded address")
+			logWalletModel.WithError(nil).Warn("Couldn't get loaded address")
 			return
 		}
 		ma := NewModelAddresses(nil)
 		ma.SetName(wallets.Value().GetLabel())
+		ma.SetId(wallets.Value().GetId())
 		oModels := make([]*ModelOutputs, 0)
 
 		for addresses.Next() {
 			a := addresses.Value()
 			outputs := a.GetCryptoAccount().ScanUnspentOutputs()
 			if outputs == nil {
+				logWalletModel.WithField("address", a.String()).Warn("Couldn't get unspent outputs")
+				fullyLoad = false
 				continue
 			}
 			mo := NewModelOutputs(nil)
@@ -140,24 +141,28 @@ func (m *ModelWallets) loadModel() {
 				qo.SetOutputID(to.GetId())
 				val, err := to.GetCoins(coin.Sky)
 				if err != nil {
-					logWalletsModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+					logWalletModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+					fullyLoad = false
 					continue
 				}
 				accuracy, err := util.AltcoinQuotient(coin.Sky)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+					logWalletModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+					fullyLoad = false
 					continue
 				}
 				coins := util.FormatCoins(val, accuracy)
 				qo.SetAddressSky(coins)
 				val, err = to.GetCoins(coin.CoinHoursTicker)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
+					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
+					fullyLoad = false
 					continue
 				}
 				accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
 				if err != nil {
-					logWalletsModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+					fullyLoad = false
 					continue
 				}
 				coinsH := util.FormatCoins(val, accuracy)
@@ -172,11 +177,27 @@ func (m *ModelWallets) loadModel() {
 		ma.addOutputs(oModels)
 		aModels = append(aModels, ma)
 	}
-	m.SetLoading(false)
+	logWalletModel.Info("Model loaded")
 	m.addAddresses(aModels)
+	if fullyLoad {
+		m.SetLoading(false)
+	}
+	m.EndResetModel()
 }
 
 func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
-	m.SetAddresses(ma)
-	m.insertRows(len(m.Addresses()), len(ma))
+	for _, modelAddresses := range ma {
+		find := false
+		for _, modelASet := range m.addresses {
+			if modelAddresses.Id() == modelASet.Id() {
+				modelASet.addOutputs(modelAddresses.outputs)
+				find = true
+				break
+			}
+		}
+		if !find {
+			m.addresses = append(m.addresses, modelAddresses)
+		}
+	}
+	m.insertRows(len(m.addresses), len(ma))
 }

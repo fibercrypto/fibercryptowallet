@@ -2,8 +2,10 @@ package models
 
 import (
 	"fmt"
-	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
 	"sync"
+
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 
@@ -27,15 +29,17 @@ var walletManager *WalletManager
 
 type WalletManager struct {
 	qtCore.QObject
-	WalletEnv           core.WalletEnv
-	SeedGenerator       core.SeedGenerator
-	wallets             []*QWallet
-	addresseseByWallets map[string][]*QAddress
-	outputsByAddress    map[string][]*QOutput
-	altManager          core.AltcoinManager
-	signer              core.BlockchainSignService
-	transactionAPI      core.BlockchainTransactionAPI
-	walletsIterator     core.WalletIterator
+	WalletEnv                core.WalletEnv
+	SeedGenerator            core.SeedGenerator
+	wallets                  []*QWallet
+	addresseseByWallets      map[string][]*QAddress
+	addressesAndWalletsMutex sync.Mutex
+	outputsByAddress         map[string][]*QOutput
+	outputsByAddressMutex    sync.Mutex
+	altManager               core.AltcoinManager
+	signer                   core.BlockchainSignService
+	transactionAPI           core.BlockchainTransactionAPI
+	walletsIterator          core.WalletIterator
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
@@ -68,6 +72,7 @@ type WalletManager struct {
 
 func (walletM *WalletManager) init() {
 	logWalletManager.Info("Initializing WalletManager")
+	logWalletManager.Debug("Starting WalletManager")
 	once.Do(func() {
 		qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
 		walletM.ConnectEditWallet(walletM.editWallet)
@@ -102,11 +107,12 @@ func (walletM *WalletManager) init() {
 		walletManager = walletM
 
 	})
+	logWalletManager.Debug("//////////  WM: Fase 2")
 	walletM.altManager = local.LoadAltcoinManager()
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
-
+	logWalletManager.Debug("//////////  WM: Fase 3")
 	walletM = walletManager
 
 	qWallets := make([]*QWallet, 0)
@@ -117,39 +123,47 @@ func (walletM *WalletManager) init() {
 		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
 		return
 	}
+	logWalletManager.Debug("//////////  WM: Fase 4")
 	for it.Next() {
+		logWalletManager.Debug("//////////// IT: Fase 1")
 		qWallet := NewQWallet(nil)
 		qml.QQmlEngine_SetObjectOwnership(qWallet, qml.QQmlEngine__CppOwnership)
 		qWallet.SetName(it.Value().GetLabel())
 		qWallet.SetExpand(false)
-
+		logWalletManager.Debug("//////////// IT: Fase 2")
 		qWallet.SetFileName(it.Value().GetId())
-
+		logWalletManager.Debug("//////////// IT: Fase 3")
 		qWallet.SetEncryptionEnabled(0)
 
 		qWallet.SetSky("N/A")
 		qWallet.SetCoinHours("N/A")
-
+		logWalletManager.Debug("//////////// IT: Fase 4")
 		qWallets = append(qWallets, qWallet)
-		walletM.updateAddresses(qWallet.FileName())
+		walletM.initWalletAddresses(it.Value().GetId())
+		logWalletManager.Debug("//////////// IT: Fase 5")
 	}
+	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
-
+	logWalletManager.Debug("//////////  WM: Fase 5")
 	go func() {
-		uptimeTicker := time.NewTicker(7 * time.Second)
-		end := make(chan bool)
+		logWalletManager.Debug("Update time is :=> ", time.Duration(config.GetDataUpdateTime())*time.Microsecond)
+		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
+
 		for {
 			<-uptimeTicker.C
 			logWalletManager.Debug("Updating wallet")
 			go func() {
-				walletM.getWalletIterators(true)
-				walletM.updateWallets()
-				end <- true
+				tmp := make(chan int)
+				go func() {
+					walletM.getWalletIterators(true)
+					tmp <- 0
+				}()
+				<-tmp
+				go walletM.updateWallets()
 			}()
-			<-end
+			walletManager = walletM
 		}
 	}()
-
 }
 
 func (walletM *WalletManager) getWalletIterators(force bool) core.WalletIterator {
@@ -165,7 +179,6 @@ func (walletM *WalletManager) updateAll() {
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
-	//walletM.uptimeTicker = time.NewTicker(7 * time.Second)
 	skycoin.UpdateAltcoin()
 }
 
@@ -234,6 +247,35 @@ func (walletM *WalletManager) updateWalletEnvs() {
 	walletM.WalletEnv = walletsEnvs[0]
 }
 
+func (walletM *WalletManager) initWalletAddresses(wltId string) {
+	logWalletManager.Info("Updating Addresses")
+	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	qAddresses := make([]*QAddress, 0)
+	it, err := wlt.GetLoadedAddresses()
+	if err != nil {
+		logWalletManager.WithError(err).Warn("Couldn't loaded addresses")
+		return
+	}
+	for it.Next() {
+		addr := it.Value()
+		qAddress := NewQAddress(nil)
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
+		qAddress.SetAddress(addr.String())
+		qAddress.SetMarked(0)
+		qAddress.SetWallet(wlt.GetLabel())
+		qAddress.SetWalletId(wlt.GetId())
+		qAddress.SetAddressSky("N/A")
+		qAddress.SetAddressCoinHours("N/A")
+		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
+
+		qAddresses = append(qAddresses, qAddress)
+		go walletM.getOutputs(wltId, addr.String())
+	}
+
+	walletM.addresseseByWallets[wltId] = qAddresses
+
+}
+
 func (walletM *WalletManager) updateAddresses(wltId string) {
 	logWalletManager.Info("Updating Addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
@@ -284,8 +326,9 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		qAddresses = append(qAddresses, qAddress)
 
 	}
-
+	walletM.addressesAndWalletsMutex.Lock()
 	walletM.addresseseByWallets[wltId] = qAddresses
+	walletM.addressesAndWalletsMutex.Unlock()
 }
 
 func (walletM *WalletManager) updateOutputs(wltId, address string) {
@@ -293,7 +336,9 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 	addressIterator, err := walletM.WalletEnv.GetWalletSet().GetWallet(wltId).GetLoadedAddresses()
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't get an addresses iterator")
+		walletM.outputsByAddressMutex.Lock()
 		walletM.outputsByAddress[address] = outs
+		walletM.outputsByAddressMutex.Unlock()
 		return
 	}
 	var addr core.Address
@@ -305,13 +350,17 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 	}
 	if addr == nil {
 		logWalletManager.WithError(err).Warn("Couldn't get address")
+		walletM.outputsByAddressMutex.Lock()
 		walletM.outputsByAddress[address] = outs
+		walletM.outputsByAddressMutex.Unlock()
 		return
 	}
 	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
 	if outsIter == nil {
 		logWalletManager.WithError(err).Warn("Couldn't scan unspent outputs")
+		walletM.outputsByAddressMutex.Lock()
 		walletM.outputsByAddress[address] = outs
+		walletM.outputsByAddressMutex.Unlock()
 		return
 	}
 	for outsIter.Next() {
@@ -350,8 +399,9 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		qout.SetWalletOwner(wltId)
 		outs = append(outs, qout)
 	}
-
+	walletM.outputsByAddressMutex.Lock()
 	walletM.outputsByAddress[address] = outs
+	walletM.outputsByAddressMutex.Unlock()
 }
 
 func (walletM *WalletManager) updateWallets() {
@@ -362,6 +412,8 @@ func (walletM *WalletManager) updateWallets() {
 		return
 	}
 	for it.Next() {
+
+		go walletM.updateAddresses(it.Value().GetId())
 
 		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
 		if err != nil {

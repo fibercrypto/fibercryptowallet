@@ -9,7 +9,9 @@ import (
 	"github.com/SkycoinProject/skycoin/src/api"
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/readable"
+	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
 )
 
 func TestSkycoinTransactionGetStatus(t *testing.T) {
@@ -91,7 +93,7 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
 	output := input.GetSpentOutput()
 
-	t.Logf("%#v",output)
+	t.Logf("%#v", output)
 	require.Equal(t, output.GetId(), "out1")
 	require.Equal(t, output.GetAddress().String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
 	sky, err := output.GetCoins(Sky)
@@ -212,4 +214,114 @@ func TestSkycoinCreatedTransactionOutputIsSpent(t *testing.T) {
 	require.Equal(t, output2.IsSpent(), true)
 	require.Equal(t, output2.IsSpent(), true)
 
+}
+
+func TestSupportedAssets(t *testing.T) {
+	pendTxn := new(SkycoinPendingTransaction)
+	assets := pendTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
+
+	coreTxn := new(SkycoinUninjectedTransaction)
+	assets = coreTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
+
+	skyTxn := new(SkycoinTransaction)
+	assets = skyTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
+
+	cTxn := new(SkycoinCreatedTransaction)
+	assets = cTxn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour}, assets)
+
+	skyTxnOut := new(SkycoinTransactionOutput)
+	assets = skyTxnOut.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+
+	skyTxnIn := new(SkycoinTransactionInput)
+	assets = skyTxnIn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+
+	cTxnOut := new(SkycoinCreatedTransactionOutput)
+	assets = cTxnOut.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+
+	cTxnIn := new(SkycoinCreatedTransactionInput)
+	assets = cTxnIn.SupportedAssets()
+	requirethat.ElementsMatch(t, []string{Sky, CoinHour, CalculatedHour}, assets)
+}
+
+func TestPendingTxnStatus(t *testing.T) {
+	pendTxn := new(SkycoinPendingTransaction)
+	require.Equal(t, core.TXN_STATUS_PENDING, pendTxn.GetStatus())
+}
+
+func TestPendingTxnFee(t *testing.T) {
+	pendTxn := new(SkycoinPendingTransaction)
+
+	fee, err := pendTxn.ComputeFee(Sky)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), fee)
+
+	_, err = pendTxn.ComputeFee(CalculatedHour)
+	testutil.RequireError(t, err, "Feature not implemented")
+
+	_, err = pendTxn.ComputeFee("NOCOINATALL")
+	testutil.RequireError(t, err, "Invalid ticker")
+}
+
+func TestUninjectedTxnTimestamp(t *testing.T) {
+	coreTxn := new(SkycoinUninjectedTransaction)
+	require.Equal(t, core.Timestamp(0), coreTxn.GetTimestamp())
+}
+
+func TestUninjectedTxnStatus(t *testing.T) {
+	coreTxn := new(SkycoinUninjectedTransaction)
+	require.Equal(t, core.TXN_STATUS_CREATED, coreTxn.GetStatus())
+}
+
+func TestUninjectedTxnFee(t *testing.T) {
+	coreTxn := new(SkycoinUninjectedTransaction)
+
+	fee, err := coreTxn.ComputeFee(Sky)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), fee)
+
+	_, err = coreTxn.ComputeFee(CalculatedHour)
+	testutil.RequireError(t, err, "Feature not implemented")
+
+	coreTxn.fee = 64
+	fee, err = coreTxn.ComputeFee(CoinHour)
+	require.NoError(t, err)
+	require.Equal(t, uint64(64), fee)
+
+	_, err = coreTxn.ComputeFee("NOCOINATALL")
+	testutil.RequireError(t, err, "Invalid ticker")
+}
+
+func TestSkycoinTxnFee(t *testing.T) {
+	skyTxn := new(SkycoinTransaction)
+
+	fee, err := skyTxn.ComputeFee(Sky)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), fee)
+
+	_, err = skyTxn.ComputeFee(CalculatedHour)
+	testutil.RequireError(t, err, "Feature not implemented")
+
+	_, err = skyTxn.ComputeFee("NOCOINATALL")
+	testutil.RequireError(t, err, "Invalid ticker")
+}
+
+func TestSkycoinCreatedTxnFee(t *testing.T) {
+	cTxn := new(SkycoinCreatedTransaction)
+
+	fee, err := cTxn.ComputeFee(Sky)
+	require.NoError(t, err)
+	require.Equal(t, uint64(0), fee)
+
+	_, err = cTxn.ComputeFee(CalculatedHour)
+	testutil.RequireError(t, err, "Feature not implemented")
+
+	_, err = cTxn.ComputeFee("NOCOINATALL")
+	testutil.RequireError(t, err, "Invalid ticker")
 }

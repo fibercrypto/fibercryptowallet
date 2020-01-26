@@ -26,11 +26,11 @@ Page {
                 onClicked:{
                     if (!checked) {
                         modelTransactions.clear()
-                        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
+                        modelTransactions.addMultipleTransactions(historyManager.getTransactions())
                     }
                     else {
                         modelTransactions.clear()
-                        modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+                        modelTransactions.addMultipleTransactions(historyManager.getTransactionsWithFilters())
                     }
                 }
             }
@@ -69,10 +69,8 @@ Page {
         id: toolTipFilters
 
         anchors.centerIn: Overlay.overlay
-
-        readonly property real minimumHeight: Math.min(applicationWindow.height - 100, filter.contentHeight + 150)
-        width: 300
-        height: minimumHeight
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: Math.min(applicationWindow.height - 40, filter.contentHeight + header.height + footer.height + topPadding + bottomPadding)
 
         modal: true
         standardButtons: Dialog.Close
@@ -81,7 +79,7 @@ Page {
 
         onClosed: {
             modelTransactions.clear()
-            modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+            modelTransactions.addMultipleTransactions(historyManager.getTransactions())
         }
         
         HistoryFilterList {
@@ -103,42 +101,38 @@ Page {
         modal: true
         focus: true
 
-        date: listTransactions.currentItem !== null ? listTransactions.currentItem.modelDate : ""
-        status: listTransactions.currentItem !== null ? listTransactions.currentItem.modelStatus : 0
-        type: listTransactions.currentItem !== null ? listTransactions.currentItem.modelType : 0
-        amount: listTransactions.currentItem !== null ? listTransactions.currentItem.modelAmount : ""
-        hoursReceived: listTransactions.currentItem !== null ? listTransactions.currentItem.modelHoursReceived : 1 
-        hoursBurned: listTransactions.currentItem !== null ?  listTransactions.currentItem.modelHoursBurned : 1 
-        transactionID: listTransactions.currentItem !== null ? listTransactions.currentItem.modelTransactionID : "" 
-        modelInputs: listTransactions.currentItem !== null ? listTransactions.currentItem.modelInputs : null
-        modelOutputs: listTransactions.currentItem !== null ? listTransactions.currentItem.modelOutputs : null
+        date: listTransactions.currentItem ? listTransactions.currentItem.modelDate : ""
+        status: listTransactions.currentItem ? listTransactions.currentItem.modelStatus : 0
+        type: listTransactions.currentItem ? listTransactions.currentItem.modelType : 0
+        amount: listTransactions.currentItem ? listTransactions.currentItem.modelAmount : ""
+        hoursReceived: listTransactions.currentItem ? listTransactions.currentItem.modelHoursReceived : 1 
+        hoursBurned: listTransactions.currentItem ?  listTransactions.currentItem.modelHoursBurned : 1 
+        transactionID: listTransactions.currentItem ? listTransactions.currentItem.modelTransactionID : "" 
+        modelInputs: listTransactions.currentItem ? listTransactions.currentItem.modelInputs : null
+        modelOutputs: listTransactions.currentItem ? listTransactions.currentItem.modelOutputs : null
     }
 
     QTransactionList {
         id: modelTransactions
+        Component.onCompleted: {
+            console.log("modelTransactions completed")
+            RegisterHistoryManager(historyManager)
+        }
     }
 
     HistoryManager {
         id: historyManager
-    }
-
-    Component.onCompleted: {
-        modelTransactions.clear()
-        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
-    }
-
-    property Timer timer: Timer{
-        id: historyTimer
-        repeat: true
-        running: true
-        interval: 4000
-        onTriggered: {
-            if (switchFilters.checked) {
-                modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
-            } else {
-                modelTransactions.addMultipleTransactions(historyManager.loadHistory())
+        Component.onCompleted: {
+            console.log("history manager completed")
+        }
+        onNewTransactions: {
+            if (!switchFilters.checked) {
+                modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
+            }
+            else {
+                modelTransactions.addMultipleTransactions(historyManager.getTNewTransactionsWithFilters())
             }
         }
-
     }
+
 }

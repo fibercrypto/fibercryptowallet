@@ -87,14 +87,21 @@ Page {
     QWallets {
         id: modelWallets
     }
+
     property Timer timer: Timer {
         id: addressModelTimer
-        interval: 0
-        repeat: false
+        interval: 10000
+        repeat: true
         running: true
         onTriggered: {
-            modelWallets.cleanModel()
-            modelWallets.loadModel()
+            new Promise(function(resolve, reject) {
+                            modelWallets.loadModel()
+
+        				}).then(result => {
+        					console.log(result);
+        				}).catch(reason => {
+        					console.log(reason);
+        				});
         }
     }
 

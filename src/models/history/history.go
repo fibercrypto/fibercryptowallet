@@ -11,8 +11,14 @@ func init() {
 
 }
 
+type Filter struct {
+	Activated       bool
+	SelectedWallets []string
+}
+
 type TransactionList struct {
 	core.QAbstractListModel
+	filterSelected Filter
 
 	_ map[int]*core.QByteArray `property:"roles"`
 
@@ -46,6 +52,22 @@ func (hm *TransactionList) init() {
 	hm.ConnectRoleNames(hm.roleNames)
 	hm.ConnectAddMultipleTransactions(hm.addMultipleTransactions)
 	hm.ConnectClear(hm.clear)
+
+	// go func() {
+	// 	timer := time.NewTicker(time.Second * 5)
+	// 	for {
+	// 		<-timer.C
+	// 		if historyManager == nil {
+	// 			continue
+	// 		}
+	// 		if hm.filterSelected.Activated {
+	// 			hm.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+	// 		} else {
+	// 			hm.addMultipleTransactions(historyManager.loadHistory())
+	// 		}
+
+	// 	}
+	// }()
 
 }
 
@@ -136,7 +158,7 @@ func (hm *TransactionList) addMultipleTransactions(txns []*transactions.Transact
 	}
 }
 
-func (hm *TransactionList)txnContained(txn *transactions.TransactionDetails) bool {
+func (hm *TransactionList) txnContained(txn *transactions.TransactionDetails) bool {
 	for _, txnStored := range hm.Transactions() {
 		if txn.TransactionID() == txnStored.TransactionID() {
 			return true

@@ -2,11 +2,11 @@ package local
 
 import (
 	"encoding/json"
-	"github.com/fibercrypto/fibercryptowallet/src/params"
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"strconv"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/params"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -79,13 +79,17 @@ func (cm *ConfigManager) RegisterSection(name string, options []*Option) *Sectio
 	defer cm.setting.Sync()
 
 	for _, opt := range options {
+		depthLevel := 0
 		for _, sect := range opt.sectionPath {
 			cm.setting.BeginGroup(sect)
-			defer cm.setting.EndGroup()
+			depthLevel++
 		}
 		if !opt.optional && !cm.setting.Contains(opt.name) {
 			cm.setting.SetValue(opt.name, qtcore.NewQVariant1(opt._default))
 
+		}
+		for i := 0; i < depthLevel; i++ {
+			cm.setting.EndGroup()
 		}
 	}
 

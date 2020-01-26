@@ -11,12 +11,13 @@ const (
 
 type ModelAddresses struct {
 	core.QAbstractListModel
+	outputs []*ModelOutputs
 
 	_ func() `constructor:"init"`
 
 	_ map[int]*core.QByteArray `property:"roles"`
-	_ []*ModelOutputs          `property:"outputs"`
 	_ string                   `property:"name"`
+	_ string                   `property:"id"`
 
 	_ func([]*ModelOutputs) `slot:"addOutputs"`
 }
@@ -31,10 +32,11 @@ func (m *ModelAddresses) init() {
 	m.ConnectRoleNames(m.roleNames)
 	m.ConnectData(m.data)
 	m.ConnectAddOutputs(m.addOutputs)
+	m.outputs = make([]*ModelOutputs, 0)
 }
 
 func (m *ModelAddresses) rowCount(*core.QModelIndex) int {
-	return len(m.Outputs())
+	return len(m.outputs)
 }
 
 func (m *ModelAddresses) roleNames() map[int]*core.QByteArray {
@@ -46,11 +48,11 @@ func (m *ModelAddresses) data(index *core.QModelIndex, role int) *core.QVariant 
 		return core.NewQVariant()
 	}
 
-	if index.Row() >= len(m.Outputs()) {
+	if index.Row() >= len(m.outputs) {
 		return core.NewQVariant()
 	}
 
-	wa := m.Outputs()[index.Row()]
+	wa := m.outputs[index.Row()]
 
 	switch role {
 	case OAddress:
@@ -75,6 +77,19 @@ func (m *ModelAddresses) insertRows(row int, count int) bool {
 }
 
 func (m *ModelAddresses) addOutputs(mo []*ModelOutputs) {
-	m.SetOutputs(mo)
-	m.insertRows(len(m.Outputs()), len(mo))
+	for _, mOut := range mo {
+		find := false
+		for _, mOutSet := range m.outputs {
+			if mOut.Address() == mOutSet.Address() {
+				mOutSet.addOutputs(mOut.outputs)
+				find = true
+				break
+			}
+		}
+		if !find  {
+			m.outputs = append(m.outputs, mOut)
+		}
+	}
+	m.outputs = append(m.outputs, mo...)
+	m.insertRows(len(m.outputs), len(mo))
 }

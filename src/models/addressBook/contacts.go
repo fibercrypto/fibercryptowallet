@@ -1,6 +1,7 @@
 package addressBook
 
 import (
+	"github.com/SkycoinProject/skycoin/src/util/file"
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/data"
@@ -185,8 +186,19 @@ func (abm *AddrsBookModel) editContact(row int, id uint64, name string) {
 }
 
 func getConfigFileDir() string {
-	homeDir := os.Getenv("HOME")
-	fileDir := filepath.Join(homeDir, ".fiber/data.dt")
+	qSettingDir := qtcore.NewQSettings(qtcore.QCoreApplication_OrganizationName(), qtcore.QCoreApplication_ApplicationName(), nil).FileName()
+	path, _ := filepath.Split(qSettingDir)
+	ok, err := file.Exists(path)
+	if err != nil {
+		logAddressBook.WithError(err).Warn("getting file dir")
+	}
+	if !ok {
+		if err := os.Mkdir(path, 0777); err != nil {
+			logAddressBook.WithError(err).Warn("getting file dir")
+		}
+	}
+
+	fileDir := filepath.Join(path, "data.dt")
 	return fileDir
 }
 

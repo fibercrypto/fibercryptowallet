@@ -22,6 +22,8 @@ Page {
     readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
+    readonly property string defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
+    readonly property string defaultLogOutput: configManager.getDefaultValue("skycoin/log/output")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
     readonly property var defaultCacheUpdateTime: configManager.getDefaultValue("global/cache/updateTime")
 
@@ -31,8 +33,16 @@ Page {
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
+    property string savedLogLevel: configManager.getValue("skycoin/log/level")
+    property string savedLogOutput: configManager.getValue("skycoin/log/output")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
     property var savedUpdateTime: configManager.getValue("global/cache/updateTime")
+
+    // QtObject{
+    //     id: logLevel
+    //     property string modifier
+    //     property string old
+    // }
 
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
@@ -40,6 +50,8 @@ Page {
     property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
     property alias cacheLifeTime: textFieldCacheLifeTime.text
+    property alias logLevel: textFieldLogLevel.text
+    property alias logOutput: textFieldLogOutput.text
     property alias cacheUpdateTime: textFieldCacheUpdateTime.text
 
     Component.onCompleted: {
@@ -50,7 +62,8 @@ Page {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
-        configManager.setValue("global/cache/lifeTime", cacheLifeTime)
+        configManager.setValue("skycoin/log/level", logLevel)
+        configManager.setValue("skycoin/log/output", logOutput)
         configManager.setValue("global/cache/updateTime", cacheUpdateTime)
         loadSavedSettings()
     }
@@ -61,6 +74,8 @@ Page {
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
         cacheUpdateTime = savedUpdateTime = configManager.getValue("global/cache/updateTime")
+        logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
+        logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
 
         walletManager.updateAll()
         updateFooterButtonsStatus()
@@ -71,6 +86,8 @@ Page {
         isLocalWalletEnv = defaultIsLocalWalletEnv
         nodeUrl = defaultNodeUrl
         cacheLifeTime = defaultCacheLifeTime
+        logLevel = defaultLogLevel
+        logOutput = defaultLogOutput
 
         saveCurrentSettings()
     }
@@ -78,6 +95,8 @@ Page {
     function updateFooterButtonsStatus() {
         var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime || cacheUpdateTime != savedUpdateTime)
         var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime !== defaultCacheLifeTime || cacheUpdateTime !== defaultCacheUpdateTime)
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime || logLevel != savedLogLevel || logOutput != savedLogOutput)
+        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime || defaultCacheLifeTime || logLevel !== defaultLogLevel || logOutput != defaultLogOutput)
         footer.standardButton(Dialog.Apply).enabled = configChanged
         footer.standardButton(Dialog.Discard).enabled = configChanged
         footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
@@ -101,221 +120,263 @@ Page {
         }
     }
 
-    ColumnLayout {
-        anchors { top: parent.top; left: parent.left; right: parent.right; margins: 20 }
+    ScrollView {
+        anchors.fill: parent
+        clip: true
+        ColumnLayout {
+            anchors { top: parent.top; left: parent.left; right: parent.right; margins: 20 }
 
-        spacing: 20
+            spacing: 20
 
-        GroupBox {
-            Layout.fillWidth: true
-            title: qsTr("Wallet environment settings")
+            GroupBox {
+                Layout.fillWidth: true
+                title: qsTr("Wallet environment settings")
 
-            RowLayout {
-                anchors.fill: parent
+                RowLayout {
+                    anchors.fill: parent
 
-                Label {
-                    text: qsTr("Remote")
-                    font.bold: true
-                    color: Material.hintTextColor
-                }
-                Switch {
-                    id: switchLocalWalletEnv
-
-                    checked: savedIsLocalWalletEnv
-                    font.bold: true
-
-                    onToggled: {
-                        updateFooterButtonsStatus();
+                    Label {
+                        text: qsTr("Remote")
+                        font.bold: true
+                        color: Material.hintTextColor
                     }
-                }
-                Label {
-                    text: qsTr("Local")
-                    font.bold: true
-                    color: Material.accent
-                }
+                    Switch {
+                        id: switchLocalWalletEnv
 
-                Rectangle {
-                    Layout.fillHeight: true
-                    Layout.leftMargin: 10
-                    Layout.rightMargin: 10
-                    width: 1
-                    color: Material.hintTextColor
-                }
+                        checked: savedIsLocalWalletEnv
+                        font.bold: true
 
-                TextField {
-                    id: textFieldWalletPath
-
-                    Layout.fillWidth: true
-                    enabled: isLocalWalletEnv
-                    selectByMouse: true
-                    placeholderText: qsTr("Local wallet path")
-
-                    onTextChanged: {
-                        updateFooterButtonsStatus();
-                    }
-                }
-            } // RowLayout
-        } // GroupBox (wallet settings)
-
-        GroupBox {
-            Layout.fillWidth: true
-            title: qsTr("Network settings")
-
-            TextField {
-                id: textFieldNodeUrl
-
-                anchors.fill: parent
-                selectByMouse: true
-                placeholderText: qsTr("Node URL")
-
-                onTextChanged: {
-                    updateFooterButtonsStatus();
-                }
-            }
-        } // GroupBox (network settings)
-
-        GroupBox {
-            Layout.fillWidth: true
-            title: qsTr("Global settings")
-
-            ColumnLayout {
-                anchors.fill: parent
-
-                TextField {
-                    id: textFieldCacheLifeTime
-
-                    Layout.alignment: Qt.AlignTop
-                    Layout.fillWidth: true
-                    selectByMouse: true
-                    placeholderText: qsTr("Cache life time")
-
-                    onTextChanged: {
-                        updateFooterButtonsStatus();
-                    }
-                }
-                TextField {
-
-                    id: textFieldCacheUpdateTime
-
-                    Layout.alignment: Qt.AlignTop
-                    Layout.fillWidth: true
-
-                    selectByMouse: true
-                    placeholderText: qsTr("Time to update")
-
-                    onTextChanged: {
-                        updateFooterButtonsStatus();
-                    }
-                }
-            }
-        } // GroupBox (global settings)
-
-         GroupBox {
-         enabled:abm.hasInit()
-         AddrsBookModel{
-             id:abm
-         }
-                    Layout.fillWidth: true
-                    title: qsTr("Address Book Settings")
-                    ColumnLayout {
-                        anchors.fill: parent
-                        RowLayout{
-                            Layout.fillWidth: true
-                            Label { text: qsTr("Security type:"); font.bold: true }
+                        onToggled: {
+                            updateFooterButtonsStatus();
                         }
-                        RowLayout {
-                        id: groupRadBtn
-                            Layout.fillWidth: true
-                                             RadioButton {
-                                             property int pos:0
-                                                 checked: abm.getSecType()==0
-                                                 anchors.margins:10
-                                                         Layout.fillWidth:true
-                                                 text: qsTr("Low (Plain text)")
-                                             }
-                                             RadioButton {
-                                             property int pos:1
-                                             checked: abm.getSecType()==1
-                                             anchors.margins: 10
-                                                         Layout.fillWidth:true
-                                                 text: qsTr("Medium (Recommended)")
-                                             }
-                                             RadioButton {
-                                             property int pos:2
-                                             checked: abm.getSecType()==2
-                                                anchors.margins: 10
-                                                Layout.fillWidth:true
-                                                 text: qsTr("Hard (With password)\n"+
-                                                 "(This can slow your dispositive)")
-                                             }
+                    }
+                    Label {
+                        text: qsTr("Local")
+                        font.bold: true
+                        color: Material.accent
+                    }
 
-                        }//RowLayoutRadioButtons
-                        RowLayout {
-                             Layout.fillWidth: true
-                            Button{
-                            id:changePassBtn
-                                    enabled:abm.getSecType()==2
-                                      text: qsTr("Change Password")
-                                    highlighted: true
-                                              anchors.margins: 10
-                                              Layout.fillWidth:true
-                                              onClicked: {
-                                              getpass.open()
-                                              }
+                    Rectangle {
+                        Layout.fillHeight: true
+                        Layout.leftMargin: 10
+                        Layout.rightMargin: 10
+                        width: 1
+                        color: Material.hintTextColor
+                    }
+
+                    TextField {
+                        id: textFieldWalletPath
+
+                        Layout.fillWidth: true
+                        enabled: isLocalWalletEnv
+                        selectByMouse: true
+                        placeholderText: qsTr("Local wallet path")
+
+                        onTextChanged: {
+                            updateFooterButtonsStatus();
+                        }
+                    }
+                } // RowLayout
+            } // GroupBox (wallet settings)
+
+            GroupBox {
+                Layout.fillWidth: true
+                title: qsTr("Network settings")
+
+                TextField {
+                    id: textFieldNodeUrl
+
+                    anchors.fill: parent
+                    selectByMouse: true
+                    placeholderText: qsTr("Node URL")
+
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
+            } // GroupBox (network settings)
+
+            GroupBox {
+                Layout.fillWidth: true
+                title: qsTr("Global settings")
+
+                ColumnLayout {
+                    anchors.fill: parent
+
+                    TextField {
+                        id: textFieldCacheLifeTime
+
+                        Layout.alignment: Qt.AlignTop
+                        Layout.fillWidth: true
+                        selectByMouse: true
+                        placeholderText: qsTr("Cache life time")
+
+                        onTextChanged: {
+                            updateFooterButtonsStatus();
+                        }
+                    }
+                    TextField {
+
+                        id: textFieldCacheUpdateTime
+
+                        Layout.alignment: Qt.AlignTop
+                        Layout.fillWidth: true
+
+                        selectByMouse: true
+                        placeholderText: qsTr("Time to update")
+
+                        onTextChanged: {
+                            updateFooterButtonsStatus();
+                        }
+                    }
+                }
+            } // GroupBox (global settings)
+
+             GroupBox {
+             enabled:abm.hasInit()
+             AddrsBookModel{
+                 id:abm
+             }
+                        Layout.fillWidth: true
+                        title: qsTr("Address Book Settings")
+                        ColumnLayout {
+                            anchors.fill: parent
+                            RowLayout{
+                                Layout.fillWidth: true
+                                Label { text: qsTr("Security type:"); font.bold: true }
                             }
-                            Button{
-                            id:applyChangesBtn
-                                      text: qsTr("Apply Changes")
-                                      enabled:false
+                            RowLayout {
+                            id: groupRadBtn
+                                Layout.fillWidth: true
+                                                 RadioButton {
+                                                 property int pos:0
+                                                     checked: abm.getSecType()==0
+                                                     anchors.margins:10
+                                                             Layout.fillWidth:true
+                                                     text: qsTr("Low (Plain text)")
+                                                 }
+                                                 RadioButton {
+                                                 property int pos:1
+                                                 checked: abm.getSecType()==1
+                                                 anchors.margins: 10
+                                                             Layout.fillWidth:true
+                                                     text: qsTr("Medium (Recommended)")
+                                                 }
+                                                 RadioButton {
+                                                 property int pos:2
+                                                 checked: abm.getSecType()==2
+                                                    anchors.margins: 10
+                                                    Layout.fillWidth:true
+                                                     text: qsTr("Hard (With password)\n"+
+                                                     "(This can slow your dispositive)")
+                                                 }
+
+                            }//RowLayoutRadioButtons
+                            RowLayout {
+                                 Layout.fillWidth: true
+                                Button{
+                                id:changePassBtn
+                                        enabled:abm.getSecType()==2
+                                          text: qsTr("Change Password")
                                         highlighted: true
-                                                anchors.margins: 10
-                                                Layout.fillWidth:true
-                                                onClicked: {
-                                                if(abm.getSecType()==2){
-                                                getpass.open()
-                                                }else{
-                                                if(buttonsGroup.select==2){
-                                                setpass.open()
-                                                }else{
-                                                this.enabled=!abm.changeSecType(buttonsGroup.select,"","")
-                                                changePassBtn.enabled=false
-                                                }
-                                                }
-                                                }
-                                  }
+                                                  anchors.margins: 10
+                                                  Layout.fillWidth:true
+                                                  onClicked: {
+                                                  getpass.open()
+                                                  }
+                                }
+                                Button{
+                                id:applyChangesBtn
+                                          text: qsTr("Apply Changes")
+                                          enabled:false
+                                            highlighted: true
+                                                    anchors.margins: 10
+                                                    Layout.fillWidth:true
+                                                    onClicked: {
+                                                    if(abm.getSecType()==2){
+                                                    getpass.open()
+                                                    }else{
+                                                    if(buttonsGroup.select==2){
+                                                    setpass.open()
+                                                    }else{
+                                                    this.enabled=!abm.changeSecType(buttonsGroup.select,"","")
+                                                    changePassBtn.enabled=false
+                                                    }
+                                                    }
+                                                    }
+                                      }
 
-                                  }//RowLayoutButtons
+                                      }//RowLayoutButtons
 
-                    } // ColumnLayout
-                    DialogGetPassword{
-                    id:getpass
-                    anchors.centerIn: Overlay.overlay
-                    height:180
-                    onAccepted:{
-                    if(!abm.authenticate(getpass.password)){
-                    getpass.open()
-                    }else{
-                    if (buttonsGroup.select==2){
-                    setpass.open()
-                    }else{
-                    applyChangesBtn.enabled=!abm.changeSecType(buttonsGroup.select,getpass.password,"")
-                    changePassBtn.enabled=false
-                    }
-                    }
-                    }
-                    }
+                        } // ColumnLayout
+                        DialogGetPassword{
+                        id:getpass
+                        anchors.centerIn: Overlay.overlay
+                        height:180
+                        onAccepted:{
+                        if(!abm.authenticate(getpass.password)){
+                        getpass.open()
+                        }else{
+                        if (buttonsGroup.select==2){
+                        setpass.open()
+                        }else{
+                        applyChangesBtn.enabled=!abm.changeSecType(buttonsGroup.select,getpass.password,"")
+                        changePassBtn.enabled=false
+                        }
+                        }
+                        }
+                        }
 
-                    DialogSetPassword{
-                    id:setpass
-                    anchors.centerIn: Overlay.overlay
-                    onAccepted:{
-                    applyChangesBtn.enabled=!abm.changeSecType(2,getpass.password,setpass.password)
-                    changePassBtn.enabled=!applyChangesBtn.enabled
-                    }
-                    }
+                        DialogSetPassword{
+                        id:setpass
+                        anchors.centerIn: Overlay.overlay
+                        onAccepted:{
+                        applyChangesBtn.enabled=!abm.changeSecType(2,getpass.password,setpass.password)
+                        changePassBtn.enabled=!applyChangesBtn.enabled
+                        }
+                        }
 
-                } // GroupBox (addressBook setting)
-    } // ColumnLayout
+                    } // GroupBox (addressBook setting)
+        GroupBox{
+            Layout.fillWidth: true
+            title: qsTr("Log level")
+
+            RowLayout{
+
+                anchors.fill: parent
+                TextField {
+                    id: textFieldLogLevel
+
+                    selectByMouse: true
+
+                    placeholderText: qsTr("Log level")
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
+            }
+        }
+
+        GroupBox{
+            Layout.fillWidth: true
+            title: qsTr("Log output")
+
+            RowLayout{
+
+                anchors.fill: parent
+                TextField {
+                    id: textFieldLogOutput
+
+                    selectByMouse: true
+
+                    placeholderText: qsTr("Log output")
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
+            }
+        }
+    }
 
   ButtonGroup {
   property int select:checkedButton.pos
@@ -326,6 +387,7 @@ Page {
      }
      }
 
+    }
     // Confirm the discard or reset action:
     Dialog {
         id: dialogConfirmation

@@ -75,10 +75,19 @@ Item {
 
                 Label {
                     id: labelSky
-                    text: sky // a role of the model
+                    text: sky === qsTr("N/A") ? "" : sky // a role of the model
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
+
+                    BusyIndicator {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        running: sky === qsTr("N/A") ? true : false
+
+                        implicitWidth: implicitHeight
+                        implicitHeight: parent.height + 10
+                    }
                 }
 
                 Label {
