@@ -203,18 +203,33 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 	require.Equal(t, hours, uint64(20))
 }
 
-func TestSkycoinTransactionOutputIsSpent(t *testing.T) {
+func TestIsSpent(t *testing.T) {
 	badID := "0000000000000000000000000000000000000000000000000000000000000000"
-	global_mock.On("UxOut", "out").Return(nil, goerrors.New("failure")).Once()
-	global_mock.On("UxOut", "out").Return(&readable.SpentOutput{SpentTxnID: badID}, nil).Once()
-	global_mock.On("UxOut", "out").Return(&readable.SpentOutput{SpentTxnID: "42"}, nil).Once()
+	tests := []struct {
+		name   string
+		output core.TransactionOutput
+	}{
+		{
+			name:   "SkycoinTransactionOutput",
+			output: &SkycoinTransactionOutput{skyOut: readable.TransactionOutput{Hash: "out"}},
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			output: &SkycoinCreatedTransactionOutput{skyOut: api.CreatedTransactionOutput{UxID: "out"}},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			global_mock.On("UxOut", "out").Return(nil, goerrors.New("failure")).Once()
+			global_mock.On("UxOut", "out").Return(&readable.SpentOutput{SpentTxnID: badID}, nil).Once()
+			global_mock.On("UxOut", "out").Return(&readable.SpentOutput{SpentTxnID: "42"}, nil).Once()
 
-	output := &SkycoinTransactionOutput{skyOut: readable.TransactionOutput{Hash: "out"}}
-
-	require.Equal(t, output.IsSpent(), false)
-	require.Equal(t, output.IsSpent(), false)
-	require.Equal(t, output.IsSpent(), true)
-	require.Equal(t, output.IsSpent(), true)
+			require.Equal(t, tt.output.IsSpent(), false)
+			require.Equal(t, tt.output.IsSpent(), false)
+			require.Equal(t, tt.output.IsSpent(), true)
+			require.Equal(t, tt.output.IsSpent(), true)
+		})
+	}
 }
 
 func TestUninjectedTransactionSignedUnsigned(t *testing.T) {
@@ -287,29 +302,6 @@ func TestSkycoinUninjectedTransactionGetInputs(t *testing.T) {
 	val, err := ti.GetCoins("INVALID_TICKER")
 	require.Error(t, err)
 	require.Equal(t, uint64(0), val)
-}
-
-func TestSkycoinCreatedTransactionOutputIsSpent(t *testing.T) {
-	global_mock.On("UxOut", "out1").Return(
-		&readable.SpentOutput{
-			SpentTxnID: "0000000000000000000000000000000000000000000000000000000000000000",
-		},
-		nil,
-	)
-	global_mock.On("UxOut", "out2").Return(
-		&readable.SpentOutput{
-			SpentTxnID: "0",
-		},
-		nil,
-	)
-
-	output1 := &SkycoinCreatedTransactionOutput{skyOut: api.CreatedTransactionOutput{UxID: "out1"}}
-	output2 := &SkycoinCreatedTransactionOutput{skyOut: api.CreatedTransactionOutput{UxID: "out2"}}
-
-	require.Equal(t, output1.IsSpent(), false)
-	require.Equal(t, output2.IsSpent(), true)
-	require.Equal(t, output2.IsSpent(), true)
-
 }
 
 func TestSupportedAssets(t *testing.T) {
