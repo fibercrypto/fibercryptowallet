@@ -72,7 +72,7 @@ type WalletManager struct {
 
 func (walletM *WalletManager) init() {
 	logWalletManager.Info("Initializing WalletManager")
-	fmt.Println("Starting WalletManager")
+	logWalletManager.Debug("Starting WalletManager")
 	once.Do(func() {
 		qml.QQmlEngine_SetObjectOwnership(walletM, qml.QQmlEngine__CppOwnership)
 		walletM.ConnectEditWallet(walletM.editWallet)
@@ -107,12 +107,12 @@ func (walletM *WalletManager) init() {
 		walletManager = walletM
 
 	})
-	fmt.Println("//////////  WM: Fase 2")
+	logWalletManager.Debug("//////////  WM: Fase 2")
 	walletM.altManager = local.LoadAltcoinManager()
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
-	fmt.Println("//////////  WM: Fase 3")
+	logWalletManager.Debug("//////////  WM: Fase 3")
 	walletM = walletManager
 
 	qWallets := make([]*QWallet, 0)
@@ -123,28 +123,28 @@ func (walletM *WalletManager) init() {
 		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
 		return
 	}
-	fmt.Println("//////////  WM: Fase 4")
+	logWalletManager.Debug("//////////  WM: Fase 4")
 	for it.Next() {
-		fmt.Println("//////////// IT: Fase 1")
+		logWalletManager.Debug("//////////// IT: Fase 1")
 		qWallet := NewQWallet(nil)
 		qml.QQmlEngine_SetObjectOwnership(qWallet, qml.QQmlEngine__CppOwnership)
 		qWallet.SetName(it.Value().GetLabel())
 		qWallet.SetExpand(false)
-		fmt.Println("//////////// IT: Fase 2")
+		logWalletManager.Debug("//////////// IT: Fase 2")
 		qWallet.SetFileName(it.Value().GetId())
-		fmt.Println("//////////// IT: Fase 3")
+		logWalletManager.Debug("//////////// IT: Fase 3")
 		qWallet.SetEncryptionEnabled(0)
 
 		qWallet.SetSky("N/A")
 		qWallet.SetCoinHours("N/A")
-		fmt.Println("//////////// IT: Fase 4")
+		logWalletManager.Debug("//////////// IT: Fase 4")
 		qWallets = append(qWallets, qWallet)
 		walletM.initWalletAddresses(it.Value().GetId())
-		fmt.Println("//////////// IT: Fase 5")
+		logWalletManager.Debug("//////////// IT: Fase 5")
 	}
 	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
-	fmt.Println("//////////  WM: Fase 5")
+	logWalletManager.Debug("//////////  WM: Fase 5")
 	go func() {
 		logWalletManager.Debug("Update time is :=> ", time.Duration(config.GetDataUpdateTime())*time.Microsecond)
 		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
