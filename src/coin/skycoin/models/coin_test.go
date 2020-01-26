@@ -1257,3 +1257,53 @@ func TestTransactionComputeFee(t *testing.T) {
 		}
 	}
 }
+
+func TestTransactionVerifyUnsigned(t *testing.T) {
+	type skyTxn interface {
+		skytypes.ReadableTxn
+		core.Transaction
+	}
+	tests := []struct {
+		name string
+		txn  skyTxn
+	}{
+		{
+			name: "empty Txn",
+			txn:  new(SkycoinTransaction),
+		},
+		//TODO: add better tests
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := verifyReadableTransaction(tt.txn, false)
+			err1 := tt.txn.VerifyUnsigned()
+			require.Equal(t, err, err1)
+		})
+	}
+}
+
+func TestTransactionVerifySigned(t *testing.T) {
+	type skyTxn interface {
+		skytypes.ReadableTxn
+		core.Transaction
+	}
+	tests := []struct {
+		name string
+		txn  skyTxn
+	}{
+		{
+			name: "empty Txn",
+			txn:  new(SkycoinTransaction),
+		},
+		//TODO: add better tests
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := verifyReadableTransaction(tt.txn, true)
+			err1 := tt.txn.VerifySigned()
+			require.Equal(t, err, err1)
+		})
+	}
+}
