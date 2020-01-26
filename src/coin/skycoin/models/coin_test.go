@@ -1307,3 +1307,50 @@ func TestTransactionVerifySigned(t *testing.T) {
 		})
 	}
 }
+
+func Test_getSkycoinTransactionInputsFromTxnHash(t *testing.T) {
+	CleanGlobalMock()
+
+	inputs := []readable.TransactionInput{
+		readable.TransactionInput{
+			Hash: "hash1",
+		},
+		readable.TransactionInput{
+			Hash: "hash2",
+		},
+		readable.TransactionInput{
+			Hash: "hash3",
+		},
+		readable.TransactionInput{
+			Hash: "hash4",
+		},
+	}
+
+	for len(inputs) > 0 {
+		global_mock.On("TransactionVerbose", "hash").Return(
+			&readable.TransactionWithStatusVerbose{
+				Transaction: readable.TransactionVerbose{
+					BlockTransactionVerbose: readable.BlockTransactionVerbose{
+						In: inputs,
+					},
+				},
+			}, nil,
+		).Once()
+		t.Run("InputsFromTxnHash", func(t *testing.T) {
+			txnInputs, err := getSkycoinTransactionInputsFromTxnHash("hash")
+			require.NoError(t, err)
+			rawInputs := make([]readable.TransactionInput, len(txnInputs))
+			for i, in := range txnInputs {
+				skyIn, valid := in.(*SkycoinTransactionInput)
+				require.True(t, valid)
+				require.Nil(t, skyIn.spentOutput)
+				rawInputs[i] = skyIn.skyIn
+			}
+			requirethat.ElementsMatch(t, inputs, rawInputs)
+		})
+		inputs = inputs[:len(inputs)-1]
+	}
+	global_mock.On("TransactionVerbose", "hash").Return(nil, goerrors.New("failure"))
+	_, err := getSkycoinTransactionInputsFromTxnHash("hash")
+	require.Error(t, err)
+}
