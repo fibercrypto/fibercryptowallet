@@ -22,6 +22,8 @@ Page {
     readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
+    readonly property string defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
+    readonly property string defaultLogOutput: configManager.getDefaultValue("skycoin/log/output")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
     readonly property var defaultCacheUpdateTime: configManager.getDefaultValue("global/cache/updateTime")
 
@@ -31,8 +33,16 @@ Page {
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
+    property string savedLogLevel: configManager.getValue("skycoin/log/level")
+    property string savedLogOutput: configManager.getValue("skycoin/log/output")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
     property var savedUpdateTime: configManager.getValue("global/cache/updateTime")
+
+    // QtObject{
+    //     id: logLevel
+    //     property string modifier
+    //     property string old
+    // }
 
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
@@ -40,6 +50,8 @@ Page {
     property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
     property alias cacheLifeTime: textFieldCacheLifeTime.text
+    property alias logLevel: textFieldLogLevel.text
+    property alias logOutput: textFieldLogOutput.text
     property alias cacheUpdateTime: textFieldCacheUpdateTime.text
 
     Component.onCompleted: {
@@ -50,7 +62,8 @@ Page {
         configManager.setValue("skycoin/walletSource/1/Source", walletPath)
         configManager.setValue("skycoin/walletSource/1/SourceType", isLocalWalletEnv ? "local" : "remote")
         configManager.setValue("skycoin/node/address", nodeUrl)
-        configManager.setValue("global/cache/lifeTime", cacheLifeTime)
+        configManager.setValue("skycoin/log/level", logLevel)
+        configManager.setValue("skycoin/log/output", logOutput)
         configManager.setValue("global/cache/updateTime", cacheUpdateTime)
         loadSavedSettings()
     }
@@ -61,6 +74,8 @@ Page {
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
         cacheUpdateTime = savedUpdateTime = configManager.getValue("global/cache/updateTime")
+        logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
+        logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
 
         walletManager.updateAll()
         updateFooterButtonsStatus()
@@ -71,6 +86,8 @@ Page {
         isLocalWalletEnv = defaultIsLocalWalletEnv
         nodeUrl = defaultNodeUrl
         cacheLifeTime = defaultCacheLifeTime
+        logLevel = defaultLogLevel
+        logOutput = defaultLogOutput
 
         saveCurrentSettings()
     }
@@ -78,6 +95,8 @@ Page {
     function updateFooterButtonsStatus() {
         var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime || cacheUpdateTime != savedUpdateTime)
         var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime !== defaultCacheLifeTime || cacheUpdateTime !== defaultCacheUpdateTime)
+        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || cacheLifeTime != savedLifeTime || logLevel != savedLogLevel || logOutput != savedLogOutput)
+        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || cacheLifeTime || defaultCacheLifeTime || logLevel !== defaultLogLevel || logOutput != defaultLogOutput)
         footer.standardButton(Dialog.Apply).enabled = configChanged
         footer.standardButton(Dialog.Discard).enabled = configChanged
         footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
@@ -318,7 +337,46 @@ Page {
                         }
 
                     } // GroupBox (addressBook setting)
-        } // ColumnLayout
+        GroupBox{
+            Layout.fillWidth: true
+            title: qsTr("Log level")
+
+            RowLayout{
+
+                anchors.fill: parent
+                TextField {
+                    id: textFieldLogLevel
+
+                    selectByMouse: true
+
+                    placeholderText: qsTr("Log level")
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
+            }
+        }
+
+        GroupBox{
+            Layout.fillWidth: true
+            title: qsTr("Log output")
+
+            RowLayout{
+
+                anchors.fill: parent
+                TextField {
+                    id: textFieldLogOutput
+
+                    selectByMouse: true
+
+                    placeholderText: qsTr("Log output")
+                    onTextChanged: {
+                        updateFooterButtonsStatus();
+                    }
+                }
+            }
+        }
+    }
 
   ButtonGroup {
   property int select:checkedButton.pos
