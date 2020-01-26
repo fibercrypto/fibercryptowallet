@@ -1376,28 +1376,179 @@ func Test_getSkycoinTransactionInputsFromTxnHash(t *testing.T) {
 }
 
 func TestGetCoins(t *testing.T) {
-	type CoinPackage interface {
+	type ObjectWithCoins interface {
 		GetCoins(string) (uint64, error)
 	}
 
 	invalidTicker := "INVALIDTICKER"
 	tests := []struct {
 		name   string
-		input  CoinPackage
+		obj    ObjectWithCoins
 		ticker string
 		want   uint64
 		err    bool
 	}{
+		// SkycoinCreatedTransactionOutput
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: invalidTicker,
+			obj:    new(SkycoinCreatedTransactionOutput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: Sky,
+			obj: &SkycoinCreatedTransactionOutput{
+				skyOut: api.CreatedTransactionOutput{
+					Coins: "20",
+				},
+			},
+			want: 20000000,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: Sky,
+			obj: &SkycoinCreatedTransactionOutput{
+				skyOut: api.CreatedTransactionOutput{
+					Coins: "20.1",
+				},
+			},
+			want: 20100000,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: Sky,
+			obj: &SkycoinCreatedTransactionOutput{
+				skyOut: api.CreatedTransactionOutput{
+					Coins: "20,1a",
+				},
+			},
+			err: true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: CoinHour,
+			obj: &SkycoinCreatedTransactionOutput{
+				skyOut: api.CreatedTransactionOutput{
+					Hours: "42",
+				},
+			},
+			want: 42,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: CoinHour,
+			obj: &SkycoinCreatedTransactionOutput{
+				skyOut: api.CreatedTransactionOutput{
+					Hours: "42.1",
+				},
+			},
+			err: true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: CalculatedHour,
+			obj: &SkycoinCreatedTransactionOutput{
+				calculatedHours: 42,
+			},
+			want: 42,
+		},
+		{
+			name:   "SkycoinCreatedTransactionOutput",
+			ticker: CalculatedHour,
+			obj: &SkycoinCreatedTransactionOutput{
+				calculatedHours: 50,
+			},
+			want: 50,
+		},
+		// SkycoinCreatedTransactionInput
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: invalidTicker,
+			obj:    new(SkycoinCreatedTransactionInput),
+			err:    true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: Sky,
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					Coins: "20",
+				},
+			},
+			want: 20000000,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: Sky,
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					Coins: "20.1",
+				},
+			},
+			want: 20100000,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: Sky,
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					Coins: "20,1a",
+				},
+			},
+			err: true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: CoinHour,
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					Hours: "42",
+				},
+			},
+			want: 42,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: CoinHour,
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					Hours: "42.1",
+				},
+			},
+			err: true,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: CalculatedHour,
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					CalculatedHours: "42",
+				},
+			},
+			want: 42,
+		},
+		{
+			name:   "SkycoinCreatedTransactionInput",
+			ticker: CalculatedHour,
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					CalculatedHours: "42.1",
+				},
+			},
+			err: true,
+		},
+		// SkycoinTransactionInput
 		{
 			name:   "SkycoinTransactionInput",
 			ticker: invalidTicker,
-			input:  new(SkycoinTransactionInput),
+			obj:    new(SkycoinTransactionInput),
 			err:    true,
 		},
 		{
 			name:   "SkycoinTransactionInput",
 			ticker: Sky,
-			input: &SkycoinTransactionInput{
+			obj: &SkycoinTransactionInput{
 				skyIn: readable.TransactionInput{
 					Coins: "20",
 				},
@@ -1407,7 +1558,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionInput",
 			ticker: Sky,
-			input: &SkycoinTransactionInput{
+			obj: &SkycoinTransactionInput{
 				skyIn: readable.TransactionInput{
 					Coins: "20.1",
 				},
@@ -1417,7 +1568,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionInput",
 			ticker: Sky,
-			input: &SkycoinTransactionInput{
+			obj: &SkycoinTransactionInput{
 				skyIn: readable.TransactionInput{
 					Coins: "20,1a",
 				},
@@ -1427,7 +1578,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionInput",
 			ticker: CoinHour,
-			input: &SkycoinTransactionInput{
+			obj: &SkycoinTransactionInput{
 				skyIn: readable.TransactionInput{
 					Hours: 42,
 				},
@@ -1437,7 +1588,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionInput",
 			ticker: CalculatedHour,
-			input: &SkycoinTransactionInput{
+			obj: &SkycoinTransactionInput{
 				skyIn: readable.TransactionInput{
 					CalculatedHours: 42,
 				},
@@ -1448,13 +1599,13 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionOutput",
 			ticker: invalidTicker,
-			input:  new(SkycoinTransactionOutput),
+			obj:    new(SkycoinTransactionOutput),
 			err:    true,
 		},
 		{
 			name:   "SkycoinTransactionOutput",
 			ticker: Sky,
-			input: &SkycoinTransactionOutput{
+			obj: &SkycoinTransactionOutput{
 				skyOut: readable.TransactionOutput{
 					Coins: "20",
 				},
@@ -1464,7 +1615,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionOutput",
 			ticker: Sky,
-			input: &SkycoinTransactionOutput{
+			obj: &SkycoinTransactionOutput{
 				skyOut: readable.TransactionOutput{
 					Coins: "20.1",
 				},
@@ -1474,7 +1625,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionOutput",
 			ticker: Sky,
-			input: &SkycoinTransactionOutput{
+			obj: &SkycoinTransactionOutput{
 				skyOut: readable.TransactionOutput{
 					Coins: "20,1a",
 				},
@@ -1484,7 +1635,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionOutput",
 			ticker: CoinHour,
-			input: &SkycoinTransactionOutput{
+			obj: &SkycoinTransactionOutput{
 				skyOut: readable.TransactionOutput{
 					Hours: 42,
 				},
@@ -1494,7 +1645,7 @@ func TestGetCoins(t *testing.T) {
 		{
 			name:   "SkycoinTransactionOutput",
 			ticker: CalculatedHour,
-			input: &SkycoinTransactionOutput{
+			obj: &SkycoinTransactionOutput{
 				calculatedHours: 42,
 			},
 			want: 42,
@@ -1503,7 +1654,7 @@ func TestGetCoins(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name+"-"+tt.ticker, func(t *testing.T) {
-			amount, err := tt.input.GetCoins(tt.ticker)
+			amount, err := tt.obj.GetCoins(tt.ticker)
 			if tt.err {
 				require.Error(t, err)
 			} else {
