@@ -1027,6 +1027,22 @@ func TestGetId(t *testing.T) {
 		want string
 	}{
 		{
+			obj: &SkycoinCreatedTransactionOutput{
+				skyOut: api.CreatedTransactionOutput{
+					UxID: "uxid",
+				},
+			},
+			want: "uxid",
+		},
+		{
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					UxID: "uxid",
+				},
+			},
+			want: "uxid",
+		},
+		{
 			obj: &SkycoinUninjectedTransaction{
 				txn: new(coin.Transaction),
 			},
