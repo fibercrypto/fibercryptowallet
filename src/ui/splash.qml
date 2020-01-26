@@ -10,8 +10,10 @@ Window {
     width: dialogSplash.width + 100
     height: dialogSplash.height + 100
     visible: true
-    flags: Qt.Dialog | Qt.CustomizeWindowHint
+    flags: Qt.SplashScreen | Qt.BypassWindowManagerHint | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint
     color: "transparent"
+    x: (Screen.width - width)/2
+    y: (Screen.height - height)/2
 
     Dialog {
         id: dialogSplash
@@ -67,7 +69,7 @@ Window {
                     implicitHeight: implicitWidth
                 }
                 Label {
-                    text: qsTr("Loading")
+                    text: qsTr("Loading...")
                     font.italic: true
                 }
             }
@@ -78,10 +80,18 @@ Window {
         id: loader
         source: "main.qml"
         asynchronous: true
-        visible: status == Loader.Ready
 
         onLoaded: {
-            dialogSplash.close()
+            dialogSplash.standardButton(Dialog.Abort).enabled = false
+            item.visible = true
+            timer.start()
         }
+    }
+
+    Timer {
+        id: timer
+        interval: 200
+        repeat: false
+        onTriggered: dialogSplash.close()
     }
 }
