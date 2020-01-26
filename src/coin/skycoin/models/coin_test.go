@@ -4,6 +4,7 @@ import (
 	"encoding/hex"
 	goerrors "errors"
 	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -13,7 +14,6 @@ import (
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/coin"
 	"github.com/SkycoinProject/skycoin/src/readable"
-	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
@@ -161,7 +161,7 @@ func TestSkycoinTransactionGetInputs(t *testing.T) {
 					sky, err := input.GetCoins(Sky)
 					require.NoError(t, err)
 					require.Equal(t, skyAmount, sky)
-					hours, err1 := it.Value().GetCoins(CoinHour)
+					hours, err1 := input.GetCoins(CoinHour)
 					require.NoError(t, err1)
 					require.Equal(t, chAmount, hours)
 				}
@@ -385,53 +385,6 @@ func TestTransactionsGetTimestamp(t *testing.T) {
 	}
 }
 
-func TestUninjectedTxnFee(t *testing.T) {
-	coreTxn := new(SkycoinUninjectedTransaction)
-
-	fee, err := coreTxn.ComputeFee(Sky)
-	require.NoError(t, err)
-	require.Equal(t, uint64(0), fee)
-
-	_, err = coreTxn.ComputeFee(CalculatedHour)
-	testutil.RequireError(t, err, "Feature not implemented")
-
-	coreTxn.fee = 64
-	fee, err = coreTxn.ComputeFee(CoinHour)
-	require.NoError(t, err)
-	require.Equal(t, uint64(64), fee)
-
-	_, err = coreTxn.ComputeFee("NOCOINATALL")
-	testutil.RequireError(t, err, "Invalid ticker")
-}
-
-func TestSkycoinTxnFee(t *testing.T) {
-	skyTxn := new(SkycoinTransaction)
-
-	fee, err := skyTxn.ComputeFee(Sky)
-	require.NoError(t, err)
-	require.Equal(t, uint64(0), fee)
-
-	_, err = skyTxn.ComputeFee(CalculatedHour)
-	testutil.RequireError(t, err, "Feature not implemented")
-
-	_, err = skyTxn.ComputeFee("NOCOINATALL")
-	testutil.RequireError(t, err, "Invalid ticker")
-}
-
-func TestSkycoinCreatedTxnFee(t *testing.T) {
-	cTxn := new(SkycoinCreatedTransaction)
-
-	fee, err := cTxn.ComputeFee(Sky)
-	require.NoError(t, err)
-	require.Equal(t, uint64(0), fee)
-
-	_, err = cTxn.ComputeFee(CalculatedHour)
-	testutil.RequireError(t, err, "Feature not implemented")
-
-	_, err = cTxn.ComputeFee("NOCOINATALL")
-	testutil.RequireError(t, err, "Invalid ticker")
-}
-
 func TestPendingTxnGetInputs(t *testing.T) {
 	hashes := make([]string, 0)
 	for i := 0; i < 10; i++ {
@@ -490,35 +443,6 @@ func TestPendingTxnGetId(t *testing.T) {
 				},
 			}
 			require.Equal(t, hash, sTxn.GetId())
-		})
-	}
-}
-
-func TestPendingTxnComputeFee(t *testing.T) {
-	tests := []struct {
-		ticker      string
-		fee         uint64
-		amount      uint64
-		wantedError error
-	}{
-		{ticker: Sky, wantedError: nil},
-		{ticker: CoinHour, fee: 20, amount: 20, wantedError: nil},
-		{ticker: CoinHour, fee: 42, amount: 42, wantedError: nil},
-		{ticker: CalculatedHour, wantedError: errors.ErrNotImplemented},
-		{ticker: "INVALIDTICKER", wantedError: errors.ErrInvalidAltcoinTicker},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.ticker, func(t *testing.T) {
-			sTxn := new(SkycoinPendingTransaction)
-			sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{
-				Transaction: readable.BlockTransactionVerbose{
-					Fee: tt.fee,
-				},
-			}
-			amount, err := sTxn.ComputeFee(tt.ticker)
-			require.Equal(t, tt.amount, amount)
-			require.Equal(t, tt.wantedError, err)
 		})
 	}
 }
@@ -1137,5 +1061,190 @@ func TestSkycoinUninjectedTransactionGetId(t *testing.T) {
 		t.Run(fmt.Sprintf("ID%d", i), func(t *testing.T) {
 			require.Equal(t, tt.want, tt.ujTxn.GetId())
 		})
+	}
+}
+
+func TestSkycoinTransactionGetOutputs(t *testing.T) {
+	skyAmount := uint64(20000000)
+	chAmount := uint64(20)
+
+	st := new(SkycoinTransaction)
+	outs := []readable.TransactionOutput{
+		readable.TransactionOutput{
+			Hash:  "O1",
+			Coins: "20",
+			Hours: chAmount,
+		},
+		readable.TransactionOutput{
+			Hash:  "O2",
+			Coins: "20",
+			Hours: chAmount,
+		},
+	}
+	st.skyTxn.Out = outs
+
+	tests := []struct {
+		name    string
+		txn     core.Transaction
+		ids     []string
+		wantNil bool
+	}{
+		{
+			name: "SkycoinTransaction1",
+			txn:  st,
+			ids:  []string{"O1", "O2"},
+		},
+		{
+			name: "SkycoinTransaction1-OutputsSaved",
+			txn:  st,
+			ids:  []string{"O1", "O2"},
+		},
+		{
+			name: "SkycoinTransaction1-OutputsSaved",
+			txn: &SkycoinTransaction{
+				skyTxn: readable.TransactionVerbose{
+					BlockTransactionVerbose: readable.BlockTransactionVerbose{
+						Out: outs[:1],
+					},
+				},
+			},
+			ids: []string{"O1"},
+		},
+		{
+			name: "SkycoinTransaction1-NoOutputs",
+			txn:  new(SkycoinTransaction),
+			ids:  []string{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			outputs := tt.txn.GetOutputs()
+			if tt.wantNil {
+				require.Nil(t, outputs)
+			} else {
+				ids := make([]string, 0)
+				it := NewSkycoinTransactionOutputIterator(outputs)
+				for it.Next() {
+					output := it.Value()
+					ids = append(ids, output.GetId())
+					sky, err := output.GetCoins(Sky)
+					require.NoError(t, err)
+					require.Equal(t, skyAmount, sky)
+					hours, err1 := output.GetCoins(CoinHour)
+					require.NoError(t, err1)
+					require.Equal(t, chAmount, hours)
+				}
+				requirethat.ElementsMatch(t, tt.ids, ids)
+			}
+		})
+	}
+}
+
+func TestTransactionComputeFee(t *testing.T) {
+	expectedError := func(ticker string) error {
+		if ticker == CalculatedHour {
+			return errors.ErrNotImplemented
+		}
+		if ticker == Sky || ticker == CoinHour {
+			return nil
+		}
+		return errors.ErrInvalidAltcoinTicker
+	}
+	expectedAmount := func(ticker string, amount uint64) uint64 {
+		if ticker == CoinHour {
+			return amount
+		}
+		return 0
+	}
+	pendingTxnWithFee := func(ticker string, fee string) (core.Transaction, uint64, bool, error) {
+		val, err := strconv.ParseUint(fee, 10, 64)
+		if err != nil {
+			return nil, 0, false, nil
+		}
+		return &SkycoinPendingTransaction{
+			Transaction: &readable.UnconfirmedTransactionVerbose{
+				Transaction: readable.BlockTransactionVerbose{
+					Fee: val,
+				},
+			},
+		}, expectedAmount(ticker, val), true, expectedError(ticker)
+	}
+	uninjectedTxnWithFee := func(ticker string, fee string) (core.Transaction, uint64, bool, error) {
+		val, err := strconv.ParseUint(fee, 10, 64)
+		if err != nil {
+			return nil, 0, false, nil
+		}
+		return &SkycoinUninjectedTransaction{fee: val}, expectedAmount(ticker, val), true, expectedError(ticker)
+	}
+	skycoinTxnWithFee := func(ticker string, fee string) (core.Transaction, uint64, bool, error) {
+		val, err := strconv.ParseUint(fee, 10, 64)
+		if err != nil {
+			return nil, 0, false, nil
+		}
+		return &SkycoinTransaction{
+			skyTxn: readable.TransactionVerbose{
+				BlockTransactionVerbose: readable.BlockTransactionVerbose{
+					Fee: val,
+				},
+			},
+		}, expectedAmount(ticker, val), true, expectedError(ticker)
+	}
+	createdTxnWithFee := func(ticker string, fee string) (core.Transaction, uint64, bool, error) {
+		val, err := strconv.ParseInt(fee, 10, 64)
+		var expError error
+		if err != nil && ticker == CoinHour {
+			expError = err
+		} else {
+			expError = expectedError(ticker)
+		}
+		return &SkycoinCreatedTransaction{
+			skyTxn: api.CreatedTransaction{
+				Fee: fee,
+			},
+		}, expectedAmount(ticker, uint64(val)), true, expError
+	}
+
+	tests := []struct {
+		name      string
+		generator func(string, string) (core.Transaction, uint64, bool, error)
+	}{
+		{
+			name:      "SkycoinPendingTransaction",
+			generator: pendingTxnWithFee,
+		},
+		{
+			name:      "SkycoinUninjectedTransaction",
+			generator: uninjectedTxnWithFee,
+		},
+		{
+			name:      "SkycoinTransaction",
+			generator: skycoinTxnWithFee,
+		},
+		{
+			name:      "SkycoinCreatedTransaction",
+			generator: createdTxnWithFee,
+		},
+	}
+	tickers := []string{Sky, CoinHour, CalculatedHour, "INVALIDTICKER"}
+	amounts := []string{"1", "2", "42", "100", "42,42", "1,1"}
+
+	for _, tt := range tests {
+		for _, ticker := range tickers {
+			for _, amount := range amounts {
+				t.Run(tt.name+"-"+ticker, func(t *testing.T) {
+					thx, expected, valid, err := tt.generator(ticker, amount)
+					if valid {
+						val, err1 := thx.ComputeFee(ticker)
+						if err != nil {
+							require.Equal(t, err, err1)
+						} else {
+							require.NoError(t, err1)
+							require.Equal(t, expected, val)
+						}
+					}
+				})
+			}
+		}
 	}
 }
