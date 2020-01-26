@@ -1681,7 +1681,7 @@ func TestGetCoins(t *testing.T) {
 	}
 }
 
-func TestSkycoinTransactionOutputGetAddress(t *testing.T) {
+func TestGetAddress(t *testing.T) {
 	strAddr := makeAddress().String()
 
 	tests := []struct {
@@ -1692,12 +1692,26 @@ func TestSkycoinTransactionOutputGetAddress(t *testing.T) {
 		isNil  bool
 	}{
 		{
+			name:   "SkycoinCreatedTransactionOutput-empty",
+			output: new(SkycoinCreatedTransactionOutput),
+			isNil:  true,
+		},
+		{
+			name: "SkycoinCreatedTransactionOutput-valid",
+			output: &SkycoinCreatedTransactionOutput{
+				skyOut: api.CreatedTransactionOutput{
+					Address: strAddr,
+				},
+			},
+			want: strAddr,
+		},
+		{
 			name:   "SkycoinTransactionOutput-empty",
 			output: new(SkycoinTransactionOutput),
 			isNil:  true,
 		},
 		{
-			name: "SkycoinTransactionOutput-empty",
+			name: "SkycoinTransactionOutput-valid",
 			output: &SkycoinTransactionOutput{
 				skyOut: readable.TransactionOutput{
 					Address: strAddr,
