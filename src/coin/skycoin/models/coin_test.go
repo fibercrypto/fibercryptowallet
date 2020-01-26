@@ -429,24 +429,6 @@ func TestPendingTxnGetOutputs(t *testing.T) {
 	requirethat.ElementsMatch(t, hashes, outHashes)
 }
 
-func TestPendingTxnGetId(t *testing.T) {
-	hashes := make([]string, 0)
-	for i := 0; i < 10; i++ {
-		hashes = append(hashes, fmt.Sprintf("hash%d", i))
-	}
-	for _, hash := range hashes {
-		t.Run(hash, func(t *testing.T) {
-			sTxn := new(SkycoinPendingTransaction)
-			sTxn.Transaction = &readable.UnconfirmedTransactionVerbose{
-				Transaction: readable.BlockTransactionVerbose{
-					Hash: hash,
-				},
-			}
-			require.Equal(t, hash, sTxn.GetId())
-		})
-	}
-}
-
 func Test_newCreatedTransactionOutput(t *testing.T) {
 	tests := []struct {
 		uxID    string
@@ -1036,19 +1018,22 @@ func TestSkycoinUninjectedTransactionGetOutputs(t *testing.T) {
 	}
 }
 
-func TestSkycoinUninjectedTransactionGetId(t *testing.T) {
+func TestGetId(t *testing.T) {
+	type ObjectWithID interface {
+		GetId() string
+	}
 	tests := []struct {
-		ujTxn *SkycoinUninjectedTransaction
-		want  string
+		obj  ObjectWithID
+		want string
 	}{
 		{
-			ujTxn: &SkycoinUninjectedTransaction{
+			obj: &SkycoinUninjectedTransaction{
 				txn: new(coin.Transaction),
 			},
 			want: "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
 		},
 		{
-			ujTxn: &SkycoinUninjectedTransaction{
+			obj: &SkycoinUninjectedTransaction{
 				txn: &coin.Transaction{
 					Length: 5,
 				},
@@ -1056,18 +1041,54 @@ func TestSkycoinUninjectedTransactionGetId(t *testing.T) {
 			want: "03e228f59704bc30de09f76fe9db0981ca77b6421aaa997e227d39bcc317174e",
 		},
 		{
-			ujTxn: &SkycoinUninjectedTransaction{
+			obj: &SkycoinUninjectedTransaction{
 				txn: &coin.Transaction{
 					Type: 2,
 				},
 			},
 			want: "bb5e828965130b51e627725f6fea3247124da6799d28ccac81c247fd78b34621",
 		},
+		{
+			obj: &SkycoinPendingTransaction{
+				Transaction: &readable.UnconfirmedTransactionVerbose{
+					Transaction: readable.BlockTransactionVerbose{
+						Hash: "hash1",
+					},
+				},
+			},
+			want: "hash1",
+		},
+		{
+			obj: &SkycoinPendingTransaction{
+				Transaction: &readable.UnconfirmedTransactionVerbose{
+					Transaction: readable.BlockTransactionVerbose{
+						Hash: "hash2",
+					},
+				},
+			},
+			want: "hash2",
+		},
+		{
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					UxID: "uxid1",
+				},
+			},
+			want: "uxid1",
+		},
+		{
+			obj: &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					UxID: "uxid2",
+				},
+			},
+			want: "uxid2",
+		},
 	}
 
 	for i, tt := range tests {
 		t.Run(fmt.Sprintf("ID%d", i), func(t *testing.T) {
-			require.Equal(t, tt.want, tt.ujTxn.GetId())
+			require.Equal(t, tt.want, tt.obj.GetId())
 		})
 	}
 }
