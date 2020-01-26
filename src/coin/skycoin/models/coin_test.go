@@ -1440,3 +1440,42 @@ func TestSkycoinTransactionInputGetCoins(t *testing.T) {
 		})
 	}
 }
+
+func TestSkycoinTransactionOutputGetAddress(t *testing.T) {
+	strAddr := makeAddress().String()
+
+	tests := []struct {
+		name   string
+		output core.TransactionOutput
+		err    bool
+		want   string
+		isNil  bool
+	}{
+		{
+			name:   "SkycoinTransactionOutput-empty",
+			output: new(SkycoinTransactionOutput),
+			isNil:  true,
+		},
+		{
+			name: "SkycoinTransactionOutput-empty",
+			output: &SkycoinTransactionOutput{
+				skyOut: readable.TransactionOutput{
+					Address: strAddr,
+				},
+			},
+			want: strAddr,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			addr := tt.output.GetAddress()
+			if tt.isNil {
+				require.Nil(t, addr)
+			} else {
+				require.NotNil(t, addr)
+				require.Equal(t, tt.want, addr.String())
+			}
+		})
+	}
+}
