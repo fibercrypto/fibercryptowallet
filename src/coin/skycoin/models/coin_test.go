@@ -1703,3 +1703,78 @@ func TestSkycoinTransactionOutputGetAddress(t *testing.T) {
 		})
 	}
 }
+
+func TestSkycoinCreatedTransactionInputGetSpentOutput(t *testing.T) {
+	tests := []struct {
+		addr    string
+		coins   string
+		hours   string
+		uxid    string
+		ccHours string
+	}{
+		{addr: makeAddress().String(), coins: "1", hours: "1", uxid: "uxid1", ccHours: "1"},
+		{addr: makeAddress().String(), coins: "2", hours: "2", uxid: "uxid2", ccHours: "2"},
+		{addr: makeAddress().String(), coins: "3", hours: "3", uxid: "uxid3", ccHours: "3"},
+		{addr: makeAddress().String(), coins: "4", hours: "4", uxid: "uxid4", ccHours: "4"},
+		{addr: makeAddress().String(), coins: "5", hours: "5", uxid: "uxid5", ccHours: "5"},
+		{addr: makeAddress().String(), coins: "6", hours: "6", uxid: "uxid6", ccHours: "6"},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("GetSepent%d", i), func(t *testing.T) {
+			createdIn := &SkycoinCreatedTransactionInput{
+				skyIn: api.CreatedTransactionInput{
+					Address:         tt.addr,
+					Coins:           tt.coins,
+					Hours:           tt.hours,
+					UxID:            tt.uxid,
+					CalculatedHours: tt.ccHours,
+				},
+			}
+			output := createdIn.GetSpentOutput()
+			createdOut, valid := output.(*SkycoinCreatedTransactionOutput)
+			require.True(t, valid)
+			for _, asset := range createdIn.SupportedAssets() {
+				cur, err := createdIn.GetCoins(asset)
+				require.NoError(t, err)
+				val, err := createdOut.GetCoins(asset)
+				require.NoError(t, err)
+				require.Equal(t, cur, val)
+			}
+			require.Equal(t, createdIn.GetId(), createdOut.GetId())
+			require.Equal(t, tt.addr, createdOut.GetAddress().String())
+		})
+	}
+}
+
+func Test_newCreatedTransactionOutputs(t *testing.T) {
+	outputs := []api.CreatedTransactionOutput{
+		api.CreatedTransactionOutput{
+			Address: "addr1",
+		},
+		api.CreatedTransactionOutput{
+			Address: "addr2",
+		},
+		api.CreatedTransactionOutput{
+			Address: "addr3",
+		},
+		api.CreatedTransactionOutput{
+			Address: "addr4",
+		},
+		api.CreatedTransactionOutput{
+			Address: "addr5",
+		},
+	}
+
+	for len(outputs) > 0 {
+		outs := newCreatedTransactionOutputs(outputs)
+		rawOutputs := make([]api.CreatedTransactionOutput, len(outputs))
+		for i, out := range outs {
+			createdOut, valid := out.(*SkycoinCreatedTransactionOutput)
+			require.True(t, valid)
+			rawOutputs[i] = createdOut.skyOut
+		}
+		requirethat.ElementsMatch(t, outputs, rawOutputs)
+		outputs = outputs[:len(outputs)-1]
+	}
+}
