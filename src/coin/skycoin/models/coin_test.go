@@ -173,6 +173,13 @@ func TestSkycoinTransactionGetInputs(t *testing.T) {
 }
 
 func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
+	CleanGlobalMock()
+
+	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
+	global_mock.On("UxOut", "in1").Return(nil, goerrors.New("failure")).Once()
+	output := input.GetSpentOutput()
+	require.Nil(t, output)
+
 	global_mock.On("UxOut", "in1").Return(
 		&readable.SpentOutput{
 			OwnerAddress: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8",
@@ -181,10 +188,9 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 			Uxid:         "out1",
 		},
 		nil,
-	)
+	).Once()
 
-	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
-	output := input.GetSpentOutput()
+	output = input.GetSpentOutput()
 
 	t.Logf("%#v", output)
 	require.Equal(t, output.GetId(), "out1")
