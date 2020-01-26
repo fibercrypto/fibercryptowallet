@@ -1870,3 +1870,50 @@ func Test_newCreatedTransactionOutputs(t *testing.T) {
 		outputs = outputs[:len(outputs)-1]
 	}
 }
+
+func TestEncodeSkycoinTransaction(t *testing.T) {
+	type SkycoinReadableTxn interface {
+		skytypes.SkycoinTxn
+		skytypes.ReadableTxn
+	}
+
+	date, err := time.Parse(time.RFC3339, "2012-11-01T22:08:41+00:00")
+	require.NoError(t, err)
+
+	tests := []struct {
+		name string
+		txn  SkycoinReadableTxn
+	}{
+		{
+			name: "SkycoinPendingTransaction",
+			txn: &SkycoinPendingTransaction{
+				Transaction: &readable.UnconfirmedTransactionVerbose{
+					Transaction: readable.BlockTransactionVerbose{
+						InnerHash: "0000000000000000000000000000000000000000000000000000000000000000",
+						Hash:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
+					},
+					Announced: date,
+				},
+			},
+		},
+		{
+			name: "SkycoinCreatedTransaction",
+			txn: &SkycoinCreatedTransaction{
+				skyTxn: api.CreatedTransaction{
+					InnerHash: "0000000000000000000000000000000000000000000000000000000000000000",
+					TxID:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ser, err := tt.txn.EncodeSkycoinTransaction()
+			require.NoError(t, err)
+			exp, err := serializeCreatedTransaction(tt.txn)
+			require.NoError(t, err)
+			require.Equal(t, exp, ser)
+		})
+	}
+}
