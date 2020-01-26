@@ -15,6 +15,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/coin"
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/requirethat"
@@ -925,18 +926,22 @@ func Test_checkFullySigned(t *testing.T) {
 	//TODO: add valid test
 }
 
-func TestPendingTxnIsFullySigned(t *testing.T) {
+func TestTransactionIsFullySigned(t *testing.T) {
+	type skyTxn interface {
+		skytypes.ReadableTxn
+		core.Transaction
+	}
 	tests := []struct {
 		name string
-		sTxn *SkycoinPendingTransaction
+		txn  skyTxn
 	}{
 		{
-			name: "empty transaction",
-			sTxn: &SkycoinPendingTransaction{Transaction: new(readable.UnconfirmedTransactionVerbose)},
+			name: "empty PendingTxn",
+			txn:  &SkycoinPendingTransaction{Transaction: new(readable.UnconfirmedTransactionVerbose)},
 		},
 		{
-			name: "cero outputs",
-			sTxn: &SkycoinPendingTransaction{
+			name: "cero outputs in PendingTxn",
+			txn: &SkycoinPendingTransaction{
 				Transaction: &readable.UnconfirmedTransactionVerbose{
 					Transaction: readable.BlockTransactionVerbose{
 						In: []readable.TransactionInput{readable.TransactionInput{}},
@@ -944,13 +949,17 @@ func TestPendingTxnIsFullySigned(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "empty Txn",
+			txn:  new(SkycoinTransaction),
+		},
 		//TODO: add valid tests
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fully, err := checkFullySigned(tt.sTxn)
-			fully1, err1 := tt.sTxn.IsFullySigned()
+			fully, err := checkFullySigned(tt.txn)
+			fully1, err1 := tt.txn.IsFullySigned()
 			require.Equal(t, err, err1)
 			require.Equal(t, fully, fully1)
 		})
