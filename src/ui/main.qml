@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
+import QtQuick.Window 2.12
 import Qt.labs.settings 1.0
 import WalletsManager 1.0
 import Config 1.0
@@ -140,6 +141,27 @@ ApplicationWindow {
             dialogAboutLicense.open()
         }
     } // CustomMenuBar
+
+    Action {
+        id: actionFullScreen
+
+        property int previous: applicationWindow.visibility
+
+        shortcut: StandardKey.FullScreen
+        onTriggered: {
+            if (applicationWindow.visibility !== Window.FullScreen) {
+                previous = applicationWindow.visibility
+            }
+            if (applicationWindow.visibility === Window.FullScreen) {
+                applicationWindow.showNormal() // Cannot show maximized directly due to a bug in some X11 managers
+                if (previous === Window.Maximized) {
+                    applicationWindow.showMaximized()
+                }
+            } else {
+                applicationWindow.showFullScreen()
+            }
+        }
+    }
 
     CustomHeader {
         id: customHeader
