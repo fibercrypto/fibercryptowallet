@@ -328,6 +328,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 	txnDetails := transactions.NewTransactionDetails(nil)
 	qml.QQmlEngine_SetObjectOwnership(txnDetails, qml.QQmlEngine__CppOwnership)
 	txnAddresses := address.NewAddressList(nil)
+	qml.QQmlEngine_SetObjectOwnership(txnAddresses, qml.QQmlEngine__CppOwnership)
 	inAddresses := make(map[string]struct{}, 0)
 	inputs := address.NewAddressList(nil)
 	outputs := address.NewAddressList(nil)
