@@ -169,28 +169,6 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 			}
 		}
 		dev := hardware.NewSkyWalletHelper()
-		addr := dev.FirstAddress(skyWallet.WalletTypeDeterministic)
-		addr.Then(func(data interface{}) interface{} {
-			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
-			logError(err)
-			registerWlt(wlt)
-			return dev.FirstAddress(skyWallet.WalletTypeBip44)
-		}).Then(func(data interface{}) interface{} {
-			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
-			logError(err)
-			registerWlt(wlt)
-			return data
-		}).Catch(func(err error) error {
-			if hadHwConnected {
-				hadHwConnected = false
-				hwConnectedOn = []int{}
-				beginIndex := walletModel.Index(0, 0, core.NewQModelIndex())
-				endIndex := walletModel.Index(walletModel.rowCount(core.NewQModelIndex())-1, 0, core.NewQModelIndex())
-				walletModel.DataChanged(beginIndex, endIndex, []int{HasHardwareWallet})
-				logSignersModel.WithError(err).Info("connection to hardware wallet was lose")
-			}
-			return err
-		}).Await()
 		dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
 			if data.(bool) {
 				locker.BeginUse()
@@ -213,7 +191,31 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 				locker.unlock()
 			}
 			return data
+		}).Then(func(data interface{}) interface {} {
+			return dev.FirstAddress(skyWallet.WalletTypeDeterministic)
+		}).Then(func(data interface{}) interface{} {
+			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
+			logError(err)
+			registerWlt(wlt)
+			return dev.FirstAddress(skyWallet.WalletTypeBip44)
+		}).Then(func(data interface{}) interface{} {
+			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
+			logError(err)
+			registerWlt(wlt)
+			return data
 		}).Catch(func(err error) error {
+			if hadHwConnected {
+				hadHwConnected = false
+				hwConnectedOn = []int{}
+				beginIndex := walletModel.Index(0, 0, core.NewQModelIndex())
+				endIndex := walletModel.Index(walletModel.rowCount(core.NewQModelIndex())-1, 0, core.NewQModelIndex())
+				walletModel.DataChanged(beginIndex, endIndex, []int{HasHardwareWallet})
+				logSignersModel.WithError(err).Info("connection to hardware wallet was lose")
+			}
+			if err == skyWallet.ErrNoDeviceConnected {
+				logWalletsModel.Warningln("00000000000000000")
+				return err
+			}
 			return err
 		}).Await()
 	}
