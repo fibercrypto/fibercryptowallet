@@ -117,7 +117,7 @@ func (walletM *WalletManager) init() {
 
 	qWallets := make([]*QWallet, 0)
 	logWalletManager.Debug("Getting iterator")
-	it := walletM.getWalletIterators(true)
+	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 	logWalletManager.Debug("Obtained iterator")
 	if it == nil {
 		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
@@ -155,7 +155,7 @@ func (walletM *WalletManager) init() {
 			go func() {
 				tmp := make(chan int)
 				go func() {
-					walletM.getWalletIterators(true)
+					walletM.WalletEnv.GetWalletSet().ListWallets()
 					tmp <- 0
 				}()
 				<-tmp
@@ -164,13 +164,6 @@ func (walletM *WalletManager) init() {
 			walletManager = walletM
 		}
 	}()
-}
-
-func (walletM *WalletManager) getWalletIterators(force bool) core.WalletIterator {
-	if force || walletM.walletsIterator == nil {
-		walletM.walletsIterator = walletM.WalletEnv.GetWalletSet().ListWallets()
-	}
-	return walletM.walletsIterator
 }
 
 func (walletM *WalletManager) updateAll() {
@@ -406,7 +399,7 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 
 func (walletM *WalletManager) updateWallets() {
 
-	it := walletM.getWalletIterators(false)
+	it := walletM.WalletEnv.GetWalletSet().ListWallets()
 	if it == nil {
 		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
 		return
@@ -436,7 +429,7 @@ func (walletM *WalletManager) updateWallets() {
 func (walletM *WalletManager) getAllAddresses() []*QAddress {
 	logWalletManager.Info("Getting all addresses")
 	qAddresses := make([]*QAddress, 0)
-	wltIter := walletM.getWalletIterators(false)
+	wltIter := walletM.WalletEnv.GetWalletSet().ListWallets()
 	if wltIter == nil {
 		logWalletManager.Warn("Error getting the list of wallets")
 		return nil
