@@ -94,14 +94,7 @@ Page {
         repeat: true
         running: true
         onTriggered: {
-            new Promise(function(resolve, reject) {
-                            modelWallets.loadModel()
-
-        				}).then(result => {
-        					console.log(result);
-        				}).catch(reason => {
-        					console.log(reason);
-        				});
+            modelWallets.loadModel()
         }
     }
 
