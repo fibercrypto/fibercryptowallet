@@ -193,7 +193,6 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 
 func (m *AddressesModel) updateModel(fileName string) {
 	go func() {
-		walletManager.updateAddresses(fileName)
 		m.LoadModel(walletManager.getAddresses(fileName))
 	}()
 }
