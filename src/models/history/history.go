@@ -53,22 +53,6 @@ func (hm *TransactionList) init() {
 	hm.ConnectAddMultipleTransactions(hm.addMultipleTransactions)
 	hm.ConnectClear(hm.clear)
 
-	// go func() {
-	// 	timer := time.NewTicker(time.Second * 5)
-	// 	for {
-	// 		<-timer.C
-	// 		if historyManager == nil {
-	// 			continue
-	// 		}
-	// 		if hm.filterSelected.Activated {
-	// 			hm.addMultipleTransactions(historyManager.loadHistoryWithFilters())
-	// 		} else {
-	// 			hm.addMultipleTransactions(historyManager.loadHistory())
-	// 		}
-
-	// 	}
-	// }()
-
 }
 
 func (hm *TransactionList) rowCount(*core.QModelIndex) int {
