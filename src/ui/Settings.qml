@@ -53,8 +53,6 @@ Page {
     property alias logLevel: comboBoxLogLevel.currentIndex
     property alias logOutput: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
-    property alias logLevel: textFieldLogLevel.text
-    property alias logOutput: textFieldLogOutput.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -89,8 +87,6 @@ Page {
         logLevel = defaultLogLevel
         logOutput = defaultLogOutput
         cacheLifeTime = defaultCacheLifeTime
-        logLevel = defaultLogLevel
-        logOutput = defaultLogOutput
 
         saveCurrentSettings()
     }
