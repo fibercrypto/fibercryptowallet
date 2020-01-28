@@ -35,7 +35,7 @@ func TestPubKeyFromBytes(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, pubKey, mockPubKey)
 
-	_, err = PubKeyFromBytes(`CUSTOMTICKER`, bytes) // nolint gosec
+	_, err = PubKeyFromBytes(`CUSTOMTICKER`, bytes)
 	require.NotNil(t, err)
 }
 
@@ -65,6 +65,6 @@ func TestSecKeyFromBytes(t *testing.T) {
 	require.Nil(t, err)
 	require.Equal(t, secKey, mockSecKey)
 
-	_, err = SecKeyFromBytes(`CUSTOMTICKER`, bytes) // nolint gosec
+	_, err = SecKeyFromBytes(`CUSTOMTICKER`, bytes)
 	require.NotNil(t, err)
 }
