@@ -10,6 +10,8 @@ import (
 // Logger wraps logrus.FieldLogger
 type Logger struct {
 	logrus.FieldLogger
+
+	moduleName string
 }
 
 // Critical adds special critical-level fields for specially highlighted logging,
@@ -26,6 +28,8 @@ func (logger *Logger) WithTime(t time.Time) *logrus.Entry {
 // MasterLogger wraps logrus.Logger and is able to create new package-aware loggers
 type MasterLogger struct {
 	*logrus.Logger
+
+	packageModules []*Logger
 }
 
 // NewMasterLogger creates a new package-aware logger with formatting string
@@ -46,14 +50,18 @@ func NewMasterLogger() *MasterLogger {
 			Hooks: hooks,
 			Level: logrus.DebugLevel,
 		},
+		packageModules: []*Logger{},
 	}
 }
 
 // PackageLogger instantiates a package-aware logger
 func (logger *MasterLogger) PackageLogger(moduleName string) *Logger {
-	return &Logger{
+	pkgLogger := &Logger{
 		FieldLogger: logger.WithField(logModuleKey, moduleName),
+		moduleName:  moduleName,
 	}
+	logger.packageModules = append(logger.packageModules, pkgLogger)
+	return pkgLogger
 }
 
 // AddHook adds a logrus.Hook to the logger and its module loggers
@@ -64,6 +72,9 @@ func (logger *MasterLogger) AddHook(hook logrus.Hook) {
 // SetLevel sets the log level for the logger and its module loggers
 func (logger *MasterLogger) SetLevel(level logrus.Level) {
 	logger.Level = level
+	for _, pl := range logger.packageModules {
+		pl.FieldLogger = logger.WithField(logModuleKey, pl.moduleName)
+	}
 }
 
 // EnableColors enables colored logging

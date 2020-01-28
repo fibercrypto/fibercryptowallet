@@ -37,6 +37,12 @@ Page {
     property string savedLogOutput: configManager.getValue("skycoin/log/output")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
+    // QtObject{
+    //     id: logLevel
+    //     property string modifier
+    //     property string old
+    // }
+
     // These are the properties that are actually set, so they are aliases of the respective
     // control's properties
     property alias walletPath: textFieldWalletPath.text
