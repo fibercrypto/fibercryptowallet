@@ -73,7 +73,7 @@ Page {
         logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
         logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
-
+        console.log(logLevel, logOutput)
         updateFooterButtonsStatus()
     }
 
@@ -89,11 +89,13 @@ Page {
     }
 
     function updateFooterButtonsStatus() {
-        var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || logLevel != savedLogLevel || logOutput != savedLogOutput || cacheLifeTime != savedLifeTime)
-        var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || logLevel !== defaultLogLevel || logOutput !== defaultLogOutput || cacheLifeTime !== defaultCacheLifeTime)
-        footer.standardButton(Dialog.Apply).enabled = configChanged
-        footer.standardButton(Dialog.Discard).enabled = configChanged
-        footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
+        if (Component.status === Component.Ready) {
+            var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || logLevel != savedLogLevel || logOutput != savedLogOutput || cacheLifeTime != savedLifeTime)
+            var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || logLevel !== defaultLogLevel || logOutput !== defaultLogOutput || cacheLifeTime !== defaultCacheLifeTime)
+            footer.standardButton(Dialog.Apply).enabled = configChanged
+            footer.standardButton(Dialog.Discard).enabled = configChanged
+            footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
+        }
     }
 
     footer: DialogButtonBox {
@@ -147,7 +149,7 @@ Page {
                         font.bold: true
 
                         onToggled: {
-                            updateFooterButtonsStatus();
+                            updateFooterButtonsStatus()
                         }
                     }
                     Label {
@@ -173,7 +175,7 @@ Page {
                         placeholderText: qsTr("Local wallet path")
 
                         onTextChanged: {
-                            updateFooterButtonsStatus();
+                            updateFooterButtonsStatus()
                         }
                     }
                 } // RowLayout
@@ -196,7 +198,7 @@ Page {
                     placeholderText: qsTr("Node URL")
 
                     onTextChanged: {
-                        updateFooterButtonsStatus();
+                        updateFooterButtonsStatus()
                     }
                 }
             } // GroupBox (network settings)
@@ -242,6 +244,9 @@ Page {
                         readonly property var logLevelColor: [ Material.Teal, Material.Blue, Material.Amber, Material.DeepOrange, Material.Red, Material.primaryTextColor ]
 
                         currentIndex: savedLogLevel
+                        onCurrentIndexChanged: {
+                            updateFooterButtonsStatus()
+                        }
                         model: [ qsTr("Debug"), qsTr("Informations"), qsTr("Warnings"), qsTr("Errors"), qsTr("Fatal errors"), qsTr("Panics") ]
                         delegate: MenuItem {
                             width: parent.width
@@ -268,6 +273,10 @@ Page {
                         Layout.fillWidth: true
                         Layout.topMargin: -20
                         height: contentHeight
+
+                        onCurrentIndexChanged: {
+                            updateFooterButtonsStatus()
+                        }
 
                         spacing: -6
                         interactive: false
