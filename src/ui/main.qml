@@ -200,7 +200,7 @@ ApplicationWindow {
         focus: true
         modal: true
     }
-    
+
     DeviceInteraction {
         id: deviceInteraction
         onInitializeDevice: {
@@ -248,7 +248,7 @@ ApplicationWindow {
             bridgeForPassword.onCompleted()
         }
     }
-    
+
     DialogGetPassword{
         id: getPasswordDialog
         anchors.centerIn: Overlay.overlay
@@ -281,17 +281,7 @@ ApplicationWindow {
         id: bip39WordDialog
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
-
-        focus: true
-        modal: true
-    }
-
-    RestoreBackupWordsDialog {
-        id: restoreBackupWordsDialog
-        anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 460 ? 460 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 340 ? 340 - 40 : applicationWindow.height - 40
+        height: applicationWindow.height > 360 ? 360 - 40 : applicationWindow.height - 40
 
         focus: true
         modal: true
@@ -307,8 +297,6 @@ ApplicationWindow {
         modal: true
     }
 
-   
-
     WalletCreatedDialog {
         id: walletCreatedDialog
         anchors.centerIn: Overlay.overlay
@@ -318,7 +306,6 @@ ApplicationWindow {
         focus: true
         modal: true
     }
-
 
     // Help dialogs
 

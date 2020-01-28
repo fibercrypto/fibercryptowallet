@@ -9,12 +9,13 @@ import "../" // For quick UI development, switch back to resources when making a
 Dialog {
     id: dialogGetBip39Word
     function clear(title, message) {
-        wordRequester.clear()
-        dialogGetBip39Word.title = title;
+        wordRequester.clear();
+        dialogGetBip39Word.title = qsTr("Action required from device");
+        msgTitle.text = "<b>" + title + "<b/>";
         labelInstructions.text = message;
     }
     onRejected: {
-        bridgeForPassword.errMessage = "Action canceled";
+        bridgeForPassword.errMessage = qsTr("Action canceled");
         bridgeForPassword.unlock()
     }
     onAccepted: {
@@ -32,25 +33,52 @@ Dialog {
         ColumnLayout {
             id: columnLayoutRoot
             width: parent.width
-            spacing: 10
+            spacing: 50
+            RowLayout {
+                id: rowLayoutIconMessage
+                spacing: 30
 
-            Label {
-                id: labelInstructions
-                Layout.fillWidth: true
-                Layout.alignment: Qt.AlignHCenter
-                horizontalAlignment: Label.AlignHCenter
-                wrapMode: Label.WordWrap
-            }
-            Label {
-                id: labelHeaderMessage
-                text: qsTr("Word")
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-            }
+                Image {
+                    id: icon
+                    source: "qrc:/images/resources/images/icons/backup.svg"
+                    sourceSize: "64x64"
+                    Layout.alignment: Qt.AlighLeft | Qt.AlignTop
+                }
 
-            TextField {
-                id: wordRequester
-                placeholderText: qsTr("Enter word")
+                ColumnLayout {
+                    id: columnLayoutMessage
+                    Label {
+                        id: msgTitle
+                        text: "<b>" + qsTr(  "Enter the word indicated in the device") + "</b>"
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
+                        Layout.alignment: Qt.AlignTop
+                    }
+
+                    Label {
+                        id: labelInstructions
+                        text: qsTr("You will be asked to enter the words " +
+                                "of your backup seed in random order, " +
+                                "plus a few additinal words.")
+                        Layout.fillWidth: true
+                        wrapMode: Text.WordWrap
+                        Layout.alignment: Qt.AlignTop
+                    }
+                } // ColumnLayout (message)
+            } // RowLayout (icon + message)
+
+            ColumnLayout {
+                Label {
+                    id: labelHeaderMessage
+                    text: qsTr("Word")
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                }
+                
+                TextField {
+                    id: wordRequester
+                    placeholderText: qsTr("Enter word")
+                }
             }
         } // ColumnLayout (root)
     } // Flickable

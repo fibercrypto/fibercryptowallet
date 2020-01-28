@@ -44,7 +44,6 @@
         <file>src/ui/Delegates/TransactionAddressDelegate.qml</file>
         <file>src/ui/Dialogs/MsgDialog.qml</file>
         <file>src/ui/Dialogs/DialogTransactionDetails.qml</file>
-        <file>src/ui/Dialogs/RestoreBackupWordsDialog.qml</file>
         <file>src/ui/Dialogs/SecureWalletDialog.qml</file>
         <file>src/ui/Dialogs/WalletCreatedDialog.qml</file>
         <file>src/ui/Dialogs/NumPadDialog.qml</file>
