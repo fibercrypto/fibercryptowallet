@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -23,6 +24,15 @@ const (
 	logPriorityKey = "_priority"
 	// logPriorityCritical is the log entry value for priority log statements
 	logPriorityCritical = "CRITICAL"
+)
+
+const (
+	Debug = iota
+	Information
+	Warning
+	Error
+	FatalError
+	Panic
 )
 
 // LevelFromString returns a logrus.Level from a string identifier
@@ -42,6 +52,31 @@ func LevelFromString(s string) (logrus.Level, error) {
 		return logrus.PanicLevel, nil
 	default:
 		return logrus.DebugLevel, errors.New("Couldn't convert string to log level")
+	}
+}
+
+// LevelFromEnum returns a logrus.Level from an enum identifier
+func LevelFromEnum(s string) (logrus.Level, error) {
+	idf, err := strconv.Atoi(s)
+	if err != nil {
+		return logrus.DebugLevel, errors.New("Couldn't convert enum identifier to log level")
+	}
+
+	switch idf {
+	case Debug:
+		return logrus.DebugLevel, nil
+	case Information:
+		return logrus.InfoLevel, nil
+	case Warning:
+		return logrus.WarnLevel, nil
+	case Error:
+		return logrus.ErrorLevel, nil
+	case FatalError:
+		return logrus.FatalLevel, nil
+	case Panic:
+		return logrus.PanicLevel, nil
+	default:
+		return logrus.DebugLevel, errors.New("Couldn't convert enum identifier to log level")
 	}
 }
 

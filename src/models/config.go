@@ -148,7 +148,7 @@ func (cs *ConfigSection) saveOptionValue(opt string, path []string, name string,
 
 	if opt == "log" {
 		if name == "level" {
-			level, err := logging.LevelFromString(value)
+			level, err := logging.LevelFromEnum(value)
 			if err != nil {
 				log.WithError(err).Warn("%s is not a correct log level", value)
 			} else {

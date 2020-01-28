@@ -31,9 +31,10 @@ func init() {
 	if err != nil {
 		logSkycoin.WithError(err).Warn("Couldn't unmarshal from options")
 	}
-	level, err := logging.LevelFromString(logSetting["level"])
+	level, err := logging.LevelFromEnum(logSetting["level"])
 	if err != nil {
-		logSkycoin.Warn("Couldn't get level from logging")
+		logSkycoin.Warn("Couldn't get level from logging ", logSetting["level"])
+		// TODO: Remove last param when feature is ok
 		logSkycoin.WithError(err).WithField("string", logSetting["level"]).Error()
 	} else {
 		logging.SetLevel(level)
