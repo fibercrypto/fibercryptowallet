@@ -286,7 +286,6 @@ func (hm *HistoryManager) addFilter(addr string) {
 	if !alreadyIs {
 		hm.filters = append(hm.filters, addr)
 	}
-
 }
 
 func (hm *HistoryManager) removeFilter(addr string) {
@@ -298,7 +297,6 @@ func (hm *HistoryManager) removeFilter(addr string) {
 			break
 		}
 	}
-
 }
 func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 	logHistoryManager.Info("Get Addresses with wallets")
