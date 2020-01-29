@@ -112,8 +112,8 @@ getAddressList()
                     Component.onCompleted: {
                         loadModel(walletManager.getWallets())
                     }
-                } 
-                
+                }
+
                 // Taken from Qt 5.13.0 source code:
                 delegate: MenuItem {
                     width: parent.width
@@ -124,7 +124,9 @@ getAddressList()
                     leftPadding: highlighted ? 2*padding : padding // added
                     Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
                 }
-
+                onPressedChanged: {
+                    comboBoxWalletsSendFrom.model.updateModel(walletManager.getWallets())
+                }
                 onActivated: {
                     root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
                     root.walletSelectedName = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name
