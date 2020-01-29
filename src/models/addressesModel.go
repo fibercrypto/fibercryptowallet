@@ -199,6 +199,7 @@ func (m *AddressesModel) updateModel(fileName string) {
 
 func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
 	for _, addr := range Qaddresses {
+		addr.SetMarked(walletManager.markFieldOfAddress(addr.Address()))
 		qml.QQmlEngine_SetObjectOwnership(addr, qml.QQmlEngine__CppOwnership)
 	}
 	addresses := make([]*QAddress, 0)

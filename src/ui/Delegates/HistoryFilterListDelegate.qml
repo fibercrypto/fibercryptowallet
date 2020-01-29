@@ -66,7 +66,7 @@ Item {
             model: listAddresses
             
             Layout.fillWidth: true
-            height: contentHeight
+            implicitHeight: contentHeight
             interactive: false
 
 
@@ -94,10 +94,12 @@ Item {
                 listAddresses = modelManager.getAddressModel(fileName)
             }
 
+            
+
             delegate: HistoryFilterListAddressDelegate {
                 // BUG: Checking the wallet does not change the check state of addresses
                 // Is `checked: marked` ok? Or it should be the opposite?
-                checked: true 
+                checked: marked
                 width: parent.width
                 text: address 
 
@@ -109,7 +111,9 @@ Item {
                     } else {
                         historyManager.removeFilter(address)  
                     }
+                    walletManager.editMarkAddress(address, checked)
                     listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
+
                 }
             } // HistoryFilterListAddressDelegate (delegate)
         } // ListView

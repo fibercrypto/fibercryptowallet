@@ -180,7 +180,7 @@ func (hm *HistoryManager) updateTxns() {
 
 func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
 	hm.mutexForAll.Lock()
-	defer hm.mutexForAll.Unlock()
+
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
 	added := make(map[string]struct{}, 0)
 	for _, txns := range hm.txnForAddresses {
@@ -195,6 +195,9 @@ func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
 			}
 		}
 	}
+	hm.mutexForAll.Unlock()
+	newTxns := hm.getNewTransactions()
+	txnsForReturn = append(txnsForReturn, newTxns...)
 	return txnsForReturn
 }
 

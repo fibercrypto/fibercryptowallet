@@ -34,6 +34,7 @@ type WalletManager struct {
 	wallets                  []*QWallet
 	addresseseByWallets      map[string][]*QAddress
 	addressesAndWalletsMutex sync.Mutex
+	markedAddress            map[string]int
 	outputsByAddress         map[string][]*QOutput
 	outputsByAddressMutex    sync.Mutex
 	altManager               core.AltcoinManager
@@ -68,6 +69,8 @@ type WalletManager struct {
 	_ func() string                                                                                                                    `slot:"getDefaultWalletType"`
 	_ func(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction)                     `slot:"signAndBroadcastTxnAsync"`
 	_ func() []string                                                                                                                  `slot:"getAvailableWalletTypes"`
+	_ func(address string, value int)                                                                                                  `slot:"editMarkAddress"`
+	_ func(address string) int                                                                                                         `slot:"markFieldOfAddress"`
 }
 
 func (walletM *WalletManager) init() {
@@ -101,10 +104,13 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectSignAndBroadcastTxnAsync(walletM.signAndBroadcastTxnAsync)
 		walletM.ConnectGetDefaultWalletType(walletM.getDefaultWalletType)
 		walletM.ConnectGetAvailableWalletTypes(walletM.getAvailableWalletTypes)
+		walletM.ConnectEditMarkAddress(walletM.editMarkAddress)
+		walletM.ConnectMarkFieldOfAddress(walletM.markFieldOfAddress)
 		walletM.addresseseByWallets = make(map[string][]*QAddress, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 		walletM.SeedGenerator = new(sky.SeedService)
 		walletManager = walletM
+		walletM.markedAddress = make(map[string]int)
 
 	})
 	logWalletManager.Debug("//////////  WM: Fase 2")
@@ -164,6 +170,18 @@ func (walletM *WalletManager) init() {
 			walletManager = walletM
 		}
 	}()
+}
+
+func (walletManager *WalletManager) editMarkAddress(address string, value int) {
+	walletManager.markedAddress[address] = value
+}
+
+func (walletM *WalletManager) markFieldOfAddress(address string) int {
+	val, ok := walletM.markedAddress[address]
+	if !ok {
+		val = 0
+	}
+	return val
 }
 
 func (walletM *WalletManager) updateAll() {
@@ -414,14 +432,19 @@ func (walletM *WalletManager) updateWallets() {
 			continue
 		}
 		qw := fromWalletToQWallet(it.Value(), encrypted, false)
-
+		founded := false
 		for i := range walletM.wallets {
 			if walletM.wallets[i].FileName() == qw.FileName() {
+				founded = true
 				if (walletM.wallets[i].Sky() == "N/A" && qw.Sky() != "N/A") ||
 					(walletM.wallets[i].CoinHours() != "N/A") && qw.CoinHours() != "N/A" {
 					walletM.wallets[i] = qw
 				}
+				break
 			}
+		}
+		if !founded {
+			walletM.wallets = append(walletM.wallets, qw)
 		}
 	}
 }
