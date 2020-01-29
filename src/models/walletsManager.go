@@ -799,8 +799,9 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 	}
 
 	logWalletManager.Info("Created encrypted wallet")
-	return fromWalletToQWallet(wlt, true, false)
-
+	qWallet := fromWalletToQWallet(wlt, true, false)
+	walletM.wallets = append(walletM.wallets, qWallet)
+	return qWallet
 }
 
 func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType string, scanN int) *QWallet {
@@ -813,7 +814,9 @@ func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType strin
 	}
 	logWalletManager.Info("Created unencrypted wallet")
 
-	return fromWalletToQWallet(wlt, false, false)
+	qWallet := fromWalletToQWallet(wlt, true, false)
+	walletM.wallets = append(walletM.wallets, qWallet)
+	return qWallet
 
 }
 
