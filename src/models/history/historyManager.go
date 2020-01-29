@@ -203,7 +203,7 @@ func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
 
 func (hm *HistoryManager) getTransansactionsWithFilters() []*transactions.TransactionDetails {
 	hm.mutexForAll.Lock()
-	defer hm.mutexForAll.Unlock()
+
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
 	added := make(map[string]struct{}, 0)
 	for _, addr := range hm.filters {
@@ -218,6 +218,9 @@ func (hm *HistoryManager) getTransansactionsWithFilters() []*transactions.Transa
 			}
 		}
 	}
+	defer hm.mutexForAll.Unlock()
+	newTxns := hm.getNewTransactionsWithFilters()
+	txnsForReturn = append(txnsForReturn, newTxns...)
 	return txnsForReturn
 }
 
