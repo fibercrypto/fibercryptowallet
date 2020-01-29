@@ -185,7 +185,7 @@ func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
 	added := make(map[string]struct{}, 0)
 	for _, txns := range hm.txnForAddresses {
 		for _, txn := range txns {
-			if _, exist := hm.txnForAddresses[txn.GetId()]; !exist {
+			if _, exist := added[txn.GetId()]; !exist {
 				txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
 				if err != nil {
 					logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
