@@ -66,5 +66,6 @@
         <file>src/ui/Controls/+material/TextField.qml</file>
         <file>src/ui/Utils/qqr.js</file>
         <file>src/ui/Utils/QRCode.qml</file>
+        <file>src/ui/Dialogs/SkyWalletInteractionDialog.qml</file>
     </qresource>
 </RCC>

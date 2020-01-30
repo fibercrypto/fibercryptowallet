@@ -213,39 +213,39 @@ ApplicationWindow {
     QBridge {
         id: topLevelDialogLocker
     }
-    QBridge{
+    QBridge {
         id: bridgeForPassword
 
         onGetPassword: {
-            getPasswordDialog.title = message
-            getPasswordDialog.clear()
-            getPasswordDialog.open()
+            getPasswordDialog.title = message;
+            getPasswordDialog.clear();
+            getPasswordDialog.open();
         }
         onDeviceRequireAction: {
-            msgDialog.title = title
-            msgDialog.text = message
-            msgDialog.open()
+            msgDialog.title = title;
+            msgDialog.text = message;
+            msgDialog.open();
         }
         onDeviceRequireConfirmableAction: {
-            requestConfirmation.title = title
-            requestConfirmation.text = message
-            requestConfirmation.open()
+            requestConfirmation.title = title;
+            requestConfirmation.text = message;
+            requestConfirmation.open();
         }
         onDeviceRequireCancelableAction: {
-            requestCancel.title = title
-            requestCancel.text = message
-            requestCancel.open()
+            requestCancel.title = title;
+            requestCancel.text = message;
+            requestCancel.open();
         }
         onGetSkyHardwareWalletPin: {
-            numPadDialog.clear(title)
-            numPadDialog.open()
+            numPadDialog.clear(title);
+            numPadDialog.open();
         }
         onGetBip39Word: {
-            bip39WordDialog.clear(title, message)
-            bip39WordDialog.open()
+            bip39WordDialog.clear(title, message);
+            bip39WordDialog.open();
         }
         Component.onCompleted: {
-            bridgeForPassword.onCompleted()
+            bridgeForPassword.onCompleted();
         }
     }
 
@@ -282,6 +282,16 @@ ApplicationWindow {
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > 360 ? 360 - 40 : applicationWindow.height - 40
+
+        focus: true
+        modal: true
+    }
+
+    SkyWalletInteractionDialog {
+        id: skyWalletInteractionDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 460 ? 460 - 40 : applicationWindow.height - 40
 
         focus: true
         modal: true
