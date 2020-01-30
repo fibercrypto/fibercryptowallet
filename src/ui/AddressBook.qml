@@ -203,6 +203,7 @@ Page {
 
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > implicitHeight + 40 ? implicitHeight : applicationWindow.height - 40
 
         focus: visible
         modal: true
@@ -221,7 +222,7 @@ Page {
 
         anchors.centerIn: Overlay.overlay
         width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 280 ? 280 - 40 : applicationWindow.height - 40
+        height: applicationWindow.height > implicitHeight + 40 ? implicitHeight : applicationWindow.height - 40
 
         modal: true
         focus: visible
