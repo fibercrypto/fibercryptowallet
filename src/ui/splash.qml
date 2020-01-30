@@ -8,7 +8,7 @@ Window {
     id: windowSplash
 
     width: dialogSplash.width + 100
-    height: dialogSplash.height + 100
+    height: dialogSplash.height + 140
     visible: true
     flags: Qt.SplashScreen | Qt.BypassWindowManagerHint | Qt.CustomizeWindowHint | Qt.WindowStaysOnTopHint
     color: "transparent"
