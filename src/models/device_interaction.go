@@ -22,6 +22,7 @@ type QDeviceInteraction struct {
 	_ func(name string)         `signal:"nameDetermined"`
 	_ func(isInitialized bool)  `signal:"isInitializedDetermined"`
 	_ func(needsBackup bool)    `signal:"needsBackupDetermined"`
+	_ func(bootloader bool)     `signal:"bootModeDetermined"`
 	_ func()                    `signal:"operationDone"`
 	_ func()                    `signal:"secureDevice"`
 	_ func()                    `signal:"initializeDevice"`
@@ -98,10 +99,13 @@ func (devI *QDeviceInteraction) deviceFeatures() {
 	dev := hardware.NewSkyWalletInteraction()
 	dev.Features().Then(func(data interface{}) interface{} {
 		features := data.(messages.Features)
-		devI.HasPinDetermined(*features.PinProtection)
-		devI.NameDetermined(*features.Label)
-		devI.NeedsBackupDetermined(*features.NeedsBackup)
-		devI.IsInitializedDetermined(*features.Initialized)
+		if features.Label != nil {
+			devI.NameDetermined(*features.Label)
+		}
+		devI.HasPinDetermined(features.PinProtection != nil && *features.PinProtection)
+		devI.NeedsBackupDetermined(features.NeedsBackup != nil && *features.NeedsBackup)
+		devI.IsInitializedDetermined(features.Initialized != nil && *features.Initialized)
+		devI.BootModeDetermined(features.BootloaderMode != nil && *features.BootloaderMode)
 		return data
 	}).Catch(func(err error) error {
 		return err

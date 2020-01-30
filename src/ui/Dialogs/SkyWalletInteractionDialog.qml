@@ -3,6 +3,7 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Controls 2.12
 
+import DeviceInteraction 1.0
 // Resource imports
 // import "qrc:/ui/src/ui/"
 import "../" // For quick UI development, switch back to resources when making a release
@@ -11,6 +12,15 @@ Dialog {
     id: deviceInteractionDialog
     title: qsTr("Device administration")
     standardButtons: Dialog.Ok
+    DeviceInteraction {
+        id: deviceInteraction3
+        onBootModeDetermined: {
+            uploadNewFirmware.visible = bootloader
+            wipeDevice.visible = !bootloader
+            changeDeviceName.visible = !bootloader
+        }
+    }
+    onAboutToShow: deviceInteraction3.deviceFeatures()
 
     Flickable {
         id: flickable
@@ -26,12 +36,12 @@ Dialog {
                 sourceSize: "64x64"
                 Layout.alignment: Qt.AlignTop
             }
-            
             ColumnLayout {
                 width: parent.width
                 spacing: 30
                 ColumnLayout {
                     ItemDelegate {
+                        id: changeDeviceName
                         text: qsTr("Change device name")
                         Layout.fillWidth: true
                     }
@@ -40,13 +50,16 @@ Dialog {
                     Label {
                         text: qsTr("--------------- Danger zone ---------------")
                         Material.foreground: Material.Pink
+                        visible: wipeDevice.visible || uploadNewFirmware.visible
                     }
                     ItemDelegate {
+                        id: uploadNewFirmware
                         text: qsTr(  "Upload new firmware")
                         Material.foreground: Material.Pink
                         Layout.fillWidth: true
                     }
                     ItemDelegate {
+                        id: wipeDevice
                         text: qsTr("Wipe device")
                         Layout.fillWidth: true
                         Material.foreground: Material.Pink
