@@ -242,7 +242,7 @@ func (sq *Sequencer) handleFinalResponse(msg wire.Message,  expectedMsgKind mess
 			sq.log.WithError(err).Errorln("unable to decode response")
 			return wire.Message{}, err
 		}
-		sq.log.Errorln(failMsg)
+		sq.log.WithField("msg", failMsg).Errorln("error handling final response")
 		return wire.Message{}, errors.New(failMsg)
 	}
 	if msg.Kind == uint16(messages.MessageType_MessageType_Cancel) {
@@ -335,11 +335,33 @@ func (sq *Sequencer) Available() bool {
 	return sq.dev.Available()
 }
 
-// FirmwareUpload forward the call to Device
-func (sq *Sequencer) FirmwareUpload(payload []byte, hash [32]byte) error {
+// EraseFirmware erases length bytes in the firmware section in the device
+func (sq *Sequencer) EraseFirmware(length uint32) (wire.Message, error) {
+	msg, err := sq.dev.EraseFirmware(length)
+	confirm := mixActionConfirmFrom(ActionConfirmOkAndCancelFromDevButton, ActionConfirmOkFromWireProtocol)
+	msg, err = sq.handleFirstCommandResponse(confirm, messages.MessageType_MessageType_Success, "erase firmware", err, msg)
+	if err != nil {
+		return wire.Message{}, err
+	}
+	return sq.handleFinalResponse(msg, messages.MessageType_MessageType_Success)
+}
+
+// UploadFirmware upload a new firmware to the device
+// erase the old one
+func (sq *Sequencer) UploadFirmware(payload []byte, hash [32]byte) (wire.Message, error) {
 	sq.Lock()
 	defer sq.Unlock()
-	return sq.dev.FirmwareUpload(payload, hash)
+	sq.logCli.Infoln("Length of firmware %d", len(payload))
+	if msg, err  := sq.EraseFirmware(uint32(len(payload))); err != nil {
+		return msg, err
+	}
+	msg, err := sq.dev.UploadFirmware(payload, hash)
+	confirm := mixActionConfirmFrom(ActionConfirmOkAndCancelFromDevButton, ActionConfirmOkFromWireProtocol)
+	msg, err = sq.handleFirstCommandResponse(confirm, messages.MessageType_MessageType_Success, "upload new firmware", err, msg)
+	if err != nil {
+		return wire.Message{}, err
+	}
+	return sq.handleFinalResponse(msg, messages.MessageType_MessageType_Success)
 }
 
 // GetFeatures forward the call to Device and handle all the consecutive command as an

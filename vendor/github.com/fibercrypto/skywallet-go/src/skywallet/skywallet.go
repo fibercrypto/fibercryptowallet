@@ -90,7 +90,8 @@ type Devicer interface {
 	ChangePin(removePin *bool) (wire.Message, error)
 	Connected() bool
 	Available() bool
-	FirmwareUpload(payload []byte, hash [32]byte) error
+	EraseFirmware(length uint32) (wire.Message, error)
+	UploadFirmware(payload []byte, hash [32]byte) (wire.Message, error)
 	GetFeatures() (wire.Message, error)
 	GenerateMnemonic(wordCount uint32, usePassphrase bool) (wire.Message, error)
 	Recovery(wordCount uint32, usePassphrase *bool, dryRun bool) (wire.Message, error)
@@ -593,91 +594,37 @@ func (d *Device) Available() bool {
 	return true
 }
 
-// FirmwareUpload Updates device's firmware
-func (d *Device) FirmwareUpload(payload []byte, hash [32]byte) error {
+func (d *Device) EraseFirmware(length uint32) (wire.Message, error) {
 	if d.Driver.DeviceType() != DeviceTypeUSB {
-		return ErrDeviceTypeEmulator
+		return wire.Message{}, ErrDeviceTypeEmulator
 	}
-
 	if err := d.Connect(); err != nil {
-		return err
+		return wire.Message{}, err
 	}
 	defer d.Disconnect()
-
 	if err := Initialize(d.dev); err != nil {
-		return err
+		return wire.Message{}, err
 	}
-
-	log.Printf("Length of firmware %d", uint32(len(payload)))
-
-	chunks, err := MessageFirmwareErase(payload)
+	eraseFirmwareChunks, err := MessageFirmwareErase(length)
 	if err != nil {
-		return err
+		return wire.Message{}, err
 	}
-	erasemsg, err := d.Driver.SendToDevice(d.dev, chunks)
+	return d.Driver.SendToDevice(d.dev, eraseFirmwareChunks)
+}
+
+func (d *Device) UploadFirmware(payload []byte, hash [32]byte) (wire.Message, error) {
+	if d.Driver.DeviceType() != DeviceTypeUSB {
+		return wire.Message{}, ErrDeviceTypeEmulator
+	}
+	if err := d.Connect(); err != nil {
+		return wire.Message{}, err
+	}
+	defer d.Disconnect()
+	uploadFirmwareChunks, err := MessageFirmwareUpload(payload, hash)
 	if err != nil {
-		return err
+		return wire.Message{}, err
 	}
-
-	switch erasemsg.Kind {
-	case uint16(messages.MessageType_MessageType_Success):
-		log.Printf("Success %d! FirmwareErase %s\n", erasemsg.Kind, erasemsg.Data)
-	case uint16(messages.MessageType_MessageType_Failure):
-		msg, err := DecodeFailMsg(erasemsg)
-		if err != nil {
-			return err
-		}
-
-		return errors.New(msg)
-	default:
-		return fmt.Errorf("received unexpected message type: %s", messages.MessageType(erasemsg.Kind))
-	}
-
-	log.Printf("Hash: %x\n", hash)
-
-	chunks, err = MessageFirmwareUpload(payload, hash)
-	if err != nil {
-		return err
-	}
-	uploadmsg, err := d.Driver.SendToDevice(d.dev, chunks)
-	if err != nil {
-		return err
-	}
-
-	switch uploadmsg.Kind {
-	case uint16(messages.MessageType_MessageType_ButtonRequest):
-		log.Println("Please confirm in the device if fingerprints match")
-		// Send ButtonAck
-		chunks, err = MessageButtonAck()
-		if err != nil {
-			return err
-		}
-		resp, err := d.Driver.SendToDevice(d.dev, chunks)
-		if err != nil {
-			return err
-		}
-		switch resp.Kind {
-		case uint16(messages.MessageType_MessageType_Success):
-			return nil
-		case uint16(messages.MessageType_MessageType_Failure):
-			var msgStr string
-			if msgStr, err = DecodeFailMsg(resp); err != nil {
-				return err
-			}
-			return errors.New(msgStr)
-		default:
-			return errors.New("unknown response")
-		}
-	case uint16(messages.MessageType_MessageType_Failure):
-		msg, err := DecodeFailMsg(erasemsg)
-		if err != nil {
-			return err
-		}
-
-		return errors.New(msg)
-	default:
-		return fmt.Errorf("received unexpected message type: %s", messages.MessageType(erasemsg.Kind))
-	}
+	return d.Driver.SendToDevice(d.dev, uploadFirmwareChunks)
 }
 
 // GetFeatures send Features message to the device
