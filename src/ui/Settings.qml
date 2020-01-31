@@ -24,7 +24,8 @@ Page {
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
     readonly property int defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
-    readonly property string defaultLogOutput: configManager.getDefaultValue("skycoin/log/output")
+    readonly property int defaultLogOutput: configManager.getDefaultValue("skycoin/log/output")
+    readonly property string defaultLogOutputFile: configManager.getDefaultValue("skycoin/log/outputFile")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
 
     // These are the saved settings, must be applied when the settings are opened or when
@@ -34,7 +35,8 @@ Page {
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
     property int savedLogLevel: configManager.getValue("skycoin/log/level")
-    property string savedLogOutput: configManager.getValue("skycoin/log/output")
+    property int savedLogOutput: configManager.getValue("skycoin/log/output")
+    property string savedLogOutputFile: configManager.getDefaultValue("skycoin/log/outputFile")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
     // QtObject{
@@ -49,7 +51,8 @@ Page {
     property alias isLocalWalletEnv: switchLocalWalletEnv.checked
     property alias nodeUrl: textFieldNodeUrl.text
     property alias logLevel: comboBoxLogLevel.currentIndex
-    property alias logOutput: listViewLogOutput.outputFile
+    property alias logOutput: listViewLogOutput.currentIndex
+    property alias logOutputFile: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
 
     Component.onCompleted: {
@@ -62,6 +65,7 @@ Page {
         configManager.setValue("skycoin/node/address", nodeUrl)
         configManager.setValue("skycoin/log/level", logLevel)
         configManager.setValue("skycoin/log/output", logOutput)
+        configManager.setValue("skycoin/log/outputFile", logOutputFile)
         configManager.setValue("global/cache/lifeTime", cacheLifeTime)
         loadSavedSettings()
     }
@@ -72,6 +76,7 @@ Page {
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
         logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
         logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
+        logOutputFile = savedLogOutputFile = configManager.getValue("skycoin/log/outputFile")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
         console.log(logLevel, logOutput)
         updateFooterButtonsStatus()
@@ -90,8 +95,8 @@ Page {
 
     function updateFooterButtonsStatus() {
         if (Component.status === Component.Ready) {
-            var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || logLevel != savedLogLevel || logOutput != savedLogOutput || cacheLifeTime != savedLifeTime)
-            var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || logLevel !== defaultLogLevel || logOutput !== defaultLogOutput || cacheLifeTime !== defaultCacheLifeTime)
+            var configChanged = (walletPath !== savedWalletPath || isLocalWalletEnv !== savedIsLocalWalletEnv || nodeUrl != savedNodeUrl || logLevel != savedLogLevel || logOutput != savedLogOutput || logOutputFile != savedLogOutputFile || cacheLifeTime != savedLifeTime)
+            var noDefaultConfig = (walletPath !== defaultWalletPath || isLocalWalletEnv !== defaultIsLocalWalletEnv || nodeUrl !== defaultNodeUrl || logLevel !== defaultLogLevel || logOutput !== defaultLogOutput || logOutputFile !== defaultLogOutputFile || cacheLifeTime !== defaultCacheLifeTime)
             footer.standardButton(Dialog.Apply).enabled = configChanged
             footer.standardButton(Dialog.Discard).enabled = configChanged
             footer.standardButton(Dialog.RestoreDefaults).enabled = noDefaultConfig
@@ -243,7 +248,7 @@ Page {
                         readonly property var logLevelString: [ "debug", "info", "warn", "error", "fatal", "panic" ]
                         readonly property var logLevelColor: [ Material.Teal, Material.Blue, Material.Amber, Material.DeepOrange, Material.Red, Material.primaryTextColor ]
 
-                        currentIndex: savedLogLevel
+                        currentIndex: savedLogLevel < 0 || savedLogLevel >= count ? defaultLogLevel : savedLogLevel
                         onCurrentIndexChanged: {
                             updateFooterButtonsStatus()
                         }
@@ -284,7 +289,7 @@ Page {
                         delegate: RadioButton {
                             width: index === Settings.LogOutput.File && textFieldLogOutputFile.enabled ? implicitWidth : parent.width
                             text: modelData
-                            checked: savedLogOutput === ListView.view.logOutputString[index]
+                            checked: savedLogOutput < 0 || savedLogOutput >= ListView.view.count ? index === defaultLogLevel : index === savedLogOutput
 
                             onCheckedChanged: {
                                 if (checked) {
