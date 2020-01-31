@@ -102,13 +102,19 @@ func(wlt *SkyWalletInteraction) IsAvailable() *promise.Promise {
 	})
 }
 
-func(wlt *SkyWalletInteraction) FirmwareUpload(payload []byte, hash [32]byte) *promise.Promise {
+func(wlt *SkyWalletInteraction) UploadFirmware(payload []byte, hash [32]byte) *promise.Promise {
 	return promise.New(func(resolve func(interface{}), reject func(error)) {
-		if err := wlt.dev.FirmwareUpload(payload, hash); err != nil {
+		msg, err := wlt.dev.UploadFirmware(payload, hash)
+		if err != nil {
 			reject(err)
 			return
 		}
-		resolve(nil)
+		msgStr, err := skywallet.DecodeSuccessMsg(msg)
+		if err != nil {
+			reject(err)
+			return
+		}
+		resolve(msgStr)
 	})
 }
 

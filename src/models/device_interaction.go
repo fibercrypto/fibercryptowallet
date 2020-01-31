@@ -1,11 +1,14 @@
 package models
 
 import (
+	"crypto/sha256"
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
+	"io/ioutil"
+	"strings"
 )
 
 type QDeviceInteraction struct {
@@ -18,6 +21,7 @@ type QDeviceInteraction struct {
 	_ func(uint, bool)          `slot:"generateMnemonic"`
 	_ func(uint, bool)          `slot:"restoreBackup"`
 	_ func()                    `slot:"cancelCommand"`
+	_ func(file string)         `slot:"firmwareUpload"`
 	_ func(hasPin bool)         `signal:"hasPinDetermined"`
 	_ func(name string)         `signal:"nameDetermined"`
 	_ func(isInitialized bool)  `signal:"isInitializedDetermined"`
@@ -36,6 +40,7 @@ func (devI *QDeviceInteraction) init() {
 	devI.ConnectDeviceFeatures(devI.deviceFeatures)
 	devI.ConnectBackupDevice(devI.backupDevice)
 	devI.ConnectCancelCommand(devI.cancelCommand)
+	devI.ConnectFirmwareUpload(devI.firmwareUpload)
 	devI.ConnectGenerateMnemonic(devI.generateMnemonic)
 	devI.ConnectRestoreBackup(devI.restoreBackup)
 }
@@ -133,6 +138,28 @@ func (devI *QDeviceInteraction) restoreBackup(wordCount uint, usePassphrase bool
 		return data
 	}).Catch(func(err error) error {
 		logWalletsModel.WithError(err).Errorln("unable to recover device with you seed")
+		devI.OperationDone()
+		return err
+	})
+}
+
+func (devI *QDeviceInteraction) firmwareUpload(filePath string) {
+	// FIXME portability
+	prefix := "file://"
+	if strings.HasPrefix(filePath, prefix) {
+		filePath = strings.TrimPrefix(filePath, prefix)
+	}
+	firmware, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		// FIXME inform the end user
+		logWalletsModel.WithError(err).Errorln("unable to upload firmware to device")
+		return
+	}
+	dev := hardware.NewSkyWalletInteraction()
+	dev.UploadFirmware(firmware, sha256.Sum256(firmware[0x100:])).Then(func(data interface{}) interface{} {
+		devI.OperationDone()
+		return data
+	}).Catch(func(err error) error {
 		devI.OperationDone()
 		return err
 	})

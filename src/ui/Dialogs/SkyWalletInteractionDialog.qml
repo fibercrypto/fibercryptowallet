@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Controls 2.12
+import QtQuick.Dialogs 1.1
 
 import DeviceInteraction 1.0
 // Resource imports
@@ -21,6 +22,16 @@ Dialog {
         }
     }
     onAboutToShow: deviceInteraction3.deviceFeatures()
+    FileDialog {
+        id: fileDialog
+        title: "Please choose a file"
+        folder: shortcuts.home
+        selectMultiple: false
+        nameFilters: [ "Firmware image files (*.bin)", "All files (*)" ]
+        onAccepted: {
+            deviceInteraction3.firmwareUpload(fileDialog.fileUrl)
+        }
+    }
 
     Flickable {
         id: flickable
@@ -57,6 +68,7 @@ Dialog {
                         text: qsTr(  "Upload new firmware")
                         Material.foreground: Material.Pink
                         Layout.fillWidth: true
+                        onClicked: fileDialog.open()
                     }
                     ItemDelegate {
                         id: wipeDevice

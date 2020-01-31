@@ -12,7 +12,7 @@ type DeviceInteraction interface {
 	CheckMessageSignature(message, signature, address string) *promise.Promise
 	ChangePin(removePin *bool) *promise.Promise
 	IsAvailable() *promise.Promise
-	FirmwareUpload(payload []byte, hash [32]byte) *promise.Promise
+	UploadFirmware(payload []byte, hash [32]byte) *promise.Promise
 	Features() *promise.Promise
 	GenerateMnemonic(wordCount uint32, usePassphrase bool) *promise.Promise
 	Recovery(wordCount uint32, usePassphrase *bool, dryRun bool) *promise.Promise
