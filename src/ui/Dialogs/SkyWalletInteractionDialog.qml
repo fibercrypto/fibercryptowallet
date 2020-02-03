@@ -20,6 +20,7 @@ Dialog {
             wipeDevice.visible = !bootloader
             changeDeviceName.visible = !bootloader
         }
+        onNameDetermined: deviceNameDialog.hint = name;
     }
     onAboutToShow: deviceInteraction3.deviceFeatures()
     FileDialog {
@@ -91,6 +92,7 @@ Dialog {
                         text: qsTr("Wipe device")
                         Layout.fillWidth: true
                         Material.foreground: Material.Pink
+                        onClicked: deviceInteraction3.wipeDevice()
                     }
                 }
             }
