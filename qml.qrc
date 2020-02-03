@@ -60,6 +60,7 @@
         <file>src/ui/Dialogs/DialogSetPassword.qml</file>
         <file>src/ui/Dialogs/DialogQR.qml</file>
         <file>src/ui/Dialogs/DialogSelectAddressByWallet.qml</file>
+        <file>src/ui/Dialogs/GetWordDialog.qml</file>
         <file>src/ui/Controls/TextArea.qml</file>
         <file>src/ui/Controls/TextField.qml</file>
         <file>src/ui/Controls/+material/TextArea.qml</file>

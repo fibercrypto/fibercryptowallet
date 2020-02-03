@@ -32,6 +32,21 @@ Dialog {
             deviceInteraction3.firmwareUpload(fileDialog.fileUrl)
         }
     }
+    GetWordDialog {
+        id: deviceNameDialog
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 240 ? 240 - 40 : applicationWindow.height - 40
+        focus: true
+        modal: true
+        
+        title: qsTr('Please choose the new device name')
+        label: qsTr("Device name")
+        hint: 'aaaaaa'
+        onAccepted: {
+            deviceInteraction3.changeDeviceName(deviceNameDialog.selectedName)
+        }
+    }
 
     Flickable {
         id: flickable
@@ -55,6 +70,7 @@ Dialog {
                         id: changeDeviceName
                         text: qsTr("Change device name")
                         Layout.fillWidth: true
+                        onClicked: deviceNameDialog.open()
                     }
                 }
                 ColumnLayout {

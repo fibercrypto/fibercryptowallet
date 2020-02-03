@@ -20,6 +20,7 @@ type QDeviceInteraction struct {
 	_ func()                    `slot:"deviceFeatures"`
 	_ func(uint, bool)          `slot:"generateMnemonic"`
 	_ func(uint, bool)          `slot:"restoreBackup"`
+	_ func(string)              `slot:"changeDeviceName"`
 	_ func()                    `slot:"cancelCommand"`
 	_ func(file string)         `slot:"firmwareUpload"`
 	_ func(hasPin bool)         `signal:"hasPinDetermined"`
@@ -43,6 +44,7 @@ func (devI *QDeviceInteraction) init() {
 	devI.ConnectFirmwareUpload(devI.firmwareUpload)
 	devI.ConnectGenerateMnemonic(devI.generateMnemonic)
 	devI.ConnectRestoreBackup(devI.restoreBackup)
+	devI.ConnectChangeDeviceName(devI.changeDeviceName)
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
@@ -157,6 +159,17 @@ func (devI *QDeviceInteraction) firmwareUpload(filePath string) {
 	}
 	dev := hardware.NewSkyWalletInteraction()
 	dev.UploadFirmware(firmware, sha256.Sum256(firmware[0x100:])).Then(func(data interface{}) interface{} {
+		devI.OperationDone()
+		return data
+	}).Catch(func(err error) error {
+		devI.OperationDone()
+		return err
+	})
+}
+
+func (devI *QDeviceInteraction) changeDeviceName(label string) {
+	dev := hardware.NewSkyWalletInteraction()
+	dev.ApplySettings(nil, label, "").Then(func(data interface{}) interface{} {
 		devI.OperationDone()
 		return data
 	}).Catch(func(err error) error {
