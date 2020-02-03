@@ -252,7 +252,10 @@ clean: clean-test clean-build ## Remove temporary files
 gen-mocks-core: ## Generate mocks for core interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 
-gen-mocks: gen-mocks-core ## Generate mocks for interface types
+gen-mocks-sky: ## Generate mocks for internal Skycoin types
+	mockery -all -output src/coin/skycoin/skymocks -outpkg skymocks -dir src/coin/skycoin/skytypes
+
+gen-mocks: gen-mocks-core gen-mocks-sky ## Generate mocks for interface types
 
 $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
