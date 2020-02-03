@@ -249,9 +249,10 @@ clean-build: ## Remove temporary files
 
 clean: clean-test clean-build ## Remove temporary files
 
-gen-mocks: ## Generate mocks for interface types
+gen-mocks-core: ## Generate mocks for core interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
-	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/fibercryptowallet/g' PATH
+
+gen-mocks: gen-mocks-core ## Generate mocks for interface types
 
 $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
