@@ -16,6 +16,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/coin"
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skymocks"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
@@ -810,7 +811,7 @@ func TestPendingTxnToCreatedTransaction(t *testing.T) {
 }
 
 func Test_serializeCreatedTransaction(t *testing.T) {
-	mockTxn := new(mocks.ReadableTxn)
+	mockTxn := new(skymocks.ReadableTxn)
 	id := "0000000000000000000000000000000000000000000000000000000000000000"
 	created := &api.CreatedTransaction{
 		TxID:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
@@ -855,7 +856,7 @@ func TestSkycoinPendingTransactionEncodeSkycoinTransaction(t *testing.T) {
 }
 
 func Test_verifyReadableTransaction(t *testing.T) {
-	mockTxn := new(mocks.ReadableTxn)
+	mockTxn := new(skymocks.ReadableTxn)
 	id := "0000000000000000000000000000000000000000000000000000000000000000"
 	created := &api.CreatedTransaction{
 		TxID:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
@@ -920,7 +921,7 @@ func TestPendingTxnVerifySignature(t *testing.T) {
 }
 
 func Test_checkFullySigned(t *testing.T) {
-	mockTxn := new(mocks.ReadableTxn)
+	mockTxn := new(skymocks.ReadableTxn)
 	id := "0000000000000000000000000000000000000000000000000000000000000000"
 	created := &api.CreatedTransaction{
 		TxID:      "78877fa898f0b4c45c9c33ae941e40617ad7c8657a307db62bc5691f92f4f60e",
