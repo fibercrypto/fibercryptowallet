@@ -5,8 +5,10 @@ package logging
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/ioutil"
+	"os"
 	"strings"
 
 	"github.com/sirupsen/logrus"
@@ -39,7 +41,7 @@ func LevelFromString(s string) (logrus.Level, error) {
 	case "panic":
 		return logrus.PanicLevel, nil
 	default:
-		return logrus.DebugLevel, errors.New("could not convert string to log level")
+		return logrus.DebugLevel, errors.New("Couldn't convert string to log level")
 	}
 }
 
@@ -76,4 +78,39 @@ func SetOutputTo(w io.Writer) {
 // Disable disables the logger completely
 func Disable() {
 	log.Out = ioutil.Discard
+}
+
+// GetFileToLog get a file with path <dir> for the logger's output
+func GetFileToLog(dir string) (io.Writer, error) {
+	f, err := os.OpenFile(dir+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Fprintln(f)
+	//defer f.Close()
+
+	return f, nil
+}
+
+// NoWriter is a writer that write nothing, useful when no writing or output is desired.
+type NoWriter struct {
+	io.Writer
+}
+
+func (NoWriter) Write(p []byte) (n int, err error) {
+	return 0, nil
+}
+
+// GetOutputWriter given a option return a writer
+func GetOutputWriter(opt string) (io.Writer, error) {
+	switch opt {
+	case "stdout":
+		return os.Stdout, nil
+	case "stderr":
+		return os.Stderr, nil
+	case "none":
+		return NoWriter{}, nil
+	default:
+		return GetFileToLog(opt)
+	}
 }

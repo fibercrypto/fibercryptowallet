@@ -1675,7 +1675,7 @@ func checkEquivalentSkycoinWallets(wlt1, wlt2 core.Wallet) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	return addrs1.HasNext() && addrs2.HasNext() && addrs1.Value().String() == addrs2.Value().String(), nil
+	return addrs1.Next() && addrs2.Next() && addrs1.Value().String() == addrs2.Value().String(), nil
 }
 
 func checkTxnSupported(wlt1, wlt2 core.Wallet, txn core.Transaction) (bool, error) {

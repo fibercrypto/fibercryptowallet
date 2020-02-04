@@ -1,12 +1,14 @@
 package util
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -138,4 +140,144 @@ func TestSignersReadyForTxn(t *testing.T) {
 	require.False(t, wasFound)
 	_, wasFound = signersFound[signerIDs[5]]
 	require.True(t, wasFound)
+
+	ready, err := ReadyForTxn(signerIDs[0], wlt, txn)
+	require.True(t, ready)
+	require.Nil(t, err)
+	ready, err = ReadyForTxn(signerIDs[1], wlt, txn)
+	require.False(t, ready)
+	require.Nil(t, err)
+	ready, err = ReadyForTxn(signerIDs[2], wlt, txn)
+	require.False(t, ready)
+	require.NotNil(t, err)
+	ready, err = ReadyForTxn(signerIDs[3], wlt, txn)
+	require.True(t, ready)
+	require.Nil(t, err)
+	ready, err = ReadyForTxn(signerIDs[4], wlt, txn)
+	require.True(t, ready)
+	require.NotNil(t, err)
+	ready, err = ReadyForTxn(signerIDs[5], wlt, txn)
+	require.True(t, ready)
+	require.Nil(t, err)
+	_, err = ReadyForTxn(core.UID("unknown_id"), wlt, txn)
+	require.NotNil(t, err)
+}
+
+func TestLookupSignServiceForWallet(t *testing.T) {
+	type WalletSigner struct {
+		mocks.Wallet
+		mocks.TxnSigner
+	}
+
+	emptyUID := core.UID("")
+	uid := core.UID("walletid")
+	other := core.UID("otherid")
+
+	ws := new(WalletSigner)
+	ws.TxnSigner.On("GetSignerUID").Return(uid)
+	var signer core.TxnSigner = ws
+	err := AttachSignService(signer)
+	defer RemoveSignService(uid) // nolint gosec
+	require.NoError(t, err)
+
+	tests := []struct {
+		wallet core.Wallet
+		id     core.UID
+		want   core.TxnSigner
+	}{
+		{wallet: new(mocks.Wallet), id: emptyUID, want: nil},
+		{wallet: ws, id: emptyUID, want: signer},
+		{wallet: ws, id: uid, want: signer},
+		{wallet: new(mocks.Wallet), id: uid, want: signer},
+		{wallet: new(mocks.Wallet), id: other, want: nil},
+		{wallet: ws, id: other, want: nil},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("lookup%d", i), func(t *testing.T) {
+			_signer, err := LookupSignServiceForWallet(tt.wallet, tt.id)
+			require.Equal(t, tt.want, _signer)
+			if tt.want == nil {
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestSignTransaction(t *testing.T) {
+	pwd := func(s string, kvs core.KeyValueStore) (string, error) {
+		return s, nil
+	}
+
+	uid := core.UID("signer_id")
+	signer := new(mocks.TxnSigner)
+	signer.On("GetSignerUID").Return(uid)
+	attachErr := AttachSignService(signer)
+	require.Nil(t, attachErr)
+	defer RemoveSignService(uid) // nolint gosec
+
+	ind := make([]string, 0)
+	txn := new(mocks.Transaction)
+	ctx := new(mocks.KeyValueStore)
+
+	signer.On("SignTransaction", txn, mock.Anything, ind).Return(txn, nil).Run(func(args mock.Arguments) {
+		pwdReader := args.Get(1).(core.PasswordReader)
+		msg := "message"
+		_msg, err2 := pwdReader(msg, ctx)
+		require.Nil(t, err2)
+		require.Equal(t, msg, _msg)
+	})
+	signedTxn, err := SignTransaction(uid, txn, pwd, ind)
+	require.Nil(t, err)
+	require.Equal(t, txn, signedTxn)
+
+	_, err = SignTransaction(core.UID(""), txn, pwd, ind)
+	require.NotNil(t, err)
+}
+
+func TestGenericMultiWalletSign(t *testing.T) {
+	var pwd core.PasswordReader = func(s string, kvs core.KeyValueStore) (string, error){
+		return s, nil
+	}
+
+	inputsIdx := []string{"index1", "index2"}
+	wlt, txn := new(mocks.Wallet), new(mocks.Transaction)
+
+	uid := core.UID("signer_id")
+	signer := new(mocks.TxnSigner)
+	signer.On("GetSignerUID").Return(uid)
+	attachErr := AttachSignService(signer)
+	require.Nil(t, attachErr)
+	defer RemoveSignService(uid) // nolint gosec
+
+	spec := make([]core.InputSignDescriptor, 0)
+	for _, input := range inputsIdx {
+		inputSpec := core.InputSignDescriptor{
+			InputIndex: input,
+			SignerID:   uid,
+			Wallet:     wlt,
+		}
+		spec = append(spec, inputSpec)
+	}
+
+	badTxn := new(mocks.Transaction)
+	badTxn.On("GetId").Return("bad_txn_id")
+	wlt.On("Sign", txn, signer, mock.Anything, inputsIdx).Return(txn, nil)
+	wlt.On("Sign", badTxn, signer, mock.Anything, inputsIdx).Return(txn, errors.ErrInvalidTxn)
+	_txn, err := GenericMultiWalletSign(txn, spec, pwd)
+	require.Equal(t, txn, _txn)
+	require.Nil(t, err)
+
+	_, err = GenericMultiWalletSign(badTxn, spec, pwd)
+	require.NotNil(t, err)
+
+	spec = []core.InputSignDescriptor{
+		core.InputSignDescriptor{
+			InputIndex: "",
+			SignerID:   core.UID(""),
+			Wallet:     wlt,
+		},
+	}
+	_, err = GenericMultiWalletSign(txn, spec, pwd)
+	require.NotNil(t, err)
 }

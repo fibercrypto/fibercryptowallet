@@ -140,9 +140,7 @@ func (ss *SkycoinBlockchain) GetLastBlock() (core.Block, error) {
 func (ss *SkycoinBlockchain) GetNumberOfBlocks() (uint64, error) {
 	logBlockchain.Info("Getting number of blocks")
 	if ss.cachedStatus == nil {
-		if ss.cachedStatus == nil {
-			ss.cachedStatus = new(SkycoinBlockchainInfo)
-		}
+		ss.cachedStatus = new(SkycoinBlockchainInfo)
 		if err := ss.requestStatusInfo(); err != nil {
 			logBlockchain.Errorf("Skycoin node API error for status info %s", err)
 			return 0, err
