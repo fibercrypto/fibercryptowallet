@@ -249,17 +249,21 @@ clean-build: ## Remove temporary files
 
 clean: clean-test clean-build ## Remove temporary files
 
-gen-mocks: ## Generate mocks for interface types
+gen-mocks-core: ## Generate mocks for core interface types
 	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
 	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
-	find src/coin/mocks/ -name '*.go' -type f -print0 | xargs -0 -I PATH sed -i '' -e 's/fibercryptowallet/fibercryptowallet/g' PATH
 
-test-skyhw: ## Run Hardware wallet tests
-	go test github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
+gen-mocks-sky: ## Generate mocks for internal Skycoin types
+	mockery -all -output src/coin/skycoin/skymocks -outpkg skymocks -dir src/coin/skycoin/skytypes
+
+gen-mocks: gen-mocks-core gen-mocks-sky ## Generate mocks for interface types
 
 $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
+
+test-skyhw: ## Run Hardware wallet tests
+	go test github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
@@ -278,8 +282,6 @@ test-data: ## Run tests for data package
 test-html-cover:
 	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEPREFIX).html
 
-
-
 test-cover-travis: clean-test
 	go test -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
@@ -290,9 +292,8 @@ test-cover-travis: clean-test
 
 test-cover: test test-html-cover ## Show more details of test coverage
 
-test: clean-test $(COVERAGEFILE) test-core test-sky ## Run project test suite
+test: clean-test $(COVERAGEFILE) test-core test-sky test-data ## Run project test suite
 
-test: clean-test test-core test-sky test-data## Run project test suite
 run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
 	@echo "Docker container GOPATH found at $(DOCKER_GOPATH)"
