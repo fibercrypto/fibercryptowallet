@@ -58,10 +58,10 @@ func TestWalletListPendingTransactions(t *testing.T) {
 		wlt := wallets.Value()
 		account := wlt.GetCryptoAccount()
 		global_mock.On(method, wlt.GetId()).Return(response, errors.New("failure")).Once()
-		txns, err := account.ListPendingTransactions() // nolint gosec
+		_, err := account.ListPendingTransactions()
 		require.Error(t, err)
 		global_mock.On(method, wlt.GetId()).Return(response, nil).Once()
-		txns, err = account.ListPendingTransactions()
+		txns, err := account.ListPendingTransactions()
 		require.NoError(t, err)
 		for txns.Next() {
 			iter := NewSkycoinTransactionOutputIterator(txns.Value().GetOutputs())
@@ -95,10 +95,10 @@ func TestSkycoinAddressGetBalance(t *testing.T) {
 	response.Confirmed = readable.Balance{Coins: uint64(42000000), Hours: uint64(200)}
 	skyAddrs := addr.GetCryptoAccount()
 	global_mock.On("Balance", []string{addr.String()}).Return(response, errors.New("failure")).Once()
-	val, err := skyAddrs.GetBalance(Sky) // nolint gosec
+	_, err = skyAddrs.GetBalance(Sky)
 	require.Error(t, err)
 	global_mock.On("Balance", []string{addr.String()}).Return(response, nil)
-	val, err = skyAddrs.GetBalance(Sky)
+	val, err := skyAddrs.GetBalance(Sky)
 	require.NoError(t, err)
 	require.Equal(t, val, uint64(42000000))
 	val, err = skyAddrs.GetBalance(CoinHour)
@@ -216,22 +216,22 @@ func TestLocalWalletGetBalance(t *testing.T) {
 
 	// wallet not found
 	wlt := &LocalWallet{WalletDir: "./testdata", Id: "no_wallet.wlt"}
-	val, err := wlt.GetBalance(Sky) // nolint gosec
+	_, err := wlt.GetBalance(Sky)
 	require.Error(t, err)
 
 	// api interaction error
 	wlt = &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
-	val, err = wlt.GetBalance(Sky) // nolint gosec
+	_, err = wlt.GetBalance(Sky)
 	require.Error(t, err)
 
 	// invalid HeadOutputs
 	wlt = &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
-	val, err = wlt.GetBalance(Sky) // nolint gosec
+	_, err = wlt.GetBalance(Sky)
 	require.Error(t, err)
 	response.HeadOutputs = response.HeadOutputs[:len(response.HeadOutputs)-1]
 
 	// all well
-	val, err = wlt.GetBalance(Sky)
+	val, err := wlt.GetBalance(Sky)
 	require.NoError(t, err)
 	require.Equal(t, uint64(84000000), val)
 	val, err = wlt.GetBalance(CoinHour)
@@ -239,7 +239,7 @@ func TestLocalWalletGetBalance(t *testing.T) {
 	require.Equal(t, uint64(84), val)
 
 	//invalid ticker
-	_, err = wlt.GetBalance("INVALID_TICKER") // nolint gosec
+	_, err = wlt.GetBalance("INVALID_TICKER")
 	require.Error(t, err)
 }
 

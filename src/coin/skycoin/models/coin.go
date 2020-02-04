@@ -25,7 +25,7 @@ var logCoin = logging.MustGetLogger("Skycoin coin")
 	Implements Transaction interface
 */
 type SkycoinPendingTransaction struct {
-	Transaction readable.UnconfirmedTransactionVerbose
+	Transaction *readable.UnconfirmedTransactionVerbose
 }
 
 func (txn *SkycoinPendingTransaction) SupportedAssets() []string {
@@ -174,7 +174,7 @@ func (txn *SkycoinPendingTransaction) EncodeSkycoinTransaction() ([]byte, error)
 
 func verifyReadableTransaction(rTxn skytypes.ReadableTxn, checkSigned bool) error {
 	var createdTxn *api.CreatedTransaction
-	if cTxn, err := rTxn.ToCreatedTransaction(); err != nil {
+	if cTxn, err := rTxn.ToCreatedTransaction(); err == nil {
 		createdTxn = cTxn
 	} else {
 		return err
@@ -639,7 +639,6 @@ func (in *SkycoinTransactionInput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return in.skyIn.CalculatedHours * accuracy, nil
 	}
-	// TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
@@ -720,7 +719,6 @@ func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
 	} else if ticker == CalculatedHour {
 		return out.calculatedHours * accuracy, nil
 	}
-	// TODO: The program never reach here because util.AltcoinQuotient(ticker) throws an error when a invalid ticker is supplied
 	logCoin.Errorf("Invalid ticker %v\n", ticker)
 	return uint64(0), errors.ErrInvalidAltcoinTicker
 }
