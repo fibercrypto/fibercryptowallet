@@ -277,8 +277,6 @@ test-data: ## Run tests for data package
 test-html-cover:
 	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEPREFIX).html
 
-
-
 test-cover-travis: clean-test
 	go test -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
@@ -289,9 +287,8 @@ test-cover-travis: clean-test
 
 test-cover: test test-html-cover ## Show more details of test coverage
 
-test: clean-test $(COVERAGEFILE) test-core test-sky ## Run project test suite
+test: clean-test $(COVERAGEFILE) test-core test-sky test-data ## Run project test suite
 
-test: clean-test test-core test-sky test-data## Run project test suite
 run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
 	@echo "Docker container GOPATH found at $(DOCKER_GOPATH)"
