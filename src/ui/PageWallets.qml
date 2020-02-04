@@ -110,6 +110,21 @@ Page {
             clip: true // limit the painting to it's bounding rectangle
             model: walletModel
             delegate: WalletListDelegate {}
+
+            populate: Transition {
+                id: transitionPopulate
+
+                SequentialAnimation {
+                    PropertyAction { property: "opacity"; value: 0.0 }
+                    PauseAnimation {
+                        duration: transitionPopulate.ViewTransition.index === 0 ? 150 : 150 + (transitionPopulate.ViewTransition.index -  transitionPopulate.ViewTransition.targetIndexes[0]) * 50
+                    }
+                    ParallelAnimation {
+                        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+                        NumberAnimation { property: "scale"; from: 0.8; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+                    }
+                }
+            }
         }
     }
 

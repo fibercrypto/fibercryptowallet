@@ -59,6 +59,8 @@ var (
 	ErrInvalidTypeAssertion = errors.New("Invalid type assertion")
 	// ErrWalletCantSign wallet can not sign transactions
 	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
+	// ErrNotImplemented feature not implemented
+	ErrNotImplemented = errors.New("Feature not implemented")
 	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
 	// wallet not found
 	ErrWltFromAddrNotFound = errors.New("Error getting wallet from addr, no wallet found")

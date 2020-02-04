@@ -5,6 +5,7 @@ import (
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"strconv"
+	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet"
 
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	fccore "github.com/fibercrypto/fibercryptowallet/src/core"

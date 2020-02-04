@@ -11,11 +11,12 @@ import "../" // For quick UI development, switch back to resources when making a
 Item {
     id: root
 
-    readonly property real addressListHeight: listViewFilterAddress.height
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
     
     clip: true
+    implicitWidth: width
+    implicitHeight: height
     width: 300
     height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
     

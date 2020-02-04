@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/cipher/base58"
+	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/stretchr/testify/assert"
@@ -197,6 +198,11 @@ func TestSkycoinAddress_Verify(t *testing.T) {
 			require.NoError(t, addrs.Verify(pk))
 		})
 	}
+
+	mockPub := new(mocks.PubKey)
+	mockPub.On("Bytes").Return([]byte(""))
+	skyAddr := new(SkycoinAddress)
+	require.Error(t, skyAddr.Verify(mockPub))
 }
 
 func Test_skyPubKeyFromBytes(t *testing.T) {
@@ -312,6 +318,76 @@ func TestAddressFromString(t *testing.T) {
 				assert.Equal(t, tt.want, got.String())
 			}
 
+		})
+	}
+}
+
+func TestToSkycoinCipherAddress(t *testing.T) {
+	dir := "R6aHqKWSQfvpdo2fGSrq4F1RYXkBWR9HHJ"
+	key := cipher.Ripemd160{0x3b, 0xe2, 0x53, 0x7f, 0x8c, 0x8, 0x93, 0xfd, 0xdc, 0xdd, 0xc8, 0x78, 0x51, 0x8f, 0x38, 0xea, 0x49, 0x3d, 0x94, 0x9e}
+	addr, err := NewSkycoinAddress(dir)
+	require.NoError(t, err)
+	skyAddr, err1 := addr.ToSkycoinCipherAddress()
+	require.NoError(t, err1)
+	require.Equal(t, key, skyAddr.Key)
+}
+
+func Test_toSkycoinPubKey(t *testing.T) {
+	pub := new(SkycoinPubKey)
+	pub.pubkey[4], pub.pubkey[2] = 1, 1
+
+	mockPub := new(mocks.PubKey)
+	mockPub.On("Bytes").Return([]byte(""))
+	tests := []struct {
+		name      string
+		pub       core.PubKey
+		wantError bool
+	}{
+		{name: "FromSkycoinPubKey", pub: pub, wantError: false},
+		{name: "FromMock", pub: mockPub, wantError: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			key, err := toSkycoinPubKey(tt.pub)
+			if tt.wantError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				for i, b := range tt.pub.Bytes() {
+					require.Equal(t, b, key[i])
+				}
+			}
+		})
+	}
+}
+
+func Test_toSkycoinSecKey(t *testing.T) {
+	sec := new(SkycoinSecKey)
+	sec.seckey[4], sec.seckey[2] = 1, 1
+
+	mockSec := new(mocks.SecKey)
+	mockSec.On("Bytes").Return([]byte(""))
+	tests := []struct {
+		name      string
+		sec       core.SecKey
+		wantError bool
+	}{
+		{name: "FromSkycoinSecKey", sec: sec, wantError: false},
+		{name: "FromMock", sec: mockSec, wantError: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			key, err := toSkycoinSecKey(tt.sec)
+			if tt.wantError {
+				require.Error(t, err)
+			} else {
+				require.NoError(t, err)
+				for i, b := range tt.sec.Bytes() {
+					require.Equal(t, b, key[i])
+				}
+			}
 		})
 	}
 }

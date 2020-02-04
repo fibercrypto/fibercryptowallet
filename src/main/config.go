@@ -2,8 +2,10 @@ package local
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
+	"github.com/fibercrypto/fibercryptowallet/src/params"
 	qtcore "github.com/therecipe/qt/core"
 )
 
@@ -24,6 +26,17 @@ func init() {
 		sections: make(map[string]*SectionManager),
 	}
 
+	valueLifeTime := strconv.FormatUint(params.DataRefreshTimeout, 10)
+
+	cache := map[string]string{"lifeTime": valueLifeTime}
+
+	cacheBytes, err := json.Marshal(cache)
+	if err != nil {
+		return
+	}
+	cacheOpt := NewOption("cache", []string{}, false, string(cacheBytes))
+
+	_ = confManager.RegisterSection("global", []*Option{cacheOpt})
 }
 
 type ConfigManager struct {
@@ -56,13 +69,17 @@ func (cm *ConfigManager) RegisterSection(name string, options []*Option) *Sectio
 	defer cm.setting.Sync()
 
 	for _, opt := range options {
+		depthLevel := 0
 		for _, sect := range opt.sectionPath {
 			cm.setting.BeginGroup(sect)
-			defer cm.setting.EndGroup()
+			depthLevel++
 		}
 		if !opt.optional && !cm.setting.Contains(opt.name) {
 			cm.setting.SetValue(opt.name, qtcore.NewQVariant1(opt._default))
 
+		}
+		for i := 0; i < depthLevel; i++ {
+			cm.setting.EndGroup()
 		}
 	}
 

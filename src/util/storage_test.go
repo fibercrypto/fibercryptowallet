@@ -52,3 +52,10 @@ func TestKeyValueiWithDefaultsGetValue(t *testing.T) {
 	require.Equal(t, "v1", s.GetValue("k1"))
 	require.Nil(t, s.GetValue("z"))
 }
+
+func TestKeyValuesWithDefaultsSetValue(t *testing.T) {
+	kvmd := NewKeyValuesWithDefaults(nil, NewKeyValueMap())
+	key, value := "key", "value"
+	kvmd.SetValue(key, value)
+	require.Equal(t, value, kvmd.GetValue(key))
+}

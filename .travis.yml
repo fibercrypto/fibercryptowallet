@@ -6,14 +6,14 @@ services:
   - docker
   - xvfb
 go_import_path: github.com/fibercrypto/fibercryptowallet
-env:
-  global:
-    - XARGS="-screen 0 1024x768x24"
-
 cache:
   directories:
     - $GOPATH/src/github.com/therecipe
     - $GOPATH/bin
+env:
+  global:
+    - XARGS="-screen 0 1024x768x24"
+
 matrix:
   include:
     - stage: RPI

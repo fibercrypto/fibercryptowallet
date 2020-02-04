@@ -37,6 +37,7 @@ nosetests.xml
 coverage.xml
 coverage.html
 coverage.out
+coverage.tmp.out
 *.cover
 .hypothesis/
 
@@ -86,3 +87,7 @@ rcc_cgo_*.go
 darwin
 
 
+# Auto-generates go files.
+
+*.pb.go
+*.log

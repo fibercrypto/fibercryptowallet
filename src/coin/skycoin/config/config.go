@@ -5,27 +5,31 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
+	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 )
 
 const (
 	LocalWallet               = "local"
 	RemoteWallet              = "remote"
 	SectionName               = "skycoin"
+	SettingPathToLog          = "log"
 	SettingPathToNode         = "node"
 	SettingPathToWalletSource = "walletSource"
 )
 
 var (
 	sectionManager *local.SectionManager
+	log            = logging.MustGetLogger("Skycoin Config")
 )
 
 func getMultiPlatformUserDirectory() string {
 	usr, err := user.Current()
 	if err != nil {
-		//TODO: Log error
+		log.WithError(err).Error()
 		return ""
 	}
 	return filepath.Join(usr.HomeDir, string(os.PathSeparator), ".skycoin", string(os.PathSeparator), "wallets")
@@ -52,7 +56,21 @@ func RegisterConfig() error {
 
 	wltOpt := local.NewOption(string(wltSrc.id), []string{SettingPathToWalletSource}, false, string(wltSrcBytes))
 
-	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt})
+	level := map[string]string{"level": "warn"}
+	levelBytes, err := json.Marshal(level)
+	if err != nil {
+		return err
+	}
+	logLevelOpt := local.NewOption(SettingPathToLog, []string{}, false, string(levelBytes))
+
+	output := map[string]string{"output": "none"}
+	outputBytes, err := json.Marshal(output)
+	if err != nil {
+		return err
+	}
+	logOutputOpt := local.NewOption(SettingPathToLog, []string{}, false, string(outputBytes))
+
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt, logOutputOpt})
 	return nil
 }
 
@@ -63,6 +81,33 @@ func GetOption(path string) (string, error) {
 
 func getValues(prefix string) ([]string, error) {
 	return sectionManager.GetValues(strings.Split(prefix, "/"))
+}
+
+func GetDataRefreshTimeout() uint64 {
+	cm := local.GetConfigManager()
+	sm := cm.GetSectionManager("global")
+	value, err := sm.GetValue("cache", nil)
+	if err != nil {
+		log.WithError(err).Warn("Couldn't get cache value option for saved settings")
+		return 0
+	}
+
+	keyValue := make(map[string]string)
+	err = json.Unmarshal([]byte(value), &keyValue)
+	if err != nil {
+		log.WithError(err).Warn("Couldn't unmarshal from options")
+		return 0
+	}
+	strVal, ok := keyValue["lifeTime"]
+	if !ok {
+		return 0
+	}
+	val, err := strconv.ParseUint(strVal, 10, 64)
+	if err != nil {
+		log.WithError(err).Warn("Couldn't parse %s to int", strVal)
+		return 0
+	}
+	return val
 }
 
 func GetWalletSources() ([]*walletSource, error) {

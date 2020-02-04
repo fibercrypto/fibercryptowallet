@@ -3,7 +3,7 @@
         "coin": "skycoin",
         "cryptoType": "",
         "encrypted": "false",
-        "filename": "2019_10_07_12e8.wlt",
+        "filename": "test.wlt",
         "label": "testWallet",
         "lastSeed": "51d1bad7d472e05929d4a28958721a90b9cf62eed28eddee0e9c3f55d2066ce0",
         "secrets": "",
