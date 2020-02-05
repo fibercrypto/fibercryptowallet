@@ -16,6 +16,7 @@ import (
 )
 
 var log = NewMasterLogger()
+var output = 0
 
 const (
 	// logModuleKey is the key used for the module name data entry
@@ -33,6 +34,13 @@ const (
 	Error
 	FatalError
 	Panic
+)
+
+const (
+	Stdout = iota
+	Stderr
+	None
+	File
 )
 
 // LevelFromString returns a logrus.Level from a string identifier
@@ -117,7 +125,11 @@ func Disable() {
 
 // GetFileToLog get a file with path <dir> for the logger's output
 func GetFileToLog(dir string) (io.Writer, error) {
-	f, err := os.OpenFile(dir+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+	if output != File {
+		return nil, errors.New("Log output isn't a File")
+	}
+
+	f, err := os.OpenFile(dir+".log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0344)
 	if err != nil {
 		return nil, err
 	}
@@ -138,14 +150,22 @@ func (NoWriter) Write(p []byte) (n int, err error) {
 
 // GetOutputWriter given a option return a writer
 func GetOutputWriter(opt string) (io.Writer, error) {
-	switch opt {
-	case "stdout":
+	idf, err := strconv.Atoi(opt)
+	if err != nil {
+		return nil, errors.New("Couldn't convert enum identifier to log output")
+	}
+
+	switch idf {
+	case Stdout:
 		return os.Stdout, nil
-	case "stderr":
+	case Stderr:
 		return os.Stderr, nil
-	case "none":
+	case None:
 		return NoWriter{}, nil
+	case File:
+		output = File
+		return nil, nil
 	default:
-		return GetFileToLog(opt)
+		return nil, errors.New("Couldn't convert enum identifier to log output")
 	}
 }
