@@ -79,9 +79,13 @@ Page {
 
         onClosed: {
             modelTransactions.clear()
-            modelTransactions.addMultipleTransactions(historyManager.getTransactions())
+            modelTransactions.addMultipleTransactions(historyManager.getTransactionsWithFilters())
         }
-        
+
+        onOpened:{
+            filter.loadWallets()
+        }
+
         HistoryFilterList {
             id: filter
             anchors.fill: parent
@@ -130,7 +134,7 @@ Page {
                 modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
             }
             else {
-                modelTransactions.addMultipleTransactions(historyManager.getTNewTransactionsWithFilters())
+                modelTransactions.addMultipleTransactions(historyManager.getNewTransactionsWithFilters())
             }
         }
     }

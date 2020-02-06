@@ -180,12 +180,12 @@ func (hm *HistoryManager) updateTxns() {
 
 func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
 	hm.mutexForAll.Lock()
-	defer hm.mutexForAll.Unlock()
+
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
 	added := make(map[string]struct{}, 0)
 	for _, txns := range hm.txnForAddresses {
 		for _, txn := range txns {
-			if _, exist := hm.txnForAddresses[txn.GetId()]; !exist {
+			if _, exist := added[txn.GetId()]; !exist {
 				txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
 				if err != nil {
 					logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
@@ -195,12 +195,15 @@ func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
 			}
 		}
 	}
+	hm.mutexForAll.Unlock()
+	newTxns := hm.getNewTransactions()
+	txnsForReturn = append(txnsForReturn, newTxns...)
 	return txnsForReturn
 }
 
 func (hm *HistoryManager) getTransansactionsWithFilters() []*transactions.TransactionDetails {
 	hm.mutexForAll.Lock()
-	defer hm.mutexForAll.Unlock()
+
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
 	added := make(map[string]struct{}, 0)
 	for _, addr := range hm.filters {
@@ -215,6 +218,9 @@ func (hm *HistoryManager) getTransansactionsWithFilters() []*transactions.Transa
 			}
 		}
 	}
+	defer hm.mutexForAll.Unlock()
+	newTxns := hm.getNewTransactionsWithFilters()
+	txnsForReturn = append(txnsForReturn, newTxns...)
 	return txnsForReturn
 }
 
@@ -222,13 +228,17 @@ func (hm *HistoryManager) getNewTransactions() []*transactions.TransactionDetail
 	hm.mutexForNew.Lock()
 	defer hm.mutexForNew.Unlock()
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
+	added := make(map[string]struct{}, 0)
 	for addr, _ := range hm.newTxn {
 		for _, txn := range hm.newTxn[addr] {
-			txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
+			if _, exist := added[txn.GetId()]; !exist {
+				txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
+				if err != nil {
+					logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
+				}
+				added[txn.GetId()] = struct{}{}
+				txnsForReturn = append(txnsForReturn, txnDetail)
 			}
-			txnsForReturn = append(txnsForReturn, txnDetail)
 			hm.mutexForAll.Lock()
 			_, exist := hm.txnForAddresses[addr]
 			if exist {
@@ -247,13 +257,18 @@ func (hm *HistoryManager) getNewTransactionsWithFilters() []*transactions.Transa
 	hm.mutexForNew.Lock()
 	defer hm.mutexForNew.Unlock()
 	txnsForReturn := make([]*transactions.TransactionDetails, 0)
+	added := make(map[string]struct{}, 0)
 	for _, addr := range hm.filters {
 		for _, txn := range hm.newTxn[addr] {
-			txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
-			if err != nil {
-				logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
+			if _, exist := added[txn.GetId()]; !exist {
+				txnDetail, err := TransactionDetailsFromCoreTxn(txn, hm.addresses)
+				if err != nil {
+					logHistoryManager.WithError(err).Warn("Couldn't convert transaction")
+				}
+				txnsForReturn = append(txnsForReturn, txnDetail)
+				added[txn.GetId()] = struct{}{}
 			}
-			txnsForReturn = append(txnsForReturn, txnDetail)
+
 			hm.mutexForAll.Lock()
 			_, exist := hm.txnForAddresses[addr]
 			if exist {
@@ -280,7 +295,6 @@ func (hm *HistoryManager) addFilter(addr string) {
 	if !alreadyIs {
 		hm.filters = append(hm.filters, addr)
 	}
-
 }
 
 func (hm *HistoryManager) removeFilter(addr string) {
@@ -292,7 +306,6 @@ func (hm *HistoryManager) removeFilter(addr string) {
 			break
 		}
 	}
-
 }
 func (hm *HistoryManager) getAddressesWithWallets() map[string]string {
 	logHistoryManager.Info("Get Addresses with wallets")
