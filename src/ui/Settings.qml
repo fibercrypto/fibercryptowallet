@@ -25,8 +25,8 @@ Page {
     readonly property string defaultWalletPath: configManager.getDefaultValue("skycoin/walletSource/1/Source")
     readonly property bool defaultIsLocalWalletEnv: configManager.getDefaultValue("skycoin/walletSource/1/SourceType") === "local"
     readonly property string defaultNodeUrl: configManager.getDefaultValue("skycoin/node/address")
-    readonly property int defaultLogLevel: configManager.getDefaultValue("skycoin/log/level")
-    readonly property int defaultLogOutput: configManager.getDefaultValue("skycoin/log/output")
+    readonly property int defaultLogLevel: ~~configManager.getDefaultValue("skycoin/log/level")
+    readonly property int defaultLogOutput: ~~configManager.getDefaultValue("skycoin/log/output")
     readonly property string defaultLogOutputFile: configManager.getDefaultValue("skycoin/log/outputFile")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
 
@@ -36,8 +36,8 @@ Page {
     property string savedWalletPath: configManager.getValue("skycoin/walletSource/1/Source")
     property bool savedIsLocalWalletEnv: configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
     property url savedNodeUrl: configManager.getValue("skycoin/node/address")
-    property int savedLogLevel: configManager.getValue("skycoin/log/level")
-    property int savedLogOutput: configManager.getValue("skycoin/log/output")
+    property int savedLogLevel: ~~configManager.getValue("skycoin/log/level")
+    property int savedLogOutput: ~~configManager.getValue("skycoin/log/output")
     property string savedLogOutputFile: configManager.getDefaultValue("skycoin/log/outputFile")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
 
@@ -76,8 +76,8 @@ Page {
         walletPath = savedWalletPath = configManager.getValue("skycoin/walletSource/1/Source")
         isLocalWalletEnv = savedIsLocalWalletEnv = configManager.getValue("skycoin/walletSource/1/SourceType") === "local"
         nodeUrl = savedNodeUrl = configManager.getValue("skycoin/node/address")
-        logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
-        logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
+        logLevel = savedLogLevel = ~~configManager.getValue("skycoin/log/level")
+        logOutput = savedLogOutput = ~~configManager.getValue("skycoin/log/output")
         logOutputFile = savedLogOutputFile = configManager.getValue("skycoin/log/outputFile")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
 
