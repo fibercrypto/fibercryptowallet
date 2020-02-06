@@ -22,7 +22,7 @@ func emulatorDevice() skywallet.Devicer {
 
 func setUpHardwareWallet(t *testing.T) {
 	util.RegisterAltcoin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
-	dev := proxy.NewSequencer(emulatorDevice())
+	dev := proxy.NewSequencer(emulatorDevice(), true, func()string{return ""})
 	keyTestData, err := skycoin.GenerateTestKeyPair(t)
 	require.NoError(t, err)
 	integrationtestutil.ForceSetMnemonic(t, dev, keyTestData.Mnemonic)

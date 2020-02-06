@@ -61,7 +61,9 @@ type QWallet struct {
 
 func (walletModel *WalletModel) init() {
 	logWalletsModel.Info("Initialize Wallet model")
-	dev = proxy.NewSequencer(skyWallet.NewDevice(skyWallet.DeviceTypeUSB))
+	dev = proxy.NewSequencer(skyWallet.NewDevice(skyWallet.DeviceTypeUSB), true, func() string{
+		return "not implemented"
+	})
 	walletModel.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),
 		EncryptionEnabled: core.NewQByteArray2("encryptionEnabled", -1),

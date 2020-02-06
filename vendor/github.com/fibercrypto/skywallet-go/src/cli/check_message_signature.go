@@ -1,13 +1,8 @@
 package cli
 
 import (
-	"fmt"
-	"os"
-	"runtime"
-
+	messages "github.com/fibercrypto/skywallet-protob/go"
 	gcli "github.com/urfave/cli"
-
-	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 )
 
 func checkMessageSignatureCmd() gcli.Command {
@@ -40,34 +35,12 @@ func checkMessageSignatureCmd() gcli.Command {
 			message := c.String("message")
 			signature := c.String("signature")
 			address := c.String("address")
-
-			device := skyWallet.NewDevice(skyWallet.DeviceTypeFromString(c.String("deviceType")))
-			if device == nil {
-				return
-			}
-			defer device.Close()
-
-			if os.Getenv("AUTO_PRESS_BUTTONS") == "1" && device.Driver.DeviceType() == skyWallet.DeviceTypeEmulator && runtime.GOOS == "linux" {
-				err := device.SetAutoPressButton(true, skyWallet.ButtonRight)
-				if err != nil {
-					log.Error(err)
-					return
-				}
-			}
-
-			msg, err := device.CheckMessageSignature(message, signature, address)
+			sq, err := createDevice(c.String("deviceType"))
 			if err != nil {
-				log.Error(err)
 				return
 			}
-
-			responseMsg, err := skyWallet.DecodeSuccessOrFailMsg(msg)
-			if err != nil {
-				log.Error(err)
-				return
-			}
-
-			fmt.Println(responseMsg)
+			msg, err := sq.CheckMessageSignature(message, signature, address)
+			handleFinalResponse(msg, err, "unable to check message signature", messages.MessageType_MessageType_Success)
 		},
 	}
 }

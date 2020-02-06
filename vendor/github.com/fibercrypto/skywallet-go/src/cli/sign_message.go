@@ -1,15 +1,9 @@
 package cli
 
 import (
-	"fmt"
-	"os"
-	"runtime"
-
 	gcli "github.com/urfave/cli"
 
 	messages "github.com/fibercrypto/skywallet-protob/go"
-
-	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 )
 
 func signMessageCmd() gcli.Command {
@@ -40,82 +34,15 @@ func signMessageCmd() gcli.Command {
 		},
 		OnUsageError: onCommandUsageError(name),
 		Action: func(c *gcli.Context) {
-			device := skyWallet.NewDevice(skyWallet.DeviceTypeFromString(c.String("deviceType")))
-			if device == nil {
-				return
-			}
-			defer device.Close()
-
-			if os.Getenv("AUTO_PRESS_BUTTONS") == "1" && device.Driver.DeviceType() == skyWallet.DeviceTypeEmulator && runtime.GOOS == "linux" {
-				err := device.SetAutoPressButton(true, skyWallet.ButtonRight)
-				if err != nil {
-					log.Error(err)
-					return
-				}
-			}
-
 			addressIndex := c.Int("addressIndex")
 			message := c.String("message")
 			walletType := c.String("walletType")
-			var signature string
-
-			msg, err := device.SignMessage(1, addressIndex, message, walletType)
+			sq, err := createDevice(c.String("deviceType"))
 			if err != nil {
-				log.Error(err)
 				return
 			}
-
-			if msg.Kind == uint16(messages.MessageType_MessageType_ButtonRequest) {
-				msg, err = device.ButtonAck()
-				if err != nil {
-					log.Error(err)
-					return
-				}
-			}
-
-			for msg.Kind != uint16(messages.MessageType_MessageType_ResponseSkycoinSignMessage) && msg.Kind != uint16(messages.MessageType_MessageType_Failure) {
-				if msg.Kind == uint16(messages.MessageType_MessageType_PinMatrixRequest) {
-					var pinEnc string
-					fmt.Printf("PinMatrixRequest response: ")
-					fmt.Scanln(&pinEnc)
-					msg, err = device.PinMatrixAck(pinEnc)
-					if err != nil {
-						log.Error(err)
-						return
-					}
-					continue
-				}
-
-				if msg.Kind == uint16(messages.MessageType_MessageType_PassphraseRequest) {
-					var passphrase string
-					fmt.Printf("Input passphrase: ")
-					fmt.Scanln(&passphrase)
-					msg, err = device.PassphraseAck(passphrase)
-					if err != nil {
-						log.Error(err)
-						return
-					}
-					continue
-				}
-			}
-
-			if msg.Kind == uint16(messages.MessageType_MessageType_ResponseSkycoinSignMessage) {
-				signature, err = skyWallet.DecodeResponseSkycoinSignMessage(msg)
-				if err != nil {
-					log.Error(err)
-					return
-				}
-				fmt.Print(signature)
-			} else {
-				failMsg, err := skyWallet.DecodeFailMsg(msg)
-				if err != nil {
-					log.Error(err)
-					return
-				}
-
-				fmt.Printf("Failed with message: %s\n", failMsg)
-				return
-			}
+			msg, err := sq.SignMessage(1, addressIndex, message, walletType)
+			handleFinalResponse(msg, err, "unable to sign message", messages.MessageType_MessageType_ResponseSkycoinSignMessage)
 		},
 	}
 }

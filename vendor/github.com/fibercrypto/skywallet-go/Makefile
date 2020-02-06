@@ -48,8 +48,8 @@ check-version:
 check: lint test ## Perform self-tests
 
 lint: ## Run linters. Use make install-linters first.
-	vendorcheck ./...
 	golangci-lint run -c .golangci.yml ./...
+	vendorcheck ./...
 
 format: ## Formats the code. Must have goimports installed (use make install-linters).
 	goimports -w -local github.com/fibercrypto/skywallet-go ./cmd

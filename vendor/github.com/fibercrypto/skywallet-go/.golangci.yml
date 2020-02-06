@@ -142,7 +142,6 @@ linters-settings:
 linters:
   enable:
     - golint
-    - goimports
     - varcheck
     - unparam
     - deadcode

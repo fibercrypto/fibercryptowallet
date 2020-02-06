@@ -1,6 +1,7 @@
 package usb
 
 import (
+	"fmt"
 	"io"
 	"net"
 	"strconv"
@@ -10,16 +11,17 @@ import (
 
 const (
 	emulatorPrefix  = "emulator"
-	emulatorAddress = "127.0.0.1"
 )
 
 type UDP struct {
 	ports []int
+	emulatorAddress string
 }
 
-func InitUDP(ports []int) (*UDP, error) {
+func InitUDP(ports []int, emulatorAddress string) (*UDP, error) {
 	udp := UDP{
 		ports: ports,
+		emulatorAddress: emulatorAddress,
 	}
 
 	return &udp, nil
@@ -51,7 +53,7 @@ func (udp *UDP) Connect(path string) (Device, error) {
 		return nil, err
 	}
 
-	address := emulatorAddress + ":" + strconv.Itoa(port)
+	address := fmt.Sprintf("%s:%d", udp.emulatorAddress, port)
 	dev, err := net.Dial("udp", address)
 	if err != nil {
 		return nil, err
