@@ -15,7 +15,7 @@ Dialog {
     title: Qt.application.name
 
     readonly property string numPadButtonText: "#"
-    readonly property real numPadButtonImplicitSize: 50
+    readonly property real numPadButtonImplicitSideSize: 50
     readonly property real numPadButtonPointSize: 18
 
     Component.onCompleted: {
@@ -84,303 +84,48 @@ Dialog {
                         Layout.alignment: Qt.AlignCenter
                         columns: 3
 
-                        ItemDelegate {
-                            id: topLeft
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
+                        readonly property var sequences: [ 7, 8, 9, 4, 5, 6, 1, 2, 3 ]
+                        readonly property var positionsStrings: [ "Top left", "Top center", "Top right", "Center left", "Center", "Center right", "Bottom left", "Bottom center", "Bottom right" ]
 
-                            Shortcut {
-                                sequence: "7"
-                                onActivated: {
-                                    topLeft.clicked()
-                                    topLeftAnimation.start()
+                        Repeater {
+                            model: 9
+
+                            delegate: ItemDelegate {
+                                id: itemDelegateNumPadButton
+
+                                text: numPadButtonText
+                                font.pointSize: numPadButtonPointSize
+                                implicitWidth: numPadButtonImplicitSideSize
+                                implicitHeight: numPadButtonImplicitSideSize
+
+                                Shortcut {
+                                    sequence: gridNumPad.sequences[index].toString()
+                                    enabled: numPadDialog.visible
+                                    onActivated: {
+                                        itemDelegateNumPadButton.clicked()
+                                        numPadButtonAnimation.start()
+                                    }
                                 }
-                            }
-                            onClicked: {
-                                console.log("Top Left clicked")
-                            }
-
-                            SequentialAnimation {
-                                id: topLeftAnimation
-                                loops: 1
-                                PropertyAction { target: topLeft; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: topLeft; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: topCenter
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "8"
-                                onActivated: {
-                                    topCenter.clicked()
-                                    topCenterAnimation.start()
+                                onClicked: {
+                                    console.log(gridNumPad.positionsStrings[index], "clicked")
                                 }
-                            }
-                            onClicked: {
-                                console.log("Top Center clicked")
-                            }
 
-                            SequentialAnimation {
-                                id: topCenterAnimation
-                                loops: 1
-                                PropertyAction { target: topCenter; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: topCenter; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: topRight
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "9"
-                                onActivated: {
-                                    topRight.clicked()
-                                    topRightAnimation.start()
+                                SequentialAnimation {
+                                    id: numPadButtonAnimation
+                                    loops: 1
+                                    PropertyAction { target: itemDelegateNumPadButton; property: "downSym"; value: true }
+                                    PauseAnimation { duration: 350 }
+                                    PropertyAction { target: itemDelegateNumPadButton; property: "downSym"; value: false }
                                 }
-                            }
-                            onClicked: {
-                                console.log("Top Right clicked")
-                            }
 
-                            SequentialAnimation {
-                                id: topRightAnimation
-                                loops: 1
-                                PropertyAction { target: topRight; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: topRight; property: "downSym"; value: false }
-                            }
+                                property bool downSym: down
+                                property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
+                                Material.foreground: color
 
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: centerLeft
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "4"
-                                onActivated: {
-                                    centerLeft.clicked()
-                                    centerLeftAnimation.start()
-                                }
-                            }
-                            onClicked: {
-                                console.log("Center Left clicked")
-                            }
-
-                            SequentialAnimation {
-                                id: centerLeftAnimation
-                                loops: 1
-                                PropertyAction { target: centerLeft; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: centerLeft; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: centerCenter
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "5"
-                                onActivated: {
-                                    centerCenter.clicked()
-                                    centerCenterAnimation.start()
-                                }
-                            }
-                            onClicked: {
-                                console.log("Center Center clicked")
-                            }
-
-                            SequentialAnimation {
-                                id: centerCenterAnimation
-                                loops: 1
-                                PropertyAction { target: centerCenter; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: centerCenter; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: centerRight
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "6"
-                                onActivated: {
-                                    centerRight.clicked()
-                                    centerRightAnimation.start()
-                                }
-                            }
-                            onClicked: {
-                                console.log("Center Right clicked")
-                            }
-
-                            SequentialAnimation {
-                                id: centerRightAnimation
-                                loops: 1
-                                PropertyAction { target: centerRight; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: centerRight; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: bottomLeft
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "1"
-                                onActivated: {
-                                    bottomLeft.clicked()
-                                    bottomLeftAnimation.start()
-                                }
-                            }
-                            onClicked: {
-                                console.log("Bottom Left clicked")
-                            }
-
-                            SequentialAnimation {
-                                id: bottomLeftAnimation
-                                loops: 1
-                                PropertyAction { target: bottomLeft; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: bottomLeft; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: bottomCenter
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "2"
-                                onActivated: {
-                                    bottomCenter.clicked()
-                                    bottomCenterAnimation.start()
-                                }
-                            }
-                            onClicked: {
-                                console.log("Bottom Center clicked")
-                            }
-
-                            SequentialAnimation {
-                                id: bottomCenterAnimation
-                                loops: 1
-                                PropertyAction { target: bottomCenter; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: bottomCenter; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-
-                        ItemDelegate {
-                            id: bottomRight
-                            text: numPadButtonText
-                            font.pointSize: numPadButtonPointSize
-                            implicitWidth: numPadButtonImplicitSize
-                            implicitHeight: numPadButtonImplicitSize
-
-                            Shortcut {
-                                sequence: "3"
-                                onActivated: {
-                                    bottomRight.clicked()
-                                    bottomRightAnimation.start()
-                                }
-                            }
-                            onClicked: {
-                                console.log("Bottom Right clicked")
-                            }
-
-                            SequentialAnimation {
-                                id: bottomRightAnimation
-                                loops: 1
-                                PropertyAction { target: bottomRight; property: "downSym"; value: true }
-                                PauseAnimation { duration: 350 }
-                                PropertyAction { target: bottomRight; property: "downSym"; value: false }
-                            }
-
-                            property bool downSym: down
-                            property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
-                            Material.foreground: color
-
-                            Behavior on color { ColorAnimation {} }
-                        }
-                    }
+                                Behavior on color { ColorAnimation {} }
+                            } // ItemDelegate (delegate)
+                        } // Repeater
+                    } // GridLayout
 
                     ItemDelegate {
                         id: backspace
