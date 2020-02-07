@@ -5,36 +5,38 @@ import QtQuick.Layouts 1.12
 
 // Resource imports
 // import "qrc:/ui/src/ui/Controls"
+// import "qrc:/ui/src/ui/Delegates"
 import "../Controls" // For quick UI development, switch back to resources when making a release
-import "../Delegates"
-Dialog {
+import "../Delegates" // For quick UI development, switch back to resources when making a release
 
+Dialog {
     id: dialogSelectAddressByAddressBook
+
     property ListModel listAddrsModel
     property string selectedAddress
+
     padding: 0
     standardButtons: Dialog.Cancel
 
     closePolicy: Dialog.CloseOnPressOutside
     onAboutToShow: {
         textFieldFilterContact.forceActiveFocus()
-}
+    }
 
-function filterByText(text){
-myDisplayAddrsModel.clear()
-if (text===""){
-for(var i=0;i<listAddrsModel.count;i++){
-myDisplayAddrsModel.append(listAddrsModel.get(i))
-}
-return
-}
-for(var i=0;i<listAddrsModel.count;i++){
-if(listAddrsModel.get(i).name.toLowerCase().includes(text.toLowerCase())||listAddrsModel.get(i).address.toLowerCase().includes(text.toLowerCase())){
-myDisplayAddrsModel.append(listAddrsModel.get(i))
-}
-}
-
-}
+    function filterByText(text) {
+        myDisplayAddrsModel.clear()
+        if (text === "") {
+            for(var i = 0; i < listAddrsModel.count; i++){
+                myDisplayAddrsModel.append(listAddrsModel.get(i))
+            }
+            return
+        }
+        for(var i = 0; i < listAddrsModel.count; i++) {
+            if (listAddrsModel.get(i).name.toLowerCase().includes(text.toLowerCase()) || listAddrsModel.get(i).address.toLowerCase().includes(text.toLowerCase())) {
+                myDisplayAddrsModel.append(listAddrsModel.get(i))
+            }
+        }
+    }
 
     ColumnLayout {
         anchors.fill: parent
@@ -45,13 +47,14 @@ myDisplayAddrsModel.append(listAddrsModel.get(i))
             Layout.fillWidth: true
             Layout.leftMargin: 10
             Layout.rightMargin: 10
+
             placeholderText: qsTr("Filter address")
             focus: true
             selectByMouse: true
-        onTextChanged:{
-filterByText(textFieldFilterContact.text)
-console.log(myDisplayAddrsModel.count)
-        }
+
+            onTextChanged: {
+                filterByText(textFieldFilterContact.text)
+            }
         }
 
         ListView {
@@ -61,16 +64,16 @@ console.log(myDisplayAddrsModel.count)
             Layout.fillHeight: true
             clip: true
             currentIndex: -1
-              section.property: "name"
-              section.criteria: ViewSection.FullString
-              section.delegate: SectionDelegate {
-              width: parent.width
-               }
+            section.property: "name"
+            section.criteria: ViewSection.FullString
+            section.delegate: SectionDelegate {
+                width: parent.width
+            }
             delegate: ItemDelegate {
                 width: parent.width
                 Behavior on height { NumberAnimation { easing.type: Easing.OutQuint } }
-               focusPolicy: Qt.NoFocus
-               text:coinType+"-"+address
+                focusPolicy: Qt.NoFocus
+                text:coinType + "-" + address
                 font.family: "Code New Roman"
                 Material.foreground: hovered ? parent.Material.accent : parent.Material.foreground
                 highlighted: hovered
@@ -87,13 +90,12 @@ console.log(myDisplayAddrsModel.count)
                 }
             }
 
-
-ListModel{
-id:myDisplayAddrsModel
-}
-
             ScrollIndicator.vertical: ScrollIndicator { }
         } // ListView
     } // ColumnLayout
+
+    ListModel{
+        id: myDisplayAddrsModel
+    }
 
 }

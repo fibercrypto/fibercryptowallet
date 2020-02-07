@@ -16,6 +16,7 @@ Item {
 
     signal addAddressesRequested()
     signal editWalletRequested()
+    signal toggleEncryptionRequested()
     signal qrCodeRequested(var data)
 
     Component.onCompleted: {
@@ -71,7 +72,7 @@ Item {
         }
         ToolButton {
             id: buttonToggleEncryption
-            text: qsTr(checked ? "Decrypt wallet" : "Encrypt wallet")
+            text: checked ? qsTr("Decrypt wallet") : qsTr("Encrypt wallet")
             checkable: true
             checked: encryptionEnabled
             icon.source: "qrc:/images/resources/images/icons/lock" + (checked ? "On" : "Off") + ".svg"
@@ -79,33 +80,19 @@ Item {
             Material.foreground: Material.Grey
             Layout.fillWidth: true
 
-            onCheckedChanged:{
+            onCheckedChanged: {
                 checked = encryptionEnabled
                 text = checked ? "Decrypt wallet" : "Encrypt wallet"
             }
-            //Connections{
-            //    target:
-            //    onDataChanged:{
-            //        checked = encryptionEnabled
-            //    }
-            //}
-            //Component.onCompleted:{
-            //    console.log(root.ListView.view.parentRoot.ListView.view.model)
-            //}
-            Connections{
+
+            Connections {
                 target: root.ListView.view.parentRoot.ListView.view.model
-                onDataChanged:{
+                onDataChanged: {
                     buttonToggleEncryption.checked = encryptionEnabled
                 }
             }
             onClicked:{
-                if (checked) {
-                    dialogGetPassword.open()
-                    // TODO Encrypt wallet
-//                    var encrypt = walletManager.decryptWallet(, dialogGetPassword.password)
-                } else{
-                    dialogSetPassword.open()
-                }
+                toggleEncryptionRequested()
             }
         }
         ToolButton {

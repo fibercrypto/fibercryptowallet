@@ -49,7 +49,7 @@ Dialog {
                     id: icon
                     source: "qrc:/images/resources/images/icons/appIcon/appIcon.png"
                     sourceSize: "64x64"
-                    Layout.alignment: Qt.AlighLeft | Qt.AlignTop
+                    Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                 }
                 Label {
                     id: msg
