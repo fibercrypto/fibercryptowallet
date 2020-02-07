@@ -1,4 +1,4 @@
-package skycoin //nolint goimports
+package skycoin // nolint goimports
 
 import (
 	"path/filepath"
@@ -46,14 +46,14 @@ func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator 
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		log.WithError(err).Error("Couldn't get API client")
-		return nil
+		return NewSkycoinTransactionOutputIterator(nil)
 	}
 	defer ReturnSkycoinClient(c)
 	log.Info("POST /api/v1/outputs?addrs=xxx")
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
 		log.WithError(err).WithField("addrs", addr.String()).Error("Couldn't POST /api/v1/outputs?addrs=xxx")
-		return nil
+		return NewSkycoinTransactionOutputIterator(nil)
 	}
 
 	outs := outputSummary.SpendableOutputs()
@@ -142,7 +142,7 @@ func (wlt *RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		log.WithError(err).Error("RemoteWallet.GetLoadedAddresses() failed")
-		return nil
+		return NewSkycoinTransactionOutputIterator(nil)
 	}
 	unOuts := make([]core.TransactionOutput, 0)
 	for addressesIter.Next() {
@@ -264,11 +264,12 @@ func (wlt *LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		log.WithError(err).Error("LocalWallet.GetLoadedAddresses() failed")
-		return nil
+		return NewSkycoinTransactionOutputIterator(nil)
 	}
 	unOuts := make([]core.TransactionOutput, 0)
 	for addressesIter.Next() {
 		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+
 		for outsIter.Next() {
 			unOuts = append(unOuts, outsIter.Value())
 		}
