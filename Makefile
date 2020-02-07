@@ -263,7 +263,7 @@ $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
 
 test-skyhw: ## Run Hardware wallet tests
-	go test -args emulator-ip="127.0.0.10" github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
+	go test -args emulator-ip="127.0.0.1" github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
