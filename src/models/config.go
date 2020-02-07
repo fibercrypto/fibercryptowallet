@@ -153,22 +153,6 @@ func (cs *ConfigSection) saveOptionValue(opt string, path []string, name string,
 			} else {
 				logging.SetLevel(level)
 			}
-			// } else if name == "output" {
-			// 	writer, err := logging.GetOutputWriter(value)
-			// 	if err != nil {
-			// 		log.WithError(err).Warn("%s is not a correct output entry or path", value)
-			// 	} else if writer != nil {
-			// 		logging.SetOutputTo(writer)
-			// 		skylog.SetOutputTo(writer)
-			// 	}
-			// } else if name == "outputFile" {
-			// 	writer, err := logging.GetFileToLog(value)
-			// 	if err != nil {
-			// 		log.WithError(err).Warn("%s is not a correct output entry or path", value)
-			// 	} else {
-			// 		logging.SetOutputTo(writer)
-			// 		skylog.SetOutputTo(writer)
-			// 	}
 		}
 	}
 }
