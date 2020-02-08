@@ -69,3 +69,9 @@ ignored = [
     name = "github.com/fibercrypto/skywallet-go"
     non-go = false
     unused-packages = false
+
+  [[prune.project]]
+    name = "github.com/SkycoinProject/skycoin"
+    non-go = false
+    unused-packages = false
+    go-tests = false

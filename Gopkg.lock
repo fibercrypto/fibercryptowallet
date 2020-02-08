@@ -10,7 +10,7 @@
   version = "v1.1.1"
 
 [[projects]]
-  digest = "1:c019af8a60273c397aed8b74972297f6c0929736650d552c59117b6a76646da7"
+  digest = "1:016b62efaf0947541de680c1d4ce92085a9954581c8a423847c6455c4aca18c3"
   name = "github.com/SkycoinProject/skycoin"
   packages = [
     "src/api",
@@ -59,7 +59,7 @@
     "src/visor/historydb",
     "src/wallet",
   ]
-  pruneopts = "NUT"
+  pruneopts = ""
   revision = "66f5df5849d339d403a475d523ebe7d1a4c92c31"
   version = "v0.27.0"
 
@@ -349,7 +349,7 @@
     "ssh/terminal",
   ]
   pruneopts = "NUT"
-  revision = "a0c6ece9d31a0ebfbd3ddf2d290cfb1265ba47c7"
+  revision = "a95e85b341fd3d114b379054ba41d2d1006beee4"
 
 [[projects]]
   branch = "master"
