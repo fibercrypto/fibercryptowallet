@@ -31,6 +31,7 @@ func main() {
 
 	// Add this monospaced font
 	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/code-new-roman/code-new-roman.otf")
+	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/hemi-head/hemi-head.ttf")
 
 	engine := qml.NewQQmlApplicationEngine(nil)
 	// To speed up UI development, loading QML files from resources is disabled, but it must be re-enabled in order to make a release

@@ -27,67 +27,63 @@ Page {
 	   	minFeeAmount = 0;
 		var valCH = 0;
 		if (comboBoxWalletsUnspentOutputsSendFrom.enabled) {
-       		for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++){
-       			upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10);
-				var s = comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours;
-				console.log(parseInt(s.replace('\,',''), 10))
-       		    valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10);
+       		for (var i = 0; i < comboBoxWalletsUnspentOutputsSendFrom.checkedElements.length; i++) {
+       			upperCoinBound += parseFloat(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressSky, 10)
+				var s = comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours
+       		    valCH += parseInt(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[comboBoxWalletsUnspentOutputsSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10)
        		}
-		} else {
-
-			if (comboBoxWalletsAddressesSendFrom.enabled) {
-    	   		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
-    	   			upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressSky, 10);
-    	   		    valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10);
+		} else if (comboBoxWalletsAddressesSendFrom.enabled) {
+    	   		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++) {
+    	   			upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressSky, 10)
+    	   		    valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].addressCoinHours.replace('\,',''), 10)
     	   		}
-			} else {
-				for(var i = 0; i < comboBoxWalletsAddressesSendFrom.model.addresses.length; i++) {
-					upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressSky, 10)
-					valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10);
-				} 
-			}
-		}
-		upperAltCointBound = valCH*9/10
+        } else {
+            for(var i = 0; i < comboBoxWalletsAddressesSendFrom.model.addresses.length; i++) {
+                upperCoinBound += parseFloat(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressSky, 10)
+                valCH += parseInt(comboBoxWalletsAddressesSendFrom.model.addresses[i].addressCoinHours.replace('\,',''), 10)
+            } 
+        }
+		upperAltCointBound = valCH * 9/10
 		minFeeAmount = valCH/10
     }
 
-    function getSelectedAddressesWithWallets(){
+    function getSelectedAddressesWithWallets() {
         var indexs =  comboBoxWalletsAddressesSendFrom.getCheckedDelegates()
         var addresses = []
         addresses.push([])
         addresses.push([])
-        for (var i =0;i< indexs.length; i++){
+        for (var i =0;i< indexs.length; i++) {
             addresses[0].push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
             addresses[1].push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].walletId)
-            //addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
+            // addresses.push(comboBoxWalletsAddressesSendFrom.model.addresses[indexs[i]].address)
         }
         return addresses
 	}
 
-    function getSelectedOutputsWithWallets(){
+    function getSelectedOutputsWithWallets() {
         var indexs =  comboBoxWalletsUnspentOutputsSendFrom.getCheckedDelegates()
         var outputs = []
         outputs.push([])
         outputs.push([])
-        for (var i =0;i< indexs.length; i++){
+        for (var i =0;i< indexs.length; i++) {
             outputs[0].push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
             outputs[1].push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].walletOwner)
-            //outputs.push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
+            // outputs.push(comboBoxWalletsUnspentOutputsSendFrom.model.outputs[indexs[i]].outputID)
         }
         return outputs
     }
 
-    function getSelectedWallet(){
+    function getSelectedWallet() {
 
         var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
         var files = []
-        for (var i=0; i < indexs.length; i++){
+        for (var i=0; i < indexs.length; i++) {
             files.push(comboBoxWalletsSendFrom.model.wallets[indexs[i]].fileName)
         }
         return files
     }
 
-    function walletIsEncrypted(){
+    function walletIsEncrypted() {
         var indexs = comboBoxWalletsSendFrom.getCheckedDelegates()
         var enc = []
         for (var i = 0; i < indexs.length; i++){
@@ -100,11 +96,11 @@ Page {
         return enc
     }
 
-    function getDestinationsSummary(){
+    function getDestinationsSummary() {
         var addrs = []
         var skyAmounts = []
         var coinHoursAmount = []
-        for (var i = 0; i < listModelDestinations.count; i++){
+        for (var i = 0; i < listModelDestinations.count; i++) {
             addrs.push(listModelDestinations.get(i).address)
             skyAmounts.push(listModelDestinations.get(i).sky)
             coinHoursAmount.push(listModelDestinations.get(i).coinHours)
@@ -112,32 +108,32 @@ Page {
         return [addrs, skyAmounts, coinHoursAmount]
     }
 
-    function getChangeAddress(){
+    function getChangeAddress() {
         return textFieldCustomChangeAddress.text
     }
 
-    function getAutomaticCoinHours(){
+    function getAutomaticCoinHours() {
         return checkBoxAutomaticCoinHoursAllocation.checked
     }
-    function getBurnFactor(){
+    function getBurnFactor() {
         return sliderCoinHoursShareFactor.value
     }
 
-    function getAllAddressesWithWallets(){
+    function getAllAddressesWithWallets() {
         var addrs = []
         addrs.push([])
         addrs.push([])
-        for (var i = 0; i < listAddresses.count; i++){
+        for (var i = 0; i < listAddresses.count; i++) {
             addrs[0].push(listAddresses.addresses[i].address)
             addrs[1].push(listAddresses.addresses[i].walletId)
-            //addrs.push(listAddresses.addresses[i].address)
+            // addrs.push(listAddresses.addresses[i].address)
         }
         return addrs
     }
 	function updateOutputs() {
 		listOutputs.cleanModel()
 		if (checkBoxAllAddresses.checked) {
-       		for (var i = 0; i < comboBoxWalletsSendFrom.checkedElements.length; i++){
+       		for (var i = 0; i < comboBoxWalletsSendFrom.checkedElements.length; i++) {
 				walletManager.updateAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
 				var addresses = walletManager.getAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[i]].fileName)
 				for(var j = 0; j < addresses.length; j++) {
@@ -146,10 +142,10 @@ Page {
 				}
 			}
 		} else {
-       		for (var j = 0; j < comboBoxWalletsSendFrom.checkedElements.length; j++){
+       		for (var j = 0; j < comboBoxWalletsSendFrom.checkedElements.length; j++) {
 				walletManager.updateAddresses(comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.checkedElements[j]].fileName)
 			}
-       		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++){
+       		for (var i = 0; i < comboBoxWalletsAddressesSendFrom.checkedElements.length; i++) {
 				walletManager.updateOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].walletId, comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].address)
 				listOutputs.insertOutputs(walletManager.getOutputs(comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].walletId, comboBoxWalletsAddressesSendFrom.model.addresses[comboBoxWalletsAddressesSendFrom.checkedElements[i]].address))
 			}

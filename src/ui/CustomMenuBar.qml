@@ -16,6 +16,7 @@ RowLayout {
     property alias enableBlockchain: menuItemBlockchain.enabled
     property alias enableNetworking: menuItemNetworking.enabled
     property alias enableSettings: menuItemSettings.enabled
+    property alias enableSettingsAddressBook: toolButtonSettingsAddressBook.enabled
     property alias enableAddrsBook: menuItemAddressBook.enabled
 
     // Signals
@@ -23,6 +24,7 @@ RowLayout {
     signal pendingTransactionsRequested()
     signal networkingRequested()
     signal settingsRequested()
+    signal settingsAddressBookRequested()
     signal blockchainRequested()
     signal aboutRequested()
     signal aboutQtRequested()
@@ -74,7 +76,11 @@ RowLayout {
             enableBlockchain = true
             enableNetworking = true
             enableSettings = true
-            enableAddrsBook = true
+            enableAddrsBook = generalStackView.depth <= 1
+            enableSettingsAddressBook = generalStackView.depth > 1
+            if (generalStackView.depth > 1) {
+                customHeader.text = qsTr("Address book")
+            }
         }
     }
 
@@ -87,8 +93,9 @@ RowLayout {
 
         Layout.fillWidth: true
         topInset: -1
-        leftInset:  -(toolButtonBack.width + toolButtonBack.padding)
-        rightInset: -(toolButtonTheme.width + toolButtonTheme.padding)
+        leftInset:  (backButtonHide ? 0 : -(toolButtonBack.width + toolButtonBack.padding))
+        rightInset: (toolButtonTheme.visible ? -(toolButtonTheme.width + toolButtonTheme.padding) : 0) +
+                    (toolButtonSettingsAddressBook.visible ? -(toolButtonBack.width + toolButtonBack.padding) : 0)
         Material.foreground: menuTextColor
         Behavior on menuTextColor { ColorAnimation { } }
 
@@ -133,20 +140,19 @@ RowLayout {
                 onClicked: networkingRequested()
             }
             CustomMenuItem {
+                id: menuItemAddressBook
+                text: qsTr("&Address Book")
+                iconSource: "qrc:/images/resources/images/icons/contacts.svg"
+
+                onClicked: addressBookRequested()
+            }
+            CustomMenuItem {
                 id: menuItemSettings
                 text: qsTr("&Settings")
                 iconSource: "qrc:/images/resources/images/icons/settings.svg"
 
                 onClicked: settingsRequested()
             }
-
-            CustomMenuItem {
-                            id: menuItemAddressBook
-                            text: qsTr("&Address Book")
-                            iconSource: "qrc:/images/resources/images/icons/settings.svg"
-
-                            onClicked: addressBookRequested()
-                        }
         } // menuTools
 
         Menu {
@@ -164,7 +170,7 @@ RowLayout {
 
             CustomMenuItem {
                 text: "English"
-                iconSource: "qrc:/images/resources/images/icons/country-flags/united states.svg"
+                iconSource: "qrc:/images/resources/images/icons/country-flags/united_states.svg"
 
                 onClicked: { /* nothing to do (for now) */ }
             }
@@ -199,6 +205,24 @@ RowLayout {
             }
         } // menuHelp
     } // menuBarReal
+
+    ToolButton {
+        id: toolButtonSettingsAddressBook
+
+        // positioning
+        Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
+
+        visible: opacity > 0
+        opacity: enabled ? 1.0 : 0.0
+        enabled: false
+        Behavior on opacity { NumberAnimation { duration: 500 } }
+
+        // icon
+        icon.source: "qrc:/images/resources/images/icons/settings.svg"
+        icon.color: menuBarReal.Material.foreground
+
+        onClicked: settingsAddressBookRequested()
+    }
 
     ToolButton {
         id: toolButtonTheme

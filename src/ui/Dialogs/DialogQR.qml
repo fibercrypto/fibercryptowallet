@@ -38,7 +38,6 @@ Dialog {
         anchors.bottomMargin : 30
         anchors.horizontalCenter : parent.horizontalCenter
         onAccepted: {
-            console.log(dialogQR.text)
             textDisplay.text = dialogQR.text
         }
     }

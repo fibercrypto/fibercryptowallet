@@ -32,49 +32,41 @@ Dialog {
     title: qsTr("Set a password")
     standardButtons: Dialog.Ok | Dialog.Cancel
 
-    Flickable {
-        id: flickable
-
-        implicitHeight: contentHeight
+    ColumnLayout {
+        id: columnLayoutRoot
         width: parent.width
-        contentHeight: columnLayoutRoot.height
+        spacing: 10
         clip: true
 
-        ColumnLayout {
-            id: columnLayoutRoot
-            width: parent.width
-            spacing: 10
+        Label {
+            id: labelHeaderMessage
 
-            Label {
-                id: labelHeaderMessage
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
+            visible: text
+        }
 
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                visible: text
-            }
+        TextField {
+            id: textFieldPassword
 
-            TextField {
-                id: textFieldPassword
+            Layout.fillWidth: true
+            placeholderText: qsTr("Password")
+            selectByMouse: true
+            echoMode: TextField.Password
+            focus: true
+        }
 
-                Layout.fillWidth: true
-                placeholderText: qsTr("Password")
-                selectByMouse: true
-                echoMode: TextField.Password
-                focus: true
-            }
+        TextField {
+            id: textFieldPasswordConfirmation
 
-            TextField {
-                id: textFieldPasswordConfirmation
-
-                Layout.fillWidth: true
-                placeholderText: qsTr("Confirm password")
-                selectByMouse: true
-                echoMode: TextField.Password
-                enabled: textFieldPassword.text
-                opacity: textFieldPassword.text ? 1.0 : 0.0
-                Behavior on opacity { NumberAnimation { duration: 200 } }
-                Material.accent: text === textFieldPassword.text ? parent.Material.accent : Material.color(Material.Red)
-            }
-        } // ColumnLayout (root)
-    } // Flickable
+            Layout.fillWidth: true
+            placeholderText: qsTr("Confirm password")
+            selectByMouse: true
+            echoMode: TextField.Password
+            enabled: textFieldPassword.text
+            opacity: textFieldPassword.text ? 1.0 : 0.0
+            Behavior on opacity { NumberAnimation { duration: 200 } }
+            Material.accent: text === textFieldPassword.text ? parent.Material.accent : Material.color(Material.Red)
+        }
+    } // ColumnLayout (root)
 }
