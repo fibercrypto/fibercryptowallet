@@ -148,6 +148,7 @@ func (wlt *RemoteWallet) ScanUnspentOutputs() (core.TransactionOutputIterator, e
 	for addressesIter.Next() {
 		outsIter, err := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
 		if err != nil {
+			log.WithError(err).Error("Couldn't get the TransactionOutputIterator")
 			return nil, err
 		}
 		for outsIter.Next() {
@@ -273,6 +274,7 @@ func (wlt *LocalWallet) ScanUnspentOutputs() (core.TransactionOutputIterator, er
 	for addressesIter.Next() {
 		outsIter, err := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
 		if err != nil {
+			log.WithError(err).Error("Couldn't get the TransactionOutputIterator")
 			return nil, err
 		}
 		for outsIter.Next() {
