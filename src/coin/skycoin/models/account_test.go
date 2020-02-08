@@ -127,11 +127,14 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 	skyAddrs := addrs.GetCryptoAccount()
 
 	global_mock.On("OutputsForAddresses", []string{addr}).Return(response, errors.New("failure")).Once()
-	it := skyAddrs.ScanUnspentOutputs()
+	it, err := skyAddrs.ScanUnspentOutputs()
+	require.Error(t, err)
 	require.Nil(t, it)
 
 	global_mock.On("OutputsForAddresses", []string{addr}).Return(response, nil)
-	it = skyAddrs.ScanUnspentOutputs()
+	it, err = skyAddrs.ScanUnspentOutputs()
+	require.NoError(t, err)
+
 	for it.Next() {
 		output := it.Value()
 		require.Equal(t, output.GetId(), "hash1")
@@ -238,7 +241,7 @@ func TestLocalWalletGetBalance(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, uint64(84), val)
 
-	//invalid ticker
+	// invalid ticker
 	_, err = wlt.GetBalance("INVALID_TICKER")
 	require.Error(t, err)
 }
@@ -290,7 +293,8 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 		new(api.WalletResponse),
 		errors.New("failure"),
 	).Once()
-	iter := wlt.ScanUnspentOutputs()
+	iter, err := wlt.ScanUnspentOutputs()
+	require.Error(t, err)
 	require.Nil(t, iter)
 
 	global_mock.On("Wallet", "wallet").Return(
@@ -334,7 +338,8 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 	// no_output
 	global_mock.On("OutputsForAddresses", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(&readable.UnspentOutputsSummary{}, nil)
 
-	iter = wlt.ScanUnspentOutputs()
+	iter, err = wlt.ScanUnspentOutputs()
+	require.NoError(t, err)
 	items := 0
 	for iter.Next() {
 		to := iter.Value()
@@ -348,7 +353,8 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 		Id:          "wallet_no_outputs",
 		poolSection: PoolSection,
 	}
-	iter = wlt.ScanUnspentOutputs()
+	iter, err = wlt.ScanUnspentOutputs()
+	require.NoError(t, err)
 	items = 0
 	for iter.Next() {
 		to := iter.Value()
@@ -434,11 +440,14 @@ func TestLocalWalletScanUnspentOutputs(t *testing.T) {
 	mockSkyApiOutputsForAddresses(global_mock, addresses)
 
 	wlt := &LocalWallet{WalletDir: "./testdata", Id: "no_wallet.wlt"}
-	iter := wlt.ScanUnspentOutputs()
+	iter, err := wlt.ScanUnspentOutputs()
+	require.Error(t, err)
 	require.Nil(t, iter)
 
 	wlt = &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
-	iter = wlt.ScanUnspentOutputs()
+	iter, err = wlt.ScanUnspentOutputs()
+	require.NoError(t, err)
+
 	items := 0
 	for iter.Next() {
 		to := iter.Value()

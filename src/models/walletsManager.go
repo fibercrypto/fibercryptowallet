@@ -243,8 +243,8 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		walletM.outputsByAddress[address] = outs
 		return
 	}
-	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
-	if outsIter == nil {
+	outsIter, err := addr.GetCryptoAccount().ScanUnspentOutputs()
+	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't scan unspent outputs")
 		walletM.outputsByAddress[address] = outs
 		return
@@ -813,7 +813,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		}
 
 	}
-	//walletM.wallets = make([]*QWallet, 0)
+	// walletM.wallets = make([]*QWallet, 0)
 
 	logWalletManager.Info("Wallets obtained")
 	return walletM.wallets
