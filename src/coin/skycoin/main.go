@@ -36,19 +36,27 @@ func UpdateAltcoin() {
 	if err != nil {
 		logSkycoin.WithError(err).Warn("Couldn't unmarshal from options")
 	}
-	level, err := logging.LevelFromString(logSetting["level"])
+	level, err := logging.LevelFromEnum(logSetting["level"])
 	if err != nil {
-		logSkycoin.Warn("Couldn't get level from logging")
+		logSkycoin.Warn("Couldn't get level from logging ")
 		logSkycoin.WithError(err).WithField("string", logSetting["level"]).Error()
 	} else {
 		logging.SetLevel(level)
 	}
 	writer, err := logging.GetOutputWriter(logSetting["output"])
 	if err != nil {
-		logSkycoin.WithError(err).Error("Error opening file: ", logSetting["output"])
-	} else {
+		logSkycoin.WithError(err).Error(logSetting["output"])
+	} else if writer != nil {
 		logging.SetOutputTo(writer)
 		skylog.SetOutputTo(writer)
+	} else {
+		writer, err := logging.GetFileToLog(logSetting["outputFile"])
+		if err != nil {
+			logSkycoin.WithError(err).Error("Error opening file: ", logSetting["outputFile"])
+		} else {
+			logging.SetOutputTo(writer)
+			skylog.SetOutputTo(writer)
+		}
 	}
 
 	nodeSettingStr, err := config.GetOption(config.SettingPathToNode)

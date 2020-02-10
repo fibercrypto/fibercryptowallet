@@ -6,7 +6,6 @@ import (
 
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 
-	skylog "github.com/SkycoinProject/skycoin/src/util/logging"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
@@ -148,19 +147,11 @@ func (cs *ConfigSection) saveOptionValue(opt string, path []string, name string,
 
 	if opt == "log" {
 		if name == "level" {
-			level, err := logging.LevelFromString(value)
+			level, err := logging.LevelFromEnum(value)
 			if err != nil {
 				log.WithError(err).Warn("%s is not a correct log level", value)
 			} else {
 				logging.SetLevel(level)
-			}
-		} else if name == "output" {
-			writer, err := logging.GetOutputWriter(value)
-			if err != nil {
-				log.WithError(err).Warn("%s is not a correct output entry or path", value)
-			} else {
-				logging.SetOutputTo(writer)
-				skylog.SetOutputTo(writer)
 			}
 		}
 	}

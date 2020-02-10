@@ -1,11 +1,11 @@
 package skycoin
 
-import "github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
+import "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skymocks"
 
 // "testing"
 
 type SkycoinApiMock struct {
-	mocks.SkycoinAPI
+	skymocks.SkycoinAPI
 }
 
 func (m *SkycoinApiMock) Create() (interface{}, error) {

@@ -56,7 +56,7 @@ func RegisterConfig() error {
 
 	wltOpt := local.NewOption(string(wltSrc.id), []string{SettingPathToWalletSource}, false, string(wltSrcBytes))
 
-	level := map[string]string{"level": "warn"}
+	level := map[string]string{"level": strconv.Itoa(logging.Warning)}
 	levelBytes, err := json.Marshal(level)
 	if err != nil {
 		return err
@@ -68,9 +68,18 @@ func RegisterConfig() error {
 	if err != nil {
 		return err
 	}
+
 	logOutputOpt := local.NewOption(SettingPathToLog, []string{}, false, string(outputBytes))
 
-	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt, logOutputOpt})
+	outputFile := map[string]string{"outputFile": ""}
+	outputFileBytes, err := json.Marshal(outputFile)
+	if err != nil {
+		return err
+	}
+
+	logOutputFileOpt := local.NewOption(SettingPathToLog, []string{}, false, string(outputFileBytes))
+
+	sectionManager = cm.RegisterSection(SectionName, []*local.Option{nodeOpt, wltOpt, logLevelOpt, logOutputOpt, logOutputFileOpt})
 	return nil
 }
 

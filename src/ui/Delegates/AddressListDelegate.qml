@@ -11,20 +11,23 @@ import "../" // For quick UI development, switch back to resources when making a
 import "../Controls" // For quick UI development, switch back to resources when making a release
 
 Item {
-    id: root
+    id: addressListDelegate
 
     signal qrCodeRequested(var data)
+    signal addressTextChanged(string text)
+    signal numberOfAddressesChanged(int count)
 
     onQrCodeRequested: {
         dialogQR.setVars(data)
         dialogQR.open()
     }
 
+    implicitHeight: rootLayout.height
     clip: true
 
     RowLayout {
         id: rootLayout
-        width: root.width
+        width: addressListDelegate.width
         clip: true
         spacing: 20
         opacity: 0.0
@@ -49,28 +52,27 @@ Item {
             TextField {
                 id: tfAddr
                 font.family: "Code New Roman"
-                placeholderText: qsTr("Address #"+(index+1))
-                text: value
+                placeholderText: qsTr("Address No.") + " " + (index + 1)
+                text: value ? value : ""
                 selectByMouse: true
                 Layout.fillWidth: true
                 Material.accent: abm.addressIsValid(text) ? parent.Material.accent : Material.color(Material.Red)
-                onTextChanged:{
-                value = text
-                enableOkBtn()
+                onTextChanged: {
+                    value = text
+                    addressTextChanged(text)
                 }
             }
         } // RowLayout
 
         RowLayout {
-        ComboBox{
-        id:cbCoinTypes
-        Layout.fillWidth: true
-        model:coins
-        currentIndex:getIndexForCoinType(coinType)
-onCurrentTextChanged:{
-coinType=cbCoinTypes.currentText
-}
-}
+            ComboBox {
+                id: cbCoinTypes
+                model: coins
+                currentIndex: getIndexForCoinType(coinType)
+                onCurrentTextChanged: {
+                    coinType = cbCoinTypes.currentText
+                }
+            }
         }
 
         ToolButton {
@@ -84,33 +86,32 @@ coinType=cbCoinTypes.currentText
 
             onClicked: {
                 if (index === 0) {
-                standardButton(Dialog.Ok).enabled=false
                     listModelAddresses.append( { "address": "", "coinType": "" } )
                 } else {
                     listModelAddresses.remove(index)
-                        enableOkBtn()
                 }
+                numberOfAddressesChanged(listModelAddresses.count)
             }
         } // ToolButton
     } // RowLayout (rootLayout)
 
-    ListModel{
-    id:coins
-    ListElement{
-    type:"SKY"
-    }
-//    ListElement{
-//    type:"BTC"
-//    }
+    ListModel {
+        id:coins
+        ListElement{
+            type:"SKY"
+        }
+        // ListElement{
+        //     type:"BTC"
+        // }
     }
 
-    function getIndexForCoinType(coinType){
-    var index=0;
-    for(var i=0;i<coins.count;i++){
-    if (coins.get(i).type==coinType){
-index=i
-    }
-    }
-  return index;
+    function getIndexForCoinType(coinType) {
+        var index = 0;
+        for(var i = 0; i < coins.count; i++) {
+            if (coins.get(i).type === coinType) {
+                index = i
+            }
+        }
+        return index;
     }
 }

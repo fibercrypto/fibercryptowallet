@@ -3,62 +3,75 @@ import QtQuick.Layouts 1.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 
-import "../Delegates"
+// Resource imports
+// import "qrc:/ui/src/ui/Delegates"
+import "../Delegates" // For quick UI development, switch back to resources when making a release
 
-Dialog{
+Dialog {
+    id: dialogCreateAddressBook
 
-property int select:0
+    enum SecurityType { LowSecurity, MediumSecurity, StrongSecurity }
 
-id:dialogCreateAddressBook
- standardButtons: Dialog.Ok | Dialog.Close
+    property alias select: listViewSecurityType.currentIndex
 
+    standardButtons: Dialog.Ok | Dialog.Cancel
 
-Flickable {
-        id: flickable
+    ScrollView {
+        id: scrollView
         anchors.fill: parent
-        contentHeight: columnLayoutRoot.height
+        contentWidth: width
         clip: true
-
+        
         ColumnLayout {
-            id: columnLayoutRoot
-            width: parent.width
-            spacing: 10
+            anchors.fill: parent
 
             Label {
-                id: labelHeaderMessage
-                text: qsTr("Select security type for your Address Book:")
+                Layout.topMargin: 10
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
                 Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                visible: text
+
+                text: qsTr("Select the security type for your <i>Address Book</i>")
+                wrapMode: Text.Wrap
+                font.bold: true
             }
 
-             ColumnLayout {
-                Layout.fillWidth:true
-                 id: column
-                  RadioButton {
-                  property int pos:0
-                      checked: true
-                      text: qsTr("Low (Plain text)")
-                  }
-                  RadioButton {
-                  property int pos:1
-                      text: qsTr("Medium (Recommended)")
-                  }
-                  RadioButton {
-                  property int pos:2
-                  Layout.fillWidth:true
-                      text: qsTr("Hard (With password)\n"+
-                      "(This can slow your dispositive)")
-                  }
-              }
-        } // ColumnLayout (root)
-    } // Flickable
+            ListView {
+                id: listViewSecurityType
 
-    ButtonGroup {
-        id:buttonsGroup
-        buttons: column.children
-       onClicked:{
-       select=checkedButton.pos
-       }
-       }
-       }
+                Layout.fillWidth: true
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                height: contentHeight
+
+                spacing: -6
+                interactive: false
+                currentIndex: DialogSelectSecType.SecurityType.MediumSecurity
+                model: [ qsTr("Low (plain text)"), qsTr("Medium (recommended)"), qsTr("Hard (with password)") ]
+                delegate: RadioButton {
+                    width: parent.width
+                    text: modelData
+                    checked: index === ListView.view.currentIndex
+
+                    onCheckedChanged: {
+                        if (checked) {
+                            ListView.view.currentIndex = index
+                        }
+                    }
+                } // RadioButton (delegate)
+            } // ListView (log output)
+
+            Label {
+                Layout.leftMargin: 20
+                Layout.rightMargin: 20
+                Layout.fillWidth: true
+
+                visible: select === DialogSelectSecType.SecurityType.StrongSecurity
+                text: "<b>" + qsTr("Note:") + "</b> " + qsTr("Accessing a password-protected address book can slowdown your device")
+                wrapMode: Text.Wrap
+                Material.foreground: Material.Red
+                font.italic: true
+            }
+        } // ColumnLayout
+    } // ScrollView
+}

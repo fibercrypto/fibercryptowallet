@@ -187,7 +187,7 @@ func (wlt *RemoteWallet) ListPendingTransactions() (core.TransactionIterator, er
 	}
 	txns := make([]core.Transaction, 0)
 	for _, ut := range response.Transactions {
-		txns = append(txns, &SkycoinPendingTransaction{Transaction: ut})
+		txns = append(txns, &SkycoinPendingTransaction{Transaction: &ut})
 	}
 	return NewSkycoinTransactionIterator(txns), nil
 }
@@ -307,7 +307,7 @@ func (wlt *LocalWallet) ListPendingTransactions() (core.TransactionIterator, err
 	}
 	txns := make([]core.Transaction, 0)
 	for _, ut := range response.Transactions {
-		txns = append(txns, &SkycoinPendingTransaction{Transaction: ut})
+		txns = append(txns, &SkycoinPendingTransaction{Transaction: &ut})
 	}
 	return NewSkycoinTransactionIterator(txns), nil
 }
