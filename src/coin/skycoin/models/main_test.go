@@ -3,15 +3,14 @@ package skycoin
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/stretchr/testify/mock"
 	"os"
 	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	util "github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/params"

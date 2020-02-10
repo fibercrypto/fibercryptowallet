@@ -36,14 +36,16 @@ func LookupSignerByUID(wlt core.Wallet, id core.UID) core.TxnSigner {
 		}
 		return nil
 	}
-	// Wallet matches ID
-	uid, err := wltSigner.GetSignerUID()
-	if err != nil {
-		logUtil.WithError(err).Errorln("unable to get signer uid")
-		return nil
-	}
-	if isSigner && uid == id {
-		return wltSigner
+	if isSigner {
+		// Wallet matches ID
+		uid, err := wltSigner.GetSignerUID()
+		if err != nil {
+			logUtil.WithError(err).Errorln("unable to get signer uid")
+			return nil
+		}
+		if uid == id {
+			return wltSigner
+		}
 	}
 	// Lookup global signers
 	return local.LoadAltcoinManager().LookupSignService(id)

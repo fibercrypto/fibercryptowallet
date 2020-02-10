@@ -174,7 +174,7 @@ func TestLookupSignServiceForWallet(t *testing.T) {
 	other := core.UID("otherid")
 
 	ws := new(WalletSigner)
-	ws.TxnSigner.On("GetSignerUID").Return(uid)
+	ws.TxnSigner.On("GetSignerUID").Return(uid, nil)
 	var signer core.TxnSigner = ws
 	err := AttachSignService(signer)
 	defer RemoveSignService(uid) // nolint gosec
@@ -211,7 +211,7 @@ func TestSignTransaction(t *testing.T) {
 
 	uid := core.UID("signer_id")
 	signer := new(mocks.TxnSigner)
-	signer.On("GetSignerUID").Return(uid)
+	signer.On("GetSignerUID").Return(uid, nil)
 	attachErr := AttachSignService(signer)
 	require.Nil(t, attachErr)
 	defer RemoveSignService(uid) // nolint gosec
@@ -245,7 +245,7 @@ func TestGenericMultiWalletSign(t *testing.T) {
 
 	uid := core.UID("signer_id")
 	signer := new(mocks.TxnSigner)
-	signer.On("GetSignerUID").Return(uid)
+	signer.On("GetSignerUID").Return(uid, nil)
 	attachErr := AttachSignService(signer)
 	require.Nil(t, attachErr)
 	defer RemoveSignService(uid) // nolint gosec

@@ -65,7 +65,7 @@ matrix:
         - make clean
         - DEFAULT_TARGET=linux make build-docker
         - make clean
-        - make test-skyhw
+        - make run-docker CMD='make test-skyhw'
         - make run-docker CMD='make test'
         - make lint
         - make run-docker CMD='make install-coveralls ; make test-cover-travis'
@@ -119,7 +119,7 @@ matrix:
         - make clean
         - make build
         - make test
-        - make test-skyhw
+        - make run-docker CMD='make test-skyhw'
         - make build-icon
         - make lint
         - make test-cover-travis

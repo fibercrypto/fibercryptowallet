@@ -201,9 +201,9 @@ func MessageConnected() ([][64]byte, error) {
 }
 
 // MessageFirmwareErase prepare MessageFirmwareErase request
-func MessageFirmwareErase(length uint32) ([][64]byte, error) {
+func MessageFirmwareErase(payload []byte) ([][64]byte, error) {
 	deviceFirmwareErase := &messages.FirmwareErase{
-		Length: proto.Uint32(length),
+		Length: proto.Uint32(uint32(len(payload))),
 	}
 
 	erasedata, err := proto.Marshal(deviceFirmwareErase)

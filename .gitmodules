@@ -1,3 +1,0 @@
-[submodule "vendor/github.com/SkycoinProject/skycoin"]
-	path = vendor/github.com/SkycoinProject/skycoin
-	url = https://github.com/SkycoinProject/skycoin
