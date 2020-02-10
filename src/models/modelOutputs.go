@@ -135,7 +135,7 @@ func (m *ModelOutputs) insertRows(row int, count int) bool {
 }
 
 func (m *ModelOutputs) addOutputs(mo []*QOutput) {
-	for _, out := range mo {
+	for row, out := range mo {
 		find := false
 		for _, outSet := range m.outputs {
 			if out.OutputID() == outSet.OutputID() {
@@ -145,10 +145,13 @@ func (m *ModelOutputs) addOutputs(mo []*QOutput) {
 			}
 		}
 		if !find {
+			m.BeginInsertRows(core.NewQModelIndex(), row, row)
 			m.outputs = append(m.outputs, out)
+			m.EndInsertRows()
+		} else {
+			m.DataChanged(m.Index(len(m.outputs)-1, row, core.NewQModelIndex()), m.Index(len(m.outputs)-1, row+1, core.NewQModelIndex()), []int{int(core.Qt__DisplayRole)})
 		}
 	}
-	m.insertRows(len(m.outputs), len(mo))
 }
 
 func contains(outputs []*QOutput, output *QOutput) bool {

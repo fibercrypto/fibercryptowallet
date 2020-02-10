@@ -77,7 +77,7 @@ func (m *ModelAddresses) insertRows(row int, count int) bool {
 }
 
 func (m *ModelAddresses) addOutputs(mo []*ModelOutputs) {
-	for _, mOut := range mo {
+	for row, mOut := range mo {
 		find := false
 		for _, mOutSet := range m.outputs {
 			if mOut.Address() == mOutSet.Address() {
@@ -87,9 +87,11 @@ func (m *ModelAddresses) addOutputs(mo []*ModelOutputs) {
 			}
 		}
 		if !find  {
+			m.BeginInsertRows(core.NewQModelIndex(), row, row)
 			m.outputs = append(m.outputs, mOut)
+			m.EndInsertRows()
+		} else {
+			m.DataChanged(m.Index(len(m.outputs)-1, row, core.NewQModelIndex()), m.Index(len(m.outputs)-1, row+1, core.NewQModelIndex()), []int{int(core.Qt__DisplayRole)})
 		}
 	}
-	m.outputs = append(m.outputs, mo...)
-	m.insertRows(len(m.outputs), len(mo))
 }
