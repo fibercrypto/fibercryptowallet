@@ -28,30 +28,30 @@ Item {
     }
 
 
-    // WalletManager {
-    //    id: walletManager
-    // }
+    WalletManager {
+        id: walletManager
+    }
 
     WalletModel {
-       id: walletModel
+        id: walletModel
 
-       Component.onCompleted: {
-           walletModel.loadModel(walletManager.getWallets())
-           if (walletModel.count) {
-               if (stackView.depth > 1) {
-                   stackView.replace(componentGeneralSwipeView)
-               } else {
-                   stackView.push(componentGeneralSwipeView)
-               }
-           } else{
-               if (stackView.depth > 1) {
-                   stackView.replace(componentPageCreateLoadWallet)
-               } else {
-                   stackView.push(componentPageCreateLoadWallet)
-               }
+        Component.onCompleted: {
+            walletModel.loadModel(walletManager.getWallets())
+            if (walletModel.count) {
+                if (stackView.depth > 1) {
+                    stackView.replace(componentGeneralSwipeView)
+                } else {
+                    stackView.push(componentGeneralSwipeView)
+                }
+            } else{
+                if (stackView.depth > 1) {
+                    stackView.replace(componentPageCreateLoadWallet)
+                } else {
+                    stackView.push(componentPageCreateLoadWallet)
+                }
 
-           }
-       }
+            }
+        }
     }
 
     BlockchainStatusModel {
@@ -105,71 +105,71 @@ Item {
     }
 
     Component {
-       id: componentPageCreateLoadWallet
+        id: componentPageCreateLoadWallet
 
-       Item {
-           PageCreateLoadWallet {
-               id: pageCreateLoadWallet
-               anchors.centerIn: parent
-               width: 400
-               height: 400
+        Item {
+            PageCreateLoadWallet {
+                id: pageCreateLoadWallet
+                anchors.centerIn: parent
+                width: 400
+                height: 400
 
-               onWalletCreationRequested: {
-                   stackView.replace(componentGeneralSwipeView)
-                   walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType() ,0)
-               }
+                onWalletCreationRequested: {
+                    stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType() ,0)
+                }
 
-               onWalletLoadingRequested:{
-                   stackView.replace(componentGeneralSwipeView)
-                   walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType(), 10)
-               }
-           }
-       }
+                onWalletLoadingRequested:{
+                    stackView.replace(componentGeneralSwipeView)
+                    walletManager.createUnencryptedWallet(pageCreateLoadWallet.seed, pageCreateLoadWallet.name, walletManager.getDefaultWalletType(), 10)
+                }
+            }
+        }
     }
 
     Component {
-       id: componentGeneralSwipeView
+        id: componentGeneralSwipeView
 
-       GeneralSwipeView {
-           id: generalSwipeView
-       }
+        GeneralSwipeView {
+            id: generalSwipeView
+        }
     }
 
     Component {
-       id: componentOutputs
+        id: componentOutputs
 
-       Outputs {
-           id: outputs
-       }
+        Outputs {
+            id: outputs
+        }
     }
 
     Component {
-       id: componentPendingTransactions
+        id: componentPendingTransactions
 
-       PendingTransactions {
-           id: pendingTransactions
-       }
+        PendingTransactions {
+            id: pendingTransactions
+        }
     }
 
     Component {
-       id: componentBlockchain
+        id: componentBlockchain
 
-       Blockchain {
-           id: blockchain
+        Blockchain {
+            id: blockchain
 
-           Component.onCompleted: {
-               model = blockchainModel
-               model.update()
-           }
-       }
+            Component.onCompleted: {
+                model = blockchainModel
+                model.update()
+            }
+        }
     }
 
     Component {
-       id: componentNetworking
+        id: componentNetworking
 
-       Networking {
-           id: networking
-       }
+        Networking {
+            id: networking
+        }
     }
 
     Component {
@@ -185,18 +185,18 @@ Item {
     }
 
     Component {
-       id: componentSettings
+        id: componentSettings
 
-       Settings {
-           id: settings
-       }
+        Settings {
+            id: settings
+        }
     }
 
     Component {
-           id: componentSettingsAddressBook
+        id: componentSettingsAddressBook
 
-           SettingsAddressBook {
-               id: settingsAddressBook
+        SettingsAddressBook {
+            id: settingsAddressBook
         }
     }
 }

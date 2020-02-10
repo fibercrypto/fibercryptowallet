@@ -56,9 +56,6 @@ Page {
     property alias logOutput: listViewLogOutput.currentIndex
     property alias logOutputFile: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
-    property alias logLevel: textFieldLogLevel.text
-    property alias logOutput: textFieldLogOutput.text
-    property alias cacheUpdateTime: textFieldCacheUpdateTime.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -85,8 +82,6 @@ Page {
         logOutputFile = savedLogOutputFile = configManager.getValue("skycoin/log/outputFile")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
         cacheUpdateTime = savedUpdateTime = configManager.getValue("global/cache/updateTime")
-        logLevel = savedLogLevel = configManager.getValue("skycoin/log/level")
-        logOutput = savedLogOutput = configManager.getValue("skycoin/log/output")
 
         walletManager.updateAll()
         updateFooterButtonsStatus()
@@ -202,6 +197,7 @@ Page {
                 Layout.fillWidth: true
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
+
                 title: qsTr("Network settings")
 
                 TextField {
@@ -224,6 +220,7 @@ Page {
                 Layout.leftMargin: 20
                 Layout.rightMargin: 20
                 Layout.bottomMargin: 10 // The Last `GroupBox` must have this set
+
                 title: qsTr("Global settings")
 
                 ColumnLayout {
@@ -265,51 +262,52 @@ Page {
                         }
                     }
 
-             Label { text: qsTr("Log level") }
+                    Label { text: qsTr("Log level") }
 
-             ComboBox{
-                 id:comboBoxLogLevel
+                    ComboBox {
+                        id: comboBoxLogLevel
                         Layout.fillWidth: true
                         Layout.topMargin: -20
 
-                            readonly property var logLevelString: [ "debug", "info", "warn", "error", "fatal", "panic" ]
-                            readonly property var logLevelColor: [ Material.Teal, Material.Blue, Material.Amber, Material.DeepOrange, Material.Red, Material.primaryTextColor ]
+                        readonly property var logLevelString: [ "debug", "info", "warn", "error", "fatal", "panic" ]
+                        readonly property var logLevelColor: [ Material.Teal, Material.Blue, Material.Amber, Material.DeepOrange, Material.Red, Material.primaryTextColor ]
 
-                                currentIndex: savedLogLevel < 0 || savedLogLevel >= count ? defaultLogLevel : savedLogLevel
+                        currentIndex: savedLogLevel < 0 || savedLogLevel >= count ? defaultLogLevel : savedLogLevel
                         onCurrentIndexChanged: {
                             updateFooterButtonsStatus()
-                            }
-                            model: [ qsTr("Debug"), qsTr("Informations"), qsTr("Warnings"), qsTr("Errors"), qsTr("Fatal errors"), qsTr("Panics") ]
-                                delegate: MenuItem {
-                                                 width: parent.width
-                                                 text: comboBoxLogLevel.textRole ? (Array.isArray(comboBoxLogLevel.model) ? modelData[comboBoxLogLevel.textRole] : model[comboBoxLogLevel.textRole]) : modelData
-                                                     icon.source: "qrc:/images/resources/images/icons/log_level_" + comboBoxLogLevel.logLevelString[index] + ".svg"
-                                                     icon.color: Material.accent
-                                                             Material.accent: comboBoxLogLevel.logLevelColor[index]
-                                                     Material.foreground: comboBoxLogLevel.currentIndex === index ? parent.Material.accent : parent.Material.foreground
-                                                 highlighted: comboBoxLogLevel.highlightedIndex === index
-                                                 hoverEnabled: comboBoxLogLevel.hoverEnabled
-                                                 leftPadding: highlighted ? 2*padding : padding // added
-                                                 Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
-                                                 } // MenuItem (delegate)
-                                                             } // ComboBox
-                                                    Label { text: qsTr("Log output") }
+                        }
+                        model: [ qsTr("Debug"), qsTr("Informations"), qsTr("Warnings"), qsTr("Errors"), qsTr("Fatal errors"), qsTr("Panics") ]
+                        delegate: MenuItem {
+                            width: parent.width
+                            text: comboBoxLogLevel.textRole ? (Array.isArray(comboBoxLogLevel.model) ? modelData[comboBoxLogLevel.textRole] : model[comboBoxLogLevel.textRole]) : modelData
+                            icon.source: "qrc:/images/resources/images/icons/log_level_" + comboBoxLogLevel.logLevelString[index] + ".svg"
+                            icon.color: Material.accent
+                            Material.accent: comboBoxLogLevel.logLevelColor[index]
+                            Material.foreground: comboBoxLogLevel.currentIndex === index ? parent.Material.accent : parent.Material.foreground
+                            highlighted: comboBoxLogLevel.highlightedIndex === index
+                            hoverEnabled: comboBoxLogLevel.hoverEnabled
+                            leftPadding: highlighted ? 2*padding : padding // added
+                            Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
+                        } // MenuItem (delegate)
+                    } // ComboBox
+
+                    Label { text: qsTr("Log output") }
 
                     ListView {
-                                                 id: listViewLogOutput
+                        id: listViewLogOutput
 
-                                                 property alias outputFile: textFieldLogOutputFile.text
-                                                 readonly property var logOutputString: [ "stdout", "stderr", "none", "file" ]
+                        property alias outputFile: textFieldLogOutputFile.text
+                        readonly property var logOutputString: [ "stdout", "stderr", "none", "file" ]
 
-                                                    Layout.fillWidth:true
-                                                     Layout.topMargin: -20
-                                                     height: contentHeight
+                        Layout.fillWidth: true
+                        Layout.topMargin: -20
+                        height: contentHeight
 
-                            onCurrentIndexChanged: {
-                                          updateFooterButtonsStatus()
-                                      }
+                        onCurrentIndexChanged: {
+                            updateFooterButtonsStatus()
+                        }
 
-                                      spacing: -6
+                        spacing: -6
                         interactive: false
                         model: [ qsTr("Standard output"), qsTr("Standard error output"), qsTr("None"), qsTr("File") ]
                         delegate: RadioButton {
@@ -317,22 +315,21 @@ Page {
                             text: modelData
                             checked: savedLogOutput < 0 || savedLogOutput >= ListView.view.count ? index === defaultLogLevel : index === savedLogOutput
 
-                        onCheckedChanged:{
-                        if(checked) {
-                        ListView.view.currentIndex = index
-                        if (index === Settings.LogOutput.File){
-                        textFieldLogOutputFile.forceActiveFocus()
-                        }
-                        }
-                        }
-                        }
-                        // RadioButton (delegate)
+                            onCheckedChanged: {
+                                if (checked) {
+                                    ListView.view.currentIndex = index
+                                    if (index === Settings.LogOutput.File) {
+                                        textFieldLogOutputFile.forceActiveFocus()
+                                    }
+                                }
+                            }
+                        } // RadioButton (delegate)
 
                         Component.onCompleted: {
-                        textFieldLogOutputFile.anchors.leftMargin = listViewLogOutput.itemAtIndex(3).implicitWidth
+                            textFieldLogOutputFile.anchors.leftMargin = listViewLogOutput.itemAtIndex(3).implicitWidth
                         }
 
-                            TextField {
+                        TextField {
                             id: textFieldLogOutputFile
 
                             anchors.bottom: parent.bottom
@@ -346,12 +343,10 @@ Page {
                         }
                     } // ListView (log output)
                 } // ColumnLayout (global settings)
-
-  } // GroupBox (global settings)
+            } // GroupBox (global settings)
         } // ColumnLayout
     } // ScrollView
 
-    }
     // Confirm the discard or reset action:
     Dialog {
         id: dialogConfirmation
