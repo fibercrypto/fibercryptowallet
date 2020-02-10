@@ -88,15 +88,15 @@ Page {
         id: modelWallets
     }
 
-    property Timer timer: Timer {
-        id: addressModelTimer
-        interval: 10000
-        repeat: true
-        running: true
-        onTriggered: {
-            modelWallets.loadModel()
-        }
-    }
+//    property Timer timer: Timer {
+//        id: addressModelTimer
+//        interval: 10000
+//        repeat: true
+//        running: true
+//        onTriggered: {
+//            modelWallets.loadModel()
+//        }
+//    }
 
     BusyIndicator {
         id: busyIndicator
