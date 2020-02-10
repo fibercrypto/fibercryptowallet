@@ -509,28 +509,33 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 			for _, addr := range ins {
 				inFind[addr.Address()] = struct{}{}
 			}
-			outs := outputs.Addresses()
-			for _, addr := range outs {
-				_, ok := inFind[addr.Address()]
+			//outs := outputs.Addresses()
+			for _, addr := range txn.GetOutputs() {
+				_, ok := inFind[addr.GetAddress().String()]
 				if !ok {
-					hours, err := strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
+					hours, err := addr.GetCoins(params.CoinHoursTicker) //strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
 					if err != nil {
 						logHistoryManager.WithError(err).Warn("Couldn't parse Coin Hours from address")
 						return nil, err
 					}
 					traspassedHoursMoved += hours
-					skyFloat, err := strconv.ParseFloat(addr.AddressSky(), 64)
+					//skyFloat, err := strconv.ParseFloat(addr.AddressSky(), 64)
+					//if err != nil {
+					//	logHistoryManager.WithError(err).Warn("Couldn't parse Skycoins from addresses")
+					//	return nil, err
+					//}
+					//accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
+					//if err != nil {
+					//	logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
+					//	return nil, err
+					//}
+					//sky := uint64(skyFloat * float64(accuracy))
+					sky, err := addr.GetCoins(params.SkycoinTicker)
 					if err != nil {
-						logHistoryManager.WithError(err).Warn("Couldn't parse Skycoins from addresses")
+						logHistoryManager.WithError(err).Error("Couldn't get Sky from address")
 						return nil, err
 					}
-					accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-					if err != nil {
-						logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-						return nil, err
-					}
-					sky := uint64(skyFloat * float64(accuracy))
-					skyAmountMoved += sky
+					skyAmountMoved += sky //addr.GetCoins(params.SkycoinTicker)
 				}
 
 			}
