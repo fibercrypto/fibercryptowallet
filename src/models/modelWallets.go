@@ -1,12 +1,15 @@
 package models
 
 import (
+	//"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
+	"github.com/therecipe/qt/qml"
+	//"time"
 )
 
 var logWalletModel = logging.MustGetLogger("Wallet Model")
@@ -18,7 +21,7 @@ const (
 
 type ModelWallets struct {
 	qtcore.QAbstractListModel
-	addresses []*ModelAddresses
+	addresses []*ModelAddresses `property:"addresses"`
 	WalletEnv core.WalletEnv
 	_         func() `constructor:"init"`
 
@@ -32,7 +35,7 @@ type ModelWallets struct {
 
 func (m *ModelWallets) init() {
 	m.SetRoles(map[int]*qtcore.QByteArray{
-		Name:       qtcore.NewQByteArray2("name", -1),
+		QName:      qtcore.NewQByteArray2("name", -1),
 		QAddresses: qtcore.NewQByteArray2("qaddresses", -1),
 	})
 
@@ -51,7 +54,14 @@ func (m *ModelWallets) init() {
 	}
 
 	m.WalletEnv = walletsEnvs[0]
+	//go func() {
+	//	uptimeTicker := time.NewTicker(100000)
 
+	//for {
+	//<-uptimeTicker.C
+	m.loadModel()
+	//}
+	//}()
 }
 
 func (m *ModelWallets) rowCount(*qtcore.QModelIndex) int {
@@ -101,92 +111,97 @@ func (m *ModelWallets) cleanModel() {
 }
 
 func (m *ModelWallets) loadModel() {
-	m.BeginResetModel()
-	logWalletModel.Info("Loading Model")
-	m.SetLoading(true)
-	fullyLoad := true
-	aModels := make([]*ModelAddresses, 0)
-	wallets := m.WalletEnv.GetWalletSet().ListWallets()
-	if wallets == nil {
-		logWalletModel.WithError(nil).Warn("Couldn't load wallet")
-		return
-	}
-	for wallets.Next() {
+	go func() {
 
-		addresses, err := wallets.Value().GetLoadedAddresses()
-		if err != nil {
-			logWalletModel.WithError(nil).Warn("Couldn't get loaded address")
+		logWalletModel.Info("Loading Model")
+		m.SetLoading(true)
+		fullyLoad := true
+		aModels := make([]*ModelAddresses, 0)
+		wallets := m.WalletEnv.GetWalletSet().ListWallets()
+		if wallets == nil {
+			logWalletModel.WithError(nil).Warn("Couldn't load wallet")
 			return
 		}
-		ma := NewModelAddresses(nil)
-		ma.SetName(wallets.Value().GetLabel())
-		ma.SetId(wallets.Value().GetId())
-		oModels := make([]*ModelOutputs, 0)
+		for wallets.Next() {
 
-		for addresses.Next() {
-			a := addresses.Value()
-			outputs := a.GetCryptoAccount().ScanUnspentOutputs()
-			if outputs == nil {
-				logWalletModel.WithField("address", a.String()).Warn("Couldn't get unspent outputs")
-				fullyLoad = false
-				continue
+			addresses, err := wallets.Value().GetLoadedAddresses()
+			if err != nil {
+				logWalletModel.WithError(nil).Warn("Couldn't get loaded address")
+				return
 			}
-			mo := NewModelOutputs(nil)
-			mo.SetAddress(a.String())
-			qOutputs := make([]*QOutput, 0)
+			ma := NewModelAddresses(nil)
+			qml.QQmlEngine_SetObjectOwnership(ma, qml.QQmlEngine__CppOwnership)
+			ma.SetName(wallets.Value().GetLabel())
+			ma.SetId(wallets.Value().GetId())
+			oModels := make([]*ModelOutputs, 0)
 
-			for outputs.Next() {
-				to := outputs.Value()
-				qo := NewQOutput(nil)
-				qo.SetOutputID(to.GetId())
-				val, err := to.GetCoins(coin.Sky)
-				if err != nil {
-					logWalletModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+			for addresses.Next() {
+				a := addresses.Value()
+				outputs := a.GetCryptoAccount().ScanUnspentOutputs()
+				if outputs == nil {
+					logWalletModel.WithField("address", a.String()).Warn("Couldn't get unspent outputs")
 					fullyLoad = false
 					continue
 				}
-				accuracy, err := util.AltcoinQuotient(coin.Sky)
-				if err != nil {
-					logWalletModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
-					fullyLoad = false
-					continue
+				mo := NewModelOutputs(nil)
+				qml.QQmlEngine_SetObjectOwnership(mo, qml.QQmlEngine__CppOwnership)
+				mo.SetAddress(a.String())
+				qOutputs := make([]*QOutput, 0)
+
+				for outputs.Next() {
+					to := outputs.Value()
+					qo := NewQOutput(nil)
+					qml.QQmlEngine_SetObjectOwnership(qo, qml.QQmlEngine__CppOwnership)
+					qo.SetOutputID(to.GetId())
+					val, err := to.GetCoins(coin.Sky)
+					if err != nil {
+						logWalletModel.WithError(nil).Warn("Couldn't get " + coin.Sky + " coins")
+						fullyLoad = false
+						continue
+					}
+					accuracy, err := util.AltcoinQuotient(coin.Sky)
+					if err != nil {
+						logWalletModel.WithError(err).Warn("Couldn't get " + coin.Sky + " coins quotient")
+						fullyLoad = false
+						continue
+					}
+					coins := util.FormatCoins(val, accuracy)
+					qo.SetAddressSky(coins)
+					val, err = to.GetCoins(coin.CoinHoursTicker)
+					if err != nil {
+						logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
+						fullyLoad = false
+						continue
+					}
+					accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
+					if err != nil {
+						logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
+						fullyLoad = false
+						continue
+					}
+					coinsH := util.FormatCoins(val, accuracy)
+					qo.SetAddressCoinHours(coinsH)
+					qOutputs = append(qOutputs, qo)
 				}
-				coins := util.FormatCoins(val, accuracy)
-				qo.SetAddressSky(coins)
-				val, err = to.GetCoins(coin.CoinHoursTicker)
-				if err != nil {
-					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins")
-					fullyLoad = false
-					continue
+				if len(qOutputs) != 0 {
+					mo.addOutputs(qOutputs)
+					oModels = append(oModels, mo)
 				}
-				accuracy, err = util.AltcoinQuotient(coin.CoinHoursTicker)
-				if err != nil {
-					logWalletModel.WithError(err).Warn("Couldn't get " + coin.CoinHoursTicker + " coins quotient")
-					fullyLoad = false
-					continue
-				}
-				coinsH := util.FormatCoins(val, accuracy)
-				qo.SetAddressCoinHours(coinsH)
-				qOutputs = append(qOutputs, qo)
 			}
-			if len(qOutputs) != 0 {
-				mo.addOutputs(qOutputs)
-				oModels = append(oModels, mo)
-			}
+			ma.addOutputs(oModels)
+			aModels = append(aModels, ma)
 		}
-		ma.addOutputs(oModels)
-		aModels = append(aModels, ma)
-	}
-	logWalletModel.Info("Model loaded")
-	m.addAddresses(aModels)
-	if fullyLoad {
-		m.SetLoading(false)
-	}
-	m.EndResetModel()
+		logWalletModel.Info("Model loaded")
+		m.addAddresses(aModels)
+		if fullyLoad {
+			m.SetLoading(false)
+		}
+	}()
 }
 
 func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
-	for _, modelAddresses := range ma {
+	for row, modelAddresses := range ma {
+		m.BeginInsertRows(qtcore.NewQModelIndex(), row, row)
 		find := false
 		for _, modelASet := range m.addresses {
 			if modelAddresses.Id() == modelASet.Id() {
@@ -198,6 +213,8 @@ func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
 		if !find {
 			m.addresses = append(m.addresses, modelAddresses)
 		}
+		//pIndex := m.Index(row, 0, qtcore.NewQModelIndex())
+		//m.DataChanged(pIndex, pIndex, []int{QName, QAddresses})
+		m.EndInsertRows()
 	}
-	m.insertRows(len(m.addresses), len(ma))
 }
