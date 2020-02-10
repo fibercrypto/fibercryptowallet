@@ -166,7 +166,7 @@ func (walletModel *WalletModel) setData(index *core.QModelIndex, value *core.QVa
 		}
 	}
 
-	walletModel.DataChanged(index, index, []int{role})
+	walletModel.DataChanged(index, index, []int{int(core.Qt__DisplayRole)})
 	return true
 }
 
