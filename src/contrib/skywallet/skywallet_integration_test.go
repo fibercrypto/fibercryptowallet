@@ -1,7 +1,6 @@
 package hardware
 
 import (
-	"flag"
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
@@ -14,15 +13,18 @@ import (
 	"testing"
 )
 
-var emulatorIpAddress = flag.String("emulator-ip", "127.0.0.1", "ip address where the emulator is running")
-
 func emulatorDevice() skywallet.Devicer {
-	return skywallet.NewDevice(skywallet.DeviceTypeEmulator, *emulatorIpAddress)
+	return proxy.NewSequencer(
+		skywallet.NewDevice(
+			skywallet.DeviceTypeEmulator),
+		true,
+		func()string{return ""},
+	)
 }
 
 func setUpHardwareWallet(t *testing.T) {
 	util.RegisterAltcoin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
-	dev := proxy.NewSequencer(emulatorDevice(), true, func()string{return ""})
+	dev := emulatorDevice()
 	keyTestData, err := skycoin.GenerateTestKeyPair(t)
 	require.NoError(t, err)
 	integrationtestutil.ForceSetMnemonic(t, dev, keyTestData.Mnemonic)
@@ -46,7 +48,7 @@ func TestMain(m *testing.M) {
 func TestTransactionSignInputFromDevice(t *testing.T) {
 	skycoin.CleanGlobalMock()
 	setUpHardwareWallet(t)
-	dev := proxy.NewSequencer(emulatorDevice())
+	dev := emulatorDevice()
 	hs1 := NewSkyWallet(nil, dev)
 	hs2 := NewSkyWallet(nil, dev)
 	hs3 := NewSkyWallet(nil, dev)
