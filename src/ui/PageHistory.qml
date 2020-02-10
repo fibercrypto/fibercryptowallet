@@ -118,17 +118,10 @@ Page {
 
     QTransactionList {
         id: modelTransactions
-        Component.onCompleted: {
-            console.log("modelTransactions completed")
-            RegisterHistoryManager(historyManager)
-        }
     }
 
     HistoryManager {
         id: historyManager
-        Component.onCompleted: {
-            console.log("history manager completed")
-        }
         onNewTransactions: {
             if (!switchFilters.checked) {
                 modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())

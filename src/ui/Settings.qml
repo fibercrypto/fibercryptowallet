@@ -56,6 +56,7 @@ Page {
     property alias logOutput: listViewLogOutput.currentIndex
     property alias logOutputFile: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
+    property alias cacheUpdateTime: textFieldCacheUpdateTime.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -91,9 +92,9 @@ Page {
         walletPath = defaultWalletPath
         isLocalWalletEnv = defaultIsLocalWalletEnv
         nodeUrl = defaultNodeUrl
+        cacheLifeTime = defaultCacheLifeTime
         logLevel = defaultLogLevel
         logOutput = defaultLogOutput
-        cacheLifeTime = defaultCacheLifeTime
 
         saveCurrentSettings()
     }
