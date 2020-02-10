@@ -202,15 +202,13 @@ func (m *ModelWallets) loadModel() {
 }
 
 func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
-	usedOutputs := make([]bool, len(m.addresses)+len(ma), len(m.addresses)+len(ma))
 	for row, modelAddresses := range ma {
 
 		find := false
-		for i, modelASet := range m.addresses {
+		for _, modelASet := range m.addresses {
 			if modelAddresses.Id() == modelASet.Id() {
 				modelASet.addOutputs(modelAddresses.outputs)
 				find = true
-				usedOutputs[i] = false
 				break
 			}
 		}
@@ -223,14 +221,14 @@ func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
 		}
 	}
 	for i := len(m.addresses) - 1; i >= 0; i-- {
-		if !usedOutputs[i] {
+		if len(m.addresses[i].outputs) < 1 {
 			m.removeWallet(i)
 		}
 	}
 }
 
 func (m *ModelWallets) removeWallet(row int) {
-	//m.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
-	//m.addresses = append(m.addresses[:row], m.addresses[row+1:]...)
-	//m.EndRemoveRows()
+	m.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
+	m.addresses = append(m.addresses[:row], m.addresses[row+1:]...)
+	m.EndRemoveRows()
 }
