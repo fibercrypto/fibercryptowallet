@@ -1,7 +1,6 @@
 package history
 
 import (
-	"strconv"
 	"time"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
@@ -82,7 +81,6 @@ func (hm *HistoryManager) init() {
 			case <-uptimeTicker.C:
 				logHistoryManager.Debug("Updating history")
 				go hm.updateTxns()
-				//go hm.reviewForNew()
 			}
 			historyManager = hm
 		}
@@ -363,8 +361,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 
 			return nil, err
 		}
-		skyFloat := float64(skyUint64) / float64(accuracy)
-		qIn.SetAddressSky(strconv.FormatFloat(skyFloat, 'f', -1, 64))
+		qIn.SetAddressSky(util.FormatCoins(skyUint64, accuracy))
 		chUint64, err := in.GetCoins(params.CalculatedHoursTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
@@ -489,14 +486,12 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 				return nil, err
 			}
 			txnDetails.SetHoursTraspassed(util.FormatCoins(traspassedHoursIn, accuracy))
-			val := float64(skyAmountIn)
 			accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
 			if err != nil {
 				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
 				return nil, err
 			}
-			val = val / float64(accuracy)
-			txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
+			txnDetails.SetAmount(util.FormatCoins(skyAmountIn, accuracy))
 
 		}
 	case transactions.TransactionTypeInternal:
@@ -509,33 +504,21 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 			for _, addr := range ins {
 				inFind[addr.Address()] = struct{}{}
 			}
-			//outs := outputs.Addresses()
 			for _, addr := range txn.GetOutputs() {
 				_, ok := inFind[addr.GetAddress().String()]
 				if !ok {
-					hours, err := addr.GetCoins(params.CoinHoursTicker) //strconv.ParseUint(addr.AddressCoinHours(), 10, 64)
+					hours, err := addr.GetCoins(params.CoinHoursTicker)
 					if err != nil {
 						logHistoryManager.WithError(err).Warn("Couldn't parse Coin Hours from address")
 						return nil, err
 					}
 					traspassedHoursMoved += hours
-					//skyFloat, err := strconv.ParseFloat(addr.AddressSky(), 64)
-					//if err != nil {
-					//	logHistoryManager.WithError(err).Warn("Couldn't parse Skycoins from addresses")
-					//	return nil, err
-					//}
-					//accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
-					//if err != nil {
-					//	logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
-					//	return nil, err
-					//}
-					//sky := uint64(skyFloat * float64(accuracy))
 					sky, err := addr.GetCoins(params.SkycoinTicker)
 					if err != nil {
 						logHistoryManager.WithError(err).Error("Couldn't get Sky from address")
 						return nil, err
 					}
-					skyAmountMoved += sky //addr.GetCoins(params.SkycoinTicker)
+					skyAmountMoved += sky
 				}
 
 			}
@@ -545,15 +528,12 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 				return nil, err
 			}
 			txnDetails.SetHoursTraspassed(util.FormatCoins(traspassedHoursMoved, accuracy))
-			val := float64(skyAmountMoved)
-			//FIXME: Error here is skipped
 			accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
 			if err != nil {
 				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
 				return nil, err
 			}
-			val = val / float64(accuracy)
-			txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
+			txnDetails.SetAmount(util.FormatCoins(skyAmountMoved, accuracy))
 
 		}
 	case transactions.TransactionTypeSend:
@@ -564,15 +544,12 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 				return nil, err
 			}
 			txnDetails.SetHoursTraspassed(util.FormatCoins(traspassedHoursOut, accuracy))
-			val := float64(skyAmountOut)
 			accuracy, err = util.AltcoinQuotient(params.SkycoinTicker)
 			if err != nil {
 				logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
 				return nil, err
 			}
-			val = val / float64(accuracy)
-			txnDetails.SetAmount(strconv.FormatFloat(val, 'f', -1, 64))
-
+			txnDetails.SetAmount(util.FormatCoins(skyAmountOut, accuracy))
 		}
 	}
 	txnDetails.SetAddresses(txnAddresses)
