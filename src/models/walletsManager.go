@@ -993,9 +993,9 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted, withoutBalance bool) *QWa
 	if err != nil {
 		qWallet.SetCoinHours("N/A")
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours Altcoin quotient")
+		panic(nil)
 		return qWallet
 	}
 	qWallet.SetCoinHours(util.FormatCoins(bl, accuracy))
-
 	return qWallet
 }
