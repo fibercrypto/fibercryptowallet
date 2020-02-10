@@ -112,12 +112,10 @@ func (walletM *WalletManager) init() {
 		walletM.markedAddress = make(map[string]int)
 
 	})
-	logWalletManager.Debug("//////////  WM: Fase 2")
 	walletM.altManager = local.LoadAltcoinManager()
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
-	logWalletManager.Debug("//////////  WM: Fase 3")
 	walletM = walletManager
 
 	qWallets := make([]*QWallet, 0)
@@ -128,35 +126,27 @@ func (walletM *WalletManager) init() {
 		logWalletManager.WithError(nil).Warn("Couldn't get a wallet iterator")
 		return
 	}
-	logWalletManager.Debug("//////////  WM: Fase 4")
 	for it.Next() {
-		logWalletManager.Debug("//////////// IT: Fase 1")
 		qWallet := NewQWallet(nil)
 		qml.QQmlEngine_SetObjectOwnership(qWallet, qml.QQmlEngine__CppOwnership)
 		qWallet.SetName(it.Value().GetLabel())
 		qWallet.SetExpand(false)
-		logWalletManager.Debug("//////////// IT: Fase 2")
 		qWallet.SetFileName(it.Value().GetId())
-		logWalletManager.Debug("//////////// IT: Fase 3")
 		qWallet.SetEncryptionEnabled(0)
 
 		qWallet.SetSky("N/A")
 		qWallet.SetCoinHours("N/A")
-		logWalletManager.Debug("//////////// IT: Fase 4")
 		qWallets = append(qWallets, qWallet)
 		walletM.initWalletAddresses(it.Value().GetId())
-		logWalletManager.Debug("//////////// IT: Fase 5")
 	}
 	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
-	logWalletManager.Debug("//////////  WM: Fase 5")
 	go func() {
 		logWalletManager.Debug("Update time is :=> ", time.Duration(config.GetDataUpdateTime())*time.Microsecond)
 		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
 
 		for {
 			<-uptimeTicker.C
-			logWalletManager.Debug("Updating wallet")
 			go func() {
 				tmp := make(chan int)
 				go func() {
