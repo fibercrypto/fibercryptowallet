@@ -262,7 +262,7 @@ gen-mocks: gen-mocks-core gen-mocks-sky ## Generate mocks for interface types
 $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
 
-test-skyhw: ## Run Hardware wallet tests
+test-skyhw: build ## Run Hardware wallet tests
 	go test -args emulator-ip="127.0.0.1" github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
 
 test-sky: ## Run Skycoin plugin test suite
