@@ -40,6 +40,7 @@ type WalletManager struct {
 	signer                   core.BlockchainSignService
 	transactionAPI           core.BlockchainTransactionAPI
 	walletsIterator          core.WalletIterator
+	changeInWallets          chan bool
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
@@ -116,6 +117,7 @@ func (walletM *WalletManager) init() {
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
+	walletM.changeInWallets = make(chan bool)
 	walletM = walletManager
 
 	qWallets := make([]*QWallet, 0)
@@ -414,27 +416,30 @@ func (walletM *WalletManager) updateWallets() {
 	for it.Next() {
 
 		go walletM.updateAddresses(it.Value().GetId())
+		go func(wlt core.Wallet) {
 
-		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
-		if err != nil {
-			logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
-			continue
-		}
-		qw := fromWalletToQWallet(it.Value(), encrypted, false)
-		founded := false
-		for i := range walletM.wallets {
-			if walletM.wallets[i].FileName() == qw.FileName() {
-				founded = true
-				if (walletM.wallets[i].Sky() == "N/A" && qw.Sky() != "N/A") ||
-					(walletM.wallets[i].CoinHours() != "N/A") && qw.CoinHours() != "N/A" {
-					walletM.wallets[i] = qw
-				}
-				break
+			encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(wlt.GetId())
+			if err != nil {
+				logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
+				return
 			}
-		}
-		if !founded {
-			walletM.wallets = append(walletM.wallets, qw)
-		}
+			qw := fromWalletToQWallet(wlt, encrypted, false)
+			founded := false
+			for i := range walletM.wallets {
+				if walletM.wallets[i].FileName() == qw.FileName() {
+					founded = true
+					if (walletM.wallets[i].Sky() == "N/A" && qw.Sky() != "N/A") ||
+						(walletM.wallets[i].CoinHours() != "N/A") && qw.CoinHours() != "N/A" {
+						walletM.wallets[i] = qw
+					}
+					break
+				}
+			}
+			if !founded {
+				walletM.wallets = append(walletM.wallets, qw)
+			}
+			walletM.changeInWallets <- true
+		}(it.Value())
 	}
 }
 
