@@ -319,6 +319,9 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 				Label:     "wallet_no_outputs",
 				Encrypted: true,
 			},
+			Entries: []readable.WalletEntry{
+				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+			},
 		},
 		nil)
 
@@ -336,7 +339,7 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 	// addrs
 	global_mock.On("OutputsForAddresses", []string{"2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt"}).Return(response, nil)
 	// no_output
-	global_mock.On("OutputsForAddresses", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(&readable.UnspentOutputsSummary{}, nil)
+	global_mock.On("OutputsForAddresses", []string{"2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"}).Return(nil, errors.New("error"))
 
 	iter, err = wlt.ScanUnspentOutputs()
 	require.NoError(t, err)
@@ -354,14 +357,8 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 		poolSection: PoolSection,
 	}
 	iter, err = wlt.ScanUnspentOutputs()
-	require.NoError(t, err)
-	items = 0
-	for iter.Next() {
-		to := iter.Value()
-		items++
-		require.Nil(t, to)
-	}
-	require.Equal(t, 0, items)
+	require.Error(t, err)
+	require.Nil(t, iter)
 }
 
 func TestRemoteWalletListTransactions(t *testing.T) {
@@ -416,12 +413,12 @@ func TestRemoteWalletListTransactions(t *testing.T) {
 func TestLocalWalletScanUnspentOutputs(t *testing.T) {
 	CleanGlobalMock()
 
-	global_mock.On("Wallet", "test.wlt").Return(
+	global_mock.On("Wallet", "test1.wlt").Return(
 		&api.WalletResponse{
 			Meta: readable.WalletMeta{
 				Coin:      "Sky",
 				Filename:  "FiberCrypto",
-				Label:     "test.wlt",
+				Label:     "test1.wlt",
 				Encrypted: true,
 			},
 			Entries: []readable.WalletEntry{
@@ -437,10 +434,32 @@ func TestLocalWalletScanUnspentOutputs(t *testing.T) {
 		"6gnBM5gMSSb7XRUEap7q3WxFnuvbN9usTq",
 	}
 
-	mockSkyApiOutputsForAddresses(global_mock, addresses)
-
-	wlt := &LocalWallet{WalletDir: "./testdata", Id: "no_wallet.wlt"}
+	wlt := &LocalWallet{WalletDir: "./testdata", Id: "test.wlt"}
+	mockSkyApiOutputsForAddresses(global_mock, addresses, true)
 	iter, err := wlt.ScanUnspentOutputs()
+	require.Error(t, err)
+	require.Nil(t, iter)
+
+	CleanGlobalMock()
+
+	global_mock.On("Wallet", "test1.wlt").Return(
+		&api.WalletResponse{
+			Meta: readable.WalletMeta{
+				Coin:      "Sky",
+				Filename:  "FiberCrypto",
+				Label:     "test1.wlt",
+				Encrypted: true,
+			},
+			Entries: []readable.WalletEntry{
+				{Address: "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8"},
+			},
+		},
+		nil)
+
+	mockSkyApiOutputsForAddresses(global_mock, addresses, false)
+
+	wlt = &LocalWallet{WalletDir: "./testdata", Id: "no_wallet.wlt"}
+	iter, err = wlt.ScanUnspentOutputs()
 	require.Error(t, err)
 	require.Nil(t, iter)
 
