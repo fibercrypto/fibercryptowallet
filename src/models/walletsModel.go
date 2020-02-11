@@ -65,7 +65,13 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectRemoveWallet(walletModel.removeWallet)
 	walletModel.ConnectLoadModel(walletModel.loadModel)
 	walletModel.ConnectUpdateModel(walletModel.updateModel)
+	go func() {
+		for {
+			<-walletManager.changeInWallets
+			go walletModel.updateModel(walletManager.getWallets())
 
+		}
+	}()
 }
 
 func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QVariant {
