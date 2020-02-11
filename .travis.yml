@@ -118,7 +118,7 @@ matrix:
         - make clean
         - make build
         - make test
-        - make run-docker CMD='make test-skyhw'
+        - make test-skyhw
         - make build-icon
         - make lint
         - make test-cover-travis
