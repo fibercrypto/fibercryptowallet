@@ -2,10 +2,9 @@ package util
 
 import (
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
-	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	messages "github.com/fibercrypto/skywallet-protob/go"
-	"testing"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 func forceWipe(t *testing.T, dev skywallet.Devicer) {
@@ -13,25 +12,12 @@ func forceWipe(t *testing.T, dev skywallet.Devicer) {
 	require.NoError(t, err)
 	msg, err := dev.Wipe()
 	require.NoError(t, err)
-	PressAcceptButton(t, dev, msg, messages.MessageType_MessageType_Success)
-}
-
-func PressAcceptButton(t *testing.T, dev skywallet.Devicer, prvMsg wire.Message, nextMsg messages.MessageType) wire.Message {
-	require.Equal(t, uint16(messages.MessageType_MessageType_ButtonRequest), prvMsg.Kind)
-	msg, err := dev.ButtonAck()
-	require.NoError(t, err)
-	require.Equal(t, uint16(nextMsg), msg.Kind)
-	if msg.Kind == uint16(messages.MessageType_MessageType_Success) {
-		successMsg, err := skywallet.DecodeSuccessMsg(msg)
-		require.NoError(t, err)
-		require.NotNil(t, successMsg)
-	}
-	return msg
+	require.Equal(t, uint16(messages.MessageType_MessageType_Success), msg.Kind)
 }
 
 func ForceSetMnemonic(t *testing.T, dev skywallet.Devicer, mnemonic string) {
 	forceWipe(t, dev)
 	msg, err := dev.SetMnemonic(mnemonic)
 	require.NoError(t, err)
-	PressAcceptButton(t, dev, msg, messages.MessageType_MessageType_Success)
+	require.Equal(t, uint16(messages.MessageType_MessageType_Success), msg.Kind)
 }
