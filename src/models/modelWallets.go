@@ -2,6 +2,9 @@ package models
 
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
+	"sync"
+	"time"
+
 	//"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
@@ -10,11 +13,20 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
-	"time"
 	//"time"
 )
 
 var logWalletModel = logging.MustGetLogger("Wallet Model")
+
+var Helper = NewHelper(nil)
+
+type helper struct {
+	qtcore.QObject
+
+	_ func(f func()) `signal:"runInMain,auto"`
+}
+
+func (h *helper) runInMain(f func()) { f() }
 
 const (
 	QName = int(qtcore.Qt__UserRole) + iota + 1
@@ -23,9 +35,10 @@ const (
 
 type ModelWallets struct {
 	qtcore.QAbstractListModel
-	addresses []*ModelAddresses `property:"addresses"`
-	WalletEnv core.WalletEnv
-	_         func() `constructor:"init"`
+	addresses      []*ModelAddresses `property:"addresses"`
+	addressesMutex sync.Mutex
+	WalletEnv      core.WalletEnv
+	_              func() `constructor:"init"`
 
 	_ map[int]*qtcore.QByteArray `property:"roles"`
 	_ bool                       `property:"loading"`
@@ -61,9 +74,8 @@ func (m *ModelWallets) init() {
 	go func() {
 		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
 
-		for {
-			<-uptimeTicker.C
-			go m.LoadModel()
+		for range uptimeTicker.C {
+			go m.loadModel()
 		}
 	}()
 }
@@ -195,15 +207,17 @@ func (m *ModelWallets) loadModel() {
 		aModels = append(aModels, ma)
 	}
 	logWalletModel.Info("Model loaded")
-	m.addAddresses(aModels)
+	Helper.RunInMain(func() {
+		m.addAddresses(aModels)
+	})
 	if fullyLoad {
 		m.SetLoading(false)
 	}
 }
 
 func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
-	for row, modelAddresses := range ma {
-
+	for _, modelAddresses := range ma {
+		row := 0
 		find := false
 		for _, modelASet := range m.addresses {
 			if modelAddresses.Id() == modelASet.Id() {
@@ -211,10 +225,13 @@ func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
 				find = true
 				break
 			}
+			row++
 		}
 		if !find {
 			m.BeginInsertRows(qtcore.NewQModelIndex(), row, row)
+			m.addressesMutex.Lock()
 			m.addresses = append(m.addresses, modelAddresses)
+			m.addressesMutex.Unlock()
 			m.EndInsertRows()
 		} else {
 			m.DataChanged(m.Index(len(m.addresses)-1, row, qtcore.NewQModelIndex()), m.Index(len(m.addresses)-1, row+1, qtcore.NewQModelIndex()), []int{int(qtcore.Qt__DisplayRole)})
@@ -229,6 +246,8 @@ func (m *ModelWallets) addAddresses(ma []*ModelAddresses) {
 
 func (m *ModelWallets) removeWallet(row int) {
 	m.BeginRemoveRows(qtcore.NewQModelIndex(), row, row)
+	m.addressesMutex.Lock()
 	m.addresses = append(m.addresses[:row], m.addresses[row+1:]...)
+	m.addressesMutex.Unlock()
 	m.EndRemoveRows()
 }
