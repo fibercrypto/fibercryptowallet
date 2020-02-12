@@ -122,6 +122,9 @@ func (walletM *WalletManager) init() {
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
+	for walletM.WalletEnv == nil {
+		walletM.updateWalletEnvs()
+	}
 	walletM = walletManager
 	walletM.updaterChannel = make(chan *updateWalletInfo)
 
@@ -243,7 +246,7 @@ func (walletM *WalletManager) updateWalletEnvs() {
 	for _, plug := range walletM.altManager.ListRegisteredPlugins() {
 		walletsEnvs = append(walletsEnvs, plug.LoadWalletEnvs()...)
 	}
-	if walletsEnvs == nil {
+	if len(walletsEnvs) == 0 {
 		logWalletManager.Error("Error loading wallet envs")
 		return
 	}
@@ -435,6 +438,7 @@ func (walletM *WalletManager) updateWallets() {
 					walletM.wallets[i] = qw
 					changed = true
 				}
+				break
 			}
 		}
 		if !founded {
