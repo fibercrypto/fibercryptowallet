@@ -243,6 +243,7 @@ func (walletM *WalletManager) updateWalletEnvs() {
 	}
 	if walletsEnvs == nil {
 		logWalletManager.Error("Error loading wallet envs")
+		return
 	}
 	walletM.WalletEnv = walletsEnvs[0]
 }
@@ -412,29 +413,31 @@ func (walletM *WalletManager) updateWallets() {
 		return
 	}
 	for it.Next() {
+		val := it.Value()
+		go func() {
 
-		go walletM.updateAddresses(it.Value().GetId())
-
-		encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(it.Value().GetId())
-		if err != nil {
-			logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
-			continue
-		}
-		qw := fromWalletToQWallet(it.Value(), encrypted, false)
-		founded := false
-		for i := range walletM.wallets {
-			if walletM.wallets[i].FileName() == qw.FileName() {
-				founded = true
-				if (walletM.wallets[i].Sky() == "N/A" && qw.Sky() != "N/A") ||
-					(walletM.wallets[i].CoinHours() != "N/A") && qw.CoinHours() != "N/A" {
-					walletM.wallets[i] = qw
-				}
-				break
+			walletM.updateAddresses(val.GetId())
+			encrypted, err := walletM.WalletEnv.GetStorage().IsEncrypted(val.GetId())
+			if err != nil {
+				logWalletManager.WithError(err).Warn("Couldn't get wallet by id")
+				return
 			}
-		}
-		if !founded {
-			walletM.wallets = append(walletM.wallets, qw)
-		}
+			qw := fromWalletToQWallet(val, encrypted, false)
+			founded := false
+			for i := range walletM.wallets {
+				if walletM.wallets[i].FileName() == qw.FileName() {
+					founded = true
+					if (walletM.wallets[i].Sky() == "N/A" && qw.Sky() != "N/A") ||
+						(walletM.wallets[i].CoinHours() != "N/A") && qw.CoinHours() != "N/A" {
+						walletM.wallets[i] = qw
+					}
+					break
+				}
+			}
+			if !founded {
+				walletM.wallets = append(walletM.wallets, qw)
+			}
+		}()
 	}
 }
 
