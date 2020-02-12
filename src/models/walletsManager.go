@@ -147,15 +147,7 @@ func (walletM *WalletManager) init() {
 
 		for {
 			<-uptimeTicker.C
-			go func() {
-				tmp := make(chan int)
-				go func() {
-					walletM.WalletEnv.GetWalletSet().ListWallets()
-					tmp <- 0
-				}()
-				<-tmp
-				go walletM.updateWallets()
-			}()
+			go walletM.updateWallets()
 			walletManager = walletM
 		}
 	}()
