@@ -79,7 +79,6 @@ Item {
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
-
                     BusyIndicator {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right

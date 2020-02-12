@@ -25,12 +25,13 @@ type WalletModel struct {
 	_ map[int]*core.QByteArray `property:"roles"`
 	_ []*QWallet               `property:"wallets"`
 
-	_ func(*QWallet)                                                                   `slot:"addWallet"`
-	_ func(row int, name string, encryptionEnabled bool, sky string, coinHours string) `slot:"editWallet"`
-	_ func(row int)                                                                    `slot:"removeWallet"`
-	_ func([]*QWallet)                                                                 `slot:"loadModel"`
-	_ func([]*QWallet)                                                                 `slot:"updateModel"`
-	_ int                                                                              `property:"count"`
+	_             func(*QWallet)                                                                   `slot:"addWallet"`
+	_             func(row int, name string, encryptionEnabled bool, sky string, coinHours string) `slot:"editWallet"`
+	_             func(row int)                                                                    `slot:"removeWallet"`
+	_             func([]*QWallet)                                                                 `slot:"loadModel"`
+	_             func([]*QWallet)                                                                 `slot:"updateModel"`
+	_             int                                                                              `property:"count"`
+	receivChannel chan *updateWalletInfo
 }
 
 type QWallet struct {
@@ -65,6 +66,23 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectRemoveWallet(walletModel.removeWallet)
 	walletModel.ConnectLoadModel(walletModel.loadModel)
 	walletModel.ConnectUpdateModel(walletModel.updateModel)
+	walletModel.receivChannel = walletManager.suscribe()
+	go func() {
+		for {
+			wi := <-walletModel.receivChannel
+			if wi.isNew {
+				walletModel.addWallet(wi.wallet)
+
+			} else {
+				encrypted := false
+				if wi.wallet.EncryptionEnabled() == 1 {
+					encrypted = true
+				}
+				walletModel.editWallet(wi.row, wi.wallet.Name(), encrypted, wi.wallet.Sky(), wi.wallet.CoinHours())
+
+			}
+		}
+	}()
 
 }
 
@@ -187,16 +205,18 @@ func (walletModel *WalletModel) addWallet(w *QWallet) {
 
 func (walletModel *WalletModel) editWallet(row int, name string, encrypted bool, sky string, coinHours string) {
 	logWalletsModel.Info("Edit Wallet")
-	pIndex := walletModel.Index(row, 0, core.NewQModelIndex())
-
-	walletModel.setData(pIndex, core.NewQVariant1(name), Name)
+	pIndex := walletModel.Index(0, 0, core.NewQModelIndex())
+	lIndex := walletModel.Index(len(walletModel.Wallets())-1, 0, core.NewQModelIndex())
+	w := walletModel.Wallets()[row]
+	w.SetName(name)
 	if encrypted {
-		walletModel.setData(pIndex, core.NewQVariant1(1), EncryptionEnabled)
+		w.SetEncryptionEnabled(1)
 	} else {
-		walletModel.setData(pIndex, core.NewQVariant1(0), EncryptionEnabled)
+		w.SetEncryptionEnabled(0)
 	}
-	walletModel.setData(pIndex, core.NewQVariant1(sky), Sky)
-	walletModel.setData(pIndex, core.NewQVariant1(coinHours), CoinHours)
+	w.SetSky(sky)
+	w.SetCoinHours(coinHours)
+	walletModel.DataChanged(pIndex, lIndex, []int{Name, EncryptionEnabled, Sky, CoinHours})
 }
 
 func (walletModel *WalletModel) removeWallet(row int) {
