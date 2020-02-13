@@ -154,8 +154,8 @@ func (m *ModelWallets) loadModel() {
 
 			for addresses.Next() {
 				a := addresses.Value()
-				outputs := a.GetCryptoAccount().ScanUnspentOutputs()
-				if outputs == nil {
+				outputs, err := a.GetCryptoAccount().ScanUnspentOutputs()
+				if err != nil {
 					logWalletModel.WithField("address", a.String()).Warn("Couldn't get unspent outputs")
 					m.SetLoading(true)
 					continue

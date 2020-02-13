@@ -361,8 +361,8 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		walletM.outputsByAddressMutex.Unlock()
 		return
 	}
-	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
-	if outsIter == nil {
+	outsIter, err := addr.GetCryptoAccount().ScanUnspentOutputs()
+	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't scan unspent outputs")
 		walletM.outputsByAddressMutex.Lock()
 		walletM.outputsByAddress[address] = outs
