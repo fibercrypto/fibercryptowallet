@@ -72,7 +72,7 @@ func (m *ModelWallets) init() {
 
 	m.WalletEnv = walletsEnvs[0]
 	go func() {
-		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
+		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Second)
 
 		for range uptimeTicker.C {
 			go m.loadModel()
