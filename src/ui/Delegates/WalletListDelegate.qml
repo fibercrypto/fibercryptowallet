@@ -100,6 +100,7 @@ Item {
             onClicked: {
 
                 expanded = !expanded
+                walletModel.changeExpanded(fileName)
             }
         } // ItemDelegate
 
