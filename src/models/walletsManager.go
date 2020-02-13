@@ -285,6 +285,10 @@ func (walletM *WalletManager) initWalletAddresses(wltId string) {
 func (walletM *WalletManager) updateAddresses(wltId string) {
 	logWalletManager.Info("Updating Addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
+	if wlt == nil {
+		logWalletManager.Warn("Couldn't load wallet")
+		return
+	}
 	qAddresses := make([]*QAddress, 0)
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
@@ -304,6 +308,7 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 			qAddress.SetAddressSky("N/A")
 			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " Balance")
+			qAddresses = append(qAddresses, qAddress)
 			continue
 		}
 		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
@@ -311,6 +316,7 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 			qAddress.SetAddressSky("N/A")
 			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.SkycoinTicker + " quotient")
+			qAddresses = append(qAddresses, qAddress)
 			continue
 		}
 		qAddress.SetAddressSky(util.FormatCoins(skyFl, accuracy))
@@ -318,12 +324,14 @@ func (walletM *WalletManager) updateAddresses(wltId string) {
 		if err != nil {
 			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " Balance")
+			qAddresses = append(qAddresses, qAddress)
 			continue
 		}
 		accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
 		if err != nil {
 			qAddress.SetAddressCoinHours("N/A")
 			logWalletManager.WithError(err).Warn("Couldn't load " + params.CoinHoursTicker + " quotient")
+			qAddresses = append(qAddresses, qAddress)
 			continue
 		}
 		qAddress.SetAddressCoinHours(util.FormatCoins(coinH, accuracy))
