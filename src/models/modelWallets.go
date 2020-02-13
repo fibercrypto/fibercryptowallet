@@ -129,7 +129,9 @@ func (m *ModelWallets) cleanModel() {
 func (m *ModelWallets) loadModel() {
 
 	logWalletModel.Info("Loading Model")
-	m.SetLoading(true)
+	if len(m.addresses) < 1 {
+		m.SetLoading(true)
+	}
 	fullyLoad := true
 	aModels := make([]*ModelAddresses, 0)
 	wallets := m.WalletEnv.GetWalletSet().ListWallets()
@@ -212,6 +214,8 @@ func (m *ModelWallets) loadModel() {
 	})
 	if fullyLoad {
 		m.SetLoading(false)
+	} else {
+		m.SetLoading(true)
 	}
 }
 
