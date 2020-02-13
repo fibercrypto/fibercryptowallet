@@ -433,7 +433,7 @@ func (walletM *WalletManager) updateWallets() {
 			if walletM.wallets[i].FileName() == qw.FileName() {
 				row = i
 				founded = true
-				if !isEqual(walletM.wallets[i], qw) {
+				if !isEqual(walletM.wallets[i], qw) && (qw.Sky() != "N/A" || qw.CoinHours() != "N/A") {
 					qw.SetExpand(walletM.wallets[i].IsExpand())
 					walletM.wallets[i] = qw
 					changed = true
