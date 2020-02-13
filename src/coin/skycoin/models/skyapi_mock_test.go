@@ -1,6 +1,7 @@
 package skycoin
 
 import (
+	"errors"
 	"github.com/SkycoinProject/skycoin/src/api"
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/coin"
@@ -67,7 +68,7 @@ func mockSkyApiCreateTransaction(mock *SkycoinApiMock, req *api.CreateTransactio
 		nil)
 }
 
-func mockSkyApiOutputsForAddresses(mock *SkycoinApiMock, addresses []string) {
+func mockSkyApiOutputsForAddresses(mock *SkycoinApiMock, addresses []string, isValid bool) {
 	usOut := readable.UnspentOutput{
 		Hash:            "hash1",
 		Coins:           "42",
@@ -80,12 +81,21 @@ func mockSkyApiOutputsForAddresses(mock *SkycoinApiMock, addresses []string) {
 	}
 
 	for _, addr := range addresses {
+		if isValid {
+			mock.On(
+				"OutputsForAddresses",
+				[]string{
+					addr,
+				},
+			).Return(nil, errors.New("error"))
+		}
 		mock.On(
 			"OutputsForAddresses",
 			[]string{
 				addr,
 			},
 		).Return(response, nil)
+
 	}
 }
 
