@@ -46,6 +46,7 @@ type WalletManager struct {
 	transactionAPI           core.BlockchainTransactionAPI
 	walletsIterator          core.WalletIterator
 	updaterChannel           chan *updateWalletInfo
+	timerUpdate              chan time.Duration
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
@@ -152,10 +153,20 @@ func (walletM *WalletManager) init() {
 	logWalletManager.Debug("Finish wallets")
 	walletM.wallets = qWallets
 	go func() {
-		logWalletManager.Debug("Update time is :=> ", time.Duration(config.GetDataUpdateTime())*time.Microsecond)
-		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Microsecond)
+		updateTime := config.GetDataUpdateTime()
+		logWalletManager.Debug("Update time is :=> ", time.Duration(updateTime)*time.Second)
+		uptimeTicker := time.NewTicker(time.Duration(updateTime) * time.Second)
 
 		for {
+			select {
+			case <-uptimeTicker.C:
+				go walletM.updateWallets()
+				walletManager = walletM
+				break
+			case t := <-walletM.timerUpdate:
+				uptimeTicker = time.NewTicker(t)
+				break
+			}
 			<-uptimeTicker.C
 			go walletM.updateWallets()
 			walletManager = walletM
@@ -185,6 +196,9 @@ func (walletM *WalletManager) updateAll() {
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
 	skycoin.UpdateAltcoin()
+	updateTime := config.GetDataUpdateTime()
+	logWalletManager.Debug("Update time is :=> ", time.Duration(updateTime)*time.Second)
+	walletM.timerUpdate <- time.Duration(updateTime) * time.Second
 }
 
 func GetWalletEnv() core.WalletEnv {
