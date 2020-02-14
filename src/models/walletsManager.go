@@ -636,6 +636,7 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 	return qTxn
 
 }
+
 func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) {
 	channel := make(chan *QTransaction)
 	go func() {

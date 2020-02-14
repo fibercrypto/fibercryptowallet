@@ -1,7 +1,6 @@
 package hardware
 
 import (
-	"encoding/hex"
 	"errors"
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/coin"
@@ -243,12 +242,7 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coi
 			// NOTE only sign required inputs
 			continue
 		}
-		buf, err := hex.DecodeString(sign)
-		if err != nil {
-			logSkyWallet.WithError(err).Error("unable to decode signature")
-			return nil, fce.ErrTxnSignFailure
-		}
-		sgn, err := cipher.NewSig(buf)
+		sgn, err := cipher.SigFromHex(sign)
 		if err != nil {
 			logSkyWallet.WithError(err).Errorln("unable to get Skycoin address from buffer")
 			return nil, errors.New("unable to get Skycoin address from buffer")
