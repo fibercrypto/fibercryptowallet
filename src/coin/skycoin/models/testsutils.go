@@ -81,8 +81,8 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) []core.Wallet
 			walletsCache[kd.Mnemonic] = w
 		}
 		wallets[i] = w
-		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex+1), nil)
-		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex+1), nil)
+		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex + 100), nil)
+		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex + 100), nil)
 	}
 	return wallets
 }
