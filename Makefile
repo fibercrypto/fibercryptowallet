@@ -231,6 +231,7 @@ clean-test: ## Remove temporary test files
 
 clean-build: ## Remove temporary files
 	@echo "Cleaning project $(APP_NAME)..."
+	rm -rf vendor/github.com/therecipe
 	rm -rf deploy/
 	rm -rf linux/
 	rm -rf windows/

@@ -247,7 +247,7 @@
   version = "v0.9.1"
 
 [[projects]]
-  digest = "1:a4b063a766f50cdadc1fce12053e3bde8599f1f8b7621d7e293cd2fc86543a44"
+  digest = "1:dacb29568d7b8e145b953ca0a9334e516ce02e56c61e902372c6c074c4846107"
   name = "github.com/prometheus/procfs"
   packages = [
     ".",
@@ -255,8 +255,8 @@
     "internal/util",
   ]
   pruneopts = "NUT"
-  revision = "6d489fc7f1d9cd890a250f3ea3431b1744b9623f"
-  version = "v0.0.8"
+  revision = "584181f8e7015e8fbd319be9a5a9341d8f3d64df"
+  version = "v0.0.9"
 
 [[projects]]
   digest = "1:c109c5d92f0de1ceeea77ae0d13a20bf0f8e4ef5d3b0e69a40a6d7ac470836bc"
@@ -357,7 +357,7 @@
     "ssh/terminal",
   ]
   pruneopts = "NUT"
-  revision = "86ce3cb696783b739e41e834e2eead3e1b4aa3fb"
+  revision = "1d94cc7ab1c630336ab82ccb9c9cda72a875c382"
 
 [[projects]]
   branch = "master"
