@@ -1100,6 +1100,7 @@ type LocalWallet struct {
 	Encrypted bool
 	Type      string
 	WalletDir string
+	balance   *util.BalanceSnapshot
 }
 
 func (wlt *LocalWallet) Sign(txn core.Transaction, signer core.TxnSigner, pwd core.PasswordReader, index []string) (signedTxn core.Transaction, err error) {
