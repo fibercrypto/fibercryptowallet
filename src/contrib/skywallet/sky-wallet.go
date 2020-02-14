@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/SkycoinProject/skycoin/src/cipher"
 	"github.com/SkycoinProject/skycoin/src/coin"
+	"github.com/SkycoinProject/skycoin/src/readable"
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/skytypes"
@@ -108,16 +109,56 @@ func findValInSlice(val int, arr []int) bool {
 	return false
 }
 
-func getInputs(txn coin.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionInput, err error) {
+func getInputs(wlt core.Wallet, txn coin.Transaction, indexes []int) (inputs []*messages.SkycoinTransactionInput, err error) {
 	for idx, input := range txn.In {
 		var transactionInput messages.SkycoinTransactionInput
 		transactionInput.HashIn = proto.String(input.String())
 		if findValInSlice(idx, indexes) {
-			transactionInput.Index = proto.Uint32(uint32(idx))
+			inputIndex, err := findAddrIndexFromInput(wlt, txn, idx)
+			if err != nil {
+				logSkyWallet.WithFields(
+					logrus.Fields{"err": err, "input": txn.In[idx]},
+					).Errorln("unable to find address index for input")
+				return nil, err
+			}
+			transactionInput.Index = proto.Uint32(inputIndex)
 		}
 		inputs = append(inputs, &transactionInput)
 	}
 	return inputs, nil
+}
+
+func spendingOutputFromRemote(inputHash cipher.SHA256) (*readable.SpentOutput, error) {
+	logSkyWallet.Info("Getting spent outputs for transaction inputs")
+	c, err := skycoin.NewSkycoinApiClient(skycoin.PoolSection)
+	if err != nil {
+		return nil, err
+	}
+	defer skycoin.ReturnSkycoinClient(c)
+	out, err := c.UxOut(inputHash.String())
+	if err != nil {
+		logSkyWallet.WithFields(
+			logrus.Fields{"err": err, "in": inputHash},
+			).Errorln("unable to get output from backend")
+		return nil, err
+	}
+	return out, nil
+}
+
+// findAddrIndexFromInput return the address index for the matching output of the given input index
+// FIXME: replace this implementation with precalculated data
+func findAddrIndexFromInput(wlt core.Wallet, txn coin.Transaction, inputIndex int) (uint32, error) {
+	input := txn.In[inputIndex]
+	retrievedOutput, err := spendingOutputFromRemote(input)
+	if err != nil {
+		return 0, err
+	}
+	addrIndex, err := getAddrIndex(wlt, retrievedOutput.OwnerAddress)
+	if err != nil {
+		logSkyWallet.WithError(err).Errorln("unable to find address index from input")
+		return 0, err
+	}
+	return addrIndex, nil
 }
 
 func getAddrIndex(wlt core.Wallet, addr string) (uint32, error) {
@@ -206,7 +247,7 @@ func coin2Core(txn *coin.Transaction, fee uint64) (core.Transaction, error) {
 }
 
 func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coin.Transaction, error) {
-	transactionInputs, err := getInputs(*txn, idxs)
+	transactionInputs, err := getInputs(sw.wlt, *txn, idxs)
 	if err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to get inputs")
 		return nil, fce.ErrTxnSignFailure

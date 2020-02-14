@@ -132,7 +132,7 @@ func (walletModel *WalletModel) sniffHw() {
 		for {
 			hwConnectedOn = []int{}
 			checkForDerivationType(skyWallet.WalletTypeDeterministic)
-			checkForDerivationType(skyWallet.WalletTypeBip44)
+			//checkForDerivationType(skyWallet.WalletTypeBip44)
 			time.Sleep(time.Millisecond * 500)
 		}
 	}()
