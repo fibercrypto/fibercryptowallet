@@ -17,6 +17,7 @@ const defaultUpdateInterval = 10000000
 // NewBalanceSnapshot new balance snapshot with validity timeout
 func NewBalanceSnapshot(updInterval int64) *BalanceSnapshot {
 	if updInterval <= 0 {
+		updInterval = defaultUpdateInterval
 	}
 	return &BalanceSnapshot{
 		cache:          make(map[string]uint64),
@@ -28,6 +29,7 @@ func NewBalanceSnapshot(updInterval int64) *BalanceSnapshot {
 // SetCoins update balance for a given coin token
 func (bs *BalanceSnapshot) SetCoins(ticker string, coins uint64) {
 	bs.cache[ticker] = coins
+	bs.lastUpdate = time.Now().UnixNano()
 }
 
 // GetCoins retrieve balance for a given coin ticker
