@@ -1,6 +1,7 @@
 package history
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
@@ -115,13 +116,16 @@ func (a ByDate) Less(i, j int) bool {
 
 func (hm *HistoryManager) updateTxns() {
 	logHistoryManager.Info("Getting transactions of Addresses")
-
+	fmt.Println("//////////////////////////UT     0")
 	hm.addresses = hm.getAddressesWithWallets()
+	fmt.Println("//////////////////////////UT     0.5")
 	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
+	fmt.Println("//////////////////////////UT     1")
 	if wltIterator == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
 		return
 	}
+	fmt.Println("//////////////////////////UT     2")
 	for wltIterator.Next() {
 		logHistoryManager.Debug("Getting addresses history for wallet ", wltIterator.Value().GetId())
 		addressIterator, err := wltIterator.Value().GetLoadedAddresses()
@@ -129,6 +133,7 @@ func (hm *HistoryManager) updateTxns() {
 			logHistoryManager.Warn("Couldn't get address iterator")
 			continue
 		}
+		fmt.Println("//////////////////////////UT     3.1")
 		var newTxnsFinded bool
 		for addressIterator.Next() {
 			newTxnsFinded = false
@@ -173,7 +178,7 @@ func (hm *HistoryManager) updateTxns() {
 
 		}
 	}
-
+	fmt.Println("//////////////////////////UT     FINISH")
 }
 
 func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
@@ -345,33 +350,50 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 	outputs := address.NewAddressList(nil)
 	qml.QQmlEngine_SetObjectOwnership(inputs, qml.QQmlEngine__CppOwnership)
 	qml.QQmlEngine_SetObjectOwnership(outputs, qml.QQmlEngine__CppOwnership)
+	fmt.Println("/////////////////STARTING/////////////////////")
 	txnIns := txn.GetInputs()
 	for _, in := range txnIns {
+		fmt.Println("/////////////////////////INPUTS 1/////////////////////////")
 		qIn := address.NewAddressDetails(nil)
 		qml.QQmlEngine_SetObjectOwnership(qIn, qml.QQmlEngine__CppOwnership)
+		if in == nil {
+			fmt.Println("INPUTS   IN IS NIL")
+		}
+		if in.GetSpentOutput() == nil {
+			fmt.Println("INPUTS   SPENT OUTPUT IS NIL")
+		}
+		if in.GetSpentOutput().GetAddress() == nil {
+			fmt.Println("INPUTS   ADDRESS IS NIL")
+		}
+
 		qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
+		fmt.Println("/////////////////////////INPUTS 2/////////////////////////")
 		skyUint64, err := in.GetCoins(params.SkycoinTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
 			return nil, err
 		}
+		fmt.Println("/////////////////////////INPUTS 3/////////////////////////")
 		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
 
 			return nil, err
 		}
+		fmt.Println("/////////////////////////INPUTS 4/////////////////////////")
 		qIn.SetAddressSky(util.FormatCoins(skyUint64, accuracy))
 		chUint64, err := in.GetCoins(params.CalculatedHoursTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours balance")
 			return nil, err
 		}
+		fmt.Println("/////////////////////////INPUTS 5/////////////////////////")
 		accuracy, err = util.AltcoinQuotient(params.CalculatedHoursTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Coin Hours quotient")
 			return nil, err
 		}
+		fmt.Println("/////////////////////////INPUTS 6/////////////////////////")
 		qIn.SetAddressCoinHours(util.FormatCoins(chUint64, accuracy))
 		inputs.AddAddress(qIn)
 		_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
@@ -385,8 +407,9 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 			}
 
 		}
+		fmt.Println("/////////////////////////INPUTS 7/////////////////////////")
 	}
-
+	fmt.Println("////////////////////////FINISHIN INPUTS//////////////////////////////////")
 	txnDetails.SetInputs(inputs)
 	for _, out := range txn.GetOutputs() {
 		sky, err := out.GetCoins(params.SkycoinTicker)
@@ -451,6 +474,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 		}
 
 	}
+	fmt.Println("//////////////////////////////FINISHING OUTPUTS///////////////////////////////////")
 	txnDetails.SetOutputs(outputs)
 	t := time.Unix(int64(txn.GetTimestamp()), 0)
 	txnDetails.SetDate(qtCore.NewQDateTime3(qtCore.NewQDate3(t.Year(), int(t.Month()), t.Day()), qtCore.NewQTime3(t.Hour(), t.Minute(), 0, 0), qtCore.Qt__LocalTime))
@@ -552,6 +576,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 			txnDetails.SetAmount(util.FormatCoins(skyAmountOut, accuracy))
 		}
 	}
+	fmt.Println("///////////////////////////////FINISHING OTHERS////////////////////////////////////")
 	txnDetails.SetAddresses(txnAddresses)
 	txnDetails.SetTransactionID(txn.GetId())
 	return txnDetails, nil

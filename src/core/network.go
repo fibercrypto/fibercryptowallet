@@ -1,7 +1,6 @@
 package core
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
@@ -71,18 +70,8 @@ type MultiPool interface {
 }
 
 type MultiPoolSection interface {
-	Get() interface{}
+	Get() (interface{}, error)
 	Put(interface{})
-}
-
-// NotAvailableObjectsError is returned when name is not bound to any pool factory
-type NotAvailableObjectsError struct {
-	poolSection string
-}
-
-// Error describes error condition
-func (err NotAvailableObjectsError) Error() string {
-	return fmt.Sprintf("There is not exist %s poolSection", err.poolSection)
 }
 
 // MultiConnectionsPool implements a generic pool supporting multiple object factories
@@ -127,27 +116,28 @@ type PoolSection struct {
 	inUse     []interface{}
 	mutex     *sync.Mutex
 	factory   PooledObjectFactory
+	
 }
 
-func (ps *PoolSection) Get() interface{} {
+func (ps *PoolSection) Get() (interface{}, error) {
 	ps.mutex.Lock()
 	defer ps.mutex.Unlock()
 
 	if len(ps.available) == 0 {
 		if len(ps.inUse) == ps.capacity {
-			return errors.ErrObjectPoolUndeflow
+			return nil, errors.ErrObjectPoolUndeflow
 		}
 		obj, err := ps.factory.Create()
 		if err != nil {
-			return err
+			return nil, err
 		}
 		ps.inUse = append(ps.inUse, obj)
-		return obj
+		return obj, nil
 	} else {
 		var obj interface{}
 		obj, ps.available = ps.available[0], ps.available[1:]
 		ps.inUse = append(ps.inUse, obj)
-		return obj
+		return obj, nil
 	}
 }
 
@@ -174,7 +164,7 @@ func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 func GetMultiPool() MultiPool {
 
 	once.Do(func() {
-		multiConnectionsPool = newMultiConnectionPool(30)
+		multiConnectionsPool = newMultiConnectionPool(60l)
 	})
 
 	return multiConnectionsPool
