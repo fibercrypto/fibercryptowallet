@@ -618,6 +618,10 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 			logWalletManager.WithError(err).Warnf("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
+		if suid, err := signer.GetSignerUID(); err != nil && wlts[0].GetId() == string(suid) {
+			// NOTE the signer is the wallet it self
+			signer = nil
+		}
 		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
 	}
 
