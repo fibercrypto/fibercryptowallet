@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
@@ -243,8 +242,8 @@ func (walletM *WalletManager) updateOutputs(wltId, address string) {
 		walletM.outputsByAddress[address] = outs
 		return
 	}
-	outsIter := addr.GetCryptoAccount().ScanUnspentOutputs()
-	if outsIter == nil {
+	outsIter, err := addr.GetCryptoAccount().ScanUnspentOutputs()
+	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't scan unspent outputs")
 		walletM.outputsByAddress[address] = outs
 		return
@@ -619,6 +618,10 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 			logWalletManager.WithError(err).Warnf("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
+		if suid, err := signer.GetSignerUID(); err != nil && wlts[0].GetId() == string(suid) {
+			// NOTE the signer is the wallet it self
+			signer = nil
+		}
 		txn, err = wlts[0].Sign(qTxn.txn, signer, pwd, nil)
 	}
 
@@ -636,6 +639,7 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 	return qTxn
 
 }
+
 func (walletM *WalletManager) signAndBroadcastTxnAsync(wltIds, addresses []string, source string, bridgeForPassword *QBridge, index []int, qTxn *QTransaction) {
 	channel := make(chan *QTransaction)
 	go func() {
@@ -813,7 +817,7 @@ func (walletM *WalletManager) getWallets() []*QWallet {
 		}
 
 	}
-	//walletM.wallets = make([]*QWallet, 0)
+	// walletM.wallets = make([]*QWallet, 0)
 
 	logWalletManager.Info("Wallets obtained")
 	return walletM.wallets
@@ -874,8 +878,7 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		return qWallet
 	}
 
-	floatBl := float64(bl) / float64(accuracy)
-	qWallet.SetSky(fmt.Sprint(floatBl))
+	qWallet.SetSky(util.FormatCoins(bl, accuracy))
 
 	bl, err = wlt.GetCryptoAccount().GetBalance(sky.CoinHoursTicker)
 	if err != nil {
@@ -883,7 +886,13 @@ func fromWalletToQWallet(wlt core.Wallet, isEncrypted bool) *QWallet {
 		logWalletManager.WithError(err).Error("Couldn't get Coin Hours balance")
 		return qWallet
 	}
-	qWallet.SetCoinHours(fmt.Sprint(bl))
+	accuracy, err = util.AltcoinQuotient(params.CoinHoursTicker)
+	if err != nil {
+		qWallet.SetCoinHours("N/A")
+		logWalletManager.WithError(err).Error("Couldn't get Coin Hours Altcoin quotient")
+		return qWallet
+	}
+	qWallet.SetCoinHours(util.FormatCoins(bl, accuracy))
 
 	return qWallet
 }

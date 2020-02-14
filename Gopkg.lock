@@ -357,7 +357,7 @@
     "ssh/terminal",
   ]
   pruneopts = "NUT"
-  revision = "ecb85df213405b7d32e4d73cb5bbaace2ec88881"
+  revision = "86ce3cb696783b739e41e834e2eead3e1b4aa3fb"
 
 [[projects]]
   branch = "master"
@@ -369,14 +369,14 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:6aaac7c1fc71a6310c4996f72f84df206cfcdc3423fa8c7f18d0adc0c87134a6"
+  digest = "1:4e1eac2eb79906608c99a7c513b8a48a0b95ca5478b808eac95abed09bc7860d"
   name = "golang.org/x/sys"
   packages = [
     "unix",
     "windows",
   ]
   pruneopts = "NUT"
-  revision = "d101bd2416d505c0448a6ce8a282482678040a89"
+  revision = "12a6c2dcc1e4cb348b57847c73987099e261714b"
 
 [solve-meta]
   analyzer-name = "dep"

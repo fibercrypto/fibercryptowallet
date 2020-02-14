@@ -9,7 +9,7 @@ type CryptoAccount interface {
 	ListAssets() []string
 	// ScanUnspentOutputs to determine the outputs that can participate in a transaction
 	// without incurring in double spending
-	ScanUnspentOutputs() TransactionOutputIterator
+	ScanUnspentOutputs() (TransactionOutputIterator, error)
 	// ListTransactions to show account history
 	ListTransactions() TransactionIterator
 	// ListPendingTransactions to obtain details of transactions pending for confirmation in the memory

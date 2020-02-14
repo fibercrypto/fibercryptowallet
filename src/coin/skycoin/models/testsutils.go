@@ -81,8 +81,8 @@ func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) []core.Wallet
 			walletsCache[kd.Mnemonic] = w
 		}
 		wallets[i] = w
-		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex+1), nil)
-		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex+1), nil)
+		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex + 100), nil)
+		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex + 100), nil)
 	}
 	return wallets
 }
@@ -155,6 +155,10 @@ func CleanGlobalMock() {
 
 func SetGlobalMock(mock *SkycoinApiMock) {
 	global_mock = mock
+}
+
+func GetGlobalMock() *SkycoinApiMock {
+	return global_mock
 }
 
 func TransactionSignInputTestSkyHwImpl(t *testing.T, signers []core.TxnSigner, setWallet func(*testing.T, core.TxnSigner, core.Wallet)) {

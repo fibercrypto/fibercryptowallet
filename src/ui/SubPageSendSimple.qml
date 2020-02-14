@@ -173,7 +173,7 @@ getAddressList()
                         }
                     }
                     function reset(wltId) {
-                        currentIndex = -1;
+                        currentIndex = 0;
                         signerModelId.loadModel(wltId)
                         signerSelectorId.visible = signerModelId.rowCount() > 1
                     }

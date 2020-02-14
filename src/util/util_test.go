@@ -61,7 +61,8 @@ func TestFormatCoins(t *testing.T) {
 		{name: "format4", value: uint64(12340), result: "1.234", quotient: uint64(10000)},
 		{name: "format5", value: uint64(421142), result: "4,211.42", quotient: uint64(100)},
 		{name: "format6", value: uint64(0), result: "0", quotient: uint64(100)},
-		{name: "format7", value: uint64(42), result: "0", quotient: uint64(10000)},
+		{name: "format7", value: uint64(42), result: "0.0042", quotient: uint64(10000)},
+		{name: "format8", value: uint64(1000), quotient: uint64(1000000), result: ("0.001")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

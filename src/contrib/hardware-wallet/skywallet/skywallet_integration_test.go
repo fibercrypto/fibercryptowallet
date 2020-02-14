@@ -47,6 +47,12 @@ func TestMain(m *testing.M) {
 
 func TestTransactionSignInputFromDevice(t *testing.T) {
 	skycoin.CleanGlobalMock()
+	skyApiMock := skycoin.GetGlobalMock()
+	err := core.GetMultiPool().CreateSection(skycoin.PoolSection, skyApiMock)
+	if err != nil {
+		logModelTest.WithError(err).Warn("Error creating pool section")
+		return
+	}
 	setUpHardwareWallet(t)
 	dev := emulatorDevice()
 	hs1 := NewSkyWallet(nil, dev)
