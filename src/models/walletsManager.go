@@ -123,6 +123,7 @@ func (walletM *WalletManager) init() {
 	walletM.updateTransactionAPI()
 	walletM.updateSigner()
 	walletM.updateWalletEnvs()
+	walletM.timerUpdate = make(chan time.Duration)
 	for walletM.WalletEnv == nil {
 		walletM.updateWalletEnvs()
 	}
