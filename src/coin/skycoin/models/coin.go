@@ -583,27 +583,22 @@ func (in *SkycoinTransactionInput) GetId() string {
 
 func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 	logCoin.Info("Getting spent outputs for transaction inputs")
-	fmt.Println("//////// GETTING TXN OUT 1")
 	if in.spentOutput == nil {
 
 		c, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
-			fmt.Println(err.Error())
 			return nil
 		}
-		fmt.Println("//////// GETTING TXN OUT 2")
 		defer ReturnSkycoinClient(c)
 		out, err := c.UxOut(in.skyIn.Hash)
 		if err != nil {
 			return nil
 		}
-		fmt.Println("//////// GETTING TXN OUT 3")
 		skyAccuracy, err := util.AltcoinQuotient(Sky)
 		if err != nil {
 			return nil
 		}
 		coins := util.FormatCoins(out.Coins, skyAccuracy)
-		fmt.Println("//////// GETTING TXN OUT 4")
 		skyOut := &SkycoinTransactionOutput{
 			skyOut: readable.TransactionOutput{
 				Address: out.OwnerAddress,
@@ -615,9 +610,7 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 		in.spentOutput = skyOut
 
 	}
-	fmt.Println("//////// GETTING TXN OUT END")
 	return in.spentOutput
-
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output

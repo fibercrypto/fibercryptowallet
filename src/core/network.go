@@ -2,6 +2,7 @@ package core
 
 import (
 	"sync"
+	"time"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
@@ -92,12 +93,26 @@ func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection
 func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) error {
 	logConnectionPool.Info("Creating pool section")
 	mp.sections[name] = &PoolSection{
-		mutex:     new(sync.Mutex),
-		capacity:  mp.capacity,
-		factory:   factory,
-		inUse:     make([]interface{}, 0),
-		available: make([]interface{}, 0),
+		mutex:        new(sync.Mutex),
+		capacity:     mp.capacity,
+		factory:      factory,
+		inUse:        make([]interface{}, 0),
+		available:    make([]interface{}, 0),
+		starveClient: 0,
 	}
+	go func() {
+		t := time.NewTicker(time.Second * 2)
+		section := mp.sections[name]
+
+		for {
+			<-t.C
+			if section.starveClient > 10000 {
+				mp.sections[name].grow()
+			} else {
+				section.starveClient = 0
+			}
+		}
+	}()
 	return nil
 }
 
@@ -111,12 +126,17 @@ func (mp *MultiConnectionsPool) ListSections() ([]string, error) {
 }
 
 type PoolSection struct {
-	capacity  int
-	available []interface{}
-	inUse     []interface{}
-	mutex     *sync.Mutex
-	factory   PooledObjectFactory
-	
+	capacity     int
+	available    []interface{}
+	inUse        []interface{}
+	mutex        *sync.Mutex
+	factory      PooledObjectFactory
+	starveClient int
+}
+
+func (ps *PoolSection) grow() {
+	ps.capacity = ps.capacity * 2
+	ps.starveClient = 0
 }
 
 func (ps *PoolSection) Get() (interface{}, error) {
@@ -125,6 +145,7 @@ func (ps *PoolSection) Get() (interface{}, error) {
 
 	if len(ps.available) == 0 {
 		if len(ps.inUse) == ps.capacity {
+			ps.starveClient++
 			return nil, errors.ErrObjectPoolUndeflow
 		}
 		obj, err := ps.factory.Create()
@@ -164,7 +185,7 @@ func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 func GetMultiPool() MultiPool {
 
 	once.Do(func() {
-		multiConnectionsPool = newMultiConnectionPool(60l)
+		multiConnectionsPool = newMultiConnectionPool(60)
 	})
 
 	return multiConnectionsPool
