@@ -12,53 +12,8 @@
 [[projects]]
   digest = "1:016b62efaf0947541de680c1d4ce92085a9954581c8a423847c6455c4aca18c3"
   name = "github.com/SkycoinProject/skycoin"
-  packages = [
-    "src/api",
-    "src/cipher",
-    "src/cipher/base58",
-    "src/cipher/bip32",
-    "src/cipher/bip39",
-    "src/cipher/bip39/wordlists",
-    "src/cipher/bip44",
-    "src/cipher/chacha20poly1305",
-    "src/cipher/chacha20poly1305/internal/chacha20",
-    "src/cipher/encoder",
-    "src/cipher/encrypt",
-    "src/cipher/pbkdf2",
-    "src/cipher/poly1305",
-    "src/cipher/ripemd160",
-    "src/cipher/scrypt",
-    "src/cipher/secp256k1-go",
-    "src/cipher/secp256k1-go/secp256k1-go2",
-    "src/cipher/testsuite",
-    "src/cli",
-    "src/coin",
-    "src/daemon",
-    "src/daemon/gnet",
-    "src/daemon/pex",
-    "src/daemon/strand",
-    "src/kvstorage",
-    "src/params",
-    "src/readable",
-    "src/testutil",
-    "src/transaction",
-    "src/util/apputil",
-    "src/util/droplet",
-    "src/util/elapse",
-    "src/util/fee",
-    "src/util/file",
-    "src/util/http",
-    "src/util/iputil",
-    "src/util/logging",
-    "src/util/mathutil",
-    "src/util/timeutil",
-    "src/util/useragent",
-    "src/visor",
-    "src/visor/blockdb",
-    "src/visor/dbutil",
-    "src/visor/historydb",
+  packages = ["src/api","src/cipher","src/cipher/base58","src/cipher/bip32","src/cipher/bip39","src/cipher/bip39/wordlists","src/cipher/bip44","src/cipher/chacha20poly1305","src/cipher/chacha20poly1305/internal/chacha20","src/cipher/encoder","src/cipher/encrypt","src/cipher/pbkdf2","src/cipher/poly1305","src/cipher/ripemd160","src/cipher/scrypt","src/cipher/secp256k1-go","src/cipher/secp256k1-go/secp256k1-go2","src/cipher/testsuite","src/cli","src/coin","src/daemon","src/daemon/gnet","src/daemon/pex","src/daemon/strand","src/kvstorage","src/params","src/readable","src/testutil","src/transaction","src/util/apputil","src/util/droplet","src/util/elapse","src/util/fee","src/util/file","src/util/http","src/util/iputil","src/util/logging","src/util/mathutil","src/util/timeutil","src/util/useragent","src/visor","src/visor/blockdb","src/visor/dbutil","src/visor/historydb","src/wallet"]
     "src/wallet",
-  ]
   pruneopts = ""
   revision = "66f5df5849d339d403a475d523ebe7d1a4c92c31"
   version = "v0.27.0"
@@ -210,10 +165,8 @@
 [[projects]]
   digest = "1:03bca087b180bf24c4f9060775f137775550a0834e18f0bca0520a868679dbd7"
   name = "github.com/prometheus/client_golang"
-  packages = [
-    "prometheus",
+  packages = ["prometheus","prometheus/promhttp"]
     "prometheus/promhttp",
-  ]
   pruneopts = "NUT"
   revision = "c5b7fccd204277076155f10851dad72b76a49317"
   version = "v0.8.0"
@@ -229,11 +182,8 @@
 [[projects]]
   digest = "1:0c9d56afe4f5b3ab5658a3270a680db8f6936d7794377fa0b9880663958b18b0"
   name = "github.com/prometheus/common"
-  packages = [
-    "expfmt",
-    "internal/bitbucket.org/ww/goautoneg",
+  packages = ["expfmt","internal/bitbucket.org/ww/goautoneg","model"]
     "model",
-  ]
   pruneopts = "NUT"
   revision = "d978bcb1309602d68bb4ba69cf3f8ed900e07308"
   version = "v0.9.1"
@@ -241,11 +191,8 @@
 [[projects]]
   digest = "1:a4b063a766f50cdadc1fce12053e3bde8599f1f8b7621d7e293cd2fc86543a44"
   name = "github.com/prometheus/procfs"
-  packages = [
-    ".",
-    "internal/fs",
+  packages = [".","internal/fs","internal/util"]
     "internal/util",
-  ]
   pruneopts = "NUT"
   revision = "6d489fc7f1d9cd890a250f3ea3431b1744b9623f"
   version = "v0.0.8"
@@ -277,19 +224,14 @@
 [[projects]]
   branch = "develop"
   digest = "1:296eddda33403e4c506e3398ace25de0dfabf46156c86db86e6e0aa69ca43d9d"
-  name = "github.com/skycoin/skycoin"
-  packages = [
     "src/cipher",
     "src/cipher/base58",
     "src/cipher/ripemd160",
     "src/cipher/secp256k1-go",
     "src/cipher/secp256k1-go/secp256k1-go2",
     "src/util/logging",
-  ]
   pruneopts = "NUT"
   revision = "d7e4b2f3e31ea96bdcaba595507fde42baa156b9"
-
-[[projects]]
   digest = "1:d3533ee568fc00a971617ec09dc0f0b3eddfb4adbc1275f8f6332553d67506b4"
   name = "github.com/spf13/cobra"
   packages = ["."]
@@ -316,11 +258,8 @@
 [[projects]]
   digest = "1:9c5200504d96cb7a3df099e8f79a45cf5df91f575bb51095f8c3355eeed38aa7"
   name = "github.com/stretchr/testify"
-  packages = [
-    "assert",
-    "mock",
+  packages = ["assert","mock","require"]
     "require",
-  ]
   pruneopts = "NUT"
   revision = "2aa2c176b9dab406a6970f6a55f513e8a8c8b18f"
 
@@ -328,13 +267,7 @@
   branch = "master"
   digest = "1:7d48359beaf9338737095261d796704f4df17776183141813200aab4d4b0131c"
   name = "github.com/therecipe/qt"
-  packages = [
-    "core",
-    "gui",
-    "internal/binding/runtime",
-    "network",
-    "qml",
-  ]
+  packages = ["core","gui","internal/binding/runtime","network","qml"]
   pruneopts = "NUT"
   revision = "5074eb6d8c41fdae5d1956af7c286160a40dd8fd"
 
@@ -342,12 +275,8 @@
   branch = "master"
   digest = "1:059bf4e6350ea6202b837cb24216b735d997e29e407f299be040a826c0bc026c"
   name = "golang.org/x/crypto"
-  packages = [
-    "bcrypt",
-    "blowfish",
-    "pbkdf2",
+  packages = ["bcrypt","blowfish","pbkdf2","ssh/terminal"]
     "ssh/terminal",
-  ]
   pruneopts = "NUT"
   revision = "86ce3cb696783b739e41e834e2eead3e1b4aa3fb"
 
@@ -363,10 +292,8 @@
   branch = "master"
   digest = "1:4e1eac2eb79906608c99a7c513b8a48a0b95ca5478b808eac95abed09bc7860d"
   name = "golang.org/x/sys"
-  packages = [
-    "unix",
+  packages = ["unix","windows"]
     "windows",
-  ]
   pruneopts = "NUT"
   revision = "12a6c2dcc1e4cb348b57847c73987099e261714b"
 

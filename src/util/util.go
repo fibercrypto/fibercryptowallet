@@ -55,7 +55,7 @@ func FormatCoins(n uint64, quotient uint64) string {
 	lenQ := len(strconv.FormatUint(quotient, 10)) - 1
 	nFormatted := FormatUint64(n / quotient)
 	if lenQ > len(number) {
-		return nFormatted
+		return strconv.FormatFloat(float64(n)/float64(quotient), 'f', -1, 64)
 	}
 	reminder := number[len(number)-lenQ:]
 	reminder = RemoveZeros(reminder)

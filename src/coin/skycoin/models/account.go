@@ -1,4 +1,4 @@
-package skycoin //nolint goimports
+package skycoin // nolint goimports
 
 import (
 	"path/filepath"
@@ -42,18 +42,18 @@ func (addr *SkycoinAddress) GetBalance(ticker string) (uint64, error) {
 func (addr *SkycoinAddress) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
-func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (addr *SkycoinAddress) ScanUnspentOutputs() (core.TransactionOutputIterator, error) {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		log.WithError(err).Error("Couldn't get API client")
-		return nil
+		return nil, err
 	}
 	defer ReturnSkycoinClient(c)
 	log.Info("POST /api/v1/outputs?addrs=xxx")
 	outputSummary, err := c.OutputsForAddresses([]string{addr.String()})
 	if err != nil {
 		log.WithError(err).WithField("addrs", addr.String()).Error("Couldn't POST /api/v1/outputs?addrs=xxx")
-		return nil
+		return nil, err
 	}
 
 	outs := outputSummary.SpendableOutputs()
@@ -72,7 +72,7 @@ func (addr *SkycoinAddress) ScanUnspentOutputs() core.TransactionOutputIterator 
 		})
 	}
 
-	return NewSkycoinTransactionOutputIterator(skyOutputs)
+	return NewSkycoinTransactionOutputIterator(skyOutputs), nil
 }
 func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 
@@ -105,7 +105,7 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 	return NewSkycoinTransactionIterator(transactions)
 
 }
-func (addr *SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
+func (addr *SkycoinAddress) ListPendingTransactions() (core.TransactionIterator, error) { // ------TODO
 	return nil, nil
 }
 
@@ -137,21 +137,25 @@ func (wlt *RemoteWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt *RemoteWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (wlt *RemoteWallet) ScanUnspentOutputs() (core.TransactionOutputIterator, error) {
 	log.Info("Calling RemoteWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		log.WithError(err).Error("RemoteWallet.GetLoadedAddresses() failed")
-		return nil
+		return nil, err
 	}
 	unOuts := make([]core.TransactionOutput, 0)
 	for addressesIter.Next() {
-		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		outsIter, err := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		if err != nil {
+			log.WithError(err).Error("Couldn't get the TransactionOutputIterator")
+			return nil, err
+		}
 		for outsIter.Next() {
 			unOuts = append(unOuts, outsIter.Value())
 		}
 	}
-	return NewSkycoinTransactionOutputIterator(unOuts)
+	return NewSkycoinTransactionOutputIterator(unOuts), err
 }
 
 func (wlt *RemoteWallet) ListTransactions() core.TransactionIterator {
@@ -259,21 +263,25 @@ func (wlt *LocalWallet) ListAssets() []string {
 	return []string{Sky, CoinHour}
 }
 
-func (wlt *LocalWallet) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (wlt *LocalWallet) ScanUnspentOutputs() (core.TransactionOutputIterator, error) {
 	log.Info("Calling LocalWallet.GetLoadedAddresses()")
 	addressesIter, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		log.WithError(err).Error("LocalWallet.GetLoadedAddresses() failed")
-		return nil
+		return nil, err
 	}
 	unOuts := make([]core.TransactionOutput, 0)
 	for addressesIter.Next() {
-		outsIter := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		outsIter, err := addressesIter.Value().GetCryptoAccount().ScanUnspentOutputs()
+		if err != nil {
+			log.WithError(err).Error("Couldn't get the TransactionOutputIterator")
+			return nil, err
+		}
 		for outsIter.Next() {
 			unOuts = append(unOuts, outsIter.Value())
 		}
 	}
-	return NewSkycoinTransactionOutputIterator(unOuts)
+	return NewSkycoinTransactionOutputIterator(unOuts), nil
 }
 
 func (wlt *LocalWallet) ListTransactions() core.TransactionIterator {
@@ -293,7 +301,7 @@ func (wlt *LocalWallet) ListTransactions() core.TransactionIterator {
 	return NewSkycoinTransactionIterator(txns)
 }
 
-func (wlt *LocalWallet) ListPendingTransactions() (core.TransactionIterator, error) { //------TODO
+func (wlt *LocalWallet) ListPendingTransactions() (core.TransactionIterator, error) { // ------TODO
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		log.WithError(err).Error("Couldn't get API client")
