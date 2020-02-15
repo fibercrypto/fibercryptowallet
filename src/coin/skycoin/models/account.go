@@ -1,7 +1,6 @@
 package skycoin // nolint goimports
 
 import (
-	"fmt"
 	"path/filepath"
 	"strconv"
 
@@ -80,7 +79,6 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 	c, err := NewSkycoinApiClient(PoolSection)
 	if err != nil {
 		log.WithError(err).Error("Couldn't get API client")
-		fmt.Println("ERRROR 1 listing txns ", err.Error())
 		return nil
 	}
 	defer ReturnSkycoinClient(c)
@@ -88,7 +86,6 @@ func (addr *SkycoinAddress) ListTransactions() core.TransactionIterator {
 	txn, err := c.TransactionsVerbose([]string{addr.String()})
 	if err != nil {
 		log.WithError(err).WithField("addrs", addr.String()).Error("Couldn't POST /api/v1/transactions?verbose=1")
-		fmt.Println("ERRROR 2 listing txns ", err.Error())
 		return nil
 	}
 

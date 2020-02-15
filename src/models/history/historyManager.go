@@ -1,7 +1,6 @@
 package history
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
@@ -118,96 +117,77 @@ func (a ByDate) Less(i, j int) bool {
 func (hm *HistoryManager) updateTxns() {
 	defer hm.mutexForUpdate.Unlock()
 	logHistoryManager.Info("Getting transactions of Addresses")
-	fmt.Println("////////////UT 1")
 	hm.addresses = hm.getAddressesWithWallets()
-	fmt.Println("////////////UT 2")
 	wltIterator := hm.walletEnv.GetWalletSet().ListWallets()
-	fmt.Println("////////////UT 3")
 	if wltIterator == nil {
 		logHistoryManager.WithError(nil).Warn("Couldn't get transactions of Addresses")
-		fmt.Println("ERROR HERE 0")
 		return
 	}
-	fmt.Println("////////////UT 4")
 	for wltIterator.Next() {
-		fmt.Println("////////////UT 5.1")
 		logHistoryManager.Debug("Getting addresses history for wallet ", wltIterator.Value().GetId())
 		addressIterator, err := wltIterator.Value().GetLoadedAddresses()
 		if err != nil {
 			logHistoryManager.Warn("Couldn't get address iterator")
-			fmt.Println("ERROR HERE 1 ", err.Error())
 			continue
 		}
-		fmt.Println("////////////UT 5.2")
 		var newTxnsFinded bool
 		for addressIterator.Next() {
-			fmt.Println("////////////UT 6.1")
 			newTxnsFinded = false
 			txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
-			fmt.Println("////////////UT 6.2")
 			if txnsIterator == nil {
 				logHistoryManager.Warn("Couldn't get transaction iterator")
-				fmt.Println("ERROR HERE 2")
 				continue
 			}
-			fmt.Println("////////////UT 6.3")
 			for txnsIterator.Next() {
-				fmt.Println("////////////UT 7.1")
+				corrupted := false
 				if _, exist := hm.txnFinded[txnsIterator.Value().GetId()]; !exist {
-					fmt.Println("////////////UT 7.2")
 					newTxnsFinded = true
 					hm.txnFinded[txnsIterator.Value().GetId()] = struct{}{}
-					fmt.Println("////////////UT 7.3")
 					for _, in := range txnsIterator.Value().GetInputs() {
-						fmt.Println("////////////UT 8")
-						if in == nil {
-							fmt.Println("IN IS NIL")
+						out := in.GetSpentOutput()
+						if out == nil {
+							corrupted = true
+							break
 						}
-						if in.GetSpentOutput() == nil {
-							fmt.Println("OUT IS NIL")
+						outAddr := out.GetAddress()
+						if outAddr == nil {
+							corrupted = true
+							break
 						}
-						if in.GetSpentOutput().GetAddress() == nil {
-							fmt.Println("ADDR IS NIL")
-						}
-						if _, exist := hm.addresses[in.GetSpentOutput().GetAddress().String()]; exist {
-							fmt.Println("////////////UT 8.1")
+						if _, exist := hm.addresses[outAddr.String()]; exist {
 							hm.mutexForNew.Lock()
-							_, exist2 := hm.newTxn[in.GetSpentOutput().GetAddress().String()]
+							_, exist2 := hm.newTxn[outAddr.String()]
 							if exist2 {
-								hm.newTxn[in.GetSpentOutput().GetAddress().String()] = append(hm.newTxn[in.GetSpentOutput().GetAddress().String()], txnsIterator.Value())
+								hm.newTxn[outAddr.String()] = append(hm.newTxn[outAddr.String()], txnsIterator.Value())
 							} else {
-								hm.newTxn[in.GetSpentOutput().GetAddress().String()] = []core.Transaction{txnsIterator.Value()}
+								hm.newTxn[outAddr.String()] = []core.Transaction{txnsIterator.Value()}
 							}
 							hm.mutexForNew.Unlock()
 						}
 					}
+					if corrupted {
+						continue
+					}
 					for _, out := range txnsIterator.Value().GetOutputs() {
-						fmt.Println("////////////UT 9.1")
 						if _, exist := hm.addresses[out.GetAddress().String()]; exist {
 							hm.mutexForNew.Lock()
-							fmt.Println("////////////UT 9.2")
 							_, exist2 := hm.newTxn[out.GetAddress().String()]
 							if exist2 {
-								fmt.Println("////////////UT 9.3")
 								hm.newTxn[out.GetAddress().String()] = append(hm.newTxn[out.GetAddress().String()], txnsIterator.Value())
 							} else {
-								fmt.Println("////////////UT 9.4")
 								hm.newTxn[out.GetAddress().String()] = []core.Transaction{txnsIterator.Value()}
 							}
-							fmt.Println("////////////UT 9.5")
 							hm.mutexForNew.Unlock()
 						}
 					}
 				}
 			}
 			if newTxnsFinded {
-				fmt.Println("////////////UT 10")
 				hm.NewTransactions()
 			}
 
 		}
 	}
-	fmt.Println("////////////UT FINISH")
 }
 
 func (hm *HistoryManager) getTransactions() []*transactions.TransactionDetails {
