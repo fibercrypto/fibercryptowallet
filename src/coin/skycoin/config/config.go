@@ -18,6 +18,7 @@ const (
 	SectionName               = "skycoin"
 	SettingPathToLog          = "log"
 	SettingPathToNode         = "node"
+	SettingNodeAddress		  = "address"
 	SettingPathToWalletSource = "walletSource"
 )
 
@@ -139,8 +140,29 @@ func GetWalletSources() ([]*walletSource, error) {
 		if err != nil {
 			return nil, err
 		}
+		if wltSrcs[i].Tp == RemoteWallet {
+			node, err := GetNodeSource()
+			if err != nil {
+				return nil, err
+			}
+			wltSrcs[i].Source = node[SettingNodeAddress]
+		}
 	}
 	return wltSrcs, nil
+}
+
+func GetNodeSource() (map[string]string, error) {
+
+	nodeSettingStr, err := GetOption(SettingPathToNode)
+	if err != nil {
+		return nil, err
+	}
+	node := make(map[string]string)
+	err = json.Unmarshal([]byte(nodeSettingStr), &node)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
 }
 
 type walletSource struct {

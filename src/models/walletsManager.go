@@ -878,7 +878,7 @@ func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType strin
 	}
 	logWalletManager.Info("Created unencrypted wallet")
 
-	qWallet := fromWalletToQWallet(wlt, true, false)
+	qWallet := fromWalletToQWallet(wlt, false, false)
 	walletM.wallets = append(walletM.wallets, qWallet)
 	wi := &updateWalletInfo{
 		isNew: true,

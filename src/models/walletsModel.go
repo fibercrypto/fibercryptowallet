@@ -75,7 +75,7 @@ func (walletModel *WalletModel) init() {
 		for {
 			wi := <-walletModel.receivChannel
 			if wi.isNew {
-				walletModel.addWallet(wi.wallet)
+				//walletModel.addWallet(wi.wallet)
 			} else {
 				encrypted := false
 				if wi.wallet.EncryptionEnabled() == 1 {
