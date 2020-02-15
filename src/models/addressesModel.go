@@ -142,11 +142,14 @@ func (m *AddressesModel) roleNames() map[int]*core.QByteArray {
 }
 
 func (m *AddressesModel) addAddress(address *QAddress) {
-	m.BeginInsertRows(core.NewQModelIndex(), len(m.Addresses()), len(m.Addresses()))
-	qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)
-	m.SetAddresses(append(m.Addresses(), address))
-	m.EndInsertRows()
-	m.SetCount(m.Count() + 1)
+	Helper.RunInMain(func() {
+		m.BeginInsertRows(core.NewQModelIndex(), len(m.Addresses()), len(m.Addresses()))
+		qml.QQmlEngine_SetObjectOwnership(address, qml.QQmlEngine__CppOwnership)
+		m.SetAddresses(append(m.Addresses(), address))
+		m.EndInsertRows()
+		m.SetCount(m.Count() + 1)
+	})
+
 }
 
 func (m *AddressesModel) addAddresses(addresses []*QAddress) {
@@ -156,10 +159,13 @@ func (m *AddressesModel) addAddresses(addresses []*QAddress) {
 }
 
 func (m *AddressesModel) removeAddress(row int) {
-	m.BeginRemoveRows(core.NewQModelIndex(), row, row)
-	m.SetAddresses(append(m.Addresses()[:row], m.Addresses()[row+1:]...))
-	m.EndRemoveRows()
-	m.SetCount(m.Count() - 1)
+	Helper.RunInMain(func() {
+		m.BeginRemoveRows(core.NewQModelIndex(), row, row)
+		m.SetAddresses(append(m.Addresses()[:row], m.Addresses()[row+1:]...))
+		m.EndRemoveRows()
+		m.SetCount(m.Count() - 1)
+	})
+
 }
 
 func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uint64, marked int) {
@@ -183,11 +189,13 @@ func (m *AddressesModel) editAddress(row int, address string, sky, coinHours uin
 	}
 	a.SetMarked(marked)
 	pIndex := m.Index(row, 0, core.NewQModelIndex())
-	if changeMarked {
-		m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours, AMarked})
-	} else {
-		m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
-	}
+	Helper.RunInMain(func() {
+		if changeMarked {
+			m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours, AMarked})
+		} else {
+			m.DataChanged(pIndex, pIndex, []int{Address, ASky, ACoinHours})
+		}
+	})
 
 }
 
@@ -212,10 +220,12 @@ func (m *AddressesModel) loadModel(Qaddresses []*QAddress) {
 	addresses = append(addresses, address)
 	addresses = append(addresses, Qaddresses...)
 
-	m.BeginResetModel()
-	m.SetAddresses(addresses)
-	m.SetCount(len(addresses))
+	Helper.RunInMain(func() {
+		m.BeginResetModel()
+		m.SetAddresses(addresses)
+		m.SetCount(len(addresses))
 
-	m.EndResetModel()
+		m.EndResetModel()
+	})
 
 }
