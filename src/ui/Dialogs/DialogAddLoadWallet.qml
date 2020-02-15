@@ -32,7 +32,7 @@ Dialog {
                 scanA = 10
             }
             
-            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name,textFieldPassword.text, comboBoxWalletType.model[comboBoxWalletType.currentIndex].name, scanA))
+            walletModel.addWallet(walletManager.createEncryptedWallet(seed, name, comboBoxWalletType.model[comboBoxWalletType.currentIndex].name, textFieldPassword.text, scanA))
             
         } else{
             
@@ -41,6 +41,7 @@ Dialog {
             }
             walletModel.addWallet(walletManager.createUnencryptedWallet(seed, name, comboBoxWalletType.model[comboBoxWalletType.currentIndex].name, scanA))
         }
+        textFieldPassword.text = ""
     }
 
     function updateAcceptButtonStatus() {
