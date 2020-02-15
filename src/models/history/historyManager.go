@@ -142,7 +142,6 @@ func (hm *HistoryManager) updateTxns() {
 				corrupted := false
 				if _, exist := hm.txnFinded[txnsIterator.Value().GetId()]; !exist {
 					newTxnsFinded = true
-					hm.txnFinded[txnsIterator.Value().GetId()] = struct{}{}
 					for _, in := range txnsIterator.Value().GetInputs() {
 						out := in.GetSpentOutput()
 						if out == nil {
@@ -180,6 +179,7 @@ func (hm *HistoryManager) updateTxns() {
 							hm.mutexForNew.Unlock()
 						}
 					}
+					hm.txnFinded[txnsIterator.Value().GetId()] = struct{}{}
 				}
 			}
 			if newTxnsFinded {
