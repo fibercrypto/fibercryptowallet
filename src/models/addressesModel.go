@@ -130,7 +130,7 @@ func (m *AddressesModel) data(index *core.QModelIndex, role int) *core.QVariant 
 }
 
 func (m *AddressesModel) rowCount(parent *core.QModelIndex) int {
-	return len(m.Addresses())
+	return m.Count()
 }
 
 func (m *AddressesModel) columnCount(parent *core.QModelIndex) int {
