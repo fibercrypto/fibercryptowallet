@@ -1,9 +1,10 @@
 package models
 
 import (
-	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	"sync"
 	"time"
+
+	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 
 	//"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
@@ -75,7 +76,7 @@ func (m *ModelWallets) init() {
 		uptimeTicker := time.NewTicker(time.Duration(config.GetDataUpdateTime()) * time.Second)
 
 		for range uptimeTicker.C {
-			go m.loadModel()
+			go m.LoadModel()
 		}
 	}()
 }

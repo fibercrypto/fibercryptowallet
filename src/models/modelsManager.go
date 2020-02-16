@@ -30,8 +30,8 @@ func (mm *ModelManager) init() {
 			for wlt, _ := range mm.addressesModel {
 				addrModel := NewAddressesModel(nil)
 				qml.QQmlEngine_SetObjectOwnership(addrModel, qml.QQmlEngine__CppOwnership)
-				addrModel.loadModel(mm.wltManager.getAddresses(wlt))
-				addrModel.removeAddress(0)
+				addrModel.LoadModel(mm.wltManager.getAddresses(wlt))
+				addrModel.RemoveAddress(0)
 				mm.addressesModel[wlt] = addrModel
 			}
 
@@ -49,8 +49,8 @@ func (mm *ModelManager) getAddressModel(wltName string) *AddressesModel {
 	if !ok {
 		addrModel = NewAddressesModel(nil)
 		qml.QQmlEngine_SetObjectOwnership(addrModel, qml.QQmlEngine__CppOwnership)
-		addrModel.loadModel(mm.wltManager.getAddresses(wltName))
-		addrModel.removeAddress(0)
+		addrModel.LoadModel(mm.wltManager.getAddresses(wltName))
+		addrModel.RemoveAddress(0)
 		mm.addressesModel[wltName] = addrModel
 	}
 
