@@ -779,10 +779,20 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 	if len(wltCache) > 1 {
 		signDescriptors := make([]core.InputSignDescriptor, 0)
 		for _, in := range qTxn.txn.GetInputs() {
+			out, err := in.GetSpentOutput()
+			if err != nil {
+				logWalletManager.WithError(err).Error("Error signing transaction")
+				return nil
+			}
+			outAddr, err := out.GetAddress()
+			if err != nil {
+				logWalletManager.WithError(err).Error("Error signing transaction")
+				return nil
+			}
 			sd := core.InputSignDescriptor{
 				InputIndex: in.GetId(),
 				SignerID:   core.UID(source),
-				Wallet:     wltByAddr[in.GetSpentOutput().GetAddress().String()],
+				Wallet:     wltByAddr[outAddr.String()],
 			}
 			signDescriptors = append(signDescriptors, sd)
 		}
@@ -860,8 +870,8 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 	qWallet := fromWalletToQWallet(wlt, true, false)
 	walletM.wallets = append(walletM.wallets, qWallet)
 	wi := &updateWalletInfo{
-		isNew: true,
-		row: len(walletM.wallets)-1,
+		isNew:  true,
+		row:    len(walletM.wallets) - 1,
 		wallet: walletM.wallets[len(walletM.wallets)-1],
 	}
 	walletM.updaterChannel <- wi
@@ -881,8 +891,8 @@ func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType strin
 	qWallet := fromWalletToQWallet(wlt, false, false)
 	walletM.wallets = append(walletM.wallets, qWallet)
 	wi := &updateWalletInfo{
-		isNew: true,
-		row: len(walletM.wallets)-1,
+		isNew:  true,
+		row:    len(walletM.wallets) - 1,
 		wallet: walletM.wallets[len(walletM.wallets)-1],
 	}
 	walletM.updaterChannel <- wi

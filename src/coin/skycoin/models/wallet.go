@@ -453,7 +453,11 @@ func (wlt *RemoteWallet) Transfer(destination core.TransactionOutput, options co
 		logWallet.WithError(err).Warnf("Couldn't retrieve %s to transfer", params.SkycoinTicker)
 		return nil, err
 	}
-	to := destination.GetAddress()
+	to, err := destination.GetAddress()
+	if err != nil {
+		logWallet.WithError(err).Error("Couldn't get address")
+		return nil, err
+	}
 
 	var txnOutput SkycoinTransactionOutput
 	txnOutput.skyOut.Address = to.String()
@@ -548,7 +552,12 @@ func createTransaction(from []core.Address, to, uxOut []core.TransactionOutput, 
 		}
 		strAmount := util.FormatCoins(skyV, quotient)
 		recv := api.Receiver{}
-		recv.Address = out.GetAddress().String()
+		outAddr, err := out.GetAddress()
+		if err != nil {
+			logWallet.WithError(err).Error("Couldn't get address")
+			return nil, err
+		}
+		recv.Address = outAddr.String()
 		recv.Coins = strAmount
 		if coinHoursSelection.Type == "manual" {
 			chV, err := out.GetCoins(CoinHour)
@@ -1401,7 +1410,12 @@ func (wlt *LocalWallet) Transfer(to core.TransactionOutput, options core.KeyValu
 	strAmount := util.FormatCoins(amount, quotient)
 
 	var txnOutput SkycoinTransactionOutput
-	txnOutput.skyOut.Address = to.GetAddress().String()
+	outAddr, err := to.GetAddress()
+	if err != nil {
+		logWallet.WithError(err).Error("Couldn't get address")
+		return nil, err
+	}
+	txnOutput.skyOut.Address = outAddr.String()
 	txnOutput.skyOut.Coins = strAmount
 	addresses := make([]core.Address, 0)
 	iterAddr, err := wlt.GetLoadedAddresses()

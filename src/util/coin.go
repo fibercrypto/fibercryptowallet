@@ -31,8 +31,8 @@ func (gOut *GenericOutput) IsSpent() bool {
 }
 
 // GetAddress returns the address of the party receiving funds
-func (gOut *GenericOutput) GetAddress() core.Address {
-	return gOut.Address
+func (gOut *GenericOutput) GetAddress() (core.Address, error) {
+	return gOut.Address, nil
 }
 
 // SetCoins allocates coin for an asset given its ticker

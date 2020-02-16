@@ -143,13 +143,13 @@ func (hm *HistoryManager) updateTxns() {
 				if _, exist := hm.txnFinded[txnsIterator.Value().GetId()]; !exist {
 					newTxnsFinded = true
 					for _, in := range txnsIterator.Value().GetInputs() {
-						out := in.GetSpentOutput()
-						if out == nil {
+						out, err := in.GetSpentOutput()
+						if err != nil {
 							corrupted = true
 							break
 						}
-						outAddr := out.GetAddress()
-						if outAddr == nil {
+						outAddr, err := out.GetAddress()
+						if err != nil {
 							corrupted = true
 							break
 						}
@@ -168,16 +168,25 @@ func (hm *HistoryManager) updateTxns() {
 						continue
 					}
 					for _, out := range txnsIterator.Value().GetOutputs() {
-						if _, exist := hm.addresses[out.GetAddress().String()]; exist {
+						outAddr, err := out.GetAddress()
+						if err != nil {
+							logHistoryManager.WithError(err).Warn("Couldn't get address")
+							corrupted = true
+							break
+						}
+						if _, exist := hm.addresses[outAddr.String()]; exist {
 							hm.mutexForNew.Lock()
-							_, exist2 := hm.newTxn[out.GetAddress().String()]
+							_, exist2 := hm.newTxn[outAddr.String()]
 							if exist2 {
-								hm.newTxn[out.GetAddress().String()] = append(hm.newTxn[out.GetAddress().String()], txnsIterator.Value())
+								hm.newTxn[outAddr.String()] = append(hm.newTxn[outAddr.String()], txnsIterator.Value())
 							} else {
-								hm.newTxn[out.GetAddress().String()] = []core.Transaction{txnsIterator.Value()}
+								hm.newTxn[outAddr.String()] = []core.Transaction{txnsIterator.Value()}
 							}
 							hm.mutexForNew.Unlock()
 						}
+					}
+					if corrupted {
+						continue
 					}
 					hm.txnFinded[txnsIterator.Value().GetId()] = struct{}{}
 				}
@@ -363,7 +372,17 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 	for _, in := range txnIns {
 		qIn := address.NewAddressDetails(nil)
 		qml.QQmlEngine_SetObjectOwnership(qIn, qml.QQmlEngine__CppOwnership)
-		qIn.SetAddress(in.GetSpentOutput().GetAddress().String())
+		out, err := in.GetSpentOutput()
+		if err != nil {
+			logHistoryManager.WithError(err).Error("Couldn't get spent output")
+			return nil, err
+		}
+		outAddr, err := out.GetAddress()
+		if err != nil {
+			logHistoryManager.WithError(err).Error("Couldn't get address")
+			return nil, err
+		}
+		qIn.SetAddress(outAddr.String())
 		skyUint64, err := in.GetCoins(params.SkycoinTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins balance")
@@ -388,7 +407,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 		}
 		qIn.SetAddressCoinHours(util.FormatCoins(chUint64, accuracy))
 		inputs.AddAddress(qIn)
-		_, ok := addresses[in.GetSpentOutput().GetAddress().String()]
+		_, ok := addresses[outAddr.String()]
 		if ok {
 			skyAmountOut += skyUint64
 			sent = true
@@ -409,7 +428,12 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 		}
 		qOu := address.NewAddressDetails(nil)
 		qml.QQmlEngine_SetObjectOwnership(qOu, qml.QQmlEngine__CppOwnership)
-		qOu.SetAddress(out.GetAddress().String())
+		outAddr, err := out.GetAddress()
+		if err != nil {
+			logHistoryManager.WithError(err).Error("Couldn't get address")
+			return nil, err
+		}
+		qOu.SetAddress(outAddr.String())
 		accuracy, err := util.AltcoinQuotient(params.SkycoinTicker)
 		if err != nil {
 			logHistoryManager.WithError(err).Warn("Couldn't get Skycoins quotient")
@@ -429,8 +453,18 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 		qOu.SetAddressCoinHours(util.FormatCoins(val, accuracy))
 		outputs.AddAddress(qOu)
 		if sent {
+			nOut, err := txn.GetInputs()[0].GetSpentOutput()
+			if err != nil {
+				logHistoryManager.WithError(err).Error("Couldn't get spent output")
+				return nil, err
+			}
+			nOutAddr, err := nOut.GetAddress()
+			if err != nil {
+				logHistoryManager.WithError(err).Error("Couldn't get address")
+				return nil, err
+			}
 
-			if addresses[txn.GetInputs()[0].GetSpentOutput().GetAddress().String()] == addresses[out.GetAddress().String()] {
+			if addresses[nOutAddr.String()] == addresses[outAddr.String()] {
 				skyAmountOut -= sky
 
 			} else {
@@ -443,7 +477,7 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 				traspassedHoursOut += val
 			}
 		} else {
-			_, ok := addresses[out.GetAddress().String()]
+			_, ok := addresses[outAddr.String()]
 			if ok {
 				val, err = out.GetCoins(params.CoinHoursTicker)
 				if err != nil {
@@ -518,7 +552,12 @@ func TransactionDetailsFromCoreTxn(txn core.Transaction, addresses map[string]st
 				inFind[addr.Address()] = struct{}{}
 			}
 			for _, addr := range txn.GetOutputs() {
-				_, ok := inFind[addr.GetAddress().String()]
+				outAddr, err := addr.GetAddress()
+				if err != nil {
+					logHistoryManager.WithError(err).Error("Couldn't get address")
+					return nil, err
+				}
+				_, ok := inFind[outAddr.String()]
 				if !ok {
 					hours, err := addr.GetCoins(params.CoinHoursTicker)
 					if err != nil {
