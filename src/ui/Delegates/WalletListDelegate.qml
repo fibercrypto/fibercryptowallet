@@ -229,17 +229,19 @@ Item {
     AddressModel {
 
         id: listAddresses
-        property Timer timer: Timer {
-            id: addressModelTimer
-            interval: 3000
-            repeat: true
-            running: true
-            onTriggered: {
-                listAddresses.updateModel(fileName);
-            }
-        }
+        // property Timer timer: Timer {
+            // id: addressModelTimer
+            // interval: 3000
+            // repeat: true
+            // running: true
+            // onTriggered: {
+                // listAddresses.updateModel(fileName);
+            // }
+        // }
     }
     Component.onCompleted: {
-        listAddresses.updateModel(fileName);
+        //listAddresses.updateModel(fileName);
+        listAddresses.updateModel(fileName)
+        listAddresses.suscribe(fileName)
     }
 }

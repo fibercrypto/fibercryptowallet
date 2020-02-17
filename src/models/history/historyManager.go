@@ -141,7 +141,6 @@ func (hm *HistoryManager) updateTxns() {
 			for txnsIterator.Next() {
 				corrupted := false
 				if _, exist := hm.txnFinded[txnsIterator.Value().GetId()]; !exist {
-					newTxnsFinded = true
 					for _, in := range txnsIterator.Value().GetInputs() {
 						out, err := in.GetSpentOutput()
 						if err != nil {
@@ -188,6 +187,7 @@ func (hm *HistoryManager) updateTxns() {
 					if corrupted {
 						continue
 					}
+					newTxnsFinded = true
 					hm.txnFinded[txnsIterator.Value().GetId()] = struct{}{}
 				}
 			}
