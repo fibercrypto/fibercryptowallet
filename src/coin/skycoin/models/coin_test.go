@@ -211,7 +211,7 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 
 	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
 	global_mock.On("UxOut", "in1").Return(nil, goerrors.New("failure")).Once()
-	output := input.GetSpentOutput()
+	output, _ := input.GetSpentOutput()
 	require.Nil(t, output)
 
 	global_mock.On("UxOut", "in1").Return(
@@ -224,11 +224,12 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 		nil,
 	).Once()
 
-	output = input.GetSpentOutput()
+	output, _ = input.GetSpentOutput()
 
 	t.Logf("%#v", output)
 	require.Equal(t, output.GetId(), "out1")
-	require.Equal(t, output.GetAddress().String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
+	outputAddress, _ := output.GetAddress()
+	require.Equal(t, outputAddress.String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
 	sky, err := output.GetCoins(Sky)
 	require.NoError(t, err)
 	require.Equal(t, sky, uint64(1000000))
@@ -1048,7 +1049,8 @@ func TestSkycoinUninjectedTransactionGetOutputs(t *testing.T) {
 				require.Equal(t, len(tt.addrs), len(outputs))
 				hashes := make([]string, len(tt.addrs))
 				for i, out := range outputs {
-					hashes[i] = out.GetAddress().String()
+					outputAddress, _ := out.GetAddress()
+					hashes[i] = outputAddress.String()
 				}
 				requirethat.ElementsMatch(t, tt.addrs, hashes)
 			}
@@ -1831,7 +1833,7 @@ func TestGetAddress(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			addr := tt.output.GetAddress()
+			addr, _ := tt.output.GetAddress()
 			if tt.isNil {
 				require.Nil(t, addr)
 			} else {
@@ -1869,7 +1871,7 @@ func TestSkycoinCreatedTransactionInputGetSpentOutput(t *testing.T) {
 					CalculatedHours: tt.ccHours,
 				},
 			}
-			output := createdIn.GetSpentOutput()
+			output, _ := createdIn.GetSpentOutput()
 			createdOut, valid := output.(*SkycoinCreatedTransactionOutput)
 			require.True(t, valid)
 			for _, asset := range createdIn.SupportedAssets() {
@@ -1880,7 +1882,8 @@ func TestSkycoinCreatedTransactionInputGetSpentOutput(t *testing.T) {
 				require.Equal(t, cur, val)
 			}
 			require.Equal(t, createdIn.GetId(), createdOut.GetId())
-			require.Equal(t, tt.addr, createdOut.GetAddress().String())
+			outputAddress, _ := createdOut.GetAddress()
+			require.Equal(t, tt.addr, outputAddress.String())
 		})
 	}
 }

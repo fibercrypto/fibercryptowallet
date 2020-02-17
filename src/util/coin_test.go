@@ -50,7 +50,8 @@ func TestNewGenericOutput(t *testing.T) {
 	require.Equal(t, uint64(42000), amount)
 	require.Nil(t, err)
 
-	require.Equal(t, addr, output.GetAddress())
+	outAddress, _ := output.GetAddress()
+	require.Equal(t, addr, outAddress)
 	require.Equal(t, "id", output.GetId())
 	require.False(t, output.IsSpent())
 
