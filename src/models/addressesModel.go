@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
@@ -89,7 +87,6 @@ func (m *AddressesModel) suscribe(wltId string) {
 				oldAddr := m.addressById[addr.address.Address()]
 				updateBalanceValues(oldAddr, addr.address)
 				Helper.RunInMain(func() {
-					fmt.Println("CHANING DATA ", m.Count())
 					pIndex := m.Index(0, 0, core.NewQModelIndex())
 					lIndex := m.Index(m.Count()-1, 0, core.NewQModelIndex())
 					m.DataChanged(pIndex, lIndex, []int{ASky, ACoinHours})

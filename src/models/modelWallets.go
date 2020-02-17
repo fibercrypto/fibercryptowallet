@@ -6,7 +6,6 @@ import (
 
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 
-	//"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/config"
 	coin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	local "github.com/fibercrypto/fibercryptowallet/src/main"
@@ -14,7 +13,6 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	qtcore "github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
-	//"time"
 )
 
 var logWalletModel = logging.MustGetLogger("Wallet Model")

@@ -18,7 +18,7 @@ const (
 	SectionName               = "skycoin"
 	SettingPathToLog          = "log"
 	SettingPathToNode         = "node"
-	SettingNodeAddress		  = "address"
+	SettingNodeAddress        = "address"
 	SettingPathToWalletSource = "walletSource"
 )
 
