@@ -48,7 +48,7 @@ func (devI *QDeviceInteraction) init() {
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.Wipe().Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data.(string))
 		devI.OperationDone()
@@ -61,7 +61,7 @@ func (devI *QDeviceInteraction) wipeDevice() {
 }
 
 func (devI *QDeviceInteraction) backupDevice() {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.Backup().Then(func(data interface{}) interface{} {
 		devI.OperationDone()
 		return data
@@ -72,7 +72,7 @@ func (devI *QDeviceInteraction) backupDevice() {
 }
 
 func (devI *QDeviceInteraction) changePin() {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	rm := false
 	dev.ChangePin(&rm).Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data.(string))
@@ -92,7 +92,7 @@ func (devI *QDeviceInteraction) changePin() {
 }
 
 func (devI* QDeviceInteraction) cancelCommand() {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.Cancel().Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data.(string))
 		return data
@@ -103,7 +103,7 @@ func (devI* QDeviceInteraction) cancelCommand() {
 }
 
 func (devI *QDeviceInteraction) deviceFeatures() {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.Features().Then(func(data interface{}) interface{} {
 		features := data.(messages.Features)
 		if features.Label != nil {
@@ -120,7 +120,7 @@ func (devI *QDeviceInteraction) deviceFeatures() {
 }
 
 func (devI *QDeviceInteraction) generateMnemonic(wordCount uint, usePassphrase bool) {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.GenerateMnemonic(uint32(wordCount), usePassphrase).Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data)
 		devI.OperationDone()
@@ -133,7 +133,7 @@ func (devI *QDeviceInteraction) generateMnemonic(wordCount uint, usePassphrase b
 }
 
 func (devI *QDeviceInteraction) restoreBackup(wordCount uint, usePassphrase bool) {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.Recovery(uint32(wordCount), &usePassphrase, false).Then(func(data interface{}) interface{} {
 		logWalletsModel.Infoln(data)
 		devI.OperationDone()
@@ -157,7 +157,7 @@ func (devI *QDeviceInteraction) firmwareUpload(filePath string) {
 		logWalletsModel.WithError(err).Errorln("unable to upload firmware to device")
 		return
 	}
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.UploadFirmware(firmware, sha256.Sum256(firmware[0x100:])).Then(func(data interface{}) interface{} {
 		devI.OperationDone()
 		return data
@@ -168,7 +168,7 @@ func (devI *QDeviceInteraction) firmwareUpload(filePath string) {
 }
 
 func (devI *QDeviceInteraction) changeDeviceName(label string) {
-	dev := hardware.NewSkyWalletInteraction()
+	dev := hardware.SkyWltInteractionInstance()
 	dev.ApplySettings(nil, label, "").Then(func(data interface{}) interface{} {
 		devI.OperationDone()
 		return data

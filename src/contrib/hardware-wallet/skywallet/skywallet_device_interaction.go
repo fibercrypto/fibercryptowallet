@@ -3,17 +3,39 @@ package hardware
 import (
 	"github.com/chebyrash/promise"
 	"github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
+	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
+	"sync"
 )
 
 type SkyWalletInteraction struct {
 	dev skywallet.Devicer
 }
 
-func NewSkyWalletInteraction() hardware_wallet.DeviceInteraction {
-	return &SkyWalletInteraction{dev: SkyWltDeviceInstance()}
+var once sync.Once
+var skyWltInteraction hardware_wallet.DeviceInteraction
+
+// CreateSkyWltInteractionInstanceOnce initialize the device instance.
+// Trying to change the device interaction behavior by using
+// different arguments does not works because this is a singleton
+// like function method.
+func CreateSkyWltInteractionInstanceOnce(deviceType skywallet.DeviceType, inputReader func(skywallet.InputRequestKind, string, string)(string, error)) hardware_wallet.DeviceInteraction {
+	once.Do(func() {
+		skyWltInteraction = &SkyWalletInteraction{
+			dev: proxy.NewSequencer(skywallet.NewDevice(deviceType), true, inputReader),
+		}
+	})
+	return skyWltInteraction
+}
+
+// SkyWltInteractionInstance return the shared device interaction instance
+func SkyWltInteractionInstance() hardware_wallet.DeviceInteraction {
+	if skyWltInteraction == nil {
+		logSkyWallet.Errorln("device instance is null, a previous call to CreateSkyWltInteractionInstanceOnce it's required")
+	}
+	return skyWltInteraction
 }
 
 func(wlt *SkyWalletInteraction) AddressGen(addressN, startIndex uint32, confirmAddress bool, walletType string) *promise.Promise {

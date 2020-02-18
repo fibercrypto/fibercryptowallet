@@ -13,7 +13,7 @@ type SkyWalletHelper struct {
 }
 
 func NewSkyWalletHelper() hardware_wallet.DeviceHelper{
-	return &SkyWalletHelper{di: NewSkyWalletInteraction()}
+	return &SkyWalletHelper{di: SkyWltInteractionInstance()}
 }
 
 func (dev *SkyWalletHelper) FirstAddress(walletType string) *promise.Promise {
