@@ -23,6 +23,8 @@ type QDeviceInteraction struct {
 	_ func(string)              `slot:"changeDeviceName"`
 	_ func()                    `slot:"cancelCommand"`
 	_ func(file string)         `slot:"firmwareUpload"`
+	_ func()                    `slot:"initializeWasWarn"`
+	_ func()                    `slot:"secureWasWarn"`
 	_ func(hasPin bool)         `signal:"hasPinDetermined"`
 	_ func(name string)         `signal:"nameDetermined"`
 	_ func(isInitialized bool)  `signal:"isInitializedDetermined"`
@@ -45,6 +47,8 @@ func (devI *QDeviceInteraction) init() {
 	devI.ConnectGenerateMnemonic(devI.generateMnemonic)
 	devI.ConnectRestoreBackup(devI.restoreBackup)
 	devI.ConnectChangeDeviceName(devI.changeDeviceName)
+	devI.ConnectInitializeWasWarn(devI.initializeWasWarn)
+	devI.ConnectSecureWasWarn(devI.secureWasWarn)
 }
 
 func (devI *QDeviceInteraction) wipeDevice() {
@@ -176,4 +180,14 @@ func (devI *QDeviceInteraction) changeDeviceName(label string) {
 		devI.OperationDone()
 		return err
 	})
+}
+
+func (devI *QDeviceInteraction) initializeWasWarn() {
+	dev := hardware.SkyWltInteractionInstance()
+	dev.SetInitializeWasWarn()
+}
+
+func (devI *QDeviceInteraction) secureWasWarn() {
+	dev := hardware.SkyWltInteractionInstance()
+	dev.SetSecureWasWarn()
 }

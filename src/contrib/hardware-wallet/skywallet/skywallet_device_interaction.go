@@ -12,6 +12,8 @@ import (
 
 type SkyWalletInteraction struct {
 	dev skywallet.Devicer
+	initializeWasWarn bool
+	secureWasWarn bool
 }
 
 var once sync.Once
@@ -25,6 +27,8 @@ func CreateSkyWltInteractionInstanceOnce(deviceType skywallet.DeviceType, inputR
 	once.Do(func() {
 		skyWltInteraction = &SkyWalletInteraction{
 			dev: proxy.NewSequencer(skywallet.NewDevice(deviceType), true, inputReader),
+			initializeWasWarn: false,
+			secureWasWarn: false,
 		}
 	})
 	return skyWltInteraction
@@ -251,4 +255,20 @@ func (wlt *SkyWalletInteraction) Cancel() *promise.Promise {
 		}
 		resolve(msgStr)
 	})
+}
+
+func (wlt *SkyWalletInteraction) SetInitializeWasWarn() {
+	wlt.initializeWasWarn = true
+}
+
+func (wlt *SkyWalletInteraction) InitializeWasWarn() bool {
+	return wlt.initializeWasWarn
+}
+
+func (wlt *SkyWalletInteraction) SetSecureWasWarn() {
+	wlt.secureWasWarn = true
+}
+
+func (wlt *SkyWalletInteraction) SecureWasWarn() bool {
+	return wlt.secureWasWarn
 }

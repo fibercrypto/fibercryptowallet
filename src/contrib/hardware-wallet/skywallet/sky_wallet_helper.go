@@ -54,6 +54,15 @@ func (dev *SkyWalletHelper) DeviceMatch(wlt core.Wallet) *promise.Promise {
 }
 
 func (dev *SkyWalletHelper) ShouldBeSecured() *promise.Promise {
+	if dev.di.SecureWasWarn() {
+		return promise.New(func(resolve func(interface{}), reject func(error)) {
+			resolve(false)
+		}).Then(func(data interface{}) interface{} {
+			return data
+		}).Catch(func(err error) error {
+			return err
+		})
+	}
 	return dev.di.Features().Then(func(data interface{}) interface{} {
 		features := data.(messages.Features)
 		if !*features.PinProtection {
@@ -69,6 +78,15 @@ func (dev *SkyWalletHelper) ShouldBeSecured() *promise.Promise {
 }
 
 func (dev *SkyWalletHelper) ShouldBeInitialized() *promise.Promise {
+	if dev.di.InitializeWasWarn() {
+		return promise.New(func(resolve func(interface{}), reject func(error)) {
+			resolve(false)
+		}).Then(func(data interface{}) interface{} {
+			return data
+		}).Catch(func(err error) error {
+			return err
+		})
+	}
 	return dev.di.Features().Then(func(data interface{}) interface{} {
 		features := data.(messages.Features)
 		if !*features.Initialized {

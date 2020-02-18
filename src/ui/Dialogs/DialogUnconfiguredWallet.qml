@@ -21,7 +21,10 @@ Dialog {
         }
     }
     onAboutToShow: deviceInteraction2.deviceFeatures();
-    onRejected: topLevelDialogLocker.unlock();
+    onRejected: {
+        deviceInteraction2.initializeWasWarn();
+        topLevelDialogLocker.unlock();
+    }
 
     Flickable {
         id: flickable

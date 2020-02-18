@@ -170,6 +170,7 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 		}
 		dev := hardware.NewSkyWalletHelper()
 		dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
+			// TODO duplicate code
 			if data.(bool) {
 				locker.BeginUse()
 				defer locker.EndUse()
@@ -182,6 +183,7 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 		}).Then(func(data interface{}) interface{} {
 			return dev.ShouldBeSecured()
 		}).Then(func(data interface{}) interface{} {
+			// TODO duplicate code
 			if data.(bool) {
 				locker.BeginUse()
 				defer locker.EndUse()
