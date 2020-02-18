@@ -12,7 +12,6 @@ import (
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
-	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	"github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/sirupsen/logrus"
@@ -229,14 +228,9 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coi
 	if err != nil {
 		return nil, fce.ErrTxnSignFailure
 	}
-	msg, ok := rMsg.(wire.Message)
+	signatures, ok := rMsg.([]string)
 	if !ok {
-		return nil, errors.New("FIXME redo this block")
-	}
-	signatures, err := skyWallet.DecodeResponseTransactionSign(msg)
-	if err != nil {
-		logSkyWallet.WithError(err).Error("error decoding device response")
-		return nil, fce.ErrTxnSignFailure
+		return nil, errors.New(" FIXME redo this block")
 	}
 	if txn.Sigs == nil {
 		logSkyWallet.Warnln("nil slice in transaction signatures detected, creating a new one")
@@ -348,15 +342,9 @@ func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
 	if err != nil {
 		return messages.Features{}, fce.ErrHwUnexpected
 	}
-	msg, ok := rMsg.(wire.Message)
+	features, ok := rMsg.(messages.Features)
 	if !ok {
-		return messages.Features{}, errors.New("FIXME redo this block")
-	}
-	features := messages.Features{}
-	err = proto.Unmarshal(msg.Data, &features)
-	if err != nil {
-		logSkyWallet.WithError(err).Error("error decoding device response")
-		return messages.Features{}, fce.ErrHwUnexpected
+		return messages.Features{}, errors.New(" FIXME redo this block")
 	}
 	return features, nil
 }
