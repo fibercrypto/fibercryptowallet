@@ -325,7 +325,11 @@ func (walletM *WalletManager) initWalletAddresses(wltId string) {
 func (walletM *WalletManager) updateAddresses(wltId string) {
 	mutex := walletM.utilByWallets[wltId].m
 	sendChan := walletM.utilByWallets[wltId].sendChannel
-	addresses := walletM.addresseseByWallets[wltId]
+	addresses, ok := walletM.addresseseByWallets[wltId]
+	if !ok {
+		walletM.addresseseByWallets[wltId] = make(map[string]*QAddress)
+		addresses = walletM.addresseseByWallets[wltId]
+	}
 	mutex.Lock()
 	defer mutex.Unlock()
 	logWalletManager.Info("Updating Addresses")
@@ -516,6 +520,10 @@ func (walletM *WalletManager) updateWallets() {
 		}
 
 		if changed {
+			walletM.utilByWallets[it.Value().GetId()] = &utilByWallet{
+				m:           sync.Mutex{},
+				sendChannel: make(chan *updateAddressInfo),
+			}
 			wi := &updateWalletInfo{
 				isNew:  !founded,
 				row:    row,
@@ -920,6 +928,10 @@ func (walletM *WalletManager) createEncryptedWallet(seed, label, wltType, passwo
 		row:    len(walletM.wallets) - 1,
 		wallet: walletM.wallets[len(walletM.wallets)-1],
 	}
+	walletM.utilByWallets[wlt.GetId()] = &utilByWallet{
+		m:           sync.Mutex{},
+		sendChannel: make(chan *updateAddressInfo),
+	}
 	walletM.updaterChannel <- wi
 	return qWallet
 }
@@ -940,6 +952,10 @@ func (walletM *WalletManager) createUnencryptedWallet(seed, label, wltType strin
 		isNew:  true,
 		row:    len(walletM.wallets) - 1,
 		wallet: walletM.wallets[len(walletM.wallets)-1],
+	}
+	walletM.utilByWallets[wlt.GetId()] = &utilByWallet{
+		m:           sync.Mutex{},
+		sendChannel: make(chan *updateAddressInfo),
 	}
 	walletM.updaterChannel <- wi
 	return qWallet
