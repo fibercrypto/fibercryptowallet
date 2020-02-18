@@ -117,5 +117,47 @@ lint                           Run linters. Use make install-linters first.
 
 Type `make help` in your console for details.
 
+## Releases
+
+### Update the version
+
+0. If the `master` branch has commits that are not in `develop` (e.g. due to a hotfix applied to `master`), merge `master` into `develop`
+0. Update `CHANGELOG.md`: move the "unreleased" changes to the version and add the date
+0. Update the files in https://github.com/skycoin/repo-info by following the [metadata update procedure](https://github.com/skycoin/repo-info/#updating-skycoin-repository-metadate),
+0. Merge these changes to `develop`
+0. Follow the steps in [pre-release testing](#pre-release-testing)
+0. Make a PR merging `develop` into `master`
+0. Review the PR and merge it
+0. Tag the `master` branch with the version number. Version tags start with `v`, e.g. `v0.1.0`.
+    Sign the tag. If you have your GPG key in github, creating a release on the Github website will automatically tag the release.
+    It can be tagged from the command line with `git tag -as v0.20.0 $COMMIT_ID`, but Github will not recognize it as a "release".
+0. Make sure that the app runs properly from the `master` branch
+0. Release builds are created and uploaded by travis. To do it manually, checkout the `master` branch and follow the [create release builds](#creating-release-builds) instructions.
+
+If there are problems discovered after merging to `master`, start over, and increment the 3rd version number.
+For example, `v0.1.0` becomes `v0.1.1`, for minor fixes.
+
+### Pre-release testing
+
+Performs these actions before releasing:
+
+* `make test-sky` Run Skycoin plugin test suite
+* `make test-core` Run tests for API core and helpers
+* `make test-data` Run tests for data package
+* `make test-cover` Show more details of test coverage
+* `make test` Run project test suite
+
+### Creating release builds
+
+Travis should build Linux and MacOS builds and upload to github releases
+
+If you do it manually, you must follow the next steps:
+
+* `make prepare-release` Change the resources in the app and prepare to release the app
+* `make clean` Remove temporary files
+* `make build` Build FiberCrypto Wallet
+* Compress the content in `deploy` folder and inside that folder 
+
+
 ## WIP
 This is a Work-In-Progress.
