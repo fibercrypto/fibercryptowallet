@@ -211,7 +211,10 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 
 	input := &SkycoinTransactionInput{skyIn: readable.TransactionInput{Hash: "in1"}}
 	global_mock.On("UxOut", "in1").Return(nil, goerrors.New("failure")).Once()
-	output, _ := input.GetSpentOutput()
+	output, err := input.GetSpentOutput()
+	if err != nil {
+		require.Equal(t,"failure", err.Error())
+	}
 	require.Nil(t, output)
 
 	global_mock.On("UxOut", "in1").Return(
@@ -224,11 +227,13 @@ func TestSkycoinTransactionInputGetSpentOutput(t *testing.T) {
 		nil,
 	).Once()
 
-	output, _ = input.GetSpentOutput()
+	output, err = input.GetSpentOutput()
+	require.Equal(t, nil, err)
 
 	t.Logf("%#v", output)
 	require.Equal(t, output.GetId(), "out1")
-	outputAddress, _ := output.GetAddress()
+	outputAddress, err := output.GetAddress()
+	require.Equal(t, nil, err)
 	require.Equal(t, outputAddress.String(), "2JJ8pgq8EDAnrzf9xxBJapE2qkYLefW4uF8")
 	sky, err := output.GetCoins(Sky)
 	require.NoError(t, err)
@@ -1049,7 +1054,8 @@ func TestSkycoinUninjectedTransactionGetOutputs(t *testing.T) {
 				require.Equal(t, len(tt.addrs), len(outputs))
 				hashes := make([]string, len(tt.addrs))
 				for i, out := range outputs {
-					outputAddress, _ := out.GetAddress()
+					outputAddress, err := out.GetAddress()
+					require.Equal(t, nil, err)
 					hashes[i] = outputAddress.String()
 				}
 				requirethat.ElementsMatch(t, tt.addrs, hashes)
@@ -1833,7 +1839,10 @@ func TestGetAddress(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			addr, _ := tt.output.GetAddress()
+			addr, err := tt.output.GetAddress()
+			if err != nil {
+				require.Equal(t, "Invalid base58 string", err.Error())
+			}
 			if tt.isNil {
 				require.Nil(t, addr)
 			} else {
@@ -1871,7 +1880,8 @@ func TestSkycoinCreatedTransactionInputGetSpentOutput(t *testing.T) {
 					CalculatedHours: tt.ccHours,
 				},
 			}
-			output, _ := createdIn.GetSpentOutput()
+			output, err := createdIn.GetSpentOutput()
+			require.Equal(t, nil, err)
 			createdOut, valid := output.(*SkycoinCreatedTransactionOutput)
 			require.True(t, valid)
 			for _, asset := range createdIn.SupportedAssets() {
@@ -1882,7 +1892,8 @@ func TestSkycoinCreatedTransactionInputGetSpentOutput(t *testing.T) {
 				require.Equal(t, cur, val)
 			}
 			require.Equal(t, createdIn.GetId(), createdOut.GetId())
-			outputAddress, _ := createdOut.GetAddress()
+			outputAddress, err := createdOut.GetAddress()
+			require.Equal(t, nil, err)
 			require.Equal(t, tt.addr, outputAddress.String())
 		})
 	}
