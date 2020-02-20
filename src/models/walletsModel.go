@@ -158,6 +158,33 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 			hadHwConnected = true
 			walletModel.updateWallet(wlt.GetId())
 			attachHwAsSigner(wlt)
+			dev := hardware.NewSkyWalletHelper()
+			dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
+				// TODO duplicate code
+				if data.(bool) {
+					locker.BeginUse()
+					defer locker.EndUse()
+					locker.lock()
+					qmlDevI.InitializeDevice()
+					locker.lock()
+					locker.unlock()
+				}
+				return dev.ShouldBeSecured()
+			}).Then(func(data interface{}) interface{} {
+				// TODO duplicate code
+				if data.(bool) {
+					locker.BeginUse()
+					defer locker.EndUse()
+					locker.lock()
+					qmlDevI.SecureDevice()
+					locker.lock()
+					locker.unlock()
+				}
+				return data
+			}).Catch(func(err error) error {
+				logWalletsModel.WithError(err).Errorln("uf")
+				return err
+			}).Await()
 		}
 		logError := func(err error) {
 			if err != nil {
@@ -169,33 +196,7 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 			}
 		}
 		dev := hardware.NewSkyWalletHelper()
-		dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
-			// TODO duplicate code
-			if data.(bool) {
-				locker.BeginUse()
-				defer locker.EndUse()
-				locker.lock()
-				qmlDevI.InitializeDevice()
-				locker.lock()
-				locker.unlock()
-			}
-			return data
-		}).Then(func(data interface{}) interface{} {
-			return dev.ShouldBeSecured()
-		}).Then(func(data interface{}) interface{} {
-			// TODO duplicate code
-			if data.(bool) {
-				locker.BeginUse()
-				defer locker.EndUse()
-				locker.lock()
-				qmlDevI.SecureDevice()
-				locker.lock()
-				locker.unlock()
-			}
-			return data
-		}).Then(func(data interface{}) interface {} {
-			return dev.FirstAddress(skyWallet.WalletTypeDeterministic)
-		}).Then(func(data interface{}) interface{} {
+		dev.FirstAddress(skyWallet.WalletTypeDeterministic).Then(func(data interface{}) interface{} {
 			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
 			logError(err)
 			registerWlt(wlt)
