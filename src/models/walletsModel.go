@@ -158,27 +158,23 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 			hadHwConnected = true
 			walletModel.updateWallet(wlt.GetId())
 			attachHwAsSigner(wlt)
+			openDialog := func(prompt func()) {
+				locker.BeginUse()
+				defer locker.EndUse()
+				locker.lock()
+				prompt()
+				locker.lock()
+				locker.unlock()
+			}
 			dev := hardware.NewSkyWalletHelper()
 			dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
-				// TODO duplicate code
 				if data.(bool) {
-					locker.BeginUse()
-					defer locker.EndUse()
-					locker.lock()
-					qmlDevI.InitializeDevice()
-					locker.lock()
-					locker.unlock()
+					openDialog(qmlDevI.InitializeDevice)
 				}
 				return dev.ShouldBeSecured()
 			}).Then(func(data interface{}) interface{} {
-				// TODO duplicate code
 				if data.(bool) {
-					locker.BeginUse()
-					defer locker.EndUse()
-					locker.lock()
-					qmlDevI.SecureDevice()
-					locker.lock()
-					locker.unlock()
+					openDialog(qmlDevI.SecureDevice)
 				}
 				return data
 			}).Catch(func(err error) error {
