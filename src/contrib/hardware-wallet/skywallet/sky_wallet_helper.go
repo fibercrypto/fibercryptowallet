@@ -21,8 +21,6 @@ func (dev *SkyWalletHelper) FirstAddress(walletType string) *promise.Promise {
 	return prm.Then(func(data interface{}) interface{} {
 		addresses := data.([]string)
 		return addresses[0]
-	}).Catch(func(err error) error {
-		return err
 	})
 }
 
@@ -48,8 +46,6 @@ func (dev *SkyWalletHelper) DeviceMatch(wlt core.Wallet) *promise.Promise {
 			return val
 		}
 		return matcher(data.(string))
-	}).Catch(func(err error) error {
-		return err
 	})
 }
 
@@ -59,8 +55,6 @@ func (dev *SkyWalletHelper) ShouldBeSecured() *promise.Promise {
 			resolve(false)
 		}).Then(func(data interface{}) interface{} {
 			return data
-		}).Catch(func(err error) error {
-			return err
 		})
 	}
 	return dev.di.Features().Then(func(data interface{}) interface{} {
@@ -72,8 +66,6 @@ func (dev *SkyWalletHelper) ShouldBeSecured() *promise.Promise {
 			return true
 		}
 		return false
-	}).Catch(func(err error) error {
-		return err
 	})
 }
 
@@ -83,8 +75,6 @@ func (dev *SkyWalletHelper) ShouldBeInitialized() *promise.Promise {
 			resolve(false)
 		}).Then(func(data interface{}) interface{} {
 			return data
-		}).Catch(func(err error) error {
-			return err
 		})
 	}
 	return dev.di.Features().Then(func(data interface{}) interface{} {
@@ -93,7 +83,5 @@ func (dev *SkyWalletHelper) ShouldBeInitialized() *promise.Promise {
 			return true
 		}
 		return false
-	}).Catch(func(err error) error {
-		return err
 	})
 }
