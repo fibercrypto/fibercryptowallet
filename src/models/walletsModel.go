@@ -158,29 +158,6 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 			hadHwConnected = true
 			walletModel.updateWallet(wlt.GetId())
 			attachHwAsSigner(wlt)
-			openDialog := func(prompt func()) {
-				locker.BeginUse()
-				defer locker.EndUse()
-				locker.lock()
-				prompt()
-				locker.lock()
-				locker.unlock()
-			}
-			dev := hardware.NewSkyWalletHelper()
-			dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
-				if data.(bool) {
-					openDialog(qmlDevI.InitializeDevice)
-				}
-				return dev.ShouldBeSecured()
-			}).Then(func(data interface{}) interface{} {
-				if data.(bool) {
-					openDialog(qmlDevI.SecureDevice)
-				}
-				return data
-			}).Catch(func(err error) error {
-				logWalletsModel.WithError(err).Errorln("uf")
-				return err
-			}).Await()
 		}
 		logError := func(err error) {
 			if err != nil {
@@ -215,6 +192,28 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 				logWalletsModel.Warningln("00000000000000000")
 				return err
 			}
+			return err
+		}).Await()
+		openDialog := func(prompt func()) {
+			locker.BeginUse()
+			defer locker.EndUse()
+			locker.lock()
+			prompt()
+			locker.lock()
+			locker.unlock()
+		}
+		dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
+			if data.(bool) {
+				openDialog(qmlDevI.InitializeDevice)
+			}
+			return dev.ShouldBeSecured()
+		}).Then(func(data interface{}) interface{} {
+			if data.(bool) {
+				openDialog(qmlDevI.SecureDevice)
+			}
+			return data
+		}).Catch(func(err error) error {
+			logWalletsModel.WithError(err).Errorln("uf")
 			return err
 		}).Await()
 	}
