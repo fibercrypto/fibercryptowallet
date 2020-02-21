@@ -264,6 +264,9 @@ ApplicationWindow {
         onSecureDevice: {
             dialogSkyWalletId.open();
         }
+        onOpenInteractionDialog: {
+            skyWalletInteractionDialog.open();
+        }
     }
     QBridge {
         id: topLevelDialogLocker

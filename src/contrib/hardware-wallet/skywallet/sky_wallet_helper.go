@@ -85,3 +85,16 @@ func (dev *SkyWalletHelper) ShouldBeInitialized() *promise.Promise {
 		return false
 	})
 }
+
+func (dev *SkyWalletHelper) IsBootloaderMode() *promise.Promise {
+	return dev.di.Features().Then(func(data interface{}) interface{} {
+		return *data.(messages.Features).BootloaderMode
+	})
+}
+
+func (dev *SkyWalletHelper) ShouldUploadFirmware() *promise.Promise {
+	if dev.di.UploadFirmwareWasWarn() {
+		return promise.Resolve(false)
+	}
+	return dev.IsBootloaderMode()
+}

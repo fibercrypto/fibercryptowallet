@@ -18,4 +18,10 @@ type DeviceHelper interface {
 
 	// ShouldBeInitialized check if the device needs to be initialized
 	ShouldBeInitialized() *promise.Promise
+
+	// ShouldUploadFirmware check if the device require a new firmware upload
+	ShouldUploadFirmware() *promise.Promise
+
+	// IsBootloaderMode check if the device is running in bootloader mode
+	IsBootloaderMode() *promise.Promise
 }

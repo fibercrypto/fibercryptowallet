@@ -79,7 +79,7 @@ func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 		}
 	}
 	hardware.CreateSkyWltInteractionInstanceOnce(
-		skyWallet.DeviceTypeEmulator,
+		skyWallet.DeviceTypeUSB,
 		func(kind skyWallet.InputRequestKind, tittle, message string)(string, error) {
 			prompt, err := requestKind2Prompt(kind, bridgeForPassword)
 			if err != nil {
@@ -169,6 +169,26 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 			}
 		}
 		dev := hardware.NewSkyWalletHelper()
+		openDialog := func(prompt func()) {
+			locker.BeginUse()
+			defer locker.EndUse()
+			locker.lock()
+			prompt()
+			locker.lock()
+			locker.unlock()
+		}
+		isBootloader, err := dev.ShouldUploadFirmware().Then(func(data interface{}) interface{} {
+			if data.(bool) {
+				openDialog(qmlDevI.OpenInteractionDialog)
+			}
+			return dev.IsBootloaderMode()
+		}).Catch(func(err error) error {
+			logWalletsModel.WithError(err).Errorln("can not determine boot mode")
+			return err
+		}).Await()
+		if err != nil || isBootloader.(bool) {
+			return
+		}
 		dev.FirstAddress(skyWallet.WalletTypeDeterministic).Then(func(data interface{}) interface{} {
 			wlt, err := walletManager.WalletEnv.LookupWallet(data.(string))
 			logError(err)
@@ -194,14 +214,6 @@ func (walletModel *WalletModel) sniffHw(qmlDevI *QDeviceInteraction, locker *QBr
 			}
 			return err
 		}).Await()
-		openDialog := func(prompt func()) {
-			locker.BeginUse()
-			defer locker.EndUse()
-			locker.lock()
-			prompt()
-			locker.lock()
-			locker.unlock()
-		}
 		dev.ShouldBeInitialized().Then(func(data interface{}) interface{} {
 			if data.(bool) {
 				openDialog(qmlDevI.InitializeDevice)

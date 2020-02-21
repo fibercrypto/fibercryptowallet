@@ -13,6 +13,7 @@ import (
 type SkyWalletInteraction struct {
 	dev skywallet.Devicer
 	initializeWasWarn bool
+	uploadFirmwareWasWarn bool
 	secureWasWarn bool
 }
 
@@ -28,6 +29,7 @@ func CreateSkyWltInteractionInstanceOnce(deviceType skywallet.DeviceType, inputR
 		skyWltInteraction = &SkyWalletInteraction{
 			dev: proxy.NewSequencer(skywallet.NewDevice(deviceType), true, inputReader),
 			initializeWasWarn: false,
+			uploadFirmwareWasWarn: false,
 			secureWasWarn: false,
 		}
 	})
@@ -255,6 +257,14 @@ func (wlt *SkyWalletInteraction) Cancel() *promise.Promise {
 		}
 		resolve(msgStr)
 	})
+}
+
+func (wlt *SkyWalletInteraction) SetUploadFirmwareWasWarn() {
+	wlt.uploadFirmwareWasWarn = true
+}
+
+func (wlt *SkyWalletInteraction) UploadFirmwareWasWarn() bool {
+	return wlt.uploadFirmwareWasWarn
 }
 
 func (wlt *SkyWalletInteraction) SetInitializeWasWarn() {

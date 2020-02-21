@@ -23,6 +23,7 @@ Dialog {
         onNameDetermined: deviceNameDialog.hint = name;
     }
     onAboutToShow: deviceInteraction3.deviceFeatures()
+    onAccepted: deviceInteraction.deviceInteractionWasWarn()
     FileDialog {
         id: fileDialog
         title: "Please choose a file"

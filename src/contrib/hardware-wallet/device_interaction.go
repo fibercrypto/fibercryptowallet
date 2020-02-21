@@ -22,6 +22,8 @@ type DeviceInteraction interface {
 	TransactionSign(inputs []*messages.SkycoinTransactionInput, outputs []*messages.SkycoinTransactionOutput, walletType string) *promise.Promise
 	SignMessage(addressN, addressIndex int, message string, walletType string) *promise.Promise
 	Wipe() *promise.Promise
+	SetUploadFirmwareWasWarn()
+	UploadFirmwareWasWarn() bool
 	SetInitializeWasWarn()
 	InitializeWasWarn() bool
 	SetSecureWasWarn()
