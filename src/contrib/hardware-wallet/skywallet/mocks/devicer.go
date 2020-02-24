@@ -220,18 +220,25 @@ func (_m *Devicer) Disconnect() error {
 	return r0
 }
 
-// FirmwareUpload provides a mock function with given fields: payload, hash
-func (_m *Devicer) FirmwareUpload(payload []byte, hash [32]byte) error {
-	ret := _m.Called(payload, hash)
+// EraseFirmware provides a mock function with given fields: length
+func (_m *Devicer) EraseFirmware(length uint32) (wire.Message, error) {
+	ret := _m.Called(length)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func([]byte, [32]byte) error); ok {
-		r0 = rf(payload, hash)
+	var r0 wire.Message
+	if rf, ok := ret.Get(0).(func(uint32) wire.Message); ok {
+		r0 = rf(length)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(wire.Message)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint32) error); ok {
+		r1 = rf(length)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GenerateMnemonic provides a mock function with given fields: wordCount, usePassphrase
@@ -409,6 +416,27 @@ func (_m *Devicer) TransactionSign(inputs []*messages.SkycoinTransactionInput, o
 	var r1 error
 	if rf, ok := ret.Get(1).(func([]*messages.SkycoinTransactionInput, []*messages.SkycoinTransactionOutput, string) error); ok {
 		r1 = rf(inputs, outputs, walletType)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UploadFirmware provides a mock function with given fields: payload, hash
+func (_m *Devicer) UploadFirmware(payload []byte, hash [32]byte) (wire.Message, error) {
+	ret := _m.Called(payload, hash)
+
+	var r0 wire.Message
+	if rf, ok := ret.Get(0).(func([]byte, [32]byte) wire.Message); ok {
+		r0 = rf(payload, hash)
+	} else {
+		r0 = ret.Get(0).(wire.Message)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]byte, [32]byte) error); ok {
+		r1 = rf(payload, hash)
 	} else {
 		r1 = ret.Error(1)
 	}

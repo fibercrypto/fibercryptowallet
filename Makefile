@@ -245,26 +245,30 @@ clean-build: ## Remove temporary files
 	rm -rf "$(ICONS_BUILDPATH)"
 	rm -rf "$(RC_OBJ)"
 	rm -rf "$(ICONSET)"
-
 	@echo "Done."
 
 clean: clean-test clean-build ## Remove temporary files
 
-gen-mocks-core: ## Generate mocks for core interface types
+gen-mocks-vendor-hw:  ## Generate mocks for hardware wallet deps interface types
 	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/hardware-wallet/skywallet/mocks -case underscore
 	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/hardware-wallet/skywallet/mocks -case underscore
+
+gen-mocks-hw: gen-mocks-vendor-hw ## Generate mocks for hardware wallet interface types
+	mockery -all -output src/coin/mocks -outpkg mocks -dir src/contrib/hardware-wallet
+
+gen-mocks-core: ## Generate mocks for core interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 
 gen-mocks-sky: ## Generate mocks for internal Skycoin types
 	mockery -all -output src/coin/skycoin/skymocks -outpkg skymocks -dir src/coin/skycoin/skytypes
 
-gen-mocks: gen-mocks-core gen-mocks-sky ## Generate mocks for interface types
+gen-mocks: gen-mocks-core gen-mocks-sky gen-mocks-hw ## Generate mocks for interface types
 
 $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
 
 test-skyhw: build ## Run Hardware wallet tests
-	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
 test-sky: ## Run Skycoin plugin test suite
@@ -291,7 +295,7 @@ test-cover-travis: clean-test
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
-	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
+	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 
 test-cover: test test-html-cover ## Show more details of test coverage

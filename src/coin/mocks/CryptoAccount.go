@@ -87,7 +87,7 @@ func (_m *CryptoAccount) ListTransactions() core.TransactionIterator {
 }
 
 // ScanUnspentOutputs provides a mock function with given fields:
-func (_m *CryptoAccount) ScanUnspentOutputs() core.TransactionOutputIterator {
+func (_m *CryptoAccount) ScanUnspentOutputs() (core.TransactionOutputIterator, error) {
 	ret := _m.Called()
 
 	var r0 core.TransactionOutputIterator
@@ -99,5 +99,12 @@ func (_m *CryptoAccount) ScanUnspentOutputs() core.TransactionOutputIterator {
 		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
