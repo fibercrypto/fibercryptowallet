@@ -1,6 +1,7 @@
 package hardware
 
 import (
+	"fmt"
 	"github.com/chebyrash/promise"
 	"github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
@@ -156,6 +157,11 @@ func(wlt *SkyWalletInteraction) Features() *promise.Promise {
 		msg, err := wlt.dev.GetFeatures()
 		if err != nil {
 			reject(err)
+			return
+		}
+		// TODO move it to lib
+		if msg.Kind != uint16(messages.MessageType_MessageType_Features) {
+			reject(fmt.Errorf("calling DecodeFeaturesMsg with wrong message type: %s", messages.MessageType(msg.Kind)))
 			return
 		}
 		features := messages.Features{}

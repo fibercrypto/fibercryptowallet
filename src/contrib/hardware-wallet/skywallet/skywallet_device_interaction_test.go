@@ -10,6 +10,7 @@ import (
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"strings"
 	"testing"
 )
 
@@ -412,4 +413,94 @@ func TestUploadFirmwareShouldHandleErrorDecodingResponse(t *testing.T) {
 	// Then
 	require.Error(t, err)
 	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
+}
+
+func TestFeaturesShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgMsg := "great"
+	featuresRespResp := messages.Features{Label: proto.String(orgMsg)}
+	data, err := proto.Marshal(&featuresRespResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Features),
+		Data: data,
+	}
+	dev.On("GetFeatures").Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	response, err := di.Features().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseFeatures, ok := response.(messages.Features)
+	require.True(t, ok)
+	require.NotNil(t, responseFeatures.Label)
+	require.Equal(t, orgMsg, *responseFeatures.Label)
+}
+
+func TestFeaturesShouldHandleDeviceError(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err := di.Features().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestFeaturesShouldHandleErrorDecodingBecauseWrongKindResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	featuresResp := messages.Failure{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&featuresResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: data,
+	}
+	dev.On("GetFeatures").Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.Features().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, err, errors.New("calling DecodeFeaturesMsg with wrong message type: MessageType_Failure"))
+}
+
+func TestFeaturesShouldHandleErrorDecodingResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	featuresResp := messages.Failure{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&featuresResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Features),
+		Data: data,
+	}
+	dev.On("GetFeatures").Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.Features().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.True(t, strings.Contains(err.Error(), "wrong wireType"))
 }
