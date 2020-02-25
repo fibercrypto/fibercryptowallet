@@ -961,3 +961,33 @@ func TestCancelShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, err, errors.New("calling DecodeFailMsg with wrong message type: MessageType_Success"))
 }
+
+func TestUninitializedInstantiation(t *testing.T) {
+	// Giving
+	skyWltInteraction = nil
+
+	// When
+	di := SkyWltInteractionInstance()
+
+	// Then
+	require.Nil(t, di)
+}
+
+func TestInitializeInstantiation(t *testing.T) {
+	// Giving
+	skyWltInteraction = nil
+
+	// When
+	di1 := CreateSkyWltInteractionInstanceOnce(
+		true,
+		skywallet.DeviceTypeEmulator,
+		func(kind skywallet.InputRequestKind, s3 string, s2 string) (s string, err error) {
+			return "", nil
+		},
+	)
+	di2 := SkyWltInteractionInstance()
+
+	// Then
+	require.NotNil(t, di1)
+	require.Equal(t, di1, di2)
+}
