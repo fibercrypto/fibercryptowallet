@@ -896,3 +896,68 @@ func TestWipeShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
 }
+
+func TestCancelShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgMsg := "great"
+	cancelResp := messages.Failure{Message: proto.String(orgMsg)}
+	data, err := proto.Marshal(&cancelResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: data,
+	}
+	dev.On("Cancel").Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	response, err := di.Cancel().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseStr, ok := response.(string)
+	require.True(t, ok)
+	require.Equal(t, orgMsg, responseStr)
+}
+
+func TestCancelShouldHandleDeviceError(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	dev.On("Cancel").Return(wire.Message{}, errors.New(""))
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err := di.Cancel().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestCancelShouldHandleErrorDecodingResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	cancelResp := messages.Success{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&cancelResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Success),
+		Data: data,
+	}
+	dev.On("Cancel").Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.Cancel().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, err, errors.New("calling DecodeFailMsg with wrong message type: MessageType_Success"))
+}
