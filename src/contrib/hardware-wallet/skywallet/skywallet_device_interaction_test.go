@@ -14,7 +14,7 @@ import (
 	"testing"
 )
 
-func createDeviceInteraction2(dev skywallet.Devicer) hardware_wallet.DeviceInteraction {
+func createDeviceInteraction(dev skywallet.Devicer) hardware_wallet.DeviceInteraction {
 	return &SkyWalletInteraction{
 		dev: dev,
 		initializeWasWarn: false,
@@ -35,7 +35,7 @@ func TestAddressGenShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("AddressGen", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	addrs, err := di.AddressGen(uint32(1), uint32(1), false, "deterministic").Then(func(data interface{}) interface{} {
@@ -55,7 +55,7 @@ func TestAddressGenShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("AddressGen", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.AddressGen(uint32(1), uint32(1), false, "deterministic").Then(func(data interface{}) interface{} {
@@ -78,7 +78,7 @@ func TestAddressGenShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("AddressGen", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.AddressGen(uint32(1), uint32(1), false, "deterministic").Then(func(data interface{}) interface{} {
@@ -102,7 +102,7 @@ func TestApplySettingsShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("ApplySettings", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.ApplySettings(nil, "l", "l").Then(func(data interface{}) interface{} {
@@ -120,7 +120,7 @@ func TestApplySettingsShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("ApplySettings", mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.ApplySettings(nil, "l", "l").Then(func(data interface{}) interface{} {
@@ -143,7 +143,7 @@ func TestApplySettingShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("ApplySettings", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.ApplySettings(nil, "l","l").Then(func(data interface{}) interface{} {
@@ -167,7 +167,7 @@ func TestBackupShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Backup").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.Backup().Then(func(data interface{}) interface{} {
@@ -185,7 +185,7 @@ func TestBackupShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("Backup").Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.Backup().Then(func(data interface{}) interface{} {
@@ -208,7 +208,7 @@ func TestBackupShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Backup").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.Backup().Then(func(data interface{}) interface{} {
@@ -232,7 +232,7 @@ func TestCheckMessageSignatureShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("CheckMessageSignature", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.CheckMessageSignature("m", "s", "a").Then(func(data interface{}) interface{} {
@@ -250,7 +250,7 @@ func TestCheckMessageSignatureShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("CheckMessageSignature", mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.CheckMessageSignature("m", "s", "a").Then(func(data interface{}) interface{} {
@@ -273,7 +273,7 @@ func TestCheckMessageSignatureShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("CheckMessageSignature", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.CheckMessageSignature("m", "s", "a").Then(func(data interface{}) interface{} {
@@ -297,7 +297,7 @@ func TestChangePinShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("ChangePin", mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.ChangePin(nil).Then(func(data interface{}) interface{} {
@@ -315,7 +315,7 @@ func TestChangePinShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("ChangePin", mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.ChangePin(nil).Then(func(data interface{}) interface{} {
@@ -338,7 +338,7 @@ func TestChangePinShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("ChangePin", mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.ChangePin(nil).Then(func(data interface{}) interface{} {
@@ -362,7 +362,7 @@ func TestUploadFirmwareShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("UploadFirmware", mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.UploadFirmware(nil, [32]byte{}).Then(func(data interface{}) interface{} {
@@ -380,7 +380,7 @@ func TestUploadFirmwareShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("UploadFirmware", mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.UploadFirmware(nil, [32]byte{}).Then(func(data interface{}) interface{} {
@@ -403,7 +403,7 @@ func TestUploadFirmwareShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("UploadFirmware", mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.UploadFirmware(nil, [32]byte{}).Then(func(data interface{}) interface{} {
@@ -427,7 +427,7 @@ func TestFeaturesShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.Features().Then(func(data interface{}) interface{} {
@@ -446,7 +446,7 @@ func TestFeaturesShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("GetFeatures").Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.Features().Then(func(data interface{}) interface{} {
@@ -469,7 +469,7 @@ func TestFeaturesShouldHandleErrorDecodingBecauseWrongKindResponse(t *testing.T)
 		Data: data,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.Features().Then(func(data interface{}) interface{} {
@@ -493,7 +493,7 @@ func TestFeaturesShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("GetFeatures").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.Features().Then(func(data interface{}) interface{} {
@@ -517,7 +517,7 @@ func TestGenerateMnemonicShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("GenerateMnemonic", mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.GenerateMnemonic(12, false).Then(func(data interface{}) interface{} {
@@ -535,7 +535,7 @@ func TestGenerateMnemonicShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("GenerateMnemonic", mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.GenerateMnemonic(12, false).Then(func(data interface{}) interface{} {
@@ -558,7 +558,7 @@ func TestGenerateMnemonicShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("GenerateMnemonic", mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.GenerateMnemonic(12, false).Then(func(data interface{}) interface{} {
@@ -582,7 +582,7 @@ func TestSetMnemonicShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("SetMnemonic", mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.SetMnemonic("").Then(func(data interface{}) interface{} {
@@ -600,7 +600,7 @@ func TestSetMnemonicShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("SetMnemonic", mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.SetMnemonic("").Then(func(data interface{}) interface{} {
@@ -623,7 +623,7 @@ func TestSetMnemonicShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("SetMnemonic", mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.SetMnemonic("").Then(func(data interface{}) interface{} {
@@ -647,7 +647,7 @@ func TestRecoveryShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Recovery", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.Recovery(12, nil, false).Then(func(data interface{}) interface{} {
@@ -665,7 +665,7 @@ func TestRecoveryShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("Recovery", mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.Recovery(12, nil, false).Then(func(data interface{}) interface{} {
@@ -688,7 +688,7 @@ func TestRecoveryShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Recovery", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.Recovery(12, nil, false).Then(func(data interface{}) interface{} {
@@ -712,7 +712,7 @@ func TestTransactionSignShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("TransactionSign", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.TransactionSign(nil, nil, "").Then(func(data interface{}) interface{} {
@@ -732,7 +732,7 @@ func TestTransactionSignShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("TransactionSign", mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.TransactionSign(nil, nil, "").Then(func(data interface{}) interface{} {
@@ -755,7 +755,7 @@ func TestTransactionSignShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("TransactionSign", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.TransactionSign(nil, nil,"").Then(func(data interface{}) interface{} {
@@ -779,7 +779,7 @@ func TestSignMessageShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("SignMessage", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.SignMessage(1, 1, "", "").Then(func(data interface{}) interface{} {
@@ -797,7 +797,7 @@ func TestSignMessageShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("SignMessage", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.SignMessage(1, 1, "", "").Then(func(data interface{}) interface{} {
@@ -820,7 +820,7 @@ func TestSignMessageShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("SignMessage", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.SignMessage(1, 1, "", "").Then(func(data interface{}) interface{} {
@@ -844,7 +844,7 @@ func TestWipeShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Wipe").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.Wipe().Then(func(data interface{}) interface{} {
@@ -862,7 +862,7 @@ func TestWipeShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("Wipe").Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.Wipe().Then(func(data interface{}) interface{} {
@@ -885,7 +885,7 @@ func TestWipeShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Wipe").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.Wipe().Then(func(data interface{}) interface{} {
@@ -909,7 +909,7 @@ func TestCancelShouldWorkOk(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Cancel").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	response, err := di.Cancel().Then(func(data interface{}) interface{} {
@@ -927,7 +927,7 @@ func TestCancelShouldHandleDeviceError(t *testing.T) {
 	// Giving
 	dev := &mocks.Devicer{}
 	dev.On("Cancel").Return(wire.Message{}, errors.New(""))
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err := di.Cancel().Then(func(data interface{}) interface{} {
@@ -950,7 +950,7 @@ func TestCancelShouldHandleErrorDecodingResponse(t *testing.T) {
 		Data: data,
 	}
 	dev.On("Cancel").Return(msg, nil)
-	di := createDeviceInteraction2(dev)
+	di := createDeviceInteraction(dev)
 
 	// When
 	_, err = di.Cancel().Then(func(data interface{}) interface{} {
@@ -990,4 +990,23 @@ func TestInitializeInstantiation(t *testing.T) {
 	// Then
 	require.NotNil(t, di1)
 	require.Equal(t, di1, di2)
+	require.False(t, di1.InitializeWasWarn())
+	require.False(t, di1.UploadFirmwareWasWarn())
+	require.False(t, di1.SecureWasWarn())
+}
+
+func TestTrackingActivityShouldBeRecorded(t *testing.T) {
+	// Giving
+	skyWltInteraction = createDeviceInteraction(nil)
+	require.NotNil(t, skyWltInteraction)
+
+	// When
+	skyWltInteraction.SetInitializeWasWarn()
+	skyWltInteraction.SetUploadFirmwareWasWarn()
+	skyWltInteraction.SetSecureWasWarn()
+
+	// Then
+	require.True(t, skyWltInteraction.InitializeWasWarn())
+	require.True(t, skyWltInteraction.UploadFirmwareWasWarn())
+	require.True(t, skyWltInteraction.SecureWasWarn())
 }
