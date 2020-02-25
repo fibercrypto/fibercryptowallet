@@ -504,3 +504,68 @@ func TestFeaturesShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Error(t, err)
 	require.True(t, strings.Contains(err.Error(), "wrong wireType"))
 }
+
+func TestGenerateMnemonicShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgMsg := "great"
+	generateMnemonicResp := messages.Success{Message: proto.String(orgMsg)}
+	data, err := proto.Marshal(&generateMnemonicResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Success),
+		Data: data,
+	}
+	dev.On("GenerateMnemonic", mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	response, err := di.GenerateMnemonic(12, false).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseStr, ok := response.(string)
+	require.True(t, ok)
+	require.Equal(t, orgMsg, responseStr)
+}
+
+func TestGenerateMnemonicShouldHandleDeviceError(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	dev.On("GenerateMnemonic", mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err := di.GenerateMnemonic(12, false).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestGenerateMnemonicShouldHandleErrorDecodingResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	generateMnemonicResp := messages.Failure{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&generateMnemonicResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: data,
+	}
+	dev.On("GenerateMnemonic", mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.GenerateMnemonic(12, false).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
+}
