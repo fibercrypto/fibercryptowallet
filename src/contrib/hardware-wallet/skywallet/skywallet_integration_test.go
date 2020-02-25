@@ -5,29 +5,50 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	integrationtestutil "github.com/fibercrypto/fibercryptowallet/test/integration/util"
-	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
 	"github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/stretchr/testify/require"
 	"os"
 	"testing"
 )
 
-func emulatorDevice() skywallet.Devicer {
-	return proxy.NewSequencer(
-		skywallet.NewDevice(
-			skywallet.DeviceTypeEmulator),
+func assertText(t *testing.T, msg interface{}, text string) {
+	msgStr, ok := msg.(string)
+	require.True(t, ok)
+	require.Equal(t, msgStr, text)
+}
+
+func forceWipe(t *testing.T) {
+	dev := SkyWltInteractionInstance()
+	msg, err := dev.Wipe().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+	require.NoError(t, err)
+	assertText(t, msg, "Device wiped")
+}
+
+func forceSetMnemonic(t *testing.T, mnemonic string) {
+	forceWipe(t)
+	dev := SkyWltInteractionInstance()
+	msg, err := dev.SetMnemonic(mnemonic).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+	require.NoError(t, err)
+	assertText(t, msg, "wire junk original sword bread bottom armor dog snow accident inform rigid")
+}
+
+func createEmulatorDevice() {
+	CreateSkyWltInteractionInstanceOnce(
 		true,
-		func()string{return ""},
-	)
+		skywallet.DeviceTypeEmulator,
+		func(requestKind skywallet.InputRequestKind, title, message string)(string, error){return "", nil})
 }
 
 func setUpHardwareWallet(t *testing.T) {
 	util.RegisterAltcoin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
-	dev := emulatorDevice()
+	createEmulatorDevice()
 	keyTestData, err := skycoin.GenerateTestKeyPair(t)
 	require.NoError(t, err)
-	integrationtestutil.ForceSetMnemonic(t, dev, keyTestData.Mnemonic)
+	forceSetMnemonic(t, keyTestData.Mnemonic)
 }
 
 var logModelTest = logging.MustGetLogger("Skycoin Hardware Wallet Test")
@@ -54,10 +75,9 @@ func TestTransactionSignInputFromDevice(t *testing.T) {
 		return
 	}
 	setUpHardwareWallet(t)
-	dev := emulatorDevice()
-	hs1 := NewSkyWallet(nil, dev)
-	hs2 := NewSkyWallet(nil, dev)
-	hs3 := NewSkyWallet(nil, dev)
+	hs1 := NewSkyWallet(nil)
+	hs2 := NewSkyWallet(nil)
+	hs3 := NewSkyWallet(nil)
 	setWallet := func(t *testing.T, signer core.TxnSigner, wlt core.Wallet) {
 		hs, ok := signer.(*SkyWallet)
 		require.True(t, ok)

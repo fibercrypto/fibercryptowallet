@@ -79,6 +79,7 @@ func createSkyHardwareWallet(bridgeForPassword *QBridge) {
 		}
 	}
 	hardware.CreateSkyWltInteractionInstanceOnce(
+		false,
 		skyWallet.DeviceTypeUSB,
 		func(kind skyWallet.InputRequestKind, tittle, message string)(string, error) {
 			prompt, err := requestKind2Prompt(kind, bridgeForPassword)

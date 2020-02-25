@@ -24,10 +24,15 @@ var skyWltInteraction hardware_wallet.DeviceInteraction
 // Trying to change the device interaction behavior by using
 // different arguments does not works because this is a singleton
 // like function method.
-func CreateSkyWltInteractionInstanceOnce(deviceType skywallet.DeviceType, inputReader func(skywallet.InputRequestKind, string, string)(string, error)) hardware_wallet.DeviceInteraction {
+func CreateSkyWltInteractionInstanceOnce(autoPressButton bool, deviceType skywallet.DeviceType, inputReader func(skywallet.InputRequestKind, string, string)(string, error)) hardware_wallet.DeviceInteraction {
 	once.Do(func() {
+		var dev skywallet.Devicer
+		dev = proxy.NewSequencer(skywallet.NewDevice(deviceType), true, inputReader)
+		if autoPressButton && deviceType == skywallet.DeviceTypeEmulator {
+			dev.SetAutoPressButton(true, skywallet.ButtonRight)
+		}
 		skyWltInteraction = &SkyWalletInteraction{
-			dev: proxy.NewSequencer(skywallet.NewDevice(deviceType), true, inputReader),
+			dev: dev,
 			initializeWasWarn: false,
 			uploadFirmwareWasWarn: false,
 			secureWasWarn: false,
@@ -165,6 +170,22 @@ func(wlt *SkyWalletInteraction) Features() *promise.Promise {
 func(wlt *SkyWalletInteraction) GenerateMnemonic(wordCount uint32, usePassphrase bool) *promise.Promise {
 	return promise.New(func(resolve func(interface{}), reject func(error)) {
 		msg, err := wlt.dev.GenerateMnemonic(wordCount, usePassphrase)
+		if err != nil {
+			reject(err)
+			return
+		}
+		msgStr, err := skywallet.DecodeSuccessMsg(msg)
+		if err != nil {
+			reject(err)
+			return
+		}
+		resolve(msgStr)
+	})
+}
+
+func(wlt *SkyWalletInteraction) SetMnemonic(mnemonic string) *promise.Promise {
+	return promise.New(func(resolve func(interface{}), reject func(error)) {
+		msg, err := wlt.dev.SetMnemonic(mnemonic)
 		if err != nil {
 			reject(err)
 			return
