@@ -962,6 +962,25 @@ func TestCancelShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Equal(t, err, errors.New("calling DecodeFailMsg with wrong message type: MessageType_Success"))
 }
 
+func TestIsAvailableShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResponse := true
+	dev.On("Available").Return(orgResponse, nil)
+	di := createDeviceInteraction(dev)
+
+	// When
+	response, err := di.IsAvailable().Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseAvailable, ok := response.(bool)
+	require.True(t, ok)
+	require.Equal(t, orgResponse, responseAvailable)
+}
+
 func TestUninitializedInstantiation(t *testing.T) {
 	// Giving
 	skyWltInteraction = nil
