@@ -699,3 +699,70 @@ func TestRecoveryShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
 }
+
+func TestTransactionSignShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgMsg := []string{"great", "very good"}
+	transactionSignResp := messages.ResponseTransactionSign{Signatures: orgMsg, Padding: new(bool)}
+	data, err := proto.Marshal(&transactionSignResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_ResponseTransactionSign),
+		Data: data,
+	}
+	dev.On("TransactionSign", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	response, err := di.TransactionSign(nil, nil, "").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseStr, ok := response.([]string)
+	require.True(t, ok)
+	require.Len(t, responseStr, 2)
+	require.Equal(t, orgMsg[0], responseStr[0])
+	require.Equal(t, orgMsg[1], responseStr[1])
+}
+
+func TestTransactionSignShouldHandleDeviceError(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	dev.On("TransactionSign", mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err := di.TransactionSign(nil, nil, "").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestTransactionSignShouldHandleErrorDecodingResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	transactionSignResp := messages.Failure{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&transactionSignResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: data,
+	}
+	dev.On("TransactionSign", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.TransactionSign(nil, nil,"").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, err, errors.New("calling DecodeResponseeSkycoinSignMessage with wrong message type: MessageType_Failure"))
+}
