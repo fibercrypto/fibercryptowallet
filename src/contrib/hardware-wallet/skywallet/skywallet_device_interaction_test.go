@@ -569,3 +569,68 @@ func TestGenerateMnemonicShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
 }
+
+func TestSetMnemonicShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgMsg := "great"
+	setMnemonicResp := messages.Success{Message: proto.String(orgMsg)}
+	data, err := proto.Marshal(&setMnemonicResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Success),
+		Data: data,
+	}
+	dev.On("SetMnemonic", mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	response, err := di.SetMnemonic("").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseStr, ok := response.(string)
+	require.True(t, ok)
+	require.Equal(t, orgMsg, responseStr)
+}
+
+func TestSetMnemonicShouldHandleDeviceError(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	dev.On("SetMnemonic", mock.Anything).Return(wire.Message{}, errors.New(""))
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err := di.SetMnemonic("").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestSetMnemonicShouldHandleErrorDecodingResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	generateMnemonicResp := messages.Failure{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&generateMnemonicResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: data,
+	}
+	dev.On("SetMnemonic", mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.SetMnemonic("").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
+}
