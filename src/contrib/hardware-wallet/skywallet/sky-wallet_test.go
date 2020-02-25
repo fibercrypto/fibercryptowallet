@@ -13,7 +13,7 @@ import (
 	"testing"
 )
 
-func createDeviceInteraction(t *testing.T) *mocks.DeviceInteraction {
+func createMockedDeviceInteraction(t *testing.T) *mocks.DeviceInteraction {
 	skyWltInteraction = &mocks.DeviceInteraction{}
 	require.NotNil(t, SkyWltInteractionInstance())
 	require.Equal(t, skyWltInteraction, SkyWltInteractionInstance())
@@ -24,7 +24,7 @@ func createDeviceInteraction(t *testing.T) *mocks.DeviceInteraction {
 
 func TestGetSignerUIDShouldBeOk(t *testing.T) {
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	expectedDevId := "c24a046d-7d7b-484d-baf6-abedd883023f"
 	dev.On("Features").Return(promise.New(func(resolve func(interface{}), reject func(error)) {
 		f := messages.Features{
@@ -44,7 +44,7 @@ func TestGetSignerUIDShouldBeOk(t *testing.T) {
 
 func TestGetSignerUIDShouldFailOnNullId(t *testing.T) {
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	dev.On("Features").Return(promise.New(func(resolve func(interface{}), reject func(error)) {
 		f := messages.Features{
 			DeviceId: nil,
@@ -63,7 +63,7 @@ func TestGetSignerUIDShouldFailOnNullId(t *testing.T) {
 
 func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	dev.On("Features").Return(promise.New(func(resolve func(interface{}), reject func(error)) {
 		reject(errors.New("any error"))
 	}))
@@ -79,7 +79,7 @@ func TestGetSignerUIDShouldFailOnDeviceError(t *testing.T) {
 
 func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	expectedDevDescription := urnPrefix +"c24a046d-7d7b-484d-baf6-abedd883023f"
 	dev.On("Features").Return(promise.New(func(resolve func(interface{}), reject func(error)) {
 		f := messages.Features{
@@ -99,7 +99,7 @@ func TestGetSignerDescriptionShouldBeOk(t *testing.T) {
 
 func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	dev.On("Features").Return(promise.New(func(resolve func(interface{}), reject func(error)) {
 		reject(errors.New(""))
 	}))
@@ -115,7 +115,7 @@ func TestGetSignerDescriptionShouldFailOnDeviceError(t *testing.T) {
 
 func TestGetSignerDescriptionShouldFailOnNullLabel(t *testing.T) {
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	dev.On("Features").Return(promise.New(func(resolve func(interface{}), reject func(error)) {
 		f := messages.Features{
 			Label: nil,
@@ -135,7 +135,7 @@ func TestGetSignerDescriptionShouldFailOnNullLabel(t *testing.T) {
 func TestShouldFailForFailResponse(t *testing.T) {
 	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	f := messages.Failure{}
 	fb, err := proto.Marshal(&f)
 	require.Nil(t, err)
@@ -157,7 +157,7 @@ func TestShouldFailForFailResponse(t *testing.T) {
 func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
 	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	msg := wire.Message{
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
@@ -174,7 +174,7 @@ func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
 
 func TestGetFeaturesShouldHandleInvalidMsgResponse(t *testing.T) {
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	dev.On("Features").Return(promise.New(func(resolve func(interface{}), reject func(error)) {
 		f := messages.ResponseTransactionSign{}
 		resolve(f)
@@ -191,7 +191,7 @@ func TestGetFeaturesShouldHandleInvalidMsgResponse(t *testing.T) {
 func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
 	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
 	// Giving
-	createDeviceInteraction(t)
+	createMockedDeviceInteraction(t)
 	sw := NewSkyWallet(nil)
 
 	// When
@@ -206,7 +206,7 @@ func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
 func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	f := messages.Failure{}
 	fb, err := proto.Marshal(&f)
 	require.Nil(t, err)
@@ -228,7 +228,7 @@ func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
 func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
 	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
 	// Giving
-	dev := createDeviceInteraction(t)
+	dev := createMockedDeviceInteraction(t)
 	msg := wire.Message{
 		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
 	}
@@ -246,7 +246,7 @@ func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
 func TestGetSignerDescriptionShouldFailForUninitializedDevice(t *testing.T) {
 	t.Skip("lllllllll7")
 	// Giving
-	createDeviceInteraction(t)
+	createMockedDeviceInteraction(t)
 	sw := SkyWallet{}
 
 	// When
