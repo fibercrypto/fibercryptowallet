@@ -218,3 +218,68 @@ func TestBackupShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
 }
+
+func TestCheckMessageSignatureShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgMsg := "great"
+	checkMsgSignatureRespResp := messages.Success{Message: proto.String(orgMsg)}
+	data, err := proto.Marshal(&checkMsgSignatureRespResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Success),
+		Data: data,
+	}
+	dev.On("CheckMessageSignature", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	response, err := di.CheckMessageSignature("m", "s", "a").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseStr, ok := response.(string)
+	require.True(t, ok)
+	require.Equal(t, orgMsg, responseStr)
+}
+
+func TestCheckMessageSignatureShouldHandleDeviceError(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	dev.On("CheckMessageSignature", mock.Anything, mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err := di.CheckMessageSignature("m", "s", "a").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestCheckMessageSignatureShouldHandleErrorDecodingResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	checkMsgSignResp := messages.Failure{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&checkMsgSignResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: data,
+	}
+	dev.On("CheckMessageSignature", mock.Anything, mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.CheckMessageSignature("m", "s", "a").Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
+}
