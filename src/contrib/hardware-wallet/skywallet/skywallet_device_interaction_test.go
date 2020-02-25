@@ -348,3 +348,68 @@ func TestChangePinShouldHandleErrorDecodingResponse(t *testing.T) {
 	require.Error(t, err)
 	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
 }
+
+func TestUploadFirmwareShouldWorkOk(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgMsg := "great"
+	uploadFirmwareRespResp := messages.Success{Message: proto.String(orgMsg)}
+	data, err := proto.Marshal(&uploadFirmwareRespResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Success),
+		Data: data,
+	}
+	dev.On("UploadFirmware", mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	response, err := di.UploadFirmware(nil, [32]byte{}).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	responseStr, ok := response.(string)
+	require.True(t, ok)
+	require.Equal(t, orgMsg, responseStr)
+}
+
+func TestUploadFirmwareShouldHandleDeviceError(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	dev.On("UploadFirmware", mock.Anything, mock.Anything).Return(wire.Message{}, errors.New(""))
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err := di.UploadFirmware(nil, [32]byte{}).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestUploadFirmwareShouldHandleErrorDecodingResponse(t *testing.T) {
+	// Giving
+	dev := &mocks.Devicer{}
+	orgResp := "jhfjdhfjd"
+	uploadFirmwareResp := messages.Failure{Message: proto.String(orgResp)}
+	data, err := proto.Marshal(&uploadFirmwareResp)
+	require.NoError(t, err)
+	msg := wire.Message{
+		Kind: uint16(messages.MessageType_MessageType_Failure),
+		Data: data,
+	}
+	dev.On("UploadFirmware", mock.Anything, mock.Anything).Return(msg, nil)
+	di := createDeviceInteraction2(dev)
+
+	// When
+	_, err = di.UploadFirmware(nil, [32]byte{}).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, err, errors.New("calling DecodeSuccessMsg with wrong message type: MessageType_Failure"))
+}
