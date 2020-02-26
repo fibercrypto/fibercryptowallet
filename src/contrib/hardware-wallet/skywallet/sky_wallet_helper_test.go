@@ -86,3 +86,65 @@ func TestMatcherShouldNotFindItIfWltCanNotGenerateAdrrs(t *testing.T) {
 	// Then
 	require.False(t, found)
 }
+
+func TestDeviceMatchShouldWorkOk4DeterministicWlt(t *testing.T) {
+	// Giving
+	orgAddrs := []string{"jhfjdhfjd", "dfd787fd8"}
+	addr := &mocks2.Address{}
+	addr.On("String").Return(orgAddrs[0])
+	addrIt := &mocks2.AddressIterator{}
+	addrIt.On("Next").Return(true)
+	addrIt.On("Value").Return(addr)
+	wlt := &mocks2.Wallet{}
+	wlt.On("GenAddresses", core.AccountAddress, uint32(0), uint32(1), mock.AnythingOfType("core.PasswordReader")).Return(addrIt)
+	di := &mocks2.DeviceInteraction{}
+	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve(orgAddrs)
+	})
+	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeDeterministic).Return(prm, nil)
+	dh := createDeviceHelper(di)
+
+	// When
+	match, err := dh.DeviceMatch(wlt).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := match.(bool)
+	require.True(t, ok)
+	require.True(t, matchBool)
+}
+
+func TestDeviceMatchShouldWorkOk4Bip44Wlt(t *testing.T) {
+	// Giving
+	orgAddrs := []string{"jhfjdhfjd", "dfd787fd8"}
+	addr := &mocks2.Address{}
+	addr.On("String").Return(orgAddrs[0])
+	addrIt := &mocks2.AddressIterator{}
+	addrIt.On("Next").Return(true)
+	addrIt.On("Value").Return(addr)
+	wlt := &mocks2.Wallet{}
+	wlt.On("GenAddresses", core.AccountAddress, uint32(0), uint32(1), mock.AnythingOfType("core.PasswordReader")).Return(addrIt)
+	di := &mocks2.DeviceInteraction{}
+	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve(orgAddrs)
+	})
+	invalidpPrm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve([]string{""})
+	})
+	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeDeterministic).Return(invalidpPrm, nil)
+	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeBip44).Return(prm, nil)
+	dh := createDeviceHelper(di)
+
+	// When
+	match, err := dh.DeviceMatch(wlt).Then(func(data interface{}) interface{} {
+		return data
+	}).Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := match.(bool)
+	require.True(t, ok)
+	require.True(t, matchBool)
+}
