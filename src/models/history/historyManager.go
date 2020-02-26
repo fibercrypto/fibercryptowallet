@@ -192,7 +192,9 @@ func (hm *HistoryManager) updateTxns() {
 				}
 			}
 			if newTxnsFinded {
-				hm.NewTransactions()
+				models.Helper.RunInMain(func() {
+					hm.NewTransactions()
+				})
 			}
 
 		}
