@@ -101,7 +101,7 @@ func TestDeviceMatchShouldWorkOk4DeterministicWlt(t *testing.T) {
 	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
 		resolve(orgAddrs)
 	})
-	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeDeterministic).Return(prm, nil)
+	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeDeterministic).Return(prm)
 	dh := createDeviceHelper(di)
 
 	// When
@@ -133,8 +133,8 @@ func TestDeviceMatchShouldWorkOk4Bip44Wlt(t *testing.T) {
 	invalidpPrm := promise.New(func(resolve func(interface{}), reject func(error)) {
 		resolve([]string{""})
 	})
-	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeDeterministic).Return(invalidpPrm, nil)
-	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeBip44).Return(prm, nil)
+	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeDeterministic).Return(invalidpPrm)
+	di.On("AddressGen", uint32(1), uint32(0), false, skyWallet.WalletTypeBip44).Return(prm)
 	dh := createDeviceHelper(di)
 
 	// When
