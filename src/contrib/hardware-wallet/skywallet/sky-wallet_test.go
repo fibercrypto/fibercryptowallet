@@ -6,6 +6,7 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
+	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
@@ -145,4 +146,42 @@ func TestGetFeaturesShouldHandleInvalidMsgResponse(t *testing.T) {
 
 	// Then
 	require.Error(t, err)
+}
+
+func TestVerifyDerivationTypeBip44(t *testing.T) {
+	// Giving
+	addr := &mocks.Address{}
+	addr.On("IsBip32").Return(true)
+	output := &mocks.TransactionOutput{}
+	output.On("GetAddress").Return(addr)
+	input := &mocks.TransactionInput{}
+	input.On("GetSpentOutput").Return(output)
+	inputs := []core.TransactionInput{input}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+
+	// When
+	dt := derivationType(txn)
+
+	// Then
+	require.Equal(t, dt, skyWallet.WalletTypeBip44)
+}
+
+func TestVerifyDerivationTypeDeterministic(t *testing.T) {
+	// Giving
+	addr := &mocks.Address{}
+	addr.On("IsBip32").Return(false)
+	output := &mocks.TransactionOutput{}
+	output.On("GetAddress").Return(addr)
+	input := &mocks.TransactionInput{}
+	input.On("GetSpentOutput").Return(output)
+	inputs := []core.TransactionInput{input}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+
+	// When
+	dt := derivationType(txn)
+
+	// Then
+	require.Equal(t, dt, skyWallet.WalletTypeDeterministic)
 }
