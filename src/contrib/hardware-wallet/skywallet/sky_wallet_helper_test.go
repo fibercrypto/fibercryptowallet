@@ -288,3 +288,59 @@ func TestShouldBeInitializedShouldReturnFalseForInitialized(t *testing.T) {
 	require.True(t, ok)
 	require.False(t, matchBool)
 }
+
+func TestShouldUploadFirmwareReturnFalseAfterFirstTime(t *testing.T) {
+	// Giving
+	di := &mocks2.DeviceInteraction{}
+	di.On("UploadFirmwareWasWarn").Return(true)
+	dh := createDeviceHelper(di)
+
+	// When
+	val, err := dh.ShouldUploadFirmware().Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := val.(bool)
+	require.True(t, ok)
+	require.False(t, matchBool)
+}
+
+func TestIsBootLoaderShouldReturnTrue4BootLoaderMode(t *testing.T) {
+	// Giving
+	di := &mocks2.DeviceInteraction{}
+	di.On("UploadFirmwareWasWarn").Return(false)
+	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve(messages.Features{BootloaderMode: proto.Bool(true)})
+	})
+	di.On("Features").Return(prm)
+	dh := createDeviceHelper(di)
+
+	// When
+	val, err := dh.ShouldUploadFirmware().Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := val.(bool)
+	require.True(t, ok)
+	require.True(t, matchBool)
+}
+
+func TestIsBootLoaderShouldReturnFalse4NonBootLoaderMode(t *testing.T) {
+	// Giving
+	di := &mocks2.DeviceInteraction{}
+	di.On("UploadFirmwareWasWarn").Return(false)
+	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve(messages.Features{BootloaderMode: proto.Bool(false)})
+	})
+	di.On("Features").Return(prm)
+	dh := createDeviceHelper(di)
+
+	// When
+	val, err := dh.ShouldUploadFirmware().Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := val.(bool)
+	require.True(t, ok)
+	require.False(t, matchBool)
+}
