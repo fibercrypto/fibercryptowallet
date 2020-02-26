@@ -17,6 +17,17 @@ func createDeviceHelper(di hardware_wallet.DeviceInteraction) hardware_wallet.De
 	return &SkyWalletHelper{di: di}
 }
 
+func TestDevHelperInitialization(t *testing.T) {
+	// Giving
+	// When
+	dh := NewSkyWalletHelper()
+
+	// Then
+	swh, ok := dh.(*SkyWalletHelper)
+	require.True(t, ok)
+	require.Equal(t, swh.di, SkyWltInteractionInstance())
+}
+
 func TestFirstAddressShouldWorkOk(t *testing.T) {
 	// Giving
 	di := &mocks2.DeviceInteraction{}
