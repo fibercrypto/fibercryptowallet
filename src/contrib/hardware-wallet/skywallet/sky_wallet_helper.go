@@ -24,18 +24,19 @@ func (dev *SkyWalletHelper) FirstAddress(walletType string) *promise.Promise {
 	})
 }
 
-func (dev *SkyWalletHelper) DeviceMatch(wlt core.Wallet) *promise.Promise {
-	matcher := func(firstAddr string) bool {
-		addrs := wlt.GenAddresses(core.AccountAddress, 0, 1, nil)
-		if addrs.Next() {
-			addr := addrs.Value()
-			return addr.String() == firstAddr
-		}
-		return false
+func matcher(wlt core.Wallet, firstAddr string) bool {
+	addrs := wlt.GenAddresses(core.AccountAddress, 0, 1, nil)
+	if addrs.Next() {
+		addr := addrs.Value()
+		return addr.String() == firstAddr
 	}
+	return false
+}
+
+func (dev *SkyWalletHelper) DeviceMatch(wlt core.Wallet) *promise.Promise {
 	prm := dev.FirstAddress(skyWallet.WalletTypeDeterministic)
 	return prm.Then(func(data interface{}) interface{} {
-		return matcher(data.(string))
+		return matcher(wlt, data.(string))
 	}).Then(func(data interface{}) interface{} {
 		if !data.(bool) {
 			return dev.FirstAddress(skyWallet.WalletTypeBip44)
@@ -45,7 +46,7 @@ func (dev *SkyWalletHelper) DeviceMatch(wlt core.Wallet) *promise.Promise {
 		if val, ok := data.(bool); ok {
 			return val
 		}
-		return matcher(data.(string))
+		return matcher(wlt, data.(string))
 	})
 }
 
