@@ -997,13 +997,8 @@ func TestInitializeInstantiation(t *testing.T) {
 	skyWltInteraction = nil
 
 	// When
-	di1 := CreateSkyWltInteractionInstanceOnce(
-		true,
-		skywallet.DeviceTypeEmulator,
-		func(kind skywallet.InputRequestKind, s3 string, s2 string) (s string, err error) {
-			return "", nil
-		},
-	)
+	di1 := createDeviceInteraction(&mocks.Devicer{})
+	skyWltInteraction = di1
 	di2 := SkyWltInteractionInstance()
 
 	// Then
@@ -1016,7 +1011,7 @@ func TestInitializeInstantiation(t *testing.T) {
 
 func TestTrackingActivityShouldBeRecorded(t *testing.T) {
 	// Giving
-	skyWltInteraction = createDeviceInteraction(nil)
+	skyWltInteraction = createDeviceInteraction(&mocks.Devicer{})
 	require.NotNil(t, skyWltInteraction)
 
 	// When

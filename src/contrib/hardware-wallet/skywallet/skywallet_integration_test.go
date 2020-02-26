@@ -2,6 +2,7 @@ package hardware
 
 import (
 	skycoin "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models"
+	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
@@ -36,11 +37,16 @@ func forceSetMnemonic(t *testing.T, mnemonic string) {
 	assertText(t, msg, "wire junk original sword bread bottom armor dog snow accident inform rigid")
 }
 
+var createdDevice hardware_wallet.DeviceInteraction = nil
+
 func createEmulatorDevice() {
-	CreateSkyWltInteractionInstanceOnce(
-		true,
-		skywallet.DeviceTypeEmulator,
-		func(requestKind skywallet.InputRequestKind, title, message string)(string, error){return "", nil})
+	if createdDevice == nil {
+		createdDevice = CreateSkyWltInteractionInstanceOnce(
+			true,
+			skywallet.DeviceTypeEmulator,
+			func(requestKind skywallet.InputRequestKind, title, message string) (string, error) { return "", nil })
+	}
+	skyWltInteraction = createdDevice
 }
 
 func setUpHardwareWallet(t *testing.T) {
