@@ -6,7 +6,6 @@ import (
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
-	"github.com/fibercrypto/skywallet-go/src/skywallet/wire"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/require"
@@ -132,46 +131,6 @@ func TestGetSignerDescriptionShouldFailOnNullLabel(t *testing.T) {
 	require.Equal(t, "", devId)
 }
 
-func TestShouldFailForFailResponse(t *testing.T) {
-	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
-	// Giving
-	dev := createMockedDeviceInteraction(t)
-	f := messages.Failure{}
-	fb, err := proto.Marshal(&f)
-	require.Nil(t, err)
-	msg := wire.Message{
-		Kind: uint16(messages.MessageType_MessageType_Failure),
-		Data: fb,
-	}
-	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(nil)
-
-	// When
-	devId, err := sw.GetSignerDescription()
-
-	// Then
-	require.Error(t, err)
-	require.Equal(t, "", devId)
-}
-
-func TestGetSignerDescriptionShouldFailForInvalidMessageType(t *testing.T) {
-	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
-	// Giving
-	dev := createMockedDeviceInteraction(t)
-	msg := wire.Message{
-		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
-	}
-	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(nil)
-
-	// When
-	devId, err := sw.GetSignerDescription()
-
-	// Then
-	require.Error(t, err)
-	require.Equal(t, "", devId)
-}
-
 func TestGetFeaturesShouldHandleInvalidMsgResponse(t *testing.T) {
 	// Giving
 	dev := createMockedDeviceInteraction(t)
@@ -186,73 +145,4 @@ func TestGetFeaturesShouldHandleInvalidMsgResponse(t *testing.T) {
 
 	// Then
 	require.Error(t, err)
-}
-
-func TestGetSignerUIDShouldFailForUninitializedDevice(t *testing.T) {
-	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
-	// Giving
-	createMockedDeviceInteraction(t)
-	sw := NewSkyWallet(nil)
-
-	// When
-	devId, err := sw.GetSignerUID()
-
-	// Then
-	require.Error(t, err)
-	require.Equal(t, err, fce.ErrHwUnexpected)
-	require.Equal(t, core.UID(""), devId)
-}
-
-func TestGetSignerUIDShouldFailForFailResponse(t *testing.T) {
-	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
-	// Giving
-	dev := createMockedDeviceInteraction(t)
-	f := messages.Failure{}
-	fb, err := proto.Marshal(&f)
-	require.Nil(t, err)
-	msg := wire.Message{
-		Kind: uint16(messages.MessageType_MessageType_Failure),
-		Data: fb,
-	}
-	dev.On("Features").Return(msg, nil)
-	sw := NewSkyWallet(nil)
-
-	// When
-	devId, err := sw.GetSignerUID()
-
-	// Then
-	require.Error(t, err)
-	require.Equal(t, core.UID(""), devId)
-}
-
-func TestGetSignerUIDShouldFailForInvalidMessageType(t *testing.T) {
-	t.Skip("TODO: This test should be moved to SkyWalletInteraction")
-	// Giving
-	dev := createMockedDeviceInteraction(t)
-	msg := wire.Message{
-		Kind: uint16(messages.MessageType_MessageType_PinMatrixAck),
-	}
-	dev.On("GetFeatures").Return(msg, nil)
-	sw := NewSkyWallet(nil)
-
-	// When
-	devId, err := sw.GetSignerUID()
-
-	// Then
-	require.Error(t, err)
-	require.Equal(t, core.UID(""), devId)
-}
-
-func TestGetSignerDescriptionShouldFailForUninitializedDevice(t *testing.T) {
-	t.Skip("lllllllll7")
-	// Giving
-	createMockedDeviceInteraction(t)
-	sw := SkyWallet{}
-
-	// When
-	devId, err := sw.GetSignerDescription()
-
-	// Then
-	require.Error(t, err)
-	require.Equal(t, "", devId)
 }
