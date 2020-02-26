@@ -6,6 +6,8 @@ import (
 	hardware_wallet "github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
+	messages "github.com/fibercrypto/skywallet-protob/go"
+	"github.com/gogo/protobuf/proto"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -147,4 +149,86 @@ func TestDeviceMatchShouldWorkOk4Bip44Wlt(t *testing.T) {
 	matchBool, ok := match.(bool)
 	require.True(t, ok)
 	require.True(t, matchBool)
+}
+
+func TestShouldBeSecuredShouldReturnFalseAfterFirstTime(t *testing.T) {
+	// Giving
+	di := &mocks2.DeviceInteraction{}
+	di.On("SecureWasWarn").Return(true)
+	dh := createDeviceHelper(di)
+
+	// When
+	val, err := dh.ShouldBeSecured().Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := val.(bool)
+	require.True(t, ok)
+	require.False(t, matchBool)
+}
+
+func TestShouldBeSecuredShouldReturnTrueForPinProtection(t *testing.T) {
+	// Giving
+	di := &mocks2.DeviceInteraction{}
+	di.On("SecureWasWarn").Return(false)
+	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve(messages.Features{PinProtection: proto.Bool(false)})
+	})
+	di.On("Features").Return(prm)
+	dh := createDeviceHelper(di)
+
+	// When
+	val, err := dh.ShouldBeSecured().Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := val.(bool)
+	require.True(t, ok)
+	require.True(t, matchBool)
+}
+
+func TestShouldBeSecuredShouldReturnTrueForNeedBackup(t *testing.T) {
+	// Giving
+	di := &mocks2.DeviceInteraction{}
+	di.On("SecureWasWarn").Return(false)
+	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve(
+			messages.Features{
+				PinProtection: proto.Bool(true),
+				NeedsBackup: proto.Bool(true)})
+	})
+	di.On("Features").Return(prm)
+	dh := createDeviceHelper(di)
+
+	// When
+	val, err := dh.ShouldBeSecured().Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := val.(bool)
+	require.True(t, ok)
+	require.True(t, matchBool)
+}
+
+func TestShouldBeSecuredShouldReturnFalseForNoNeedBackupAndHavePin(t *testing.T) {
+	// Giving
+	di := &mocks2.DeviceInteraction{}
+	di.On("SecureWasWarn").Return(false)
+	prm := promise.New(func(resolve func(interface{}), reject func(error)) {
+		resolve(
+			messages.Features{
+				PinProtection: proto.Bool(true),
+				NeedsBackup: proto.Bool(false)})
+	})
+	di.On("Features").Return(prm)
+	dh := createDeviceHelper(di)
+
+	// When
+	val, err := dh.ShouldBeSecured().Await()
+
+	// Then
+	require.NoError(t, err)
+	matchBool, ok := val.(bool)
+	require.True(t, ok)
+	require.False(t, matchBool)
 }
