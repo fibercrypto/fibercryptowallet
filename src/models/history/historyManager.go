@@ -71,8 +71,7 @@ func (hm *HistoryManager) init() {
 
 	hm.txnForAddresses = make(map[string][]core.Transaction, 0)
 	hm.newTxn = make(map[string][]core.Transaction, 0)
-	//updateTime := config.GetDataUpdateTime()
-	uptimeTicker := time.NewTicker( /*time.Duration(updateTime)*/ 10 * time.Second)
+	uptimeTicker := time.NewTicker(10 * time.Second)
 	historyManager = hm
 	hm.txnFinded = make(map[string]struct{}, 0)
 	go func() {
