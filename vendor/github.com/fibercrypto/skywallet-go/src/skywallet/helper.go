@@ -102,7 +102,7 @@ func NewDriver(deviceType DeviceType, emulatorAddress ...string) (*Driver, error
 		if len(emulatorAddress) == 0 {
 			emulatorAddress = []string{"127.0.0.1"}
 		} else if len(emulatorAddress) > 1 {
-			return nil, ErrInvalidArgCountForEmulatorIPAddress
+			return nil, ErrInvalidArgCountForEmulatorIpAddress
 		}
 		udpBus, err := usb.InitUDP([]int{EmulatorPort}, emulatorAddress[0])
 		if err != nil {

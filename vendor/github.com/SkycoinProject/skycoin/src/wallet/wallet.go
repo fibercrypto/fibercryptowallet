@@ -628,16 +628,16 @@ func Load(filename string) (Wallet, error) {
 	var err error
 	switch m.Meta.Type {
 	case WalletTypeDeterministic:
-		logger.WithField("filename", filename).Info("LoadReadableDeterministicWallet")
+		//logger.WithField("filename", filename).Info("LoadReadableDeterministicWallet")
 		rw, err = LoadReadableDeterministicWallet(filename)
 	case WalletTypeCollection:
-		logger.WithField("filename", filename).Info("LoadReadableCollectionWallet")
+		//logger.WithField("filename", filename).Info("LoadReadableCollectionWallet")
 		rw, err = LoadReadableCollectionWallet(filename)
 	case WalletTypeBip44:
-		logger.WithField("filename", filename).Info("LoadReadableBip44Wallet")
+		//logger.WithField("filename", filename).Info("LoadReadableBip44Wallet")
 		rw, err = LoadReadableBip44Wallet(filename)
 	case WalletTypeXPub:
-		logger.WithField("filename", filename).Info("LoadReadableXPubWallet")
+		//logger.WithField("filename", filename).Info("LoadReadableXPubWallet")
 		rw, err = LoadReadableXPubWallet(filename)
 	default:
 		err := errors.New("unhandled wallet type")
