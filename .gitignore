@@ -91,4 +91,5 @@ darwin
 # Auto-generates go files.
 
 *.pb.go
+!vendor/github.com/golang/protobuf/**/*.pb.go
 *.log
