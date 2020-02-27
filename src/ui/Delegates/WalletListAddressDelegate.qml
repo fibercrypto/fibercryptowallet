@@ -187,10 +187,20 @@ Item {
         Label {
             id: labelAddressSky
             visible:  !showOnlyAddresses
-            text: addressSky // a role of the model
             color: Material.accent
             horizontalAlignment: Text.AlignRight
             Layout.preferredWidth: internalLabelsWidth
+
+            text: addressSky === qsTr("N/A") ? "" : addressSky // a role of the model
+
+            BusyIndicator {
+                anchors.verticalCenter: parent.verticalCenter
+                anchors.right: parent.right
+                running: addressSky === qsTr("N/A") ? true : false
+
+                implicitWidth: implicitHeight
+                implicitHeight: parent.height + 10
+            }
         }
 
         Label {

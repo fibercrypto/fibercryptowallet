@@ -57,4 +57,6 @@ var (
 	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
 	// ErrNotImplemented feature not implemented
 	ErrNotImplemented = errors.New("Feature not implemented")
+	// ErrKeyNotFound unknown key
+	ErrKeyNotFound = errors.New("Key not found")
 )

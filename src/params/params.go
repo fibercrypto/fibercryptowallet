@@ -2,5 +2,10 @@ package params
 
 const (
 	// Default refresh timeout for API data
-	DataRefreshTimeout = 1000000 //FIXME: set correct value
+	DataRefreshTimeout = 10
+	DataUpdateTime	   = 5
+	OrganizationName   = "Simelo.Tech"
+	OrganizationDomain = "simelo.tech"
+	ApplicationName    = "FiberCryptoWallet"
+	ApplicationVersion = "0.27.0"
 )

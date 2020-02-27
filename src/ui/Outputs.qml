@@ -87,16 +87,6 @@ Page {
     QWallets {
         id: modelWallets
     }
-    property Timer timer: Timer {
-        id: addressModelTimer
-        interval: 0
-        repeat: false
-        running: true
-        onTriggered: {
-            modelWallets.cleanModel()
-            modelWallets.loadModel()
-        }
-    }
 
     BusyIndicator {
         id: busyIndicator

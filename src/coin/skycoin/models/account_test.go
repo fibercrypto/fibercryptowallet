@@ -138,7 +138,9 @@ func TestSkycoinAddressScanUnspentOutputs(t *testing.T) {
 	for it.Next() {
 		output := it.Value()
 		require.Equal(t, output.GetId(), "hash1")
-		require.Equal(t, output.GetAddress().String(), addr)
+		outputAddress, err := output.GetAddress()
+		require.Equal(t, nil, err)
+		require.Equal(t, outputAddress.String(), addr)
 		val, err := output.GetCoins(Sky)
 		require.NoError(t, err)
 		require.Equal(t, val, uint64(42000000))
@@ -347,7 +349,9 @@ func TestRemoteWalletScanUnspentOutputs(t *testing.T) {
 	for iter.Next() {
 		to := iter.Value()
 		items++
-		require.Equal(t, "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", to.GetAddress().String())
+		outputsAddress, err := to.GetAddress()
+		require.Equal(t, nil, err)
+		require.Equal(t, "2kvLEyXwAYvHfJuFCkjnYNRTUfHPyWgVwKt", outputsAddress.String())
 	}
 	require.Equal(t, 1, items)
 
@@ -471,7 +475,9 @@ func TestLocalWalletScanUnspentOutputs(t *testing.T) {
 	for iter.Next() {
 		to := iter.Value()
 		items++
-		require.Equal(t, "2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP", to.GetAddress().String())
+		outputsAddress, err := to.GetAddress()
+		require.Equal(t, nil, err)
+		require.Equal(t, "2HPiZkMTD2pB9FZ6HbCxFSXa1FGeNkLeEbP", outputsAddress.String())
 	}
 	require.Equal(t, 8, items)
 }
