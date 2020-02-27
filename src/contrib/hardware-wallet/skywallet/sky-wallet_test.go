@@ -185,3 +185,103 @@ func TestVerifyDerivationTypeDeterministic(t *testing.T) {
 	// Then
 	require.Equal(t, dt, skyWallet.WalletTypeDeterministic)
 }
+
+func TestVerifyInputsGroupingShouldWorkOk1(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr2 := &mocks.Address{}
+	addr1.On("IsBip32").Return(true)
+	addr2.On("IsBip32").Return(true)
+	output1 := &mocks.TransactionOutput{}
+	output2 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	output2.On("GetAddress").Return(addr2)
+	input1 := &mocks.TransactionInput{}
+	input2 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	input2.On("GetSpentOutput").Return(output2)
+	inputs := []core.TransactionInput{input1, input2}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+
+	// When
+	err := verifyInputsGrouping(txn)
+
+	// Then
+	require.NoError(t, err)
+}
+
+func TestVerifyInputsGroupingShouldWorkOk2(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr2 := &mocks.Address{}
+	addr1.On("IsBip32").Return(false)
+	addr2.On("IsBip32").Return(false)
+	output1 := &mocks.TransactionOutput{}
+	output2 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	output2.On("GetAddress").Return(addr2)
+	input1 := &mocks.TransactionInput{}
+	input2 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	input2.On("GetSpentOutput").Return(output2)
+	inputs := []core.TransactionInput{input1, input2}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+
+	// When
+	err := verifyInputsGrouping(txn)
+
+	// Then
+	require.NoError(t, err)
+}
+
+func TestVerifyInputsGroupingShouldDetectErr1(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr2 := &mocks.Address{}
+	addr1.On("IsBip32").Return(false)
+	addr2.On("IsBip32").Return(true)
+	output1 := &mocks.TransactionOutput{}
+	output2 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	output2.On("GetAddress").Return(addr2)
+	input1 := &mocks.TransactionInput{}
+	input2 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	input2.On("GetSpentOutput").Return(output2)
+	inputs := []core.TransactionInput{input1, input2}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+
+	// When
+	err := verifyInputsGrouping(txn)
+
+	// Then
+	require.Error(t, err)
+}
+
+func TestVerifyInputsGroupingShouldDetectErr2(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr2 := &mocks.Address{}
+	addr1.On("IsBip32").Return(true)
+	addr2.On("IsBip32").Return(false)
+	output1 := &mocks.TransactionOutput{}
+	output2 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	output2.On("GetAddress").Return(addr2)
+	input1 := &mocks.TransactionInput{}
+	input2 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	input2.On("GetSpentOutput").Return(output2)
+	inputs := []core.TransactionInput{input1, input2}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+
+	// When
+	err := verifyInputsGrouping(txn)
+
+	// Then
+	require.Error(t, err)
+}
