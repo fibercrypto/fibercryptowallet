@@ -50,7 +50,7 @@ Item {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: {
-                            dialogSkyWalletId.visible = true
+                            skyWalletInteractionDialog.open()
                         }
                     }
                 }
