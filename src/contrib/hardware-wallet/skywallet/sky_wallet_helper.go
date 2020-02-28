@@ -89,7 +89,7 @@ func (dev *SkyWalletHelper) ShouldBeInitialized() *promise.Promise {
 
 func (dev *SkyWalletHelper) IsBootloaderMode() *promise.Promise {
 	return dev.di.Features().Then(func(data interface{}) interface{} {
-		return *data.(messages.Features).BootloaderMode
+		return data.(messages.Features).BootloaderMode != nil && *data.(messages.Features).BootloaderMode
 	})
 }
 
