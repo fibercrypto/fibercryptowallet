@@ -146,7 +146,6 @@ Dialog {
                                     enabled: numPadDialog.visible
                                     onActivated: {
                                         itemDelegateNumPadButton.clicked()
-                                        numPadButtonAnimation.start()
                                     }
                                 }
                                 onClicked: {
@@ -154,19 +153,9 @@ Dialog {
                                     textInput.addChar(gridNumPad.sequences[index].toString());
                                 }
 
-                                SequentialAnimation {
-                                    id: numPadButtonAnimation
-                                    loops: 1
-                                    PropertyAction { target: itemDelegateNumPadButton; property: "downSym"; value: true }
-                                    PauseAnimation { duration: 350 }
-                                    PropertyAction { target: itemDelegateNumPadButton; property: "downSym"; value: false }
-                                }
-
                                 property bool downSym: down
                                 property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
                                 Material.foreground: color
-
-                                Behavior on color { ColorAnimation {} }
                             } // ItemDelegate (delegate)
                         } // Repeater
                     } // GridLayout
@@ -184,26 +173,15 @@ Dialog {
                             sequence: "Backspace"
                             onActivated: {
                                 backspace.clicked()
-                                backspaceAnimation.start()
                             }
                         }
                         onClicked: {
                             textInput.removeLastChar();
                         }
 
-                        SequentialAnimation {
-                            id: backspaceAnimation
-                            loops: 1
-                            PropertyAction { target: backspace; property: "downSym"; value: true }
-                            PauseAnimation { duration: 350 }
-                            PropertyAction { target: backspace; property: "downSym"; value: false }
-                        }
-
                         property bool downSym: down
                         property color color: (down || downSym) ? Material.color(Material.Amber) : hovered ? numPadDialog.Material.accent : numPadDialog.Material.foreground
                         Material.foreground: color
-
-                        Behavior on color { ColorAnimation {} }
                     } // GridLayout (numpad)
                 } // ColumnLayout (numpad)
             } // Rectangle (numpad)
