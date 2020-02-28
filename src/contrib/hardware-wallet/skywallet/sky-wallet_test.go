@@ -9,6 +9,7 @@ import (
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	messages "github.com/fibercrypto/skywallet-protob/go"
 	"github.com/gogo/protobuf/proto"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 	"testing"
 )
@@ -284,4 +285,126 @@ func TestVerifyInputsGroupingShouldDetectErr2(t *testing.T) {
 
 	// Then
 	require.Error(t, err)
+}
+
+func TestSignTransactionShouldDetectInvalidInputsGrouping(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr2 := &mocks.Address{}
+	addr1.On("IsBip32").Return(true)
+	addr2.On("IsBip32").Return(false)
+	output1 := &mocks.TransactionOutput{}
+	output2 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	output2.On("GetAddress").Return(addr2)
+	input1 := &mocks.TransactionInput{}
+	input2 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	input2.On("GetSpentOutput").Return(output2)
+	inputs := []core.TransactionInput{input1, input2}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+	wlt := NewSkyWallet(&mocks.Wallet{})
+
+	// When
+	_, err := wlt.SignTransaction(
+		txn, func(string, core.KeyValueStore) (string, error){return "", nil}, []string{})
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, fce.ErrTxnSignFailure, err)
+}
+
+func TestSignTransactionShouldHandleErrorFromIsFullySigned(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr1.On("IsBip32").Return(true)
+	output1 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	input1 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	inputs := []core.TransactionInput{input1}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+	txn.On("IsFullySigned").Return(false, errors.New("asd"))
+	wlt := NewSkyWallet(&mocks.Wallet{})
+
+	// When
+	_, err := wlt.SignTransaction(
+		txn, func(string, core.KeyValueStore) (string, error){return "", nil}, []string{})
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, errors.New("asd"), err)
+}
+
+func TestSignTransactionShouldHandleFailIfIsFullySigned(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr1.On("IsBip32").Return(true)
+	output1 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	input1 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	inputs := []core.TransactionInput{input1}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+	txn.On("IsFullySigned").Return(true, nil)
+	wlt := NewSkyWallet(&mocks.Wallet{})
+
+	// When
+	_, err := wlt.SignTransaction(
+		txn, func(string, core.KeyValueStore) (string, error){return "", nil}, []string{})
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, errors.New("Transaction is fully signed"), err)
+}
+
+func TestSignTransactionShouldHandleErrorFromGetHashIndices(t *testing.T) {
+	//t.Skip("ddd")
+	// Giving
+	addr1 := &mocks.Address{}
+	addr1.On("IsBip32").Return(true)
+	output1 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	input1 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	inputs := []core.TransactionInput{input1}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+	txn.On("IsFullySigned").Return(false, nil)
+	wlt := NewSkyWallet(&mocks.Wallet{})
+
+	// When
+	_, err := wlt.SignTransaction(
+		txn, func(string, core.KeyValueStore) (string, error){return "", nil}, []string{"#asd"})
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, fce.ErrTxnSignFailure, err)
+}
+
+func TestSignTransactionShouldHandleErrorFromsignTransaction(t *testing.T) {
+	// Giving
+	addr1 := &mocks.Address{}
+	addr1.On("IsBip32").Return(true)
+	output1 := &mocks.TransactionOutput{}
+	output1.On("GetAddress").Return(addr1)
+	input1 := &mocks.TransactionInput{}
+	input1.On("GetSpentOutput").Return(output1)
+	inputs := []core.TransactionInput{input1}
+	txn := &mocks.Transaction{}
+	txn.On("GetInputs").Return(inputs)
+	txn.On("IsFullySigned").Return(false, nil)
+	txn.On("ComputeFee", mock.Anything).Return(uint64(0), errors.New("error computing fee"))
+	wlt := NewSkyWallet(&mocks.Wallet{})
+
+	// When
+	_, err := wlt.SignTransaction(
+		txn, func(string, core.KeyValueStore) (string, error){return "", nil}, nil)
+
+	// Then
+	require.Error(t, err)
+	require.Equal(t, fce.ErrTxnSignFailure, err)
 }
