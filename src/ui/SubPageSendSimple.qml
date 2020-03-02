@@ -6,8 +6,9 @@ import WalletsManager 1.0
 import AddrsBookManager 1.0
 
 // Resource imports
+// import "qrc:/ui/src/ui/Dialogs"
 // import "qrc:/ui/src/ui/Controls"
-import "Dialogs"
+import "Dialogs" // For quick UI development, switch back to resources when making a release
 import "Controls" // For quick UI development, switch back to resources when making a release
 
 Page {
@@ -112,7 +113,7 @@ getAddressList()
                     Layout.fillWidth: true
                     id: comboBoxWalletsSendFrom
                     textRole: "name"
-                    displayText: comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky ? comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name + " - " + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky + " SKY (" + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].coinHours + " CoinHours)": "Select a wallet"
+                displayText: comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex] && comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky ? comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name + " - " + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky + " SKY (" + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].coinHours + " CoinHours)" : "Select a wallet"
                     model: WalletModel {
                         Component.onCompleted: {
                             loadModel(walletManager.getWallets())
@@ -129,7 +130,9 @@ getAddressList()
                         leftPadding: highlighted ? 2*padding : padding // added
                         Behavior on leftPadding { NumberAnimation { duration: 500; easing.type: Easing.OutQuint } } // added
                     }
-                    
+                onPressedChanged: {
+                    comboBoxWalletsSendFrom.model.updateModel(walletManager.getWallets())
+                }
                     onActivated: {
                         root.walletSelected = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].fileName
                         root.walletSelectedName = comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name

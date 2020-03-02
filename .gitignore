@@ -37,6 +37,7 @@ nosetests.xml
 coverage.xml
 coverage.html
 coverage.out
+coverage.tmp.out
 *.cover
 .hypothesis/
 
@@ -89,3 +90,4 @@ darwin
 # Auto-generates go files.
 
 *.pb.go
+*.log

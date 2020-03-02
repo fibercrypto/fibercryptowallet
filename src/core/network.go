@@ -1,8 +1,8 @@
 package core
 
 import (
-	"fmt"
 	"sync"
+	"time"
 
 	"github.com/fibercrypto/fibercryptowallet/src/errors"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
@@ -71,18 +71,8 @@ type MultiPool interface {
 }
 
 type MultiPoolSection interface {
-	Get() interface{}
+	Get() (interface{}, error)
 	Put(interface{})
-}
-
-// NotAvailableObjectsError is returned when name is not bound to any pool factory
-type NotAvailableObjectsError struct {
-	poolSection string
-}
-
-// Error describes error condition
-func (err NotAvailableObjectsError) Error() string {
-	return fmt.Sprintf("There is not exist %s poolSection", err.poolSection)
 }
 
 // MultiConnectionsPool implements a generic pool supporting multiple object factories
@@ -103,12 +93,26 @@ func (mp *MultiConnectionsPool) GetSection(poolSection string) (MultiPoolSection
 func (mp *MultiConnectionsPool) CreateSection(name string, factory PooledObjectFactory) error {
 	logConnectionPool.Info("Creating pool section")
 	mp.sections[name] = &PoolSection{
-		mutex:     new(sync.Mutex),
-		capacity:  mp.capacity,
-		factory:   factory,
-		inUse:     make([]interface{}, 0),
-		available: make([]interface{}, 0),
+		mutex:        new(sync.Mutex),
+		capacity:     mp.capacity,
+		factory:      factory,
+		inUse:        make([]interface{}, 0),
+		available:    make([]interface{}, 0),
+		starveClient: 0,
 	}
+	go func() {
+		t := time.NewTicker(time.Second * 2)
+		section := mp.sections[name]
+
+		for {
+			<-t.C
+			if section.starveClient > 10000 {
+				mp.sections[name].grow()
+			} else {
+				section.starveClient = 0
+			}
+		}
+	}()
 	return nil
 }
 
@@ -122,32 +126,39 @@ func (mp *MultiConnectionsPool) ListSections() ([]string, error) {
 }
 
 type PoolSection struct {
-	capacity  int
-	available []interface{}
-	inUse     []interface{}
-	mutex     *sync.Mutex
-	factory   PooledObjectFactory
+	capacity     int
+	available    []interface{}
+	inUse        []interface{}
+	mutex        *sync.Mutex
+	factory      PooledObjectFactory
+	starveClient int
 }
 
-func (ps *PoolSection) Get() interface{} {
+func (ps *PoolSection) grow() {
+	ps.capacity = ps.capacity * 2
+	ps.starveClient = 0
+}
+
+func (ps *PoolSection) Get() (interface{}, error) {
 	ps.mutex.Lock()
 	defer ps.mutex.Unlock()
 
 	if len(ps.available) == 0 {
 		if len(ps.inUse) == ps.capacity {
-			return errors.ErrObjectPoolUndeflow
+			ps.starveClient++
+			return nil, errors.ErrObjectPoolUndeflow
 		}
 		obj, err := ps.factory.Create()
 		if err != nil {
-			return err
+			return nil, err
 		}
 		ps.inUse = append(ps.inUse, obj)
-		return obj
+		return obj, nil
 	} else {
 		var obj interface{}
 		obj, ps.available = ps.available[0], ps.available[1:]
 		ps.inUse = append(ps.inUse, obj)
-		return obj
+		return obj, nil
 	}
 }
 
@@ -174,7 +185,7 @@ func newMultiConnectionPool(capacity int) *MultiConnectionsPool {
 func GetMultiPool() MultiPool {
 
 	once.Do(func() {
-		multiConnectionsPool = newMultiConnectionPool(10)
+		multiConnectionsPool = newMultiConnectionPool(60)
 	})
 
 	return multiConnectionsPool

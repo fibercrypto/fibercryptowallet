@@ -99,7 +99,8 @@ func (p *SkyFiberPlugin) LoadTransactionAPI(netType string) (core.BlockchainTran
 	if netType != "MainNet" {
 		return nil, errors.ErrInvalidNetworkType
 	}
-	return NewSkycoinBlockchain(config.GetDataRefreshTimeout()), nil
+	refreshTimeOut := config.GetDataRefreshTimeout()
+	return NewSkycoinBlockchain(refreshTimeOut*(1000000000)), nil
 }
 
 // LoadSignService sign service entry point

@@ -59,10 +59,14 @@ var (
 	ErrInvalidTypeAssertion = errors.New("Invalid type assertion")
 	// ErrWalletCantSign wallet can not sign transactions
 	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
-	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
+q	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
 	// wallet not found
 	ErrWltFromAddrNotFound = errors.New("Error getting wallet from addr, no wallet found")
 	// ErrInvalidIndex invalid index detected
+	// ErrNotImplemented feature not implemented
+	ErrNotImplemented = errors.New("Feature not implemented")
+	// ErrKeyNotFound unknown key
+	ErrKeyNotFound = errors.New("Key not found")
 	ErrInvalidIndex = errors.New("Invalid index")
 	// ErrHwUnexpected unexpected error with sky-hw
 	ErrHwUnexpected = errors.New("Unexpected error with device")

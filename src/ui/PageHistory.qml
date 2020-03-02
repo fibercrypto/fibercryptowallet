@@ -26,11 +26,11 @@ Page {
                 onClicked:{
                     if (!checked) {
                         modelTransactions.clear()
-                        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
+                        modelTransactions.addMultipleTransactions(historyManager.getTransactions())
                     }
                     else {
                         modelTransactions.clear()
-                        modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+                        modelTransactions.addMultipleTransactions(historyManager.getTransactionsWithFilters())
                     }
                 }
             }
@@ -79,9 +79,13 @@ Page {
 
         onClosed: {
             modelTransactions.clear()
-            modelTransactions.addMultipleTransactions(historyManager.loadHistoryWithFilters())
+            modelTransactions.addMultipleTransactions(historyManager.getTransactionsWithFilters())
         }
-        
+
+        onOpened:{
+            filter.loadWallets()
+        }
+
         HistoryFilterList {
             id: filter
             anchors.fill: parent
@@ -118,9 +122,14 @@ Page {
 
     HistoryManager {
         id: historyManager
+        onNewTransactions: {
+            if (!switchFilters.checked) {
+                modelTransactions.addMultipleTransactions(historyManager.getNewTransactions())
+            }
+            else {
+                modelTransactions.addMultipleTransactions(historyManager.getNewTransactionsWithFilters())
+            }
+        }
     }
 
-    Component.onCompleted: {
-        modelTransactions.addMultipleTransactions(historyManager.loadHistory())
-    }
 }

@@ -13,6 +13,8 @@ Dialog {
     property alias headerMessageColor: labelHeaderMessage.color
     property alias password: passwordRequester.text
 
+    property url forgottenPasswordUrl: "http://skycoin.com/"
+
     function clear() {
         passwordRequester.clear()
         standardButton(Dialog.Ok).enabled = password
@@ -26,38 +28,32 @@ Dialog {
     title: qsTr("Password requested")
     standardButtons: Dialog.Ok | Dialog.Cancel
 
-    Flickable {
-        id: flickable
-        anchors.fill: parent
-        contentHeight: columnLayoutRoot.height
+    ColumnLayout {
+        id: columnLayoutRoot
+        width: parent.width
+        spacing: 10
         clip: true
 
-        ColumnLayout {
-            id: columnLayoutRoot
-            width: parent.width
-            spacing: 10
+        Label {
+            id: labelHeaderMessage
 
-            Label {
-                id: labelHeaderMessage
+            Layout.fillWidth: true
+            wrapMode: Text.Wrap
+            visible: text
+        }
 
-                Layout.fillWidth: true
-                wrapMode: Text.WordWrap
-                visible: text
+        PasswordRequester {
+            id: passwordRequester
+
+            Layout.fillWidth: true
+
+            onPasswordForgotten: {
+                Qt.openUrlExternally(forgottenPasswordUrl)
             }
-
-            PasswordRequester {
-                id: passwordRequester
-
-                Layout.fillWidth: true
-
-                onPasswordForgotten: {
-                    Qt.openUrlExternally("http://skycoin.com/")
-                }
-                onTextChanged: {
-                    dialogGetPassword.standardButton(Dialog.Ok).enabled = text !== ""
-		            password = text
-                }
+            onTextChanged: {
+                dialogGetPassword.standardButton(Dialog.Ok).enabled = text !== ""
+                password = text
             }
-        } // ColumnLayout (root)
-    } // Flickable
+        }
+    } // ColumnLayout (root)
 }

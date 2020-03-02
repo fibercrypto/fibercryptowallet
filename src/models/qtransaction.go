@@ -45,7 +45,15 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	ins := txn.GetInputs()
 	for _, in := range ins {
 		qIn := address.NewAddressDetails(nil)
-		addr := in.GetSpentOutput().GetAddress().String()
+		out, err := in.GetSpentOutput()
+		if err != nil {
+			return nil, err
+		}
+		outAddr, err := out.GetAddress()
+		if err != nil {
+			return nil, err
+		}
+		addr := outAddr.String()
 		inputsAddresses[addr] = struct{}{}
 		qIn.SetAddress(addr)
 		quotient, err := util.AltcoinQuotient(params.SkycoinTicker)
@@ -74,7 +82,11 @@ func NewQTransactionFromTransaction(txn core.Transaction) (*QTransaction, error)
 	outs := txn.GetOutputs()
 	for _, out := range outs {
 		qOu := address.NewAddressDetails(nil)
-		addr := out.GetAddress().String()
+		outAddr, err := out.GetAddress()
+		if err != nil {
+			return nil, err
+		}
+		addr := outAddr.String()
 		qOu.SetAddress(addr)
 		quotient, err := util.AltcoinQuotient(params.SkycoinTicker)
 		sky, err := out.GetCoins(params.SkycoinTicker)

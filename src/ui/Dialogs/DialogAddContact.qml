@@ -4,129 +4,105 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 
+import AddrsBookManager 1.0
+
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+// import "qrc:/ui/src/ui"
+// import "qrc:/ui/src/ui/Delegates"
 import "../Controls" // For quick UI development, switch back to resources when making a release
 import "../" // For quick UI development, switch back to resources when making a release
-import "../Delegates"
+import "../Delegates" // For quick UI development, switch back to resources when making a release
 
+Dialog {
+    id: dialogAddContact
 
-Dialog{
-  id: dialogAddContact
-  property bool isEdit:false
+    property alias name: textFieldName.text
+    property int index: -1
+    property int cId: -1
+    property AddrsBkAddressModel addressModel
+    property alias listModelAddresses: listModelAddresses
+    property bool isEdit: false
 
-  title: Qt.application.name
-  standardButtons: Dialog.Ok | Dialog.Cancel
+    title: isEdit ? qsTr("Edit contact") : qsTr("Add contact")
+    standardButtons: Dialog.Save | Dialog.Cancel
+
     Component.onCompleted: {
-    standardButton(Dialog.Ok).enabled=false
-    }
-    onAboutToShow:{
-if(isEdit){
-    name.text=menu.name
-listModelAddresses.clear()
-for(var i=0;i<menu.address.rowCount();i++){
-listModelAddresses.append({value:menu.address.address[i].value,
-coinType:menu.address.address[i].coinType})
-}
-}else{
-    name.text=""
-listModelAddresses.append({value:"",coinType:""})
-}
-}
-    onAccepted:{
-updateAcceptButtonStatus()
-    name.text=""
-    listModelAddresses.clear()
+        standardButton(Dialog.Save).enabled = false
+        standardButton(Dialog.Save).text = Qt.binding( function() { return isEdit ? qsTr("Save") : qsTr("Add") } )
     }
 
-    onRejected:{
-    name.text=""
-    listModelAddresses.clear()
-//    listModelAddresses.append( { value: "", coinType: "" } )
-    }
+    onAboutToShow: {
+        listModelAddresses.clear()
+        if (isEdit) {
+            for (var i = 0; i < addressModel.rowCount(); i++) {
+                listModelAddresses.append( {
+                    value: addressModel.address[i].value,
+                    coinType: addressModel.address[i].coinType
+                })
+            }
+        } else {
+            name = ""
+            listModelAddresses.append( { value: "", coinType: "" } )
+        }
 
-function enableOkBtn(){
-for(var i=0;i<listModelAddresses.count;i++){
-if (!(abm.addressIsValid(listModelAddresses.get(i).value))||
-     name.text==""|| abm.nameExist(menu.index,name.text)||
-     abm.addressExist(menu.index,listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)){
-standardButton(Dialog.Ok).enabled=false
-return
-}
-}
-standardButton(Dialog.Ok).enabled=true
-}
+        updateAcceptButtonStatus()
+    }
 
     function updateAcceptButtonStatus() {
-    for(var i=0;i<listModelAddresses.count;i++){
-    abm.addAddress(listModelAddresses.get(i).value,listModelAddresses.get(i).coinType)
-    }
-
-    if (isEdit){
-abm.editContact(menu.index, menu.cId, name.text)
-    }else{
-    abm.newContact(name.text)
-    }
-    } // function updateAcceptButtonStatus()
-
-
-
-Flickable{
-        id:flickable
-        anchors.fill: parent
-        contentHeight: columnLayoutRoot.height
-        clip: true
-        ColumnLayout{
-            id: columnLayoutRoot
-            width: parent.width
-            spacing: 30
-
-                    Behavior on Layout.preferredHeight {NumberAnimation{duration: 500;easing.type:Easing.OutQuint}}
-                    TextField{
-                        id:name
-                        placeholderText: qsTr("Name")
-                        Layout.fillWidth: true
-                        text: menu.name
-                        onTextChanged:{
-                        enableOkBtn()
-                        }
-
-                    }
-                   ColumnLayout {
-                               id: columnLayoutDestinations
-
-                               Layout.alignment: Qt.AlignTop
-
-                               ListView {
-                                   id: listViewDestinations
-
-                                   property real delegateHeight: 47
-
-                                   Layout.fillWidth: true
-                                   Layout.topMargin: -16
-                                   implicitHeight: count * delegateHeight
-
-                                   Behavior on implicitHeight { NumberAnimation { duration: 250; easing.type: Easing.OutQuint } }
-
-                                   interactive: false
-                                   clip: true
-
-                                   model: listModelAddresses
-
-                                   delegate: AddressListDelegate {
-                                       width: listViewDestinations.width
-                                       implicitHeight: ListView.view.delegateHeight
-                                   }
-                               } // ListView
-                           } // ColumnLayout (destinations)
-ListModel {
-        id: listModelAddresses
-      }
-        }//ColumnLayoutRoot
-        ScrollIndicator.vertical: ScrollIndicator{
-        parent: dialogAddContact.contentItem
-        anchors.top: flickable.top
-        anchors.bottom: flickable.bottom
-        anchors.right: parent.right
-        anchors.rightMargin: -dialogAddContact.rightMargin+1
+        for (var i = 0; i < listModelAddresses.count; i++) {
+            if ( !(abm.addressIsValid(listModelAddresses.get(i).value)) ||
+                   name === "" || abm.nameExist(index, name) ||
+                   abm.addressExist(index, listModelAddresses.get(i).value, listModelAddresses.get(i).coinType)) {
+                standardButton(Dialog.Save).enabled = false
+                return
+            }
         }
-    }//Flickable
+        standardButton(Dialog.Save).enabled = true
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+
+        TextField {
+            id: textFieldName
+            Layout.fillWidth: true
+
+            placeholderText: qsTr("Name")
+            selectByMouse: true
+            onTextChanged: {
+                updateAcceptButtonStatus()
+            }
+        }
+
+        ScrollView {
+            id: scrollView
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            ListView {
+                id: listViewDestinations
+
+                interactive: false
+                clip: true
+
+                model: listModelAddresses
+
+                delegate: AddressListDelegate {
+                    width: listViewDestinations.width
+
+                    onAddressTextChanged: {
+                        updateAcceptButtonStatus()
+                    }
+                    onNumberOfAddressesChanged: {
+                        updateAcceptButtonStatus()
+                    }
+                }
+            } // ListView
+        } // ScrollView
+    } // ColumnLayout
+
+    ListModel {
+        id: listModelAddresses
+    }
 }

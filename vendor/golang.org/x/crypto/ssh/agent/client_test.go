@@ -14,7 +14,6 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -36,19 +35,17 @@ func startOpenSSHAgent(t *testing.T) (client ExtendedAgent, socket string, clean
 	}
 
 	cmd := exec.Command(bin, "-s")
-	cmd.Env = []string{} // Do not let the user's environment influence ssh-agent behavior.
-	cmd.Stderr = new(bytes.Buffer)
 	out, err := cmd.Output()
 	if err != nil {
-		t.Fatalf("%s failed: %v\n%s", strings.Join(cmd.Args, " "), err, cmd.Stderr)
+		t.Fatalf("cmd.Output: %v", err)
 	}
 
-	// Output looks like:
-	//
-	//	SSH_AUTH_SOCK=/tmp/ssh-P65gpcqArqvH/agent.15541; export SSH_AUTH_SOCK;
-	//	SSH_AGENT_PID=15542; export SSH_AGENT_PID;
-	//	echo Agent pid 15542;
+	/* Output looks like:
 
+		   SSH_AUTH_SOCK=/tmp/ssh-P65gpcqArqvH/agent.15541; export SSH_AUTH_SOCK;
+	           SSH_AGENT_PID=15542; export SSH_AGENT_PID;
+	           echo Agent pid 15542;
+	*/
 	fields := bytes.Split(out, []byte(";"))
 	line := bytes.SplitN(fields[0], []byte("="), 2)
 	line[0] = bytes.TrimLeft(line[0], "\n")
