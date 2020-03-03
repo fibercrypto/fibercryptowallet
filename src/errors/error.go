@@ -65,11 +65,9 @@ var (
 	// wallet not found
 	ErrWltFromAddrNotFound = errors.New("Error getting wallet from addr, no wallet found")
 	// ErrInvalidIndex invalid index detected
-	// ErrNotImplemented feature not implemented
-	ErrNotImplemented = errors.New("Feature not implemented")
+	ErrInvalidIndex = errors.New("Invalid index")
 	// ErrKeyNotFound unknown key
 	ErrKeyNotFound = errors.New("Key not found")
-	ErrInvalidIndex = errors.New("Invalid index")
 	// ErrHwUnexpected unexpected error with sky-hw
 	ErrHwUnexpected = errors.New("Unexpected error with device")
 	// ErrHwSignTransactionCanceled cancelled by user in the physical device
