@@ -46,6 +46,8 @@ var (
 	ErrDeviceTypeEmulator = errors.New("device type cannot be emulator")
 	// ErrInvalidWordCount is returned if word count is not valid mnemonic word length
 	ErrInvalidWordCount = errors.New("word count must be 12 or 24")
+	// ErrInvalidArgCountForEmulatorIPAddress emulator ip address is the only one expected argument for emulatorAddress
+	ErrInvalidArgCountForEmulatorIPAddress = errors.New("emulator ip address is the only one expected argument for emulatorAddress")
 	// ErrNoDeviceConnected is returned if no device is connected to the system
 	ErrNoDeviceConnected = errors.New("no device connected")
 	// ErrInvalidWalletType a valid wallet type should  be specified
@@ -126,8 +128,8 @@ func DeviceTypeFromString(deviceType string) DeviceType {
 var devSingleCreator sync.Once
 var devSingleInstance *Device
 
-func newDevice(deviceType DeviceType) *Device {
-	driver, err := NewDriver(deviceType)
+func newDevice(deviceType DeviceType, emulatorAddress ...string) *Device {
+	driver, err := NewDriver(deviceType, emulatorAddress...)
 	if err != nil {
 		log.Fatalf("failed to create driver: %s", err)
 	}
@@ -143,11 +145,11 @@ func newDevice(deviceType DeviceType) *Device {
 }
 
 // NewDevice returns a new device instance
-func NewDevice(deviceType DeviceType) *Device {
+func NewDevice(deviceType DeviceType, emulatorAddress ...string) *Device {
 	// TODO rename NewDevice to DeviceInstance as this is a singleton
 	// implementation.
 	devSingleCreator.Do(func() {
-		devSingleInstance = newDevice(deviceType)
+		devSingleInstance = newDevice(deviceType, emulatorAddress...)
 	})
 	return devSingleInstance
 }
@@ -923,7 +925,7 @@ func (d *Device) PinMatrixAck(p string) (wire.Message, error) {
 	}
 	defer d.Disconnect()
 
-	log.Printf("Setting pin: %s\n", p)
+	log.Printf("Setting pin %s\n", p)
 
 	pinMatrixChunks, err := MessagePinMatrixAck(p)
 	if err != nil {

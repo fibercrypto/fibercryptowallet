@@ -1,15 +1,9 @@
 package cli
 
 import (
-	"fmt"
-	"os"
-	"runtime"
-
 	messages "github.com/fibercrypto/skywallet-protob/go"
 
 	gcli "github.com/urfave/cli"
-
-	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 )
 
 func generateMnemonicCmd() gcli.Command {
@@ -38,43 +32,12 @@ func generateMnemonicCmd() gcli.Command {
 		Action: func(c *gcli.Context) {
 			usePassphrase := c.Bool("usePassphrase")
 			wordCount := uint32(c.Uint64("wordCount"))
-
-			device := skyWallet.NewDevice(skyWallet.DeviceTypeFromString(c.String("deviceType")))
-			if device == nil {
-				return
-			}
-			defer device.Close()
-
-			if os.Getenv("AUTO_PRESS_BUTTONS") == "1" && device.Driver.DeviceType() == skyWallet.DeviceTypeEmulator && runtime.GOOS == "linux" {
-				err := device.SetAutoPressButton(true, skyWallet.ButtonRight)
-				if err != nil {
-					log.Error(err)
-					return
-				}
-			}
-
-			msg, err := device.GenerateMnemonic(wordCount, usePassphrase)
+			sq, err := createDevice(c.String("deviceType"))
 			if err != nil {
-				log.Error(err)
 				return
 			}
-
-			if msg.Kind == uint16(messages.MessageType_MessageType_ButtonRequest) {
-				// Send ButtonAck
-				msg, err = device.ButtonAck()
-				if err != nil {
-					log.Error(err)
-					return
-				}
-			}
-
-			responseMsg, err := skyWallet.DecodeSuccessOrFailMsg(msg)
-			if err != nil {
-				log.Error(err)
-				return
-			}
-
-			fmt.Println(responseMsg)
+			msg, err := sq.GenerateMnemonic(wordCount, usePassphrase)
+			handleFinalResponse(msg, err, "unable to generate mnemonic", messages.MessageType_MessageType_Success)
 		},
 	}
 }

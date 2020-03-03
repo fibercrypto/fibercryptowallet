@@ -2,16 +2,11 @@ package cli
 
 import (
 	"fmt"
-	"os"
-	"runtime"
-
 	"github.com/gogo/protobuf/proto"
 
 	gcli "github.com/urfave/cli"
 
 	messages "github.com/fibercrypto/skywallet-protob/go"
-
-	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 )
 
 func transactionSignCmd() gcli.Command {
@@ -65,21 +60,6 @@ func transactionSignCmd() gcli.Command {
 			hours := c.Int64Slice("hour")
 			addressIndex := c.IntSlice("addressIndex")
 			walletType := c.String("walletType")
-
-			device := skyWallet.NewDevice(skyWallet.DeviceTypeFromString(c.String("deviceType")))
-			if device == nil {
-				return
-			}
-			defer device.Close()
-
-			if os.Getenv("AUTO_PRESS_BUTTONS") == "1" && device.Driver.DeviceType() == skyWallet.DeviceTypeEmulator && runtime.GOOS == "linux" {
-				err := device.SetAutoPressButton(true, skyWallet.ButtonRight)
-				if err != nil {
-					log.Error(err)
-					return
-				}
-			}
-
 			if len(inputs) != len(inputIndex) {
 				fmt.Println("Every given input hash should have the an inputIndex")
 				return
@@ -88,7 +68,6 @@ func transactionSignCmd() gcli.Command {
 				fmt.Println("Every given output should have a coin and hour value")
 				return
 			}
-
 			var transactionInputs []*messages.SkycoinTransactionInput
 			var transactionOutputs []*messages.SkycoinTransactionOutput
 			for i, input := range inputs {
@@ -107,64 +86,12 @@ func transactionSignCmd() gcli.Command {
 				}
 				transactionOutputs = append(transactionOutputs, &transactionOutput)
 			}
-
-			msg, err := device.TransactionSign(transactionInputs, transactionOutputs, walletType)
+			sq, err := createDevice(c.String("deviceType"))
 			if err != nil {
-				log.Error(err)
 				return
 			}
-
-			for {
-				switch msg.Kind {
-				case uint16(messages.MessageType_MessageType_ResponseTransactionSign):
-					signatures, err := skyWallet.DecodeResponseTransactionSign(msg)
-					if err != nil {
-						log.Error(err)
-						return
-					}
-					fmt.Println(signatures)
-					return
-				case uint16(messages.MessageType_MessageType_Success):
-					fmt.Println("Should end with ResponseTransactionSign request")
-					return
-				case uint16(messages.MessageType_MessageType_ButtonRequest):
-					msg, err = device.ButtonAck()
-					if err != nil {
-						log.Error(err)
-						return
-					}
-				case uint16(messages.MessageType_MessageType_PassphraseRequest):
-					var passphrase string
-					fmt.Printf("Input passphrase: ")
-					fmt.Scanln(&passphrase)
-					msg, err = device.PassphraseAck(passphrase)
-					if err != nil {
-						log.Error(err)
-						return
-					}
-				case uint16(messages.MessageType_MessageType_PinMatrixRequest):
-					var pinEnc string
-					fmt.Printf("PinMatrixRequest response: ")
-					fmt.Scanln(&pinEnc)
-					msg, err = device.PinMatrixAck(pinEnc)
-					if err != nil {
-						log.Error(err)
-						return
-					}
-				case uint16(messages.MessageType_MessageType_Failure):
-					failMsg, err := skyWallet.DecodeFailMsg(msg)
-					if err != nil {
-						log.Error(err)
-						return
-					}
-
-					fmt.Printf("Failed with message: %s\n", failMsg)
-					return
-				default:
-					log.Errorf("received unexpected message type: %s", messages.MessageType(msg.Kind))
-					return
-				}
-			}
+			msg, err := sq.TransactionSign(transactionInputs, transactionOutputs, walletType)
+			handleFinalResponse(msg, err, "unable to sign transaction", messages.MessageType_MessageType_ResponseTransactionSign)
 		},
 	}
 }

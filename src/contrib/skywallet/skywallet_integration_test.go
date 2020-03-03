@@ -13,9 +13,18 @@ import (
 	"testing"
 )
 
+func emulatorDevice() skywallet.Devicer {
+	return proxy.NewSequencer(
+		skywallet.NewDevice(
+			skywallet.DeviceTypeEmulator),
+		true,
+		func()string{return ""},
+	)
+}
+
 func setUpHardwareWallet(t *testing.T) {
 	util.RegisterAltcoin(skycoin.NewSkyFiberPlugin(skycoin.SkycoinMainNetParams))
-	dev := proxy.NewSequencer(skywallet.NewDevice(skywallet.DeviceTypeEmulator))
+	dev := emulatorDevice()
 	keyTestData, err := skycoin.GenerateTestKeyPair(t)
 	require.NoError(t, err)
 	integrationtestutil.ForceSetMnemonic(t, dev, keyTestData.Mnemonic)
@@ -38,8 +47,14 @@ func TestMain(m *testing.M) {
 
 func TestTransactionSignInputFromDevice(t *testing.T) {
 	skycoin.CleanGlobalMock()
+	skyApiMock := skycoin.GetGlobalMock()
+	err := core.GetMultiPool().CreateSection(skycoin.PoolSection, skyApiMock)
+	if err != nil {
+		logModelTest.WithError(err).Warn("Error creating pool section")
+		return
+	}
 	setUpHardwareWallet(t)
-	dev := proxy.NewSequencer(skywallet.NewDevice(skywallet.DeviceTypeEmulator))
+	dev := emulatorDevice()
 	hs1 := NewSkyWallet(nil, dev)
 	hs2 := NewSkyWallet(nil, dev)
 	hs3 := NewSkyWallet(nil, dev)

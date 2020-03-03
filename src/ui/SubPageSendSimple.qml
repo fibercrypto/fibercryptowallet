@@ -113,7 +113,7 @@ getAddressList()
                     Layout.fillWidth: true
                     id: comboBoxWalletsSendFrom
                     textRole: "name"
-                displayText: comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex] && comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky ? comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name + " - " + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky + " SKY (" + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].coinHours + " CoinHours)" : "Select a wallet"
+                    displayText: comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex] && comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky ? comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].name + " - " + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].sky + " SKY (" + comboBoxWalletsSendFrom.model.wallets[comboBoxWalletsSendFrom.currentIndex].coinHours + " CoinHours)" : "Select a wallet"
                     model: WalletModel {
                         Component.onCompleted: {
                             loadModel(walletManager.getWallets())
@@ -175,7 +175,7 @@ getAddressList()
                         }
                     }
                     function reset(wltId) {
-                        currentIndex = -1;
+                        currentIndex = 0;
                         signerModelId.loadModel(wltId)
                         signerSelectorId.visible = signerModelId.rowCount() > 1
                     }
