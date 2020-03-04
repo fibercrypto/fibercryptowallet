@@ -292,6 +292,10 @@ type WalletNode struct {
 	poolSection string
 }
 
+func (wltEnv *WalletNode) LookupWallet(firstAddr string) (core.Wallet, error) {
+	return lookupWallet(wltEnv, firstAddr)
+}
+
 func (wltEnv *WalletNode) GetStorage() core.WalletStorage {
 	logWallet.Info("Getting wallet node storage")
 	if wltEnv.wltService == nil {
@@ -736,7 +740,7 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		indices, err = GetHashIndices(txn.GetInputs(), strIdxs)
 		if err != nil {
 			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
 			return nil, err
@@ -746,7 +750,7 @@ func (wlt *RemoteWallet) SignTransaction(txn core.Transaction, pwdReader core.Pa
 	return
 }
 
-func getHashIndices(ins []core.TransactionInput, strIdxs []string) (indices []int, err error) {
+func GetHashIndices(ins []core.TransactionInput, strIdxs []string) (indices []int, err error) {
 	cache := make(map[string]int, len(ins))
 	indices = make([]int, len(strIdxs))
 	scanIdx := 0
@@ -782,12 +786,12 @@ func getHashIndices(ins []core.TransactionInput, strIdxs []string) (indices []in
 	return indices, nil
 }
 
-func (wlt *RemoteWallet) GetSignerUID() core.UID {
-	return SignerIDRemoteWallet
+func (wlt *RemoteWallet) GetSignerUID() (core.UID, error) {
+	return SignerIDRemoteWallet, nil
 }
 
-func (wlt *RemoteWallet) GetSignerDescription() string {
-	return "Remote Skycoin wallet " + wlt.Id
+func (wlt *RemoteWallet) GetSignerDescription() (string, error) {
+	return "Remote Skycoin wallet " + wlt.Id, nil
 }
 
 func walletResponseToWallet(wltR api.WalletResponse) *RemoteWallet {
@@ -821,7 +825,31 @@ func NewWalletDirectory(dirPath string) *WalletDirectory {
 type WalletDirectory struct {
 	// Implements WallentEnv interface
 	WalletDir  string
-	wltService *SkycoinLocalWallet
+	wltService core.PersistibleSet
+}
+
+func (wd *WalletDirectory) SetWltService(wltSrv core.PersistibleSet) {
+	wd.wltService = wltSrv
+}
+
+func lookupWallet(env core.WalletEnv, firstAddr string) (core.Wallet, error) {
+	ws := env.GetWalletSet()
+	wls := ws.ListWallets()
+	for wls.Next() {
+		w := wls.Value()
+		addrs := w.GenAddresses(core.AccountAddress, 0, 1, nil)
+		if addrs.Next() {
+			addr := addrs.Value()
+			if addr.String() == firstAddr {
+				return w, nil
+			}
+		}
+	}
+	return nil, errors.ErrWltFromAddrNotFound
+}
+
+func (wltDir *WalletDirectory) LookupWallet(firstAddr string) (core.Wallet, error) {
+	return lookupWallet(wltDir, firstAddr)
 }
 
 func (wltDir *WalletDirectory) GetStorage() core.WalletStorage {
@@ -1697,7 +1725,7 @@ func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 	if strIdxs == nil {
 		indices = nil
 	} else {
-		indices, err = getHashIndices(txn.GetInputs(), strIdxs)
+		indices, err = GetHashIndices(txn.GetInputs(), strIdxs)
 		if err != nil {
 			logWallet.Error("Error parsing Skycoin transaction input indices array for signing")
 			return nil, err
@@ -1707,12 +1735,12 @@ func (wlt *LocalWallet) SignTransaction(txn core.Transaction, pwdReader core.Pas
 	return
 }
 
-func (wlt *LocalWallet) GetSignerUID() core.UID {
-	return SignerIDLocalWallet
+func (wlt *LocalWallet) GetSignerUID() (core.UID, error) {
+	return SignerIDLocalWallet, nil
 }
 
-func (wlt *LocalWallet) GetSignerDescription() string {
-	return "Remote Skycoin wallet " + wlt.Id
+func (wlt *LocalWallet) GetSignerDescription() (string, error) {
+	return "Remote Skycoin wallet " + wlt.Id, nil
 }
 
 // Typoe assertions

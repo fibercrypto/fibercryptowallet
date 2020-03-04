@@ -24,6 +24,11 @@ type WalletSet interface {
 	SupportedWalletTypes() []string
 }
 
+type PersistibleSet interface {
+	WalletSet
+	WalletStorage
+}
+
 // WalletStorage provides access to the underlying wallets data store
 type WalletStorage interface {
 	// Encrypt protects wallet data using cryptography
@@ -101,4 +106,7 @@ type WalletEnv interface {
 	GetStorage() WalletStorage
 	// GetWalletSet loads wallets in this environment
 	GetWalletSet() WalletSet
+	// LookupWallet allow you to get a wallet from the first address in the
+	// deterministic sequence, error if not found or some thing was happen
+	LookupWallet(firstAddr string) (Wallet, error)
 }

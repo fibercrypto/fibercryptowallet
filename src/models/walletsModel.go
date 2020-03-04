@@ -1,9 +1,15 @@
 package models
 
 import (
+	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet"
+	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
+	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
+	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
+	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
+	"time"
 )
 
 const (
@@ -13,9 +19,13 @@ const (
 	CoinHours
 	FileName
 	Expand
+	HasHardwareWallet
 )
 
 var logWalletsModel = logging.MustGetLogger("Wallets Model")
+var dev skyWallet.Devicer
+var hadHwConnected = false
+var hwConnectedOn []int
 
 type WalletModel struct {
 	core.QAbstractListModel
@@ -30,6 +40,7 @@ type WalletModel struct {
 	_             func(row int)                                                                    `slot:"removeWallet"`
 	_             func([]*QWallet)                                                                 `slot:"loadModel"`
 	_             func([]*QWallet)                                                                 `slot:"updateModel"`
+	_             func()                                                                           `slot:"sniffHw"`
 	_             func(string)                                                                     `slot:"changeExpanded"`
 	_             int                                                                              `property:"count"`
 	receivChannel chan *updateWalletInfo
@@ -44,10 +55,14 @@ type QWallet struct {
 	_ string `property:"coinHours"`
 	_ string `property:"fileName"`
 	_ bool   `property:"expand"`
+	_ bool   `property:"hasHardwareWallet"`
 }
 
 func (walletModel *WalletModel) init() {
 	logWalletsModel.Info("Initialize Wallet model")
+	dev = proxy.NewSequencer(skyWallet.NewDevice(skyWallet.DeviceTypeUSB), true, func() string {
+		return "not implemented"
+	})
 	walletModel.SetRoles(map[int]*core.QByteArray{
 		Name:              core.NewQByteArray2("name", -1),
 		EncryptionEnabled: core.NewQByteArray2("encryptionEnabled", -1),
@@ -55,6 +70,7 @@ func (walletModel *WalletModel) init() {
 		CoinHours:         core.NewQByteArray2("coinHours", -1),
 		FileName:          core.NewQByteArray2("fileName", -1),
 		Expand:            core.NewQByteArray2("expand", -1),
+		HasHardwareWallet: core.NewQByteArray2("hasHardwareWallet", -1),
 	})
 	qml.QQmlEngine_SetObjectOwnership(walletModel, qml.QQmlEngine__CppOwnership)
 	walletModel.ConnectData(walletModel.data)
@@ -82,11 +98,73 @@ func (walletModel *WalletModel) init() {
 					encrypted = true
 				}
 				walletModel.editWallet(wi.row, wi.wallet.Name(), encrypted, wi.wallet.Sky(), wi.wallet.CoinHours())
-
+				walletModel.ConnectSniffHw(walletModel.sniffHw)
 			}
 		}
 	}()
+}
 
+// attachHwAsSigner add a hw as signer
+func attachHwAsSigner(wlt fccore.Wallet, dev skyWallet.Devicer) error {
+	hw := hardware.NewSkyWallet(wlt, dev)
+	am := wlcore.LoadAltcoinManager()
+	if err := am.AttachSignService(hw); err != nil {
+		logSignersModel.Errorln("error registering hardware wallet as signer")
+		return err
+	}
+	return nil
+}
+
+// sniffHw notify the model about available hardware wallet device if any
+func (walletModel *WalletModel) sniffHw() {
+	checkForDerivationType := func(dt string) {
+		addr, err := hardware.HwFirstAddr(dev, dt)
+		if err == nil {
+			wlt, err := walletManager.WalletEnv.LookupWallet(addr)
+			if err != nil {
+				logSignersModel.Warnln("can not find a wallet matching the hardware one")
+				// FIXME handle this scenario with a wallet registration.
+				return
+			}
+			err = attachHwAsSigner(wlt, dev)
+			if err != nil {
+				logSignersModel.WithError(err).Errorln("unable to attach signer")
+				return
+			}
+			hadHwConnected = true
+			walletModel.updateWallet(wlt.GetId())
+		} else {
+			if hadHwConnected {
+				hadHwConnected = false
+				hwConnectedOn = []int{}
+				beginIndex := walletModel.Index(0, 0, core.NewQModelIndex())
+				endIndex := walletModel.Index(walletModel.rowCount(core.NewQModelIndex())-1, 0, core.NewQModelIndex())
+				walletModel.DataChanged(beginIndex, endIndex, []int{HasHardwareWallet})
+				logSignersModel.WithError(err).Info("connection to hardware wallet was lose")
+			}
+		}
+	}
+	go func() {
+		for {
+			hwConnectedOn = []int{}
+			checkForDerivationType(skyWallet.WalletTypeDeterministic)
+			//checkForDerivationType(skyWallet.WalletTypeBip44)
+			time.Sleep(time.Millisecond * 500)
+		}
+	}()
+}
+
+func (walletModel *WalletModel) updateWallet(fn string) {
+	index := &core.QModelIndex{}
+	for row := 0; row < walletModel.rowCount(core.NewQModelIndex()); row++ {
+		index = walletModel.Index(row, 0, core.NewQModelIndex())
+		fileName := walletModel.data(index, FileName)
+		if fileName.ToString() == fn {
+			hwConnectedOn = append(hwConnectedOn, row)
+			walletModel.DataChanged(index, index, []int{HasHardwareWallet})
+			break
+		}
+	}
 }
 
 func (walletModel *WalletModel) changeExpanded(id string) {
@@ -128,6 +206,20 @@ func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QV
 	case FileName:
 		{
 			return core.NewQVariant1(w.FileName())
+		}
+	case HasHardwareWallet:
+		{
+			valInSlice := func() bool {
+				for idx := range hwConnectedOn {
+					if hwConnectedOn[idx] == index.Row() && hadHwConnected {
+						return true
+					}
+				}
+				return false
+			}
+			// FIXME: consider a double checking here instead of hadHwConnected
+			// be careful this can have a big performance impact
+			return core.NewQVariant1(valInSlice())
 		}
 	case Expand:
 		{
