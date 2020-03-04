@@ -454,7 +454,7 @@ func (txn *SkycoinTransaction) GetOutputs() []core.TransactionOutput {
 }
 
 func (txn *SkycoinTransaction) GetId() string {
-	logCoin.Info("Getting if from transaction")
+	logCoin.Info("Getting id from transaction")
 	return txn.skyTxn.Hash
 }
 
@@ -581,29 +581,28 @@ func (in *SkycoinTransactionInput) GetId() string {
 	return in.skyIn.Hash
 }
 
-func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
+func (in *SkycoinTransactionInput) GetSpentOutput() (core.TransactionOutput, error) {
 	logCoin.Info("Getting spent outputs for transaction inputs")
-
 	if in.spentOutput == nil {
 
 		c, err := NewSkycoinApiClient(PoolSection)
 		if err != nil {
-			return nil
+			return nil, err
 		}
 		defer ReturnSkycoinClient(c)
 		out, err := c.UxOut(in.skyIn.Hash)
 		if err != nil {
-			return nil
+			return nil, err
 		}
 		skyAccuracy, err := util.AltcoinQuotient(Sky)
 		if err != nil {
-			return nil
+			return nil, err
 		}
-
+		coins := util.FormatCoins(out.Coins, skyAccuracy)
 		skyOut := &SkycoinTransactionOutput{
 			skyOut: readable.TransactionOutput{
 				Address: out.OwnerAddress,
-				Coins:   strconv.FormatFloat(float64(out.Coins)/float64(skyAccuracy), 'f', -1, 64),
+				Coins:   coins,
 				Hours:   out.Hours,
 				Hash:    out.Uxid,
 			},
@@ -611,8 +610,7 @@ func (in *SkycoinTransactionInput) GetSpentOutput() core.TransactionOutput {
 		in.spentOutput = skyOut
 
 	}
-	return in.spentOutput
-
+	return in.spentOutput, nil
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output
@@ -686,14 +684,14 @@ func (out *SkycoinTransactionOutput) GetId() string {
 
 }
 
-func (out *SkycoinTransactionOutput) GetAddress() core.Address {
+func (out *SkycoinTransactionOutput) GetAddress() (core.Address, error) {
 	logCoin.Info("Getting address for transaction output")
 	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address)
 	if err != nil {
 		logCoin.Error(err)
-		return nil
+		return nil, err
 	}
-	return &skyAddrs
+	return &skyAddrs, nil
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output
@@ -703,7 +701,7 @@ func (in *SkycoinTransactionOutput) SupportedAssets() []string {
 
 // GetCoins return input balance in one of supported coins , or error
 func (out *SkycoinTransactionOutput) GetCoins(ticker string) (uint64, error) {
-	logCoin.Info("Getting coins for transaction outputs using " + ticker + "ticker")
+	logCoin.Info("Getting coins for transaction outputs using " + ticker + " ticker")
 	accuracy, err2 := util.AltcoinQuotient(ticker)
 	if err2 != nil {
 		return uint64(0), err2
@@ -768,12 +766,12 @@ func (in *SkycoinCreatedTransactionInput) GetId() string {
 	return in.skyIn.UxID
 }
 
-func (in *SkycoinCreatedTransactionInput) GetSpentOutput() core.TransactionOutput {
+func (in *SkycoinCreatedTransactionInput) GetSpentOutput() (core.TransactionOutput, error) {
 	if in.spentOutput == nil {
 
 		calculatedHours, err := in.GetCoins(CalculatedHour)
 		if err != nil {
-			calculatedHours = 0
+			return nil, err
 		}
 		skyOut := &SkycoinCreatedTransactionOutput{
 			skyOut: api.CreatedTransactionOutput{
@@ -787,7 +785,7 @@ func (in *SkycoinCreatedTransactionInput) GetSpentOutput() core.TransactionOutpu
 		in.spentOutput = skyOut
 
 	}
-	return in.spentOutput
+	return in.spentOutput, nil
 
 }
 
@@ -848,13 +846,13 @@ func (out *SkycoinCreatedTransactionOutput) GetId() string {
 	return out.skyOut.UxID
 }
 
-func (out *SkycoinCreatedTransactionOutput) GetAddress() core.Address {
+func (out *SkycoinCreatedTransactionOutput) GetAddress() (core.Address, error) {
 	skyAddrs, err := NewSkycoinAddress(out.skyOut.Address)
 	if err != nil {
 		logCoin.Error(err)
-		return nil
+		return nil, err
 	}
-	return &skyAddrs
+	return &skyAddrs, nil
 }
 
 // SupportedAssets enumerates tickers of crypto assets supported by this output

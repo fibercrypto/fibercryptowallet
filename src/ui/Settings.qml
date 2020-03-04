@@ -27,6 +27,7 @@ Page {
     readonly property int defaultLogOutput: ~~configManager.getDefaultValue("skycoin/log/output")
     readonly property string defaultLogOutputFile: configManager.getDefaultValue("skycoin/log/outputFile")
     readonly property var defaultCacheLifeTime: configManager.getDefaultValue("global/cache/lifeTime")
+    readonly property var defaultCacheUpdateTime: configManager.getDefaultValue("global/cache/updateTime")
 
     // These are the saved settings, must be applied when the settings are opened or when
     // the user clicks "RESET" and updated when the user clicks "APPLY"
@@ -38,6 +39,7 @@ Page {
     property int savedLogOutput: ~~configManager.getValue("skycoin/log/output")
     property string savedLogOutputFile: configManager.getDefaultValue("skycoin/log/outputFile")
     property var savedLifeTime: configManager.getValue("global/cache/lifeTime")
+    property var savedUpdateTime: configManager.getValue("global/cache/updateTime")
 
     // QtObject{
     //     id: logLevel
@@ -54,6 +56,7 @@ Page {
     property alias logOutput: listViewLogOutput.currentIndex
     property alias logOutputFile: listViewLogOutput.outputFile
     property alias cacheLifeTime: textFieldCacheLifeTime.text
+    property alias cacheUpdateTime: textFieldCacheUpdateTime.text
 
     Component.onCompleted: {
         loadSavedSettings()
@@ -65,6 +68,7 @@ Page {
         configManager.setValue("skycoin/node/address", nodeUrl)
         configManager.setValue("skycoin/log/level", logLevel)
         configManager.setValue("skycoin/log/output", logOutput)
+        configManager.setValue("global/cache/updateTime", cacheUpdateTime)
         configManager.setValue("skycoin/log/outputFile", logOutputFile)
         configManager.setValue("global/cache/lifeTime", cacheLifeTime)
         loadSavedSettings()
@@ -78,6 +82,9 @@ Page {
         logOutput = savedLogOutput = ~~configManager.getValue("skycoin/log/output")
         logOutputFile = savedLogOutputFile = configManager.getValue("skycoin/log/outputFile")
         cacheLifeTime = savedLifeTime = configManager.getValue("global/cache/lifeTime")
+        cacheUpdateTime = savedUpdateTime = configManager.getValue("global/cache/updateTime")
+
+        walletManager.updateAll()
         updateFooterButtonsStatus()
     }
 
@@ -85,9 +92,9 @@ Page {
         walletPath = defaultWalletPath
         isLocalWalletEnv = defaultIsLocalWalletEnv
         nodeUrl = defaultNodeUrl
+        cacheLifeTime = defaultCacheLifeTime
         logLevel = defaultLogLevel
         logOutput = defaultLogOutput
-        cacheLifeTime = defaultCacheLifeTime
 
         saveCurrentSettings()
     }
@@ -228,6 +235,25 @@ Page {
                         Layout.fillWidth: true
                         selectByMouse: true
                         placeholderText: qsTr("Cache lifetime")
+                        onTextChanged: {
+                            updateFooterButtonsStatus();
+                        }
+                        validator: IntValidator {
+                            bottom: 0
+                            top: 99999999
+                        }
+                    }
+
+                    TextField {
+
+                        id: textFieldCacheUpdateTime
+
+                        Layout.alignment: Qt.AlignTop
+                        Layout.fillWidth: true
+
+                        selectByMouse: true
+                        placeholderText: qsTr("Time to update")
+
                         onTextChanged: {
                             updateFooterButtonsStatus();
                         }

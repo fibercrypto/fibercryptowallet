@@ -79,7 +79,7 @@ func getInputs(wlt core.Wallet, txn coin.Transaction, indexes []int) (inputs []*
 			if err != nil {
 				logSkyWallet.WithFields(
 					logrus.Fields{"err": err, "input": txn.In[idx]},
-					).Errorln("unable to find address index for input")
+				).Errorln("unable to find address index for input")
 				return nil, err
 			}
 			transactionInput.Index = proto.Uint32(inputIndex)
@@ -100,7 +100,7 @@ func spendingOutputFromRemote(inputHash cipher.SHA256) (*readable.SpentOutput, e
 	if err != nil {
 		logSkyWallet.WithFields(
 			logrus.Fields{"err": err, "in": inputHash},
-			).Errorln("unable to get output from backend")
+		).Errorln("unable to get output from backend")
 		return nil, err
 	}
 	return out, nil
@@ -162,13 +162,15 @@ func readableTxn2Transaction(txn skytypes.ReadableTxn) (*coin.Transaction, error
 	return skyTxn, nil
 }
 
-func rawTxn2Transaction (txn skytypes.SkycoinTxn) (*coin.Transaction, error) {
+func rawTxn2Transaction(txn skytypes.SkycoinTxn) (*coin.Transaction, error) {
 	buf, err := txn.EncodeSkycoinTransaction()
 	if err != nil {
+		logSkyWallet.WithError(err).Errorln("can not encode txn as a Skycoin transaction")
 		return nil, err
 	}
 	skyTxn, err := coin.DeserializeTransaction(buf)
 	if err != nil {
+		logSkyWallet.WithError(err).Errorln("can not decode transaction")
 		return nil, err
 	}
 	return &skyTxn, nil
@@ -239,7 +241,7 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coi
 	if len(signatures) != len(transactionInputs) {
 		logSkyWallet.WithFields(
 			logrus.Fields{
-				"signatures_len": len(signatures),
+				"signatures_len":        len(signatures),
 				"transactionInputs_len": len(transactionInputs)}).Errorln("signatures response len should match inputs one")
 		return nil, fce.ErrTxnSignFailure
 	}
@@ -269,7 +271,10 @@ func (sw SkyWallet) signTransaction(txn core.Transaction, idxs []int) (core.Tran
 		logSkyWallet.WithError(err).Errorln("unable to get txn as coin.Transaction")
 		return nil, fce.ErrTxnSignFailure
 	}
-	dt := derivationType(txn)
+	dt, err := derivationType(txn)
+	if err != nil {
+		return nil, err
+	}
 	signed, err := sw.signTxn(t, idxs, dt)
 	if err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to sign transaction")
@@ -278,22 +283,49 @@ func (sw SkyWallet) signTransaction(txn core.Transaction, idxs []int) (core.Tran
 	return coin2Core(signed, fee)
 }
 
-func derivationType(txn core.Transaction) string {
+func derivationType(txn core.Transaction) (string, error) {
+	strErrIfAny := "can not determine derivation type"
 	wt := skyWallet.WalletTypeDeterministic
 	inputs := txn.GetInputs()
 	if len(inputs) > 0 {
-		addr := inputs[0].GetSpentOutput().GetAddress()
+		out, err := inputs[0].GetSpentOutput()
+		if err != nil {
+			logSkyWallet.WithFields(
+				logrus.Fields{
+					"err": err,
+					"input": inputs[0]}).Errorln("unable to get spent output from input")
+			return "", errors.New(strErrIfAny)
+		}
+		addr, err := out.GetAddress()
+		if err != nil {
+			logSkyWallet.WithFields(
+				logrus.Fields{
+					"err": err,
+					"output": out}).Errorln("unable to get addresses from output")
+			return "", errors.New(strErrIfAny)
+		}
 		if addr.IsBip32() {
 			wt = skyWallet.WalletTypeBip44
 		}
 	}
-	return wt
+	return wt, nil
 }
 
 func verifyInputsGrouping(txn core.Transaction) error {
-	areBip32 := derivationType(txn) == skyWallet.WalletTypeBip44
+	dt, err := derivationType(txn)
+	if err != nil {
+		return err
+	}
+	areBip32 := dt == skyWallet.WalletTypeBip44
 	for _, in := range txn.GetInputs() {
-		addr := in.GetSpentOutput().GetAddress()
+		out, err := in.GetSpentOutput()
+		if err != nil {
+			return err
+		}
+		addr, err := out.GetAddress()
+		if err != nil {
+			return err
+		}
 		if addr.IsBip32() != areBip32 {
 			return errors.New("all inputs should be grouped by derivation type")
 		}
@@ -375,7 +407,7 @@ func (sw SkyWallet) GetSignerDescription() (string, error) {
 		logSkyWallet.WithField("devLabel", features.Label).Errorln("unable to get device label")
 		return "", fce.ErrNilValue
 	}
-	return urnPrefix+*features.Label, nil
+	return urnPrefix + *features.Label, nil
 }
 
 // Type assertions

@@ -259,22 +259,23 @@ gen-mocks-hw: gen-mocks-vendor-hw ## Generate mocks for hardware wallet interfac
 gen-mocks-core: ## Generate mocks for core interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 
-gen-mocks-sky: ## Generate mocks for internal Skycoin types
-	mockery -all -output src/coin/skycoin/skymocks -outpkg skymocks -dir src/coin/skycoin/skytypes
+gen-mocks-sky: ## Generate mocks for sky-wallet interface types
+	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
+	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
 
 gen-mocks: gen-mocks-core gen-mocks-sky gen-mocks-hw ## Generate mocks for interface types
 
 $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
 
-test-skyhw: build ## Run Hardware wallet tests
+test-skyhw: ## Run Hardware wallet tests
 	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
 test-sky: ## Run Skycoin plugin test suite
 	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
-	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
+	go test -coverprofile=$(COVERAGETEMP) -timeout 60s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
 test-core: ## Run tests for API core and helpers

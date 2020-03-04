@@ -8,12 +8,12 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	util "github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/fibercrypto/fibercryptowallet/src/params"
+	util "github.com/fibercrypto/fibercryptowallet/src/util"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 //Prepare the mock API for all test
@@ -138,7 +138,7 @@ func TestSkyFiberPluginNetOperations(t *testing.T) {
 		require.Nil(t, err1)
 		require.IsType(t, new(SkycoinBlockchain), api)
 		sAPI := api.(*SkycoinBlockchain)
-		require.Equal(t, uint64(params.DataRefreshTimeout), sAPI.CacheTime)
+		require.Equal(t, uint64(params.DataRefreshTimeout*1000000000), sAPI.CacheTime)
 	})
 }
 

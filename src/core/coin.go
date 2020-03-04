@@ -54,7 +54,7 @@ type TransactionInput interface {
 	// GetId provides transaction input ID
 	GetId() string
 	// GetSpentOutput looks up the output spent by this input
-	GetSpentOutput() TransactionOutput
+	GetSpentOutput() (TransactionOutput, error)
 	// GetCoins looks up coins for asset represented by ticker
 	// that have been spent by this input
 	GetCoins(ticker string) (uint64, error)
@@ -79,7 +79,7 @@ type TransactionOutput interface {
 	// IsSpent determines whether there exists a confirmed transaction with an input spending this output
 	IsSpent() bool
 	// GetAddress returns the address of the party receiving funds
-	GetAddress() Address
+	GetAddress() (Address, error)
 	// GetCoins looks up coins for asset represented by ticker that have been transferred in this output
 	GetCoins(ticker string) (uint64, error)
 	// SupportedAssets enumerates tickers of crypto assets supported by this output

@@ -2,10 +2,7 @@ package local
 
 import (
 	"github.com/fibercrypto/fibercryptowallet/src/core"
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 )
-
-var logMainPlugin = logging.MustGetLogger("Altcoin plugin entry point")
 
 type altcoinRecord struct {
 	Manager  core.AltcoinPlugin
@@ -24,13 +21,11 @@ var (
 )
 
 func (m *fibercryptoAltcoinManager) RegisterPlugin(p core.AltcoinPlugin) {
-	logMainPlugin.Info("Register plugin to Altcoin manager")
 	p.RegisterTo(m)
 	m.registeredPlugins = append(m.registeredPlugins, p)
 }
 
 func (m *fibercryptoAltcoinManager) RegisterAltcoin(info core.AltcoinMetadata, plugin core.AltcoinPlugin) {
-	logMainPlugin.Info("Register altcoin to Altcoin manager")
 	m.altcoinMap[info.Ticker] = altcoinRecord{
 		Manager:  plugin,
 		Metadata: info,
@@ -38,12 +33,10 @@ func (m *fibercryptoAltcoinManager) RegisterAltcoin(info core.AltcoinMetadata, p
 }
 
 func (m *fibercryptoAltcoinManager) ListRegisteredPlugins() []core.AltcoinPlugin {
-	logMainPlugin.Info("Listing registered plugins in Altcoin manager")
 	return m.registeredPlugins
 }
 
 func (m *fibercryptoAltcoinManager) LookupAltcoinPlugin(ticker string) (core.AltcoinPlugin, bool) {
-	logMainPlugin.Info("Looking up for registered altcoin's")
 	if r, isRegistered := m.altcoinMap[ticker]; isRegistered {
 		return r.Manager, true
 	}
@@ -51,7 +44,6 @@ func (m *fibercryptoAltcoinManager) LookupAltcoinPlugin(ticker string) (core.Alt
 }
 
 func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (core.AltcoinMetadata, bool) {
-	logMainPlugin.Info("Describing Altcoin manager")
 	if r, isRegistered := m.altcoinMap[ticker]; isRegistered {
 		return r.Metadata, true
 	}
@@ -60,7 +52,6 @@ func (m *fibercryptoAltcoinManager) DescribeAltcoin(ticker string) (core.Altcoin
 
 // LoadAltcoinManager load altcoin manager singleton instance
 func LoadAltcoinManager() core.AltcoinManager {
-	logMainPlugin.Info("Loading Altcoin manager")
 	if manager.altcoinMap == nil {
 		manager.altcoinMap = make(map[string]altcoinRecord, 5)
 		manager.signers = make(map[core.UID]core.TxnSigner, 5)
