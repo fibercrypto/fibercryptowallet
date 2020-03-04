@@ -118,7 +118,7 @@ func getInputs(wlt core.Wallet, txn coin.Transaction, indexes []int) (inputs []*
 			if err != nil {
 				logSkyWallet.WithFields(
 					logrus.Fields{"err": err, "input": txn.In[idx]},
-					).Errorln("unable to find address index for input")
+				).Errorln("unable to find address index for input")
 				return nil, err
 			}
 			transactionInput.Index = proto.Uint32(inputIndex)
@@ -139,7 +139,7 @@ func spendingOutputFromRemote(inputHash cipher.SHA256) (*readable.SpentOutput, e
 	if err != nil {
 		logSkyWallet.WithFields(
 			logrus.Fields{"err": err, "in": inputHash},
-			).Errorln("unable to get output from backend")
+		).Errorln("unable to get output from backend")
 		return nil, err
 	}
 	return out, nil
@@ -201,7 +201,7 @@ func readableTxn2Transaction(txn skytypes.ReadableTxn) (*coin.Transaction, error
 	return skyTxn, nil
 }
 
-func rawTxn2Transaction (txn skytypes.SkycoinTxn) (*coin.Transaction, error) {
+func rawTxn2Transaction(txn skytypes.SkycoinTxn) (*coin.Transaction, error) {
 	buf, err := txn.EncodeSkycoinTransaction()
 	if err != nil {
 
@@ -274,7 +274,7 @@ func (sw *SkyWallet) signTxn(txn *coin.Transaction, idxs []int, dt string) (*coi
 	if len(signatures) != len(transactionInputs) {
 		logSkyWallet.WithFields(
 			logrus.Fields{
-				"signatures_len": len(signatures),
+				"signatures_len":        len(signatures),
 				"transactionInputs_len": len(transactionInputs)}).Errorln("signatures response len should match inputs one")
 		return nil, fce.ErrTxnSignFailure
 	}
@@ -317,7 +317,16 @@ func derivationType(txn core.Transaction) string {
 	wt := skyWallet.WalletTypeDeterministic
 	inputs := txn.GetInputs()
 	if len(inputs) > 0 {
-		addr := inputs[0].GetSpentOutput().GetAddress()
+		out, err := inputs[0].GetSpentOutput()
+		if err != nil {
+			// FIXME: Improve error handling
+			return ""
+		}
+		addr, err := out.GetAddress()
+		if err != nil {
+			// FIXME: Improve error handling
+			return ""
+		}
 		if addr.IsBip32() {
 			wt = skyWallet.WalletTypeBip44
 		}
@@ -328,7 +337,14 @@ func derivationType(txn core.Transaction) string {
 func verifyInputsGrouping(txn core.Transaction) error {
 	areBip32 := derivationType(txn) == skyWallet.WalletTypeBip44
 	for _, in := range txn.GetInputs() {
-		addr := in.GetSpentOutput().GetAddress()
+		out, err := in.GetSpentOutput()
+		if err != nil {
+			return err
+		}
+		addr, err := out.GetAddress()
+		if err != nil {
+			return err
+		}
 		if addr.IsBip32() != areBip32 {
 			return errors.New("all inputs should be grouped by derivation type")
 		}
@@ -419,7 +435,7 @@ func (sw SkyWallet) GetSignerDescription() (string, error) {
 		logSkyWallet.WithField("devLabel", features.Label).Errorln("unable to get device label")
 		return "", fce.ErrNilValue
 	}
-	return urnPrefix+*features.Label, nil
+	return urnPrefix + *features.Label, nil
 }
 
 // Type assertions

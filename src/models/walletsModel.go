@@ -2,13 +2,13 @@ package models
 
 import (
 	hardware "github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet"
+	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
+	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
 	"github.com/fibercrypto/skywallet-go/src/integration/proxy"
+	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
-	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
-	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
-	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
 	"time"
 )
 
@@ -40,7 +40,7 @@ type WalletModel struct {
 	_             func(row int)                                                                    `slot:"removeWallet"`
 	_             func([]*QWallet)                                                                 `slot:"loadModel"`
 	_             func([]*QWallet)                                                                 `slot:"updateModel"`
-	_ func()                                                                            `slot:"sniffHw"`
+	_             func()                                                                           `slot:"sniffHw"`
 	_             func(string)                                                                     `slot:"changeExpanded"`
 	_             int                                                                              `property:"count"`
 	receivChannel chan *updateWalletInfo
@@ -55,12 +55,12 @@ type QWallet struct {
 	_ string `property:"coinHours"`
 	_ string `property:"fileName"`
 	_ bool   `property:"expand"`
-	_ bool    `property:"hasHardwareWallet"`
+	_ bool   `property:"hasHardwareWallet"`
 }
 
 func (walletModel *WalletModel) init() {
 	logWalletsModel.Info("Initialize Wallet model")
-	dev = proxy.NewSequencer(skyWallet.NewDevice(skyWallet.DeviceTypeUSB), true, func() string{
+	dev = proxy.NewSequencer(skyWallet.NewDevice(skyWallet.DeviceTypeUSB), true, func() string {
 		return "not implemented"
 	})
 	walletModel.SetRoles(map[int]*core.QByteArray{
@@ -98,7 +98,8 @@ func (walletModel *WalletModel) init() {
 					encrypted = true
 				}
 				walletModel.editWallet(wi.row, wi.wallet.Name(), encrypted, wi.wallet.Sky(), wi.wallet.CoinHours())
-	walletModel.ConnectSniffHw(walletModel.sniffHw)
+				walletModel.ConnectSniffHw(walletModel.sniffHw)
+			}
 		}
 	}()
 }
@@ -158,16 +159,12 @@ func (walletModel *WalletModel) updateWallet(fn string) {
 	for row := 0; row < walletModel.rowCount(core.NewQModelIndex()); row++ {
 		index = walletModel.Index(row, 0, core.NewQModelIndex())
 		fileName := walletModel.data(index, FileName)
-		if  fileName.ToString() == fn {
+		if fileName.ToString() == fn {
 			hwConnectedOn = append(hwConnectedOn, row)
 			walletModel.DataChanged(index, index, []int{HasHardwareWallet})
 			break
 		}
 	}
-			}
-		}
-	}()
-
 }
 
 func (walletModel *WalletModel) changeExpanded(id string) {
