@@ -266,7 +266,7 @@ test-skyhw: build ## Run Hardware wallet tests
 test-sky: ## Run Skycoin plugin test suite
 	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
-	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
+	go test -coverprofile=$(COVERAGETEMP) -timeout 60s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
 test-core: ## Run tests for API core and helpers
