@@ -138,7 +138,7 @@ func TestSkyFiberPluginNetOperations(t *testing.T) {
 		require.Nil(t, err1)
 		require.IsType(t, new(SkycoinBlockchain), api)
 		sAPI := api.(*SkycoinBlockchain)
-		require.Equal(t, uint64(params.DataRefreshTimeout*10000), sAPI.CacheTime)
+		require.Equal(t, uint64(params.DataRefreshTimeout*100000000000000), sAPI.CacheTime)
 	})
 }
 
