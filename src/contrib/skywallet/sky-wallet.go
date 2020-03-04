@@ -304,7 +304,10 @@ func (sw SkyWallet) signTransaction(txn core.Transaction, idxs []int) (core.Tran
 		logSkyWallet.WithError(err).Errorln("unable to get txn as coin.Transaction")
 		return nil, fce.ErrTxnSignFailure
 	}
-	dt := derivationType(txn)
+	dt, err := derivationType(txn)
+	if err != nil {
+		return nil, err
+	}
 	signed, err := sw.signTxn(t, idxs, dt)
 	if err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to sign transaction")
@@ -313,29 +316,40 @@ func (sw SkyWallet) signTransaction(txn core.Transaction, idxs []int) (core.Tran
 	return coin2Core(signed, fee)
 }
 
-func derivationType(txn core.Transaction) string {
+func derivationType(txn core.Transaction) (string, error) {
+	strErrIfAny := "can not determine derivation type"
 	wt := skyWallet.WalletTypeDeterministic
 	inputs := txn.GetInputs()
 	if len(inputs) > 0 {
 		out, err := inputs[0].GetSpentOutput()
 		if err != nil {
-			// FIXME: Improve error handling
-			return ""
+			logSkyWallet.WithFields(
+				logrus.Fields{
+					"err": err,
+					"input": inputs[0]}).Errorln("unable to get spent output from input")
+			return "", errors.New(strErrIfAny)
 		}
 		addr, err := out.GetAddress()
 		if err != nil {
-			// FIXME: Improve error handling
-			return ""
+			logSkyWallet.WithFields(
+				logrus.Fields{
+					"err": err,
+					"output": out}).Errorln("unable to get addresses from output")
+			return "", errors.New(strErrIfAny)
 		}
 		if addr.IsBip32() {
 			wt = skyWallet.WalletTypeBip44
 		}
 	}
-	return wt
+	return wt, nil
 }
 
 func verifyInputsGrouping(txn core.Transaction) error {
-	areBip32 := derivationType(txn) == skyWallet.WalletTypeBip44
+	dt, err := derivationType(txn)
+	if err != nil {
+		return err
+	}
+	areBip32 := dt == skyWallet.WalletTypeBip44
 	for _, in := range txn.GetInputs() {
 		out, err := in.GetSpentOutput()
 		if err != nil {
@@ -358,7 +372,6 @@ func (sw SkyWallet) SignTransaction(txn core.Transaction, pr core.PasswordReader
 		logSkyWallet.Errorln("error creating hardware wallet device handler")
 		return nil, fce.ErrTxnSignFailure
 	}
-	//defer device.Close()
 	if err := verifyInputsGrouping(txn); err != nil {
 		logSkyWallet.WithError(err).Errorln("unable to sign transaction using skycoin hardware wallet")
 		return nil, fce.ErrTxnSignFailure
@@ -393,8 +406,6 @@ func (sw SkyWallet) getDeviceFeatures() (messages.Features, error) {
 		logSkyWallet.Error("error, nil hardware wallet device handler")
 		return messages.Features{}, fce.ErrHwUnexpected
 	}
-	// FIXME: This should not be closed, it's a lower level detail (check out in cli tool too).
-	// defer sw.dev.Close()
 	msg, err := sw.dev.GetFeatures()
 	if err != nil {
 		logSkyWallet.WithError(err).Error("error getting device features")
