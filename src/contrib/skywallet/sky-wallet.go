@@ -204,11 +204,13 @@ func readableTxn2Transaction(txn skytypes.ReadableTxn) (*coin.Transaction, error
 func rawTxn2Transaction(txn skytypes.SkycoinTxn) (*coin.Transaction, error) {
 	buf, err := txn.EncodeSkycoinTransaction()
 	if err != nil {
-
+		logSkyWallet.WithError(err).Errorln("can not encode txn as a Skycoin transaction")
+		return nil, err
 	}
 	skyTxn, err := coin.DeserializeTransaction(buf)
 	if err != nil {
-
+		logSkyWallet.WithError(err).Errorln("can not decode transaction")
+		return nil, err
 	}
 	return &skyTxn, nil
 }
