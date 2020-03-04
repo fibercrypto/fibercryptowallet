@@ -259,7 +259,7 @@ gen-mocks: gen-mocks-core gen-mocks-sky ## Generate mocks for interface types
 $(COVERAGEFILE):
 	echo 'mode: set' > $(COVERAGEFILE)
 
-test-skyhw: build ## Run Hardware wallet tests
+test-skyhw: ## Run Hardware wallet tests
 	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/skywallet
 	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
