@@ -43,20 +43,21 @@ type updateWalletInfo struct {
 }
 type WalletManager struct {
 	qtCore.QObject
-	WalletEnv             core.WalletEnv
-	SeedGenerator         core.SeedGenerator
-	wallets               []*QWallet
-	addresseseByWallets   map[string](map[string]*QAddress)
-	utilByWallets         map[string]*utilByWallet
-	markedAddress         map[string]int
-	outputsByAddress      map[string][]*QOutput
-	outputsByAddressMutex sync.Mutex
-	altManager            core.AltcoinManager
-	signer                core.BlockchainSignService
-	transactionAPI        core.BlockchainTransactionAPI
-	walletsIterator       core.WalletIterator
-	updaterChannel        chan *updateWalletInfo
-	timerUpdate           chan time.Duration
+	WalletEnv                 core.WalletEnv
+	SeedGenerator             core.SeedGenerator
+	wallets                   []*QWallet
+	addresseseByWallets       map[string](map[string]*QAddress)
+	orderedAddressesByWallets map[string][]*QAddress
+	utilByWallets             map[string]*utilByWallet
+	markedAddress             map[string]int
+	outputsByAddress          map[string][]*QOutput
+	outputsByAddressMutex     sync.Mutex
+	altManager                core.AltcoinManager
+	signer                    core.BlockchainSignService
+	transactionAPI            core.BlockchainTransactionAPI
+	walletsIterator           core.WalletIterator
+	updaterChannel            chan *updateWalletInfo
+	timerUpdate               chan time.Duration
 
 	_ func()                                                                                                                           `slot:"updateWalletEnvs"`
 	_ func(wltId, address string)                                                                                                      `slot:"updateOutputs"`
@@ -123,6 +124,7 @@ func (walletM *WalletManager) init() {
 		walletM.ConnectEditMarkAddress(walletM.editMarkAddress)
 		walletM.ConnectMarkFieldOfAddress(walletM.markFieldOfAddress)
 		walletM.addresseseByWallets = make(map[string](map[string]*QAddress), 0)
+		walletM.orderedAddressesByWallets = make(map[string][]*QAddress, 0)
 		walletM.utilByWallets = make(map[string]*utilByWallet, 0)
 		walletM.outputsByAddress = make(map[string][]*QOutput, 0)
 		walletM.SeedGenerator = new(sky.SeedService)
@@ -295,7 +297,8 @@ func (walletM *WalletManager) updateWalletEnvs() {
 func (walletM *WalletManager) initWalletAddresses(wltId string) {
 	logWalletManager.Info("Updating Addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
-	qAddresses := make(map[string]*QAddress, 0)
+	qAddresses1 := make(map[string]*QAddress, 0)
+	qAddresses2 := make([]*QAddress, 0)
 	it, err := wlt.GetLoadedAddresses()
 	if err != nil {
 		logWalletManager.WithError(err).Warn("Couldn't loaded addresses")
@@ -313,25 +316,27 @@ func (walletM *WalletManager) initWalletAddresses(wltId string) {
 		qAddress.SetAddressCoinHours("N/A")
 		qml.QQmlEngine_SetObjectOwnership(qAddress, qml.QQmlEngine__CppOwnership)
 
-		//qAddresses = append(qAddresses, qAddress)
-		qAddresses[addr.String()] = qAddress
+		qAddresses2 = append(qAddresses2, qAddress)
+		qAddresses1[addr.String()] = qAddress
 		go walletM.getOutputs(wltId, addr.String())
 	}
 
-	walletM.addresseseByWallets[wltId] = qAddresses
+	walletM.addresseseByWallets[wltId] = qAddresses1
+	walletM.orderedAddressesByWallets[wltId] = qAddresses2
 
 }
 
 func (walletM *WalletManager) updateAddresses(wltId string) {
-	mutex := walletM.utilByWallets[wltId].m
+	mutex := &walletM.utilByWallets[wltId].m
 	sendChan := walletM.utilByWallets[wltId].sendChannel
 	addresses, ok := walletM.addresseseByWallets[wltId]
 	if !ok {
 		walletM.addresseseByWallets[wltId] = make(map[string]*QAddress)
+		walletM.orderedAddressesByWallets[wltId] = make([]*QAddress, 0)
 		addresses = walletM.addresseseByWallets[wltId]
 	}
-	mutex.Lock()
-	defer mutex.Unlock()
+	(*mutex).Lock()
+	defer (*mutex).Unlock()
 	logWalletManager.Info("Updating Addresses")
 	wlt := walletM.WalletEnv.GetWalletSet().GetWallet(wltId)
 	if wlt == nil {
@@ -1071,16 +1076,13 @@ func (walletM *WalletManager) editWallet(id, label string) *QWallet {
 }
 
 func (walletM *WalletManager) getAddresses(Id string) []*QAddress {
-	addrs, ok := walletM.addresseseByWallets[Id]
+	addrs, ok := walletM.orderedAddressesByWallets[Id]
 	if !ok {
 		walletM.updateAddresses(Id)
-		addrs = walletM.addresseseByWallets[Id]
+		addrs = walletM.orderedAddressesByWallets[Id]
 	}
-	addresses := make([]*QAddress, 0)
-	for _, addr := range addrs {
-		addresses = append(addresses, addr)
-	}
-	return addresses
+
+	return addrs
 }
 
 func fromWalletToQWallet(wlt core.Wallet, isEncrypted, withoutBalance bool) *QWallet {
