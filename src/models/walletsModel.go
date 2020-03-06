@@ -6,10 +6,7 @@ import (
 	fce "github.com/fibercrypto/fibercryptowallet/src/errors"
 	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
 	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
-	fccore "github.com/fibercrypto/fibercryptowallet/src/core"
-	wlcore "github.com/fibercrypto/fibercryptowallet/src/main"
 	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	skyWallet "github.com/fibercrypto/skywallet-go/src/skywallet"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/qml"
@@ -131,7 +128,7 @@ func (walletModel *WalletModel) init() {
 	walletModel.ConnectRowCount(walletModel.rowCount)
 	walletModel.ConnectColumnCount(walletModel.columnCount)
 	walletModel.ConnectRoleNames(walletModel.roleNames)
-
+	walletModel.ConnectSniffHw(walletModel.sniffHw)
 	walletModel.ConnectAddWallet(walletModel.addWallet)
 	walletModel.ConnectEditWallet(walletModel.editWallet)
 	walletModel.ConnectRemoveWallet(walletModel.removeWallet)
@@ -151,7 +148,6 @@ func (walletModel *WalletModel) init() {
 					encrypted = true
 				}
 				walletModel.editWallet(wi.row, wi.wallet.Name(), encrypted, wi.wallet.Sky(), wi.wallet.CoinHours())
-				walletModel.ConnectSniffHw(walletModel.sniffHw)
 			}
 		}
 	}()
