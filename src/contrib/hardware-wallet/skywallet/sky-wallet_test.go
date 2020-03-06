@@ -154,17 +154,18 @@ func TestVerifyDerivationTypeBip44(t *testing.T) {
 	addr := &mocks.Address{}
 	addr.On("IsBip32").Return(true)
 	output := &mocks.TransactionOutput{}
-	output.On("GetAddress").Return(addr)
+	output.On("GetAddress").Return(addr, nil)
 	input := &mocks.TransactionInput{}
-	input.On("GetSpentOutput").Return(output)
+	input.On("GetSpentOutput").Return(output, nil)
 	inputs := []core.TransactionInput{input}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
 
 	// When
-	dt := derivationType(txn)
+	dt, err := derivationType(txn)
 
 	// Then
+	require.NoError(t, err)
 	require.Equal(t, dt, skyWallet.WalletTypeBip44)
 }
 
@@ -173,17 +174,18 @@ func TestVerifyDerivationTypeDeterministic(t *testing.T) {
 	addr := &mocks.Address{}
 	addr.On("IsBip32").Return(false)
 	output := &mocks.TransactionOutput{}
-	output.On("GetAddress").Return(addr)
+	output.On("GetAddress").Return(addr, nil)
 	input := &mocks.TransactionInput{}
-	input.On("GetSpentOutput").Return(output)
+	input.On("GetSpentOutput").Return(output, nil)
 	inputs := []core.TransactionInput{input}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
 
 	// When
-	dt := derivationType(txn)
+	dt, err := derivationType(txn)
 
 	// Then
+	require.NoError(t, err)
 	require.Equal(t, dt, skyWallet.WalletTypeDeterministic)
 }
 
@@ -195,12 +197,12 @@ func TestVerifyInputsGroupingShouldWorkOk1(t *testing.T) {
 	addr2.On("IsBip32").Return(true)
 	output1 := &mocks.TransactionOutput{}
 	output2 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
-	output2.On("GetAddress").Return(addr2)
+	output1.On("GetAddress").Return(addr1, nil)
+	output2.On("GetAddress").Return(addr2, nil)
 	input1 := &mocks.TransactionInput{}
 	input2 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
-	input2.On("GetSpentOutput").Return(output2)
+	input1.On("GetSpentOutput").Return(output1, nil)
+	input2.On("GetSpentOutput").Return(output2, nil)
 	inputs := []core.TransactionInput{input1, input2}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -220,12 +222,12 @@ func TestVerifyInputsGroupingShouldWorkOk2(t *testing.T) {
 	addr2.On("IsBip32").Return(false)
 	output1 := &mocks.TransactionOutput{}
 	output2 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
-	output2.On("GetAddress").Return(addr2)
+	output1.On("GetAddress").Return(addr1, nil)
+	output2.On("GetAddress").Return(addr2, nil)
 	input1 := &mocks.TransactionInput{}
 	input2 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
-	input2.On("GetSpentOutput").Return(output2)
+	input1.On("GetSpentOutput").Return(output1, nil)
+	input2.On("GetSpentOutput").Return(output2, nil)
 	inputs := []core.TransactionInput{input1, input2}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -245,12 +247,12 @@ func TestVerifyInputsGroupingShouldDetectErr1(t *testing.T) {
 	addr2.On("IsBip32").Return(true)
 	output1 := &mocks.TransactionOutput{}
 	output2 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
-	output2.On("GetAddress").Return(addr2)
+	output1.On("GetAddress").Return(addr1, nil)
+	output2.On("GetAddress").Return(addr2, nil)
 	input1 := &mocks.TransactionInput{}
 	input2 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
-	input2.On("GetSpentOutput").Return(output2)
+	input1.On("GetSpentOutput").Return(output1, nil)
+	input2.On("GetSpentOutput").Return(output2, nil)
 	inputs := []core.TransactionInput{input1, input2}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -270,12 +272,12 @@ func TestVerifyInputsGroupingShouldDetectErr2(t *testing.T) {
 	addr2.On("IsBip32").Return(false)
 	output1 := &mocks.TransactionOutput{}
 	output2 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
-	output2.On("GetAddress").Return(addr2)
+	output1.On("GetAddress").Return(addr1, nil)
+	output2.On("GetAddress").Return(addr2, nil)
 	input1 := &mocks.TransactionInput{}
 	input2 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
-	input2.On("GetSpentOutput").Return(output2)
+	input1.On("GetSpentOutput").Return(output1, nil)
+	input2.On("GetSpentOutput").Return(output2, nil)
 	inputs := []core.TransactionInput{input1, input2}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -295,12 +297,12 @@ func TestSignTransactionShouldDetectInvalidInputsGrouping(t *testing.T) {
 	addr2.On("IsBip32").Return(false)
 	output1 := &mocks.TransactionOutput{}
 	output2 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
-	output2.On("GetAddress").Return(addr2)
+	output1.On("GetAddress").Return(addr1, nil)
+	output2.On("GetAddress").Return(addr2, nil)
 	input1 := &mocks.TransactionInput{}
 	input2 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
-	input2.On("GetSpentOutput").Return(output2)
+	input1.On("GetSpentOutput").Return(output1, nil)
+	input2.On("GetSpentOutput").Return(output2, nil)
 	inputs := []core.TransactionInput{input1, input2}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -320,9 +322,9 @@ func TestSignTransactionShouldHandleErrorFromIsFullySigned(t *testing.T) {
 	addr1 := &mocks.Address{}
 	addr1.On("IsBip32").Return(true)
 	output1 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
+	output1.On("GetAddress").Return(addr1, nil)
 	input1 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
+	input1.On("GetSpentOutput").Return(output1, nil)
 	inputs := []core.TransactionInput{input1}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -343,9 +345,9 @@ func TestSignTransactionShouldHandleFailIfIsFullySigned(t *testing.T) {
 	addr1 := &mocks.Address{}
 	addr1.On("IsBip32").Return(true)
 	output1 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
+	output1.On("GetAddress").Return(addr1, nil)
 	input1 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
+	input1.On("GetSpentOutput").Return(output1, nil)
 	inputs := []core.TransactionInput{input1}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -367,9 +369,9 @@ func TestSignTransactionShouldHandleErrorFromGetHashIndices(t *testing.T) {
 	addr1 := &mocks.Address{}
 	addr1.On("IsBip32").Return(true)
 	output1 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
+	output1.On("GetAddress").Return(addr1, nil)
 	input1 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
+	input1.On("GetSpentOutput").Return(output1, nil)
 	inputs := []core.TransactionInput{input1}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
@@ -390,9 +392,9 @@ func TestSignTransactionShouldHandleErrorFromsignTransaction(t *testing.T) {
 	addr1 := &mocks.Address{}
 	addr1.On("IsBip32").Return(true)
 	output1 := &mocks.TransactionOutput{}
-	output1.On("GetAddress").Return(addr1)
+	output1.On("GetAddress").Return(addr1, nil)
 	input1 := &mocks.TransactionInput{}
-	input1.On("GetSpentOutput").Return(output1)
+	input1.On("GetSpentOutput").Return(output1, nil)
 	inputs := []core.TransactionInput{input1}
 	txn := &mocks.Transaction{}
 	txn.On("GetInputs").Return(inputs)
