@@ -217,7 +217,11 @@ func (sq *Sequencer) handleInputInteraction(cf ActionConfirmFrom, msg wire.Messa
 
 func (sq *Sequencer) handleFirstCommandResponse(cf ActionConfirmFrom, successMsgKind messages.MessageType, commandName string, err error, msg wire.Message) (wire.Message, error) {
 	if err != nil {
-		sq.log.WithError(err).Errorln(commandName + ": sending message failed")
+		if err == skywallet.ErrNoDeviceConnected {
+			//sq.log.WithError(err).Infoln(commandName + ": sending message failed")
+		} else {
+			sq.log.WithError(err).Errorln(commandName + ": sending message failed")
+		}
 		return wire.Message{}, err
 	}
 	for msg.Kind != uint16(successMsgKind) && msg.Kind != uint16(messages.MessageType_MessageType_Failure) {

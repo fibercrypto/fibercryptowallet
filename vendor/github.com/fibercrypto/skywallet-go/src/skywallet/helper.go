@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 
@@ -207,6 +208,9 @@ func sendToDevice(dev usb.Device, chunks [][64]byte) (wire.Message, error) {
 
 	msg, err = wire.ReadFrom(dev)
 	if err != nil {
+		if strings.Contains(err.Error(), "read: connection refused") {
+			return wire.Message{}, ErrNoDeviceConnected
+		}
 		return wire.Message{}, err
 	}
 

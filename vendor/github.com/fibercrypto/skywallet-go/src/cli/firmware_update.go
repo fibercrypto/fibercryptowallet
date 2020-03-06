@@ -3,8 +3,6 @@ package cli
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/fibercrypto/skywallet-go/src/skywallet"
-	messages "github.com/fibercrypto/skywallet-protob/go"
 	"io/ioutil"
 
 	gcli "github.com/urfave/cli"
@@ -31,12 +29,11 @@ func firmwareUpdate() gcli.Command {
 				panic(err)
 			}
 			fmt.Printf("Hash: %x\n", sha256.Sum256(firmware[0x100:]))
-			sq, err := createDevice(skywallet.DeviceTypeUSB.String())
+			sq, err := createDevice(c.String("deviceType"))
 			if err != nil {
 				return
 			}
-			msg, err := sq.UploadFirmware(firmware, sha256.Sum256(firmware[0x100:]))
-			handleFinalResponse(msg, err, "unable to update firmware", messages.MessageType_MessageType_Success)
+			err = sq.FirmwareUpload(firmware, sha256.Sum256(firmware[0x100:]))
 			if err != nil {
 				log.Error(err)
 				return

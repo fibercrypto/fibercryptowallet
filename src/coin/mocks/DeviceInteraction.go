@@ -107,6 +107,11 @@ func (_m *DeviceInteraction) CheckMessageSignature(message string, signature str
 	return r0
 }
 
+// ClearSingleTimeOperationsCache provides a mock function with given fields:
+func (_m *DeviceInteraction) ClearSingleTimeOperationsCache() {
+	_m.Called()
+}
+
 // Features provides a mock function with given fields:
 func (_m *DeviceInteraction) Features() *promise.Promise {
 	ret := _m.Called()
