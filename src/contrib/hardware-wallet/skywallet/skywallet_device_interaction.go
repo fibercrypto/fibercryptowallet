@@ -32,12 +32,8 @@ func CreateSkyWltInteractionInstanceOnce(autoPressButton bool, deviceType skywal
 		if autoPressButton && deviceType == skywallet.DeviceTypeEmulator {
 			dev.SetAutoPressButton(true, skywallet.ButtonRight)
 		}
-		skyWltInteraction = &SkyWalletInteraction{
-			dev: dev,
-			initializeWasWarn: false,
-			uploadFirmwareWasWarn: false,
-			secureWasWarn: false,
-		}
+		skyWltInteraction = &SkyWalletInteraction{dev: dev}
+		skyWltInteraction.ClearSingleTimeOperationsCache()
 	})
 	return skyWltInteraction
 }
@@ -308,4 +304,10 @@ func (wlt *SkyWalletInteraction) SetSecureWasWarn() {
 
 func (wlt *SkyWalletInteraction) SecureWasWarn() bool {
 	return wlt.secureWasWarn
+}
+
+func (wlt *SkyWalletInteraction) ClearSingleTimeOperationsCache() {
+	wlt.uploadFirmwareWasWarn = false
+	wlt.initializeWasWarn = false
+	wlt.secureWasWarn = false
 }

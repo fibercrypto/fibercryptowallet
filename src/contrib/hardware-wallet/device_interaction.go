@@ -29,4 +29,5 @@ type DeviceInteraction interface {
 	InitializeWasWarn() bool
 	SetSecureWasWarn()
 	SecureWasWarn() bool
+	ClearSingleTimeOperationsCache()
 }
