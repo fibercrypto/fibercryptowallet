@@ -129,9 +129,8 @@ func (hm *HistoryManager) updateTxns() {
 			logHistoryManager.Warn("Couldn't get address iterator")
 			continue
 		}
-		var newTxnsFinded bool
+
 		for addressIterator.Next() {
-			newTxnsFinded = false
 			txnsIterator := addressIterator.Value().GetCryptoAccount().ListTransactions()
 			if txnsIterator == nil {
 				logHistoryManager.Warn("Couldn't get transaction iterator")
@@ -186,14 +185,9 @@ func (hm *HistoryManager) updateTxns() {
 					if corrupted {
 						continue
 					}
-					newTxnsFinded = true
+					hm.NewTransactions()
 					hm.txnFinded[txnsIterator.Value().GetId()] = struct{}{}
 				}
-			}
-			if newTxnsFinded {
-				models.Helper.RunInMain(func() {
-					hm.NewTransactions()
-				})
 			}
 
 		}
