@@ -41,3 +41,26 @@ func (_m *WalletEnv) GetWalletSet() core.WalletSet {
 
 	return r0
 }
+
+// LookupWallet provides a mock function with given fields: firstAddr
+func (_m *WalletEnv) LookupWallet(firstAddr string) (core.Wallet, error) {
+	ret := _m.Called(firstAddr)
+
+	var r0 core.Wallet
+	if rf, ok := ret.Get(0).(func(string) core.Wallet); ok {
+		r0 = rf(firstAddr)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(core.Wallet)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(firstAddr)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}

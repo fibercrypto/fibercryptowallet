@@ -96,6 +96,15 @@ Page {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         ListView {
+            Timer {
+                interval: 4000
+                repeat: false
+                running: true
+                onTriggered: {
+                    walletModel.sniffHw()
+                }
+            }
+
             id: walletList
             anchors.fill: parent
             clip: true // limit the painting to it's bounding rectangle
@@ -125,15 +134,15 @@ Page {
         Component.onCompleted: {
             walletModel.loadModel(walletManager.getWallets())
         }
-        property Timer timer: Timer {
-            id: walletListTimer
-            interval: 5000
-            repeat: true
-            running: true
-            onTriggered: {
-                walletModel.updateModel(walletManager.getWallets())
-            }
-        }
+        //property Timer timer: Timer {
+        //    id: walletListTimer
+        //    interval: 5000
+        //    repeat: true
+        //    running: true
+        //    onTriggered: {
+        //        walletModel.updateModel(walletManager.getWallets())
+        //    }
+        //}
     }
 
     DialogAddLoadWallet {

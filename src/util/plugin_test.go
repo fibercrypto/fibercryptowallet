@@ -55,7 +55,7 @@ func TestLookupSignerByUID(t *testing.T) {
 	other := core.UID("otherid")
 
 	ws := new(WalletSigner)
-	ws.TxnSigner.On("GetSignerUID").Return(uid)
+	ws.TxnSigner.On("GetSignerUID").Return(uid, nil)
 	var signer core.TxnSigner = ws
 	err := AttachSignService(signer)
 	defer RemoveSignService(uid) // nolint gosec

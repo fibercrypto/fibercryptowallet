@@ -17,6 +17,11 @@ import (
 var logSkycoin = logging.MustGetLogger("Skycoin Altcoin")
 
 func init() {
+	UpdateAltcoin()
+}
+
+// Refresh Skycoin Altcoin node settings
+func UpdateAltcoin() {
 	err := config.RegisterConfig()
 	if err != nil {
 		logSkycoin.Warn("Couldn't register Skycoin configuration")
@@ -69,5 +74,4 @@ func init() {
 		logSkycoin.Warn("Couldn't create section for Skycoin")
 	}
 	util.RegisterAltcoin(sky.NewSkyFiberPlugin(sky.SkycoinMainNetParams))
-
 }

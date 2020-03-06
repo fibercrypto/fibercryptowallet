@@ -11,7 +11,7 @@ type TransactionOutput struct {
 }
 
 // GetAddress provides a mock function with given fields:
-func (_m *TransactionOutput) GetAddress() core.Address {
+func (_m *TransactionOutput) GetAddress() (core.Address, error) {
 	ret := _m.Called()
 
 	var r0 core.Address
@@ -23,7 +23,7 @@ func (_m *TransactionOutput) GetAddress() core.Address {
 		}
 	}
 
-	return r0
+	return r0, nil
 }
 
 // GetCoins provides a mock function with given fields: ticker

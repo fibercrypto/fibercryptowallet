@@ -45,6 +45,8 @@ var (
 	ErrInvalidAddressString = errors.New("Error decoding base58 address")
 	// ErrTxnSignFailure signing strategy reported an error whie signing transaction
 	ErrTxnSignFailure = errors.New("Transaction signing failed for txn")
+	// ErrNoMoreElements no more elements in a sequence or succession
+	ErrNoMoreElements = errors.New("No more elements in the sequence")
 	// ErrUnexpectedUxOutAddress unexpected address
 	ErrUnexpectedUxOutAddress = errors.New("Unexpected address")
 	// ErrInvalidPoolObjectType clients in the pool do not match expected type
@@ -53,8 +55,23 @@ var (
 	ErrInvalidWalletEntropy = errors.New("Entropy must be 128 or 256")
 	// ErrInvalidValue invalid value was supplied in to function
 	ErrInvalidValue = errors.New("Value errors")
+	// ErrInvalidTypeAssertion the current value have not the expected type
+	ErrInvalidTypeAssertion = errors.New("Invalid type assertion")
 	// ErrWalletCantSign wallet can not sign transactions
 	ErrWalletCantSign = errors.New("Wallet does not support transaction signing")
 	// ErrNotImplemented feature not implemented
 	ErrNotImplemented = errors.New("Feature not implemented")
+	// ErrWltFromAddrNotFound trying to find a wallet from the first address in the deterministic sequence failed
+	// wallet not found
+	ErrWltFromAddrNotFound = errors.New("Error getting wallet from addr, no wallet found")
+	// ErrInvalidIndex invalid index detected
+	ErrInvalidIndex = errors.New("Invalid index")
+	// ErrKeyNotFound unknown key
+	ErrKeyNotFound = errors.New("Key not found")
+	// ErrHwUnexpected unexpected error with sky-hw
+	ErrHwUnexpected = errors.New("Unexpected error with device")
+	// ErrHwSignTransactionCanceled cancelled by user in the physical device
+	ErrHwSignTransactionCanceled = errors.New("Sign transaction with hardware wallet has been canceled")
+	// ErrNilValue object should not be null
+	ErrNilValue = errors.New("Object should not be null")
 )

@@ -33,7 +33,7 @@ type AddressList struct {
 
 	_ func() `constructor:"init"`
 
-	_ func(transaction *AddressDetails) `signal:"addAddress,auto"`
+	_ func(transaction *AddressDetails) `signal:"addAddress"`
 	_ func(index int)                   `signal:"removeAddress,auto"`
 
 	_ []*AddressDetails `property:"addresses"`
@@ -49,6 +49,7 @@ func (al *AddressList) init() {
 	al.ConnectRowCount(al.rowCount)
 	al.ConnectData(al.data)
 	al.ConnectRoleNames(al.roleNames)
+	al.ConnectAddAddress(al.addAddress)
 
 }
 

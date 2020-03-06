@@ -64,7 +64,7 @@ func GetSignerDescription(signerID core.UID) (string, error) {
 	if signer == nil {
 		return "", errors.ErrInvalidID
 	}
-	return signer.GetSignerDescription(), nil
+	return signer.GetSignerDescription()
 }
 
 // LookupSignServiceForWallet instantiate signing straegy identified by UID. Fall back to wallet if empty

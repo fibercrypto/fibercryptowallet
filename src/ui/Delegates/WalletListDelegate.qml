@@ -42,6 +42,12 @@ Item {
                 anchors.rightMargin: listWalletRightMargin
                 spacing: listWalletSpacing
 
+                Rectangle {
+                    width: 10
+                    height: 6
+                    visible: hasHardwareWallet
+                    color: "red"
+                }
                 Image {
                     id: status
                     source: statusIcon
@@ -79,10 +85,10 @@ Item {
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
-
                     BusyIndicator {
                         anchors.verticalCenter: parent.verticalCenter
                         anchors.right: parent.right
+                        running: sky === qsTr("N/A") ? true : false
 
                         implicitWidth: implicitHeight
                         implicitHeight: parent.height + 10
@@ -100,6 +106,7 @@ Item {
             onClicked: {
 
                 expanded = !expanded
+                walletModel.changeExpanded(fileName)
             }
         } // ItemDelegate
 
@@ -228,17 +235,19 @@ Item {
     AddressModel {
 
         id: listAddresses
-        property Timer timer: Timer {
-            id: addressModelTimer
-            interval: 7000
-            repeat: true
-            running: true
-            onTriggered: {
-                listAddresses.updateModel(fileName);
-            }
-        }
+        // property Timer timer: Timer {
+            // id: addressModelTimer
+            // interval: 3000
+            // repeat: true
+            // running: true
+            // onTriggered: {
+                // listAddresses.updateModel(fileName);
+            // }
+        // }
     }
     Component.onCompleted: {
-        listAddresses.updateModel(fileName);
+        //listAddresses.updateModel(fileName);
+        listAddresses.updateModel(fileName)
+        listAddresses.suscribe(fileName)
     }
 }

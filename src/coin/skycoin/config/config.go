@@ -18,6 +18,7 @@ const (
 	SectionName               = "skycoin"
 	SettingPathToLog          = "log"
 	SettingPathToNode         = "node"
+	SettingNodeAddress        = "address"
 	SettingPathToWalletSource = "walletSource"
 )
 
@@ -37,7 +38,7 @@ func getMultiPlatformUserDirectory() string {
 
 func RegisterConfig() error {
 	cm := local.GetConfigManager()
-	node := map[string]string{"address": "https://staging.node.skycoin.net"}
+	node := map[string]string{"address": "https://node.skycoin.com"}
 	nodeBytes, err := json.Marshal(node)
 	if err != nil {
 		return err
@@ -93,6 +94,14 @@ func getValues(prefix string) ([]string, error) {
 }
 
 func GetDataRefreshTimeout() uint64 {
+	return getFromCache(local.DataRefreshTimeoutKey)
+}
+
+func GetDataUpdateTime() uint64 {
+	return getFromCache(local.DataUpdateTimeKey)
+}
+
+func getFromCache(cacheKeyValue string) uint64 {
 	cm := local.GetConfigManager()
 	sm := cm.GetSectionManager("global")
 	value, err := sm.GetValue("cache", nil)
@@ -107,7 +116,7 @@ func GetDataRefreshTimeout() uint64 {
 		log.WithError(err).Warn("Couldn't unmarshal from options")
 		return 0
 	}
-	strVal, ok := keyValue["lifeTime"]
+	strVal, ok := keyValue[cacheKeyValue]
 	if !ok {
 		return 0
 	}
@@ -131,8 +140,29 @@ func GetWalletSources() ([]*walletSource, error) {
 		if err != nil {
 			return nil, err
 		}
+		if wltSrcs[i].Tp == RemoteWallet {
+			node, err := GetNodeSource()
+			if err != nil {
+				return nil, err
+			}
+			wltSrcs[i].Source = node[SettingNodeAddress]
+		}
 	}
 	return wltSrcs, nil
+}
+
+func GetNodeSource() (map[string]string, error) {
+
+	nodeSettingStr, err := GetOption(SettingPathToNode)
+	if err != nil {
+		return nil, err
+	}
+	node := make(map[string]string)
+	err = json.Unmarshal([]byte(nodeSettingStr), &node)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
 }
 
 type walletSource struct {

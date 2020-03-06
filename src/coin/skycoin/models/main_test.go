@@ -3,33 +3,18 @@ package skycoin
 import (
 	"encoding/hex"
 	"fmt"
+	"github.com/stretchr/testify/mock"
 	"os"
 	"sort"
 	"testing"
 
+	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
+	"github.com/fibercrypto/fibercryptowallet/src/core"
+	"github.com/fibercrypto/fibercryptowallet/src/params"
+	util "github.com/fibercrypto/fibercryptowallet/src/util"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
-	"github.com/fibercrypto/fibercryptowallet/src/util/logging"
-
-	"github.com/fibercrypto/fibercryptowallet/src/core"
-	util "github.com/fibercrypto/fibercryptowallet/src/util"
-	"github.com/stretchr/testify/mock"
-
-	"github.com/fibercrypto/fibercryptowallet/src/params"
 )
-
-var global_mock *SkycoinApiMock
-
-var logModelTest = logging.MustGetLogger("Skycoin Model Test")
-
-// CleanGlobalMock util when is needed to change the values of an
-
-// API method used in other test with different values.
-func CleanGlobalMock() {
-	global_mock.ExpectedCalls = []*mock.Call{}
-}
 
 //Prepare the mock API for all test
 func TestMain(m *testing.M) {
@@ -153,7 +138,7 @@ func TestSkyFiberPluginNetOperations(t *testing.T) {
 		require.Nil(t, err1)
 		require.IsType(t, new(SkycoinBlockchain), api)
 		sAPI := api.(*SkycoinBlockchain)
-		require.Equal(t, uint64(params.DataRefreshTimeout), sAPI.CacheTime)
+		require.Equal(t, uint64(params.DataRefreshTimeout*1000000000), sAPI.CacheTime)
 	})
 }
 

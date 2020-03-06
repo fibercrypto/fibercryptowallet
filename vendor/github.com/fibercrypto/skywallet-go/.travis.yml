@@ -1,0 +1,93 @@
+language: go
+dist: xenial
+go:
+  - "1.12.x"
+matrix:
+  include:
+    - os: linux
+      env:
+        - PIP='sudo pip'
+env:
+  global:
+    - XARGS="-screen 0 1024x768x24"
+before_install:
+  - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
+
+install:
+  - if [[ ! -d $GOPATH/src/github.com/fibercrypto/skywallet-go ]]; then mkdir -p $GOPATH/src/github.com/skycoin; ln -s $TRAVIS_BUILD_DIR $GOPATH/src/github.com/fibercrypto/skywallet-go; fi
+  - go get github.com/vektra/mockery/.../
+  - cd $GOPATH/src/github.com/fibercrypto/skywallet-go
+  - make mocks
+  - make install-linters
+  - make lint
+  - go get -t ./...
+
+before_script:
+  # Install go dep
+  - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+  # Start Xvfb on osx
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    ( sudo Xvfb :99 -ac ${XARGS}; echo "Xvfb ok" )&
+    fi
+  # Install hardware wallet for running tests against emulator
+  - mkdir -p tmp/hardware-wallet
+  - git clone --depth=1 --single-branch --branch develop https://github.com/skycoin/hardware-wallet.git tmp/hardware-wallet
+  - git -C tmp/hardware-wallet submodule update --init
+  # Install OS-specific test and build dependencies for hardware-wallet
+  - ( cd ./tmp/hardware-wallet && sh "ci-scripts/install-${TRAVIS_OS_NAME}.sh" )
+  # Define env vars for Linux builds
+  - if [[ $TRAVIS_OS_NAME == 'linux' ]]; then
+    ls -l /usr/local/bin/protoc;
+    export PATH="/usr/local/bin:$(pwd)/tmp/hardware-wallet/protoc/bin:$PATH";
+    fi
+  # Include paths for brew packages e.g. SDL2
+  - if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+    export SDL_INCLUDE="$(brew --prefix sdl2)/include/SDL2" ;
+    fi
+  - echo "PATH=$PATH";
+  - echo "PIP=$PIP";
+
+script:
+  - make check-version
+  - make -C tmp/hardware-wallet clean
+  - make -C tmp/hardware-wallet/tiny-firmware/protob install-protoc
+  - make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+  - make -C tmp/hardware-wallet emulator
+  # On GNU/Linux wrap emulator in xvfb graphics context
+  - if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+    xvfb-run --server-args="${XARGS}" make -C ./tmp/hardware-wallet run-emulator & true ;
+    fi
+  # On osx Xvfb started in before_script step
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+    make -C ./tmp/hardware-wallet run-emulator & true ;
+    fi
+  # Run self-tests
+  - ps aux | grep emulator
+  - make test_unit
+  - make test-integration-emulator
+  # Test that dependencies can be updated
+  - make clean
+  - make dep
+
+after_script:
+  - kill -s KILL $(pgrep emulator)
+
+notifications:
+  # https://github.com/kvld/travisci-telegram TravisCI Telegram Bot integration
+  webhooks: https://fathomless-fjord-24024.herokuapp.com/notify
+
+before_deploy:
+- make release
+
+deploy:
+- provider: releases
+  api_key:
+    secure: ee6xAJoQIXKy8w7DvSMWTpIVymJCzV4raj7MatahyEAtIuQZ0oGR35mxxTHC6/iEkVvOP8+i+g7LTnGgTc1OSJmSq9PwwG+3aNnBLtZbdEs/b+tKkA4xLoK3aRpWJ9dD2uusjI3z3gVqj3N6u3Y7idYPdMSC7+L0G72CdtL9bqjL2j2rStgv5Teb8i9P6uAPDl01uoN1mMBxfGoYES1i+MkRVKg+6In5V+eoar0h1o3zki33W5S0bGSJo3VbasCLoJIiTEDgcnM2rqfJeb07URbSLOBqhFOidVFi9QdfRVfMoRWYmCtiYKyXraCj6LgWbD+A90ZMfOJBBI6iTl2QRsNVge1Jz02MTofH2VGmOpvM7oKmkmvhHdNXnEH7zr1xSNpWDHobvY0Pl6aVoiwK3C+idk8SSfeohEJEuj5uTLRrf3qrafdcMx/YKCYHDyvhxG+zTy5I4+hwxIfT40juUqQkcUEZvsaf0aOKX25EO5aRTnQpkn9rWMytohmBSnm8D5SMlUgrhn3CVO8xysW+VlomAVPEDAVyqopiOJrsD5E8lnp0VuwA4NUC/Gp+ZrxYYgJhAX+utWtVYQ7I4egZ8lIzE3BMJRUxK4ZunlqHsiVqI7nrGEZHvxc2+ALp8mpsfWf6H4t1kfkHWt354cupSl8Z2UlwPW0fE2/XNjE6WSk=
+  file:
+  - skycoin-hw-cli-$(uname -s)-v$(VERSION_RAW)
+  skip_cleanup: true
+  draft: true
+  on:
+    repo: skycoin/hardware-wallet-go
+    tags: true
+

@@ -2,187 +2,412 @@
 
 
 [[projects]]
+  digest = "1:ee35b514b6826a6e65bc24795873020d86570e5252c30c7e136581d0fa4ebdb0"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
+  pruneopts = ""
   revision = "dd0439581c7657cb652dfe5c71d7d48baf39541d"
   version = "v1.1.1"
 
 [[projects]]
+  digest = "1:016b62efaf0947541de680c1d4ce92085a9954581c8a423847c6455c4aca18c3"
   name = "github.com/SkycoinProject/skycoin"
-  packages = ["src/api","src/cipher","src/cipher/base58","src/cipher/bip32","src/cipher/bip39","src/cipher/bip39/wordlists","src/cipher/bip44","src/cipher/chacha20poly1305","src/cipher/chacha20poly1305/internal/chacha20","src/cipher/encoder","src/cipher/encrypt","src/cipher/pbkdf2","src/cipher/poly1305","src/cipher/ripemd160","src/cipher/scrypt","src/cipher/secp256k1-go","src/cipher/secp256k1-go/secp256k1-go2","src/cipher/testsuite","src/cli","src/coin","src/daemon","src/daemon/gnet","src/daemon/pex","src/daemon/strand","src/kvstorage","src/params","src/readable","src/testutil","src/transaction","src/util/apputil","src/util/droplet","src/util/elapse","src/util/fee","src/util/file","src/util/http","src/util/iputil","src/util/logging","src/util/mathutil","src/util/timeutil","src/util/useragent","src/visor","src/visor/blockdb","src/visor/dbutil","src/visor/historydb","src/wallet"]
+  packages = [
+    "src/api",
+    "src/cipher",
+    "src/cipher/base58",
+    "src/cipher/bip32",
+    "src/cipher/bip39",
+    "src/cipher/bip39/wordlists",
+    "src/cipher/bip44",
+    "src/cipher/chacha20poly1305",
+    "src/cipher/chacha20poly1305/internal/chacha20",
+    "src/cipher/encoder",
+    "src/cipher/encrypt",
+    "src/cipher/pbkdf2",
+    "src/cipher/poly1305",
+    "src/cipher/ripemd160",
+    "src/cipher/scrypt",
+    "src/cipher/secp256k1-go",
+    "src/cipher/secp256k1-go/secp256k1-go2",
+    "src/cipher/testsuite",
+    "src/cli",
+    "src/coin",
+    "src/daemon",
+    "src/daemon/gnet",
+    "src/daemon/pex",
+    "src/daemon/strand",
+    "src/kvstorage",
+    "src/params",
+    "src/readable",
+    "src/testutil",
+    "src/transaction",
+    "src/util/apputil",
+    "src/util/droplet",
+    "src/util/elapse",
+    "src/util/fee",
+    "src/util/file",
+    "src/util/http",
+    "src/util/iputil",
+    "src/util/logging",
+    "src/util/mathutil",
+    "src/util/timeutil",
+    "src/util/useragent",
+    "src/visor",
+    "src/visor/blockdb",
+    "src/visor/dbutil",
+    "src/visor/historydb",
+    "src/wallet",
+  ]
+  pruneopts = "UT"
   revision = "66f5df5849d339d403a475d523ebe7d1a4c92c31"
   version = "v0.27.0"
 
 [[projects]]
+  digest = "1:707ebe952a8b3d00b343c01536c79c73771d100f63ec6babeaed5c79e2b8a8dd"
   name = "github.com/beorn7/perks"
   packages = ["quantile"]
+  pruneopts = "NUT"
   revision = "37c8de3658fcb183f997c4e13e8337516ab753e6"
   version = "v1.0.1"
 
 [[projects]]
+  digest = "1:00b2c2ee0f120e9d267674ca28446e6aa43258d2c5491861664325e24ef32e62"
   name = "github.com/blang/semver"
   packages = ["."]
+  pruneopts = ""
   revision = "ba2c2ddd89069b46a7011d4106f6868f17ee1705"
   version = "v3.6.1"
 
 [[projects]]
+  digest = "1:ed112122ed4a920d944cc99b9d00b0441c11685939c28462c719488d36fe29aa"
   name = "github.com/boltdb/bolt"
   packages = ["."]
+  pruneopts = ""
   revision = "2f1ce7a837dcb8da3ec595b1dac9d0632f0f99e8"
   version = "v1.3.1"
 
 [[projects]]
+  digest = "1:1cf61f0228e64d1bfddaa42bfd1f5047ed3626925b9bea69bbcb9168472dae23"
   name = "github.com/cenkalti/backoff"
   packages = ["."]
+  pruneopts = ""
   revision = "61153c768f31ee5f130071d08fc82b85208528de"
   version = "v1.1.0"
 
 [[projects]]
+  digest = "1:0deddd908b6b4b768cfc272c16ee61e7088a60f7fe2f06c547bd3d8e1f8b8e77"
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
+  pruneopts = ""
   revision = "8991bc29aa16c548c550c7ff78260e27b9ab7c73"
   version = "v1.1.1"
 
 [[projects]]
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
-  revision = "6c65a5562fc06764971b7c5d05c76c75e84bdbf7"
-  version = "v1.3.2"
+  branch = "develop"
+  digest = "1:93c50d5f0b1e381b8116b0b644bf8890b0d8bfedb7fe18d8304c0e5ad4488f79"
+  name = "github.com/fibercrypto/skywallet-go"
+  packages = [
+    "src/integration/proxy",
+    "src/skywallet",
+    "src/skywallet/usb",
+    "src/skywallet/wire",
+    "src/usb/lowlevel/hidapi",
+    "src/usb/lowlevel/libusb",
+  ]
+  pruneopts = "T"
+  revision = "8e10440cf9e721a0944f046dcf78c07e97489cf3"
 
 [[projects]]
+  branch = "develop"
+  digest = "1:ec1a1f7bbfba1362708324d1b7aff4153086c837cdfe13eabd241a4cc9bac44d"
+  name = "github.com/fibercrypto/skywallet-protob"
+  packages = [
+    "go",
+    "go/google/protobuf",
+  ]
+  pruneopts = "NUT"
+  revision = "81be0e9029a26fadc841a14e84bd8a822b2dd8b5"
+
+[[projects]]
+  digest = "1:d439e7c59417e2221733a69fadeabc351a64c96ed02dde6b9d41b009d4139f83"
+  name = "github.com/gogo/protobuf"
+  packages = ["proto"]
+  pruneopts = "NUT"
+  revision = "5628607bb4c51c3157aacc3a50f0ab707582b805"
+  version = "v1.3.1"
+
+[[projects]]
+  digest = "1:a06187c7498a14ab96bb909e09af9ce1687678f355b775bcf1dc84729e2a2100"
+  name = "github.com/golang/protobuf"
+  packages = [
+    "proto",
+    "ptypes",
+    "ptypes/any",
+    "ptypes/duration",
+    "ptypes/timestamp",
+  ]
+  pruneopts = "NUT"
+  revision = "d23c5127dc24889085f8ccea5c9d560a57a879d8"
+  version = "v1.3.3"
+
+[[projects]]
+  digest = "1:406338ad39ab2e37b7f4452906442a3dbf0eb3379dd1f06aafb5c07e769a5fbb"
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
   version = "v1.0"
 
 [[projects]]
+  digest = "1:0f51cee70b0d254dbc93c22666ea2abf211af81c1701a96d04e2284b408621db"
   name = "github.com/konsorten/go-windows-terminal-sequences"
   packages = ["."]
+  pruneopts = ""
   revision = "f55edac94c9bbba5d6182a4be46d86a2c9b5b50e"
   version = "v1.0.2"
 
 [[projects]]
+  digest = "1:9b58ad18b38cf0d44b1d006fce319e45f200eafa406fe7f65fe0d0194b9f7a9f"
   name = "github.com/mattn/go-colorable"
   packages = ["."]
+  pruneopts = ""
   revision = "98ec13f34aabf44cc914c65a1cfb7b9bc815aef1"
   version = "v0.1.4"
 
 [[projects]]
+  digest = "1:5794dadc5456af270fc564d98efbfa1f3627cd6c733ca772d14409793772064f"
   name = "github.com/mattn/go-isatty"
   packages = ["."]
-  revision = "88ba11cfdc67c7588b30042edf244b2875f892b6"
-  version = "v0.0.10"
+  pruneopts = ""
+  revision = "7b513a986450394f7bbf1476909911b3aa3a55ce"
+  version = "v0.0.12"
 
 [[projects]]
+  digest = "1:63722a4b1e1717be7b98fc686e0b30d5e7f734b9e93d7dee86293b6deab7ea28"
   name = "github.com/matttproud/golang_protobuf_extensions"
   packages = ["pbutil"]
+  pruneopts = ""
   revision = "c12348ce28de40eed0136aa2b644d0ee0650e56c"
   version = "v1.0.1"
 
 [[projects]]
   branch = "master"
+  digest = "1:50416da10e189bc201e122e20078fb8e680a439cbdd24aaece06c434b4415b60"
   name = "github.com/mgutz/ansi"
   packages = ["."]
+  pruneopts = ""
   revision = "9520e82c474b0a04dd04f8a40959027271bab992"
 
 [[projects]]
+  digest = "1:256484dbbcd271f9ecebc6795b2df8cad4c458dd0f5fd82a8c2fa0c29f233411"
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
+  pruneopts = ""
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
   version = "v1.0.0"
 
 [[projects]]
+  digest = "1:4142d94383572e74b42352273652c62afec5b23f325222ed09198f46009022d1"
   name = "github.com/prometheus/client_golang"
-  packages = ["prometheus","prometheus/promhttp"]
+  packages = [
+    "prometheus",
+    "prometheus/promhttp",
+  ]
+  pruneopts = "NUT"
   revision = "c5b7fccd204277076155f10851dad72b76a49317"
   version = "v0.8.0"
 
 [[projects]]
-  branch = "master"
+  digest = "1:0db23933b8052702d980a3f029149b3f175f7c0eea0cff85b175017d0f2722c0"
   name = "github.com/prometheus/client_model"
   packages = ["go"]
-  revision = "14fe0d1b01d4d5fc031dd4bec1823bd3ebbe8016"
+  pruneopts = "NUT"
+  revision = "7bc5445566f0fe75b15de23e6b93886e982d7bf9"
+  version = "v0.2.0"
 
 [[projects]]
+  digest = "1:0c9d56afe4f5b3ab5658a3270a680db8f6936d7794377fa0b9880663958b18b0"
   name = "github.com/prometheus/common"
-  packages = ["expfmt","internal/bitbucket.org/ww/goautoneg","model"]
-  revision = "287d3e634a1e550c9e463dd7e5a75a422c614505"
-  version = "v0.7.0"
+  packages = [
+    "expfmt",
+    "internal/bitbucket.org/ww/goautoneg",
+    "model",
+  ]
+  pruneopts = "NUT"
+  revision = "d978bcb1309602d68bb4ba69cf3f8ed900e07308"
+  version = "v0.9.1"
 
 [[projects]]
+  digest = "1:a4b063a766f50cdadc1fce12053e3bde8599f1f8b7621d7e293cd2fc86543a44"
   name = "github.com/prometheus/procfs"
-  packages = [".","internal/fs","internal/util"]
-  revision = "499c85531f756d1129edd26485a5f73871eeb308"
-  version = "v0.0.5"
+  packages = [
+    ".",
+    "internal/fs",
+    "internal/util",
+  ]
+  pruneopts = "NUT"
+  revision = "6d489fc7f1d9cd890a250f3ea3431b1744b9623f"
+  version = "v0.0.8"
 
 [[projects]]
+  digest = "1:c109c5d92f0de1ceeea77ae0d13a20bf0f8e4ef5d3b0e69a40a6d7ac470836bc"
   name = "github.com/rs/cors"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "db0fe48135e83b5812a5a31be0eea66984b1b521"
   version = "v1.7.0"
 
 [[projects]]
+  digest = "1:615c827f6a892973a587c754ae5fad7acfc4352657aff23d0238fe0ba2a154df"
   name = "github.com/shopspring/decimal"
   packages = ["."]
+  pruneopts = ""
   revision = "cd690d0c9e2447b1ef2a129a6b7b49077da89b8e"
   version = "1.1.0"
 
 [[projects]]
+  digest = "1:1a405cddcf3368445051fb70ab465ae99da56ad7be8d8ca7fc52159d1c2d873c"
   name = "github.com/sirupsen/logrus"
   packages = ["."]
+  pruneopts = ""
   revision = "839c75faf7f98a33d445d181f3018b5c3409a45e"
   version = "v1.4.2"
 
 [[projects]]
+  branch = "develop"
+  digest = "1:296eddda33403e4c506e3398ace25de0dfabf46156c86db86e6e0aa69ca43d9d"
+  name = "github.com/skycoin/skycoin"
+  packages = [
+    "src/cipher",
+    "src/cipher/base58",
+    "src/cipher/ripemd160",
+    "src/cipher/secp256k1-go",
+    "src/cipher/secp256k1-go/secp256k1-go2",
+    "src/util/logging",
+  ]
+  pruneopts = "NUT"
+  revision = "d7e4b2f3e31ea96bdcaba595507fde42baa156b9"
+
+[[projects]]
+  digest = "1:d3533ee568fc00a971617ec09dc0f0b3eddfb4adbc1275f8f6332553d67506b4"
   name = "github.com/spf13/cobra"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "f2b07da1e2c38d5f12845a4f607e2e1018cbb1f5"
   version = "v0.0.5"
 
 [[projects]]
+  digest = "1:688428eeb1ca80d92599eb3254bdf91b51d7e232fead3a73844c1f201a281e51"
   name = "github.com/spf13/pflag"
   packages = ["."]
+  pruneopts = ""
   revision = "2e9d26c8c37aae03e3f9d4e90b7116f5accb7cab"
   version = "v1.0.5"
 
 [[projects]]
+  digest = "1:88e031206b52c11a8442f3f07e9bcddc1b248274d0506c768a948e7e254b84bb"
   name = "github.com/stretchr/objx"
   packages = ["."]
+  pruneopts = ""
   revision = "ea4fe68685ee0d3cee7032121851b57e7494e8ea"
   version = "v0.2.0"
 
 [[projects]]
+  digest = "1:3b4870930878fb464616897c4e4bc100d323a8f95c3d8bbff0952d372571f7f7"
   name = "github.com/stretchr/testify"
-  packages = ["assert","mock","require"]
+  packages = [
+    "assert",
+    "mock",
+    "require",
+  ]
+  pruneopts = "NUT"
   revision = "2aa2c176b9dab406a6970f6a55f513e8a8c8b18f"
 
 [[projects]]
   branch = "master"
+  digest = "1:7d48359beaf9338737095261d796704f4df17776183141813200aab4d4b0131c"
   name = "github.com/therecipe/qt"
-  packages = ["core","gui","internal/binding/runtime","network","qml"]
-  revision = "2b818d970888dab6bbf6aa2702bc28c1e6fbdb83"
+  packages = [
+    "core",
+    "gui",
+    "internal/binding/runtime",
+    "network",
+    "qml",
+  ]
+  pruneopts = "NUT"
+  revision = "5074eb6d8c41fdae5d1956af7c286160a40dd8fd"
 
 [[projects]]
   branch = "master"
+  digest = "1:059bf4e6350ea6202b837cb24216b735d997e29e407f299be040a826c0bc026c"
   name = "golang.org/x/crypto"
-  packages = ["bcrypt","blowfish","pbkdf2","ssh/terminal"]
-  revision = "87dc89f01550277dc22b74ffcf4cd89fa2f40f4c"
+  packages = [
+    "bcrypt",
+    "blowfish",
+    "pbkdf2",
+    "ssh/terminal",
+  ]
+  pruneopts = "NUT"
+  revision = "86ce3cb696783b739e41e834e2eead3e1b4aa3fb"
 
 [[projects]]
   branch = "master"
+  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "ec77196f6094c3492a8b61f2c11cf937f78992ae"
+  pruneopts = "NUT"
+  revision = "16171245cfb220d5317888b716d69c1fb4e7992b"
 
 [[projects]]
   branch = "master"
+  digest = "1:4e1eac2eb79906608c99a7c513b8a48a0b95ca5478b808eac95abed09bc7860d"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
-  revision = "b4ff53e7a1cb8ab8ce2e12d50d5d63530183e1a9"
+  packages = [
+    "unix",
+    "windows",
+  ]
+  pruneopts = "NUT"
+  revision = "12a6c2dcc1e4cb348b57847c73987099e261714b"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "987ade7bd18b7212ac209dabcd84ecbfca67d8f12fcfbff5971d8a0f09a56d6d"
+  input-imports = [
+    "github.com/SkycoinProject/skycoin/src/api",
+    "github.com/SkycoinProject/skycoin/src/cipher",
+    "github.com/SkycoinProject/skycoin/src/cipher/base58",
+    "github.com/SkycoinProject/skycoin/src/cipher/bip39",
+    "github.com/SkycoinProject/skycoin/src/cipher/testsuite",
+    "github.com/SkycoinProject/skycoin/src/cli",
+    "github.com/SkycoinProject/skycoin/src/coin",
+    "github.com/SkycoinProject/skycoin/src/params",
+    "github.com/SkycoinProject/skycoin/src/readable",
+    "github.com/SkycoinProject/skycoin/src/testutil",
+    "github.com/SkycoinProject/skycoin/src/util/droplet",
+    "github.com/SkycoinProject/skycoin/src/util/file",
+    "github.com/SkycoinProject/skycoin/src/util/logging",
+    "github.com/SkycoinProject/skycoin/src/visor",
+    "github.com/SkycoinProject/skycoin/src/visor/dbutil",
+    "github.com/SkycoinProject/skycoin/src/wallet",
+    "github.com/boltdb/bolt",
+    "github.com/fibercrypto/skywallet-go/src/integration/proxy",
+    "github.com/fibercrypto/skywallet-go/src/skywallet",
+    "github.com/fibercrypto/skywallet-go/src/skywallet/usb",
+    "github.com/fibercrypto/skywallet-go/src/skywallet/wire",
+    "github.com/fibercrypto/skywallet-protob/go",
+    "github.com/gogo/protobuf/proto",
+    "github.com/mgutz/ansi",
+    "github.com/sirupsen/logrus",
+    "github.com/stretchr/testify/assert",
+    "github.com/stretchr/testify/mock",
+    "github.com/stretchr/testify/require",
+    "github.com/therecipe/qt/core",
+    "github.com/therecipe/qt/gui",
+    "github.com/therecipe/qt/qml",
+    "golang.org/x/crypto/bcrypt",
+    "golang.org/x/crypto/pbkdf2",
+    "golang.org/x/crypto/ssh/terminal",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1
