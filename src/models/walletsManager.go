@@ -799,7 +799,6 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	}
 	logWalletManager.Info("Transaction created")
 	return qTxn
-
 }
 
 func (walletM *WalletManager) signTxn(wltIds, address []string, source string, tmpPwd interface{}, index []int, qTxn *QTransaction) *QTransaction {
