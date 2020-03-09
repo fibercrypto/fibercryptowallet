@@ -324,8 +324,6 @@ func (walletModel *WalletModel) data(index *core.QModelIndex, role int) *core.QV
 				}
 				return false
 			}
-			// FIXME: consider a double checking here instead of hadHwConnected
-			// be careful this can have a big performance impact
 			return core.NewQVariant1(valInSlice())
 		}
 	case Expand:
