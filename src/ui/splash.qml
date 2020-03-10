@@ -3,6 +3,7 @@ import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Window 2.12
 import QtQuick.Layouts 1.12
+import Qt.labs.settings 1.0
 
 Window {
     id: windowSplash
@@ -14,6 +15,8 @@ Window {
     color: "transparent"
     x: (Screen.width - width)/2
     y: (Screen.height - height)/2
+
+    Material.theme: ~~settings.value("style/material/theme", Material.Light)
 
     Dialog {
         id: dialogSplash
@@ -34,6 +37,8 @@ Window {
         height: implicitHeight + (implicitHeight % 2)
 
         ColumnLayout {
+            anchors.fill: parent
+            
             Image {
                 id: imageLogo
                 Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
@@ -91,5 +96,9 @@ Window {
         interval: 200
         repeat: false
         onTriggered: dialogSplash.close()
+    }
+
+    Settings {
+        id: settings
     }
 }
