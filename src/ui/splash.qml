@@ -30,10 +30,8 @@ Window {
         onRejected: Qt.exit(-1)
         onClosed: windowSplash.visible = false
 
-        width: 300
-        height: 300
-        // The width/height must be always greater than its implicit version:
-        // onAboutToShow: console.log("Size:", width + 'x' + height, "Implicit size:", implicitWidth + 'x' + implicitHeight)
+        width: implicitWidth + (implicitWidth % 2)
+        height: implicitHeight + (implicitHeight % 2)
 
         ColumnLayout {
             Image {
