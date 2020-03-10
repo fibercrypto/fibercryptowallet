@@ -10,7 +10,7 @@ type MultiPoolSection struct {
 }
 
 // Get provides a mock function with given fields:
-func (_m *MultiPoolSection) Get() interface{} {
+func (_m *MultiPoolSection) Get() (interface{}, error) {
 	ret := _m.Called()
 
 	var r0 interface{}
@@ -22,7 +22,14 @@ func (_m *MultiPoolSection) Get() interface{} {
 		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Put provides a mock function with given fields: _a0

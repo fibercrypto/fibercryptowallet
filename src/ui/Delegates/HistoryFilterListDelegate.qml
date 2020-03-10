@@ -11,11 +11,12 @@ import "../" // For quick UI development, switch back to resources when making a
 Item {
     id: root
 
-    readonly property real addressListHeight: listViewFilterAddress.height
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
     
     clip: true
+    implicitWidth: width
+    implicitHeight: height
     width: 300
     height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
     
@@ -65,7 +66,7 @@ Item {
             model: listAddresses
             
             Layout.fillWidth: true
-            height: contentHeight
+            implicitHeight: contentHeight
             interactive: false
 
 
@@ -80,26 +81,33 @@ Item {
                 }
             }
 
-            onAllCheckedChanged: {
-                if (listViewFilterAddress.allChecked) {
-                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 1)
-                } else {
-                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, 0)
-                }
-            }
+            
 
             Component.onCompleted: {
                 modelManager.setWalletManager(walletManager)
                 listAddresses = modelManager.getAddressModel(fileName)
             }
 
+            
+
             delegate: HistoryFilterListAddressDelegate {
                 // BUG: Checking the wallet does not change the check state of addresses
                 // Is `checked: marked` ok? Or it should be the opposite?
-                checked: true 
+                checked: marked
                 width: parent.width
                 text: address 
-
+                Connections{
+                    target: listViewFilterAddress
+                    onAllCheckedChanged: {
+                        if (listViewFilterAddress.allChecked) {
+                            historyManager.addFilter(address)
+                        } else {
+                            historyManager.removeFilter(address)
+                        }
+                        walletManager.editMarkAddress(address, listViewFilterAddress.allChecked)
+                        listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, listViewFilterAddress.allChecked)
+                    }
+                }
                 onCheckedChanged: {
                     ListView.view.checkedDelegates += checked ? 1: -1
                     
@@ -108,7 +116,9 @@ Item {
                     } else {
                         historyManager.removeFilter(address)  
                     }
+                    walletManager.editMarkAddress(address, checked)
                     listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
+
                 }
             } // HistoryFilterListAddressDelegate (delegate)
         } // ListView

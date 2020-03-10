@@ -42,6 +42,18 @@ Item {
                 anchors.rightMargin: listWalletRightMargin
                 spacing: listWalletSpacing
 
+                Rectangle {
+                    width: 10
+                    height: 6
+                    visible: hasHardwareWallet
+                    color: "red"
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            skyWalletInteractionDialog.open()
+                        }
+                    }
+                }
                 Image {
                     id: status
                     source: statusIcon
@@ -75,10 +87,18 @@ Item {
 
                 Label {
                     id: labelSky
-                    text: sky // a role of the model
+                    text: sky === qsTr("N/A") ? "" : sky // a role of the model
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
+                    BusyIndicator {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        running: sky === qsTr("N/A") ? true : false
+
+                        implicitWidth: implicitHeight
+                        implicitHeight: parent.height + 10
+                    }
                 }
 
                 Label {
@@ -92,6 +112,7 @@ Item {
             onClicked: {
 
                 expanded = !expanded
+                walletModel.changeExpanded(fileName)
             }
         } // ItemDelegate
 
@@ -121,6 +142,14 @@ Item {
                     dialogEditWallet.name = name
                     dialogEditWallet.open()
                 }
+                onToggleEncryptionRequested: {
+                    if (encryptionEnabled) {
+                        dialogGetPassword.addAddress = false
+                        dialogGetPassword.open()
+                    } else {
+                        dialogSetPassword.open()
+                    }
+                }
             }
 
         } // ListView
@@ -134,54 +163,43 @@ Item {
         focus: true
 
         onAccepted: {
-            if (encryptionEnabled){
-                dialogGetPasswordForAddAddresses.title = "Enter Password"
-                dialogGetPasswordForAddAddresses.height = dialogGetPassword.height - 20
-                dialogGetPasswordForAddAddresses.nAddress = spinValue
-                dialogGetPasswordForAddAddresses.open()
-
-
-            } else{
+            if (encryptionEnabled) {
+                dialogGetPassword.addAddress = true
+                dialogGetPassword.title = qsTr("Enter Password")
+                dialogGetPassword.nAddress = spinValue
+                dialogGetPassword.open()
+            } else {
                 walletManager.newWalletAddress(fileName, spinValue, "")
                 listAddresses.loadModel(walletManager.getAddresses(fileName))
             }
-
-
-        }
-        onRejected: {
-            console.log("Adding rejected")
         }
     } // DialogAddAddresses
-    DialogGetPassword {
-        id: dialogGetPasswordForAddAddresses
-        anchors.centerIn: Overlay.overlay
-        property int nAddress
-        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
-        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
-
-        focus: true
-        modal: true
-
-        onAccepted: {
-            walletManager.newWalletAddress(fileName, nAddress, dialogGetPasswordForAddAddresses.password)
-            listAddresses.loadModel(walletManager.getAddresses(fileName))
-        }
-    }
 
     DialogGetPassword {
         id: dialogGetPassword
 
-        anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 440 ? 440 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > 320 ? 320 - 40 : applicationWindow.height - 40
+        property bool addAddress: false
+        property int nAddress
 
-        headerMessage: qsTr("<b>Warning:</b> for security reasons, it is not recommended to keep the wallets unencrypted. Caution is advised.")
-        headerMessageColor: Material.color(Material.Red)
-        focus: true
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > implicitHeight + 40 ? implicitHeight : applicationWindow.height - 40
+
+        headerMessage: addAddress ? "" : qsTr("<b>Warning:</b> for security reasons, it is not recommended to keep the wallets unencrypted. Caution is advised.")
+        Material.primary: Material.Red
+        headerMessageColor: Material.primary
+
+        focus: visible
         modal: true
+
         onAccepted: {
-            var isEncrypted = walletManager.decryptWallet(fileName, password)
-            walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
+            if (addAddress) {
+                walletManager.newWalletAddress(fileName, nAddress, password)
+                listAddresses.loadModel(walletManager.getAddresses(fileName))
+            } else {
+                var isEncrypted = walletManager.decryptWallet(fileName, password)
+                walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
+            }
         }
     }
 
@@ -189,12 +207,13 @@ Item {
         id: dialogSetPassword
 
         anchors.centerIn: Overlay.overlay
-        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
         height: applicationWindow.height > implicitHeight + 40 ? implicitHeight : applicationWindow.height - 40
 
-        headerMessage: qsTr("We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet.")
-        headerMessageColor: Material.color(Material.Red)
-        focus: true
+        headerMessage: qsTr("<b>Warning:</b> We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet.")
+        headerMessageColor: Material.primary
+        Material.primary: Material.Red
+        focus: visible
         modal: true
 
         onAccepted: {
@@ -222,17 +241,19 @@ Item {
     AddressModel {
 
         id: listAddresses
-        property Timer timer: Timer {
-            id: addressModelTimer
-            interval: 7000
-            repeat: true
-            running: true
-            onTriggered: {
-                listAddresses.updateModel(fileName);
-            }
-        }
+        // property Timer timer: Timer {
+            // id: addressModelTimer
+            // interval: 3000
+            // repeat: true
+            // running: true
+            // onTriggered: {
+                // listAddresses.updateModel(fileName);
+            // }
+        // }
     }
     Component.onCompleted: {
-        listAddresses.updateModel(fileName);
+        //listAddresses.updateModel(fileName);
+        listAddresses.updateModel(fileName)
+        listAddresses.suscribe(fileName)
     }
 }

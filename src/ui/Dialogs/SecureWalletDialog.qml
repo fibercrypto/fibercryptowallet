@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import DeviceInteraction 1.0
 
 Dialog {
     id: secureWalletDialog
@@ -15,6 +16,33 @@ Dialog {
     title: Qt.application.name
     standardButtons: Dialog.Abort
     closePolicy: Dialog.NoAutoClose
+    DeviceInteraction {
+        id: deviceInteraction
+        onHasPinDetermined: enablePINWarning = !hasPin;
+        onNameDetermined: deviceName = name
+        onNeedsBackupDetermined: enableBackupWarning = needsBackup;
+        onOperationDone: {
+            deviceInteraction.deviceFeatures();
+            unblockButtons();
+        }
+    }
+    onAboutToShow: deviceInteraction.deviceFeatures();
+    onRejected: {
+        deviceInteraction.secureWasWarn();
+        topLevelDialogLocker.unlock();
+    }
+    function setEnableButtons(enabled) {
+        buttonCreateBackup.enabled = enabled;
+        buttonWipeDevice.enabled = enabled;
+        buttonCreatePIN.enabled = enabled;
+        secureWalletDialog.standardButton(Dialog.Abort).enabled = enabled;
+    }
+    function blockButtons() {
+        setEnableButtons(false);
+    }
+    function unblockButtons() {
+        setEnableButtons(true);
+    }
 
     Flickable {
         id: flickable
@@ -117,18 +145,39 @@ Dialog {
                         visible: enableBackupWarning
                         text: qsTr("Create a backup")
                         Layout.fillWidth: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                blockButtons();
+                                deviceInteraction.backupDevice();
+                            }
+                        }
                     }
                     ItemDelegate {
                         id: buttonCreatePIN
                         visible: enablePINWarning
                         text: qsTr("Create PIN code")
                         Layout.fillWidth: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                blockButtons();
+                                deviceInteraction.changePin();
+                            }
+                        }
                     }
                     ItemDelegate {
                         id: buttonWipeDevice
                         text: qsTr("Wipe device")
                         Layout.fillWidth: true
                         Material.foreground: Material.Pink
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                blockButtons();
+                                deviceInteraction.wipeDevice();
+                            }
+                        }
                     }
                 } // ColumnLayout (options)
             } // ColumnLayouts (warnings + options)

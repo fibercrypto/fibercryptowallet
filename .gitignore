@@ -2,6 +2,7 @@
 *.so
 
 # Distribution / packaging
+vendor/github.com/therecipe/qt/
 
 # Configuration
 *.vscode
@@ -37,6 +38,7 @@ nosetests.xml
 coverage.xml
 coverage.html
 coverage.out
+coverage.tmp.out
 *.cover
 .hypothesis/
 
@@ -86,3 +88,8 @@ rcc_cgo_*.go
 darwin
 
 
+# Auto-generates go files.
+
+*.pb.go
+!vendor/github.com/golang/protobuf/**/*.pb.go
+*.log

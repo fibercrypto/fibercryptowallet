@@ -8,7 +8,11 @@ import (
 
 func (m *fibercryptoAltcoinManager) AttachSignService(signSrv core.TxnSigner) error {
 	if signSrv != nil {
-		m.signers[signSrv.GetSignerUID()] = signSrv
+		uid, err := signSrv.GetSignerUID()
+		if err != nil {
+			return err
+		}
+		m.signers[uid] = signSrv
 	}
 	return nil
 }
@@ -25,7 +29,10 @@ func (m *fibercryptoAltcoinManager) LookupSignService(id core.UID) core.TxnSigne
 }
 
 func (m *fibercryptoAltcoinManager) RemoveSignService(signSrv core.TxnSigner) error {
-	uid := signSrv.GetSignerUID()
+	uid, err := signSrv.GetSignerUID()
+	if err != nil {
+		return err
+	}
 	if _, isBound := m.signers[uid]; isBound {
 		delete(m.signers, uid)
 		return nil

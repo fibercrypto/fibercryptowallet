@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import DeviceInteraction 1.0
 
 Dialog {
     id: dialogUnconfiguredWallet
@@ -9,6 +10,21 @@ Dialog {
     title: qsTr("Unconfigured wallet")
     standardButtons: Dialog.Abort
     closePolicy: Dialog.NoAutoClose
+    DeviceInteraction {
+        id: deviceInteraction2
+        onOperationDone: {
+            deviceInteraction2.deviceFeatures();
+        }
+        onIsInitializedDetermined: {
+            buttonAutoConfDevice.visible = !isInitialized;
+            buttonRecoveryDevice.visible = !isInitialized;
+        }
+    }
+    onAboutToShow: deviceInteraction2.deviceFeatures();
+    onRejected: {
+        deviceInteraction2.initializeWasWarn();
+        topLevelDialogLocker.unlock();
+    }
 
     Flickable {
         id: flickable
@@ -53,16 +69,48 @@ Dialog {
                     font.bold: true
                     Layout.fillWidth: true
                 }
-                ItemDelegate {
-                    id: buttonAutoConf
-                    text: qsTr("Configure automatically")
+                RowLayout {
+                    id: buttonAutoConfDevice
                     Layout.fillWidth: true
+                    ItemDelegate {
+                        text: qsTr("Configure automatically")
+                        Layout.fillWidth: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                deviceInteraction2.generateMnemonic(+generateWordCount.currentText, generateUsePassphrase.checked);
+                            }
+                        }
+                    }
+                    CheckBox {
+                        id: generateUsePassphrase
+                        text: qsTr("Use pass phrase")
+                        enabled: false
+                    }
+                    ComboBox {
+                        id: generateWordCount
+                        model: [12, 24]
+                    }
                 }
-                ItemDelegate {
-                    id: buttonBackupConf
-                    text: qsTr("Restore backup")
+                RowLayout {
+                    id: buttonRecoveryDevice
                     Layout.fillWidth: true
-
+                    ItemDelegate {
+                        text: qsTr("Restore backup")
+                        Layout.fillWidth: true
+                        onClicked: {
+                            deviceInteraction2.restoreBackup(+recoveryWordCount.currentText, recoveryUsePassphrase.checked)
+                        }
+                    }
+                    CheckBox {
+                        id: recoveryUsePassphrase
+                        text: qsTr("Use pass phrase")
+                        enabled: false
+                    }
+                    ComboBox {
+                        id: recoveryWordCount
+                        model: [12, 24]
+                    }
                 }
             }
         } // ColumnLayout (root)

@@ -96,11 +96,35 @@ Page {
         ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
         ListView {
+            Timer {
+                interval: 4000
+                repeat: false
+                running: true
+                onTriggered: {
+                    walletModel.sniffHw(deviceInteraction, topLevelDialogLocker)
+                }
+            }
+
             id: walletList
             anchors.fill: parent
             clip: true // limit the painting to it's bounding rectangle
             model: walletModel
             delegate: WalletListDelegate {}
+
+            populate: Transition {
+                id: transitionPopulate
+
+                SequentialAnimation {
+                    PropertyAction { property: "opacity"; value: 0.0 }
+                    PauseAnimation {
+                        duration: transitionPopulate.ViewTransition.index === 0 ? 150 : 150 + (transitionPopulate.ViewTransition.index -  transitionPopulate.ViewTransition.targetIndexes[0]) * 50
+                    }
+                    ParallelAnimation {
+                        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+                        NumberAnimation { property: "scale"; from: 0.8; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+                    }
+                }
+            }
         }
     }
 
@@ -110,15 +134,15 @@ Page {
         Component.onCompleted: {
             walletModel.loadModel(walletManager.getWallets())
         }
-        property Timer timer: Timer {
-            id: walletListTimer
-            interval: 5000
-            repeat: true
-            running: true
-            onTriggered: {
-                walletModel.updateModel(walletManager.getWallets())
-            }
-        }
+        //property Timer timer: Timer {
+        //    id: walletListTimer
+        //    interval: 5000
+        //    repeat: true
+        //    running: true
+        //    onTriggered: {
+        //        walletModel.updateModel(walletManager.getWallets())
+        //    }
+        //}
     }
 
     DialogAddLoadWallet {

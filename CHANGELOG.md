@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- Use sky-wallet as signer.
 - Spend in single transaction coins owned by multiple wallets (same altcoin plugin)
 - Added logger for the app and proper error handling
 - Built-in support for SkyWallet hardware wallet as signer for Skycoin transactions
@@ -63,4 +64,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - QR code images are buttons
 - GUI to add wallets
 - GUI to generate new addresses for a wallet
-
+- Added Address Book

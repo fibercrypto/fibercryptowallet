@@ -25,37 +25,9 @@ Dialog {
     title: qsTr("Transaction details")
     standardButtons: Dialog.Ok
 
-    Flickable {
-        id: flickable
+    TransactionDetails {
+        id: transactionDetails
         anchors.fill: parent
         clip: true
-        contentHeight: columnLayoutRoot.height
-
-        ColumnLayout {
-            id: columnLayoutRoot
-            width: parent.width
-            spacing: 20
-
-            TransactionDetails {
-                id: transactionDetails
-                implicitWidth: 500
-                Layout.fillWidth: true
-            }
-
-            Rectangle {
-                visible: transactionDetails.expanded
-                height: 1
-                color: Material.color(Material.Grey)
-                Layout.fillWidth: true
-            }
-        } // ColumnLayout
-
-        ScrollIndicator.vertical: ScrollIndicator {
-            parent: dialogTransactionsDetails.contentItem
-            anchors.top: flickable.top
-            anchors.bottom: flickable.bottom
-            anchors.right: parent.right
-            anchors.rightMargin: -dialogTransactionsDetails.rightPadding + 1
-        }
     }
 }

@@ -1,6 +1,6 @@
 # FiberCrypto wallet
 
-[![Build Status](https://travis-ci.org/fibercrypto/FiberCryptoWallet.svg?branch=develop)](https://travis-ci.org/fibercrypto/FiberCryptoWallet)
+[![Build Status](https://travis-ci.org/fibercrypto/fibercryptowallet.svg?branch=develop)](https://travis-ci.org/fibercrypto/fibercryptowallet)
 [![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.GPLv3)
 [![Coverage Status](https://coveralls.io/repos/github/fibercrypto/FiberCryptoWallet/badge.svg?branch=develop)](https://coveralls.io/github/fibercrypto/FiberCryptoWallet?branch=develop)
@@ -101,11 +101,15 @@ prepare-release                Change the resources in the app and prepare to re
 clean-test                     Remove temporary test files
 clean-build                    Remove temporary files
 clean                          Remove temporary files
+gen-mocks-core                 Generate mocks for core interface types
+gen-mocks-sky                  Generate mocks for internal Skycoin types
 gen-mocks                      Generate mocks for interface types
 test-sky                       Run Skycoin plugin test suite
 test-core                      Run tests for API core and helpers
+test-data                      Run tests for data package
 test-cover                     Show more details of test coverage
 test                           Run project test suite
+run-docker                     Run CMD inside Docker container
 install-linters                Install linters
 install-coveralls              Install coveralls
 lint                           Run linters. Use make install-linters first.

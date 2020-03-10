@@ -14,6 +14,7 @@ Page {
 
     property alias advancedMode: switchAdvancedMode.checked
     property string walletSelected
+    property string signerSelected
     property string walletEncrypted
     property string destinationAddress
     property string amount
@@ -174,39 +175,15 @@ Page {
         anchors.centerIn: Overlay.overlay
         property var walletsAddresses
         readonly property real maxHeight: (expanded ? 490 : 340) + (showPasswordField ? 140 : 0)
-        width: applicationWindow.width > 640 ? 640 - 40 : applicationWindow.width - 40
-        height: applicationWindow.height > maxHeight ? maxHeight - 40 : applicationWindow.height - 40
+        width: applicationWindow.width > 640 - 40 ? 640 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > maxHeight - 40 ? maxHeight - 40 : applicationWindow.height - 40
         Behavior on height { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
         
         modal: true
         focus: true
 		onAccepted: {
-            walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],"", bridgeForPassword, [], txn)
-        }
-    }
-
-    DialogGetPassword{
-        id: getPasswordDialog
-        anchors.centerIn: Overlay.overlay
-        property int nAddress
-        width: applicationWindow.width > 540 ? 540 - 120 : applicationWindow.width - 40
-        height: applicationWindow.height > 570 ? 570 - 180 : applicationWindow.height - 40
-
-        focus: true
-        modal: true
-        onClosed:{
-            bridgeForPassword.setResult(getPasswordDialog.password)
-            bridgeForPassword.unlock()
-        }
-    }
-
-    QBridge{
-        id: bridgeForPassword
-
-        onGetPassword:{
-            getPasswordDialog.title = message
-            getPasswordDialog.clear()
-            getPasswordDialog.open()
+            signerSelected = stackView.currentItem.simplePage.getSignerSelected()
+            walletManager.signAndBroadcastTxnAsync(walletsAddresses[1], walletsAddresses[0],signerSelected, bridgeForPassword, [], txn)
         }
     }
 }

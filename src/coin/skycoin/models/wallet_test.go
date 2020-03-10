@@ -2,17 +2,17 @@ package skycoin
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math"
+	"path/filepath"
+	"sort"
 	"strconv"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/SkycoinProject/skycoin/src/visor"
 
+	"github.com/fibercrypto/fibercryptowallet/src/coin/mocks"
 	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/params"
-	"github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/testsuite"
 	"github.com/fibercrypto/fibercryptowallet/src/core"
 	"github.com/fibercrypto/fibercryptowallet/src/util"
 
@@ -22,6 +22,7 @@ import (
 	"github.com/SkycoinProject/skycoin/src/readable"
 	"github.com/SkycoinProject/skycoin/src/testutil"
 	"github.com/SkycoinProject/skycoin/src/wallet"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -260,18 +261,6 @@ func TestRemoteWalletSetLabel(t *testing.T) {
 	}
 
 	wlt.SetLabel("wallet")
-}
-
-type TransferOptions struct {
-	values map[string]interface{}
-}
-
-func (tOpt *TransferOptions) GetValue(key string) interface{} {
-	return tOpt.values[key]
-}
-
-func (tOpt *TransferOptions) SetValue(key string, value interface{}) {
-	tOpt.values[key] = value
 }
 
 func NewTransferOptions() *TransferOptions {
@@ -582,17 +571,6 @@ func TestRemoteWalletGetLoadedAddresses(t *testing.T) {
 	require.Equal(t, 1, items)
 }
 
-func makeUninjectedTransaction(t *testing.T, txn *coin.Transaction, fee uint64) *SkycoinUninjectedTransaction {
-	if txn == nil {
-		skyTxn, err := makeTransaction(t)
-		require.NoError(t, err)
-		txn = &skyTxn
-	}
-	uitxn, err := NewUninjectedTransaction(txn, fee)
-	require.NoError(t, err)
-	return uitxn
-}
-
 func TestUninjectedTransactionVerifySigned(t *testing.T) {
 	// Mismatch header hash
 	txn, err := makeTransaction(t)
@@ -770,143 +748,8 @@ func TestUninjectedTransactionVerifyUnsigned(t *testing.T) {
 	require.NoError(t, err)
 }
 
-var (
-	tmpWalletDir  string
-	testWalletEnv core.WalletEnv
-)
-
-func loadTestWalletEnv(t *testing.T) core.WalletEnv {
-	if tmpWalletDir == "" {
-		tmpDir, err := ioutil.TempDir("", testsuite.TestIDToken)
-		require.NoError(t, err)
-		tmpWalletDir = tmpDir
-	}
-	if testWalletEnv == nil {
-		testWalletEnv = NewWalletDirectory(tmpWalletDir)
-	}
-	return testWalletEnv
-}
-
-var whitespaceReplacer = strings.NewReplacer(" ", "-")
-
-func makeLocalWalletsFromKeyData(t *testing.T, keysData []KeyData) []core.Wallet {
-	walletsCache := make(map[string]core.Wallet)
-	wallets := make([]core.Wallet, len(keysData))
-	walletSet := loadTestWalletEnv(t).GetWalletSet()
-	for i, kd := range keysData {
-		walletID := whitespaceReplacer.Replace(kd.Mnemonic)
-		var w core.Wallet
-		var isFound bool
-		var err error
-		if w, isFound = walletsCache[kd.Mnemonic]; !isFound {
-			if w = walletSet.GetWallet(walletID); w == nil {
-				w, err = walletSet.CreateWallet(walletID, kd.Mnemonic, wallet.WalletTypeDeterministic, false, util.EmptyPassword, 0)
-				require.NoError(t, err)
-			}
-			walletsCache[kd.Mnemonic] = w
-		}
-		wallets[i] = w
-		w.GenAddresses(core.AccountAddress, 0, uint32(kd.AddressIndex+1), nil)
-		w.GenAddresses(core.ChangeAddress, 0, uint32(kd.AddressIndex+1), nil)
-	}
-	return wallets
-}
-
 func TestTransactionSignInput(t *testing.T) {
-	txn, keysData, uxspent, err := makeTransactionMultipleInputs(t, 3)
-	require.NoError(t, err)
-	// Mock UxOut API calls
-	for _, ux := range uxspent {
-		mockSkyApiUxOut(global_mock, ux)
-	}
-
-	uiTxn := makeUninjectedTransaction(t, &txn, 1)
-	var signedCoreTxn core.Transaction
-	var isFullySigned bool
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.True(t, isFullySigned)
-
-	// Load local wallets
-	wallets := makeLocalWalletsFromKeyData(t, keysData)
-
-	// Input is already signed
-	_, err = wallets[0].Sign(uiTxn, nil, util.EmptyPassword, []string{"#0"})
-	testutil.RequireError(t, err, "Transaction is fully signed")
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.True(t, isFullySigned)
-
-	// Input is not signed
-	txn.Sigs[1] = cipher.Sig{}
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, nil, nil, []string{"#1"})
-	require.NoError(t, err)
-	signedTxn, isUninjected := signedCoreTxn.(*SkycoinUninjectedTransaction)
-	require.True(t, isUninjected)
-	require.NotEqual(t, uiTxn.txn, signedTxn.txn)
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.False(t, isFullySigned)
-	isFullySigned, err = signedTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.True(t, isFullySigned)
-	_, err = wallets[1].Sign(signedTxn, nil, nil, []string{"#1"})
-	testutil.RequireError(t, err, "Transaction is fully signed")
-	// Repeat using UXID
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.False(t, isFullySigned)
-	uxId := txn.In[1].Hex()
-	signedCoreTxn, err = wallets[1].Sign(uiTxn, nil, nil, []string{uxId})
-	require.NoError(t, err)
-	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
-	require.True(t, isUninjected)
-	require.NotEqual(t, uiTxn.txn, signedTxn.txn)
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.False(t, isFullySigned)
-	isFullySigned, err = signedTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.True(t, isFullySigned)
-	_, err = wallets[1].Sign(signedTxn, nil, nil, []string{"#1"})
-	testutil.RequireError(t, err, "Transaction is fully signed")
-
-	// Transaction has no sigs; sigs array is initialized
-	txn.Sigs = nil
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[2].Sign(uiTxn, nil, nil, []string{"#2"})
-	require.NoError(t, err)
-	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
-	require.True(t, isUninjected)
-	require.NotEqual(t, uiTxn.txn, signedTxn.txn)
-	isFullySigned, err = uiTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.False(t, isFullySigned)
-	require.Len(t, signedTxn.txn.Sigs, 3)
-	require.True(t, signedTxn.txn.Sigs[0].Null())
-	require.True(t, signedTxn.txn.Sigs[1].Null())
-	require.False(t, signedTxn.txn.Sigs[2].Null())
-
-	// Signing the rest of the inputs individually works
-	signedCoreTxn, err = wallets[1].Sign(signedTxn, nil, nil, []string{"#1"})
-	require.NoError(t, err)
-	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
-	require.True(t, isUninjected)
-	isFullySigned, err = signedTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.False(t, isFullySigned)
-	signedCoreTxn, err = wallets[0].Sign(signedTxn, nil, nil, []string{"#0"})
-	require.NoError(t, err)
-	signedTxn, isUninjected = signedCoreTxn.(*SkycoinUninjectedTransaction)
-	require.True(t, isUninjected)
-	isFullySigned, err = signedTxn.IsFullySigned()
-	require.NoError(t, err)
-	require.True(t, isFullySigned)
+	TransactionSignInputTestImpl(t, nil)
 }
 
 func TestTransactionSignInputs(t *testing.T) {
@@ -971,21 +814,6 @@ func TestTransactionSignInputs(t *testing.T) {
 	require.NoError(t, cipher.VerifyAddressSignedHash(a2, signedTxn.txn.Sigs[1], cipher.AddSHA256(h, signedTxn.txn.In[1])))
 	require.Error(t, cipher.VerifyAddressSignedHash(a, signedTxn.txn.Sigs[1], cipher.AddSHA256(h, signedTxn.txn.In[0])))
 	require.Error(t, cipher.VerifyAddressSignedHash(a2, signedTxn.txn.Sigs[0], cipher.AddSHA256(h, signedTxn.txn.In[1])))
-}
-
-func makeLocalWallet(t *testing.T) core.Wallet {
-	_, kd, err := makeUxOutWithSecret(t)
-	require.NoError(t, err)
-	require.NoError(t, err)
-	wallets := makeLocalWalletsFromKeyData(t, []KeyData{*kd})
-	wallet := wallets[0]
-	seed, seckeys, err2 := cipher.GenerateDeterministicKeyPairsSeed([]byte(kd.Mnemonic), kd.AddressIndex+1)
-	require.NoError(t, err2)
-	require.Equal(t, kd.SecKey, seckeys[kd.AddressIndex])
-	_, _, err3 := cipher.GenerateDeterministicKeyPair(seed)
-	require.NoError(t, err3)
-	wallet.GenAddresses(core.AccountAddress, uint32(kd.AddressIndex), 2, nil)
-	return wallet
 }
 
 func makeSkycoinBlockchain() core.BlockchainTransactionAPI {
@@ -1586,4 +1414,423 @@ func TestSkycoinSignServiceSign(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, true, signed)
 
+}
+
+func TestWalletDirectoryGetStorage(t *testing.T) {
+	dir := "wallet-dir"
+	tests := []struct {
+		wlt  *WalletDirectory
+		want *SkycoinLocalWallet
+	}{
+		{wlt: &WalletDirectory{WalletDir: dir}, want: &SkycoinLocalWallet{walletDir: dir}},
+		{wlt: &WalletDirectory{wltService: new(SkycoinLocalWallet)}, want: new(SkycoinLocalWallet)},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("GetStorage_%d", i), func(t *testing.T) {
+			storage := tt.wlt.GetStorage()
+			require.Equal(t, tt.want, storage)
+		})
+	}
+}
+
+func TestSkycoinLocalWalletListWallets(t *testing.T) {
+	tests := []struct {
+		dir   string
+		valid bool
+		want  []string
+	}{
+		{
+			dir:   "testdata",
+			valid: true,
+			want:  []string{"testWallet", "encryptedWallet"},
+		},
+		{
+			dir:   "no-dir",
+			valid: false,
+			want:  make([]string, 0),
+		},
+		{
+			dir:   "testdata/invalid/wallets",
+			valid: false,
+			want:  make([]string, 0),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("ListWalletsOn -> %s", tt.dir), func(t *testing.T) {
+			slw := &SkycoinLocalWallet{walletDir: tt.dir}
+			it := slw.ListWallets()
+			labels := make([]string, 0)
+			if tt.valid {
+				require.NotNil(t, it)
+				for it.Next() {
+					wlt := it.Value()
+					labels = append(labels, wlt.GetLabel())
+				}
+			} else {
+				require.Nil(t, it)
+			}
+			sort.Strings(labels)
+			sort.Strings(tt.want)
+			require.Equal(t, tt.want, labels)
+		})
+	}
+}
+
+func TestSkycoinLocalIsEncrypted(t *testing.T) {
+	slw := &SkycoinLocalWallet{walletDir: "testdata"}
+	tests := []struct {
+		srv   *SkycoinLocalWallet
+		name  string
+		valid bool
+		want  bool
+	}{
+		{srv: slw, valid: true, want: false, name: "test.wlt"},
+		{srv: slw, valid: true, want: true, name: "encrypted.wlt"},
+		{srv: slw, valid: false, want: false, name: "unknown.wlt"},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("Wallet%d -> %s", i, tt.name), func(t *testing.T) {
+			encrypted, err := tt.srv.IsEncrypted(tt.name)
+			require.Equal(t, tt.want, encrypted)
+			if tt.valid {
+				require.Nil(t, err)
+			} else {
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestSkycoinLocalWalletEncrypt(t *testing.T) {
+	slw := &SkycoinLocalWallet{walletDir: "testdata"}
+	pwd := func(s string, store core.KeyValueStore) (string, error) {
+		return "test-password", nil
+	}
+	emptyPwd := func(s string, store core.KeyValueStore) (string, error) {
+		return "", nil
+	}
+	tests := []struct {
+		srv   *SkycoinLocalWallet
+		pwd   core.PasswordReader
+		name  string
+		valid bool
+	}{
+		{srv: slw, pwd: pwd, valid: true, name: "test.wlt"},
+		{srv: slw, pwd: pwd, valid: true, name: "encrypted.wlt"},
+		{srv: slw, pwd: pwd, valid: false, name: "unknown.wlt"},
+		{srv: slw, pwd: emptyPwd, valid: false, name: "test.wlt"},
+		{srv: slw, pwd: emptyPwd, valid: true, name: "encrypted.wlt"},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("Wallet%d -> %s", i, tt.name), func(t *testing.T) {
+			wlt, err := wallet.Load(filepath.Join(tt.srv.walletDir, tt.name))
+			clean := err == nil
+
+			tt.srv.Encrypt(tt.name, tt.pwd)
+			encrypted, err := tt.srv.IsEncrypted(tt.name)
+			if clean {
+				require.NoError(t, err)
+				err = wallet.Save(wlt, tt.srv.walletDir)
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+			}
+			require.Equal(t, tt.valid, encrypted)
+		})
+	}
+}
+
+func TestSkycoinLocalWalletDecrypt(t *testing.T) {
+	slw := &SkycoinLocalWallet{walletDir: "testdata"}
+	pwd := func(s string, store core.KeyValueStore) (string, error) {
+		return "test-password", nil
+	}
+	emptyPwd := func(s string, store core.KeyValueStore) (string, error) {
+		return "", nil
+	}
+	tests := []struct {
+		srv   *SkycoinLocalWallet
+		pwd   core.PasswordReader
+		name  string
+		valid bool
+	}{
+		{srv: slw, pwd: pwd, valid: false, name: "test.wlt"},
+		{srv: slw, pwd: pwd, valid: false, name: "encrypted.wlt"},
+		{srv: slw, pwd: pwd, valid: false, name: "unknown.wlt"},
+		{srv: slw, pwd: emptyPwd, valid: false, name: "test.wlt"},
+		{srv: slw, pwd: emptyPwd, valid: true, name: "encrypted.wlt"},
+	}
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("Wallet%d -> %s", i, tt.name), func(t *testing.T) {
+			wlt, err := wallet.Load(filepath.Join(tt.srv.walletDir, tt.name))
+			clean := err == nil
+
+			tt.srv.Decrypt(tt.name, tt.pwd)
+			encrypted, err := tt.srv.IsEncrypted(tt.name)
+			if clean {
+				require.NoError(t, err)
+				err = wallet.Save(wlt, tt.srv.walletDir)
+				require.NoError(t, err)
+			} else {
+				require.Error(t, err)
+			}
+			require.Equal(t, tt.valid, encrypted)
+		})
+	}
+}
+
+func TestLocalWalletSetLabel(t *testing.T) {
+	newLabel := "custom-label"
+	tests := []struct {
+		name  string
+		label string
+		valid bool
+	}{
+		{label: "testWallet", name: "test.wlt", valid: true},
+		{label: "encryptedWallet", name: "encrypted.wlt", valid: true},
+		{name: "unknown.wlt", valid: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("CangeLabelOf -> %s", tt.name), func(t *testing.T) {
+			lw := &LocalWallet{WalletDir: "testdata", Id: tt.name}
+			lw.SetLabel(newLabel)
+			if tt.valid {
+				label := lw.GetLabel()
+				lw.SetLabel(tt.label)
+				require.Equal(t, newLabel, label)
+			}
+		})
+	}
+}
+
+func TestWalletsReadyForTxn(t *testing.T) {
+	type WalleSigner struct {
+		mocks.Wallet
+		mocks.TxnSigner
+	}
+	emptyWlt := new(LocalWallet)
+	mockWlt := new(WalleSigner)
+	mockWlt.TxnSigner.On(
+		"ReadyForTxn",
+		mock.AnythingOfType("*skycoin.LocalWallet"),
+		mock.AnythingOfType("*mocks.Transaction"),
+	).Return(
+		func(w core.Wallet, txn core.Transaction) bool {
+			ok, err := checkTxnSupported(mockWlt, w, txn)
+			require.NoError(t, err)
+			return ok
+		},
+		nil,
+	)
+
+	tests := []struct {
+		signer core.TxnSigner
+		wlt2   core.Wallet
+		txn    core.Transaction
+		valid  bool
+		want   bool
+	}{
+		{
+			valid:  true,
+			want:   false,
+			signer: mockWlt,
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: new(LocalWallet),
+			wlt2:   mockWlt,
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: &LocalWallet{Type: "custom-type"},
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  false,
+			want:   false,
+			signer: new(LocalWallet),
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: emptyWlt,
+			wlt2:   emptyWlt,
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  false,
+			want:   false,
+			signer: &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			wlt2:   new(LocalWallet),
+			txn:    new(mocks.Transaction),
+		},
+		{
+			valid:  true,
+			want:   true,
+			signer: &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			wlt2:   &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			txn:    new(SkycoinTransaction),
+		},
+		{
+			valid:  true,
+			want:   false,
+			signer: &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			wlt2:   &LocalWallet{WalletDir: "testdata", Id: "test.wlt"},
+			txn:    new(mocks.Transaction),
+		},
+		//RemoteWallet
+		{
+			valid:  false,
+			want:   false,
+			signer: new(RemoteWallet),
+			wlt2:   new(RemoteWallet),
+			txn:    new(mocks.Transaction),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run("ReadyForTxn", func(t *testing.T) {
+			ready, err := tt.signer.ReadyForTxn(tt.wlt2, tt.txn)
+			if tt.valid {
+				require.Equal(t, tt.want, ready)
+			} else {
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestWalletFunctions(t *testing.T) {
+	id := "local-id"
+	wlt := &LocalWallet{Id: id}
+	signerUuid, err := wlt.GetSignerUID()
+	require.NoError(t, err)
+	require.Equal(t, core.UID(SignerIDLocalWallet), signerUuid)
+	signerDescription, err := wlt.GetSignerDescription()
+	require.NoError(t, err)
+	require.Equal(t, "Remote Skycoin wallet "+id, signerDescription)
+
+	rmt := &RemoteWallet{Id: id}
+	signerUuid, err = rmt.GetSignerUID()
+	require.NoError(t, err)
+	require.Equal(t, core.UID(SignerIDRemoteWallet), signerUuid)
+	signerDescription, err = rmt.GetSignerDescription()
+	require.NoError(t, err)
+	require.Equal(t, "Remote Skycoin wallet "+id, signerDescription)
+}
+
+func TestWalletNodeGetWalletSet(t *testing.T) {
+	sectionName := "custom-section"
+	tests := []struct {
+		wlt  *WalletNode
+		want core.WalletSet
+	}{
+		{wlt: new(WalletNode), want: new(SkycoinRemoteWallet)},
+		{wlt: &WalletNode{poolSection: sectionName}, want: &SkycoinRemoteWallet{poolSection: sectionName}},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("GetWalletSet%d", i), func(t *testing.T) {
+			require.Equal(t, tt.want, tt.wlt.GetWalletSet())
+		})
+	}
+}
+
+func TestWalletNodeGetStorage(t *testing.T) {
+	sectionName := "custom-section"
+	tests := []struct {
+		wlt  *WalletNode
+		want core.WalletSet
+	}{
+		{wlt: new(WalletNode), want: new(SkycoinRemoteWallet)},
+		{wlt: &WalletNode{poolSection: sectionName}, want: &SkycoinRemoteWallet{poolSection: sectionName}},
+	}
+
+	for i, tt := range tests {
+		t.Run(fmt.Sprintf("GetWalletSet%d", i), func(t *testing.T) {
+			require.Equal(t, tt.want, tt.wlt.GetStorage())
+		})
+	}
+}
+
+func TestSeedServiceGenerateMnemonic(t *testing.T) {
+	srv := new(SeedService)
+	tests := []struct {
+		name  string
+		bits  int
+		valid bool
+	}{
+		{name: "bad-entropyBits", bits: 15, valid: false},
+		{name: "128-bits", bits: 128, valid: true},
+		{name: "256-bits", bits: 256, valid: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := srv.GenerateMnemonic(tt.bits)
+			if tt.valid {
+				require.Nil(t, err)
+			} else {
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestSeedServiceVerifyMnemonic(t *testing.T) {
+	srv := new(SeedService)
+	mnc128, err := srv.GenerateMnemonic(128)
+	require.NoError(t, err)
+	mnc256, err := srv.GenerateMnemonic(256)
+	require.NoError(t, err)
+	tests := []struct {
+		name     string
+		mnemonic string
+		valid    bool
+	}{
+		{name: "bad-mnemonic", mnemonic: "invalid-mnemonic", valid: false},
+		{name: "128-bits", mnemonic: mnc128, valid: true},
+		{name: "256-bits", mnemonic: mnc256, valid: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			valid, err := srv.VerifyMnemonic(tt.mnemonic)
+			if tt.valid {
+				require.True(t, valid)
+				require.Nil(t, err)
+			} else {
+				require.False(t, valid)
+				require.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestErrorTickerInvalidError(t *testing.T) {
+	format := " is an invalid ticker. Use " + Sky + " or " + CoinHour
+	tickers := []string{"a", "b", "c"}
+	for _, ticker := range tickers {
+		err := errorTickerInvalid{ticker}
+		require.Equal(t, ticker+format, err.Error())
+	}
+}
+
+func TestNewWalletNode(t *testing.T) {
+	addr := "addr"
+	for i := 1; i < 4; i++ {
+		wn := NewWalletNode(addr)
+		require.Equal(t, fmt.Sprintf("skycoin-%d", i), wn.poolSection)
+		require.Equal(t, addr, wn.NodeAddress)
+	}
 }

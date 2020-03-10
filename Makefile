@@ -23,8 +23,10 @@ DEFAULT_ARCH ?= linux
 ## In future use as a parameter tu make command.
 COIN ?= skycoin
 COVERAGEPATH = src/coin/$(COIN)
-COVERAGEFILE = $(COVERAGEPATH)/coverage.out
-COVERAGEHTML = $(COVERAGEPATH)/coverage.html
+COVERAGEPREFIX = $(COVERAGEPATH)/coverage
+COVERAGEFILE = $(COVERAGEPREFIX).out
+COVERAGETEMP = $(COVERAGEPREFIX).tmp.out
+COVERAGEHTML = $(COVERAGEPREFIX).html
 
 # Icons
 APP_ICON_PATH	:= resources/images/icons/appIcon
@@ -33,6 +35,9 @@ ICONSET			:= resources/images/icons/appIcon/appIcon.iconset
 CONVERT			:= convert
 SIPS			:= sips
 ICONUTIL		:= iconutil
+UNAME_S         = $(shell uname -s)
+DEFAULT_TARGET  ?= desktop
+DEFAULT_ARCH    ?= linux
 
 # Platform-specific switches
 ifeq ($(OS),Windows_NT)
@@ -81,8 +86,8 @@ QTFILES       := $(shell echo "$(QRCFILES) $(TSFILES) $(PLISTFILES) $(QTCONFFILE
 RESOURCEFILES := $(shell echo "$(SVGFILES) $(PNGFILES) $(OTFFILES) $(ICNSFILES) $(ICOFILES) $(RCFILES)")
 SRCFILES      := $(shell echo "$(QTFILES) $(RESOURCEFILES) $(GOFILES)")
 
-BINPATH_Linux      := deploy/linux/FiberCryptoWallet
-BINPATH_Windows_NT := deploy/windows/FiberCryptoWallet.exe
+BINPATH_Linux      := deploy/linux/fibercryptowallet
+BINPATH_Windows_NT := deploy/windows/fibercryptowallet.exe
 BINPATH_Darwin     := deploy/darwin/fibercryptowallet.app/Contents/MacOS/fibercryptowallet
 BINPATH            := $(BINPATH_$(UNAME_S))
 
@@ -96,7 +101,7 @@ DOCKER_QT_TEST  ?= simelotech/qt-test
 
 deps: ## Add dependencies
 	dep ensure
-	rm -rf rm -rf vendor/github.com/therecipe
+	rm -rf vendor/github.com/therecipe
 
 # Targets
 run: $(BINPATH) ## Run FiberCrypto Wallet.
@@ -221,10 +226,12 @@ prepare-release: ## Change the resources in the app and prepare to release the a
 
 clean-test: ## Remove temporary test files
 	rm -f $(COVERAGEFILE)
+	rm -f $(COVERAGETEMP)
 	rm -f $(COVERAGEHTML)
 
 clean-build: ## Remove temporary files
 	@echo "Cleaning project $(APP_NAME)..."
+	rm -rf vendor/github.com/therecipe
 	rm -rf deploy/
 	rm -rf linux/
 	rm -rf windows/
@@ -238,43 +245,68 @@ clean-build: ## Remove temporary files
 	rm -rf "$(ICONS_BUILDPATH)"
 	rm -rf "$(RC_OBJ)"
 	rm -rf "$(ICONSET)"
-
 	@echo "Done."
 
 clean: clean-test clean-build ## Remove temporary files
 
-gen-mocks: ## Generate mocks for interface types
+gen-mocks-vendor-hw:  ## Generate mocks for hardware wallet deps interface types
+	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/hardware-wallet/skywallet/mocks -case underscore
+	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/hardware-wallet/skywallet/mocks -case underscore
+
+gen-mocks-hw: gen-mocks-vendor-hw ## Generate mocks for hardware wallet interface types
+	mockery -all -output src/coin/mocks -outpkg mocks -dir src/contrib/hardware-wallet
+
+gen-mocks-core: ## Generate mocks for core interface types
 	mockery -all -output src/coin/mocks -outpkg mocks -dir src/core
 
+gen-mocks-sky: ## Generate mocks for sky-wallet interface types
+	mockery -name Devicer -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
+	mockery -name DeviceDriver -dir ./vendor/github.com/fibercrypto/skywallet-go/src/skywallet -output ./src/contrib/skywallet/mocks -case underscore
+
+gen-mocks: gen-mocks-core gen-mocks-sky gen-mocks-hw ## Generate mocks for interface types
+
+$(COVERAGEFILE):
+	echo 'mode: set' > $(COVERAGEFILE)
+
+test-skyhw: ## Run Hardware wallet tests
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
+
 test-sky: ## Run Skycoin plugin test suite
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
-	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
+	go test -coverprofile=$(COVERAGETEMP) -timeout 60s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
 test-core: ## Run tests for API core and helpers
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
-test-sky-launch-html-cover:
-	go test -cover -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
-	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
-	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEHTML)
+test-data: ## Run tests for data package
+	go test -coverprofile=$(COVERAGETEMP) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/data
+	cat $(COVERAGETEMP) | grep -v '^mode: set$$' >> $(COVERAGEFILE)
 
-test-cover-travis:
+test-html-cover:
+	go tool cover -html=$(COVERAGEFILE) -o $(COVERAGEPREFIX).html
+
+test-cover-travis: clean-test
 	go test -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/util
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin/models
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/coin/skycoin
 	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
+	go test -cover -covermode=count -coverprofile=$(COVERAGEFILE) -timeout 30s github.com/fibercrypto/fibercryptowallet/src/contrib/hardware-wallet/skywallet
+	$(GOPATH)/bin/goveralls -coverprofile=$(COVERAGEFILE) -service=travis-ci -repotoken 1zkcSxi8TkcxpL2zTQOK9G5FFoVgWjceP
 
+test-cover: test test-html-cover ## Show more details of test coverage
 
-test-cover: clean-test test-sky-launch-html-cover ## Show more details of test coverage
-
-test: clean-test test-core test-sky ## Run project test suite
+test: clean-test $(COVERAGEFILE) test-core test-sky test-data ## Run project test suite
 
 run-docker: DOCKER_GOPATH=$(shell docker inspect $(DOCKER_QT):$(DEFAULT_ARCH) | grep '"GOPATH=' | head -n1 | cut -d = -f2 | cut -d '"' -f1)
 run-docker: install-docker-deps ## Run CMD inside Docker container
 	@echo "Docker container GOPATH found at $(DOCKER_GOPATH)"
-	docker run --rm -v $(PWD):$(DOCKER_GOPATH)/$(GOPATH_SRC) $(DOCKER_QT_TEST):$(DEFAULT_ARCH) bash -c 'cd $(DOCKER_GOPATH)/$(GOPATH_SRC) ; $(CMD)'
+	docker run --network="host" --rm -v $(PWD):$(DOCKER_GOPATH)/$(GOPATH_SRC) $(DOCKER_QT_TEST):$(DEFAULT_ARCH) bash -c 'cd $(DOCKER_GOPATH)/$(GOPATH_SRC) ; $(CMD)'
 
 install-linters: ## Install linters
 	go get -u github.com/FiloSottile/vendorcheck

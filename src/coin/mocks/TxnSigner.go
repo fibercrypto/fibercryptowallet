@@ -11,7 +11,7 @@ type TxnSigner struct {
 }
 
 // GetSignerDescription provides a mock function with given fields:
-func (_m *TxnSigner) GetSignerDescription() string {
+func (_m *TxnSigner) GetSignerDescription() (string, error) {
 	ret := _m.Called()
 
 	var r0 string
@@ -21,11 +21,18 @@ func (_m *TxnSigner) GetSignerDescription() string {
 		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // GetSignerUID provides a mock function with given fields:
-func (_m *TxnSigner) GetSignerUID() core.UID {
+func (_m *TxnSigner) GetSignerUID() (core.UID, error) {
 	ret := _m.Called()
 
 	var r0 core.UID
@@ -35,7 +42,14 @@ func (_m *TxnSigner) GetSignerUID() core.UID {
 		r0 = ret.Get(0).(core.UID)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // ReadyForTxn provides a mock function with given fields: _a0, _a1
