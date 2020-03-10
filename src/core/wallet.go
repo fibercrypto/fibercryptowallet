@@ -24,11 +24,6 @@ type WalletSet interface {
 	SupportedWalletTypes() []string
 }
 
-type PersistibleSet interface {
-	WalletSet
-	WalletStorage
-}
-
 // WalletStorage provides access to the underlying wallets data store
 type WalletStorage interface {
 	// Encrypt protects wallet data using cryptography

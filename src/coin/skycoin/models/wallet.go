@@ -825,11 +825,7 @@ func NewWalletDirectory(dirPath string) *WalletDirectory {
 type WalletDirectory struct {
 	// Implements WallentEnv interface
 	WalletDir  string
-	wltService core.PersistibleSet
-}
-
-func (wd *WalletDirectory) SetWltService(wltSrv core.PersistibleSet) {
-	wd.wltService = wltSrv
+	wltService *SkycoinLocalWallet
 }
 
 func lookupWallet(env core.WalletEnv, firstAddr string) (core.Wallet, error) {
