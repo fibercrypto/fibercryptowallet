@@ -799,7 +799,6 @@ func (walletM *WalletManager) sendTo(wltId, destinationAddress, amount string) *
 	}
 	logWalletManager.Info("Transaction created")
 	return qTxn
-
 }
 
 func (walletM *WalletManager) signTxn(wltIds, address []string, source string, tmpPwd interface{}, index []int, qTxn *QTransaction) *QTransaction {
@@ -862,7 +861,12 @@ func (walletM *WalletManager) signTxn(wltIds, address []string, source string, t
 			logWalletManager.WithError(err).Warnf("No signer %s for wallet %v", source, wlts[0])
 			return nil
 		}
-		if suid, err := signer.GetSignerUID(); err != nil && wlts[0].GetId() == string(suid) {
+		signerUid, err := signer.GetSignerUID()
+		if err != nil {
+			logWalletManager.WithError(err).Errorln("unable to ger signer uuid")
+			return nil
+		}
+		if wlts[0].GetId() == string(signerUid) {
 			// NOTE the signer is the wallet it self
 			signer = nil
 		}
