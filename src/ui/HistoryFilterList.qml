@@ -7,9 +7,6 @@ import WalletsManager 1.0
 // import "qrc:/ui/src/ui/Delegates"
 import "Delegates/" // For quick UI development, switch back to resources when making a release
 
-
-
-
 ScrollView {
     id: historyFilterDelegate
     signal loadWallets()

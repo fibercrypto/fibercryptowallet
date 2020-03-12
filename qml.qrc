@@ -29,9 +29,12 @@
         <file>src/ui/WalletSettings.qml</file>
         <file>src/ui/Settings.qml</file>
         <file>src/ui/SettingsAddressBook.qml</file>
+        <file>src/ui/AddressBook.qml</file>
         <file>src/ui/MenuThemeAccent.qml</file>
         <file>src/ui/ToolButtonQR.qml</file>
         <file>src/ui/Delegates/WalletListDelegate.qml</file>
+        <file>src/ui/Delegates/AddressListDelegate.qml</file>
+        <file>src/ui/Delegates/ContactDelegate.qml</file>
         <file>src/ui/Delegates/WalletListAddressDelegate.qml</file>
         <file>src/ui/Delegates/NetworkingListDelegate.qml</file>
         <file>src/ui/Delegates/OutputsListDelegate.qml</file>
@@ -44,6 +47,11 @@
         <file>src/ui/Delegates/HistoryFilterListAddressDelegate.qml</file>
         <file>src/ui/Delegates/PendingTransactionsDelegate.qml</file>
         <file>src/ui/Delegates/TransactionAddressDelegate.qml</file>
+        <file>src/ui/Delegates/SectionDelegate.qml</file>
+        <file>src/ui/Dialogs/DialogSelectAddressByAddressBook.qml</file>
+        <file>src/ui/Dialogs/DialogShowContact.qml</file>
+        <file>src/ui/Dialogs/DialogSelectSecType.qml</file>
+        <file>src/ui/Dialogs/DialogAddContact.qml</file>
         <file>src/ui/Dialogs/MsgDialog.qml</file>
         <file>src/ui/Dialogs/DialogTransactionDetails.qml</file>
         <file>src/ui/Dialogs/RestoreBackupWordsDialog.qml</file>
