@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.1.0rc2] - 2020-03-27
 
 ### Added
 
@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Spend in single transaction coins owned by multiple wallets (same altcoin plugin)
 - Added logger for the app and proper error handling
 - Built-in support for SkyWallet hardware wallet as signer for Skycoin transactions
-- Built-in support iand GUI for applying operations upon SkyWallet hardware devices
+- Built-in support and GUI for applying operations upon SkyWallet hardware devices
 - A UI to show blockchains
 - GUI for status of peer-to-peer exchange network of cryptocurrencies
 - GUI to render unspent outputs
