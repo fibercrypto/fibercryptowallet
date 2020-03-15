@@ -4,7 +4,11 @@ import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
 
 // Resource imports
-import "qrc:/ui/src/ui/"
+// import "qrc:/ui/src/ui/"
+import "../" // For quick UI development, switch back to resources when making a release
+
+// Backend imports
+import HistoryModels 1.0
 
 ItemDelegate {
     id: root
@@ -13,16 +17,27 @@ ItemDelegate {
     property int modelType: type
     property int modelStatus: status
     property var modelStatusString: [ qsTr("Confirmed"), qsTr("Pending"), qsTr("Preview") ]
-    property real modelAmount: amount
-    property int modelHoursReceived: hoursReceived
-    property int modelHoursBurned: hoursBurned
-    property string modelTransactionID
+    property string modelAmount: amount
+    property string modelHoursReceived: hoursTraspassed
+    property string modelHoursBurned: hoursBurned
+    property string modelTransactionID: transactionID
+    property QAddressList modelAddresses: addresses
+    property QAddressList modelInputs: inputs
+    property QAddressList modelOutputs: outputs
+    
+    signal qrCodeRequested(var data)
+    
+    onQrCodeRequested: {
+        dialogQR.setVars(data)
+        dialogQR.open()
+    }
 
     implicitWidth: parent.width
     implicitHeight: (columnLayoutMainContent.height < 78 ? 78 : columnLayoutMainContent.height) + rowLayoutRoot.anchors.topMargin + rowLayoutRoot.anchors.bottomMargin
 
     RowLayout {
         id: rowLayoutRoot
+
         anchors.fill: parent
         anchors.leftMargin: 20
         anchors.rightMargin: 20
@@ -42,51 +57,36 @@ ItemDelegate {
         ColumnLayout {
             id: columnLayoutMainContent
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignTop
+            Layout.alignment: Qt.AlignTop | Qt.AlignLeft
 
             RowLayout {
+                Layout.alignment: Qt.AlignLeft
                 spacing: 20
-                Layout.fillWidth: true
+                
+                RowLayout {
+                    Layout.fillWidth:true
+                    spacing: 20
 
-                Label {
-                    font.bold: true
-                    text: (modelType === TransactionDetails.Type.Receive ? qsTr("Received") : qsTr("Sent")) + " SKY"
-                }
+                    Label {
+                        font.bold: true
+                        text: (modelType == TransactionDetails.Type.Receive ? qsTr("Received") : (modelType == TransactionDetails.Type.Send ? qsTr("Sent") : qsTr("Internal"))) + " SKY"
+                    }
 
-                Label {
-                    Material.foreground: Material.Grey
-                    text: modelDate // model's role
-                    font.pointSize: Qt.application.font.pointSize * 0.9
-                }
+                    Label {
+                        Material.foreground: Material.Grey
+                        text: modelDate.toLocaleString("2000-01-01 00:00") // model's role
+                        font.pointSize: Qt.application.font.pointSize * 0.9
+                    }
+                } // RowLayout
+            } // RowLayout
+
+            ListView {
+                Layout.alignment: Qt.AlignLeft
+                height: contentHeight
+                id: listViewAddresses
+                model: modelAddresses
+                delegate: TransactionAddressDelegate {}
             }
-
-            ColumnLayout {
-                RowLayout {
-                    id: rowLayoutSent
-                    visible: modelType === TransactionDetails.Type.Send
-                    Image {
-                        source: "qrc:/images/resources/images/icons/qr.svg"
-                        sourceSize: "24x24"
-                    }
-                    Label {
-                        text: sentAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
-                }
-                RowLayout {
-                    id: rowLayoutReceive
-                    Image {
-                        source: "qrc:/images/resources/images/icons/qr.svg"
-                        sourceSize: "24x24"
-                    }
-                    Label {
-                        text: receivedAddress // model's role
-                        font.family: "Code New Roman"
-                        Layout.fillWidth: true
-                    }
-                }
-            } // ColumnLayout (addresses)
         } // ColumnLayout (main content)
 
         Label {

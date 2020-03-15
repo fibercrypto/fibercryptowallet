@@ -1,12 +1,72 @@
-# Wallet GUI client
+# FiberCrypto wallet
 
-## Build System
+[![Build Status](https://travis-ci.org/fibercrypto/fibercryptowallet.svg?branch=develop)](https://travis-ci.org/fibercrypto/fibercryptowallet)
+[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.GPLv3)
+[![Coverage Status](https://coveralls.io/repos/github/fibercrypto/FiberCryptoWallet/badge.svg?branch=develop)](https://coveralls.io/github/fibercrypto/FiberCryptoWallet?branch=develop)
+
+FiberCrypto wallet is a cryptocurrency software wallet aimed at:
+
+- Provide easy-to-use interactions to users
+- State
+- Out-of-the-box support for every SkyFiber token in a single place
+- Support other altcoins
+- Facilitate exchange of crypto assets
+- Buy and sell supported crypto assets using fiat (e.g. USD, GBP, EUR, ...)
+- Integrations with trading tools
+- Offer basic blockchain-specific tools
+
+## Development
+
+### Project folder structure
+
+Project files are organized as follows:
+
+- `main.go` : Application entry point
+- `CHANGELOG.md` : Project changelog
+- `Makefile` : Project build rules
+- `README.md` : This file.
+- `*.qrc` : QML resource index files.
+- `qtquickcontrols2.conf` : QT Quick controls configuration file.
+- `./resources` : Static resources.
+- `./resources/images` : Graphics resources needed by the application.
+- `./resources/images/icons` : Project and third-party icons
+- `./resources/fonts` : Font files needed to compile the application.
+- `./src` : Application source code.
+- `./src/ui` : QML definitions for application GUI components.
+- `./src/ui/Dialogs` : QML definitions for reusable dialogs.
+- `./src/ui/Delegates` : QML specs for partial views.
+- `./src/core` : Core go-lang interfaces.
+- `./src/main` : Project specific source code.
+- `./src/util` : Reusable code.
+- `./src/util/logging` : Event logging infrastructure.
+- `./src/models` : QT models linking coin-specific models to application GUI.
+- `./src/coin` : Source code for altcoin integrations.
+- `./src/coin/mocks` : Types implementing `core` interfaces for generic testing scenarios
+- `./src/coin/skycoin` : Skycoin wallet integration
+- `./src/coin/skycoin/models` : Skycoin implementation of golang core interfaces.
+- `./src/coin/skycoin/blockchain` : Skycoin blockchain API.
+- `./src/coin/skycoin/sign` : Skycoin sign API.
+- `./vendor` : Project dependencies managed by `dep`.
+
+### Architecture
+
+FiberCrypto wallet supports multiple altcoins. In order to cope with this complexity GUI code and QT models rely on strict interfaces which shall be implemented to add support for a given coin. Each such integration must have two main components:
+
+- `Models API`: Implements application core interfaces.
+- `Sign API` : Implements altcoin transaction and message signing primitives required by application code.
+- `Blockchain API` : Provides communication between application and altcoin service nodes to query for data via REST, JSON-RPC and other similar low-level client-server API.
+- `Peer-exchange API` (optional): Implements peer-to-peer interactions with altcoin blockchain nodes.
+
+### Build System
 
 The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The front-end is programmed in [QML](http://doc.qt.io/qt-5/qmlapplications.html "QML Applications"), and the back-end in [Go](https://golang.org/ "The Go Programming Language"), using [therecipe/qt](https://github.com/therecipe/qt/ "therecipe/qt").
 
-### Requirements
+#### Requirements
 
-#### Qt version
+Windows requires the command line tool `magick convert`, that comes with the open-source [ImageMagick](https://imagemagick.org) project in order to build the icons (not necessary as default icons are always provided)
+
+##### Qt version
 
 [Linux/X11 requirements](http://doc.qt.io/qt-5/linux.html)  
 [MacOS requirements](http://doc.qt.io/qt-5/macos.html)  
@@ -17,6 +77,87 @@ The minimum Qt version required is [Qt 5.12.0 LTS](https://download.qt.io/archiv
 - [QTBUG-72811](https://bugreports.qt.io/browse/QTBUG-72811 "[Reg 5.11 -> 5.12] QQC2 buttons not react to click when holding for about a second")
 
 We always recommend using the latest Qt version. See [Qt Archive](https://download.qt.io/archive/qt/ "Qt Archive").
+
+#### Make targets
+
+Common actions are automated with the help of `make`. The following targets have been implemnented:
+
+```
+deps                           Add dependencies
+run                            Run FiberCrypto Wallet.
+install-deps-no-envs           Install therecipe/qt with -tags=no_env set
+install-docker-deps            Install docker images for project compilation using docker
+install-deps-Linux             Install Linux dependencies
+install-deps-Darwin            Install osx dependencies
+install-deps-Windows           Install Windowns dependencies
+install-deps                   Install dependencies
+build-docker                   Build project using docker
+build-icon-Windows_NT          Build the application icon in Windows
+build-icon-Darwin              Build the application icon in Darwin
+build-icon-Linux               Build the application icon in Linux
+build-icon                     Build the application icon (Windows_NT and Darwin systems)
+build                          Build FiberCrypto Wallet
+prepare-release                Change the resources in the app and prepare to release the app
+clean-test                     Remove temporary test files
+clean-build                    Remove temporary files
+clean                          Remove temporary files
+gen-mocks-core                 Generate mocks for core interface types
+gen-mocks-sky                  Generate mocks for internal Skycoin types
+gen-mocks                      Generate mocks for interface types
+test-sky                       Run Skycoin plugin test suite
+test-core                      Run tests for API core and helpers
+test-data                      Run tests for data package
+test-cover                     Show more details of test coverage
+test                           Run project test suite
+run-docker                     Run CMD inside Docker container
+install-linters                Install linters
+install-coveralls              Install coveralls
+lint                           Run linters. Use make install-linters first.
+```
+
+Type `make help` in your console for details.
+
+## Releases
+
+### Update the version
+
+0. If the `master` branch has commits that are not in `develop` (e.g. due to a hotfix applied to `master`), merge `master` into `develop`
+0. Update `CHANGELOG.md`: move the "unreleased" changes to the version and add the date
+0. Update the files in https://github.com/skycoin/repo-info by following the [metadata update procedure](https://github.com/skycoin/repo-info/#updating-skycoin-repository-metadate),
+0. Merge these changes to `develop`
+0. Follow the steps in [pre-release testing](#pre-release-testing)
+0. Make a PR merging `develop` into `master`
+0. Review the PR and merge it
+0. Tag the `master` branch with the version number. Version tags start with `v`, e.g. `v0.1.0`.
+    Sign the tag. If you have your GPG key in github, creating a release on the Github website will automatically tag the release.
+    It can be tagged from the command line with `git tag -as v0.20.0 $COMMIT_ID`, but Github will not recognize it as a "release".
+0. Make sure that the app runs properly from the `master` branch
+0. Release builds are created and uploaded by travis. To do it manually, checkout the `master` branch and follow the [create release builds](#creating-release-builds) instructions.
+
+If there are problems discovered after merging to `master`, start over, and increment the 3rd version number.
+For example, `v0.1.0` becomes `v0.1.1`, for minor fixes.
+
+### Pre-release testing
+
+Performs these actions before releasing:
+
+* `make test-sky` Run Skycoin plugin test suite
+* `make test-core` Run tests for API core and helpers
+* `make test-data` Run tests for data package
+* `make test-cover` Show more details of test coverage
+* `make test` Run project test suite
+
+### Creating release builds
+
+Travis should build Linux and MacOS builds and upload to github releases
+
+If you do it manually, you must follow the next steps:
+
+* `make prepare-release` Change the resources in the app and prepare to release the app
+* `make clean` Remove temporary files
+* `make build` Build FiberCrypto Wallet
+* Compress the content in `deploy` folder and inside that folder 
+
 
 ## WIP
 This is a Work-In-Progress.

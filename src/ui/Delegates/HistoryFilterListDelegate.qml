@@ -2,17 +2,27 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
+
+// Resource imports
+// import "qrc:/ui/src/ui/"
+import "../" // For quick UI development, switch back to resources when making a release
 
 Item {
     id: root
 
-    readonly property real addressListHeight: listViewFilterAddress.height
-    readonly property real delegateHeight: 42
     property alias tristate: checkDelegate.tristate
     property alias walletText: checkDelegate.text
-
+    
+    clip: true
+    implicitWidth: width
+    implicitHeight: height
+    width: 300
+    height: checkDelegate.height +  columnLayout.spacing + listViewFilterAddress.height
+    
     ColumnLayout {
-        width: root.width
+        id: columnLayout
+        anchors.fill: parent
 
         CheckDelegate {
             id: checkDelegate
@@ -40,17 +50,25 @@ Item {
 
             contentItem: Label {
                 leftPadding: checkDelegate.indicator.width + checkDelegate.spacing
-                text: checkDelegate.text
                 verticalAlignment: Qt.AlignVCenter
+                text: checkDelegate.text
                 color: checkDelegate.enabled ? checkDelegate.Material.foreground : checkDelegate.Material.hintTextColor
             }
-        }
+        } // CheckDelegate
 
         ListView {
             id: listViewFilterAddress
 
+            property AddressModel listAddresses
             property int checkedDelegates: 0
             property bool allChecked: false
+
+            model: listAddresses
+            
+            Layout.fillWidth: true
+            implicitHeight: contentHeight
+            interactive: false
+
 
             onCheckedDelegatesChanged: {
                 if (checkedDelegates === 0) {
@@ -59,35 +77,50 @@ Item {
                     checkDelegate.checkState = Qt.Checked
                 } else {
                     checkDelegate.checkState = Qt.PartiallyChecked
+
                 }
             }
 
-            Layout.fillWidth: true
-            height: count * delegateHeight
+            
 
-            model: listAddresses
+            Component.onCompleted: {
+                modelManager.setWalletManager(walletManager)
+                listAddresses = modelManager.getAddressModel(fileName)
+            }
+
+            
+
             delegate: HistoryFilterListAddressDelegate {
-                width: ListView.view.width
-                height: delegateHeight
-                leftPadding: 30
-                scale: 0.875
-                checked: ListView.view.allChecked
-
-                onCheckedChanged: {
-                    ListView.view.checkedDelegates += checked ? 1 : -1
+                // BUG: Checking the wallet does not change the check state of addresses
+                // Is `checked: marked` ok? Or it should be the opposite?
+                checked: marked
+                width: parent.width
+                text: address 
+                Connections{
+                    target: listViewFilterAddress
+                    onAllCheckedChanged: {
+                        if (listViewFilterAddress.allChecked) {
+                            historyManager.addFilter(address)
+                        } else {
+                            historyManager.removeFilter(address)
+                        }
+                        walletManager.editMarkAddress(address, listViewFilterAddress.allChecked)
+                        listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, listViewFilterAddress.allChecked)
+                    }
                 }
-            }
+                onCheckedChanged: {
+                    ListView.view.checkedDelegates += checked ? 1: -1
+                    
+                    if (checked == true) {
+                        historyManager.addFilter(address)
+                    } else {
+                        historyManager.removeFilter(address)  
+                    }
+                    walletManager.editMarkAddress(address, checked)
+                    listViewFilterAddress.listAddresses.editAddress(index, address, sky, coinHours, checked)
+
+                }
+            } // HistoryFilterListAddressDelegate (delegate)
         } // ListView
     } // ColumnLayout
-
-    // This model can be the same as the wallet address list,
-    // as this model need to expose all addresses for each wallet.
-    // For that, it should be implemented in the backend, instead of here.
-    ListModel { // EXAMPLE
-        id: listAddresses
-
-        ListElement { address: "qrxw7364w8xerusftaxkw87ues" }
-        ListElement { address: "8745yuetsrk8tcsku4ryj48ije" }
-        ListElement { address: "gfdhgs343kweru38200384uwqd" }
-    }
 }

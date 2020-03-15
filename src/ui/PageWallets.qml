@@ -2,9 +2,13 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import WalletsManager 1.0
 
 // Resource imports
-import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Dialogs"
+import "Delegates/" // For quick UI development, switch back to resources when making a release
+import "Dialogs/" // For quick UI development, switch back to resources when making a release
 
 Page {
     id: root
@@ -28,7 +32,7 @@ Page {
                 Layout.fillWidth: true
             }
             Label {
-                text: qsTr("Sky")
+                text: qsTr("SKY")
                 font.pointSize: 9
                 horizontalAlignment: Text.AlignRight
                 Layout.preferredWidth: internalLabelsWidth
@@ -40,19 +44,22 @@ Page {
                 Layout.rightMargin: listWalletRightMargin
                 Layout.preferredWidth: internalLabelsWidth
             }
-        }
+        } // RowLayout
 
         Rectangle {
+            id: rect
             Layout.fillWidth: true
             height: 1
             color: "#DDDDDD"
         }
-    }
+    } // ColumnLayout (header)
 
     footer: ToolBar {
         id: tabBarCreateUpload
-        Material.primary: Material.Blue
-        Material.accent: Material.Yellow
+        Material.theme: applicationWindow.Material.theme
+        Material.primary: applicationWindow.accentColor
+        Material.foreground: applicationWindow.Material.background
+        Material.elevation: 0
 
         RowLayout {
             anchors.fill: parent
@@ -61,28 +68,94 @@ Page {
                 text: qsTr("Add wallet")
                 icon.source: "qrc:/images/resources/images/icons/add.svg"
                 Layout.fillWidth: true
+
+                onClicked: {
+                    dialogAddLoadWallet.mode = CreateLoadWallet.Create
+                    dialogAddLoadWallet.open()
+                }
+
             }
             ToolButton {
                 id: buttonLoadWallet
                 text: qsTr("Load wallet")
                 icon.source: "qrc:/images/resources/images/icons/upload.svg"
                 Layout.fillWidth: true
+
+                onClicked: {
+                    dialogAddLoadWallet.mode = CreateLoadWallet.Load
+                    dialogAddLoadWallet.open()
+                }
+            }
+        } // RowLayout
+    } // ToolBar (footer)
+
+    ScrollView {
+        id: scrollItem
+
+        anchors.fill: parent
+        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
+
+        ListView {
+            Timer {
+                interval: 4000
+                repeat: false
+                running: true
+                onTriggered: {
+                    walletModel.sniffHw()
+                }
+            }
+
+            id: walletList
+            anchors.fill: parent
+            clip: true // limit the painting to it's bounding rectangle
+            model: walletModel
+            delegate: WalletListDelegate {}
+
+            populate: Transition {
+                id: transitionPopulate
+
+                SequentialAnimation {
+                    PropertyAction { property: "opacity"; value: 0.0 }
+                    PauseAnimation {
+                        duration: transitionPopulate.ViewTransition.index === 0 ? 150 : 150 + (transitionPopulate.ViewTransition.index -  transitionPopulate.ViewTransition.targetIndexes[0]) * 50
+                    }
+                    ParallelAnimation {
+                        NumberAnimation { property: "opacity"; from: 0.0; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+                        NumberAnimation { property: "scale"; from: 0.8; to: 1.0; duration: 250; easing.type: Easing.OutCubic }
+                    }
+                }
             }
         }
     }
 
-    ScrollView {
-        id: scrollItem
-        anchors.fill: parent
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ListView {
-            id: walletList
-            anchors.fill: parent
-            clip: true // limit the painting to it's bounding rectangle
-            model: listWallets
-            delegate: WalletListDelegate {}
+    WalletModel {
+        id: walletModel
+
+        Component.onCompleted: {
+            walletModel.loadModel(walletManager.getWallets())
         }
+        //property Timer timer: Timer {
+        //    id: walletListTimer
+        //    interval: 5000
+        //    repeat: true
+        //    running: true
+        //    onTriggered: {
+        //        walletModel.updateModel(walletManager.getWallets())
+        //    }
+        //}
     }
+
+    DialogAddLoadWallet {
+        id: dialogAddLoadWallet
+        anchors.centerIn: Overlay.overlay
+
+        modal: true
+        focus: true
+
+        width: applicationWindow.width > 540 ? 540 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > 640 ? 640 - 40 : applicationWindow.height - 40
+    }
+
 
     // Roles: name, encryptionEnabled, sky, coinHours
     // Use listModel.append( { "name": value, "encryptionEnabled": value, "sky": value, "coinHours": value } )

@@ -1,43 +1,50 @@
 package main
 
 import (
+	"github.com/fibercrypto/fibercryptowallet/src/params"
+	"os"
+
+	_ "github.com/fibercrypto/fibercryptowallet/src/coin/skycoin"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models/addressBook"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models/history"
+	_ "github.com/fibercrypto/fibercryptowallet/src/models/pending"
 	"github.com/therecipe/qt/core"
 	"github.com/therecipe/qt/gui"
 	"github.com/therecipe/qt/qml"
-	//"github.com/therecipe/qt/quick"
-	//"github.com/therecipe/qt/widgets"
-	"os"
 )
 
 func main() {
+
+	// Enable High DPI scaling
 	core.QCoreApplication_SetAttribute(core.Qt__AA_EnableHighDpiScaling, true)
 
+	// Create a Qt Application
+	// Avoid using a `QApplication` as it requires `widgets` module
 	app := gui.NewQGuiApplication(len(os.Args), os.Args)
-	app.SetOrganizationName("Simelo")
-	app.SetApplicationName("FiberCrypto Wallet")
-	app.SetApplicationVersion("0.1")
-	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon.png"))
+
+	// Set the application information
+	app.SetOrganizationName(params.OrganizationName)
+	app.SetOrganizationDomain(params.OrganizationDomain)
+	app.SetApplicationName(params.ApplicationName)
+	app.SetApplicationVersion(params.ApplicationVersion)
+	app.SetWindowIcon(gui.NewQIcon5(":/images/resources/images/icons/appIcon/appIcon.png"))
 
 	// Add this monospaced font
 	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/code-new-roman/code-new-roman.otf")
+	gui.QFontDatabase_AddApplicationFont(":/fonts/resources/fonts/hemi-head/hemi-head.ttf")
 
 	engine := qml.NewQQmlApplicationEngine(nil)
-	url := core.NewQUrl3("qrc:/ui/src/ui/main.qml", 0)
+	// To speed up UI development, loading QML files from resources is disabled, but it must be re-enabled in order to make a release
+	// url := core.NewQUrl3("qrc:/ui/src/ui/splash.qml", 0)
+	url := core.NewQUrl3("src/ui/splash.qml", 0) // disable this to make a release
 
-	// TODO: Find a way to use a `core.Qt__QueuedConnection`, so we can remove the flag `allOk`
-	allOk := true
-	engine.ConnectObjectCreated(func (object *core.QObject, objUrl *core.QUrl) {
-		if object.Pointer() == nil && url.ToString(0) == objUrl.ToString(0) {
-			allOk = false
-			app.Exit(-1) // Ignored because we need a `core.Qt__QueuedConnection`
+	engine.ConnectSignal(engine.ConnectObjectCreated, func(object *core.QObject, objUrl *core.QUrl) {
+		if object.Pointer() == nil && url.ToString(0) == objUrl.ToString(0)[len(objUrl.ToString(0)) - len(url.ToString(0)):] {
+			app.Exit(-1)
 		}
-	})
+	}, core.Qt__QueuedConnection)
 	engine.Load(url)
 
-	// A `core.Qt__QueuedConnection` will allows us to remove the condition bellow, leaving only `app.Exec()`
-	if allOk == true {
-		app.Exec()
-	} else {
-		app.Exit(-1)
-	}
+	app.Exec()
 }

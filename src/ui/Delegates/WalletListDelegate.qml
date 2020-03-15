@@ -2,16 +2,23 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import QtGraphicalEffects 1.12
+import WalletsManager 1.0
+
+// Resource imports
+// import "qrc:/ui/src/ui/Dialogs"
+import "../Dialogs/" // For quick UI development, switch back to resources when making a release
 
 Item {
     id: root
 
     readonly property real delegateHeight: 30
     property bool emptyAddressVisible: true
-    property bool expanded: false
+    property bool expanded: expand
     // The following property is used to avoid a binding conflict with the `height` property.
     // Also avoids a bug with the animation when collapsing a wallet
     readonly property real finalViewHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+
 
     width: walletList.width
     height: itemDelegateMainButton.height + (expanded ? finalViewHeight : 0)
@@ -35,6 +42,12 @@ Item {
                 anchors.rightMargin: listWalletRightMargin
                 spacing: listWalletSpacing
 
+                Rectangle {
+                    width: 10
+                    height: 6
+                    visible: hasHardwareWallet
+                    color: "red"
+                }
                 Image {
                     id: status
                     source: statusIcon
@@ -47,18 +60,39 @@ Item {
                     Layout.fillWidth: true
                 }
 
-                Image {
-                    id: lockIcon
-                    source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
-                    sourceSize: "24x24"
+                Item {
+                    id: itemImageLockIcon
+
+                    width: lockIcon.width
+                    height: lockIcon.height
+
+                    Image {
+                        id: lockIcon
+                        source: "qrc:/images/resources/images/icons/lock" + (encryptionEnabled ? "On" : "Off") + ".svg"
+                        sourceSize: "24x24"
+                    }
+
+                    ColorOverlay {
+                        anchors.fill: lockIcon
+                        source: lockIcon
+                        color: Material.theme === Material.Dark ? Material.foreground : "undefined"
+                    }
                 }
 
                 Label {
                     id: labelSky
-                    text: sky // a role of the model
+                    text: sky === qsTr("N/A") ? "" : sky // a role of the model
                     color: Material.accent
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
+                    BusyIndicator {
+                        anchors.verticalCenter: parent.verticalCenter
+                        anchors.right: parent.right
+                        running: sky === qsTr("N/A") ? true : false
+
+                        implicitWidth: implicitHeight
+                        implicitHeight: parent.height + 10
+                    }
                 }
 
                 Label {
@@ -67,10 +101,12 @@ Item {
                     horizontalAlignment: Text.AlignRight
                     Layout.preferredWidth: internalLabelsWidth
                 }
-            }
+            } // RowLayout
 
             onClicked: {
+
                 expanded = !expanded
+                walletModel.changeExpanded(fileName)
             }
         } // ItemDelegate
 
@@ -78,6 +114,7 @@ Item {
             id: addressList
             model: listAddresses
             implicitHeight: expanded ? delegateHeight*(addressList.count) + 50 : 0
+            property alias parentRoot: root
             opacity: expanded ? 1.0 : 0.0
             clip: true
             interactive: false
@@ -90,20 +127,127 @@ Item {
             delegate: WalletListAddressDelegate {
                 width: walletList.width
                 height: index == 0 ? delegateHeight + 20 : visible ? delegateHeight : 0
+
+                onAddAddressesRequested: {
+                    dialogAddAddresses.open()
+                }
+                onEditWalletRequested: {
+                    dialogEditWallet.originalWalletName = name
+                    dialogEditWallet.name = name
+                    dialogEditWallet.open()
+                }
+                onToggleEncryptionRequested: {
+                    if (encryptionEnabled) {
+                        dialogGetPassword.addAddress = false
+                        dialogGetPassword.open()
+                    } else {
+                        dialogSetPassword.open()
+                    }
+                }
+            }
+
+        } // ListView
+    } // ColumnLayout
+
+    DialogAddAddresses {
+        id: dialogAddAddresses
+        anchors.centerIn: Overlay.overlay
+
+        modal: true
+        focus: true
+
+        onAccepted: {
+            if (encryptionEnabled) {
+                dialogGetPassword.addAddress = true
+                dialogGetPassword.title = qsTr("Enter Password")
+                dialogGetPassword.nAddress = spinValue
+                dialogGetPassword.open()
+            } else {
+                walletManager.newWalletAddress(fileName, spinValue, "")
+                listAddresses.loadModel(walletManager.getAddresses(fileName))
             }
         }
-    } // ColumnLayout
+    } // DialogAddAddresses
+
+    DialogGetPassword {
+        id: dialogGetPassword
+
+        property bool addAddress: false
+        property int nAddress
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > implicitHeight + 40 ? implicitHeight : applicationWindow.height - 40
+
+        headerMessage: addAddress ? "" : qsTr("<b>Warning:</b> for security reasons, it is not recommended to keep the wallets unencrypted. Caution is advised.")
+        Material.primary: Material.Red
+        headerMessageColor: Material.primary
+
+        focus: visible
+        modal: true
+
+        onAccepted: {
+            if (addAddress) {
+                walletManager.newWalletAddress(fileName, nAddress, password)
+                listAddresses.loadModel(walletManager.getAddresses(fileName))
+            } else {
+                var isEncrypted = walletManager.decryptWallet(fileName, password)
+                walletModel.editWallet(index, name, isEncrypted, sky, coinHours)
+            }
+        }
+    }
+
+    DialogSetPassword {
+        id: dialogSetPassword
+
+        anchors.centerIn: Overlay.overlay
+        width: applicationWindow.width > 400 ? 400 - 40 : applicationWindow.width - 40
+        height: applicationWindow.height > implicitHeight + 40 ? implicitHeight : applicationWindow.height - 40
+
+        headerMessage: qsTr("<b>Warning:</b> We suggest that you encrypt each one of your wallets with a password. If you forget your password, you can reset it with your seed. Make sure you have your seed saved somewhere safe before encrypting your wallet.")
+        headerMessageColor: Material.primary
+        Material.primary: Material.Red
+        focus: visible
+        modal: true
+
+        onAccepted: {
+            var isEncypted = walletManager.encryptWallet(fileName, password)
+            walletModel.editWallet(index, name, isEncypted, sky, coinHours)
+        }
+    } // DialogSetPassword
+
+    DialogEditWallet {
+        id: dialogEditWallet
+        anchors.centerIn: Overlay.overlay
+
+        focus: true
+        modal: true
+
+        onAccepted: {
+            var qwallet = walletManager.editWallet(fileName, name)
+            walletModel.editWallet(index, qwallet.name, encryptionEnabled, qwallet.sky, qwallet.coinHours )
+        }
+    } // DialogEditWallet
 
     // Roles: address, addressSky, addressCoinHours
     // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
-    ListModel {
+    AddressModel {
+
         id: listAddresses
-        // The first element must exist but will not be used
-        ListElement { address: "--------------------------"; addressSky: 0; addressCoinHours: 0 }
-        ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
-        ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
-        ListElement { address: "gfdhgs343kweru38200384uwqd"; addressSky: 0; addressCoinHours: 72 }
-        ListElement { address: "00qdqsdjkssvmchskjkxxdg374"; addressSky: 521; addressCoinHours: 11 }
+        // property Timer timer: Timer {
+            // id: addressModelTimer
+            // interval: 3000
+            // repeat: true
+            // running: true
+            // onTriggered: {
+                // listAddresses.updateModel(fileName);
+            // }
+        // }
+    }
+    Component.onCompleted: {
+        //listAddresses.updateModel(fileName);
+        listAddresses.updateModel(fileName)
+        listAddresses.suscribe(fileName)
     }
 }

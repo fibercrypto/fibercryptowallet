@@ -1,54 +1,47 @@
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
-import QtQuick.Layouts 1.12
+import WalletsManager 1.0
 
 // Resource imports
-import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Delegates"
+import "Delegates/" // For quick UI development, switch back to resources when making a release
 
-Item {
-    id: root
-
-    readonly property real delegateHeight: 48
-    readonly property alias count: listViewFilters.count
-    property alias interactive: listViewFilters.interactive
-
-    implicitWidth: listViewFilters.width
-    implicitHeight: listViewFilters.height
-    clip: true
-
+ScrollView {
+    id: historyFilterDelegate
+    signal loadWallets()
     ListView {
         id: listViewFilters
-
-        spacing: 20
-        width: 400
-        clip: true
-
+        
+        width: parent.width
+        spacing: 10
+        
         model: modelFilters
         delegate: HistoryFilterListDelegate {
-            id: filterDelegate
-            width: ListView.view.width
-            height: delegateHeight + addressListHeight
+            property var listAddresses
+            width: parent.width
+        }
+
+        ModelManager {
+            id: modelManager
+            
             Component.onCompleted: {
-                listViewFilters.height += height
-                if (index === count - 1) {
-                    listViewFilters.height += 24
-                }
+                setWalletManager(walletManager)
             }
         }
-    }
-
-    // This model can be the same as the wallet list,
-    // as this model need to expose all wallets and their addresses.
-    // For that, it should be implemented in the backend, instead of here.
-    ListModel { // EXAMPLE
-        id: modelFilters
-
-        ListElement { name: "My first wallet" }
-        ListElement { name: "My second wallet" }
-        ListElement { name: "My third wallet" }
-        ListElement { name: "My fourth wallet" }
-        ListElement { name: "My fiveth wallet" }
-        ListElement { name: "My sixth wallet" }
+        Connections{
+            target: historyFilterDelegate
+            onLoadWallets:{
+                modelFilters.loadModel(walletManager.getWallets())
+            }
+        }
+        
+        WalletModel {
+            id: modelFilters
+                       
+            Component.onCompleted: {
+                loadModel(walletManager.getWallets())
+            }
+        }
     }
 }

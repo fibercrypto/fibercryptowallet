@@ -2,12 +2,19 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 
+// Resource imports
+// import "qrc:/ui/src/ui/Controls"
+import "Controls" // For quick UI development, switch back to resources when making a release
+
 Item {
     id: root
 
     implicitWidth: 100
     implicitHeight: 60
-
+    signal dataModified()
+    property Item nextTabItem
+    property alias textArea: textArea
+    property alias text: textArea.text
     property alias placeholderText: textArea.placeholderText
     property alias readOnly: textArea.readOnly
     property alias buttonLeftText: buttonLeft.text
@@ -18,6 +25,21 @@ Item {
     readonly property alias inputControlWidth: textArea.width
     readonly property alias inputControlHeight: textArea.height
 
+    function generateSeed( words){
+        if (words == 12 ){
+            textArea.text = walletManager.getNewSeed(128)
+        } else if (words == 24){
+            textArea.text = walletManager.getNewSeed(256)
+        }
+    }
+    function clear() {
+        textArea.clear()
+        if (mode === CreateLoadWallet.Create){
+            generateSeed(12)
+        }
+        
+    }
+
     Row {
         id: rowButtons
         anchors.bottom: textArea.top
@@ -27,7 +49,8 @@ Item {
 
         ItemDelegate {
             id: buttonLeft
-
+            onClicked: generateSeed(12)
+            
             height: buttonRight.height
 
             text: "ButtonLeft"
@@ -44,7 +67,9 @@ Item {
 
         ItemDelegate {
             id: buttonRight
-
+            onClicked:  generateSeed(24)
+                
+                   
             height: 30
             opacity: buttonsVisible ? 1.0 : 0.0
             visible: opacity > 0.0
@@ -59,8 +84,8 @@ Item {
                 font: buttonRight.font
                 color: buttonRight.enabled ? buttonRight.Material.foreground : buttonRight.Material.hintTextColor
             }
-        }
-    }
+        } // ItemDelegate
+    } // Row
 
     /*
     // Put the text area inside this to make it scrollable
@@ -87,7 +112,11 @@ Item {
         anchors.right: parent.right
         height: 80
         wrapMode: TextArea.Wrap
+        clip: true
 
         selectByMouse: true
+        KeyNavigation.priority: KeyNavigation.BeforeItem
+        KeyNavigation.tab: nextTabItem
+        onTextChanged: dataModified()
     }
 }

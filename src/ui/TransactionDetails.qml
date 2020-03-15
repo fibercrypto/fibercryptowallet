@@ -2,9 +2,14 @@ import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Controls.Material 2.12
 import QtQuick.Layouts 1.12
+import HistoryModels 1.0
 
 // Resource imports
-import "qrc:/ui/src/ui/Delegates"
+// import "qrc:/ui/src/ui/Delegates"
+import "Delegates/" // For quick UI development, switch back to resources when making a release
+
+// Backend imports
+import HistoryModels 1.0
 
 Item {
     id: root
@@ -14,9 +19,11 @@ Item {
     property int status: TransactionDetails.Status.Preview
     property var statusString: [ qsTr("Confirmed"), qsTr("Pending"), qsTr("Preview") ]
     property real amount: 0
-    property int hoursReceived: 0
-    property int hoursBurned: 0
+    property string hoursReceived
+    property string hoursBurned
     property string transactionID
+    property QAddressList modelInputs
+    property QAddressList modelOutputs
 
     readonly property bool expanded: buttonMoreDetails.checked
 
@@ -27,15 +34,14 @@ Item {
     }
     enum Type {
         Send,
-        Receive
+        Receive,
+        Internal
     }
 
-    implicitHeight: 80 + rowLayoutBasicDetails.height + (expanded ? rowLayoutMoreDetails.height : 0)
+    readonly property real basicHeight: 80 + rowLayoutBasicDetails.height
+    implicitHeight: Math.min(basicHeight + (expanded ? Math.max(listViewInputs.height, listViewOutputs.height) : 0), maxHeight)
+    Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
 
-    // TODO: Fix performance problem with the animation
-    //Behavior on implicitHeight { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
-
-    implicitWidth: 650
     clip: true
 
     ColumnLayout {
@@ -113,6 +119,7 @@ Item {
 
             ColumnLayout {
                 Layout.alignment: Qt.AlignTop
+                Layout.topMargin: -10
                 Layout.rightMargin: 20
                 Image {
                     source: "qrc:/images/resources/images/icons/send-" + (type === TransactionDetails.Type.Receive ? "blue" : "amber") + ".svg"
@@ -122,9 +129,9 @@ Item {
                     Layout.fillWidth: true
                 }
                 Label {
-                    text: (type === TransactionDetails.Type.Receive ? "Receive" : "Send") + ' ' + amount + ' ' + qsTr("SKY")
+                    text: (type === TransactionDetails.Type.Receive ? qsTr("Receive") : qsTr("Send")) + ' ' + amount + ' ' + qsTr("SKY")
                     font.bold: true
-                    font.pointSize: Qt.application.font.pointSize * 1.25
+                    font.pointSize: Qt.application.font.pointSize * 1.15
                     horizontalAlignment: Label.AlignHCenter
                     Layout.fillWidth: true
                 }
@@ -142,7 +149,7 @@ Item {
                 implicitWidth: 200
                 flat: true
                 checkable: true
-                text: (checked ? qsTr("Less") : qsTr("More")) + ' ' + qsTr("details")
+                text: checked ? qsTr("Less details") : qsTr("More details")
             }
 
             Rectangle {
@@ -158,10 +165,15 @@ Item {
 
             Layout.alignment: Qt.AlignTop
             Layout.fillWidth: true
+            Layout.fillHeight: true
+
+            opacity: expanded ? 1 : 0
+            Behavior on opacity { NumberAnimation { duration: 1000; easing.type: Easing.OutQuint } }
 
             ColumnLayout {
-                Layout.alignment: Qt.AlignTop
+                id: columnLayoutInputs
                 Layout.fillWidth: true
+                Layout.fillHeight: true
 
                 Label {
                     text: qsTr("Inputs")
@@ -173,27 +185,25 @@ Item {
                 ScrollView {
                     Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
-
-                    contentHeight: 160
+                    Layout.fillHeight: true
 
                     ListView {
                         id: listViewInputs
 
                         Material.foreground: Material.Grey
-                        model: listModelInputs
+                        model: modelInputs
                         clip: true
-                        Layout.alignment: Qt.AlignTop
-                        Layout.fillWidth: true
                         delegate: InputOutputDelegate {
-                            width: ListView.view.width
+                            width: parent.width
                         }
                     }
-                }
-            }
+                } // ScrollView
+            } // ColumnLayout (inputs)
 
             ColumnLayout {
-                Layout.alignment: Qt.AlignTop
+                id: columnLayoutOutputs
                 Layout.fillWidth: true
+                Layout.fillHeight: true
 
                 Label {
                     text: qsTr("Outputs")
@@ -205,39 +215,42 @@ Item {
                 ScrollView {
                     Layout.alignment: Qt.AlignTop
                     Layout.fillWidth: true
-
-                    contentHeight: 160
+                    Layout.fillHeight: true
 
                     ListView {
                         id: listViewOutputs
 
                         Material.foreground: Material.Grey
-                        model: listModelOutputs
+                        model: modelOutputs
                         clip: true
-                        Layout.alignment: Qt.AlignTop
-                        Layout.fillWidth: true
                         delegate: InputOutputDelegate {
-                            width: ListView.view.width
+                            width: parent.width
                         }
                     }
-                }
-            }
-        } // RowLayout
+                } // ScrollView
+            } // ColumnLayout (outputs)
+        } // RowLayout (details)
     } // ColumnLayout (root)
 
     // Roles: address, addressSky, addressCoinHours
     // Use listModel.append( { "address": value, "addressSky": value, "addressCoinHours": value } )
     // Or implement the model in the backend (a more recommendable approach)
-    ListModel {
-        id: listModelInputs
-        ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
-        ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
-    }
-    ListModel {
-        id: listModelOutputs
-        ListElement { address: "734irweaweygtawieta783cwyc"; addressSky: 38; addressCoinHours: 5048 }
-        ListElement { address: "ekq03i3qerwhjqoqh9823yurig"; addressSky: 61; addressCoinHours: 9456 }
-        ListElement { address: "1kjher73yiner7wn32nkuwe94v"; addressSky: 1; addressCoinHours: 24 }
-        ListElement { address: "oopfwwklfd34iuhjwe83w3h28r"; addressSky: 111; addressCoinHours: 13548 }
-    }
+    // ListModel {
+    //     id: listModelInputs
+    //     ListElement { address: "qrxw7364w8xerusftaxkw87ues"; addressSky: 30; addressCoinHours: 1049 }
+    //     ListElement { address: "8745yuetsrk8tcsku4ryj48ije"; addressSky: 12; addressCoinHours: 16011 }
+    // }
+    // ListModel {
+    //     id: listModelOutputs
+    //     ListElement { address: "734irweaweygtawieta783cwyc"; addressSky: 38; addressCoinHours: 5048 }
+    //     ListElement { address: "ekq03i3qerwhjqoqh9823yurig"; addressSky: 61; addressCoinHours: 9456 }
+    //     ListElement { address: "1kjher73yiner7wn32nkuwe94v"; addressSky: 1; addressCoinHours: 24 }
+    //     ListElement { address: "oopfwwklfd34iuhjwe83w3h28r"; addressSky: 111; addressCoinHours: 13548 }
+    // }
+    // QAddressList{
+    //     id: listModelInputs
+    // }
+    // QAddressList{
+    //     id: listModelOutputs
+    // }
 }

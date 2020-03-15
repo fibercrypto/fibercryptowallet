@@ -1,0 +1,150 @@
+sudo: required
+language: go
+go:
+  - 1.12.6
+services:
+  - docker
+  - xvfb
+go_import_path: github.com/fibercrypto/fibercryptowallet
+cache:
+  directories:
+    - $GOPATH/src/github.com/therecipe
+    - $GOPATH/bin
+env:
+  global:
+    - XARGS="-screen 0 1024x768x24"
+
+matrix:
+  include:
+    - stage: RPI
+      if: branch = release*$
+      install:
+        - DEFAULT_ARCH=rpi1 make install-docker-deps
+        - DEFAULT_ARCH=rpi2 make install-docker-deps
+        - DEFAULT_ARCH=rpi3 make install-docker-deps
+        - make install-deps-no-envs
+      script:
+        - make clean
+        - DEFAULT_TARGET=rpi1 make build-docker
+        - DEFAULT_TARGET=rpi2 make build-docker
+        - DEFAULT_TARGET=rpi3 make build-docker
+        - make lint
+        - make run-docker CMD='make test'
+    - stage: Android
+      if: branch = release*$
+      install:
+        - DEFAULT_ARCH=android make install-docker-deps
+        - make install-deps-no-envs
+      script:
+        - make clean
+        - DEFAULT_TARGET=android make build-docker
+        - DEFAULT_TARGET=android-emulator make build-docker
+        - make lint
+        - make run-docker CMD='make test'
+        - make run-docker CMD='make install coveralls ; make test-cover-travis'
+    - stage: Linux
+      before_install:
+        - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
+      install:
+        - make install-docker-deps
+        - make install-deps-no-envs
+        - make install-linters
+      before_script:
+        - echo "PATH=$PATH";
+        - echo "PIP=$PIP";
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
+        - make -C ./tmp/hardware-wallet run-emulator & true;
+        # Run self-tests
+        - ps aux | grep emulator
+
+      script:
+        - make clean
+        - DEFAULT_TARGET=linux make build-docker
+        - make clean
+        - make run-docker CMD='make test'
+        - make run-docker CMD='make test-skyhw'
+        - make lint
+        - make run-docker CMD='make install-coveralls ; make test-cover-travis'
+# FIXME: Restore Windows builds
+#    - stage: Windows
+#      os: windows
+#      env:
+#        - QT5_BASE_DIR: C:/Qt/5.13.0/msvc2017
+#        - QT_DIR: C:/Qt
+#        - QT_QMAKE_DIR: C:/Qt/5.13.0/mingw73_64/bin
+#      install:
+#        - choco install make -y
+#        - choco install unzip -y
+#        #- df -h
+#        #- .travis/install-qt-win.sh
+#        #- df -h
+#        #- ls C:/Qt
+#        #- ls C:/Qt/5.13.0
+#        #- ls C:/Qt/5.13.0/mingw73_64
+#        #- ls C:/Qt/5.13.0/mingw73_64/bin
+#        - travis_wait 50 make install-deps-Windows
+#        - df -h
+#        - make install-linters
+#        - make install-coveralls
+#      script:
+#        - make build
+#        - make test
+#        - make build-icon
+#        - make test-cover-travis
+    - stage: MacOS
+      os: osx
+      osx_image: xcode10.2
+      before_install:
+        - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
+      install:
+        - make install-deps
+        - make install-coveralls
+      before_script:
+        - echo "PATH=$PATH";
+        - echo "PIP=$PIP";
+        # Start Xvfb on osx
+        - ( sudo Xvfb :99 -ac ${XARGS}; echo "Xvfb ok" )& export DISPLAY=:99
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet clean
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob install-deps-nanopb
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet/tiny-firmware/protob/nanopb/vendor/nanopb/generator/proto
+        - PYTHON=python3 PIP=pip3 make -C tmp/hardware-wallet emulator
+        - make -C ./tmp/hardware-wallet run-emulator & true;
+        # Run self-tests
+        - ps aux | grep emulator
+      script:
+        - make clean
+        - make build
+        - make test
+        - make test-skyhw
+        - make build-icon
+        - make lint
+        - make test-cover-travis
+notifications:
+  email: false
+  webhooks:
+    urls:
+      - https://fathomless-fjord-24024.herokuapp.com/notify
+      - https://coveralls.io/webhook
+
+before_deploy:
+  - export VERSION="$(git describe --tags --exact-match HEAD 2> /dev/null)"
+  - export ARCH="$(uname -m)"
+  - export OS="$(uname -s)"
+  - make prepare-release
+  - make build
+  - ( cd deploy && tar czf ../fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz ./*  )
+  - pwd && ls -l .
+deploy:
+  provider: releases
+  api_key:
+    secure: DCM8aKdci6IA7dF9a84V6FEK+VkfEGoitre/wdxeZs7z4obKY41MhejHvWe017tuLhWqARwuud4PgEDcypVVDN2zB5d/D94O3JQHIDfL643WWTS7JOd+93vfOVmQ3jcGg5yRwt4T8fH3RUwNgQjagXeWLnoAhgAvUzGeAUN26AUFS4TXMmf0tnfGRGsrd8tMcnmsPxWcmrog1GllJ1m7GQ55ua1FuYV3ldyX6bnxQSx/B73T8pCvmz9OIW14nZVHgPrdOeVgHy2JlA10dKe59i1CTBevbo050CEIAque6RkzW52AQTKksmd/X2GnxODkqaZ8dux5b/uCv8Stht1jebM8AwZID8nmnmlpUHrafuZilu/m3RJ/j7YuF+UsNGOPeLG+z1tb3KcSENihRPsFOh4YHFTPHkDBbMcvg+2EKfbOIOrg/+js7Ycmmjx1NoLZgYpmMuq6mBu/TZDuFmFNVtDwevieG7berfVyvIyr3TJEdW+bm+vHGpdTcZho1cMrSmaB2r9j9UADKrRrRAU7vHCjozufg4+dnGjYHHQNCecpeirsbCymq3d7Wgezkm/LK4c0vDbtHuXo1q5VxrMjizzuBNCmiRyguGt0zSWvemU68x8W+OjmnFNJRyEa/g//2BLBQrn6A3qC+Qv5tn1REClW7xMcZXcDjIjmIW7z2Gw=
+  file: fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz
+  kip_cleanup: true
+  draft: true
+  overwrite: true
+  on:
+    repo: fibercrypto/fibercryptowallet
+    tags: true

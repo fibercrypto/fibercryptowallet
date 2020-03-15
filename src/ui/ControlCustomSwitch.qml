@@ -14,13 +14,13 @@ Rectangle {
     property bool isInLeftSide: true
     property string leftText: "Left Text"
     property string rightText: "Right Text"
-    property color leftColor: Material.color(Material.Blue)
-    property color rightColor: Material.color(Material.Green)
     property int animationsSpeed: 150
     property color textColor: Material.foreground
     property color hoveredColor: "#0A000000"
     property color pressedColor: "#1A000000"
     property real controlRadius: 40
+
+    signal toggled()
 
     color: backgroundColor
     radius: controlRadius
@@ -45,6 +45,7 @@ Rectangle {
 
         onClicked: {
             root.isInLeftSide = !root.isInLeftSide
+            parent.toggled()
         }
 
         contentItem: IconLabel {
@@ -63,7 +64,7 @@ Rectangle {
             implicitHeight: switchButton.Material.buttonHeight
 
             radius: root.controlRadius
-            color: !switchButton.enabled ? switchButton.Material.buttonDisabledColor : root.isInLeftSide ? root.leftColor : root.rightColor
+            color: !switchButton.enabled ? switchButton.Material.buttonDisabledColor : "white"
             Behavior on color { ColorAnimation { duration: animationsSpeed } }
 
             layer.enabled: switchButton.enabled && switchButton.Material.buttonColor.a > 0
@@ -77,6 +78,6 @@ Rectangle {
 
                 Behavior on color { ColorAnimation { duration: animationsSpeed } }
             }
-        }
-    }
+        } // Rectangle (button's background)
+    } // Button
 }
