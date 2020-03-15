@@ -17,8 +17,9 @@ env:
 matrix:
   include:
     - stage: RPI
-      if: branch = release*$
+      if: tag IS present 
       install:
+        - export D_ARCH="RPI"
         - DEFAULT_ARCH=rpi1 make install-docker-deps
         - DEFAULT_ARCH=rpi2 make install-docker-deps
         - DEFAULT_ARCH=rpi3 make install-docker-deps
@@ -31,8 +32,9 @@ matrix:
         - make lint
         - make run-docker CMD='make test'
     - stage: Android
-      if: branch = release*$
+      if: tag IS present 
       install:
+        - export D_ARCH="Android"
         - DEFAULT_ARCH=android make install-docker-deps
         - make install-deps-no-envs
       script:
@@ -46,6 +48,7 @@ matrix:
       before_install:
         - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
       install:
+        - export D_ARCH="Linux"
         - make install-docker-deps
         - make install-deps-no-envs
         - make install-linters
@@ -100,6 +103,7 @@ matrix:
       before_install:
         - source ./ci-scripts/install-$TRAVIS_OS_NAME.sh
       install:
+        - export D_ARCH="MacOS"
         - make install-deps
         - make install-coveralls
       before_script:
@@ -134,15 +138,18 @@ before_deploy:
   - export ARCH="$(uname -m)"
   - export OS="$(uname -s)"
   - make prepare-release
-  - make build
+  - if [["$D_ARCH" == "RPI"]]; then DEFAULT_TARGET=rpi1 make build-docker; DEFAULT_TARGET=rpi2 make build; DEFAULT_TARGET=rpi3 make build-docker; fi
+  - if [["$D_ARCH" == "Android"]]; then DEFAULT_TARGET=android make build-docker; fi
+  - if [["$D_ARCH" == "Linux"]]; then DEFAULT_TARGET=linux make build-docker; fi
+  - if [["$D_ARCH" == "MacOS"]]; then make build; fi
   - ( cd deploy && tar czf ../fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz ./*  )
   - pwd && ls -l .
 deploy:
   provider: releases
   api_key:
     secure: DCM8aKdci6IA7dF9a84V6FEK+VkfEGoitre/wdxeZs7z4obKY41MhejHvWe017tuLhWqARwuud4PgEDcypVVDN2zB5d/D94O3JQHIDfL643WWTS7JOd+93vfOVmQ3jcGg5yRwt4T8fH3RUwNgQjagXeWLnoAhgAvUzGeAUN26AUFS4TXMmf0tnfGRGsrd8tMcnmsPxWcmrog1GllJ1m7GQ55ua1FuYV3ldyX6bnxQSx/B73T8pCvmz9OIW14nZVHgPrdOeVgHy2JlA10dKe59i1CTBevbo050CEIAque6RkzW52AQTKksmd/X2GnxODkqaZ8dux5b/uCv8Stht1jebM8AwZID8nmnmlpUHrafuZilu/m3RJ/j7YuF+UsNGOPeLG+z1tb3KcSENihRPsFOh4YHFTPHkDBbMcvg+2EKfbOIOrg/+js7Ycmmjx1NoLZgYpmMuq6mBu/TZDuFmFNVtDwevieG7berfVyvIyr3TJEdW+bm+vHGpdTcZho1cMrSmaB2r9j9UADKrRrRAU7vHCjozufg4+dnGjYHHQNCecpeirsbCymq3d7Wgezkm/LK4c0vDbtHuXo1q5VxrMjizzuBNCmiRyguGt0zSWvemU68x8W+OjmnFNJRyEa/g//2BLBQrn6A3qC+Qv5tn1REClW7xMcZXcDjIjmIW7z2Gw=
-  file: fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz
-  kip_cleanup: true
+  file: fibercryptowallet-${VERSION}-${OS}-${D_ARCH}.tar.gz
+  skip_cleanup: true
   draft: true
   overwrite: true
   on:
