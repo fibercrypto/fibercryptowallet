@@ -17,7 +17,7 @@ env:
 matrix:
   include:
     - stage: RPI
-      if: tag IS present 
+      if: branch = release*$
       install:
         - export D_ARCH="RPI"
         - DEFAULT_ARCH=rpi1 make install-docker-deps
@@ -32,7 +32,7 @@ matrix:
         - make lint
         - make run-docker CMD='make test'
     - stage: Android
-      if: tag IS present 
+      if: branch = release*$
       install:
         - export D_ARCH="Android"
         - DEFAULT_ARCH=android make install-docker-deps
