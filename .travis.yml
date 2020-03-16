@@ -138,7 +138,7 @@ before_deploy:
   - export ARCH="$(uname -m)"
   - export OS="$(uname -s)"
   - make prepare-release
-  - if [[ $D_ARCH == "Linux"  ]]; then echo DEFAULT_TARGET=linux make build-docker ; else echo "False"; fi
+  - if [[ $D_ARCH == "Linux"  ]]; then DEFAULT_TARGET=linux make build-docker ; else echo "False"; fi
   - if [[ $D_ARCH == "MacOS"  ]]; then make build; else echo "False"; fi
   - ( cd deploy && tar czf ../fibercryptowallet-${VERSION}-${OS}-${ARCH}.tar.gz ./*  )
   - pwd && ls -l .
