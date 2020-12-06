@@ -1,5 +1,5 @@
-<img href="https://t.me/fibercrypto" src="resources/images/icons/github-related/telegram.svg" height=16 title="Follow us on Telegram">
-<img src="resources/images/icons/appIcon/appIcon.png" height=64 align="right">
+<a href="https://t.me/fibercrypto"> <img src="resources/images/icons/github-related/telegram.svg" height=16 title="Follow us on Telegram"></a>
+<a href="https://github.com/fibercrypto/fibercryptowallet"> <img src="resources/images/icons/appIcon/appIcon.png" height=64 align="right"></a>
 
 # FiberCrypto Wallet
 
@@ -96,9 +96,9 @@ The minimum required version is [CMake 3.16](https://cmake.org/files/v3.16/ "Dow
 ### Requirements
 
 <table>
-     <tr><td style="width:90px"><img href="https://qt.io/" src="resources/images/icons/qt_logo_green_rgb.svg" title="The Qt Company"></td><td>This project uses the <a href="https://www.qt.io/" title="The Qt Company">Qt framework</a> for the frontend. The minimum required version is <a href="https://download.qt.io/archive/qt/6.0/6.0.0/" title="Download Qt 6.0.0">Qt 6.0.0</a>, but we always recommend using the <a href="https://download.qt.io/archive/qt/" title="Download latest version">latest version</a> available.</td></tr>
-     <tr><td style="width:90px"><img href="https://golang.org/" src="resources/images/icons/github-related/go.svg" title="The Go Programming Language"></td><td>This project uses <a href="https://golang.org/" title="The Go Programming Language">Go</a> for the backend. The minimum required version is <a href="https://blog.golang.org/go1.13/" title="Go 1.13 is released - The Go Blog">Go 1.13</a>, but we always recommend using the <a href="https://golang.org/dl/" title="Download latest version">latest version</a> available.</td></tr>
-     <tr><td style="width:90px"><img href="https://imagemagick.org/" src="resources/images/icons/github-related/image-magick.svg" title="Image Magick"></td><td>Windows requires the command line tool <tt>convert</tt> (or <tt>magick convert</tt>, depending of the version used), that comes with the open-source <a href="https://imagemagick.org" title="Image Magick">ImageMagick</a> project in order to build the icon. A default icon is always provided, so this is not neccesary unless it's going to be replaced.</td></tr>
+     <tr><td style="width:90px"><a href="https://qt.io/"><img src="resources/images/icons/qt_logo_green_rgb.svg" title="The Qt Company"></a></td><td>This project uses the <a href="https://www.qt.io/" title="The Qt Company">Qt framework</a> for the frontend. The minimum required version is <a href="https://download.qt.io/archive/qt/6.0/6.0.0/" title="Download Qt 6.0.0">Qt 6.0.0</a>, but we always recommend using the <a href="https://download.qt.io/archive/qt/" title="Download latest version">latest version</a> available.</td></tr>
+     <tr><td style="width:90px"><a href="https://golang.org/"><img src="resources/images/icons/github-related/go.svg" title="The Go Programming Language"></a></td><td>This project uses <a href="https://golang.org/" title="The Go Programming Language">Go</a> for the backend. The minimum required version is <a href="https://blog.golang.org/go1.13/" title="Go 1.13 is released - The Go Blog">Go 1.13</a>, but we always recommend using the <a href="https://golang.org/dl/" title="Download latest version">latest version</a> available.</td></tr>
+     <tr><td style="width:90px"><a href="https://imagemagick.org/"><img src="resources/images/icons/github-related/image-magick.svg" title="Image Magick"></a></td><td>Windows requires the command line tool <tt>convert</tt> (or <tt>magick convert</tt>, depending of the version used), that comes with the open-source <a href="https://imagemagick.org" title="Image Magick">ImageMagick</a> project in order to build the icon. A default icon is always provided, so this is not neccesary unless it's going to be replaced.</td></tr>
 </table>
 
 
@@ -151,4 +151,4 @@ The minimum required version is [CMake 3.16](https://cmake.org/files/v3.16/ "Dow
 WIP
 </h2>
 
-![WIP](resources/images/icons/github-related/wip.svg "WIP")
+[![WIP](resources/images/icons/github-related/wip.svg)](https://github.com/fibercrypto/fibercryptowallet/issues "WIP: Check issues")
