@@ -1,5 +1,5 @@
-<a href="https://t.me/fibercrypto"> <img src="resources/images/icons/github-related/telegram.svg" height=16 title="Follow us on Telegram"></a>
-<a href="https://github.com/fibercrypto/fibercryptowallet"> <img src="resources/images/icons/appIcon/appIcon.png" height=64 align="right"></a>
+<a href="https://t.me/fibercrypto"> <img src="resources/images/icons/github-related/telegram.svg" height=18 title="Follow us on Telegram"></a>
+<a href="https://github.com/fibercrypto/fibercryptowallet"> <img src="resources/images/icons/appIcon/appIcon.png" height=96 align="right"></a>
 
 # FiberCrypto Wallet
 
