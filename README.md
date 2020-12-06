@@ -53,7 +53,7 @@
 
 [![Releases](resources/images/icons/github-related/releases.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/releases/ "Releases")
 
-As of today, no releases has been published yet. However, a compilable tag was published. Releases are planned for the following platforms: *Windows*, *macOS*, *Linux*, *Android*, *iOS* and *Raspberry Pi*. In the long term, we also want to release for *watchOS*, *Asteroid* and more embedded devices.
+As of today, no releases has been published yet. However, a compilable tag was published. Releases are planned for the following platforms: *Windows*, *macOS*, *Linux*, *Android*, *iOS* and *Raspberry Pi*. In the long term, we also want to release for *watchOS*, *AsteroidOS* and more embedded devices.
 
 ### Release status by platform
 
