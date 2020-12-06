@@ -1,163 +1,154 @@
-# FiberCrypto wallet
+<img href="https://t.me/fibercrypto" src="resources/images/icons/github-related/telegram.svg" height=16 title="Follow us on Telegram">
+<img src="resources/images/icons/appIcon/appIcon.png" height=64 align="right">
 
-[![Build Status](https://travis-ci.org/fibercrypto/fibercryptowallet.svg?branch=develop)](https://travis-ci.org/fibercrypto/fibercryptowallet)
-[![Contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE.GPLv3)
-[![Coverage Status](https://coveralls.io/repos/github/fibercrypto/FiberCryptoWallet/badge.svg?branch=develop)](https://coveralls.io/github/fibercrypto/FiberCryptoWallet?branch=develop)
+# FiberCrypto Wallet
 
-FiberCrypto wallet is a cryptocurrency software wallet aimed at:
+**Multi-coin cryptocurrency wallet**
 
-- Provide easy-to-use interactions to users
-- State
-- Out-of-the-box support for every SkyFiber token in a single place
-- Support other altcoins
-- Facilitate exchange of crypto assets
-- Buy and sell supported crypto assets using fiat (e.g. USD, GBP, EUR, ...)
-- Integrations with trading tools
-- Offer basic blockchain-specific tools
+[![License: GPL v3](resources/images/icons/github-related/license-gplv3.svg)](LICENSE.GPLv3 "GPL v3")
+[![Built with Qt](resources/images/icons/github-related/built-with-qt.svg)](https://qt.io "The Qt Company")
+[![Open-source](resources/images/icons/github-related/open-source.svg)](https://github.com "Open-source")
+[![WIP](resources/images/icons/github-related/wip.svg)](https://github.com/fibercrypto/fibercryptowallet/issues "WIP: Check issues")
+[![Contributions welcome](resources/images/icons/github-related/contributions-welcome.svg)](CONTRIBUTING.md "Contributions are welcome")
 
-## Development
+:star: Star us on GitHub — it really helps!
 
-### Project folder structure
 
-Project files are organized as follows:
+## Table of content
 
-- `main.go` : Application entry point
-- `CHANGELOG.md` : Project changelog
-- `Makefile` : Project build rules
-- `README.md` : This file.
-- `*.qrc` : QML resource index files.
-- `qtquickcontrols2.conf` : QT Quick controls configuration file.
-- `./resources` : Static resources.
-- `./resources/images` : Graphics resources needed by the application.
-- `./resources/images/icons` : Project and third-party icons
-- `./resources/fonts` : Font files needed to compile the application.
-- `./src` : Application source code.
-- `./src/ui` : QML definitions for application GUI components.
-- `./src/ui/Dialogs` : QML definitions for reusable dialogs.
-- `./src/ui/Delegates` : QML specs for partial views.
-- `./src/core` : Core go-lang interfaces.
-- `./src/main` : Project specific source code.
-- `./src/util` : Reusable code.
-- `./src/util/logging` : Event logging infrastructure.
-- `./src/models` : QT models linking coin-specific models to application GUI.
-- `./src/coin` : Source code for altcoin integrations.
-- `./src/coin/mocks` : Types implementing `core` interfaces for generic testing scenarios
-- `./src/coin/skycoin` : Skycoin wallet integration
-- `./src/coin/skycoin/models` : Skycoin implementation of golang core interfaces.
-- `./src/coin/skycoin/blockchain` : Skycoin blockchain API.
-- `./src/coin/skycoin/sign` : Skycoin sign API.
-- `./vendor` : Project dependencies managed by `dep`.
+- [FiberCrypto Wallet](#fibercrypto-wallet)
+  - [Table of content](#table-of-content)
+  - [Features](#features)
+  - [Releases](#releases)
+    - [Release status by platform](#release-status-by-platform)
+  - [Build](#build)
+    - [Build System](#build-system)
+    - [Requirements](#requirements)
+  - [Statistics](#statistics)
+    - [Build and release](#build-and-release)
+    - [Activity](#activity)
+    - [Downloads](#downloads)
+    - [Analysis](#analysis)
+    - [Issue tracking](#issue-tracking)
+    - [Code coverage](#code-coverage)
+    - [Size](#size)
+  - [License](#license)
 
-### Architecture
 
-FiberCrypto wallet supports multiple altcoins. In order to cope with this complexity GUI code and QT models rely on strict interfaces which shall be implemented to add support for a given coin. Each such integration must have two main components:
+## Features
 
-- `Models API`: Implements application core interfaces.
-- `Sign API` : Implements altcoin transaction and message signing primitives required by application code.
-- `Blockchain API` : Provides communication between application and altcoin service nodes to query for data via REST, JSON-RPC and other similar low-level client-server API.
-- `Peer-exchange API` (optional): Implements peer-to-peer interactions with altcoin blockchain nodes.
+***FiberCrypto Wallet*** is a cryptocurrency software wallet aimed at:
 
-### Build System
+* Provide easy-to-use interactions to users
+* State
+* Out-of-the-box support for every *SkyFiber* token in a single place
+* Support other altcoins
+* Facilitate exchange of crypto assets
+* Buy and sell supported crypto assets using fiat (e.g. USD, GBP, EUR, ...)
+* Integrations with trading tools
+* Offer basic blockchain-specific tools
 
-The build system is [Qt framework](https://www.qt.io/ "The Qt Company"). The front-end is programmed in [QML](http://doc.qt.io/qt-5/qmlapplications.html "QML Applications"), and the back-end in [Go](https://golang.org/ "The Go Programming Language"), using [therecipe/qt](https://github.com/therecipe/qt/ "therecipe/qt").
-
-#### Requirements
-
-Windows requires the command line tool `magick convert`, that comes with the open-source [ImageMagick](https://imagemagick.org) project in order to build the icons (not necessary as default icons are always provided)
-
-##### Qt version
-
-[Linux/X11 requirements](http://doc.qt.io/qt-5/linux.html)  
-[MacOS requirements](http://doc.qt.io/qt-5/macos.html)  
-[Windows requirements](http://doc.qt.io/qt-5/windows.html)  
-
-The minimum Qt version required is [Qt 5.12.0 LTS](https://download.qt.io/archive/qt/5.12/5.12.0/ "Qt Archive"). However, is highly recommended using [Qt 5.12.1 LTS](https://download.qt.io/archive/qt/5.12/5.12.1/ "Qt Archive") or any later version of Qt5 due to some bugs:  
-- [QTBUG-68156](https://bugreports.qt.io/browse/QTBUG-68156 "Incompatible version of OpenSSL on Ubuntu 18.04")  
-- [QTBUG-72811](https://bugreports.qt.io/browse/QTBUG-72811 "[Reg 5.11 -> 5.12] QQC2 buttons not react to click when holding for about a second")
-
-We always recommend using the latest Qt version. See [Qt Archive](https://download.qt.io/archive/qt/ "Qt Archive").
-
-#### Make targets
-
-Common actions are automated with the help of `make`. The following targets have been implemnented:
-
-```
-deps                           Add dependencies
-run                            Run FiberCrypto Wallet.
-install-deps-no-envs           Install therecipe/qt with -tags=no_env set
-install-docker-deps            Install docker images for project compilation using docker
-install-deps-Linux             Install Linux dependencies
-install-deps-Darwin            Install osx dependencies
-install-deps-Windows           Install Windowns dependencies
-install-deps                   Install dependencies
-build-docker                   Build project using docker
-build-icon-Windows_NT          Build the application icon in Windows
-build-icon-Darwin              Build the application icon in Darwin
-build-icon-Linux               Build the application icon in Linux
-build-icon                     Build the application icon (Windows_NT and Darwin systems)
-build                          Build FiberCrypto Wallet
-prepare-release                Change the resources in the app and prepare to release the app
-clean-test                     Remove temporary test files
-clean-build                    Remove temporary files
-clean                          Remove temporary files
-gen-mocks-core                 Generate mocks for core interface types
-gen-mocks-sky                  Generate mocks for internal Skycoin types
-gen-mocks                      Generate mocks for interface types
-test-sky                       Run Skycoin plugin test suite
-test-core                      Run tests for API core and helpers
-test-data                      Run tests for data package
-test-cover                     Show more details of test coverage
-test                           Run project test suite
-run-docker                     Run CMD inside Docker container
-install-linters                Install linters
-install-coveralls              Install coveralls
-lint                           Run linters. Use make install-linters first.
-```
-
-Type `make help` in your console for details.
 
 ## Releases
 
-### Update the version
+[![Releases](resources/images/icons/github-related/releases.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/releases/ "Releases")
 
-0. If the `master` branch has commits that are not in `develop` (e.g. due to a hotfix applied to `master`), merge `master` into `develop`
-0. Update `CHANGELOG.md`: move the "unreleased" changes to the version and add the date
-0. Update the files in https://github.com/skycoin/repo-info by following the [metadata update procedure](https://github.com/skycoin/repo-info/#updating-skycoin-repository-metadate),
-0. Merge these changes to `develop`
-0. Follow the steps in [pre-release testing](#pre-release-testing)
-0. Make a PR merging `develop` into `master`
-0. Review the PR and merge it
-0. Tag the `master` branch with the version number. Version tags start with `v`, e.g. `v0.1.0`.
-    Sign the tag. If you have your GPG key in github, creating a release on the Github website will automatically tag the release.
-    It can be tagged from the command line with `git tag -as v0.20.0 $COMMIT_ID`, but Github will not recognize it as a "release".
-0. Make sure that the app runs properly from the `master` branch
-0. Release builds are created and uploaded by travis. To do it manually, checkout the `master` branch and follow the [create release builds](#creating-release-builds) instructions.
+As of today, no releases has been published yet. However, a compilable tag was published. Releases are planned for the following platforms: *Windows*, *macOS*, *Linux*, *Android*, *iOS* and *Raspberry Pi*. In the long term, we also want to release for *watchOS*, *Asteroid* and more embedded devices.
 
-If there are problems discovered after merging to `master`, start over, and increment the 3rd version number.
-For example, `v0.1.0` becomes `v0.1.1`, for minor fixes.
+### Release status by platform
 
-### Pre-release testing
+**Desktop platforms:**
 
-Performs these actions before releasing:
+Release type | ![Win](resources/images/icons/github-related/windows.svg "Windows") | ![mac](resources/images/icons/github-related/macos.svg "macOS") | ![linux](resources/images/icons/github-related/linux.svg "Linux")
+-------------------------------------------|--------------------|--------------------|--------------------
+Source code *(compilable)*                 | Yes                | Yes                | Yes
+Installer *(recommended)*                  | No                 | No                 | No
+Portable<br> *(compressed folder)*         | No                 | No                 | No
+Portable<br> *(static, single executable)* | No                 | No                 | No
 
-* `make test-sky` Run Skycoin plugin test suite
-* `make test-core` Run tests for API core and helpers
-* `make test-data` Run tests for data package
-* `make test-cover` Show more details of test coverage
-* `make test` Run project test suite
+**Mobile platforms:**
 
-### Creating release builds
+Release type | ![droid](resources/images/icons/github-related/android.svg "Android") | ![ios](resources/images/icons/github-related/ios.svg "iOS")
+-------------------------------------------|--------------------|--------------------
+Source code *(compilable)*                 | No                 | No
+Default *(Store)*                          | No                 | No
+Alternative                                | No                 | No
 
-Travis should build Linux and MacOS builds and upload to github releases
+**Embedded platforms:**
 
-If you do it manually, you must follow the next steps:
+Release type | ![raspi](resources/images/icons/github-related/raspberry-pi.svg "Raspberry Pi")
+-------------------------------------------|--------------------
+Source code *(compilable)*                 | No
+Installer *(recommended)*                  | No
+Portable<br> *(compressed folder)*         | No
+Portable<br> *(static, single executable)* | No
 
-* `make prepare-release` Change the resources in the app and prepare to release the app
-* `make clean` Remove temporary files
-* `make build` Build FiberCrypto Wallet
-* Compress the content in `deploy` folder and inside that folder 
+## Build
 
 
-## WIP
-This is a Work-In-Progress.
+### Build System
+
+[![CMake](resources/images/icons/github-related/cmake.svg)](https://cmake.org/ "CMake")
+
+The minimum required version is [CMake 3.16](https://cmake.org/files/v3.16/ "Download CMake 3.16"), but we always recommend the [latest version](https://cmake.org/download/ "Download CMake") available.
+
+
+### Requirements
+
+<table>
+     <tr><td style="width:90px"><img href="https://qt.io/" src="resources/images/icons/qt_logo_green_rgb.svg" title="The Qt Company"></td><td>This project uses the <a href="https://www.qt.io/" title="The Qt Company">Qt framework</a> for the frontend. The minimum required version is <a href="https://download.qt.io/archive/qt/6.0/6.0.0/" title="Download Qt 6.0.0">Qt 6.0.0</a>, but we always recommend using the <a href="https://download.qt.io/archive/qt/" title="Download latest version">latest version</a> available.</td></tr>
+     <tr><td style="width:90px"><img href="https://golang.org/" src="resources/images/icons/github-related/go.svg" title="The Go Programming Language"></td><td>This project uses <a href="https://golang.org/" title="The Go Programming Language">Go</a> for the backend. The minimum required version is <a href="https://blog.golang.org/go1.13/" title="Go 1.13 is released - The Go Blog">Go 1.13</a>, but we always recommend using the <a href="https://golang.org/dl/" title="Download latest version">latest version</a> available.</td></tr>
+     <tr><td style="width:90px"><img href="https://imagemagick.org/" src="resources/images/icons/github-related/image-magick.svg" title="Image Magick"></td><td>Windows requires the command line tool <tt>convert</tt> (or <tt>magick convert</tt>, depending of the version used), that comes with the open-source <a href="https://imagemagick.org" title="Image Magick">ImageMagick</a> project in order to build the icon. A default icon is always provided, so this is not neccesary unless it's going to be replaced.</td></tr>
+</table>
+
+
+## Statistics
+
+<!-- TODO: Add localization status -->
+<!-- TODO: Add social networks status -->
+<!-- TODO: Add funding status -->
+
+### Build and release
+[![Build Status](https://img.shields.io/travis/fibercrypto/fibercryptowallet/develop)](https://travis-ci.org/fibercrypto/fibercryptowallet "Build status")
+[![GitHub release](https://img.shields.io/github/release/fibercrypto/fibercryptowallet.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/releases/ "Releases")
+[![GitHub tag](https://img.shields.io/github/tag/fibercrypto/fibercryptowallet.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/tags/ "Tags")
+
+### Activity
+[![GitHub contributors](https://img.shields.io/github/contributors/fibercrypto/fibercryptowallet.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/commit/ "Contributors")
+[![GitHub release date](https://img.shields.io/github/release-date/fibercrypto/fibercryptowallet.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/releases/ "Release date")
+[![Milestone](https://img.shields.io/github/milestones/progress/fibercrypto/fibercryptowallet/2.svg)](https://github.com/fibercrypto/fibercryptowallet/milestones/2 "Progress of next release")
+[![GitHub commits since last release](https://img.shields.io/github/commits-since/fibercrypto/fibercryptowallet/latest/develop.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/commit/ "Commits since last release")
+[![GitHub last commit](https://img.shields.io/github/last-commit/fibercrypto/fibercryptowallet.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/commit/ "Last commit")
+
+### Downloads
+[![Github all downloads](https://img.shields.io/github/downloads/fibercrypto/fibercryptowallet/total.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/releases/ "All downloads")
+[![Github latest version downloads](https://img.shields.io/github/downloads/fibercrypto/fibercryptowallet/latest/total.svg)](https://GitHub.com/fibercrypto/fibercryptowallet/releases/ "Latest version downloads")
+
+### Analysis
+![Github languages](https://img.shields.io/github/languages/count/fibercrypto/fibercryptowallet.svg "Languages count")
+![Github top language](https://img.shields.io/github/languages/top/fibercrypto/fibercryptowallet.svg "Top language")
+![Github languages](https://img.shields.io/scrutinizer/quality/g/fibercrypto/fibercryptowallet/develop.svg "Top language")
+
+### Issue tracking
+[![Github issues](https://img.shields.io/github/issues-raw/fibercrypto/fibercryptowallet.svg)](https://githib.com/fibercrypto/fibercryptowallet/issues "Open issues")
+[![Pull requests](https://img.shields.io/github/issues-pr-raw/fibercrypto/fibercryptowallet.svg)](https://githib.com/fibercrypto/fibercryptowallet/pr "Open pull requests")
+
+### Code coverage
+[![Coverage Status](https://img.shields.io/coveralls/github/fibercrypto/FiberCryptoWallet/develop)](https://coveralls.io/github/fibercrypto/FiberCryptoWallet?branch=develop "Coverage status")
+
+### Size
+![Github code size](https://img.shields.io/github/languages/code-size/fibercrypto/fibercryptowallet.svg "Code size")
+![Github repository size](https://img.shields.io/github/repo-size/fibercrypto/fibercryptowallet.svg "Repository size")
+![Github file count](https://img.shields.io/github/directory-file-count/fibercrypto/fibercryptowallet.svg "File count")
+![Github .go file count](https://img.shields.io/github/directory-file-count/fibercrypto/fibercryptowallet/*.svg?color=blue&extension=go&label=.go%20files.svg ".go file count")
+![Github .qml file count](https://img.shields.io/github/directory-file-count/fibercrypto/fibercryptowallet/*.svg?color=blue&extension=qml&label=.qml%20files ".qml file count")
+
+
+## License
+[![License: GPL v3](resources/images/icons/github-related/license-gplv3.svg)](LICENSE.GPLv3 "GPL v3")
+
+<h2>
+WIP
+</h2>
+
+![WIP](resources/images/icons/github-related/wip.svg "WIP")
